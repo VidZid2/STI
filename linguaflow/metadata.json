@@ -1,0 +1,5 @@
+{
+  "name": "LinguaFlow",
+  "description": "An advanced, AI-powered writing assistant that checks grammar, style, and factual accuracy using Google Search grounding.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,1622 @@
+/* ====================================================================
+   RESPONSIVE & PERFORMANCE OPTIMIZATION CSS
+   Optimized for: PC, Laptop, Mobile (Android/iOS), Tablet, iPad
+   Version: 2.0 - Enhanced & Fixed
+   ==================================================================== */
+
+/* ===== BASE PERFORMANCE OPTIMIZATIONS ===== */
+* {
+    /* Hardware acceleration */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    
+    /* Prevent text inflation on mobile */
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* Optimize animations for better performance */
+@media (prefers-reduced-motion: no-preference) {
+    * {
+        animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+/* Base responsive images and media */
+img, video, iframe {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* ===== DEVICE-SPECIFIC OPTIMIZATIONS ===== */
+
+/* ===== EXTRA SMALL PHONES (< 375px) ===== */
+@media (max-width: 374px) {
+    body {
+        font-size: 14px;
+    }
+    
+    .welcome-modal {
+        max-width: 98% !important;
+        max-height: 92vh !important;
+        border-radius: 12px !important;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.25rem !important;
+        line-height: 1.3;
+    }
+    
+    .modal-header p {
+        font-size: 0.8rem !important;
+    }
+    
+    .benefit-item,
+    .overhaul-card,
+    .profile-feature-item,
+    .quick-feature-item {
+        padding: 0.625rem !important;
+        gap: 0.625rem !important;
+    }
+    
+    .benefit-icon,
+    .overhaul-icon,
+    .profile-feature-icon {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    .benefit-icon svg,
+    .overhaul-icon svg {
+        width: 16px !important;
+        height: 16px !important;
+    }
+    
+    .benefit-content h4,
+    .overhaul-card h4,
+    .profile-feature-content h4 {
+        font-size: 0.8rem !important;
+    }
+    
+    .benefit-content p,
+    .overhaul-card p,
+    .profile-feature-content p {
+        font-size: 0.65rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* Dashboard specific */
+    .header {
+        height: 56px !important;
+        padding: 0 0.75rem !important;
+    }
+    
+    .logo-text {
+        font-size: 1rem !important;
+    }
+    
+    .sidebar {
+        width: 240px !important;
+    }
+    
+    /* Index.html specific */
+    .hero h1 {
+        font-size: 1.75rem !important;
+    }
+    
+    .hero p {
+        font-size: 0.9rem !important;
+    }
+    
+    .nav-links {
+        font-size: 0.85rem !important;
+    }
+}
+
+/* ===== SMALL PHONES (375px - 479px) ===== */
+@media (min-width: 375px) and (max-width: 479px) {
+    body {
+        font-size: 15px;
+    }
+    
+    .welcome-modal {
+        max-width: 96% !important;
+        max-height: 90vh !important;
+        border-radius: 14px !important;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.4rem !important;
+    }
+    
+    .benefit-item,
+    .overhaul-card,
+    .profile-feature-item {
+        padding: 0.7rem !important;
+    }
+    
+    .benefit-content h4,
+    .overhaul-card h4 {
+        font-size: 0.825rem !important;
+    }
+    
+    .benefit-content p,
+    .overhaul-card p {
+        font-size: 0.675rem !important;
+    }
+}
+
+/* ===== STANDARD PHONES (480px - 767px) ===== */
+@media (min-width: 480px) and (max-width: 767px) {
+    .welcome-modal {
+        max-width: 95% !important;
+        max-height: 90vh !important;
+        border-radius: 16px !important;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    .benefit-item,
+    .overhaul-card,
+    .profile-feature-item {
+        padding: 0.75rem !important;
+    }
+    
+    .benefit-content h4,
+    .overhaul-card h4 {
+        font-size: 0.85rem !important;
+    }
+    
+    .benefit-content p,
+    .overhaul-card p {
+        font-size: 0.7rem !important;
+    }
+    
+    /* Dashboard grid adjustments */
+    .course-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .profile-sections-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Index.html hero section */
+    .hero {
+        padding: 3rem 1rem !important;
+    }
+    
+    .cta-buttons {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+}
+
+/* ===== TABLETS (768px - 1023px) ===== */
+
+/* Tablet Portrait Mode */
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
+    .welcome-modal {
+        max-width: 90% !important;
+        max-height: 85vh !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+    
+    .profile-sections-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .benefit-item,
+    .overhaul-card {
+        padding: 1rem !important;
+    }
+    
+    .benefit-content h4,
+    .overhaul-card h4 {
+        font-size: 0.9rem !important;
+    }
+    
+    .benefit-content p,
+    .overhaul-card p {
+        font-size: 0.75rem !important;
+    }
+    
+    /* Dashboard specific */
+    .sidebar {
+        width: 260px !important;
+    }
+    
+    .main-content {
+        margin-left: 260px !important;
+    }
+    
+    /* Index.html features */
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* Tablet Landscape Mode */
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+    .welcome-modal {
+        max-width: 85% !important;
+        max-height: 90vh !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.875rem !important;
+    }
+    
+    .modal-header {
+        padding: 1.25rem !important;
+    }
+    
+    .update-item {
+        padding: 0.75rem !important;
+    }
+    
+    /* Optimize for limited height */
+    .modal-header h2 {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .benefit-item {
+        padding: 0.875rem !important;
+    }
+}
+
+/* iPad specific optimizations */
+@media only screen 
+  and (min-device-width: 768px) 
+  and (max-device-width: 1024px) {
+    .welcome-modal {
+        max-width: 90% !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+}
+
+/* iPad Pro */
+@media only screen 
+  and (min-device-width: 1024px) 
+  and (max-device-width: 1366px) {
+    .welcome-modal {
+        max-width: 85% !important;
+    }
+}
+
+/* ===== SMALL LAPTOPS (1024px - 1365px) ===== */
+@media (min-width: 1024px) and (max-width: 1365px) {
+    .welcome-modal {
+        max-width: 92% !important;
+        max-height: 85vh !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.875rem !important;
+    }
+    
+    .benefit-item,
+    .overhaul-card {
+        padding: 1.25rem !important;
+    }
+    
+    /* Common 1366x768 laptop optimization */
+    .modal-header h2 {
+        font-size: 1.75rem !important;
+    }
+    
+    /* Dashboard optimization */
+    .sidebar {
+        width: 260px !important;
+    }
+    
+    .course-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    /* Index.html */
+    .features-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* ===== STANDARD LAPTOPS (1366px - 1599px) ===== */
+@media (min-width: 1366px) and (max-width: 1599px) {
+    .welcome-modal {
+        max-width: 90% !important;
+        max-height: 85vh !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    .benefit-item,
+    .overhaul-card {
+        padding: 1.375rem 1.125rem !important;
+    }
+    
+    /* Dashboard */
+    .course-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    .sidebar {
+        width: 280px !important;
+    }
+}
+
+/* ===== LARGE LAPTOPS / SMALL DESKTOPS (1600px - 1919px) ===== */
+@media (min-width: 1600px) and (max-width: 1919px) {
+    .welcome-modal {
+        max-width: 1150px !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1rem !important;
+    }
+    
+    /* Full features enabled */
+    .benefit-item,
+    .overhaul-card {
+        padding: 1.5rem 1.25rem !important;
+    }
+    
+    .course-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* ===== FULL HD DESKTOPS (1920px - 2559px) ===== */
+@media (min-width: 1920px) and (max-width: 2559px) {
+    .welcome-modal {
+        max-width: 1200px !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.25rem !important;
+    }
+    
+    .benefit-item,
+    .overhaul-card {
+        padding: 1.5rem 1.25rem !important;
+    }
+    
+    .benefit-content h4,
+    .overhaul-card h4 {
+        font-size: 1rem !important;
+    }
+    
+    .benefit-content p,
+    .overhaul-card p {
+        font-size: 0.8rem !important;
+    }
+    
+    /* Dashboard */
+    .sidebar {
+        width: 300px !important;
+    }
+    
+    .course-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    /* Index.html */
+    .hero h1 {
+        font-size: 3.5rem !important;
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 2rem !important;
+    }
+}
+
+/* ===== 2K / QHD DISPLAYS (2560px - 3839px) ===== */
+@media (min-width: 2560px) and (max-width: 3839px) {
+    .welcome-modal {
+        max-width: 1400px !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.5rem !important;
+    }
+    
+    body {
+        font-size: 18px !important;
+    }
+    
+    .benefit-content h4,
+    .overhaul-card h4 {
+        font-size: 1.1rem !important;
+    }
+    
+    .benefit-content p,
+    .overhaul-card p {
+        font-size: 0.85rem !important;
+    }
+    
+    .course-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 1.5rem !important;
+    }
+}
+
+/* ===== 4K / UHD DISPLAYS (3840px+) ===== */
+@media (min-width: 3840px) {
+    .welcome-modal {
+        max-width: 1600px !important;
+    }
+    
+    body {
+        font-size: 20px !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 2rem !important;
+    }
+    
+    .benefit-item,
+    .overhaul-card {
+        padding: 2rem 1.5rem !important;
+    }
+    
+    .benefit-content h4,
+    .overhaul-card h4 {
+        font-size: 1.25rem !important;
+    }
+    
+    .benefit-content p,
+    .overhaul-card p {
+        font-size: 1rem !important;
+    }
+    
+    .course-grid {
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 2rem !important;
+    }
+    
+    /* Larger touch targets for 4K */
+    button,
+    .header-btn {
+        min-height: 50px !important;
+        min-width: 50px !important;
+        padding: 0.875rem 1.5rem !important;
+    }
+}
+
+/* ===== MOBILE IN DESKTOP MODE ===== */
+[data-mode="desktop-mode"] button,
+[data-mode="desktop-mode"] .header-btn {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* ===== 30FPS OPTIMIZATIONS ===== */
+[data-fps="30fps"] * {
+    animation-duration: 0.4s !important;
+    transition-duration: 0.3s !important;
+}
+
+[data-fps="30fps"] .welcome-modal-overlay {
+    backdrop-filter: none !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-fps="30fps"] .welcome-modal {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-fps="30fps"] .benefit-item:hover,
+[data-fps="30fps"] .overhaul-card:hover {
+    transform: translateX(2px) !important;
+}
+
+/* ===== LOW-END DEVICE OPTIMIZATIONS ===== */
+[data-performance="low"] * {
+    will-change: auto !important;
+}
+
+[data-performance="low"] .welcome-modal {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-performance="low"] .benefit-icon,
+[data-performance="low"] .overhaul-icon {
+    box-shadow: none !important;
+}
+
+/* ===== TOUCH DEVICE OPTIMIZATIONS ===== */
+.touch-device {
+    /* Better tap highlighting */
+    -webkit-tap-highlight-color: rgba(30, 64, 175, 0.1);
+}
+
+.touch-device button,
+.touch-device .header-btn {
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.touch-device .benefit-item,
+.touch-device .overhaul-card,
+.touch-device .profile-feature-item {
+    cursor: pointer;
+}
+
+/* ===== iOS SPECIFIC OPTIMIZATIONS ===== */
+.is-ios .modal-right,
+.is-ios .modal-left {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+.is-ios input,
+.is-ios button,
+.is-ios select,
+.is-ios textarea {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+}
+
+/* ===== ANDROID SPECIFIC OPTIMIZATIONS ===== */
+.is-android * {
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+/* ===== ENHANCED ORIENTATION HANDLING ===== */
+
+/* Portrait Mode - All Devices */
+@media (orientation: portrait) and (max-width: 1023px) {
+    .welcome-modal {
+        flex-direction: column !important;
+    }
+    
+    .modal-left {
+        width: 100% !important;
+        max-height: 40vh !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+    
+    .modal-right {
+        width: 100% !important;
+        max-height: 50vh !important;
+    }
+    
+    /* Stack navigation vertically */
+    .update-item {
+        padding: 0.75rem !important;
+    }
+    
+    /* Optimize scrolling areas */
+    .modal-left,
+    .modal-right {
+        overflow-y: auto !important;
+    }
+}
+
+/* Landscape Mode - Short Screens */
+@media (orientation: landscape) and (max-height: 500px) {
+    .welcome-modal {
+        max-height: 95vh !important;
+        padding: 0.5rem !important;
+    }
+    
+    .modal-header {
+        padding: 0.75rem 1rem !important;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.25rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .modal-header p {
+        font-size: 0.8rem !important;
+    }
+    
+    .update-item {
+        padding: 0.5rem 0.75rem !important;
+        gap: 0.5rem !important;
+    }
+    
+    .update-icon {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    
+    .benefit-item,
+    .overhaul-card {
+        padding: 0.625rem !important;
+    }
+    
+    /* Compact text */
+    .benefit-content h4,
+    .overhaul-card h4 {
+        font-size: 0.8rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .benefit-content p,
+    .overhaul-card p {
+        font-size: 0.7rem !important;
+        line-height: 1.3 !important;
+    }
+}
+
+/* Landscape Mode - Very Short Screens (like phones landscape) */
+@media (orientation: landscape) and (max-height: 400px) {
+    .welcome-modal {
+        max-height: 98vh !important;
+    }
+    
+    .modal-header {
+        padding: 0.5rem !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 0.5rem !important;
+    }
+    
+    .benefit-item {
+        padding: 0.5rem !important;
+    }
+}
+
+/* ===== ULTRA-WIDE DISPLAYS (21:9, 32:9) ===== */
+@media (min-aspect-ratio: 21/9) {
+    .welcome-modal {
+        max-width: 1400px !important;
+        margin: 0 auto !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    
+    /* Center content on ultra-wide */
+    .main-content {
+        max-width: 1800px !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* Super Ultra-wide (32:9) */
+@media (min-aspect-ratio: 32/9) {
+    .welcome-modal {
+        max-width: 1600px !important;
+    }
+    
+    .overhaul-grid {
+        grid-template-columns: repeat(6, 1fr) !important;
+    }
+}
+
+/* ===== HIGH DPI DISPLAYS ===== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Optimize for retina displays */
+    .benefit-icon svg,
+    .overhaul-icon svg {
+        shape-rendering: geometricPrecision;
+    }
+}
+
+/* ===== PRINT OPTIMIZATION ===== */
+@media print {
+    .header,
+    .sidebar,
+    .welcome-modal-overlay,
+    .notification-container {
+        display: none !important;
+    }
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+@media (prefers-contrast: high) {
+    .benefit-item,
+    .overhaul-card {
+        border-width: 2px !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    /* Ready for dark mode if needed */
+}
+
+/* ===== NETWORK-AWARE OPTIMIZATIONS ===== */
+@media (prefers-reduced-data: reduce) {
+    /* Reduce data usage */
+    .welcome-modal-overlay {
+        backdrop-filter: none !important;
+    }
+}
+
+/* ===== SAFE AREA INSETS (iPhone X+, notches) ===== */
+@supports (padding: max(0px)) {
+    .header {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+    }
+    
+    .welcome-modal {
+        padding: max(1rem, env(safe-area-inset-top)) 
+                 max(1rem, env(safe-area-inset-right)) 
+                 max(1rem, env(safe-area-inset-bottom)) 
+                 max(1rem, env(safe-area-inset-left));
+    }
+}
+
+/* ===== FOLDABLE DEVICE SUPPORT ===== */
+@media (horizontal-viewport-segments: 2) {
+    .welcome-modal {
+        max-width: 45vw !important;
+    }
+}
+
+/* ===== SAMSUNG DEX MODE ===== */
+@media (min-width: 1920px) and (pointer: fine) {
+    [data-device-type="mobile"] .sidebar {
+        width: 280px !important;
+    }
+    
+    [data-device-type="mobile"] .course-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* ===== CONFETTI CANVAS OPTIMIZATION ===== */
+#confetti {
+    /* Hardware acceleration */
+    transform: translateZ(0);
+    will-change: auto;
+    pointer-events: none;
+}
+
+[data-performance="low"] #confetti {
+    display: none !important;
+}
+
+[data-fps="30fps"] #confetti {
+    /* Reduce confetti particle count via JavaScript */
+    opacity: 0.85;
+}
+
+/* ===== SCROLLBAR STYLING (OPTIONAL) ===== */
+/* Modern browsers */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(30, 64, 175, 0.3) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: rgba(30, 64, 175, 0.3);
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(30, 64, 175, 0.5);
+}
+
+/* ===== INPUT AND FORM OPTIMIZATIONS ===== */
+input, textarea, select, button {
+    /* Prevent text size inflation */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    
+    /* Better touch response */
+    touch-action: manipulation;
+}
+
+/* Touch device form enhancements */
+.touch-device input,
+.touch-device textarea,
+.touch-device select {
+    min-height: 44px;
+    padding: 0.75rem;
+    font-size: 16px; /* Prevent zoom on iOS */
+}
+
+/* iOS form styling reset */
+.is-ios input[type="text"],
+.is-ios input[type="email"],
+.is-ios input[type="search"],
+.is-ios textarea {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 8px;
+}
+
+/* ===== ENHANCED SCROLLING PERFORMANCE ===== */
+.modal-left,
+.modal-right,
+.main-content {
+    /* Smooth scrolling with containment */
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Sidebar scrolling - controlled by dashboard.css state classes */
+.sidebar:not(.closing) {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Force hide overflow when closing to prevent element ghosting */
+.sidebar.closing {
+    overflow: hidden !important;
+}
+
+/* Optimize scroll performance on low-end devices */
+[data-performance="low"] .modal-left,
+[data-performance="low"] .modal-right {
+    -webkit-overflow-scrolling: auto;
+}
+
+/* ===== GPU ACCELERATION FOR ANIMATIONS ===== */
+.benefit-item,
+.overhaul-card,
+.profile-feature-item,
+.welcome-modal,
+.modal-left,
+.modal-right,
+.update-item {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Disable on low-end devices */
+[data-performance="low"] * {
+    transform: none !important;
+    backface-visibility: visible !important;
+    perspective: none !important;
+}
+
+/* ===== ANIMATION PERFORMANCE OPTIMIZATIONS ===== */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    #confetti {
+        display: none !important;
+    }
+}
+
+/* Battery saver mode detection */
+[data-performance="low"] *:hover {
+    /* Minimize hover effects */
+    transform: none !important;
+}
+
+/* ===== NETWORK-AWARE IMAGE LOADING ===== */
+@media (prefers-reduced-data: reduce) {
+    img {
+        /* Suggest browser to use low-res images */
+        image-rendering: -webkit-optimize-contrast;
+    }
+    
+    /* Hide decorative elements */
+    .decorative,
+    .hero-background {
+        display: none !important;
+    }
+}
+
+/* ===== CHROMEBOOK SPECIFIC ===== */
+@media (pointer: coarse) and (min-width: 768px) {
+    /* Likely a Chromebook or tablet with keyboard */
+    .touch-device button,
+    .touch-device .header-btn {
+        min-height: 40px;
+        min-width: 40px;
+    }
+}
+
+/* ===== WINDOWS HIGH CONTRAST MODE ===== */
+@media (prefers-contrast: high) {
+    .benefit-item,
+    .overhaul-card,
+    .profile-feature-item {
+        border: 2px solid currentColor !important;
+    }
+    
+    .benefit-icon,
+    .overhaul-icon {
+        border: 2px solid currentColor !important;
+    }
+}
+
+/* ===== SURFACE DUO / FOLDABLE PHONES ===== */
+@media (spanning: single-fold-vertical) {
+    .welcome-modal {
+        max-width: 48vw !important;
+        margin-right: 2vw !important;
+    }
+}
+
+@media (spanning: single-fold-horizontal) {
+    .welcome-modal {
+        max-height: 45vh !important;
+        margin-bottom: 2vh !important;
+    }
+}
+
+/* ===== POINTER TYPE OPTIMIZATIONS ===== */
+/* Coarse pointer (touch) */
+@media (pointer: coarse) {
+    button,
+    .header-btn,
+    .nav-item,
+    .update-item {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Larger click targets */
+    .modal-close-btn {
+        width: 48px !important;
+        height: 48px !important;
+    }
+}
+
+/* Fine pointer (mouse, trackpad) */
+@media (pointer: fine) {
+    /* Enable more subtle hover effects */
+    .benefit-item:hover,
+    .overhaul-card:hover {
+        transform: translateX(4px);
+    }
+}
+
+/* ===== HOVER CAPABILITY ===== */
+@media (hover: none) {
+    /* No hover capability (touch devices) */
+    .benefit-item:hover,
+    .overhaul-card:hover,
+    .profile-feature-item:hover {
+        transform: none;
+        background: rgba(30, 64, 175, 0.02);
+    }
+}
+
+@media (hover: hover) {
+    /* Hover capability available */
+    /* Enable full hover effects */
+}
+
+/* ===== FORCED COLORS MODE (Windows High Contrast) ===== */
+@media (forced-colors: active) {
+    .benefit-item,
+    .overhaul-card {
+        border: 1px solid CanvasText;
+    }
+    
+    .benefit-icon,
+    .overhaul-icon {
+        background: Canvas;
+        color: CanvasText;
+        border: 1px solid CanvasText;
+    }
+}
+
+/* ===== DISPLAY P3 COLOR SUPPORT ===== */
+@media (color-gamut: p3) {
+    :root {
+        --primary-blue: color(display-p3 0.118 0.251 0.686);
+        --primary-gold: color(display-p3 1 0.843 0);
+    }
+}
+
+/* ===== REFRESH RATE OPTIMIZATION ===== */
+/* Detected via JavaScript, applied via data attribute */
+[data-fps="30fps"] * {
+    animation-duration: 0.4s !important;
+    transition-duration: 0.3s !important;
+}
+
+[data-fps="60fps"] * {
+    /* Full smooth animations */
+    animation-duration: 0.5s;
+    transition-duration: 0.4s;
+}
+
+[data-fps="120fps"] * {
+    /* Ultra-smooth for high refresh rate displays */
+    animation-duration: 0.3s;
+    transition-duration: 0.25s;
+}
+
+/* ===== BROWSER-SPECIFIC OPTIMIZATIONS ===== */
+/* Firefox */
+@-moz-document url-prefix() {
+    * {
+        scrollbar-width: thin;
+    }
+}
+
+/* Safari */
+@supports (-webkit-backdrop-filter: blur(10px)) {
+    .welcome-modal-overlay {
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+    }
+}
+
+/* ===== FINAL PERFORMANCE HINTS ===== */
+/* Content visibility for off-screen elements */
+.benefit-item,
+.overhaul-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 300px 200px;
+}
+
+/* Contain layout changes */
+.modal-right,
+.modal-left {
+    contain: layout style paint;
+}
+
+/* ===== DEBUG MODE (OPTIONAL) ===== */
+[data-debug="true"] * {
+    outline: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+[data-debug="true"] .welcome-modal {
+    outline: 2px solid red;
+}
+
+/* ===== DASHBOARD SPECIFIC FIXES ===== */
+
+/* Revert modal to original size (override responsive changes) */
+.welcome-modal {
+    max-width: 1100px !important;
+    max-height: 85vh !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Keep original modal size on all devices for dashboard */
+@media (max-width: 767px) {
+    .welcome-modal {
+        max-width: 1100px !important;
+        max-height: 85vh !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .welcome-modal {
+        max-width: 1100px !important;
+        max-height: 85vh !important;
+    }
+}
+
+/* Sidebar animations are handled in dashboard.css - don't override */
+
+/* Sidebar overlay - smooth fade transition */
+.sidebar-overlay {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s;
+}
+
+.sidebar-overlay.active,
+body.sidebar-open .sidebar-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Hide scrollbars in modal sections */
+.modal-left::-webkit-scrollbar,
+.modal-right::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+}
+
+.modal-left,
+.modal-right {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+/* Move blue line indicator to absolute left edge - NO GAP */
+.update-item {
+    margin: 0 !important;
+    padding: 0.875rem 1.5rem 0.875rem 0 !important;
+    border-left: 3px solid transparent !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+}
+
+.update-item.active,
+.update-item:hover {
+    border-left-color: var(--primary-blue) !important;
+}
+
+/* Add padding to the content instead of the item */
+.update-icon {
+    margin-left: 0.875rem !important;
+}
+
+/* First update item no top margin */
+.update-item:first-child {
+    margin-top: 0 !important;
+}
+
+/* Remove extra spacing from updates list container */
+.updates-list {
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+/* Ensure modal-left has no left padding and matches border radius */
+.modal-left {
+    padding-left: 0 !important;
+    border-top-left-radius: 20px !important;
+    border-bottom-left-radius: 20px !important;
+    margin: 0 !important;
+}
+
+/* Keep modal-header aligned with padding */
+.modal-header {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    margin: 0 !important;
+}
+
+/* ===== WIDGETS SIDEBAR - NO GAPS ON ANY DEVICE & ZOOM LEVEL ===== */
+
+/* Ensure widgets toggle button has ZERO gap - works at all zoom levels */
+.widgets-toggle-btn {
+    left: 0 !important;
+    margin-left: -40px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    margin-right: 0 !important;
+    padding: 0 !important;
+    border-radius: 8px 0 0 8px !important;
+    width: 40px !important;
+    height: 80px !important;
+    box-sizing: border-box !important;
+}
+
+.widgets-toggle-btn.show {
+    transform: translateY(-50%) translateX(0) !important;
+}
+
+/* Ensure widgets sidebar is flush with edge - no gaps */
+.widgets-sidebar {
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Mobile/Touch device optimizations - NO CURSOR */
+@media (hover: none) and (pointer: coarse) {
+    /* Touch devices - larger button, easier to tap */
+    .widgets-toggle-btn {
+        width: 60px !important;
+        height: 100px !important;
+        margin-left: -60px !important;
+        font-size: 1.5rem !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: translateY(-50%) translateX(0) !important;
+    }
+    
+    .widgets-toggle-btn.show {
+        opacity: 1 !important;
+    }
+    
+    /* Always show on touch devices */
+    .toggle-tooltip {
+        display: none !important;
+    }
+}
+
+/* Tablet touch devices */
+@media (hover: none) and (pointer: coarse) and (min-width: 768px) {
+    .widgets-toggle-btn {
+        width: 55px !important;
+        height: 95px !important;
+        margin-left: -55px !important;
+    }
+}
+
+/* Phone touch devices */
+@media (hover: none) and (pointer: coarse) and (max-width: 767px) {
+    .widgets-toggle-btn {
+        width: 60px !important;
+        height: 100px !important;
+        margin-left: -60px !important;
+    }
+}
+
+/* Responsive adjustments for all screen sizes */
+@media (max-width: 1920px) {
+    .widgets-toggle-btn {
+        margin-left: -40px !important;
+    }
+}
+
+@media (max-width: 1440px) {
+    .widgets-toggle-btn {
+        margin-left: -40px !important;
+    }
+}
+
+@media (max-width: 1366px) {
+    .widgets-toggle-btn {
+        margin-left: -40px !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .widgets-toggle-btn {
+        margin-left: -45px !important;
+        width: 45px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .widgets-toggle-btn {
+        margin-left: -50px !important;
+        width: 50px !important;
+        height: 90px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .widgets-toggle-btn {
+        margin-left: -50px !important;
+        width: 50px !important;
+    }
+}
+
+/* Ensure no gaps when resizing or zooming */
+.widgets-sidebar.open {
+    transform: translateX(0) !important;
+}
+
+.widgets-sidebar.closed {
+    transform: translateX(100%) !important;
+}
+
+/* Fix any potential gaps from border or padding */
+.widgets-content {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* High DPI / Zoom level fixes (100%, 125%, 150%, 175%, 200%) */
+@media (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
+    .widgets-toggle-btn {
+        left: 0 !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+    .widgets-toggle-btn {
+        left: 0 !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (-webkit-min-device-pixel-ratio: 1.75), (min-resolution: 168dpi) {
+    .widgets-toggle-btn {
+        left: 0 !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .widgets-toggle-btn {
+        left: 0 !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* ===== QUICK ACTIONS FAB - CONSISTENT SIZE ALL ZOOM & DEVICES ===== */
+
+/* Base styling - consistent across all zoom levels */
+.quick-actions-fab {
+    position: fixed !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    padding: 8px 12px !important;
+    gap: 8px !important;
+    border-radius: 50px !important;
+    box-sizing: border-box !important;
+    max-width: 600px !important;
+    width: auto !important;
+}
+
+.quick-actions-fab.visible {
+    bottom: 2rem !important;
+    opacity: 1 !important;
+}
+
+.quick-actions-fab .value {
+    padding: 12px 18px !important;
+    font-size: 0.875rem !important;
+    min-height: 44px !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+}
+
+.quick-actions-fab .value svg {
+    width: 18px !important;
+    height: 18px !important;
+}
+
+/* Touch devices - always visible, larger buttons */
+@media (hover: none) and (pointer: coarse) {
+    .quick-actions-fab {
+        bottom: 1.5rem !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        padding: 10px 14px !important;
+    }
+    
+    .quick-actions-fab.visible {
+        bottom: 1.5rem !important;
+    }
+    
+    .quick-actions-fab .value {
+        padding: 14px 20px !important;
+        font-size: 0.9rem !important;
+        min-height: 48px !important;
+        min-width: 48px !important;
+    }
+    
+    .quick-actions-fab .value svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+    
+    /* Show toolbelt toggle button on touch devices */
+    .toolbelt-toggle-mobile {
+        display: flex !important;
+    }
+    
+    /* Show widgets toggle button on touch devices - always visible */
+    .widgets-toggle-btn {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: translateY(-50%) translateX(0) !important;
+        visibility: visible !important;
+    }
+    
+    .widgets-toggle-btn.show {
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    /* Hide tooltip on touch devices */
+    .widgets-toggle-btn .toggle-tooltip {
+        display: none !important;
+    }
+}
+
+/* Tablet touch */
+@media (hover: none) and (pointer: coarse) and (min-width: 768px) {
+    .quick-actions-fab {
+        max-width: 650px !important;
+    }
+    
+    .quick-actions-fab .value {
+        padding: 13px 19px !important;
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Phone touch */
+@media (hover: none) and (pointer: coarse) and (max-width: 767px) {
+    .quick-actions-fab {
+        flex-wrap: wrap !important;
+        max-width: 90% !important;
+        gap: 6px !important;
+        padding: 8px !important;
+    }
+    
+    .quick-actions-fab .value {
+        padding: 12px 16px !important;
+        font-size: 0.8rem !important;
+        flex: 1 1 calc(50% - 6px) !important;
+        min-width: 120px !important;
+    }
+    
+    .quick-actions-fab .value svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+}
+
+/* Zoom level consistency */
+@media (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
+    .quick-actions-fab {
+        box-sizing: border-box !important;
+    }
+}
+
+@media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+    .quick-actions-fab {
+        box-sizing: border-box !important;
+    }
+}
+
+@media (-webkit-min-device-pixel-ratio: 1.75), (min-resolution: 168dpi) {
+    .quick-actions-fab {
+        box-sizing: border-box !important;
+    }
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .quick-actions-fab {
+        box-sizing: border-box !important;
+    }
+}
+
+/* ===== TOOLBELT MOBILE TOGGLE (FOR TOUCH DEVICES) ===== */
+
+/* Hidden by default, shown only on touch devices */
+.toolbelt-toggle-mobile {
+    display: none;
+    position: fixed;
+    bottom: 6rem;
+    right: 1.5rem;
+    width: 56px;
+    height: 56px;
+    background: var(--primary-blue);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+    cursor: pointer;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.toolbelt-toggle-mobile:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.4);
+}
+
+.toolbelt-toggle-mobile svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Toolbelt panel for mobile */
+@media (hover: none) and (pointer: coarse) {
+    .toolbelt-buttons {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        z-index: 999;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    .toolbelt-buttons.active {
+        transform: translateY(0);
+    }
+    
+    .toolbelt-button {
+        padding: 1rem !important;
+        border-radius: 12px !important;
+        background: rgba(30, 64, 175, 0.05) !important;
+    }
+    
+    .toolbelt-button:active {
+        background: rgba(30, 64, 175, 0.1) !important;
+    }
+}
+
+/* ===== WIDGETS SIDEBAR CONTENT STYLING ===== */
+
+/* Fix widget cards to match the design */
+.widget {
+    background: var(--bg-color) !important;
+    border-radius: 16px !important;
+    padding: 1.5rem !important;
+    margin-bottom: 1.25rem !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.widget:hover {
+    border-color: rgba(30, 64, 175, 0.15) !important;
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.08) !important;
+}
+
+/* Ensure widgets content has proper padding */
+.widgets-content {
+    padding: 1.5rem !important;
+}
+
+/* Widget header spacing */
+.widget-header {
+    margin-bottom: 1.25rem !important;
+}
+
+/* Empty state styling */
+.empty-state {
+    padding: 2rem 1rem !important;
+    text-align: center !important;
+}
+
+.empty-state i {
+    font-size: 3rem !important;
+    color: rgba(0, 0, 0, 0.15) !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.empty-state p {
+    color: rgba(0, 0, 0, 0.4) !important;
+    font-size: 0.9rem !important;
+}
+
+/* Sidebar styling moved to dashboard.css */
+
+/* ===== END OF RESPONSIVE OPTIMIZATION ===== */

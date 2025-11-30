@@ -1,0 +1,872 @@
+/* Scoped styles for Student Login Page */
+
+.student-login-wrapper {
+    font-family: 'Calibri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    background-image: url('/images/Background_For_Login.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #1b1b1b;
+    position: relative;
+    width: 100vw;
+    margin: 0;
+}
+
+.student-login-wrapper .login-container,
+.student-login-wrapper .password-modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 20px;
+}
+
+/* Card content wrapper for slide animation */
+.student-login-wrapper .login-card>*:not(.loading-bar) {
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.student-login-wrapper .login-card.slide-out>*:not(.loading-bar) {
+    transform: translateX(-100%);
+}
+
+.student-login-wrapper .login-card.slide-in>*:not(.loading-bar) {
+    transform: translateX(-100%);
+}
+
+.student-login-wrapper .password-modal .login-card.slide-in>*:not(.loading-bar) {
+    animation: slideInFromLeft 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.student-login-wrapper .login-card {
+    width: 100%;
+    max-width: 450px;
+    padding: 44px 44px 20px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(0, 0, 0, 0.05);
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Dot Floating Animation Container */
+.student-login-wrapper .dot-floating-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Dot Floating Animation */
+.student-login-wrapper .dot-floating {
+    position: relative;
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: #0067b8;
+    color: #0067b8;
+    animation: dot-floating 1.5s infinite cubic-bezier(0.15, 0.6, 0.9, 0.1);
+}
+
+.student-login-wrapper .dot-floating::before,
+.student-login-wrapper .dot-floating::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 0;
+}
+
+.student-login-wrapper .dot-floating::before {
+    left: -10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: #0067b8;
+    color: #0067b8;
+    animation: dot-floating-before 1.5s infinite ease-in-out;
+}
+
+.student-login-wrapper .dot-floating::after {
+    left: -20px;
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: #0067b8;
+    color: #0067b8;
+    animation: dot-floating-after 1.5s infinite cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* Additional dots */
+.student-login-wrapper .dot-floating .dot {
+    position: absolute;
+    top: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: #0067b8;
+}
+
+.student-login-wrapper .dot-floating .dot-1 {
+    left: -30px;
+    animation: dot-floating-1 1.5s infinite cubic-bezier(0.5, 0, 1, 1);
+}
+
+.student-login-wrapper .dot-floating .dot-2 {
+    left: -40px;
+    animation: dot-floating-2 1.5s infinite cubic-bezier(0.6, 0, 1, 1);
+}
+
+.student-login-wrapper .dot-floating .dot-3 {
+    left: -50px;
+    animation: dot-floating-3 1.5s infinite cubic-bezier(0.7, 0, 1, 1);
+}
+
+@keyframes dot-floating-1 {
+    0% { left: -120px; }
+    50% { left: -30px; }
+    75% { left: -120px; }
+    100% { left: -120px; }
+}
+
+@keyframes dot-floating-2 {
+    0% { left: -140px; }
+    50% { left: -40px; }
+    75% { left: -140px; }
+    100% { left: -140px; }
+}
+
+@keyframes dot-floating-3 {
+    0% { left: -160px; }
+    50% { left: -50px; }
+    75% { left: -160px; }
+    100% { left: -160px; }
+}
+
+@keyframes dot-floating {
+    0% {
+        left: calc(-50% - 5px);
+    }
+    75% {
+        left: calc(100% + 50px);
+    }
+    100% {
+        left: calc(100% + 50px);
+    }
+}
+
+@keyframes dot-floating-before {
+    0% {
+        left: -50px;
+    }
+    50% {
+        left: -10px;
+    }
+    75% {
+        left: -50px;
+    }
+    100% {
+        left: -50px;
+    }
+}
+
+@keyframes dot-floating-after {
+    0% {
+        left: -100px;
+    }
+    50% {
+        left: -20px;
+    }
+    75% {
+        left: -100px;
+    }
+    100% {
+        left: -100px;
+    }
+}
+
+/* Logo */
+.student-login-wrapper .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.student-login-wrapper .password-card .logo {
+    margin-bottom: 16px;
+}
+
+.student-login-wrapper .logo svg {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+.student-login-wrapper .logo-text {
+    font-size: 20px;
+    font-weight: 600;
+    color: #5e5e5e !important;
+    line-height: 1;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #5e5e5e !important;
+    background-clip: unset !important;
+}
+
+.student-login-wrapper .microsoft-logo-img {
+    height: 65px;
+    width: auto;
+    object-fit: contain;
+    margin: -16px 0 -16px -2px;
+    padding: 0;
+    display: block;
+}
+
+/* Title */
+.student-login-wrapper .title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1b1b1b;
+    margin-bottom: 14px;
+    margin-top: 0;
+    line-height: 32px;
+}
+
+.student-login-wrapper .password-card .title {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+/* Account List */
+.student-login-wrapper .account-list {
+    margin-top: 0;
+    margin-bottom: 24px;
+    margin-left: -44px;
+    margin-right: -44px;
+    padding-left: 44px;
+    padding-right: 44px;
+    padding-bottom: 16px;
+}
+
+.student-login-wrapper .account-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    margin: 0 -44px;
+    padding-left: 44px;
+    padding-right: 44px;
+    border: none;
+    border-top: 2px dotted transparent;
+    border-bottom: 2px dotted transparent;
+    background: #ffffff;
+    cursor: pointer;
+    transition: none;
+    position: relative;
+}
+
+.student-login-wrapper .account-item.active {
+    border-top: 2px dotted #000000;
+    border-bottom: 2px dotted #000000;
+}
+
+/* Show dotted border and gray background on keyboard focus (Tab) */
+.student-login-wrapper .account-item:focus-visible {
+    outline: none;
+    border-top: 2px dotted #000000;
+    border-bottom: 2px dotted #000000;
+    background: #f0f0f0;
+}
+
+/* Remove default focus ring for mouse clicks */
+.student-login-wrapper .account-item:focus:not(:focus-visible) {
+    outline: none;
+    border-top: 2px dotted transparent;
+    border-bottom: 2px dotted transparent;
+}
+
+.student-login-wrapper .account-item:hover {
+    background: #f0f0f0;
+}
+
+.student-login-wrapper .account-item.add-account {
+    background: transparent;
+}
+
+.student-login-wrapper .account-item.add-account:hover {
+    background: #f0f0f0;
+}
+
+.student-login-wrapper .account-item.add-account:focus-visible {
+    background: #f0f0f0;
+}
+
+/* Keep gray background when active (clicked) */
+.student-login-wrapper .account-item.active {
+    background: #f0f0f0;
+}
+
+.student-login-wrapper .account-item.add-account.active {
+    background: #f0f0f0;
+}
+
+/* Account Avatar */
+.student-login-wrapper .account-avatar {
+    width: 44px;
+    height: 44px;
+    margin-right: 16px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e5e5e5;
+    border-radius: 50%;
+}
+
+.student-login-wrapper .account-avatar svg {
+    width: 26px;
+    height: 26px;
+}
+
+.student-login-wrapper .account-avatar.add-icon {
+    background: #e5e5e5;
+    border-radius: 50%;
+}
+
+/* Account Info */
+.student-login-wrapper .account-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.student-login-wrapper .account-email {
+    font-size: 14px;
+    color: #1b1b1b;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Account Options Button */
+.student-login-wrapper .account-options {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: #5e5e5e;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    transition: background 0.2s ease;
+}
+
+.student-login-wrapper .account-options:hover {
+    background: #e5e5e5;
+}
+
+/* Account Options Wrapper */
+.student-login-wrapper .account-options-wrapper {
+    position: relative;
+}
+
+/* Forget Dropdown */
+.student-login-wrapper .forget-dropdown {
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    transform: translateY(-50%);
+    margin-right: -20px;
+    background: #f0f0f0;
+    border: 2px dashed #1b1b1b;
+    min-width: 150px;
+    z-index: 100;
+}
+
+.student-login-wrapper .forget-option {
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    background: #e5e5e5;
+    color: #1b1b1b;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.student-login-wrapper .forget-option:hover {
+    text-decoration: underline;
+}
+
+/* Footer Links */
+.student-login-wrapper .footer-links {
+    margin-top: 24px;
+}
+
+.student-login-wrapper .footer-link {
+    color: #0067b8;
+    text-decoration: none;
+    font-size: 13px;
+    display: inline-block;
+}
+
+.student-login-wrapper .footer-link:hover {
+    text-decoration: underline;
+}
+
+/* Page Footer */
+.student-login-wrapper .page-footer {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    padding: 8px;
+    z-index: 100;
+}
+
+.student-login-wrapper .footer-link-small {
+    color: #5e5e5e;
+    text-decoration: none;
+    font-size: 11px;
+}
+
+.student-login-wrapper .footer-link-small:hover {
+    text-decoration: underline;
+}
+
+/* Password Modal Specific Styles */
+.student-login-wrapper .password-modal {
+    display: none;
+}
+
+.student-login-wrapper .back-btn-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+    cursor: pointer;
+    color: #1b1b1b;
+}
+
+.student-login-wrapper .back-btn-wrapper:hover {
+    background: #f0f0f0;
+}
+
+.student-login-wrapper .back-btn-wrapper:active {
+    outline: 1px solid #000000;
+    background: #f0f0f0;
+}
+
+.student-login-wrapper .back-btn-wrapper svg {
+    flex-shrink: 0;
+    display: block;
+}
+
+.student-login-wrapper .email-text {
+    font-size: 15px;
+    color: #1b1b1b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 400;
+    cursor: default;
+    margin-left: 0;
+}
+
+
+/* Password Form */
+.student-login-wrapper .password-form {
+    margin-top: 24px;
+}
+
+.student-login-wrapper .form-group {
+    margin-bottom: 8px;
+}
+
+.student-login-wrapper .form-input {
+    width: 100%;
+    padding: 8px 0 7px 0;
+    font-size: 15px;
+    border: none !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #1b1b1b !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #1b1b1b;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: border-color 0.2s ease;
+}
+
+.student-login-wrapper .form-input:hover {
+    border-bottom-color: #1b1b1b !important;
+}
+
+.student-login-wrapper .form-input:focus {
+    border-bottom-color: #1b1b1b !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.student-login-wrapper .form-input::placeholder {
+    color: #605e5c;
+    font-size: 15px;
+    opacity: 1;
+}
+
+.student-login-wrapper .forgot-password {
+    color: #0067b8;
+    text-decoration: none;
+    font-size: 13px;
+    display: inline-block;
+    margin-top: 8px;
+    margin-bottom: 24px;
+}
+
+.student-login-wrapper .forgot-password:hover {
+    text-decoration: underline;
+}
+
+.student-login-wrapper .button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0;
+}
+
+.student-login-wrapper .submit-btn {
+    min-width: 90px;
+    padding: 8px 20px;
+    background: #0067b8;
+    color: #ffffff;
+    border: none;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    text-align: center;
+    border-radius: 0;
+}
+
+.student-login-wrapper .submit-btn:hover {
+    background: #005a9e;
+}
+
+.student-login-wrapper .submit-btn:active {
+    background: #004578;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .student-login-wrapper .login-card {
+        padding: 32px 24px;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+    .student-login-wrapper {
+        background-color: #ffffff;
+    }
+
+    .student-login-wrapper .title {
+        font-size: 20px;
+        line-height: 28px;
+    }
+
+    .student-login-wrapper .account-email {
+        font-size: 14px;
+    }
+
+    .student-login-wrapper .logo-text {
+        font-size: 16px;
+    }
+
+    .student-login-wrapper .page-footer {
+        position: static;
+        margin-top: 40px;
+        justify-content: center;
+        padding: 20px;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.student-login-wrapper .login-card {
+    animation: none;
+}
+
+/* Fade in slide up animation for card contents */
+.student-login-wrapper .login-card > * {
+    animation: contentFadeIn 0.4s ease forwards;
+}
+
+.student-login-wrapper .login-card > *:nth-child(1) { animation-delay: 0s; }
+.student-login-wrapper .login-card > *:nth-child(2) { animation-delay: 0.05s; }
+.student-login-wrapper .login-card > *:nth-child(3) { animation-delay: 0.1s; }
+.student-login-wrapper .login-card > *:nth-child(4) { animation-delay: 0.15s; }
+.student-login-wrapper .login-card > *:nth-child(5) { animation-delay: 0.2s; }
+
+@keyframes contentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Troubleshooting Card */
+.student-login-wrapper .troubleshooting-card {
+    width: 100%;
+    max-width: 450px;
+    margin-top: 16px;
+    padding: 44px 44px 20px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(0, 0, 0, 0.05);
+    border-radius: 0;
+    animation: none;
+}
+
+.student-login-wrapper .troubleshooting-card > * {
+    animation: contentFadeIn 0.4s ease forwards;
+}
+
+.student-login-wrapper .troubleshooting-card > *:nth-child(1) { animation-delay: 0s; }
+.student-login-wrapper .troubleshooting-card > *:nth-child(2) { animation-delay: 0.05s; }
+.student-login-wrapper .troubleshooting-card > *:nth-child(3) { animation-delay: 0.1s; }
+.student-login-wrapper .troubleshooting-card > *:nth-child(4) { animation-delay: 0.15s; }
+.student-login-wrapper .troubleshooting-card > *:nth-child(5) { animation-delay: 0.2s;
+}
+
+.student-login-wrapper .troubleshooting-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.student-login-wrapper .troubleshooting-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1b1b1b;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.student-login-wrapper .close-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    line-height: 1;
+    color: #605e5c;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    transition: background 0.2s ease;
+    padding: 0;
+    margin: -6px -6px 0 0;
+}
+
+.student-login-wrapper .close-btn:hover {
+    background: #f3f2f1;
+}
+
+.student-login-wrapper .troubleshooting-intro {
+    font-size: 13px;
+    color: #1b1b1b;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.student-login-wrapper .copy-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.student-login-wrapper .copy-link {
+    display: inline-block;
+    color: #0067b8;
+    text-decoration: none;
+    font-size: 13px;
+    cursor: pointer;
+    transition: text-decoration 0.2s ease;
+}
+
+.student-login-wrapper .copy-link:hover {
+    text-decoration: underline;
+}
+
+.student-login-wrapper .copy-confirmation {
+    display: none;
+    align-items: center;
+    gap: 4px;
+}
+
+.student-login-wrapper .copy-confirmation.show {
+    display: flex !important;
+    animation: fadeInCopy 0.4s ease forwards;
+}
+
+.student-login-wrapper .copy-confirmation lord-icon {
+    display: block !important;
+    flex-shrink: 0;
+}
+
+.student-login-wrapper .copied-text {
+    font-size: 13px;
+    color: #109121;
+    font-weight: 600;
+}
+
+@keyframes fadeInCopy {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.student-login-wrapper .troubleshooting-info {
+    margin-bottom: 16px;
+}
+
+.student-login-wrapper .info-row {
+    display: flex;
+    font-size: 13px;
+    color: #1b1b1b;
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.student-login-wrapper .info-row:last-child {
+    margin-bottom: 0;
+}
+
+.student-login-wrapper .info-label {
+    font-weight: 600;
+    color: #1b1b1b;
+    white-space: nowrap;
+    margin-right: 4px;
+}
+
+.student-login-wrapper .info-value {
+    word-break: break-all;
+    color: #1b1b1b;
+}
+
+.student-login-wrapper .flag-section {
+    margin-top: 16px;
+}
+
+.student-login-wrapper .flag-title {
+    font-size: 13px;
+    color: #1b1b1b;
+    margin: 0 0 0 0;
+    line-height: 1.5;
+}
+
+.student-login-wrapper .flag-description {
+    font-size: 13px;
+    color: #1b1b1b;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.student-login-wrapper .troubleshooting-link {
+    color: #0067b8;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+.student-login-wrapper .troubleshooting-link:hover {
+    text-decoration: underline;
+}
+
+/* Page Footer */
+.student-login-wrapper .page-footer {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    padding: 6px 12px;
+    background: transparent;
+}
+
+.student-login-wrapper .footer-link-small {
+    font-size: 13px;
+    color: #000000;
+    text-decoration: none;
+    font-family: 'Calibri', 'Segoe UI', sans-serif;
+}
+
+.student-login-wrapper .footer-link-small:hover {
+    text-decoration: underline;
+}
+
+.student-login-wrapper .footer-dots {
+    font-size: 7px;
+    letter-spacing: 1px;
+}
