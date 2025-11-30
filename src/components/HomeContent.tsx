@@ -124,7 +124,7 @@ void _QuickStatBadge;
 
 // Animated Flame Component for Streak
 // Using CSS animations for better performance on infinite animations
-const AnimatedFlame: React.FC<{ isActive?: boolean }> = ({ isActive = true }) => (
+const _AnimatedFlame: React.FC<{ isActive?: boolean }> = ({ isActive = true }) => (
     <div className={`flame-container ${isActive ? 'flame-active' : ''}`}>
         <svg viewBox="0 0 24 24" fill="currentColor" className="flame-icon">
             <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67z"/>
@@ -132,6 +132,7 @@ const AnimatedFlame: React.FC<{ isActive?: boolean }> = ({ isActive = true }) =>
         <div className="flame-glow" />
     </div>
 );
+void _AnimatedFlame;
 
 // Confetti Burst Component for Milestone Celebrations
 const ConfettiBurst: React.FC<{ color: string; isActive: boolean }> = ({ color, isActive }) => {
@@ -852,19 +853,21 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
         { icon: 'tools', label: 'Tools', description: 'Grammar & more', color: '#f59e0b' },
     ];
 
-    // Upcoming deadlines
-    const deadlines = [
+    // Upcoming deadlines - available for future use
+    const _deadlines = [
         { day: '28', month: 'Nov', title: 'Programming Assignment 3', course: 'Computer Programming 1', urgent: true },
         { day: '30', month: 'Nov', title: 'Quiz: Chapter 5', course: 'Introduction to Computing', urgent: false },
         { day: '02', month: 'Dec', title: 'Performance Task', course: 'Purposive Communication', urgent: false },
     ];
+    void _deadlines;
 
-    // Recent activity
-    const activities = [
+    // Recent activity - available for future use
+    const _activities = [
         { type: 'completed', title: 'Completed Module 5', course: 'Computer Programming 1', time: '2 hours ago' },
         { type: 'submitted', title: 'Submitted Assignment 2', course: 'Introduction to Computing', time: '5 hours ago' },
         { type: 'started', title: 'Started Module 3', course: 'Euthenics 1', time: 'Yesterday' },
     ];
+    void _activities;
 
     // Show skeleton while loading
     if (isHomeLoading) {
