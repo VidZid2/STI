@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import CourseCard from './CourseCard';
 import ReorderableCourseGrid from './ReorderableCourseGrid';
@@ -44,7 +44,8 @@ const itemVariants = {
     }
 };
 
-const cardVariants = {
+// cardVariants available for future use if needed
+const _cardVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: {
         opacity: 1,
@@ -55,6 +56,7 @@ const cardVariants = {
         }
     }
 };
+void _cardVariants;
 
 interface HomeContentProps {
     onShowWelcomeModal: () => void;
@@ -105,8 +107,8 @@ const ProgressRing: React.FC<{ progress: number; size?: number; strokeWidth?: nu
     );
 };
 
-// Quick Stats Badge Component
-const QuickStatBadge: React.FC<{ count: number; label: string; type: 'urgent' | 'info' }> = ({ count, label, type }) => (
+// Quick Stats Badge Component - available for future use
+const _QuickStatBadge: React.FC<{ count: number; label: string; type: 'urgent' | 'info' }> = ({ count, label, type }) => (
     <motion.div 
         className={`quick-stat-badge ${type}`}
         initial={{ opacity: 0, scale: 0.8 }}
@@ -118,6 +120,7 @@ const QuickStatBadge: React.FC<{ count: number; label: string; type: 'urgent' | 
         <span className="badge-label">{label}</span>
     </motion.div>
 );
+void _QuickStatBadge;
 
 // Animated Flame Component for Streak
 // Using CSS animations for better performance on infinite animations
