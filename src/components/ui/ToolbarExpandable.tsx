@@ -6,6 +6,7 @@ import { AnimatePresence, motion, MotionConfig } from 'motion/react';
 import { cn } from '@/lib/utils';
 import useClickOutside from '@/hooks/useClickOutside';
 import { useNotifications, type Notification as SharedNotification, type NotificationCategory } from '@/contexts/NotificationContext';
+import { ViewerCounter } from './ViewerCounter';
 // MorphingDialog removed - mail is now inside the toolbar
 
 const transition = {
@@ -1243,6 +1244,9 @@ export default function ToolbarExpandable() {
     return (
         <MotionConfig transition={transition}>
             <div className='flex items-center gap-3'>
+                {/* Viewer Counter */}
+                <ViewerCounter />
+                
                 <div ref={ref} className='relative'>
                     <div className='h-full w-full rounded-xl border border-blue-500 bg-white'>
                         {/* Buttons at the top */}
