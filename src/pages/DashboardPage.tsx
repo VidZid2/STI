@@ -951,8 +951,11 @@ const DashboardPage: React.FC = () => {
     const [widgetsSidebarActive, setWidgetsSidebarActive] = useState(false);
     // AI Chat state removed
     const [settingsModalActive, setSettingsModalActive] = useState(false);
-    // Welcome modal only shows for first-time users
+    // Welcome modal only shows for first-time users (and not during intro)
     const [welcomeModalActive, setWelcomeModalActive] = useState(() => {
+        // Don't show welcome modal if intro hasn't been shown yet
+        const introNotShown = sessionStorage.getItem('dashboardIntroShown') !== 'true';
+        if (introNotShown) return false;
         return localStorage.getItem('welcome-modal-completed') !== 'true';
     });
     // Tutorial only shows for first-time users (after welcome modal)
@@ -3925,7 +3928,13 @@ const DashboardPage: React.FC = () => {
             <Confetti active={showConfetti} />
 
             {/* Dashboard Intro - shows only once per session */}
-            {showIntro && <DashboardIntro onComplete={() => setShowIntro(false)} />}
+            {showIntro && <DashboardIntro onComplete={() => {
+                setShowIntro(false);
+                // Show welcome modal after intro if it hasn't been completed
+                if (localStorage.getItem('welcome-modal-completed') !== 'true') {
+                    setWelcomeModalActive(true);
+                }
+            }} />}
 
             {/* Toast Notifications Container - Compact Design on Left Side */}
             {/* Only show toast notifications after intro and tutorial are complete */}
