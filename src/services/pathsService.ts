@@ -800,7 +800,7 @@ export interface PathRecommendation {
  * Analyzes enrolled courses to suggest relevant learning paths
  */
 export async function getPathRecommendations(
-    studentId: string,
+    _studentId: string,
     courseProgress: Record<string, { progress: number }>,
     enrolledPaths: PathWithProgress[]
 ): Promise<PathRecommendation[]> {

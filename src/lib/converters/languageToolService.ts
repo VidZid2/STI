@@ -45,11 +45,13 @@ export interface LanguageToolResponse {
 }
 
 // Issue types for color coding
-export enum IssueCategory {
-    Error = 'error',           // Red - spelling, grammar errors
-    Warning = 'warning',       // Yellow - style, improvements
-    Info = 'info',            // Blue - punctuation, formatting
-}
+export const IssueCategory = {
+    Error: 'error',           // Red - spelling, grammar errors
+    Warning: 'warning',       // Yellow - style, improvements
+    Info: 'info',            // Blue - punctuation, formatting
+} as const;
+
+export type IssueCategoryType = typeof IssueCategory[keyof typeof IssueCategory];
 
 export interface GrammarIssue {
     id: string;
@@ -59,7 +61,7 @@ export interface GrammarIssue {
     offset: number;
     length: number;
     replacements: string[];
-    category: IssueCategory;
+    category: IssueCategoryType;
     categoryName: string;
     ruleId: string;
     ruleDescription: string;
@@ -130,7 +132,7 @@ const waitForRateLimit = async (): Promise<void> => {
 /**
  * Map LanguageTool category to our issue category
  */
-const mapCategory = (categoryId: string, issueType: string): IssueCategory => {
+const mapCategory = (categoryId: string, issueType: string): IssueCategoryType => {
     // Spelling and grammar errors = Red
     if (categoryId === 'TYPOS' ||
         categoryId === 'MISSPELLING' ||
@@ -267,7 +269,7 @@ export const getLanguageToolStatus = () => {
 /**
  * Get color for issue category
  */
-export const getCategoryColor = (category: IssueCategory): string => {
+export const getCategoryColor = (category: IssueCategoryType): string => {
     switch (category) {
         case IssueCategory.Error:
             return '#ef4444'; // Red
@@ -283,7 +285,7 @@ export const getCategoryColor = (category: IssueCategory): string => {
 /**
  * Get underline style for issue category
  */
-export const getCategoryUnderlineStyle = (category: IssueCategory): string => {
+export const getCategoryUnderlineStyle = (category: IssueCategoryType): string => {
     switch (category) {
         case IssueCategory.Error:
             return 'wavy underline #ef4444';

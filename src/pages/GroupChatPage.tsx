@@ -10,7 +10,7 @@ import {
     fetchGroupMessages,
     sendMessage,
     subscribeToMessages,
-    formatMessageTime,
+    // formatMessageTime, // Available for future use
     type ChatMessage,
 } from '../services/chatService';
 import { getProfile } from '../services/profileService';
@@ -77,8 +77,7 @@ const TooltipPortal: React.FC<{
             exit={{ opacity: 0, y: isAbove ? 6 : -6, scale: 0.95 }}
             transition={{ 
                 duration: 0.2, 
-                ease: [0.4, 0, 0.2, 1],
-                exit: { duration: 0.15, ease: 'easeOut' }
+                ease: [0.4, 0, 0.2, 1]
             }}
             style={{
                 position: 'fixed',

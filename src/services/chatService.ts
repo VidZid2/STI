@@ -39,7 +39,7 @@ export const fetchGroupMessages = async (
     }
 
     try {
-        let query = supabase
+        let query = supabase!
             .from('group_messages')
             .select('*')
             .eq('group_id', groupId)
@@ -87,7 +87,7 @@ export const sendMessage = async (
     }
 
     try {
-        const { data, error } = await supabase
+        const { data, error } = await supabase!
             .from('group_messages')
             .insert({
                 group_id: groupId,
@@ -117,7 +117,7 @@ export const editMessage = async (
     if (!isSupabaseConfigured()) return true;
 
     try {
-        const { error } = await supabase
+        const { error } = await supabase!
             .from('group_messages')
             .update({ content: newContent, is_edited: true, updated_at: new Date().toISOString() })
             .eq('id', messageId);
@@ -135,7 +135,7 @@ export const deleteMessage = async (messageId: string): Promise<boolean> => {
     if (!isSupabaseConfigured()) return true;
 
     try {
-        const { error } = await supabase
+        const { error } = await supabase!
             .from('group_messages')
             .delete()
             .eq('id', messageId);
@@ -158,7 +158,7 @@ export const addReaction = async (
 
     try {
         // Get current reactions
-        const { data: message } = await supabase
+        const { data: message } = await supabase!
             .from('group_messages')
             .select('reactions')
             .eq('id', messageId)
@@ -172,7 +172,7 @@ export const addReaction = async (
             reactions[emoji].push(userId);
         }
 
-        const { error } = await supabase
+        const { error } = await supabase!
             .from('group_messages')
             .update({ reactions })
             .eq('id', messageId);
@@ -192,7 +192,7 @@ export const subscribeToMessages = (
 ) => {
     if (!isSupabaseConfigured()) return () => {};
 
-    const channel = supabase
+    const channel = supabase!
         .channel(`group-messages-${groupId}`)
         .on(
             'postgres_changes',
@@ -209,7 +209,7 @@ export const subscribeToMessages = (
         .subscribe();
 
     return () => {
-        supabase.removeChannel(channel);
+        supabase!.removeChannel(channel);
     };
 };
 
@@ -222,7 +222,7 @@ export const updateTypingStatus = async (
     if (!isSupabaseConfigured()) return;
 
     try {
-        await supabase
+        await supabase!
             .from('group_members')
             .update({ is_typing: isTyping })
             .eq('group_id', groupId)

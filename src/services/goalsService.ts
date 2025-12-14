@@ -9,7 +9,7 @@ import {
     getStudyTimeData, 
     getStreakData, 
     getCourseProgressData,
-    getCompletedCoursesCount,
+    // getCompletedCoursesCount, // Available for future use
 } from './studyTimeService';
 import { getGradePredictionSync } from './gradePredictorService';
 
