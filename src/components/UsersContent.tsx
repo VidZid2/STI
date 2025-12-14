@@ -1318,7 +1318,8 @@ const UserCardSkeleton: React.FC<{
 };
 
 // Classmates Section Skeleton
-const ClassmatesSkeleton: React.FC<{
+// @ts-ignore - Reserved for future use
+const _ClassmatesSkeleton: React.FC<{
     isDarkMode: boolean;
     colors: { cardBg: string; border: string };
 }> = ({ isDarkMode, colors }) => {
