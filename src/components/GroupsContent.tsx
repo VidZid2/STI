@@ -1799,7 +1799,8 @@ const CreateGroupModal: React.FC<{
     };
     
     // Check if email exists in database
-    const checkEmailExists = async (email: string): Promise<boolean> => {
+    // @ts-ignore - Reserved for future use
+    const _checkEmailExists = async (email: string): Promise<boolean> => {
         if (!isSupabaseConfigured() || !supabase) return false;
         try {
             const db = supabase;

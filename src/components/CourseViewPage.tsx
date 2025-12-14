@@ -322,8 +322,7 @@ const QuickStatsBar: React.FC<{ courseId: string }> = ({ courseId: _courseId }) 
     };
 
     const gradeLetter = getGradeLetter(stats.grade);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _hasGrade = stats.grade > 0; // Available for future use
+    void (stats.grade > 0); // _hasGrade - Available for future use
 
     // Trend arrow component
     const TrendArrow = ({ trend }: { trend: 'up' | 'down' | 'stable' }) => {
@@ -1515,12 +1514,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     );
     
     // Get teachers data for this course (with demo mode support)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const teachersData = useMemo(() => getTeachersData(course.id), [course.id]);
+    // @ts-ignore - Reserved for future use
+    const _teachersData = useMemo(() => getTeachersData(course.id), [course.id]);
     
     // Get AI grading data for this course (with demo mode support)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const aiGradingData = useMemo(() => getAIGradingData(course.id), [course.id]);
+    // @ts-ignore - Reserved for future use
+    const _aiGradingData = useMemo(() => getAIGradingData(course.id), [course.id]);
 
     // Handle wheel scroll to horizontal scroll for modules - snap to cards
     useEffect(() => {

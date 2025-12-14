@@ -169,7 +169,8 @@ const formatTimeRemaining = (days?: number): string => {
 };
 
 // Progress Ring Component (matching PathsContent style)
-const ProgressRingWithTooltip: React.FC<{
+// @ts-ignore - Reserved for future use
+const _ProgressRingWithTooltip: React.FC<{
     progress: number;
     color: string;
     isDarkMode: boolean;
