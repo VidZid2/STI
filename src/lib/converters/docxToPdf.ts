@@ -8,12 +8,12 @@ export interface ConversionResult {
 
 export const convertDocxToPDF = async (file: File): Promise<ConversionResult> => {
     const arrayBuffer = await file.arrayBuffer();
-    
+
     // Convert DOCX to HTML using mammoth
     const result = await mammoth.convertToHtml({ arrayBuffer });
     const html = result.value;
     const warnings = result.messages.map(m => m.message);
-    
+
     // Create styled HTML container
     const styledHtml = `
         <div style="
@@ -37,7 +37,7 @@ export const convertDocxToPDF = async (file: File): Promise<ConversionResult> =>
             ${html}
         </div>
     `;
-    
+
     // Create temporary element for conversion
     const element = document.createElement('div');
     element.innerHTML = styledHtml;
@@ -45,7 +45,7 @@ export const convertDocxToPDF = async (file: File): Promise<ConversionResult> =>
     element.style.left = '-9999px';
     element.style.width = '210mm'; // A4 width
     document.body.appendChild(element);
-    
+
     try {
         // Convert HTML to PDF
         const pdfBlob = await html2pdf()
@@ -53,21 +53,21 @@ export const convertDocxToPDF = async (file: File): Promise<ConversionResult> =>
                 margin: [15, 15, 15, 15],
                 filename: 'document.pdf',
                 image: { type: 'jpeg', quality: 0.95 },
-                html2canvas: { 
+                html2canvas: {
                     scale: 2,
                     useCORS: true,
                     letterRendering: true,
                 },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'portrait' 
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
                 },
                 // pagebreak option removed for compatibility
             })
             .from(element)
             .outputPdf('blob');
-        
+
         return { blob: pdfBlob, warnings };
     } finally {
         document.body.removeChild(element);

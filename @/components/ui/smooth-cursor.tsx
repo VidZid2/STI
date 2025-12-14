@@ -1,5 +1,5 @@
 import { type FC, useEffect, useRef, useState } from "react"
-import { motion, useSpring } from "framer-motion"
+import { motion, useSpring } from "motion/react"
 
 interface Position {
   x: number
@@ -89,6 +89,7 @@ export function SmoothCursor({
   },
 }: SmoothCursorProps) {
   const [isHovering, setIsHovering] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const lastMousePos = useRef<Position>({ x: 0, y: 0 })
   const velocity = useRef<Position>({ x: 0, y: 0 })
   const lastUpdateTime = useRef(Date.now())
@@ -108,7 +109,26 @@ export function SmoothCursor({
     damping: 35,
   })
 
+  // Detect mobile/touch devices
   useEffect(() => {
+    const checkMobile = () => {
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      const isSmallScreen = window.innerWidth <= 768
+      setIsMobile(isTouchDevice || isSmallScreen)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  useEffect(() => {
+    // Don't run cursor logic on mobile
+    if (isMobile) {
+      document.body.style.cursor = "auto"
+      return
+    }
     const updateVelocity = (currentPos: Position) => {
       const currentTime = Date.now()
       const deltaTime = currentTime - lastUpdateTime.current
@@ -196,6 +216,11 @@ export function SmoothCursor({
     }
   }, [cursorX, cursorY, rotation, scale])
 
+  // Don't render on mobile devices
+  if (isMobile) {
+    return null
+  }
+
   return (
     <motion.div
       style={{
@@ -209,13 +234,6 @@ export function SmoothCursor({
         zIndex: 99999,
         pointerEvents: "none",
         willChange: "transform",
-      }}
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{
-        type: "spring",
-        stiffness: 400,
-        damping: 30,
       }}
     >
       <CustomCursorSVG isHovering={isHovering} />

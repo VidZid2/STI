@@ -12,7 +12,7 @@ export interface Notification {
     isRead: boolean;
     timestamp: Date;
     category: NotificationCategory;
-    type?: 'assignment' | 'grade' | 'announcement' | 'system'; // For toast compatibility
+    type?: 'assignment' | 'grade' | 'announcement' | 'system' | 'warning'; // For toast compatibility
 }
 
 // Storage keys
@@ -85,7 +85,7 @@ interface NotificationContextType {
     markAllAsRead: () => void;
     clearAllNotifications: () => void;
     clearAllToasts: () => void;
-    addNotification: (title: string, message: string, type: 'assignment' | 'grade' | 'announcement' | 'system') => void;
+    addNotification: (title: string, message: string, type: 'assignment' | 'grade' | 'announcement' | 'system' | 'warning') => void;
     
     // Counts
     unreadCount: number;
@@ -167,10 +167,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         setDismissedToastIds(prev => new Set([...prev, ...unreadIds]));
     }, [notifications]);
 
-    const addNotification = useCallback((title: string, message: string, type: 'assignment' | 'grade' | 'announcement' | 'system') => {
+    const addNotification = useCallback((title: string, message: string, type: 'assignment' | 'grade' | 'announcement' | 'system' | 'warning') => {
         const settings = getSettings();
         
-        // Check if this type of notification is enabled
+        // Check if this type of notification is enabled (warning always shows)
         if (type === 'assignment' && !settings.assignmentAlerts) return;
         if (type === 'grade' && !settings.gradeUpdates) return;
         if (type === 'announcement' && !settings.courseReminders) return;
@@ -179,7 +179,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             'assignment': 'assignment',
             'grade': 'assignment',
             'announcement': 'announcement',
-            'system': 'announcement'
+            'system': 'announcement',
+            'warning': 'announcement'
         };
 
         const newNotification: Notification = {

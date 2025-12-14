@@ -1,9 +1,31 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import useClickOutside from '@/hooks/useClickOutside';
+
+// Hook to detect dark mode
+function useDarkMode() {
+    const [isDark, setIsDark] = useState(() => 
+        typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
+    );
+    
+    useEffect(() => {
+        const checkDarkMode = () => {
+            setIsDark(document.body.classList.contains('dark-mode'));
+        };
+        checkDarkMode();
+        
+        const observer = new MutationObserver(checkDarkMode);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        
+        return () => observer.disconnect();
+    }, []);
+    
+    return isDark;
+}
 import {
     type UserProfile,
     type UserSettings,
@@ -15,10 +37,19 @@ import {
     getSettings,
     saveSettings,
 } from '@/services/profileService';
+import {
+    getXPProgress,
+    getCurrentLevel,
+    checkRecentLevelUp,
+    clearLevelUpNotification,
+    getXPData,
+} from '@/services/studyTimeService';
 
 type ProfileTab = 'profile' | 'settings';
 
 export default function UserProfileDropdown() {
+    const navigate = useNavigate();
+    const isDarkMode = useDarkMode();
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<ProfileTab>('profile');
     const [profile, setProfile] = useState<UserProfile>(() => getProfile());
@@ -29,9 +60,61 @@ export default function UserProfileDropdown() {
     const [coverImage, setCoverImage] = useState<string | null>(() => getImages().coverImage);
     const [profileImage, setProfileImage] = useState<string | null>(() => getImages().profileImage);
     const [showOnlineStatus, setShowOnlineStatus] = useState(() => getSettings().showOnlineStatus);
+    const [isSigningOut, setIsSigningOut] = useState(false);
+    const [xpProgress, setXpProgress] = useState(() => getXPProgress());
+    const [level, setLevel] = useState(() => getCurrentLevel());
+    const [showLevelUp, setShowLevelUp] = useState(false);
+    const [xpGain, setXpGain] = useState<number | null>(null);
+    const [lastTotalXP, setLastTotalXP] = useState(() => getXPData().totalXP);
     const coverInputRef = useRef<HTMLInputElement>(null);
     const profileInputRef = useRef<HTMLInputElement>(null);
     const ref = useRef<HTMLDivElement>(null!);
+
+    // Check for level up and update XP with gain animation
+    useEffect(() => {
+        const checkXP = () => {
+            const currentData = getXPData();
+            const newProgress = getXPProgress();
+            const newLevel = getCurrentLevel();
+            
+            // Check if XP increased
+            if (currentData.totalXP > lastTotalXP) {
+                const gained = currentData.totalXP - lastTotalXP;
+                setXpGain(gained);
+                setLastTotalXP(currentData.totalXP);
+                
+                // Hide the +XP popup after 2 seconds
+                setTimeout(() => setXpGain(null), 2000);
+            }
+            
+            setXpProgress(newProgress);
+            setLevel(newLevel);
+            
+            if (checkRecentLevelUp()) {
+                setShowLevelUp(true);
+                setTimeout(() => {
+                    setShowLevelUp(false);
+                    clearLevelUpNotification();
+                }, 3000);
+            }
+        };
+        
+        checkXP();
+        const interval = setInterval(checkXP, 5000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Handle sign out with fade transition
+    const handleSignOut = () => {
+        setIsSigningOut(true);
+        setIsOpen(false);
+        // Set flag for landing page to show fade out
+        sessionStorage.setItem('fromSignOut', 'true');
+        // Wait for fade animation then navigate
+        setTimeout(() => {
+            navigate('/');
+        }, 600);
+    };
 
     // Load saved data on mount
     useEffect(() => {
@@ -159,12 +242,37 @@ export default function UserProfileDropdown() {
     };
 
     return (
-        <div ref={ref} className='relative'>
-            {/* Profile Button */}
-            <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setIsOpen(!isOpen)}
+        <>
+            {/* Sign Out Fade Overlay - covers everything including dock */}
+            <AnimatePresence>
+                {isSigningOut && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5, ease: 'easeInOut' }}
+                        style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            width: '100vw',
+                            height: '100vh',
+                            backgroundColor: 'white',
+                            zIndex: 2147483647, // Maximum z-index value
+                            pointerEvents: 'all',
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+
+            <div ref={ref} className='relative'>
+                {/* Profile Button */}
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setIsOpen(!isOpen)}
                 className='flex items-center gap-3 px-3 py-1.5 rounded-xl hover:bg-zinc-100 transition-colors'
             >
                 <div className='text-right hidden sm:block'>
@@ -172,6 +280,43 @@ export default function UserProfileDropdown() {
                     <div className='text-[10px] text-zinc-500'>{profile.course}</div>
                 </div>
                 <div className='relative'>
+                    {/* XP Progress Ring */}
+                    <svg 
+                        className='absolute -inset-1 w-12 h-12'
+                        viewBox='0 0 48 48'
+                        style={{ transform: 'rotate(-90deg)' }}
+                    >
+                        {/* Background ring */}
+                        <circle
+                            cx='24'
+                            cy='24'
+                            r='22'
+                            fill='none'
+                            stroke={isDarkMode ? '#1e3a5f' : '#dbeafe'}
+                            strokeWidth='2.5'
+                        />
+                        {/* Progress ring */}
+                        <motion.circle
+                            cx='24'
+                            cy='24'
+                            r='22'
+                            fill='none'
+                            stroke={isDarkMode ? '#60a5fa' : '#3b82f6'}
+                            strokeWidth='2.5'
+                            strokeLinecap='round'
+                            strokeDasharray={2 * Math.PI * 22}
+                            initial={{ strokeDashoffset: 2 * Math.PI * 22 }}
+                            animate={{ 
+                                strokeDashoffset: 2 * Math.PI * 22 * (1 - xpProgress / 100)
+                            }}
+                            transition={{ 
+                                duration: 1.2, 
+                                ease: [0.34, 1.56, 0.64, 1] // Smooth spring-like easing
+                            }}
+                        />
+                    </svg>
+                    
+                    {/* Profile Image */}
                     {profileImage ? (
                         <img src={profileImage} alt="Profile" className='w-10 h-10 rounded-full object-cover shadow-md' />
                     ) : (
@@ -179,11 +324,68 @@ export default function UserProfileDropdown() {
                             {getInitials(profile.firstName, profile.lastName)}
                         </div>
                     )}
+                    
+                    {/* Level Badge */}
+                    <motion.div 
+                        className={cn(
+                            'absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-sm',
+                            isDarkMode 
+                                ? 'bg-blue-400 text-blue-950 border-2 border-slate-700' 
+                                : 'bg-blue-500 text-white border-2 border-white'
+                        )}
+                        animate={showLevelUp ? { scale: [1, 1.3, 1] } : {}}
+                        transition={{ duration: 0.5 }}
+                    >
+                        {level}
+                    </motion.div>
+                    
+                    {/* Online Status (moved to top-right) */}
                     {showOnlineStatus && (
-                        <div className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white'></div>
+                        <div className={cn(
+                            'absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2',
+                            isDarkMode 
+                                ? 'bg-green-400 border-slate-700' 
+                                : 'bg-green-500 border-white'
+                        )}></div>
                     )}
                 </div>
             </motion.button>
+            
+            {/* XP Gain Popup - minimalistic with smooth animation */}
+            <AnimatePresence>
+                {xpGain !== null && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -4, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 4, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                        transition={{ 
+                            duration: 0.5, 
+                            ease: [0.25, 0.46, 0.45, 0.94] // smooth easeOut
+                        }}
+                        className='absolute top-full right-1 mt-1 px-2.5 py-1 bg-blue-600 text-yellow-300 text-[10px] font-semibold rounded-lg shadow-md whitespace-nowrap z-50'
+                    >
+                        <span className='opacity-80'>Nice!</span> +{xpGain} XP
+                        <div className='absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-blue-600 rotate-45' />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            
+            {/* Level Up Tooltip */}
+            <AnimatePresence>
+                {showLevelUp && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -5, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -5, scale: 0.9 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                        className='absolute top-full right-0 mt-2 px-3 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-lg shadow-lg whitespace-nowrap z-50'
+                    >
+                        <span className='mr-1'>🎉</span>
+                        Level Up!
+                        <div className='absolute -top-1 right-5 w-2 h-2 bg-blue-500 rotate-45' />
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Dropdown Panel */}
             <AnimatePresence>
@@ -376,6 +578,7 @@ export default function UserProfileDropdown() {
                             <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
+                                onClick={handleSignOut}
                                 className='w-full py-2 text-sm font-medium text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center gap-2'
                             >
                                 <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -388,6 +591,7 @@ export default function UserProfileDropdown() {
                 )}
             </AnimatePresence>
         </div>
+        </>
     );
 }
 
@@ -730,20 +934,42 @@ function SettingsContent({ onShowOnlineStatusChange }: { onShowOnlineStatusChang
                                     <div className='text-xs font-medium text-zinc-700'>{item.label}</div>
                                     <div className='text-[10px] text-zinc-400 mt-0.5'>{item.desc}</div>
                                 </div>
-                                <motion.button
-                                    onClick={() => toggleSetting(item.key)}
-                                    whileTap={{ scale: 0.95 }}
-                                    className={cn(
-                                        'relative w-9 h-5 rounded-full transition-colors flex-shrink-0 ml-3',
-                                        settings[item.key] ? 'bg-blue-500' : 'bg-zinc-300'
-                                    )}
+                                {/* Toggle Switch - Same style as SettingsModal */}
+                                <label 
+                                    className="settings-switch" 
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{ flexShrink: 0, marginLeft: '12px' }}
                                 >
-                                    <motion.div
-                                        animate={{ x: settings[item.key] ? 16 : 2 }}
-                                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                                        className='absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm'
+                                    <input 
+                                        type="checkbox" 
+                                        checked={settings[item.key]} 
+                                        onChange={() => toggleSetting(item.key)}
                                     />
-                                </motion.button>
+                                    <div className="settings-slider">
+                                        <div className="settings-circle">
+                                            <svg 
+                                                className="settings-cross" 
+                                                viewBox="0 0 365.696 365.696" 
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path 
+                                                    fill="currentColor" 
+                                                    d="M243.188 182.86 356.32 69.726c12.5-12.5 12.5-32.766 0-45.247L341.238 9.398c-12.504-12.503-32.77-12.503-45.25 0L182.86 122.528 69.727 9.374c-12.5-12.5-32.766-12.5-45.247 0L9.375 24.457c-12.5 12.504-12.5 32.77 0 45.25l113.152 113.152L9.398 295.99c-12.503 12.503-12.503 32.769 0 45.25L24.48 356.32c12.5 12.5 32.766 12.5 45.247 0l113.132-113.132L295.99 356.32c12.503 12.5 32.769 12.5 45.25 0l15.081-15.082c12.5-12.504 12.5-32.77 0-45.25zm0 0"
+                                                />
+                                            </svg>
+                                            <svg 
+                                                className="settings-checkmark" 
+                                                viewBox="0 0 24 24" 
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path 
+                                                    fill="currentColor" 
+                                                    d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </label>
                             </motion.div>
                         ))}
                     </div>

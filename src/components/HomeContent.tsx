@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import CourseCard from './CourseCard';
 import ReorderableCourseGrid from './ReorderableCourseGrid';
 import { NumberTicker } from './ui/number-ticker';
 import { getSettings, getProfile, getImages } from '../services/profileService';
+import { useNotifications } from '../contexts/NotificationContext';
 import {
     getStudyTimeData,
     getStreakData,
@@ -12,6 +14,8 @@ import {
     calculateOverallProgress,
     getCompletedCoursesCount,
     getInProgressCoursesCount,
+    getTotalEnrolledCoursesCount,
+    getNotStartedCoursesCount,
     getStudyTimeHours,
     getDailyAverageHours,
     initializeTracking,
@@ -19,6 +23,7 @@ import {
     type StreakData,
     type CourseProgressData,
 } from '../services/studyTimeService';
+import { getUpcomingDeadlines } from '../services/deadlinesService';
 
 // Animation variants for staggered children - optimized for performance
 const containerVariants = {
@@ -121,6 +126,90 @@ const _QuickStatBadge: React.FC<{ count: number; label: string; type: 'urgent' |
     </motion.div>
 );
 void _QuickStatBadge;
+
+// What's New Button with Portal Tooltip
+const WhatsNewButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
+    const wrapperRef = React.useRef<HTMLDivElement>(null);
+
+    const handleMouseEnter = () => {
+        if (wrapperRef.current) {
+            const rect = wrapperRef.current.getBoundingClientRect();
+            setTooltipPos({
+                top: rect.bottom + 8,
+                left: rect.left + rect.width / 2,
+            });
+        }
+        setIsHovered(true);
+    };
+
+    return (
+        <div ref={wrapperRef} style={{ display: 'inline-block' }}>
+            <motion.button
+                className="btn-minimal"
+                onClick={onClick}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={() => setIsHovered(false)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                style={{
+                    background: '#3b82f6',
+                    color: '#fbbf24',
+                    border: 'none',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                }}
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+                What's New
+            </motion.button>
+            {createPortal(
+                <AnimatePresence>
+                    {isHovered && (
+                        <div
+                            style={{
+                                position: 'fixed',
+                                top: tooltipPos.top,
+                                left: tooltipPos.left,
+                                transform: 'translateX(-50%)',
+                                zIndex: 9999,
+                            }}
+                        >
+                            <motion.div
+                                className="whats-new-tooltip-portal"
+                                initial={{ opacity: 0, y: -4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -4 }}
+                                transition={{ duration: 0.15 }}
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <div className="whats-new-tooltip-arrow" />
+                                <div className="whats-new-tooltip-content">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="12" y1="16" x2="12" y2="12" />
+                                        <line x1="12" y1="8" x2="12.01" y2="8" />
+                                    </svg>
+                                    <span className="whats-new-tooltip-title">Latest Updates</span>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
+        </div>
+    );
+};
 
 // Animated Flame Component for Streak
 // Using CSS animations for better performance on infinite animations
@@ -369,30 +458,34 @@ const NewsSlideshow: React.FC = () => {
     );
 };
 
-// Achievement Toast Component - Bottom Left Position
+// Achievement Toast Component - Bottom Left Position (rendered via portal to escape overflow)
 const AchievementToast: React.FC<{
     show: boolean;
     title: string;
     description: string;
     icon: string;
     onClose: () => void;
-}> = ({ show, title, description, icon, onClose }) => (
-    <AnimatePresence>
-        {show && (
-            <motion.div
-                className="achievement-toast"
-                style={{
-                    position: 'fixed',
-                    bottom: '100px',
-                    left: '20px',
-                    top: 'auto',
-                    zIndex: 10000,
-                }}
-                initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 30, scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            >
+}> = ({ show, title, description, icon, onClose }) => {
+    // Use portal to render outside the component tree
+    const toastContent = (
+        <AnimatePresence>
+            {show && (
+                <motion.div
+                    className="achievement-toast"
+                    style={{
+                        position: 'fixed',
+                        bottom: '20px',
+                        left: '20px',
+                        top: 'auto',
+                        right: 'auto',
+                        zIndex: 99998, // Below custom cursor (99999)
+                        maxWidth: '320px',
+                    }}
+                    initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 30, scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                >
                 <motion.div 
                     className="achievement-icon"
                     initial={{ rotate: -20, scale: 0 }}
@@ -435,70 +528,76 @@ const AchievementToast: React.FC<{
                 >
                     ✕
                 </motion.button>
-                <motion.div
-                    className="achievement-progress"
-                    initial={{ scaleX: 1 }}
-                    animate={{ scaleX: 0 }}
-                    transition={{ duration: 5, ease: 'linear' }}
-                />
-            </motion.div>
-        )}
-    </AnimatePresence>
-);
+                    <motion.div
+                        className="achievement-progress"
+                        initial={{ scaleX: 1 }}
+                        animate={{ scaleX: 0 }}
+                        transition={{ duration: 5, ease: 'linear' }}
+                    />
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+    
+    // Render via portal to document.body to escape any overflow:hidden containers
+    return typeof document !== 'undefined' ? createPortal(toastContent, document.body) : null;
+};
 
-// Animated Role Badges Component - Side by side
+// Minimalistic Role Badges Component
 const ROLES = [
-    { name: 'Tester', bg: 'rgba(168, 85, 247, 0.1)', text: '#a855f7', border: 'rgba(168, 85, 247, 0.3)' },
-    { name: 'Admin', bg: 'rgba(239, 68, 68, 0.1)', text: '#ef4444', border: 'rgba(239, 68, 68, 0.3)' },
-    { name: 'Teacher', bg: 'rgba(34, 197, 94, 0.1)', text: '#22c55e', border: 'rgba(34, 197, 94, 0.3)' },
-    { name: 'Student', bg: 'rgba(59, 130, 246, 0.1)', text: '#3b82f6', border: 'rgba(59, 130, 246, 0.3)' },
+    { name: 'Tester', color: '#a855f7' },
+    { name: 'Admin', color: '#ef4444' },
+    { name: 'Teacher', color: '#22c55e' },
+    { name: 'Student', color: '#3b82f6' },
 ] as const;
 
 const RoleBadge: React.FC = () => {
+    const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
+    
     return (
         <motion.div
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.3 }}
-            style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}
+            style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}
         >
             {ROLES.map((role, index) => (
                 <motion.span
                     key={role.name}
-                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
                     transition={{ 
-                        delay: 0.5 + index * 0.08, 
-                        duration: 0.3, 
-                        type: 'spring', 
-                        stiffness: 300, 
-                        damping: 20 
+                        delay: 0.5 + index * 0.06, 
+                        duration: 0.25,
+                        ease: [0.25, 0.46, 0.45, 0.94]
                     }}
-                    whileHover={{ scale: 1.05, y: -1 }}
+                    onHoverStart={() => setHoveredIndex(index)}
+                    onHoverEnd={() => setHoveredIndex(null)}
                     style={{
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '4px',
-                        padding: '2px 8px',
-                        fontSize: '10px',
-                        fontWeight: 600,
-                        letterSpacing: '0.02em',
-                        borderRadius: '10px',
-                        backgroundColor: role.bg,
-                        color: role.text,
-                        border: `1px solid ${role.border}`,
+                        gap: '5px',
+                        padding: '3px 10px',
+                        fontSize: '11px',
+                        fontWeight: 500,
+                        letterSpacing: '0.01em',
+                        borderRadius: '6px',
+                        backgroundColor: hoveredIndex === index ? `${role.color}15` : 'transparent',
+                        color: role.color,
                         cursor: 'default',
+                        transition: 'background-color 0.2s ease, transform 0.2s ease',
+                        transform: hoveredIndex === index ? 'translateY(-1px)' : 'translateY(0)',
                     }}
                 >
-                    <motion.span
+                    <span
                         style={{
-                            width: '4px',
-                            height: '4px',
+                            width: '5px',
+                            height: '5px',
                             borderRadius: '50%',
-                            backgroundColor: role.text,
+                            backgroundColor: role.color,
+                            opacity: hoveredIndex === index ? 1 : 0.7,
+                            transition: 'opacity 0.2s ease',
                         }}
-                        animate={{ opacity: [0.5, 1, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: index * 0.3 }}
                     />
                     {role.name}
                 </motion.span>
@@ -507,116 +606,138 @@ const RoleBadge: React.FC = () => {
     );
 };
 
-// Skeleton Loading Component
-const HomeSkeleton: React.FC = () => (
-    <div className="home-content">
-        {/* Welcome Hero Skeleton */}
-        <motion.section className="welcome-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <div className="welcome-cards-row">
-                <motion.div 
-                    className="welcome-main-card"
-                    style={{ background: '#f4f4f5', minHeight: '200px' }}
-                >
-                    <div className="welcome-content">
-                        <div className="welcome-left">
-                            <motion.div 
-                                className="w-[72px] h-[72px] rounded-full bg-zinc-200"
-                                animate={{ opacity: [0.5, 0.8, 0.5] }}
-                                transition={{ duration: 1.5, repeat: Infinity }}
-                            />
-                            <div className="welcome-text-group-minimal" style={{ marginLeft: '16px' }}>
-                                <motion.div className="h-4 w-24 bg-zinc-200 rounded mb-2" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
-                                <motion.div className="h-8 w-48 bg-zinc-200 rounded mb-3" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.1 }} />
-                                <div className="flex gap-2 mb-3">
-                                    {[0, 1, 2, 3].map(i => (
-                                        <motion.div key={i} className="h-5 w-16 bg-zinc-200 rounded-full" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }} />
-                                    ))}
-                                </div>
-                                <div className="flex gap-2">
-                                    {[0, 1, 2, 3].map(i => (
-                                        <motion.div key={i} className="h-8 w-24 bg-zinc-200 rounded-lg" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }} />
-                                    ))}
+// Skeleton Loading Component with dark mode support
+const HomeSkeleton: React.FC = () => {
+    const [isDark, setIsDark] = useState(() => 
+        typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
+    );
+    
+    useEffect(() => {
+        const checkDarkMode = () => setIsDark(document.body.classList.contains('dark-mode'));
+        checkDarkMode();
+        const observer = new MutationObserver(checkDarkMode);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        return () => observer.disconnect();
+    }, []);
+    
+    // Dark mode aware colors
+    const cardBg = isDark ? 'rgba(30, 41, 59, 0.8)' : '#f4f4f5';
+    const shimmerBg = isDark ? 'rgba(51, 65, 85, 0.6)' : undefined;
+    const shimmerClass = isDark ? '' : 'bg-zinc-200';
+    const containerClass = isDark ? '' : 'bg-zinc-100';
+    
+    return (
+        <div className="home-content">
+            {/* Welcome Hero Skeleton */}
+            <motion.section className="welcome-hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="welcome-cards-row">
+                    <motion.div 
+                        className="welcome-main-card"
+                        style={{ background: cardBg, minHeight: '200px' }}
+                    >
+                        <div className="welcome-content">
+                            <div className="welcome-left">
+                                <motion.div 
+                                    className={`w-[72px] h-[72px] rounded-full ${shimmerClass}`}
+                                    style={isDark ? { backgroundColor: shimmerBg } : undefined}
+                                    animate={{ opacity: [0.5, 0.8, 0.5] }}
+                                    transition={{ duration: 1.5, repeat: Infinity }}
+                                />
+                                <div className="welcome-text-group-minimal" style={{ marginLeft: '16px' }}>
+                                    <motion.div className={`h-4 w-24 ${shimmerClass} rounded mb-2`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
+                                    <motion.div className={`h-8 w-48 ${shimmerClass} rounded mb-3`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.1 }} />
+                                    <div className="flex gap-2 mb-3">
+                                        {[0, 1, 2, 3].map(i => (
+                                            <motion.div key={i} className={`h-5 w-16 ${shimmerClass} rounded-full`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }} />
+                                        ))}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {[0, 1, 2, 3].map(i => (
+                                            <motion.div key={i} className={`h-8 w-24 ${shimmerClass} rounded-lg`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }} />
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </motion.div>
-                <motion.div className="news-slideshow" style={{ background: '#f4f4f5', minHeight: '200px', borderRadius: '16px' }}>
-                    <div className="p-4 space-y-3">
-                        <motion.div className="h-4 w-24 bg-zinc-200 rounded" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
-                        <motion.div className="h-32 w-full bg-zinc-200 rounded-lg" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.1 }} />
-                        <motion.div className="h-4 w-3/4 bg-zinc-200 rounded" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }} />
-                    </div>
-                </motion.div>
-            </div>
-            {/* Stats Row Skeleton */}
-            <div className="stats-row-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginTop: '16px' }}>
-                {[0, 1, 2, 3].map(i => (
-                    <motion.div key={i} className="bg-zinc-100 rounded-2xl p-5 space-y-4" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}>
-                        <div className="flex justify-between">
-                            <motion.div className="w-10 h-10 bg-zinc-200 rounded-xl" />
-                            <motion.div className="w-16 h-5 bg-zinc-200 rounded-full" />
-                        </div>
-                        <motion.div className="h-8 w-20 bg-zinc-200 rounded" />
-                        <div className="flex gap-4">
-                            <motion.div className="h-12 w-16 bg-zinc-200 rounded-lg" />
-                            <motion.div className="h-12 w-16 bg-zinc-200 rounded-lg" />
-                        </div>
-                        <motion.div className="h-2 w-full bg-zinc-200 rounded-full" />
                     </motion.div>
-                ))}
-            </div>
-        </motion.section>
-        {/* Quick Access Skeleton */}
-        <motion.section className="quick-access-section" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
-            <div className="flex items-center gap-2 mb-4">
-                <motion.div className="h-5 w-28 bg-zinc-200 rounded" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
-                <motion.div className="h-5 w-20 bg-zinc-100 rounded-full" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
-            </div>
-            <div className="grid grid-cols-5 gap-3">
-                {[...Array(10)].map((_, i) => (
-                    <motion.div key={i} className="bg-zinc-100 rounded-xl p-4 space-y-3" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05 }}>
-                        <motion.div className="w-10 h-10 bg-zinc-200 rounded-xl" />
-                        <motion.div className="h-3 w-20 bg-zinc-200 rounded" />
-                        <motion.div className="h-2 w-16 bg-zinc-200 rounded" />
-                    </motion.div>
-                ))}
-            </div>
-        </motion.section>
-        {/* Courses Skeleton */}
-        <motion.section className="courses-section" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                    <motion.div className="h-6 w-32 bg-zinc-200 rounded" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
-                    <motion.div className="h-5 w-20 bg-zinc-100 rounded-full" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
-                </div>
-                <div className="flex gap-2">
-                    <motion.div className="h-9 w-9 bg-zinc-200 rounded-lg" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
-                    <motion.div className="h-9 w-9 bg-zinc-200 rounded-lg" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
-                </div>
-            </div>
-            <div className="flex gap-4 overflow-hidden">
-                {[0, 1, 2, 3].map(i => (
-                    <motion.div key={i} className="flex-shrink-0 w-[280px] bg-zinc-100 rounded-2xl overflow-hidden" animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}>
-                        <motion.div className="h-40 bg-zinc-200" />
+                    <motion.div className="news-slideshow" style={{ background: cardBg, minHeight: '200px', borderRadius: '16px' }}>
                         <div className="p-4 space-y-3">
-                            <motion.div className="h-4 w-3/4 bg-zinc-200 rounded" />
-                            <motion.div className="h-3 w-1/2 bg-zinc-200 rounded" />
-                            <div className="flex gap-2 mt-4">
-                                <motion.div className="h-8 w-20 bg-zinc-200 rounded-lg" />
-                                <motion.div className="h-8 w-16 bg-zinc-200 rounded-lg" />
-                            </div>
-                            <motion.div className="h-2 w-full bg-zinc-200 rounded-full mt-4" />
-                            <motion.div className="h-10 w-full bg-zinc-200 rounded-xl mt-2" />
+                            <motion.div className={`h-4 w-24 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
+                            <motion.div className={`h-32 w-full ${shimmerClass} rounded-lg`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.1 }} />
+                            <motion.div className={`h-4 w-3/4 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }} />
                         </div>
                     </motion.div>
-                ))}
-            </div>
-        </motion.section>
-    </div>
-);
+                </div>
+                {/* Stats Row Skeleton */}
+                <div className="stats-row-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginTop: '16px' }}>
+                    {[0, 1, 2, 3].map(i => (
+                        <motion.div key={i} className={`${containerClass} rounded-2xl p-5 space-y-4`} style={isDark ? { backgroundColor: cardBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}>
+                            <div className="flex justify-between">
+                                <motion.div className={`w-10 h-10 ${shimmerClass} rounded-xl`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                                <motion.div className={`w-16 h-5 ${shimmerClass} rounded-full`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                            </div>
+                            <motion.div className={`h-8 w-20 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                            <div className="flex gap-4">
+                                <motion.div className={`h-12 w-16 ${shimmerClass} rounded-lg`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                                <motion.div className={`h-12 w-16 ${shimmerClass} rounded-lg`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                            </div>
+                            <motion.div className={`h-2 w-full ${shimmerClass} rounded-full`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                        </motion.div>
+                    ))}
+                </div>
+            </motion.section>
+            {/* Quick Access Skeleton */}
+            <motion.section className="quick-access-section" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
+                <div className="flex items-center gap-2 mb-4">
+                    <motion.div className={`h-5 w-28 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
+                    <motion.div className={`h-5 w-20 ${containerClass} rounded-full`} style={isDark ? { backgroundColor: cardBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
+                </div>
+                <div className="grid grid-cols-5 gap-3">
+                    {[...Array(10)].map((_, i) => (
+                        <motion.div key={i} className={`${containerClass} rounded-xl p-4 space-y-3`} style={isDark ? { backgroundColor: cardBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05 }}>
+                            <motion.div className={`w-10 h-10 ${shimmerClass} rounded-xl`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                            <motion.div className={`h-3 w-20 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                            <motion.div className={`h-2 w-16 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                        </motion.div>
+                    ))}
+                </div>
+            </motion.section>
+            {/* Courses Skeleton */}
+            <motion.section className="courses-section" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                        <motion.div className={`h-6 w-32 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
+                        <motion.div className={`h-5 w-20 ${containerClass} rounded-full`} style={isDark ? { backgroundColor: cardBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
+                    </div>
+                    <div className="flex gap-2">
+                        <motion.div className={`h-9 w-9 ${shimmerClass} rounded-lg`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
+                        <motion.div className={`h-9 w-9 ${shimmerClass} rounded-lg`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
+                    </div>
+                </div>
+                <div className="flex gap-4 overflow-hidden">
+                    {[0, 1, 2, 3].map(i => (
+                        <motion.div key={i} className={`flex-shrink-0 w-[280px] ${containerClass} rounded-2xl overflow-hidden`} style={isDark ? { backgroundColor: cardBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}>
+                            <motion.div className={`h-40 ${shimmerClass}`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                            <div className="p-4 space-y-3">
+                                <motion.div className={`h-4 w-3/4 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                                <motion.div className={`h-3 w-1/2 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                                <div className="flex gap-2 mt-4">
+                                    <motion.div className={`h-8 w-20 ${shimmerClass} rounded-lg`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                                    <motion.div className={`h-8 w-16 ${shimmerClass} rounded-lg`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                                </div>
+                                <motion.div className={`h-2 w-full ${shimmerClass} rounded-full mt-4`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                                <motion.div className={`h-10 w-full ${shimmerClass} rounded-xl mt-2`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </motion.section>
+        </div>
+    );
+};
 
 const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
+    const { addNotification } = useNotifications();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [coursesPerView, setCoursesPerView] = useState(4);
     const [showAchievement, setShowAchievement] = useState(false);
@@ -625,6 +746,11 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
     const [celebratingMilestones, setCelebratingMilestones] = useState<Record<string, boolean>>({});
     const [achievement, setAchievement] = useState({ title: '', description: '', icon: '🏆' });
     const [isHomeLoading, setIsHomeLoading] = useState(true);
+    
+    // Dark mode detection
+    const [isDarkMode, setIsDarkMode] = useState(() => 
+        typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
+    );
     
     // Real-time tracking state
     const [studyTimeData, setStudyTimeData] = useState<StudyTimeData>(() => getStudyTimeData());
@@ -635,8 +761,13 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
     const overallProgress = useMemo(() => calculateOverallProgress(), [courseProgressData]);
     const completedCourses = useMemo(() => getCompletedCoursesCount(), [courseProgressData]);
     const inProgressCourses = useMemo(() => getInProgressCoursesCount(), [courseProgressData]);
+    const totalEnrolledCourses = useMemo(() => getTotalEnrolledCoursesCount(), [courseProgressData]);
+    const notStartedCourses = useMemo(() => getNotStartedCoursesCount(), [courseProgressData]);
     const studyTimeHours = useMemo(() => getStudyTimeHours(), [studyTimeData]);
     const dailyAverage = useMemo(() => getDailyAverageHours(), [studyTimeData]);
+    
+    // Upcoming deadlines count (within 7 days)
+    const upcomingDeadlinesCount = useMemo(() => getUpcomingDeadlines(7).length, []);
     const [showOnlineStatus, setShowOnlineStatus] = useState(() => {
         const settings = getSettings();
         return settings.showOnlineStatus;
@@ -692,15 +823,31 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Dark mode detection
+    useEffect(() => {
+        const checkDarkMode = () => setIsDarkMode(document.body.classList.contains('dark-mode'));
+        checkDarkMode();
+        const observer = new MutationObserver(checkDarkMode);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        return () => observer.disconnect();
+    }, []);
+
     // Initial loading state
     useEffect(() => {
         const timer = setTimeout(() => setIsHomeLoading(false), 800);
         return () => clearTimeout(timer);
     }, []);
 
-    // Initialize study time tracking
+    // Initialize study time tracking (with database sync)
     useEffect(() => {
-        initializeTracking();
+        const init = async () => {
+            await initializeTracking();
+            // Refresh data after database sync
+            setStudyTimeData(getStudyTimeData());
+            setStreakData(getStreakData());
+            setCourseProgressData(getCourseProgressData());
+        };
+        init();
         
         // Update tracking data every 30 seconds
         const trackingInterval = setInterval(() => {
@@ -712,27 +859,40 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
         return () => clearInterval(trackingInterval);
     }, []);
 
-    // Show achievement toast on milestone (demo: show after delay to not block initial render)
+    // Show achievement toast only at 5-day milestones (5, 10, 15, 20, etc.)
     useEffect(() => {
-        // Delay achievement toast to after initial render is complete
-        const timer = setTimeout(() => {
-            setAchievement({
-                title: `${streakData.currentStreak} Day Streak!`,
-                description: `You've been learning consistently for ${streakData.currentStreak} days. Keep it up!`,
-                icon: '🔥'
-            });
-            setShowAchievement(true);
-        }, 3000); // Increased delay to let dashboard render first
+        const streak = streakData.currentStreak;
         
-        // Auto-hide after 5 seconds
-        const hideTimer = setTimeout(() => {
-            setShowAchievement(false);
-        }, 8000);
-        
-        return () => {
-            clearTimeout(timer);
-            clearTimeout(hideTimer);
-        };
+        // Only show at 5-day milestones
+        if (streak > 0 && streak % 5 === 0) {
+            // Check if we already showed this milestone today
+            const lastShownMilestone = localStorage.getItem('lastStreakMilestoneShown');
+            const milestoneKey = `streak-${streak}`;
+            
+            if (lastShownMilestone !== milestoneKey) {
+                // Delay achievement toast to after initial render is complete
+                const timer = setTimeout(() => {
+                    setAchievement({
+                        title: `${streak} Day Streak!`,
+                        description: `Amazing! You've been learning consistently for ${streak} days. Keep it up!`,
+                        icon: '🔥'
+                    });
+                    setShowAchievement(true);
+                    // Mark this milestone as shown
+                    localStorage.setItem('lastStreakMilestoneShown', milestoneKey);
+                }, 3000);
+                
+                // Auto-hide after 5 seconds
+                const hideTimer = setTimeout(() => {
+                    setShowAchievement(false);
+                }, 8000);
+                
+                return () => {
+                    clearTimeout(timer);
+                    clearTimeout(hideTimer);
+                };
+            }
+        }
     }, [streakData.currentStreak]);
 
     // Listen for settings/profile changes - optimized polling
@@ -784,16 +944,33 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
         }));
     };
 
+    // Helper to check if course has been visited (has progress or time spent)
+    const hasVisitedCourse = (courseId: string) => {
+        const data = courseProgressData[courseId];
+        return data && (data.progress > 0 || data.timeSpent > 0);
+    };
+
+    // Helper to calculate grade based on progress
+    const getGradeFromProgress = (progress: number): { current: number; letter: string; trend: 'up' | 'down' | 'stable' } => {
+        if (progress >= 90) return { current: progress, letter: 'A', trend: 'up' };
+        if (progress >= 80) return { current: progress, letter: 'B', trend: 'up' };
+        if (progress >= 70) return { current: progress, letter: 'C', trend: 'stable' };
+        if (progress >= 60) return { current: progress, letter: 'D', trend: 'down' };
+        return { current: progress, letter: 'C', trend: 'stable' };
+    };
+
+    // Course progress is loaded from courseProgressData (synced with Supabase)
+    // Grade is calculated based on progress percentage
     const coursesData = [
-        { id: 'cp1', title: "Computer Programming 1 - SY2526-1T", subtitle: "CITE1003 · BSIT101A", image: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=300&h=200&fit=crop&crop=center", progress: 75, modules: 8, nextLesson: "Module 6: Functions and Methods", timeEstimate: "~25 min", deadline: { title: "Programming Assignment 3", dueDate: "Nov 28, 2025", daysLeft: 1 }, lastAccessed: "2 hours ago", unreadCount: 3, grade: { current: 92, letter: 'A', trend: 'up' as const }, studyStreak: 12, instructor: { name: "David Clarence Del Mundo" }, category: 'major' as const },
-        { id: 'euth1', title: "Euthenics 1 - SY2526-1T", subtitle: "STIC1002 · BSIT101A", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop&crop=center", progress: 100, modules: 6, nextLesson: "Chapter 4: Home Management", timeEstimate: "~20 min", lastAccessed: "Yesterday", unreadCount: 1, grade: { current: 88, letter: 'B+', trend: 'stable' as const }, studyStreak: 5, instructor: { name: "Claire Maurillo" }, category: 'ge' as const },
-        { id: 'itc', title: "Introduction to Computing - SY2526-1T", subtitle: "CITE1004 · BSIT101A", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center", progress: 45, modules: 10, nextLesson: "Module 5: Computer Networks", timeEstimate: "~30 min", deadline: { title: "Quiz: Chapter 5", dueDate: "Nov 30, 2025", daysLeft: 3 }, lastAccessed: "3 days ago", unreadCount: 5, grade: { current: 85, letter: 'B', trend: 'up' as const }, instructor: { name: "Psalmmiracle Mariano" }, category: 'major' as const },
-        { id: 'nstp1', title: "National Service Training Program 1 - SY2526-1T", subtitle: "NSTP1008 · BSIT101A", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=200&fit=crop&crop=center", progress: 30, modules: 8, nextLesson: "Unit 3: Community Service", timeEstimate: "~45 min", lastAccessed: "1 week ago", unreadCount: 12, grade: { current: 78, letter: 'C+', trend: 'down' as const }, instructor: { name: "Dan Risty Montojo" }, category: 'nstp' as const },
-        { id: 'pe1', title: "P.E./PATHFIT 1: Movement Competency Training - SY2526-1T", subtitle: "PHED1005 · BSIT101A", image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&h=200&fit=crop&crop=center", progress: 50, modules: 12, nextLesson: "Week 7: Flexibility Training", timeEstimate: "~35 min", lastAccessed: "5 hours ago", grade: { current: 95, letter: 'A', trend: 'stable' as const }, studyStreak: 8, instructor: { name: "Mark Joseph Danoy" }, category: 'pe' as const },
-        { id: 'ppc', title: "Philippine Popular Culture - SY2526-1T", subtitle: "GEDC1041 · BSIT101A", image: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=300&h=200&fit=crop&crop=center", progress: 40, modules: 8, nextLesson: "Topic 4: Filipino Music Evolution", timeEstimate: "~20 min", lastAccessed: "2 weeks ago", unreadCount: 2, grade: { current: 82, letter: 'B-', trend: 'up' as const }, instructor: { name: "Claire Maurillo" }, category: 'ge' as const },
-        { id: 'purcom', title: "Purposive Communication - SY2526-1T", subtitle: "GEDC1016 · BSIT101A", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=300&h=200&fit=crop&crop=center", progress: 65, modules: 10, nextLesson: "Lesson 7: Academic Writing", timeEstimate: "~40 min", deadline: { title: "Performance Task", dueDate: "Dec 2, 2025", daysLeft: 5 }, lastAccessed: "4 days ago", grade: { current: 90, letter: 'A-', trend: 'up' as const }, studyStreak: 3, instructor: { name: "John Denielle San Martin" }, category: 'ge' as const },
-        { id: 'tcw', title: "The Contemporary World - SY2526-1T", subtitle: "GEDC1002 · BSIT101A", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center", progress: 35, modules: 9, nextLesson: "Chapter 4: Global Economy", timeEstimate: "~25 min", lastAccessed: "6 days ago", unreadCount: 1, grade: { current: 75, letter: 'C', trend: 'stable' as const }, instructor: { name: "Claire Maurillo" }, category: 'ge' as const },
-        { id: 'uts', title: "Understanding the Self - SY2526-1T", subtitle: "GEDC1008 · BSIT101A", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center", progress: 55, modules: 8, nextLesson: "Module 5: The Physical Self", timeEstimate: "~30 min", lastAccessed: "Today", grade: { current: 87, letter: 'B+', trend: 'up' as const }, studyStreak: 2, instructor: { name: "Claire Maurillo" }, category: 'ge' as const },
+        { id: 'cp1', title: "Computer Programming 1 - SY2526-1T", subtitle: "CITE1003 · BSIT101A", image: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=300&h=200&fit=crop&crop=center", progress: courseProgressData['cp1']?.progress || 0, modules: 1, nextLesson: "Module 1: Introduction to Programming", timeEstimate: "~25 min", lastAccessed: hasVisitedCourse('cp1') ? "Recently" : "Not started", grade: getGradeFromProgress(courseProgressData['cp1']?.progress || 0), studyStreak: hasVisitedCourse('cp1') ? streakData.currentStreak : undefined, instructor: { name: "David Clarence Del Mundo" }, category: 'major' as const },
+        { id: 'euth1', title: "Euthenics 1 - SY2526-1T", subtitle: "STIC1002 · BSIT101A", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop&crop=center", progress: courseProgressData['euth1']?.progress || 0, modules: 1, nextLesson: "Chapter 1: Introduction", timeEstimate: "~20 min", lastAccessed: hasVisitedCourse('euth1') ? "Recently" : "Not started", grade: getGradeFromProgress(courseProgressData['euth1']?.progress || 0), studyStreak: hasVisitedCourse('euth1') ? streakData.currentStreak : undefined, instructor: { name: "Claire Maurillo" }, category: 'ge' as const },
+        { id: 'itc', title: "Introduction to Computing - SY2526-1T", subtitle: "CITE1004 · BSIT101A", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center", progress: courseProgressData['itc']?.progress || 0, modules: 1, nextLesson: "Module 1: What is Computing?", timeEstimate: "~30 min", lastAccessed: hasVisitedCourse('itc') ? "Recently" : "Not started", grade: getGradeFromProgress(courseProgressData['itc']?.progress || 0), studyStreak: hasVisitedCourse('itc') ? streakData.currentStreak : undefined, instructor: { name: "Psalmmiracle Mariano" }, category: 'major' as const },
+        { id: 'nstp1', title: "National Service Training Program 1 - SY2526-1T", subtitle: "NSTP1008 · BSIT101A", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=200&fit=crop&crop=center", progress: courseProgressData['nstp1']?.progress || 0, modules: 1, nextLesson: "Unit 1: Introduction to NSTP", timeEstimate: "~45 min", lastAccessed: hasVisitedCourse('nstp1') ? "Recently" : "Not started", grade: getGradeFromProgress(courseProgressData['nstp1']?.progress || 0), studyStreak: hasVisitedCourse('nstp1') ? streakData.currentStreak : undefined, instructor: { name: "Dan Risty Montojo" }, category: 'nstp' as const },
+        { id: 'pe1', title: "P.E./PATHFIT 1: Movement Competency Training - SY2526-1T", subtitle: "PHED1005 · BSIT101A", image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&h=200&fit=crop&crop=center", progress: courseProgressData['pe1']?.progress || 0, modules: 1, nextLesson: "Week 1: Fitness Assessment", timeEstimate: "~35 min", lastAccessed: hasVisitedCourse('pe1') ? "Recently" : "Not started", grade: getGradeFromProgress(courseProgressData['pe1']?.progress || 0), studyStreak: hasVisitedCourse('pe1') ? streakData.currentStreak : undefined, instructor: { name: "Mark Joseph Danoy" }, category: 'pe' as const },
+        { id: 'ppc', title: "Philippine Popular Culture - SY2526-1T", subtitle: "GEDC1041 · BSIT101A", image: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=300&h=200&fit=crop&crop=center", progress: courseProgressData['ppc']?.progress || 0, modules: 1, nextLesson: "Topic 1: What is Culture?", timeEstimate: "~20 min", lastAccessed: hasVisitedCourse('ppc') ? "Recently" : "Not started", grade: getGradeFromProgress(courseProgressData['ppc']?.progress || 0), studyStreak: hasVisitedCourse('ppc') ? streakData.currentStreak : undefined, instructor: { name: "Claire Maurillo" }, category: 'ge' as const },
+        { id: 'purcom', title: "Purposive Communication - SY2526-1T", subtitle: "GEDC1016 · BSIT101A", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=300&h=200&fit=crop&crop=center", progress: courseProgressData['purcom']?.progress || 0, modules: 1, nextLesson: "Lesson 1: Communication Basics", timeEstimate: "~40 min", lastAccessed: hasVisitedCourse('purcom') ? "Recently" : "Not started", grade: getGradeFromProgress(courseProgressData['purcom']?.progress || 0), studyStreak: hasVisitedCourse('purcom') ? streakData.currentStreak : undefined, instructor: { name: "John Denielle San Martin" }, category: 'ge' as const },
+        { id: 'tcw', title: "The Contemporary World - SY2526-1T", subtitle: "GEDC1002 · BSIT101A", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center", progress: courseProgressData['tcw']?.progress || 0, modules: 1, nextLesson: "Chapter 1: Globalization", timeEstimate: "~25 min", lastAccessed: hasVisitedCourse('tcw') ? "Recently" : "Not started", grade: getGradeFromProgress(courseProgressData['tcw']?.progress || 0), studyStreak: hasVisitedCourse('tcw') ? streakData.currentStreak : undefined, instructor: { name: "Anne Jenell Lumintigar" }, category: 'ge' as const },
+        { id: 'uts', title: "Understanding the Self - SY2526-1T", subtitle: "GEDC1008 · BSIT101A", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center", progress: courseProgressData['uts']?.progress || 0, modules: 1, nextLesson: "Module 1: The Self", timeEstimate: "~30 min", lastAccessed: hasVisitedCourse('uts') ? "Recently" : "Not started", grade: getGradeFromProgress(courseProgressData['uts']?.progress || 0), studyStreak: hasVisitedCourse('uts') ? streakData.currentStreak : undefined, instructor: { name: "Jocel Lazalita" }, category: 'ge' as const },
     ];
 
     // Sort courses based on saved order, then merge with bookmark state
@@ -999,25 +1176,20 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                 <RoleBadge />
                                 
                                 <motion.div 
-                                    className="context-minimal"
+                                    className="continue-link"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.6, duration: 0.4 }}
+                                    transition={{ delay: 0.6, duration: 0.3 }}
+                                    whileHover={{ x: 2 }}
                                 >
-                                    <span className="context-label">Continue with</span>
-                                    <motion.span 
-                                        className="context-module"
-                                        whileHover={{ x: 4 }}
-                                        transition={{ type: 'spring', stiffness: 300 }}
-                                    >
-                                        Module 6: Functions
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                                        </svg>
-                                    </motion.span>
+                                    <span className="continue-text">Continue</span>
+                                    <span className="continue-module">Module 6: Functions</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                                    </svg>
                                 </motion.div>
 
-                                {/* All Badges Row */}
+                                {/* All Badges Row - Connected to real data */}
                                 <motion.div
                                     className="badges-row-minimal"
                                     initial={{ opacity: 0, y: 10 }}
@@ -1033,10 +1205,12 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                     >
                                         <motion.span 
                                             className="badge-number"
+                                            key={streakData.currentStreak}
+                                            initial={{ scale: 1.2 }}
                                             animate={{ scale: [1, 1.05, 1] }}
                                             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                                         >
-                                            12
+                                            {streakData.currentStreak}
                                         </motion.span>
                                         <span className="badge-label">day streak</span>
                                     </motion.div>
@@ -1055,29 +1229,27 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                     </motion.div>
 
                                     <motion.div 
-                                        className="badge-minimal deadline"
+                                        className={`badge-minimal ${upcomingDeadlinesCount > 0 ? 'deadline' : 'no-deadline'}`}
                                         initial={{ opacity: 0, scale: 0.9 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ delay: 0.85, duration: 0.3, type: 'spring', stiffness: 200 }}
                                         whileHover={{ scale: 1.02 }}
                                     >
-                                        <svg viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-                                        </svg>
-                                        <span className="badge-label">2 due soon</span>
-                                    </motion.div>
-
-                                    <motion.div 
-                                        className="badge-minimal messages"
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: 0.9, duration: 0.3, type: 'spring', stiffness: 200 }}
-                                        whileHover={{ scale: 1.02 }}
-                                    >
-                                        <svg viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                                        </svg>
-                                        <span className="badge-label">5 new</span>
+                                        {upcomingDeadlinesCount > 0 ? (
+                                            <>
+                                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                                                </svg>
+                                                <span className="badge-label">{upcomingDeadlinesCount} due soon</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                                </svg>
+                                                <span className="badge-label">Nice! No due</span>
+                                            </>
+                                        )}
                                     </motion.div>
                                 </motion.div>
 
@@ -1091,24 +1263,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.95, duration: 0.4 }}
                         >
-                            <motion.button
-                                className="btn-minimal secondary"
-                                onClick={onShowWelcomeModal}
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                            >
-                                What's New
-                            </motion.button>
-                            <motion.button
-                                className="btn-minimal primary"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                            >
-                                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
-                                Continue
-                            </motion.button>
+                            <WhatsNewButton onClick={onShowWelcomeModal} />
                         </motion.div>
                     </div>
                 </motion.div>
@@ -1127,21 +1282,21 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                 >
                     {[
                         { 
-                            numValue: completedCourses + inProgressCourses, suffix: '', label: 'Enrolled Courses', 
+                            numValue: totalEnrolledCourses, suffix: '', label: 'Enrolled Courses', 
                             icon: 'book', color: '#3b82f6', lightBg: '#eff6ff',
                             tag: 'ACTIVE', tagColor: '#3b82f6',
                             detail1: { icon: 'check', value: String(completedCourses), label: 'Completed' },
-                            detail2: { icon: 'clock', value: String(inProgressCourses), label: 'In Progress' },
-                            progress: Math.round((completedCourses / (completedCourses + inProgressCourses)) * 100) || 0, progressLabel: 'COMPLETION', modules: `${completedCourses + inProgressCourses} courses`,
-                            comparison: { value: `+${completedCourses + inProgressCourses}`, period: 'new this term', isPositive: true },
-                            sparkline: [0, 0, 0, 3, 6, 9, completedCourses + inProgressCourses],
-                            tooltipMessage: `You have ${completedCourses + inProgressCourses} courses this semester. ${completedCourses} completed, ${inProgressCourses} in progress!`,
+                            detail2: { icon: 'clock', value: String(notStartedCourses > 0 ? notStartedCourses : inProgressCourses), label: notStartedCourses > 0 ? 'Not Started' : 'In Progress' },
+                            progress: Math.round((completedCourses / totalEnrolledCourses) * 100) || 0, progressLabel: 'COMPLETION', modules: `${totalEnrolledCourses} courses`,
+                            comparison: { value: `+${totalEnrolledCourses}`, period: 'this term', isPositive: true },
+                            sparkline: [0, 0, 0, 3, 6, 9, totalEnrolledCourses],
+                            tooltipMessage: `You have ${totalEnrolledCourses} courses this semester. ${completedCourses} completed, ${inProgressCourses} in progress, ${notStartedCourses} not started!`,
                             expandedContent: {
                                 title: 'Course Breakdown',
                                 items: Object.entries(courseProgressData).map(([id, data]) => ({
                                     name: id === 'cp1' ? 'Computer Programming 1' : id === 'euth1' ? 'Euthenics 1' : id === 'itc' ? 'Introduction to Computing' : id === 'nstp1' ? 'NSTP 1' : id === 'pe1' ? 'P.E./PATHFIT 1' : id === 'ppc' ? 'Philippine Popular Culture' : id === 'purcom' ? 'Purposive Communication' : id === 'tcw' ? 'The Contemporary World' : 'Understanding the Self',
                                     progress: data.progress,
-                                    status: data.progress === 100 ? 'completed' : 'in-progress'
+                                    status: data.progress === 100 ? 'completed' : data.progress > 0 ? 'in-progress' : 'not-started'
                                 })).sort((a, b) => b.progress - a.progress)
                             }
                         },
@@ -1304,22 +1459,41 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                         {stat.comparison.isPositive ? '↑' : '↓'} {stat.comparison.value}
                                     </span>
                                 </div>
-                                <div className="sparkline-bars">
-                                    {stat.sparkline.map((value, i) => {
-                                        const max = Math.max(...stat.sparkline);
-                                        const height = (value / max) * 100;
-                                        const isLast = i === stat.sparkline.length - 1;
-                                        return (
-                                            <div
-                                                key={i}
-                                                className={`sparkline-bar ${isLast ? 'current' : ''}`}
-                                                style={{ 
-                                                    backgroundColor: isLast ? stat.color : `${stat.color}40`,
-                                                    height: `${height}%`
-                                                }}
-                                            />
-                                        );
-                                    })}
+                                <div className="sparkline-chart-wrapper">
+                                    <svg className="sparkline-chart" viewBox="0 0 100 32" preserveAspectRatio="none">
+                                        <defs>
+                                            <linearGradient id={`gradient-${stat.label.replace(/\s+/g, '-')}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                                                <stop offset="0%" stopColor={stat.color} stopOpacity="0.3" />
+                                                <stop offset="100%" stopColor={stat.color} stopOpacity="0.05" />
+                                            </linearGradient>
+                                        </defs>
+                                        {(() => {
+                                            const max = Math.max(...stat.sparkline, 1);
+                                            const min = Math.min(...stat.sparkline);
+                                            const range = max - min || 1;
+                                            const points = stat.sparkline.map((value, i) => {
+                                                const x = (i / (stat.sparkline.length - 1)) * 100;
+                                                const y = 32 - ((value - min) / range) * 28 - 2;
+                                                return `${x},${y}`;
+                                            });
+                                            const linePath = `M ${points.join(' L ')}`;
+                                            const areaPath = `M 0,32 L ${points.join(' L ')} L 100,32 Z`;
+                                            return (
+                                                <>
+                                                    <path d={areaPath} fill={`url(#gradient-${stat.label.replace(/\s+/g, '-')})`} />
+                                                    <path d={linePath} fill="none" stroke={stat.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </>
+                                            );
+                                        })()}
+                                    </svg>
+                                    {/* Separate circle to avoid stretching */}
+                                    <div 
+                                        className="sparkline-dot"
+                                        style={{ 
+                                            backgroundColor: stat.color,
+                                            top: `${((Math.max(...stat.sparkline, 1) - stat.sparkline[stat.sparkline.length - 1]) / (Math.max(...stat.sparkline, 1) - Math.min(...stat.sparkline) || 1)) * 87.5 + 6.25}%`
+                                        }}
+                                    />
                                 </div>
                             </div>
 
@@ -1330,11 +1504,11 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                     <div className="stat-progress-ring-container">
                                         <svg className="stat-progress-ring" viewBox="0 0 36 36">
                                             <circle
+                                                className="ring-bg"
                                                 cx="18"
                                                 cy="18"
                                                 r="15"
                                                 fill="none"
-                                                stroke="#f3f4f6"
                                                 strokeWidth="3"
                                             />
                                             <circle
@@ -1477,7 +1651,10 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                         e.stopPropagation();
                                         setExpandedStatCard(isExpanded ? null : stat.label);
                                     }}
-                                    style={{ backgroundColor: isExpanded ? stat.color : stat.lightBg, color: isExpanded ? 'white' : stat.color }}
+                                    style={{ 
+                                        backgroundColor: isExpanded ? stat.color : (isDarkMode ? `${stat.color}20` : stat.lightBg), 
+                                        color: isExpanded ? 'white' : stat.color 
+                                    }}
                                 >
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                                         <line x1="12" y1="5" x2="12" y2="19" />
@@ -1516,12 +1693,16 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                                     }}
                                                 >
                                                     <span className="popup-item-icon" style={{ 
-                                                        backgroundColor: item.status === 'completed' || item.status === 'record' ? '#ecfdf5' : 
-                                                                        item.status === 'in-progress' || item.status === 'active' ? stat.lightBg : 
-                                                                        '#f3f4f6',
-                                                        color: item.status === 'completed' || item.status === 'record' ? '#10b981' : 
-                                                               item.status === 'in-progress' || item.status === 'active' ? stat.color : 
-                                                               '#6b7280'
+                                                        backgroundColor: item.status === 'completed' || item.status === 'record' 
+                                                            ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5') 
+                                                            : item.status === 'in-progress' || item.status === 'active' 
+                                                                ? (isDarkMode ? `${stat.color}20` : stat.lightBg) 
+                                                                : (isDarkMode ? '#334155' : '#f3f4f6'),
+                                                        color: item.status === 'completed' || item.status === 'record' 
+                                                            ? (isDarkMode ? '#34d399' : '#10b981') 
+                                                            : item.status === 'in-progress' || item.status === 'active' 
+                                                                ? stat.color 
+                                                                : (isDarkMode ? '#94a3b8' : '#6b7280')
                                                     }}>
                                                         {item.status === 'completed' || item.status === 'record' ? (
                                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -1622,6 +1803,13 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                 boxShadow: '0 20px 40px rgba(59, 130, 246, 0.12)'
                             }}
                             whileTap={{ scale: 0.97 }}
+                            onClick={() => {
+                                addNotification(
+                                    'Feature Coming Soon',
+                                    'Sorry po mam/sir, this is still not working pa po 🙏',
+                                    'warning'
+                                );
+                            }}
                         >
                             <div className="quick-card-icon" style={{ backgroundColor: `${action.color}15`, color: action.color }}>
                                 {action.icon === 'play' && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>}
@@ -1795,9 +1983,9 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                         modules={course.modules}
                                         nextLesson={course.nextLesson}
                                         timeEstimate={course.timeEstimate}
-                                        deadline={'deadline' in course ? course.deadline : undefined}
+                                        deadline={'deadline' in course ? (course as { deadline?: { title: string; dueDate: string; daysLeft: number } }).deadline : undefined}
                                         lastAccessed={course.lastAccessed}
-                                        unreadCount={'unreadCount' in course ? course.unreadCount : undefined}
+                                        unreadCount={'unreadCount' in course ? (course as { unreadCount?: number }).unreadCount : undefined}
                                         grade={'grade' in course ? course.grade : undefined}
                                         isBookmarked={course.isBookmarked}
                                         onBookmarkToggle={(isBookmarked) => handleBookmarkToggle(course.title, isBookmarked)}
@@ -1831,49 +2019,59 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '3rem 2rem',
-                    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-                    borderRadius: '20px',
-                    border: '1px solid #e2e8f0',
+                    padding: '2.5rem 2rem',
+                    background: '#fafafa',
+                    borderRadius: '12px',
+                    border: '1px dashed #d4d4d4',
                     textAlign: 'center',
-                    gap: '1rem'
+                    gap: '0.75rem'
                 }}
             >
                 <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
+                    initial={{ scale: 0, rotate: -15 }}
+                    animate={{ scale: 1, rotate: 0 }}
                     transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+                    style={{ opacity: 0.6 }}
                 >
-                    <lord-icon
-                        src="https://cdn.lordicon.com/mudwpdhy.json"
-                        trigger="hover"
-                        style={{ width: '150px', height: '150px' }}
-                    />
+                    <svg 
+                        width="48" 
+                        height="48" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="#737373" 
+                        strokeWidth="1.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                    >
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                    </svg>
                 </motion.div>
-                <motion.h3
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
+                <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
                     style={{
-                        fontSize: '1.25rem',
-                        fontWeight: 600,
-                        color: '#1e293b',
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
+                        color: '#525252',
                         margin: 0
                     }}
                 >
-                    Nothing to see here
-                </motion.h3>
+                    More features coming soon
+                </motion.p>
                 <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
                     style={{
-                        fontSize: '0.95rem',
-                        color: '#64748b',
-                        margin: 0
+                        fontSize: '0.8rem',
+                        color: '#a3a3a3',
+                        margin: 0,
+                        maxWidth: '280px',
+                        lineHeight: 1.5
                     }}
                 >
-                    Under construction
+                    We're working on new tools and features to enhance your learning experience
                 </motion.p>
             </motion.div>
         </motion.div>

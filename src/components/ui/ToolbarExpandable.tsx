@@ -15,11 +15,32 @@ const transition = {
     duration: 0.25,
 };
 
+// Hook to detect dark mode
+function useDarkMode() {
+    const [isDark, setIsDark] = useState(() => 
+        typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
+    );
+    
+    useEffect(() => {
+        const checkDarkMode = () => {
+            setIsDark(document.body.classList.contains('dark-mode'));
+        };
+        checkDarkMode();
+        
+        const observer = new MutationObserver(checkDarkMode);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        
+        return () => observer.disconnect();
+    }, []);
+    
+    return isDark;
+}
+
 // Skeleton Loading Component
-function Skeleton({ className }: { className?: string }) {
+function Skeleton({ className, isDark }: { className?: string; isDark?: boolean }) {
     return (
         <motion.div
-            className={cn('bg-zinc-200 rounded', className)}
+            className={cn(isDark ? 'bg-slate-600' : 'bg-zinc-200', 'rounded', className)}
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
         />
@@ -66,38 +87,44 @@ function MailSkeleton() {
 }
 
 // Course Progress Skeleton
-function CourseSkeleton() {
+function CourseSkeleton({ isDark }: { isDark?: boolean }) {
     return (
         <div className='flex flex-col space-y-4'>
-            <Skeleton className='h-4 w-32' />
+            <Skeleton className='h-4 w-32' isDark={isDark} />
             <div className='space-y-3'>
                 {[1, 2, 3].map((i) => (
                     <div key={i} className='flex flex-col space-y-1.5'>
-                        <Skeleton className='h-3.5 w-3/4' />
-                        <Skeleton className='h-2 w-full rounded-full' />
-                        <Skeleton className='h-2.5 w-20' />
+                        <Skeleton className='h-3.5 w-3/4' isDark={isDark} />
+                        <Skeleton className='h-2 w-full rounded-full' isDark={isDark} />
+                        <Skeleton className='h-2.5 w-20' isDark={isDark} />
                     </div>
                 ))}
             </div>
-            <Skeleton className='h-8 w-full rounded-lg' />
+            <Skeleton className='h-8 w-full rounded-lg' isDark={isDark} />
         </div>
     );
 }
 
 // Search Results Skeleton
-function SearchSkeleton() {
+function SearchSkeleton({ isDark }: { isDark?: boolean }) {
     return (
-        <div className='w-full bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden'>
-            <div className='px-3 py-2 border-b border-zinc-200 bg-white'>
-                <Skeleton className='h-3 w-24' />
+        <div className={cn(
+            'w-full rounded-xl overflow-hidden border',
+            isDark ? 'bg-slate-800 border-slate-700' : 'bg-zinc-50 border-zinc-200'
+        )}>
+            <div className={cn(
+                'px-3 py-2 border-b',
+                isDark ? 'border-slate-700 bg-slate-700' : 'border-zinc-200 bg-white'
+            )}>
+                <Skeleton className='h-3 w-24' isDark={isDark} />
             </div>
             <div className='p-1 space-y-1'>
                 {[1, 2, 3].map((i) => (
                     <div key={i} className='flex items-center gap-3 px-3 py-2'>
-                        <Skeleton className='w-8 h-8 rounded-lg flex-shrink-0' />
+                        <Skeleton className='w-8 h-8 rounded-lg flex-shrink-0' isDark={isDark} />
                         <div className='flex-1 space-y-1.5'>
-                            <Skeleton className='h-3.5 w-3/4' />
-                            <Skeleton className='h-2.5 w-16' />
+                            <Skeleton className='h-3.5 w-3/4' isDark={isDark} />
+                            <Skeleton className='h-2.5 w-16' isDark={isDark} />
                         </div>
                     </div>
                 ))}
@@ -107,16 +134,17 @@ function SearchSkeleton() {
 }
 
 // Enrolled courses data - synced with "Your Courses" section
+// Progress starts at 0 and is loaded from studyTimeService/database
 const ENROLLED_COURSES = [
-    { id: 'cp1', title: "Computer Programming 1", subtitle: "CITE1003 · BSIT101A", image: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=300&h=200&fit=crop&crop=center", progress: 75 },
-    { id: 'euth1', title: "Euthenics 1", subtitle: "STIC1002 · BSIT101A", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop&crop=center", progress: 100 },
-    { id: 'itc', title: "Introduction to Computing", subtitle: "CITE1004 · BSIT101A", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center", progress: 45 },
-    { id: 'nstp1', title: "National Service Training Program 1", subtitle: "NSTP1008 · BSIT101A", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=200&fit=crop&crop=center", progress: 30 },
-    { id: 'pe1', title: "P.E./PATHFIT 1: Movement Competency Training", subtitle: "PHED1005 · BSIT101A", image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&h=200&fit=crop&crop=center", progress: 50 },
-    { id: 'ppc', title: "Philippine Popular Culture", subtitle: "GEDC1041 · BSIT101A", image: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=300&h=200&fit=crop&crop=center", progress: 40 },
-    { id: 'purcom', title: "Purposive Communication", subtitle: "GEDC1016 · BSIT101A", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=300&h=200&fit=crop&crop=center", progress: 65 },
-    { id: 'tcw', title: "The Contemporary World", subtitle: "GEDC1002 · BSIT101A", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center", progress: 35 },
-    { id: 'uts', title: "Understanding the Self", subtitle: "GEDC1008 · BSIT101A", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center", progress: 55 },
+    { id: 'cp1', title: "Computer Programming 1", subtitle: "CITE1003 · BSIT101A", image: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=300&h=200&fit=crop&crop=center", progress: 0 },
+    { id: 'euth1', title: "Euthenics 1", subtitle: "STIC1002 · BSIT101A", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop&crop=center", progress: 0 },
+    { id: 'itc', title: "Introduction to Computing", subtitle: "CITE1004 · BSIT101A", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center", progress: 0 },
+    { id: 'nstp1', title: "National Service Training Program 1", subtitle: "NSTP1008 · BSIT101A", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=200&fit=crop&crop=center", progress: 0 },
+    { id: 'pe1', title: "P.E./PATHFIT 1: Movement Competency Training", subtitle: "PHED1005 · BSIT101A", image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&h=200&fit=crop&crop=center", progress: 0 },
+    { id: 'ppc', title: "Philippine Popular Culture", subtitle: "GEDC1041 · BSIT101A", image: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=300&h=200&fit=crop&crop=center", progress: 0 },
+    { id: 'purcom', title: "Purposive Communication", subtitle: "GEDC1016 · BSIT101A", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=300&h=200&fit=crop&crop=center", progress: 0 },
+    { id: 'tcw', title: "The Contemporary World", subtitle: "GEDC1002 · BSIT101A", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center", progress: 0 },
+    { id: 'uts', title: "Understanding the Self", subtitle: "GEDC1008 · BSIT101A", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center", progress: 0 },
 ];
 
 // Transform enrolled courses to searchable items format
@@ -178,33 +206,34 @@ const INITIAL_MAILS: Mail[] = [
 
 function NotificationContent({ 
     notifications, 
-    setNotifications,
     isLoading = false
 }: { 
     notifications: Notification[], 
-    setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>,
     isLoading?: boolean
 }) {
     const [isClearing, setIsClearing] = useState(false);
     const [activeCategory, setActiveCategory] = useState<NotificationCategory>('all');
+    
+    // Use context functions for persistence
+    const { dismissNotification: contextDismiss, markAllAsRead: contextMarkAllAsRead, clearAllNotifications: contextClearAll } = useNotifications();
 
     const filteredNotifications = activeCategory === 'all' 
         ? notifications 
         : notifications.filter(n => n.category === activeCategory);
 
     const dismissNotification = (id: number) => {
-        setNotifications(prev => prev.filter(n => n.id !== id));
+        contextDismiss(id);
     };
 
     const markAllAsRead = () => {
-        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        contextMarkAllAsRead();
     };
 
     const clearAllNotifications = () => {
         setIsClearing(true);
         // Small delay to let exit animations play
         setTimeout(() => {
-            setNotifications([]);
+            contextClearAll();
             setIsClearing(false);
         }, 300);
     };
@@ -603,6 +632,7 @@ const SEARCH_FILTERS: { id: SearchFilter; label: string }[] = [
 ];
 
 function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => void }) {
+    const isDarkMode = useDarkMode();
     const [query, setQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -689,7 +719,12 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
             {/* Search Input with Loading Indicator */}
             <div className='relative w-full'>
                 <input
-                    className='h-9 w-full rounded-lg border border-zinc-950/10 bg-transparent pl-3 pr-8 py-2 text-sm text-zinc-900 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                    className={cn(
+                        'h-9 w-full rounded-lg border pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500',
+                        isDarkMode 
+                            ? 'border-slate-600 bg-slate-700 text-slate-100 placeholder-slate-400' 
+                            : 'border-zinc-950/10 bg-transparent text-zinc-900 placeholder-zinc-500'
+                    )}
                     autoFocus
                     placeholder='Search courses, modules, assignments...'
                     value={query}
@@ -721,7 +756,10 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.2 }}
-                        className='flex gap-1 p-0.5 bg-zinc-100 rounded-lg overflow-hidden'
+                        className={cn(
+                            'flex gap-1 p-0.5 rounded-lg overflow-hidden',
+                            isDarkMode ? 'bg-slate-700' : 'bg-zinc-100'
+                        )}
                     >
                         {SEARCH_FILTERS.map((filter) => {
                             const isActive = activeFilter === filter.id;
@@ -731,14 +769,21 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                     onClick={() => setActiveFilter(filter.id)}
                                     className={cn(
                                         'relative flex-1 px-2 py-1 text-[10px] font-medium rounded-md transition-colors',
-                                        isActive ? 'text-blue-600' : 'text-zinc-500 hover:text-zinc-700'
+                                        isActive 
+                                            ? 'text-blue-500' 
+                                            : isDarkMode 
+                                                ? 'text-slate-400 hover:text-slate-200' 
+                                                : 'text-zinc-500 hover:text-zinc-700'
                                     )}
                                     whileTap={{ scale: 0.97 }}
                                 >
                                     {isActive && (
                                         <motion.div
                                             layoutId="searchFilterTab"
-                                            className='absolute inset-0 bg-white rounded-md shadow-sm'
+                                            className={cn(
+                                                'absolute inset-0 rounded-md shadow-sm',
+                                                isDarkMode ? 'bg-slate-600' : 'bg-white'
+                                            )}
                                             transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                                         />
                                     )}
@@ -762,12 +807,18 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                         className='w-full'
                     >
                         <div className='flex items-center justify-between mb-2'>
-                            <span className='text-[10px] font-semibold text-zinc-500 uppercase tracking-wide'>Recent Searches</span>
+                            <span className={cn(
+                                'text-[10px] font-semibold uppercase tracking-wide',
+                                isDarkMode ? 'text-slate-400' : 'text-zinc-500'
+                            )}>Recent Searches</span>
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={clearAllRecent}
-                                className='text-[10px] text-zinc-400 hover:text-red-500 transition-colors'
+                                className={cn(
+                                    'text-[10px] hover:text-red-500 transition-colors',
+                                    isDarkMode ? 'text-slate-500' : 'text-zinc-400'
+                                )}
                             >
                                 Clear all
                             </motion.button>
@@ -781,16 +832,27 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                     exit={{ opacity: 0, scale: 0.8 }}
                                     transition={{ delay: index * 0.05, type: 'spring', stiffness: 400, damping: 25 }}
                                     onClick={() => handleRecentClick(term)}
-                                    className='group flex items-center gap-1 px-2.5 py-1 bg-zinc-100 hover:bg-blue-50 rounded-full text-xs text-zinc-600 hover:text-blue-600 transition-all'
+                                    className={cn(
+                                        'group flex items-center gap-1 px-2.5 py-1 rounded-full text-xs transition-all',
+                                        isDarkMode 
+                                            ? 'bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-blue-400' 
+                                            : 'bg-zinc-100 hover:bg-blue-50 text-zinc-600 hover:text-blue-600'
+                                    )}
                                 >
-                                    <svg className='w-3 h-3 text-zinc-400 group-hover:text-blue-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                    <svg className={cn(
+                                        'w-3 h-3 group-hover:text-blue-500',
+                                        isDarkMode ? 'text-slate-500' : 'text-zinc-400'
+                                    )} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
                                     </svg>
                                     <span>{term}</span>
                                     <motion.span
                                         whileHover={{ scale: 1.2 }}
                                         onClick={(e) => removeFromRecent(term, e)}
-                                        className='ml-0.5 text-zinc-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity'
+                                        className={cn(
+                                            'ml-0.5 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity',
+                                            isDarkMode ? 'text-slate-500' : 'text-zinc-400'
+                                        )}
                                     >
                                         ×
                                     </motion.span>
@@ -805,7 +867,7 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className='text-xs text-zinc-500'
+                        className={cn('text-xs', isDarkMode ? 'text-slate-400' : 'text-zinc-500')}
                     >
                         Search your enrolled courses by name or code
                     </motion.div>
@@ -822,7 +884,7 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
                     >
-                        <SearchSkeleton />
+                        <SearchSkeleton isDark={isDarkMode} />
                     </motion.div>
                 )}
 
@@ -837,13 +899,24 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                             ease: [0.4, 0, 0.2, 1],
                             height: { duration: 0.3 }
                         }}
-                        className='w-full bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden'
+                        className={cn(
+                            'w-full rounded-xl overflow-hidden border',
+                            isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-zinc-50 border-zinc-200'
+                        )}
                     >
-                        <div className='px-3 py-2 border-b border-zinc-200 bg-white flex items-center justify-between'>
-                            <p className='text-xs font-semibold text-zinc-500 uppercase tracking-wide'>
+                        <div className={cn(
+                            'px-3 py-2 border-b flex items-center justify-between',
+                            isDarkMode ? 'border-slate-700 bg-slate-700' : 'border-zinc-200 bg-white'
+                        )}>
+                            <p className={cn(
+                                'text-xs font-semibold uppercase tracking-wide',
+                                isDarkMode ? 'text-slate-300' : 'text-zinc-500'
+                            )}>
                                 Your Courses
                             </p>
-                            <span className='text-[10px] text-zinc-400'>{filteredItems.length} {filteredItems.length === 1 ? 'course' : 'courses'} found</span>
+                            <span className={cn('text-[10px]', isDarkMode ? 'text-slate-400' : 'text-zinc-400')}>
+                                {filteredItems.length} {filteredItems.length === 1 ? 'course' : 'courses'} found
+                            </span>
                         </div>
                         <div className='max-h-56 overflow-y-auto p-1'>
                             {filteredItems.map((item, index) => (
@@ -857,7 +930,10 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                         ease: 'easeOut'
                                     }}
                                     onClick={() => handleSelectItem(item)}
-                                    className='w-full text-left px-2.5 py-2 hover:bg-blue-50 rounded-lg transition-all duration-150 flex items-center gap-3 group'
+                                    className={cn(
+                                        'w-full text-left px-2.5 py-2 rounded-lg transition-all duration-150 flex items-center gap-3 group',
+                                        isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-blue-50'
+                                    )}
                                 >
                                     {/* Course Image */}
                                     <div className='relative flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden'>
@@ -881,17 +957,29 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                         </div>
                                     </div>
                                     <div className='flex-1 min-w-0'>
-                                        <div className='text-sm font-medium text-zinc-900 truncate'>{item.title}</div>
-                                        <div className='text-[10px] text-zinc-500'>{item.subtitle}</div>
+                                        <div className={cn(
+                                            'text-sm font-medium truncate',
+                                            isDarkMode ? 'text-slate-100' : 'text-zinc-900'
+                                        )}>{item.title}</div>
+                                        <div className={cn(
+                                            'text-[10px]',
+                                            isDarkMode ? 'text-slate-400' : 'text-zinc-500'
+                                        )}>{item.subtitle}</div>
                                     </div>
                                     {/* Progress indicator */}
                                     <div className='flex-shrink-0 flex items-center gap-1.5'>
                                         {item.progress === 100 ? (
-                                            <span className='text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded'>
+                                            <span className={cn(
+                                                'text-[10px] font-medium px-1.5 py-0.5 rounded',
+                                                isDarkMode ? 'text-emerald-400 bg-emerald-900/50' : 'text-emerald-600 bg-emerald-50'
+                                            )}>
                                                 ✓ Done
                                             </span>
                                         ) : (
-                                            <span className='text-[10px] font-medium text-blue-600'>
+                                            <span className={cn(
+                                                'text-[10px] font-medium',
+                                                isDarkMode ? 'text-blue-400' : 'text-blue-600'
+                                            )}>
                                                 {item.progress}%
                                             </span>
                                         )}
@@ -918,7 +1006,10 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                         animate={{ opacity: 1, height: 'auto', scale: 1 }}
                         exit={{ opacity: 0, height: 0, scale: 0.95 }}
                         transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-                        className='w-full bg-zinc-50 border border-zinc-200 rounded-xl p-4 overflow-hidden'
+                        className={cn(
+                            'w-full rounded-xl p-4 overflow-hidden border',
+                            isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-zinc-50 border-zinc-200'
+                        )}
                     >
                         <div className='text-center'>
                             <motion.div 
@@ -929,8 +1020,14 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                             >
                                 🔍
                             </motion.div>
-                            <div className='text-sm font-medium text-zinc-700'>No courses found</div>
-                            <div className='text-xs text-zinc-500 mt-1'>
+                            <div className={cn(
+                                'text-sm font-medium',
+                                isDarkMode ? 'text-slate-200' : 'text-zinc-700'
+                            )}>No courses found</div>
+                            <div className={cn(
+                                'text-xs mt-1',
+                                isDarkMode ? 'text-slate-400' : 'text-zinc-500'
+                            )}>
                                 {activeFilter === 'completed' ? 'No completed courses match your search' : 
                                  activeFilter === 'inProgress' ? 'No in-progress courses match your search' : 
                                  'Try searching by course name or code'}
@@ -943,17 +1040,166 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
     );
 }
 
+// Course Progress Content with dark mode support
+function CourseProgressContent({ isLoading }: { isLoading: boolean }) {
+    const isDarkMode = useDarkMode();
+    
+    if (isLoading) {
+        return <CourseSkeleton isDark={isDarkMode} />;
+    }
+    
+    const continueCourse = ENROLLED_COURSES.find(c => c.progress > 0 && c.progress < 100);
+    
+    return (
+        <div className='flex flex-col space-y-3'>
+            {/* Continue Where You Left Off */}
+            {continueCourse && (
+                <motion.div 
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={cn(
+                        'rounded-lg p-3 border',
+                        isDarkMode 
+                            ? 'bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border-blue-800/50' 
+                            : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100'
+                    )}
+                >
+                    <div className='flex items-center gap-2 mb-1'>
+                        <svg className={cn('w-4 h-4', isDarkMode ? 'text-blue-400' : 'text-blue-500')} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z' />
+                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+                        </svg>
+                        <span className={cn(
+                            'text-[10px] font-semibold uppercase tracking-wide',
+                            isDarkMode ? 'text-blue-400' : 'text-blue-600'
+                        )}>Continue Learning</span>
+                    </div>
+                    <div className={cn(
+                        'text-sm font-medium',
+                        isDarkMode ? 'text-slate-100' : 'text-zinc-800'
+                    )}>{continueCourse.title}</div>
+                    <div className={cn(
+                        'text-[11px]',
+                        isDarkMode ? 'text-slate-400' : 'text-zinc-500'
+                    )}>{continueCourse.subtitle}</div>
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className='mt-2 w-full py-1.5 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors flex items-center justify-center'
+                    >
+                        Resume
+                    </motion.button>
+                </motion.div>
+            )}
+
+            {/* Course List */}
+            <div className='space-y-2 max-h-48 overflow-y-auto'>
+                {ENROLLED_COURSES.filter(c => c.progress < 100).slice(0, 5).map((course, index) => (
+                    <motion.div
+                        key={course.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className={cn(
+                            'group p-2 rounded-lg transition-colors cursor-pointer',
+                            isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-zinc-50'
+                        )}
+                    >
+                        <div className='flex items-center justify-between mb-1'>
+                            <span className={cn(
+                                'text-sm font-medium truncate pr-2',
+                                isDarkMode ? 'text-slate-100' : 'text-zinc-800'
+                            )}>{course.title}</span>
+                            <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                className={cn(
+                                    'opacity-0 group-hover:opacity-100 p-1 text-blue-500 rounded transition-all flex-shrink-0',
+                                    isDarkMode ? 'hover:bg-blue-900/50' : 'hover:bg-blue-50'
+                                )}
+                                title='Go to course'
+                            >
+                                <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+                                </svg>
+                            </motion.button>
+                        </div>
+                        <div className={cn(
+                            'w-full rounded-full h-1.5 mb-1',
+                            isDarkMode ? 'bg-blue-950' : 'bg-gray-200'
+                        )}>
+                            <motion.div 
+                                className={`h-1.5 rounded-full ${course.progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${course.progress}%` }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                            />
+                        </div>
+                        <div className={cn(
+                            'flex items-center justify-between text-[10px]',
+                            isDarkMode ? 'text-slate-400' : 'text-zinc-500'
+                        )}>
+                            <span>{course.progress}% • {course.subtitle.split(' · ')[0]}</span>
+                            <span className='flex items-center gap-0.5'>
+                                <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
+                                </svg>
+                                {Math.round((100 - course.progress) * 0.5)}h left
+                            </span>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+
+            <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={cn(
+                    'w-full py-2 text-xs font-medium rounded-lg transition-colors',
+                    isDarkMode 
+                        ? 'text-blue-400 hover:text-blue-300 hover:bg-slate-700' 
+                        : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'
+                )}
+            >
+                View All Courses
+            </motion.button>
+        </div>
+    );
+}
+
 export default function ToolbarExpandable() {
     const [active, setActive] = useState<number | null>(null);
     const [contentRef, { height: heightContent }] = useMeasure();
     const [menuRef, { width: widthContainer }] = useMeasure();
     const ref = useRef<HTMLDivElement>(null!);
     const [isOpen, setIsOpen] = useState(false);
+    const isDarkMode = useDarkMode();
+    
+    // Show hint only after 10 page visits, and only if not dismissed before
+    const [showSearchHint, setShowSearchHint] = useState(() => {
+        // Check if user has already dismissed the hint permanently
+        if (localStorage.getItem('search-hint-dismissed') === 'true') {
+            return false;
+        }
+        
+        // Get current visit count and increment it
+        const visitCount = parseInt(localStorage.getItem('search-hint-visits') || '0', 10) + 1;
+        localStorage.setItem('search-hint-visits', visitCount.toString());
+        
+        // Show hint only on the 10th visit and beyond
+        return visitCount >= 10;
+    });
 
     useClickOutside(ref, () => {
         setIsOpen(false);
         setActive(null);
     });
+
+    // Dismiss search hint permanently when user clicks search
+    const dismissSearchHint = useCallback(() => {
+        setShowSearchHint(false);
+        localStorage.setItem('search-hint-dismissed', 'true');
+    }, []);
 
     // Keyboard shortcuts: Ctrl+K or / to open search, ESC to close
     const openSearch = useCallback(() => {
@@ -970,11 +1216,6 @@ export default function ToolbarExpandable() {
         const handleKeyDown = (e: KeyboardEvent) => {
             // Ctrl+K or Cmd+K to open search
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                openSearch();
-            }
-            // "/" to open search (only when not typing in an input)
-            if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
                 e.preventDefault();
                 openSearch();
             }
@@ -1007,7 +1248,7 @@ export default function ToolbarExpandable() {
     }, []);
 
     // Notification state - using shared context for sync with toast notifications
-    const { notifications, setNotifications, unreadCount: unreadNotificationCount } = useNotifications();
+    const { notifications, unreadCount: unreadNotificationCount } = useNotifications();
 
     // Mail state - persisted to localStorage with version check
     const MAIL_VERSION = 'v2'; // Increment this to reset mails to new defaults
@@ -1084,7 +1325,12 @@ export default function ToolbarExpandable() {
                                     stiffness: 500, 
                                     damping: 25 
                                 }}
-                                className='absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-semibold text-white rounded-full bg-red-500'
+                                className={cn(
+                                    'absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-semibold rounded-full',
+                                    isDarkMode 
+                                        ? 'bg-red-400 text-red-950' 
+                                        : 'bg-red-500 text-white'
+                                )}
                             >
                                 <motion.span
                                     key={unreadNotificationCount}
@@ -1099,18 +1345,42 @@ export default function ToolbarExpandable() {
                     </AnimatePresence>
                 </div>
             ),
-            content: <NotificationContent notifications={notifications} setNotifications={setNotifications} isLoading={isNotificationsLoading} />,
+            content: <NotificationContent notifications={notifications} isLoading={isNotificationsLoading} />,
         },
         {
             id: 2,
             label: 'Search',
             title: (
-                <lord-icon
-                    src="https://cdn.lordicon.com/axroojxh.json"
-                    trigger="hover"
-                    colors={`primary:${getIconColor(2)}`}
-                    style={{ width: '24px', height: '24px', transition: 'all 0.3s ease' }}
-                />
+                <div className='relative flex items-center justify-center'>
+                    <lord-icon
+                        src="https://cdn.lordicon.com/axroojxh.json"
+                        trigger="hover"
+                        colors={`primary:${getIconColor(2)}`}
+                        style={{ width: '24px', height: '24px', transition: 'all 0.3s ease' }}
+                    />
+                    {/* Search Shortcut Hint Tooltip */}
+                    <AnimatePresence>
+                        {showSearchHint && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 5, scale: 0.9 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 5, scale: 0.9 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                                className='absolute top-full mt-3 px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-50 text-[11px] font-medium bg-white text-zinc-700 border border-zinc-200'
+                                style={{ left: '-95px' }}
+                            >
+                                <div className='flex items-center gap-2'>
+                                    <span>💡</span>
+                                    <span>Press</span>
+                                    <kbd className='px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-100 text-blue-600 border border-blue-200'>Ctrl+K</kbd>
+                                    <span>for quick search</span>
+                                </div>
+                                {/* Arrow pointing up - positioned over search icon */}
+                                <div className='absolute -top-1.5 w-3 h-3 rotate-45 bg-white border-l border-t border-zinc-200' style={{ left: '107px' }} />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             ),
             content: <SearchContent onSearchChange={(query) => console.log('Searching:', query)} />,
         },
@@ -1125,93 +1395,7 @@ export default function ToolbarExpandable() {
                     style={{ width: '24px', height: '24px', transition: 'all 0.3s ease' }}
                 />
             ),
-            content: isCoursesLoading ? (
-                <CourseSkeleton />
-            ) : (
-                <div className='flex flex-col space-y-3'>
-                    {/* Continue Where You Left Off - Show most recently accessed incomplete course */}
-                    {(() => {
-                        const continueCourse = ENROLLED_COURSES.find(c => c.progress > 0 && c.progress < 100);
-                        if (!continueCourse) return null;
-                        return (
-                            <motion.div 
-                                initial={{ opacity: 0, y: -5 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className='bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-100'
-                            >
-                                <div className='flex items-center gap-2 mb-1'>
-                                    <svg className='w-4 h-4 text-blue-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z' />
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-                                    </svg>
-                                    <span className='text-[10px] font-semibold text-blue-600 uppercase tracking-wide'>Continue Learning</span>
-                                </div>
-                                <div className='text-sm font-medium text-zinc-800'>{continueCourse.title}</div>
-                                <div className='text-[11px] text-zinc-500'>{continueCourse.subtitle}</div>
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className='mt-2 w-full py-1.5 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors flex items-center justify-center'
-                                >
-                                    Resume
-                                </motion.button>
-                            </motion.div>
-                        );
-                    })()}
-
-                    {/* Course List - Show all enrolled courses */}
-                    <div className='space-y-2 max-h-48 overflow-y-auto'>
-                        {ENROLLED_COURSES.filter(c => c.progress < 100).slice(0, 5).map((course, index) => (
-                            <motion.div
-                                key={course.id}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className='group p-2 rounded-lg hover:bg-zinc-50 transition-colors cursor-pointer'
-                            >
-                                <div className='flex items-center justify-between mb-1'>
-                                    <span className='text-sm font-medium text-zinc-800 truncate pr-2'>{course.title}</span>
-                                    <motion.button
-                                        whileHover={{ scale: 1.1 }}
-                                        whileTap={{ scale: 0.9 }}
-                                        className='opacity-0 group-hover:opacity-100 p-1 text-blue-500 hover:bg-blue-50 rounded transition-all flex-shrink-0'
-                                        title='Go to course'
-                                    >
-                                        <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
-                                        </svg>
-                                    </motion.button>
-                                </div>
-                                <div className='w-full bg-gray-200 rounded-full h-1.5 mb-1'>
-                                    <motion.div 
-                                        className={`h-1.5 rounded-full ${course.progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${course.progress}%` }}
-                                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    />
-                                </div>
-                                <div className='flex items-center justify-between text-[10px] text-zinc-500'>
-                                    <span>{course.progress}% • {course.subtitle.split(' · ')[0]}</span>
-                                    <span className='flex items-center gap-0.5'>
-                                        <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
-                                        </svg>
-                                        {Math.round((100 - course.progress) * 0.5)}h left
-                                    </span>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className='w-full py-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors'
-                    >
-                        View All Courses
-                    </motion.button>
-                </div>
-            ),
+            content: <CourseProgressContent isLoading={isCoursesLoading} />,
         },
         {
             id: 4,
@@ -1224,17 +1408,36 @@ export default function ToolbarExpandable() {
                         colors={`primary:${getIconColor(4)}`}
                         style={{ width: '24px', height: '24px', transition: 'all 0.3s ease' }}
                     />
-                    {unreadMailCount > 0 && (
-                        <span 
-                            className='absolute -top-2 -right-2 flex items-center justify-center min-w-4 h-4 px-1 text-[10px] font-bold text-white rounded-full'
-                            style={{
-                                background: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
-                                boxShadow: '0 2px 6px rgba(245, 158, 11, 0.4)'
-                            }}
-                        >
-                            {unreadMailCount}
-                        </span>
-                    )}
+                    <AnimatePresence mode='wait'>
+                        {unreadMailCount > 0 && (
+                            <motion.span
+                                key="mail-badge"
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                transition={{ 
+                                    type: 'spring', 
+                                    stiffness: 500, 
+                                    damping: 25 
+                                }}
+                                className={cn(
+                                    'absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-semibold rounded-full',
+                                    isDarkMode 
+                                        ? 'bg-blue-400 text-blue-950' 
+                                        : 'bg-blue-500 text-white'
+                                )}
+                            >
+                                <motion.span
+                                    key={unreadMailCount}
+                                    initial={{ y: -8, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                                >
+                                    {unreadMailCount > 9 ? '9+' : unreadMailCount}
+                                </motion.span>
+                            </motion.span>
+                        )}
+                    </AnimatePresence>
                 </div>
             ),
             content: <MailContent mails={mails} markMailAsRead={markMailAsRead} markAllMailsAsRead={markAllMailsAsRead} deleteMail={deleteMail} clearAllMails={clearAllMails} isLoading={isMailsLoading} />,
@@ -1268,6 +1471,11 @@ export default function ToolbarExpandable() {
                                             setIsOpen(false);
                                             setActive(null);
                                             return;
+                                        }
+
+                                        // Dismiss search hint when clicking search button
+                                        if (item.id === 2 && showSearchHint) {
+                                            dismissSearchHint();
                                         }
 
                                         setActive(item.id);

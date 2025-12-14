@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { Tooltip } from './ui/tooltip-card';
 
 interface WelcomeModalProps {
@@ -9,6 +10,7 @@ interface WelcomeModalProps {
 const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
     const [activeFeature, setActiveFeature] = useState('animations');
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [isCloseHovered, setIsCloseHovered] = useState(false);
 
     // Auto-rotate slides for engagement feature
     useEffect(() => {
@@ -37,11 +39,48 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
     return (
         <div className={`welcome-modal-overlay ${isOpen ? 'active' : ''}`} id="welcomeModalOverlay">
             <div className="welcome-modal">
-                <button className="modal-close-btn" onClick={onClose}>
-                    <span className="X"></span>
-                    <span className="Y"></span>
-                    <div className="close">Close</div>
-                </button>
+                <motion.button 
+                    className="modal-close-btn-minimal"
+                    onClick={onClose}
+                    onMouseEnter={() => setIsCloseHovered(true)}
+                    onMouseLeave={() => setIsCloseHovered(false)}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ scale: 1.1, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    style={{
+                        position: 'absolute',
+                        top: '16px',
+                        right: '16px',
+                        width: '36px',
+                        height: '36px',
+                        border: 'none',
+                        background: 'transparent',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 10,
+                    }}
+                >
+                    <motion.svg 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                        animate={{ color: isCloseHovered ? '#ef4444' : '#666' }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </motion.svg>
+                </motion.button>
 
                 {/* Left Side - Updates List */}
                 <div className="modal-left">

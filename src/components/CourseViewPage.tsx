@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { createTask, type CreateTaskInput } from '../services/taskService';
 
 interface CourseViewPageProps {
     course: {
@@ -88,203 +89,96 @@ const COURSE_DATA: Record<string, {
 }> = {
     'cp1': {
         modules: [
-            { id: 1, title: 'Module 1: Introduction to Programming', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'Course Overview', completed: true },
-                { type: 'handout-b' as ContentType, title: 'Getting Started Guide', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Introduction Slides', completed: true },
-                { type: 'video' as ContentType, title: 'Welcome Video', completed: true },
-            ]},
-            { id: 2, title: 'Module 2: Variables and Data Types', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'Variables Explained', completed: true },
-                { type: 'handout-b' as ContentType, title: 'Data Types Reference', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Variables & Types Slides', completed: true },
-                { type: 'video' as ContentType, title: 'Coding Demo: Variables', completed: true },
-            ]},
-            { id: 3, title: 'Module 3: Control Structures', status: 'in-progress', contents: [
-                { type: 'handout-a' as ContentType, title: 'If-Else Statements', completed: true },
-                { type: 'handout-b' as ContentType, title: 'Loops Guide', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Control Flow Slides', completed: false },
-                { type: 'video' as ContentType, title: 'Loop Examples Video', completed: false },
-            ]},
-            { id: 4, title: 'Module 4: Functions and Methods', status: 'locked', contents: [
-                { type: 'handout-a' as ContentType, title: 'Functions Basics', completed: false },
-                { type: 'handout-b' as ContentType, title: 'Method Parameters', completed: false },
-                { type: 'slideshow' as ContentType, title: 'Functions Slides', completed: false },
-                { type: 'video' as ContentType, title: 'Function Demo', completed: false },
+            { id: 1, title: 'Module 1: Introduction to Programming', status: 'in-progress', contents: [
+                { type: 'handout-a' as ContentType, title: 'Course Overview', completed: false },
+                { type: 'handout-b' as ContentType, title: 'Getting Started Guide', completed: false },
+                { type: 'slideshow' as ContentType, title: 'Introduction Slides', completed: false },
+                { type: 'video' as ContentType, title: 'Welcome Video', completed: false },
             ]},
         ],
-        tasks: [
-            { id: 1, title: 'Assignment 1: Hello World Program', due: 'Nov 10, 2025', status: 'submitted', score: '95/100', category: 'assignment' as TaskCategory },
-            { id: 2, title: 'Quiz 1: Programming Basics', due: 'Nov 12, 2025', status: 'submitted', score: '88/100', category: 'quiz' as TaskCategory },
-            { id: 3, title: 'Assignment 2: Loop Exercises', due: 'Nov 28, 2025', status: 'pending', score: null, category: 'assignment' as TaskCategory },
-            { id: 4, title: 'Performance Task 1: Calculator App', due: 'Dec 1, 2025', status: 'pending', score: null, category: 'performance' as TaskCategory },
-            { id: 5, title: 'Practical Exam: Midterm Lab', due: 'Dec 5, 2025', status: 'upcoming', score: null, category: 'practical' as TaskCategory },
-        ],
+        tasks: [],
         instructor: { name: 'David Clarence Del Mundo', title: 'Instructor', email: 'd.delmundo@university.edu' }
     },
     'euth1': {
         modules: [
-            { id: 1, title: 'Chapter 1: Introduction to Euthenics', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'What is Euthenics?', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Course Introduction', completed: true },
-                { type: 'video' as ContentType, title: 'Welcome to Euthenics', completed: true },
-            ]},
-            { id: 2, title: 'Chapter 2: Personal Development', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'Self-Improvement Guide', completed: true },
-                { type: 'handout-b' as ContentType, title: 'Goal Setting Worksheet', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Personal Growth Slides', completed: true },
-            ]},
-            { id: 3, title: 'Chapter 3: Home Management', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'Home Organization Tips', completed: true },
-                { type: 'video' as ContentType, title: 'Efficient Living Spaces', completed: true },
-            ]},
-            { id: 4, title: 'Chapter 4: Environmental Awareness', status: 'in-progress', contents: [
-                { type: 'handout-a' as ContentType, title: 'Sustainability Basics', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Green Living', completed: false },
+            { id: 1, title: 'Chapter 1: Introduction to Euthenics', status: 'in-progress', contents: [
+                { type: 'handout-a' as ContentType, title: 'What is Euthenics?', completed: false },
+                { type: 'slideshow' as ContentType, title: 'Course Introduction', completed: false },
+                { type: 'video' as ContentType, title: 'Welcome to Euthenics', completed: false },
             ]},
         ],
-        tasks: [
-            { id: 1, title: 'Reflection Paper 1: Personal Goals', due: 'Nov 8, 2025', status: 'submitted', score: '92/100', category: 'journal' as TaskCategory },
-            { id: 2, title: 'Quiz 1: Euthenics Fundamentals', due: 'Nov 15, 2025', status: 'submitted', score: '90/100', category: 'quiz' as TaskCategory },
-            { id: 3, title: 'Assignment 1: Home Improvement Plan', due: 'Nov 25, 2025', status: 'pending', score: null, category: 'assignment' as TaskCategory },
-            { id: 4, title: 'Performance Task: Lifestyle Presentation', due: 'Dec 5, 2025', status: 'upcoming', score: null, category: 'performance' as TaskCategory },
-        ],
+        tasks: [],
         instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
     },
     'itc': {
         modules: [
-            { id: 1, title: 'Module 1: Computer Fundamentals', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'History of Computing', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Computer Components', completed: true },
-                { type: 'video' as ContentType, title: 'Inside a Computer', completed: true },
-            ]},
-            { id: 2, title: 'Module 2: Operating Systems', status: 'in-progress', contents: [
-                { type: 'handout-a' as ContentType, title: 'OS Basics', completed: true },
-                { type: 'handout-b' as ContentType, title: 'Windows vs Linux', completed: false },
-                { type: 'video' as ContentType, title: 'OS Demo', completed: false },
-            ]},
-            { id: 3, title: 'Module 3: Computer Networks', status: 'locked', contents: [
-                { type: 'handout-a' as ContentType, title: 'Networking Basics', completed: false },
-                { type: 'slideshow' as ContentType, title: 'Internet & Web', completed: false },
+            { id: 1, title: 'Module 1: Computer Fundamentals', status: 'in-progress', contents: [
+                { type: 'handout-a' as ContentType, title: 'History of Computing', completed: false },
+                { type: 'slideshow' as ContentType, title: 'Computer Components', completed: false },
+                { type: 'video' as ContentType, title: 'Inside a Computer', completed: false },
             ]},
         ],
-        tasks: [
-            { id: 1, title: 'Quiz 1: Computer History', due: 'Nov 10, 2025', status: 'submitted', score: '85/100', category: 'quiz' as TaskCategory },
-            { id: 2, title: 'Assignment 1: Hardware Identification', due: 'Nov 20, 2025', status: 'pending', score: null, category: 'assignment' as TaskCategory },
-            { id: 3, title: 'Practical: OS Installation', due: 'Dec 1, 2025', status: 'upcoming', score: null, category: 'practical' as TaskCategory },
-        ],
+        tasks: [],
         instructor: { name: 'Psalmmiracle Mariano', title: 'Instructor', email: 'p.mariano@university.edu' }
     },
     'nstp1': {
         modules: [
-            { id: 1, title: 'Unit 1: NSTP Overview', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'NSTP Law & Guidelines', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Program Introduction', completed: true },
-            ]},
-            { id: 2, title: 'Unit 2: Civic Welfare Training', status: 'in-progress', contents: [
-                { type: 'handout-a' as ContentType, title: 'Community Service Guide', completed: true },
-                { type: 'video' as ContentType, title: 'Volunteerism', completed: false },
+            { id: 1, title: 'Unit 1: NSTP Overview', status: 'in-progress', contents: [
+                { type: 'handout-a' as ContentType, title: 'NSTP Law & Guidelines', completed: false },
+                { type: 'slideshow' as ContentType, title: 'Program Introduction', completed: false },
             ]},
         ],
-        tasks: [
-            { id: 1, title: 'Reflection: Community Needs', due: 'Nov 15, 2025', status: 'submitted', score: '88/100', category: 'journal' as TaskCategory },
-            { id: 2, title: 'Community Service Report', due: 'Dec 10, 2025', status: 'pending', score: null, category: 'assignment' as TaskCategory },
-        ],
+        tasks: [],
         instructor: { name: 'Dan Risty Montojo', title: 'Instructor', email: 'd.montojo@university.edu' }
     },
     'pe1': {
         modules: [
-            { id: 1, title: 'Week 1-2: Fitness Assessment', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'Fitness Test Guide', completed: true },
-                { type: 'video' as ContentType, title: 'Proper Form Demo', completed: true },
-            ]},
-            { id: 2, title: 'Week 3-4: Cardio Training', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'Cardio Exercises', completed: true },
-                { type: 'video' as ContentType, title: 'HIIT Workout', completed: true },
-            ]},
-            { id: 3, title: 'Week 5-6: Strength Training', status: 'in-progress', contents: [
-                { type: 'handout-a' as ContentType, title: 'Strength Basics', completed: true },
-                { type: 'video' as ContentType, title: 'Weight Training', completed: false },
+            { id: 1, title: 'Week 1: Fitness Assessment', status: 'in-progress', contents: [
+                { type: 'handout-a' as ContentType, title: 'Fitness Test Guide', completed: false },
+                { type: 'video' as ContentType, title: 'Proper Form Demo', completed: false },
             ]},
         ],
-        tasks: [
-            { id: 1, title: 'Fitness Test 1', due: 'Nov 5, 2025', status: 'submitted', score: '95/100', category: 'practical' as TaskCategory },
-            { id: 2, title: 'Workout Log Week 1-4', due: 'Nov 20, 2025', status: 'submitted', score: '90/100', category: 'journal' as TaskCategory },
-            { id: 3, title: 'Fitness Test 2', due: 'Dec 5, 2025', status: 'upcoming', score: null, category: 'practical' as TaskCategory },
-        ],
+        tasks: [],
         instructor: { name: 'Mark Joseph Danoy', title: 'Instructor', email: 'm.danoy@university.edu' }
     },
     'ppc': {
         modules: [
-            { id: 1, title: 'Topic 1: Filipino Identity', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'Cultural Roots', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Filipino Heritage', completed: true },
-            ]},
-            { id: 2, title: 'Topic 2: Media & Entertainment', status: 'in-progress', contents: [
-                { type: 'handout-a' as ContentType, title: 'Philippine Cinema', completed: true },
-                { type: 'video' as ContentType, title: 'Classic Filipino Films', completed: false },
+            { id: 1, title: 'Topic 1: Understanding Culture', status: 'in-progress', contents: [
+                { type: 'handout-a' as ContentType, title: 'What is Culture?', completed: false },
+                { type: 'slideshow' as ContentType, title: 'Cultural Elements', completed: false },
             ]},
         ],
-        tasks: [
-            { id: 1, title: 'Essay: Cultural Identity', due: 'Nov 12, 2025', status: 'submitted', score: '87/100', category: 'assignment' as TaskCategory },
-            { id: 2, title: 'Film Analysis Paper', due: 'Dec 1, 2025', status: 'pending', score: null, category: 'assignment' as TaskCategory },
-        ],
+        tasks: [],
         instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
     },
     'purcom': {
         modules: [
-            { id: 1, title: 'Lesson 1: Communication Basics', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'Communication Process', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Effective Communication', completed: true },
-            ]},
-            { id: 2, title: 'Lesson 2: Written Communication', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'Business Writing', completed: true },
-                { type: 'handout-b' as ContentType, title: 'Email Etiquette', completed: true },
-            ]},
-            { id: 3, title: 'Lesson 3: Academic Writing', status: 'in-progress', contents: [
-                { type: 'handout-a' as ContentType, title: 'Research Paper Guide', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Citation Styles', completed: false },
+            { id: 1, title: 'Lesson 1: Communication Process', status: 'in-progress', contents: [
+                { type: 'handout-a' as ContentType, title: 'Elements of Communication', completed: false },
+                { type: 'slideshow' as ContentType, title: 'Communication Models', completed: false },
             ]},
         ],
-        tasks: [
-            { id: 1, title: 'Business Letter Writing', due: 'Nov 10, 2025', status: 'submitted', score: '90/100', category: 'assignment' as TaskCategory },
-            { id: 2, title: 'Quiz: Communication Theory', due: 'Nov 18, 2025', status: 'submitted', score: '88/100', category: 'quiz' as TaskCategory },
-            { id: 3, title: 'Research Paper Draft', due: 'Dec 2, 2025', status: 'pending', score: null, category: 'performance' as TaskCategory },
-        ],
+        tasks: [],
         instructor: { name: 'John Denielle San Martin', title: 'Instructor', email: 'j.sanmartin@university.edu' }
     },
     'tcw': {
         modules: [
-            { id: 1, title: 'Chapter 1: Globalization', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'What is Globalization?', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Global Connections', completed: true },
-            ]},
-            { id: 2, title: 'Chapter 2: Global Economy', status: 'in-progress', contents: [
-                { type: 'handout-a' as ContentType, title: 'International Trade', completed: true },
-                { type: 'video' as ContentType, title: 'Economic Systems', completed: false },
+            { id: 1, title: 'Chapter 1: Globalization', status: 'in-progress', contents: [
+                { type: 'handout-a' as ContentType, title: 'What is Globalization?', completed: false },
+                { type: 'slideshow' as ContentType, title: 'Global Interconnectedness', completed: false },
             ]},
         ],
-        tasks: [
-            { id: 1, title: 'Essay: Globalization Impact', due: 'Nov 15, 2025', status: 'submitted', score: '82/100', category: 'assignment' as TaskCategory },
-            { id: 2, title: 'Quiz: Global Economy', due: 'Dec 1, 2025', status: 'pending', score: null, category: 'quiz' as TaskCategory },
-        ],
+        tasks: [],
         instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
     },
     'uts': {
         modules: [
-            { id: 1, title: 'Module 1: The Self', status: 'completed', contents: [
-                { type: 'handout-a' as ContentType, title: 'Philosophical Self', completed: true },
-                { type: 'slideshow' as ContentType, title: 'Who Am I?', completed: true },
-            ]},
-            { id: 2, title: 'Module 2: Psychological Self', status: 'in-progress', contents: [
-                { type: 'handout-a' as ContentType, title: 'Personality Theories', completed: true },
-                { type: 'video' as ContentType, title: 'Self-Awareness', completed: false },
+            { id: 1, title: 'Module 1: The Self from Various Perspectives', status: 'in-progress', contents: [
+                { type: 'handout-a' as ContentType, title: 'Philosophical Self', completed: false },
+                { type: 'slideshow' as ContentType, title: 'Who Am I?', completed: false },
             ]},
         ],
-        tasks: [
-            { id: 1, title: 'Reflection: My Identity', due: 'Nov 12, 2025', status: 'submitted', score: '91/100', category: 'journal' as TaskCategory },
-            { id: 2, title: 'Personality Assessment', due: 'Nov 28, 2025', status: 'pending', score: null, category: 'assignment' as TaskCategory },
-        ],
+        tasks: [],
         instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
     },
 };
@@ -293,8 +187,52 @@ const COURSE_DATA: Record<string, {
 const DEFAULT_MODULES = COURSE_DATA['cp1'].modules;
 const DEFAULT_TASKS = COURSE_DATA['cp1'].tasks;
 
-// Helper function to get course-specific data
-const getCourseData = (courseId: string) => {
+// Type for course data
+type CourseDataType = {
+    modules: { id: number; title: string; status: string; contents: { type: ContentType; title: string; completed: boolean }[] }[];
+    tasks: { id: number; title: string; due: string; status: string; score: string | null; category: TaskCategory }[];
+    instructor: { name: string; title: string; email: string };
+};
+
+// Helper function to get course-specific data (with demo mode support)
+const getCourseData = (courseId: string): CourseDataType => {
+    // Check if demo mode is active and demo modules exist
+    const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
+    if (isDemoMode) {
+        try {
+            const demoModulesData = localStorage.getItem('demo-course-modules');
+            if (demoModulesData) {
+                const demoModules = JSON.parse(demoModulesData) as Record<string, { modules: { id: number; title: string; status: string; contents: { type: string; title: string; completed: boolean }[] }[]; tasks?: { id: number; title: string; due: string; status: string; score: string | null; category: string }[] }>;
+                if (demoModules[courseId]) {
+                    const baseData = COURSE_DATA[courseId] || {
+                        modules: DEFAULT_MODULES,
+                        tasks: DEFAULT_TASKS,
+                        instructor: { name: 'Instructor', title: 'Instructor', email: 'instructor@university.edu' }
+                    };
+                    // Cast the demo data to proper types
+                    const typedModules = demoModules[courseId].modules.map(m => ({
+                        ...m,
+                        contents: m.contents.map(c => ({
+                            ...c,
+                            type: c.type as ContentType
+                        }))
+                    }));
+                    const typedTasks = demoModules[courseId].tasks?.map(t => ({
+                        ...t,
+                        category: t.category as TaskCategory
+                    })) || baseData.tasks;
+                    return {
+                        ...baseData,
+                        modules: typedModules,
+                        tasks: typedTasks,
+                    };
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load demo modules:', e);
+        }
+    }
+    
     return COURSE_DATA[courseId] || {
         modules: DEFAULT_MODULES,
         tasks: DEFAULT_TASKS,
@@ -302,51 +240,89 @@ const getCourseData = (courseId: string) => {
     };
 };
 
-const SAMPLE_NEWS = [
-    { id: 1, title: 'Class Schedule Update', date: 'Nov 25, 2025', preview: 'Please note that our class on Friday will be moved to Room 301...', unread: true },
-    { id: 2, title: 'Assignment 3 Guidelines Posted', date: 'Nov 22, 2025', preview: 'The guidelines for Programming Assignment 3 are now available...', unread: true },
-    { id: 3, title: 'Midterm Coverage Announcement', date: 'Nov 18, 2025', preview: 'The midterm exam will cover Modules 1-4. Please review...', unread: false },
+// Fresh start - no news announcements yet
+const SAMPLE_NEWS: { id: number; title: string; date: string; preview: string; unread: boolean }[] = [];
+
+// Default students data - only the current user (you)
+const DEFAULT_STUDENTS = [
+    { id: 1, name: 'Josiah P. De Asis', status: 'online', role: 'Student', email: 'deasis.462124@meycauayan.sti.edu.ph', grade: 0, attendance: 0, submissions: 0, aiGraded: false },
 ];
 
-const SAMPLE_STUDENTS = [
-    { id: 1, name: 'Juan Dela Cruz', status: 'online', role: 'Student', email: 'j.delacruz@university.edu' },
-    { id: 2, name: 'Maria Santos', status: 'online', role: 'Student', email: 'm.santos@university.edu' },
-    { id: 3, name: 'Pedro Reyes', status: 'offline', role: 'Student', email: 'p.reyes@university.edu' },
-    { id: 4, name: 'Ana Garcia', status: 'online', role: 'Student', email: 'a.garcia@university.edu' },
-    { id: 5, name: 'Jose Rizal', status: 'offline', role: 'Student', email: 'j.rizal@university.edu' },
-    { id: 6, name: 'Carmen Lopez', status: 'online', role: 'Student', email: 'c.lopez@university.edu' },
-    { id: 7, name: 'Miguel Torres', status: 'offline', role: 'Student', email: 'm.torres@university.edu' },
-    { id: 8, name: 'Sofia Mendoza', status: 'online', role: 'Student', email: 's.mendoza@university.edu' },
-    { id: 9, name: 'Carlos Rivera', status: 'online', role: 'Student', email: 'c.rivera@university.edu' },
-    { id: 10, name: 'Isabella Cruz', status: 'offline', role: 'Student', email: 'i.cruz@university.edu' },
-    { id: 11, name: 'Diego Fernandez', status: 'online', role: 'Student', email: 'd.fernandez@university.edu' },
-    { id: 12, name: 'Lucia Martinez', status: 'offline', role: 'Student', email: 'l.martinez@university.edu' },
-];
+// Helper to get students data (with demo mode support)
+const getStudentsData = () => {
+    const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
+    if (isDemoMode) {
+        try {
+            const demoStudents = localStorage.getItem('demo-students');
+            if (demoStudents) {
+                return JSON.parse(demoStudents);
+            }
+        } catch (e) {
+            console.error('Failed to load demo students:', e);
+        }
+    }
+    return DEFAULT_STUDENTS;
+};
+
+// Helper to get teachers data (with demo mode support)
+const getTeachersData = (courseId: string) => {
+    const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
+    if (isDemoMode) {
+        try {
+            const demoTeachers = localStorage.getItem('demo-teachers');
+            if (demoTeachers) {
+                const teachers = JSON.parse(demoTeachers);
+                return teachers.filter((t: { courses: string[] }) => t.courses.includes(courseId));
+            }
+        } catch (e) {
+            console.error('Failed to load demo teachers:', e);
+        }
+    }
+    return [];
+};
+
+// Helper to get AI grading data (with demo mode support)
+const getAIGradingData = (courseId: string) => {
+    const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
+    if (isDemoMode) {
+        try {
+            const demoAIGrades = localStorage.getItem('demo-ai-grades');
+            if (demoAIGrades) {
+                const grades = JSON.parse(demoAIGrades);
+                return grades[courseId] || null;
+            }
+        } catch (e) {
+            console.error('Failed to load demo AI grades:', e);
+        }
+    }
+    return null;
+};
 
 // Quick Stats Component - Matching CourseCard grade display style
 const QuickStatsBar: React.FC<{ courseId: string }> = ({ courseId: _courseId }) => {
     void _courseId;
     
-    // Sample stats data
+    // Fresh start - 0% grade (C) and 0% attendance
     const stats = {
-        grade: 92,
-        gradeTrend: 'up' as const,
-        attendance: 95,
-        nextDeadline: { title: 'Programming Assignment 2', days: 3 },
-        unreadNews: 2,
+        grade: 0,
+        gradeTrend: 'stable' as const,
+        attendance: 0,
+        nextDeadline: { title: 'No assignments yet', days: 0 },
+        unreadNews: 0,
     };
 
-    // Get grade letter based on percentage
+    // Get grade letter based on percentage (0% = C grade)
     const getGradeLetter = (grade: number) => {
         if (grade >= 90) return 'A';
         if (grade >= 85) return 'B+';
         if (grade >= 80) return 'B';
         if (grade >= 75) return 'C+';
         if (grade >= 70) return 'C';
-        return 'D';
+        return 'C'; // 0% or below 70% = C
     };
 
     const gradeLetter = getGradeLetter(stats.grade);
+    const _hasGrade = stats.grade > 0; // Available for future use
 
     // Trend arrow component
     const TrendArrow = ({ trend }: { trend: 'up' | 'down' | 'stable' }) => {
@@ -386,11 +362,15 @@ const QuickStatsBar: React.FC<{ courseId: string }> = ({ courseId: _courseId }) 
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2, delay: 0.1 }}
                 whileHover={{ scale: 1.02 }}
-                className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-xl p-4 cursor-pointer transition-shadow hover:shadow-md border border-blue-100/50"
+                className={`rounded-xl p-4 cursor-pointer transition-shadow hover:shadow-md border ${
+                    stats.grade === 0 
+                        ? 'bg-gradient-to-br from-zinc-50 to-slate-50 border-zinc-100/50'
+                        : 'bg-gradient-to-br from-blue-50 to-slate-50 border-blue-100/50'
+                }`}
             >
                 <div className="flex items-center gap-2">
                     <motion.span 
-                        className="text-3xl font-bold text-blue-600"
+                        className={`text-3xl font-bold ${stats.grade === 0 ? 'text-zinc-400' : 'text-blue-600'}`}
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.2, type: 'spring', stiffness: 300 }}
@@ -398,11 +378,11 @@ const QuickStatsBar: React.FC<{ courseId: string }> = ({ courseId: _courseId }) 
                         {gradeLetter}
                     </motion.span>
                     <div className="flex items-center gap-1">
-                        <span className="text-lg font-semibold text-zinc-700">{stats.grade}%</span>
+                        <span className={`text-lg font-semibold ${stats.grade === 0 ? 'text-zinc-400' : 'text-zinc-700'}`}>{stats.grade}%</span>
                         <TrendArrow trend={stats.gradeTrend} />
                     </div>
                 </div>
-                <p className="text-[11px] font-medium text-blue-500 uppercase tracking-wide mt-2">Current Grade</p>
+                <p className={`text-[11px] font-medium uppercase tracking-wide mt-2 ${stats.grade === 0 ? 'text-zinc-400' : 'text-blue-500'}`}>Current Grade</p>
             </motion.div>
 
             {/* Attendance */}
@@ -411,11 +391,15 @@ const QuickStatsBar: React.FC<{ courseId: string }> = ({ courseId: _courseId }) 
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2, delay: 0.15 }}
                 whileHover={{ scale: 1.02 }}
-                className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-xl p-4 cursor-pointer transition-shadow hover:shadow-md border border-blue-100/50"
+                className={`rounded-xl p-4 cursor-pointer transition-shadow hover:shadow-md border ${
+                    stats.attendance === 0 
+                        ? 'bg-gradient-to-br from-zinc-50 to-slate-50 border-zinc-100/50'
+                        : 'bg-gradient-to-br from-blue-50 to-slate-50 border-blue-100/50'
+                }`}
             >
                 <div className="flex items-center gap-2">
                     <motion.span 
-                        className="text-3xl font-bold text-blue-600"
+                        className={`text-3xl font-bold ${stats.attendance === 0 ? 'text-zinc-400' : 'text-blue-600'}`}
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.25, type: 'spring', stiffness: 300 }}
@@ -423,7 +407,7 @@ const QuickStatsBar: React.FC<{ courseId: string }> = ({ courseId: _courseId }) 
                         {stats.attendance}%
                     </motion.span>
                 </div>
-                <p className="text-[11px] font-medium text-blue-500 uppercase tracking-wide mt-2">Attendance</p>
+                <p className={`text-[11px] font-medium uppercase tracking-wide mt-2 ${stats.attendance === 0 ? 'text-zinc-400' : 'text-blue-500'}`}>Attendance</p>
             </motion.div>
 
             {/* Next Deadline */}
@@ -433,23 +417,33 @@ const QuickStatsBar: React.FC<{ courseId: string }> = ({ courseId: _courseId }) 
                 transition={{ duration: 0.2, delay: 0.2 }}
                 whileHover={{ scale: 1.02 }}
                 className={`rounded-xl p-4 cursor-pointer transition-shadow hover:shadow-md border ${
-                    stats.nextDeadline.days <= 2 
-                        ? 'bg-gradient-to-br from-red-50 to-orange-50 border-red-100/50' 
-                        : 'bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-100/50'
+                    stats.nextDeadline.days === 0
+                        ? 'bg-gradient-to-br from-zinc-50 to-slate-50 border-zinc-100/50'
+                        : stats.nextDeadline.days <= 2 
+                            ? 'bg-gradient-to-br from-red-50 to-orange-50 border-red-100/50' 
+                            : 'bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-100/50'
                 }`}
             >
                 <div className="flex items-center gap-2">
                     <motion.span 
-                        className={`text-2xl font-bold ${stats.nextDeadline.days <= 2 ? 'text-red-600' : 'text-yellow-600'}`}
+                        className={`text-2xl font-bold ${
+                            stats.nextDeadline.days === 0 ? 'text-zinc-400' :
+                            stats.nextDeadline.days <= 2 ? 'text-red-600' : 'text-yellow-600'
+                        }`}
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.3, type: 'spring', stiffness: 300 }}
                     >
-                        {stats.nextDeadline.days}
+                        {stats.nextDeadline.days === 0 ? '-' : stats.nextDeadline.days}
                     </motion.span>
-                    <span className={`text-sm font-medium ${stats.nextDeadline.days <= 2 ? 'text-red-500' : 'text-yellow-500'}`}>days</span>
+                    {stats.nextDeadline.days > 0 && (
+                        <span className={`text-sm font-medium ${stats.nextDeadline.days <= 2 ? 'text-red-500' : 'text-yellow-500'}`}>days</span>
+                    )}
                 </div>
-                <p className={`text-[11px] font-medium uppercase tracking-wide mt-2 ${stats.nextDeadline.days <= 2 ? 'text-red-500' : 'text-yellow-600'}`}>Next Deadline</p>
+                <p className={`text-[11px] font-medium uppercase tracking-wide mt-2 ${
+                    stats.nextDeadline.days === 0 ? 'text-zinc-500' :
+                    stats.nextDeadline.days <= 2 ? 'text-red-500' : 'text-yellow-600'
+                }`}>Next Deadline</p>
             </motion.div>
 
             {/* Announcements */}
@@ -1049,17 +1043,8 @@ interface Submission {
     aiScore: number | null;
 }
 
-// Sample student submissions for grading
-const SAMPLE_SUBMISSIONS: Submission[] = [
-    { id: 1, studentName: 'Juan Dela Cruz', studentId: 'STU001', task: 'Assignment 1: Hello World', submitted: '2025-11-25', status: 'pending', yearLevel: '1st' as YearLevel, section: 'A' as Section, aiScore: null as number | null },
-    { id: 2, studentName: 'Maria Santos', studentId: 'STU002', task: 'Assignment 1: Hello World', submitted: '2025-11-24', status: 'pending', yearLevel: '1st' as YearLevel, section: 'A' as Section, aiScore: null as number | null },
-    { id: 3, studentName: 'Pedro Reyes', studentId: 'STU003', task: 'Quiz 1: Programming Basics', submitted: '2025-11-23', status: 'graded', yearLevel: '1st' as YearLevel, section: 'B' as Section, aiScore: 85 },
-    { id: 4, studentName: 'Ana Garcia', studentId: 'STU004', task: 'Assignment 1: Hello World', submitted: '2025-11-22', status: 'pending', yearLevel: '2nd' as YearLevel, section: 'A' as Section, aiScore: null as number | null },
-    { id: 5, studentName: 'Jose Rizal', studentId: 'STU005', task: 'Performance Task 1', submitted: '2025-11-21', status: 'ai-checked', yearLevel: '1st' as YearLevel, section: 'C' as Section, aiScore: 78 },
-    { id: 6, studentName: 'Carmen Lopez', studentId: 'STU006', task: 'Journal 1: Reflection', submitted: '2025-11-20', status: 'pending', yearLevel: '3rd' as YearLevel, section: 'A' as Section, aiScore: null as number | null },
-    { id: 7, studentName: 'Miguel Torres', studentId: 'STU007', task: 'Quiz 1: Programming Basics', submitted: '2025-11-19', status: 'graded', yearLevel: '2nd' as YearLevel, section: 'B' as Section, aiScore: 92 },
-    { id: 8, studentName: 'Sofia Mendoza', studentId: 'STU008', task: 'Practical Exam 1', submitted: '2025-11-18', status: 'pending', yearLevel: '4th' as YearLevel, section: 'A' as Section, aiScore: null as number | null },
-];
+// Fresh start - no student submissions yet (empty for realistic fresh database)
+const SAMPLE_SUBMISSIONS: Submission[] = [];
 
 const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [activeTab, setActiveTab] = useState<TabType>('modules');
@@ -1073,33 +1058,69 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [taskFilter, setTaskFilter] = useState<TaskCategory>('all');
     const [studentFilter, setStudentFilter] = useState<'all' | 'online' | 'offline'>('all');
     
-    // Teacher Mode State
-    const [isTeacherMode, setIsTeacherMode] = useState(false);
-    const [teacherTab, setTeacherTab] = useState<TeacherTabType>('manage-tasks');
+    // Teacher Mode State - persist across page refreshes
+    const [isTeacherMode, setIsTeacherMode] = useState(() => {
+        return sessionStorage.getItem('teacher_mode_active') === 'true';
+    });
+    const [teacherTab, setTeacherTab] = useState<TeacherTabType>(() => {
+        const saved = sessionStorage.getItem('teacher_mode_tab');
+        return (saved as TeacherTabType) || 'manage-tasks';
+    });
     const [isTeacherLoading, setIsTeacherLoading] = useState(false);
     const [yearLevelFilter, setYearLevelFilter] = useState<YearLevel>('all');
     const [sectionFilter, setSectionFilter] = useState<Section>('all');
-    const [submissions, setSubmissions] = useState(() => {
-        // Load saved submissions from localStorage
-        const storageKey = `ai-grading-${course.id}`;
-        try {
-            const saved = localStorage.getItem(storageKey);
-            if (saved) {
-                return JSON.parse(saved);
-            }
-        } catch (e) {
-            console.error('Failed to load saved submissions:', e);
+    
+    // One-time migration: Clear old ai-grading data for fresh start
+    useEffect(() => {
+        const migrationKey = 'ai-grading-reset-v2';
+        if (!localStorage.getItem(migrationKey)) {
+            // Clear all old ai-grading data
+            const courseIds = ['cp1', 'euth1', 'itc', 'nstp1', 'pe1', 'ppc', 'purcom', 'tcw', 'uts'];
+            courseIds.forEach(id => localStorage.removeItem(`ai-grading-${id}`));
+            localStorage.setItem(migrationKey, 'true');
+            console.log('[Migration] Cleared old ai-grading data for fresh start');
         }
+    }, []);
+    
+    const [submissions, setSubmissions] = useState(() => {
+        // Check if demo mode is active - only then load from localStorage
+        const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
+        if (isDemoMode) {
+            const storageKey = `ai-grading-${course.id}`;
+            try {
+                const saved = localStorage.getItem(storageKey);
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('Failed to load saved submissions:', e);
+            }
+        }
+        // Fresh start - no submissions (empty array)
         return SAMPLE_SUBMISSIONS;
     });
     
-    // Save submissions to localStorage when they change
+    // Save submissions to localStorage when they change (only in demo mode)
     useEffect(() => {
-        const storageKey = `ai-grading-${course.id}`;
-        localStorage.setItem(storageKey, JSON.stringify(submissions));
+        const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
+        if (isDemoMode) {
+            const storageKey = `ai-grading-${course.id}`;
+            localStorage.setItem(storageKey, JSON.stringify(submissions));
+        }
     }, [submissions, course.id]);
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
     const [selectedTaskType, setSelectedTaskType] = useState<TaskCategory>('assignment');
+    
+    // Add Task Form State
+    const [newTaskTitle, setNewTaskTitle] = useState('');
+    const [newTaskDescription, setNewTaskDescription] = useState('');
+    const [newTaskDueDate, setNewTaskDueDate] = useState('');
+    const [newTaskPoints, setNewTaskPoints] = useState('100');
+    const [newTaskInstructions, setNewTaskInstructions] = useState('');
+    const [newTaskFiles, setNewTaskFiles] = useState<File[]>([]);
+    const [isCreatingTask, setIsCreatingTask] = useState(false);
+    const taskFileInputRef = useRef<HTMLInputElement>(null);
+    
     const [isAiGrading, setIsAiGrading] = useState(false);
     const [aiGradingProgress, setAiGradingProgress] = useState(0);
     const [showAiWarning, setShowAiWarning] = useState(false);
@@ -1107,6 +1128,16 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [showSectionDropdown, setShowSectionDropdown] = useState(false);
     const [showTeacherTutorial, setShowTeacherTutorial] = useState(false);
     const [tutorialStep, setTutorialStep] = useState(0);
+
+    // Persist teacher mode state to sessionStorage
+    useEffect(() => {
+        sessionStorage.setItem('teacher_mode_active', isTeacherMode.toString());
+    }, [isTeacherMode]);
+
+    // Persist teacher tab to sessionStorage
+    useEffect(() => {
+        sessionStorage.setItem('teacher_mode_tab', teacherTab);
+    }, [teacherTab]);
 
     // Simulate loading for smooth transitions
     useEffect(() => {
@@ -1134,14 +1165,17 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         return () => document.removeEventListener('click', handleClickOutside);
     }, []);
 
-    // Show teacher tutorial every time user switches to teacher mode
+    // Show teacher tutorial only for first-time users
     useEffect(() => {
         if (isTeacherMode) {
-            setTutorialStep(0); // Reset to first step
-            const timer = setTimeout(() => {
-                setShowTeacherTutorial(true);
-            }, 800);
-            return () => clearTimeout(timer);
+            const hasSeenTutorial = localStorage.getItem('teacher_tutorial_completed');
+            if (!hasSeenTutorial) {
+                setTutorialStep(0); // Reset to first step
+                const timer = setTimeout(() => {
+                    setShowTeacherTutorial(true);
+                }, 800);
+                return () => clearTimeout(timer);
+            }
         } else {
             setShowTeacherTutorial(false);
         }
@@ -1399,6 +1433,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         if (tutorialStep < TEACHER_TUTORIAL_STEPS.length - 1) {
             setTutorialStep(tutorialStep + 1);
         } else {
+            // Mark tutorial as completed so it won't show again
+            localStorage.setItem('teacher_tutorial_completed', 'true');
             setShowTeacherTutorial(false);
             setTutorialStep(0);
         }
@@ -1411,6 +1447,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     };
 
     const handleTutorialSkip = () => {
+        // Mark tutorial as completed so it won't show again
+        localStorage.setItem('teacher_tutorial_completed', 'true');
         setShowTeacherTutorial(false);
         setTutorialStep(0);
     };
@@ -1428,8 +1466,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             'pe1': { name: 'Mark Joseph Danoy', title: 'Instructor', email: 'm.danoy@university.edu' },
             'ppc': { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' },
             'purcom': { name: 'John Denielle San Martin', title: 'Instructor', email: 'j.sanmartin@university.edu' },
-            'tcw': { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' },
-            'uts': { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' },
+            'tcw': { name: 'Anne Jenell Lumintigar', title: 'Instructor', email: 'a.lumintigar@university.edu' },
+            'uts': { name: 'Jocel Lazalita', title: 'Instructor', email: 'j.lazalita@university.edu' },
         };
         return instructors[course.id] || { name: 'Instructor', title: 'Instructor', email: 'instructor@university.edu' };
     };
@@ -1462,15 +1500,24 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         [searchQuery]
     );
 
+    // Get students data (with demo mode support)
+    const studentsData = useMemo(() => getStudentsData(), []);
+    
     const filteredStudents = useMemo(() => 
-        SAMPLE_STUDENTS.filter(s => {
+        studentsData.filter((s: { name: string; email: string; status: string }) => {
             const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                   s.email.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesFilter = studentFilter === 'all' || s.status === studentFilter;
             return matchesSearch && matchesFilter;
         }),
-        [searchQuery, studentFilter]
+        [searchQuery, studentFilter, studentsData]
     );
+    
+    // Get teachers data for this course (with demo mode support)
+    const teachersData = useMemo(() => getTeachersData(course.id), [course.id]);
+    
+    // Get AI grading data for this course (with demo mode support)
+    const aiGradingData = useMemo(() => getAIGradingData(course.id), [course.id]);
 
     // Handle wheel scroll to horizontal scroll for modules - snap to cards
     useEffect(() => {
@@ -2129,8 +2176,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                     );
                 }
                 
-                const onlineCount = SAMPLE_STUDENTS.filter(s => s.status === 'online').length;
-                const offlineCount = SAMPLE_STUDENTS.filter(s => s.status === 'offline').length;
+                const onlineCount = studentsData.filter((s: { status: string }) => s.status === 'online').length;
+                const offlineCount = studentsData.filter((s: { status: string }) => s.status === 'offline').length;
                 
                 return (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
@@ -2206,7 +2253,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 ref={studentsScrollRef}
                                 className="flex gap-4 overflow-x-auto pt-1 pb-4 -mx-1 px-1 snap-x snap-mandatory scroll-smooth"
                             >
-                                {filteredStudents.map((student, index) => (
+                                {filteredStudents.map((student: { id: number; name: string; status: string; role: string; email: string; grade?: number; attendance?: number; submissions?: number; aiGraded?: boolean }, index: number) => (
                                     <motion.div
                                         key={student.id}
                                         initial={{ opacity: 0, x: 20 }}
@@ -2898,6 +2945,35 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     </div>
                                     
                                     {/* Tasks Cards - Horizontal Scroll */}
+                                    {courseTasks.filter((t: { category: TaskCategory }) => selectedTaskType === 'all' || t.category === selectedTaskType).length === 0 ? (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="flex flex-col items-center justify-center py-16 px-6 text-center"
+                                        >
+                                            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-50 to-zinc-50 flex items-center justify-center mb-5 border border-blue-100">
+                                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round">
+                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                    <polyline points="14 2 14 8 20 8" />
+                                                    <line x1="12" y1="18" x2="12" y2="12" />
+                                                    <line x1="9" y1="15" x2="15" y2="15" />
+                                                </svg>
+                                            </div>
+                                            <p className="text-base font-semibold text-zinc-800 mb-2">No tasks yet</p>
+                                            <p className="text-sm text-zinc-500 max-w-sm mb-6">Create your first task to get started. Add assignments, quizzes, performance tasks, and more for your students.</p>
+                                            <motion.button
+                                                onClick={() => setShowAddTaskModal(true)}
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-500/25"
+                                            >
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                    <path d="M12 5v14M5 12h14" />
+                                                </svg>
+                                                Create First Task
+                                            </motion.button>
+                                        </motion.div>
+                                    ) : (
                                     <div 
                                         ref={tasksScrollRef}
                                         className="flex gap-4 overflow-x-auto pt-2 pb-4 -mx-1 px-1 snap-x snap-mandatory scroll-smooth"
@@ -3006,6 +3082,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             </motion.div>
                                         ))}
                                     </div>
+                                    )}
                                 </div>
                                 )
                             )}
@@ -3298,7 +3375,25 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     </AnimatePresence>
                                     
                                     {/* Submissions List - Horizontal Scrolling Cards */}
-                                        {/* Cards Container */}
+                                        {submissions.length === 0 ? (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="flex flex-col items-center justify-center py-12 px-6 text-center"
+                                            >
+                                                <div className="w-16 h-16 rounded-2xl bg-zinc-100 flex items-center justify-center mb-4">
+                                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" strokeWidth="1.5" strokeLinecap="round">
+                                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                        <polyline points="14 2 14 8 20 8" />
+                                                        <line x1="16" y1="13" x2="8" y2="13" />
+                                                        <line x1="16" y1="17" x2="8" y2="17" />
+                                                    </svg>
+                                                </div>
+                                                <p className="text-sm font-semibold text-zinc-700 mb-1">No submissions yet</p>
+                                                <p className="text-xs text-zinc-500 max-w-xs">Student submissions will appear here once they submit their assignments.</p>
+                                            </motion.div>
+                                        ) : (
+                                        /* Cards Container */
                                         <div 
                                             ref={submissionsScrollRef}
                                             className="flex gap-4 overflow-x-auto pt-2 pb-4 px-1 -mx-1 snap-x snap-mandatory scroll-smooth"
@@ -3423,13 +3518,14 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             </motion.div>
                                         ))}
                                         </div>
+                                        )}
                                 </div>
                                 )
                             )}
                             
                             {teacherTab === 'analytics' && (() => {
                                 // Calculate real statistics from submissions
-                                const totalStudents = SAMPLE_STUDENTS.length;
+                                const totalStudents = studentsData.length;
                                 const totalSubmissions = submissions.length;
                                 const pendingCount = submissions.filter((s: Submission) => s.status === 'pending').length;
                                 const gradedSubmissions = submissions.filter((s: Submission) => s.aiScore !== null);
@@ -3439,7 +3535,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 const completionRate = totalSubmissions > 0 
                                     ? Math.round(((totalSubmissions - pendingCount) / totalSubmissions) * 100)
                                     : 0;
-                                const onlineStudents = SAMPLE_STUDENTS.filter(s => s.status === 'online').length;
+                                const onlineStudents = studentsData.filter((s: { status: string }) => s.status === 'online').length;
                                 
                                 if (isTeacherLoading) {
                                     return (
@@ -3835,7 +3931,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                 activeTab === 'modules' ? courseModules.length :
                                                 activeTab === 'assignments' ? courseTasks.length :
                                                 activeTab === 'news' ? SAMPLE_NEWS.length :
-                                                activeTab === 'students' ? SAMPLE_STUDENTS.length : undefined
+                                                activeTab === 'students' ? studentsData.length : undefined
                                             }
                                         />
                                     </div>
@@ -3849,104 +3945,444 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 </AnimatePresence>
             </div>
             
-            {/* Add Task Modal */}
+            {/* Add Task Modal - Clean & Minimalistic */}
             <AnimatePresence>
                 {showAddTaskModal && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                        transition={{ duration: 0.2 }}
+                        className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 pt-16 pb-4 px-4"
                         onClick={() => setShowAddTaskModal(false)}
                     >
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.96 }}
+                            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl"
+                            className={`rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-full ${
+                                isTeacherMode ? 'bg-zinc-900' : 'bg-white'
+                            }`}
                         >
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-semibold text-zinc-800">Add New Task</h3>
+                            {/* Modal Header - Compact */}
+                            <div className={`flex items-center justify-between px-5 py-4 border-b ${
+                                isTeacherMode ? 'border-zinc-700' : 'border-zinc-100'
+                            }`}>
+                                <div>
+                                    <h3 className={`text-base font-semibold ${isTeacherMode ? 'text-white' : 'text-zinc-800'}`}>Create Task</h3>
+                                    <p className={`text-xs mt-0.5 ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Add a new task for your students</p>
+                                </div>
                                 <motion.button
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                     onClick={() => setShowAddTaskModal(false)}
-                                    className="w-8 h-8 rounded-lg bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center transition-colors"
+                                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                                        isTeacherMode ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400' : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-600'
+                                    }`}
                                 >
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                         <path d="M18 6L6 18M6 6l12 12" />
                                     </svg>
                                 </motion.button>
                             </div>
                             
-                            <div className="space-y-4">
+                            {/* Modal Body - Scrollable */}
+                            <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                                {/* Task Type - Compact Pills */}
                                 <div>
-                                    <label className="text-[11px] font-medium text-zinc-600 mb-1 block">Task Type</label>
-                                    <div className="flex gap-2 flex-wrap">
+                                    <label className={`text-xs font-medium mb-2 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Type</label>
+                                    <div className="flex flex-wrap gap-2">
                                         {TASK_CATEGORIES.filter(c => c.id !== 'all').map((cat) => (
                                             <motion.button
                                                 key={cat.id}
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                className={`flex items-center gap-1.5 px-3 py-2 text-[11px] font-medium rounded-lg transition-colors ${
+                                                whileTap={{ scale: 0.97 }}
+                                                className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all ${
                                                     selectedTaskType === cat.id 
                                                         ? 'bg-blue-600 text-white' 
-                                                        : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                                                        : isTeacherMode 
+                                                            ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                                                            : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
                                                 }`}
                                                 onClick={() => setSelectedTaskType(cat.id)}
                                             >
                                                 {cat.icon}
-                                                {cat.label}
+                                                {cat.label.replace('s', '')}
                                             </motion.button>
                                         ))}
                                     </div>
                                 </div>
                                 
+                                {/* Title */}
                                 <div>
-                                    <label className="text-[11px] font-medium text-zinc-600 mb-1 block">Title</label>
+                                    <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                                        Title <span className="text-red-500">*</span>
+                                    </label>
                                     <input
                                         type="text"
+                                        value={newTaskTitle}
+                                        onChange={(e) => setNewTaskTitle(e.target.value)}
                                         placeholder="Enter task title..."
-                                        className="w-full h-10 px-3 text-sm border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                        className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${
+                                            isTeacherMode 
+                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500' 
+                                                : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                        }`}
                                     />
                                 </div>
                                 
-                                <div>
-                                    <label className="text-[11px] font-medium text-zinc-600 mb-1 block">Due Date</label>
-                                    <input
-                                        type="date"
-                                        className="w-full h-10 px-3 text-sm border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                                    />
+                                {/* Due Date and Points */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                                            Due Date <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="datetime-local"
+                                            value={newTaskDueDate}
+                                            onChange={(e) => setNewTaskDueDate(e.target.value)}
+                                            className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${
+                                                isTeacherMode 
+                                                    ? 'bg-zinc-800 border-zinc-700 text-white [color-scheme:dark]' 
+                                                    : 'bg-white border border-zinc-200 text-zinc-900'
+                                            }`}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Points</label>
+                                        <input
+                                            type="number"
+                                            value={newTaskPoints}
+                                            onChange={(e) => setNewTaskPoints(e.target.value)}
+                                            placeholder="100"
+                                            min="0"
+                                            className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${
+                                                isTeacherMode 
+                                                    ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500' 
+                                                    : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                            }`}
+                                        />
+                                    </div>
                                 </div>
                                 
+                                {/* Description */}
                                 <div>
-                                    <label className="text-[11px] font-medium text-zinc-600 mb-1 block">Description</label>
+                                    <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Description</label>
                                     <textarea
-                                        placeholder="Enter task description..."
-                                        rows={3}
-                                        className="w-full px-3 py-2 text-sm border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
+                                        value={newTaskDescription}
+                                        onChange={(e) => setNewTaskDescription(e.target.value)}
+                                        placeholder="Brief description..."
+                                        rows={2}
+                                        className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none ${
+                                            isTeacherMode 
+                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500' 
+                                                : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                        }`}
                                     />
                                 </div>
                                 
-                                <div className="flex gap-3 pt-2">
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => setShowAddTaskModal(false)}
-                                        className="flex-1 py-2.5 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-xl transition-colors"
-                                    >
-                                        Cancel
-                                    </motion.button>
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => setShowAddTaskModal(false)}
-                                        className="flex-1 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors"
-                                    >
-                                        Create Task
-                                    </motion.button>
+                                {/* Instructions */}
+                                <div>
+                                    <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Instructions</label>
+                                    <textarea
+                                        value={newTaskInstructions}
+                                        onChange={(e) => setNewTaskInstructions(e.target.value)}
+                                        placeholder="Detailed instructions for students..."
+                                        rows={3}
+                                        className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none ${
+                                            isTeacherMode 
+                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500' 
+                                                : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                        }`}
+                                    />
                                 </div>
+                                
+                                {/* File Attachments - Matching Tools Page Style */}
+                                <div>
+                                    <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Attachments</label>
+                                    <input
+                                        ref={taskFileInputRef}
+                                        type="file"
+                                        multiple
+                                        onChange={(e) => {
+                                            if (e.target.files) {
+                                                setNewTaskFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+                                            }
+                                        }}
+                                        className="hidden"
+                                        accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.zip,.rar,.jpg,.jpeg,.png,.gif"
+                                    />
+                                    
+                                    <motion.div
+                                        onClick={() => newTaskFiles.length === 0 && taskFileInputRef.current?.click()}
+                                        whileHover={newTaskFiles.length === 0 ? "animate" : undefined}
+                                        className={`p-6 group/file block rounded-2xl w-full relative border-2 border-dashed transition-colors ${
+                                            newTaskFiles.length === 0
+                                                ? isTeacherMode 
+                                                    ? "cursor-pointer border-zinc-700 hover:border-blue-500 bg-zinc-800/50"
+                                                    : "cursor-pointer border-gray-200 hover:border-blue-400 bg-gray-50/50"
+                                                : isTeacherMode
+                                                    ? "border-zinc-700 bg-zinc-800/50"
+                                                    : "border-gray-200 bg-gray-50/50"
+                                        }`}
+                                    >
+                                        <AnimatePresence mode="wait">
+                                            {newTaskFiles.length === 0 ? (
+                                                <motion.div
+                                                    key="upload-area"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    className="flex flex-col items-center justify-center"
+                                                >
+                                                    <div className="relative w-full max-w-xl mx-auto mb-4 flex items-center justify-center">
+                                                        <div className="relative h-20 w-20">
+                                                            {/* Animated upload icon card with hover effect */}
+                                                            <motion.div
+                                                                variants={{
+                                                                    initial: { x: 0, y: 0 },
+                                                                    animate: { x: 20, y: -20, opacity: 0.9 }
+                                                                }}
+                                                                transition={{
+                                                                    type: "spring",
+                                                                    stiffness: 300,
+                                                                    damping: 20,
+                                                                }}
+                                                                className={`relative group-hover/file:shadow-xl z-40 flex items-center justify-center h-20 w-20 rounded-xl shadow-md ${
+                                                                    isTeacherMode 
+                                                                        ? 'bg-zinc-800 border border-zinc-600' 
+                                                                        : 'bg-white border border-gray-200'
+                                                                }`}
+                                                            >
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={isTeacherMode ? "#71717a" : "#9ca3af"} strokeWidth="2" strokeLinecap="round">
+                                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                                                    <polyline points="17 8 12 3 7 8" />
+                                                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                                                </svg>
+                                                            </motion.div>
+                                                            {/* Secondary dashed border that appears on hover */}
+                                                            <motion.div
+                                                                variants={{
+                                                                    initial: { opacity: 0 },
+                                                                    animate: { opacity: 1 }
+                                                                }}
+                                                                className="absolute top-0 left-0 opacity-0 border-2 border-dashed border-blue-400 z-30 bg-transparent h-20 w-20 rounded-xl"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <p className={`font-semibold text-sm ${isTeacherMode ? 'text-zinc-300' : 'text-gray-700'}`}>
+                                                        Upload files
+                                                    </p>
+                                                    <p className={`font-normal text-xs mt-1 ${isTeacherMode ? 'text-zinc-500' : 'text-gray-400'}`}>
+                                                        PDF, DOC, PPT, Images (Max 10MB)
+                                                    </p>
+                                                </motion.div>
+                                            ) : (
+                                                <motion.div
+                                                    key="file-list"
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    className="flex flex-col gap-2"
+                                                >
+                                                    <AnimatePresence mode="popLayout">
+                                                        {newTaskFiles.slice(0, 2).map((file, idx) => (
+                                                            <motion.div
+                                                                key={"file" + idx}
+                                                                layout
+                                                                initial={{ opacity: 0, y: 10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                                                transition={{ delay: idx * 0.05, type: "spring", stiffness: 300, damping: 25 }}
+                                                                className={`relative overflow-hidden z-40 flex flex-col items-start justify-start p-3 w-full rounded-xl shadow-sm ${
+                                                                    isTeacherMode 
+                                                                        ? 'bg-zinc-800 border border-zinc-700' 
+                                                                        : 'bg-white border border-gray-200'
+                                                                }`}
+                                                            >
+                                                                <div className="flex justify-between w-full items-center gap-3">
+                                                                    <p className={`text-sm font-medium truncate flex-1 min-w-0 ${isTeacherMode ? 'text-zinc-200' : 'text-gray-800'}`}>
+                                                                        {file.name}
+                                                                    </p>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className={`rounded-lg px-2 py-0.5 text-xs ${
+                                                                            isTeacherMode 
+                                                                                ? 'text-emerald-400 bg-emerald-900/30 border border-emerald-800' 
+                                                                                : 'text-emerald-600 bg-emerald-50 border border-emerald-200'
+                                                                        }`}>
+                                                                            {(file.size / (1024 * 1024)).toFixed(2)} MB
+                                                                        </span>
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                setNewTaskFiles(prev => prev.filter((_, i) => i !== idx));
+                                                                            }}
+                                                                            className={`p-1 rounded-full transition-colors ${
+                                                                                isTeacherMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'
+                                                                            }`}
+                                                                        >
+                                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={isTeacherMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-400 hover:text-gray-600'}>
+                                                                                <path d="M18 6L6 18M6 6l12 12" />
+                                                                            </svg>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div className={`flex text-xs flex-row items-center w-full mt-1.5 justify-between ${isTeacherMode ? 'text-zinc-500' : 'text-gray-500'}`}>
+                                                                    <span className={`px-2 py-0.5 rounded-md ${isTeacherMode ? 'bg-zinc-700' : 'bg-gray-100'}`}>
+                                                                        {file.type || "Unknown type"}
+                                                                    </span>
+                                                                    <span>
+                                                                        modified {new Date(file.lastModified).toLocaleDateString()}
+                                                                    </span>
+                                                                </div>
+                                                            </motion.div>
+                                                        ))}
+
+                                                        {newTaskFiles.length > 2 && (
+                                                            <motion.div
+                                                                key="collapsed-summary"
+                                                                layout
+                                                                initial={{ opacity: 0, y: 10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                                                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                                                                className={`relative z-40 flex items-center p-3 w-full rounded-xl ${
+                                                                    isTeacherMode 
+                                                                        ? 'bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-800' 
+                                                                        : 'bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200'
+                                                                }`}
+                                                            >
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="flex -space-x-2">
+                                                                        {newTaskFiles.slice(2, 5).map((_, i) => (
+                                                                            <motion.div
+                                                                                key={i}
+                                                                                initial={{ scale: 0, opacity: 0 }}
+                                                                                animate={{ scale: 1, opacity: 1 }}
+                                                                                transition={{ delay: i * 0.1 }}
+                                                                                className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-sm ${
+                                                                                    isTeacherMode 
+                                                                                        ? 'bg-zinc-800 border border-blue-700' 
+                                                                                        : 'bg-white border border-blue-200'
+                                                                                }`}
+                                                                            >
+                                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round">
+                                                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                                                    <polyline points="14 2 14 8 20 8" />
+                                                                                </svg>
+                                                                            </motion.div>
+                                                                        ))}
+                                                                    </div>
+                                                                    <div className="text-left">
+                                                                        <p className={`text-xs font-medium ${isTeacherMode ? 'text-blue-400' : 'text-blue-700'}`}>
+                                                                            +{newTaskFiles.length - 2} more {newTaskFiles.length - 2 === 1 ? 'file' : 'files'}
+                                                                        </p>
+                                                                        <p className={`text-[10px] ${isTeacherMode ? 'text-blue-500' : 'text-blue-500'}`}>
+                                                                            {(newTaskFiles.slice(2).reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(2)} MB total
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+
+                                                    <motion.button
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: 0.1 }}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            taskFileInputRef.current?.click();
+                                                        }}
+                                                        className={`w-full py-2.5 px-4 rounded-xl border-2 border-dashed text-sm font-medium hover:border-blue-400 hover:text-blue-500 transition-colors mt-1 ${
+                                                            isTeacherMode 
+                                                                ? 'border-zinc-600 text-zinc-400' 
+                                                                : 'border-gray-300 text-gray-500'
+                                                        }`}
+                                                    >
+                                                        + Add more files
+                                                    </motion.button>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </motion.div>
+                                </div>
+                            </div>
+                            
+                            {/* Modal Footer - Compact */}
+                            <div className={`px-5 py-3 border-t flex items-center justify-end gap-2 ${
+                                isTeacherMode ? 'border-zinc-700' : 'border-zinc-100'
+                            }`}>
+                                <motion.button
+                                    whileTap={{ scale: 0.97 }}
+                                    onClick={() => {
+                                        setShowAddTaskModal(false);
+                                        setNewTaskTitle('');
+                                        setNewTaskDescription('');
+                                        setNewTaskDueDate('');
+                                        setNewTaskPoints('100');
+                                        setNewTaskInstructions('');
+                                        setNewTaskFiles([]);
+                                    }}
+                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                        isTeacherMode 
+                                            ? 'text-zinc-400 hover:bg-zinc-800' 
+                                            : 'text-zinc-600 hover:bg-zinc-100'
+                                    }`}
+                                >
+                                    Cancel
+                                </motion.button>
+                                <motion.button
+                                    whileTap={{ scale: 0.97 }}
+                                    disabled={!newTaskTitle || !newTaskDueDate || isCreatingTask}
+                                    onClick={async () => {
+                                        setIsCreatingTask(true);
+                                        try {
+                                            const taskInput: CreateTaskInput = {
+                                                courseId: course.id,
+                                                type: selectedTaskType === 'all' ? 'assignment' : selectedTaskType,
+                                                title: newTaskTitle,
+                                                description: newTaskDescription,
+                                                instructions: newTaskInstructions,
+                                                dueDate: newTaskDueDate,
+                                                points: parseInt(newTaskPoints) || 100,
+                                                files: newTaskFiles.length > 0 ? newTaskFiles : undefined
+                                            };
+                                            const createdTask = await createTask(taskInput);
+                                            if (createdTask) {
+                                                console.log('[CourseView] Task created:', createdTask.id);
+                                            }
+                                        } catch (err) {
+                                            console.error('[CourseView] Error:', err);
+                                        } finally {
+                                            setIsCreatingTask(false);
+                                            setShowAddTaskModal(false);
+                                            setNewTaskTitle('');
+                                            setNewTaskDescription('');
+                                            setNewTaskDueDate('');
+                                            setNewTaskPoints('100');
+                                            setNewTaskInstructions('');
+                                            setNewTaskFiles([]);
+                                        }
+                                    }}
+                                    className={`px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all flex items-center gap-1.5 ${
+                                        !newTaskTitle || !newTaskDueDate || isCreatingTask
+                                            ? 'bg-blue-400 cursor-not-allowed'
+                                            : 'bg-blue-600 hover:bg-blue-700'
+                                    }`}
+                                >
+                                    {isCreatingTask ? (
+                                        <>
+                                            <motion.svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+                                                <path d="M21 12a9 9 0 1 1-6.219-8.56" strokeLinecap="round" />
+                                            </motion.svg>
+                                            Creating...
+                                        </>
+                                    ) : (
+                                        'Create Task'
+                                    )}
+                                </motion.button>
                             </div>
                         </motion.div>
                     </motion.div>

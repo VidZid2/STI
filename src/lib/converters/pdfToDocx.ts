@@ -65,9 +65,9 @@ const analyzeFont = (fontName: string): StyleInfo => {
     }
 
     const fn = fontName.toLowerCase();
-    
+
     const style: StyleInfo = {
-        isBold: 
+        isBold:
             fn.includes('bold') ||
             fn.includes('black') ||
             fn.includes('heavy') ||
@@ -105,7 +105,7 @@ const processItems = (
         const [scaleX, , , scaleY, x, y] = item.transform;
         const fontSize = Math.abs(scaleY || scaleX) || 12;
         const fontName = item.fontName || '';
-        
+
         seenFonts.add(fontName);
 
         chunks.push({
@@ -121,7 +121,7 @@ const processItems = (
 
     // Debug: log fonts found
     console.log('Fonts in PDF:', Array.from(seenFonts));
-    console.log('Font styles detected:', 
+    console.log('Font styles detected:',
         Array.from(seenFonts).map(f => ({ font: f, ...analyzeFont(f) }))
     );
 
@@ -189,8 +189,8 @@ const buildTextRuns = (chunks: TextChunk[]): TextRun[] => {
                 text: chunk.text,
                 bold: chunk.style.isBold,
                 italics: chunk.style.isItalic,
-                underline: chunk.style.isUnderline 
-                    ? { type: UnderlineType.SINGLE } 
+                underline: chunk.style.isUnderline
+                    ? { type: UnderlineType.SINGLE }
                     : undefined,
                 size: Math.round(chunk.fontSize * 2),
             })
@@ -269,13 +269,13 @@ export const convertPdfToDocx = async (file: File): Promise<Blob> => {
 
         const flush = (extraSpace = false) => {
             if (currentRuns.length === 0) return;
-            
+
             allParagraphs.push(
                 new Paragraph({
                     children: currentRuns,
-                    spacing: { 
+                    spacing: {
                         after: extraSpace ? 280 : 160,
-                        line: 276 
+                        line: 276
                     },
                     alignment: AlignmentType.JUSTIFIED,
                 })
@@ -317,7 +317,7 @@ export const convertPdfToDocx = async (file: File): Promise<Blob> => {
 
             if (!newPara && prev) {
                 const gap = line.y - prev.y;
-                
+
                 // New paragraph conditions
                 if (
                     gap > avgGap * 1.5 ||  // Large gap

@@ -46,11 +46,11 @@ const DEFAULT_PROFILE: UserProfile = {
     firstName: 'Josiah',
     middleName: 'P',
     lastName: 'De Asis',
-    email: 'josiah.deasis@sti.edu.ph',
-    studentId: '02000123456',
+    email: 'deasis.462124@meycauayan.sti.edu.ph',
+    studentId: '02000456421',
     course: 'BS Information Technology',
-    yearLevel: '3rd Year',
-    section: 'BSIT-3A',
+    yearLevel: '1st Year',
+    section: 'BSIT-101 A',
     phone: '+63 912 345 6789',
     birthday: '2003-05-15',
     address: 'Manila, Philippines',
@@ -90,6 +90,8 @@ export const saveProfile = async (profile: UserProfile): Promise<{ success: bool
         await new Promise(resolve => setTimeout(resolve, 500));
         
         localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
+        // Dispatch custom event for real-time updates
+        window.dispatchEvent(new CustomEvent('profileUpdated'));
         return { success: true, message: 'Profile saved successfully!' };
     } catch (error) {
         console.error('Error saving profile:', error);
@@ -113,6 +115,8 @@ export const getImages = (): UserImages => {
 export const saveImages = async (images: UserImages): Promise<{ success: boolean; message: string }> => {
     try {
         localStorage.setItem(STORAGE_KEYS.IMAGES, JSON.stringify(images));
+        // Dispatch custom event for real-time updates
+        window.dispatchEvent(new CustomEvent('imagesUpdated'));
         return { success: true, message: 'Images saved successfully!' };
     } catch (error) {
         console.error('Error saving images:', error);
@@ -144,6 +148,8 @@ export const saveProfileImage = async (profileImage: string | null): Promise<{ s
         const jsonData = JSON.stringify(images);
         localStorage.setItem(STORAGE_KEYS.IMAGES, jsonData);
         console.log('Profile image saved successfully, size:', jsonData.length, 'bytes');
+        // Dispatch custom event for real-time updates
+        window.dispatchEvent(new CustomEvent('imagesUpdated'));
         return { success: true };
     } catch (error) {
         console.error('Error saving profile image:', error);
@@ -171,6 +177,8 @@ export const getSettings = (): UserSettings => {
 export const saveSettings = async (settings: UserSettings): Promise<{ success: boolean; message: string }> => {
     try {
         localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+        // Dispatch custom event for real-time updates (especially for showOnlineStatus)
+        window.dispatchEvent(new CustomEvent('settingsUpdated'));
         return { success: true, message: 'Settings saved successfully!' };
     } catch (error) {
         console.error('Error saving settings:', error);

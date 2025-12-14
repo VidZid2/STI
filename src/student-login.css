@@ -1,7 +1,32 @@
 /* Scoped styles for Student Login Page */
 
+/* Force default cursor on student login page */
+.student-login-wrapper,
+.student-login-wrapper * {
+    cursor: auto !important;
+}
+
+.student-login-wrapper button,
+.student-login-wrapper a,
+.student-login-wrapper [role="button"],
+.student-login-wrapper .account-item,
+.student-login-wrapper .submit-btn,
+.student-login-wrapper .footer-link,
+.student-login-wrapper .footer-link-small,
+.student-login-wrapper .forgot-password,
+.student-login-wrapper .copy-link,
+.student-login-wrapper .close-btn,
+.student-login-wrapper .back-btn-wrapper,
+.student-login-wrapper .account-options {
+    cursor: pointer !important;
+}
+
+.student-login-wrapper .form-input {
+    cursor: text !important;
+}
+
 .student-login-wrapper {
-    font-family: 'Calibri', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Segoe UI Semibold", "Segoe UI", "Helvetica Neue", "Lucida Grande", Roboto, Ebrima, "Nirmala UI", Gadugi, "Segoe Xbox Symbol", "Segoe UI Symbol", "Meiryo UI", "Khmer UI", Tunga, "Lao UI", Raavi, "Iskoola Pota", Latha, Leelawadee, "Microsoft YaHei UI", "Microsoft JhengHei UI", "Malgun Gothic", "Estrangelo Edessa", "Microsoft Himalaya", "Microsoft New Tai Lue", "Microsoft PhagsPa", "Microsoft Tai Le", "Microsoft Yi Baiti", "Mongolian Baiti", "MV Boli", "Myanmar Text", "Cambria Math";
     background-color: #f5f5f5;
     background-image: url('/images/Background_For_Login.png');
     background-size: cover;
@@ -58,14 +83,80 @@
 
 .student-login-wrapper .login-card {
     width: 100%;
-    max-width: 450px;
-    padding: 44px 44px 20px;
-    background: #ffffff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1),
-        0 0 0 1px rgba(0, 0, 0, 0.05);
+    max-width: 440px;
+    height: 340px;
+    padding: 40px 44px 52px 44px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     border-radius: 0;
     position: relative;
     overflow: hidden;
+    animation: slideInFromRight 0.4s ease forwards;
+}
+
+/* Sign-in options section */
+.student-login-wrapper .sign-in-options {
+    width: 100%;
+    max-width: 440px;
+    margin-top: 16px;
+    animation: slideInFromRight 0.4s ease 0.1s forwards;
+    opacity: 0;
+    padding: 0;
+    height: 52px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.student-login-wrapper .sign-in-options:hover {
+    background-color: #f0f0f0;
+}
+
+.student-login-wrapper .sign-in-options:focus {
+    outline: none;
+    border: 1px dashed #666666;
+    background-color: #f0f0f0;
+}
+
+.student-login-wrapper .sign-in-options:focus:hover {
+    background-color: #d4d4d4;
+}
+
+.student-login-wrapper .sign-in-options:focus:active {
+    background-color: #c8c8c8;
+}
+
+.student-login-wrapper .sign-in-options-inner {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 48px;
+    height: 52px;
+    gap: 12px;
+}
+
+.student-login-wrapper .sign-in-options-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.student-login-wrapper .sign-in-options-icon img {
+    width: 24px;
+    height: 24px;
+    opacity: 0.6;
+}
+
+.student-login-wrapper .sign-in-options-text {
+    color: #5e5e5e;
+    font-size: 15px;
+    font-weight: 400;
 }
 
 /* Dot Floating Animation Container */
@@ -248,12 +339,12 @@
 
 /* Title */
 .student-login-wrapper .title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 600;
     color: #1b1b1b;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     margin-top: 0;
-    line-height: 32px;
+    line-height: 28px;
 }
 
 .student-login-wrapper .password-card .title {
@@ -515,13 +606,21 @@
 }
 
 .student-login-wrapper .form-group {
-    margin-bottom: 8px;
+    margin-bottom: 0;
+}
+
+.student-login-wrapper .input-error-message {
+    color: #e81123;
+    font-size: 13px;
+    font-weight: 400;
+    margin-bottom: 6px;
+    line-height: 1.4;
 }
 
 .student-login-wrapper .form-input {
     width: 100%;
-    padding: 8px 0 7px 0;
-    font-size: 15px;
+    padding: 6px 0 5px 0;
+    font-size: 14px;
     border: none !important;
     border-top: none !important;
     border-left: none !important;
@@ -547,8 +646,19 @@
 
 .student-login-wrapper .form-input::placeholder {
     color: #605e5c;
-    font-size: 15px;
+    font-size: 14px;
     opacity: 1;
+}
+
+/* Error states */
+.student-login-wrapper .form-input.input-error {
+    color: #e81123 !important;
+    border-bottom-color: #e81123 !important;
+}
+
+.student-login-wrapper .form-input.input-error:hover,
+.student-login-wrapper .form-input.input-error:focus {
+    border-bottom-color: #e81123 !important;
 }
 
 .student-login-wrapper .forgot-password {
@@ -571,13 +681,13 @@
 }
 
 .student-login-wrapper .submit-btn {
-    min-width: 90px;
-    padding: 8px 20px;
+    min-width: 108px;
+    padding: 6px 20px;
     background: #0067b8;
     color: #ffffff;
     border: none;
-    font-size: 14px;
-    font-weight: 400;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
     transition: background 0.2s ease;
     text-align: center;
@@ -642,27 +752,7 @@
     animation: none;
 }
 
-/* Fade in slide up animation for card contents */
-.student-login-wrapper .login-card > * {
-    animation: contentFadeIn 0.4s ease forwards;
-}
-
-.student-login-wrapper .login-card > *:nth-child(1) { animation-delay: 0s; }
-.student-login-wrapper .login-card > *:nth-child(2) { animation-delay: 0.05s; }
-.student-login-wrapper .login-card > *:nth-child(3) { animation-delay: 0.1s; }
-.student-login-wrapper .login-card > *:nth-child(4) { animation-delay: 0.15s; }
-.student-login-wrapper .login-card > *:nth-child(5) { animation-delay: 0.2s; }
-
-@keyframes contentFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+/* No initial animation on page load */
 
 /* Troubleshooting Card */
 .student-login-wrapper .troubleshooting-card {
@@ -677,16 +767,7 @@
     animation: none;
 }
 
-.student-login-wrapper .troubleshooting-card > * {
-    animation: contentFadeIn 0.4s ease forwards;
-}
 
-.student-login-wrapper .troubleshooting-card > *:nth-child(1) { animation-delay: 0s; }
-.student-login-wrapper .troubleshooting-card > *:nth-child(2) { animation-delay: 0.05s; }
-.student-login-wrapper .troubleshooting-card > *:nth-child(3) { animation-delay: 0.1s; }
-.student-login-wrapper .troubleshooting-card > *:nth-child(4) { animation-delay: 0.15s; }
-.student-login-wrapper .troubleshooting-card > *:nth-child(5) { animation-delay: 0.2s;
-}
 
 .student-login-wrapper .troubleshooting-header {
     display: flex;
@@ -859,7 +940,7 @@
     font-size: 13px;
     color: #000000;
     text-decoration: none;
-    font-family: 'Calibri', 'Segoe UI', sans-serif;
+    font-family: "Segoe UI", "Helvetica Neue", "Lucida Grande", Roboto, Ebrima, "Nirmala UI", Gadugi, "Segoe Xbox Symbol", "Segoe UI Symbol", "Meiryo UI", "Khmer UI", Tunga, "Lao UI", Raavi, "Iskoola Pota", Latha, Leelawadee, "Microsoft YaHei UI", "Microsoft JhengHei UI", "Malgun Gothic", "Estrangelo Edessa", "Microsoft Himalaya", "Microsoft New Tai Lue", "Microsoft PhagsPa", "Microsoft Tai Le", "Microsoft Yi Baiti", "Mongolian Baiti", "MV Boli", "Myanmar Text", "Cambria Math";
 }
 
 .student-login-wrapper .footer-link-small:hover {
@@ -869,4 +950,180 @@
 .student-login-wrapper .footer-dots {
     font-size: 7px;
     letter-spacing: 1px;
+}
+
+
+/* Card content wrapper for slide animations */
+.student-login-wrapper .card-content {
+    overflow: hidden;
+    animation: slideInFromRight 0.4s ease forwards;
+}
+
+/* Slide out left animation */
+.student-login-wrapper .card-content.slide-out-left {
+    animation: slideOutLeft 0.3s ease forwards;
+}
+
+/* Slide in from left animation */
+.student-login-wrapper .card-content.slide-in-left {
+    animation: slideInFromLeft 0.3s ease forwards;
+}
+
+/* Slide out right animation */
+.student-login-wrapper .card-content.slide-out-right {
+    animation: slideOutRight 0.3s ease forwards;
+}
+
+@keyframes slideOutLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Slide out left with fade for sign-in options card */
+.student-login-wrapper .sign-in-options.fade-out {
+    animation: slideOutLeftFade 0.3s ease forwards;
+}
+
+@keyframes slideOutLeftFade {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+}
+
+/* Sign-in options screen styles */
+.student-login-wrapper .sign-in-options-card {
+    height: auto;
+    min-height: 340px;
+}
+
+.student-login-wrapper .sign-in-options-list {
+    margin: 0 -44px;
+    border-top: 1px dashed #1b1b1b;
+}
+
+.student-login-wrapper .sign-in-option-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 44px;
+    gap: 16px;
+    cursor: pointer;
+    border-bottom: 1px dashed #1b1b1b;
+    background: #f5f5f5;
+}
+
+.student-login-wrapper .sign-in-option-item:last-child {
+    border-bottom: 1px dashed #1b1b1b;
+    background: #fff;
+}
+
+.student-login-wrapper .sign-in-option-item:hover {
+    background: #e8e8e8;
+}
+
+.student-login-wrapper .sign-in-option-item:focus {
+    outline: none;
+    background: #e8e8e8;
+}
+
+.student-login-wrapper .sign-in-option-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.student-login-wrapper .sign-in-option-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.student-login-wrapper .sign-in-option-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1b1b1b;
+}
+
+.student-login-wrapper .sign-in-option-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.student-login-wrapper .sign-in-option-help {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.student-login-wrapper .back-btn {
+    min-width: 108px;
+    padding: 6px 20px;
+    background: #e0e0e0;
+    color: #1b1b1b;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 0;
+}
+
+.student-login-wrapper .back-btn:hover {
+    background: #d0d0d0;
+}
+
+.student-login-wrapper .back-btn:active {
+    background: #c0c0c0;
 }

@@ -18,9 +18,24 @@ const WidgetsToggleButton: React.FC<WidgetsToggleButtonProps> = memo(({
 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(false);
     const isVisibleRef = useRef(false);
     const rafIdRef = useRef<number | null>(null);
     const lastXRef = useRef(0);
+
+    // Check for dark mode
+    useEffect(() => {
+        const checkDarkMode = () => {
+            setIsDarkMode(document.body.classList.contains('dark-mode'));
+        };
+        checkDarkMode();
+        
+        // Watch for class changes on body
+        const observer = new MutationObserver(checkDarkMode);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        
+        return () => observer.disconnect();
+    }, []);
 
     // Mouse proximity detection - completely isolated from parent
     useEffect(() => {
@@ -81,14 +96,14 @@ const WidgetsToggleButton: React.FC<WidgetsToggleButtonProps> = memo(({
     return (
         <div 
             style={{
-                position: 'absolute',
-                left: shouldShowButton ? '-50px' : '0px',
+                position: 'fixed',
+                right: shouldShowButton ? (isWidgetsSidebarActive ? '360px' : '0px') : '-50px',
                 top: '50%',
                 transform: 'translateY(-50%)',
                 zIndex: 101,
-                transition: 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: 'right 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 // Use will-change for GPU acceleration
-                willChange: 'left',
+                willChange: 'right',
             }}
         >
             <button
@@ -100,20 +115,25 @@ const WidgetsToggleButton: React.FC<WidgetsToggleButtonProps> = memo(({
                     width: '50px',
                     height: '80px',
                     borderRadius: '12px 0 0 12px',
-                    background: isWidgetsSidebarActive ? 'white' : '#1d4ed8',
-                    border: isWidgetsSidebarActive ? '2px solid #1d4ed8' : 'none',
+                    background: isWidgetsSidebarActive 
+                        ? (isDarkMode ? '#334155' : 'white') 
+                        : '#1d4ed8',
+                    border: isWidgetsSidebarActive 
+                        ? `2px solid ${isDarkMode ? '#60a5fa' : '#1d4ed8'}` 
+                        : 'none',
                     borderRight: 'none',
-                    color: isWidgetsSidebarActive ? '#1d4ed8' : 'white',
+                    color: isWidgetsSidebarActive 
+                        ? (isDarkMode ? '#60a5fa' : '#1d4ed8') 
+                        : 'white',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '1.5rem',
                     boxShadow: isHovered
-                        ? '-6px 0 20px rgba(30, 64, 175, 0.3)'
-                        : '-4px 0 12px rgba(30, 64, 175, 0.15)',
+                        ? (isDarkMode ? '-6px 0 20px rgba(0, 0, 0, 0.4)' : '-6px 0 20px rgba(30, 64, 175, 0.3)')
+                        : (isDarkMode ? '-4px 0 12px rgba(0, 0, 0, 0.3)' : '-4px 0 12px rgba(30, 64, 175, 0.15)'),
                     transition: 'background 0.3s, border 0.3s, color 0.3s, box-shadow 0.3s',
-                    // Use will-change for GPU acceleration
                     willChange: 'box-shadow',
                 }}
             >
@@ -156,7 +176,14 @@ const WidgetsToggleButton: React.FC<WidgetsToggleButtonProps> = memo(({
                             width: 'max-content',
                         }}
                     >
-                        <div className="rounded-md border border-blue-700 bg-white px-3 py-1.5 text-sm whitespace-nowrap text-blue-700 shadow-lg">
+                        <div 
+                            className="rounded-md border px-3 py-1.5 text-sm whitespace-nowrap shadow-lg"
+                            style={{
+                                background: isDarkMode ? '#334155' : 'white',
+                                borderColor: isDarkMode ? '#60a5fa' : '#1d4ed8',
+                                color: isDarkMode ? '#60a5fa' : '#1d4ed8',
+                            }}
+                        >
                             {isWidgetsSidebarActive ? 'Hide Widgets' : 'Dashboard Widgets'}
                         </div>
                         {/* Arrow pointing to the button */}
@@ -165,7 +192,7 @@ const WidgetsToggleButton: React.FC<WidgetsToggleButtonProps> = memo(({
                             height: 0,
                             borderTop: '8px solid transparent',
                             borderBottom: '8px solid transparent',
-                            borderLeft: '8px solid #1d4ed8',
+                            borderLeft: `8px solid ${isDarkMode ? '#60a5fa' : '#1d4ed8'}`,
                             marginLeft: '-1px',
                         }} />
                         <div style={{
@@ -173,7 +200,7 @@ const WidgetsToggleButton: React.FC<WidgetsToggleButtonProps> = memo(({
                             height: 0,
                             borderTop: '7px solid transparent',
                             borderBottom: '7px solid transparent',
-                            borderLeft: '7px solid white',
+                            borderLeft: `7px solid ${isDarkMode ? '#334155' : 'white'}`,
                             marginLeft: '-8px',
                         }} />
                     </motion.div>

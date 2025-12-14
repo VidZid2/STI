@@ -4,7 +4,7 @@ interface NotificationToastProps {
     id: number;
     title: string;
     message: string;
-    type: 'assignment' | 'grade' | 'announcement' | 'system';
+    type: 'assignment' | 'grade' | 'announcement' | 'system' | 'warning';
     onClose: (id: number) => void;
 }
 
@@ -45,6 +45,7 @@ const NotificationToast: React.FC<NotificationToastProps> = ({ id, title, messag
             case 'grade': return 'fa-star';
             case 'announcement': return 'fa-bullhorn';
             case 'system': return 'fa-info-circle';
+            case 'warning': return 'fa-exclamation-triangle';
             default: return 'fa-bell';
         }
     };

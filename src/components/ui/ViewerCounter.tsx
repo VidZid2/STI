@@ -8,13 +8,16 @@ interface ViewerCounterProps {
 }
 
 export function ViewerCounter({ className }: ViewerCounterProps) {
+    // Temporarily hidden
+    return null;
+    
     const [viewerCount, setViewerCount] = useState(1);
     const [isHovered, setIsHovered] = useState(false);
     const [showPulse, setShowPulse] = useState(false);
 
     useEffect(() => {
         // Generate a session ID for this viewer
-        const sessionId = `viewer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const sessionId = `viewer_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
         
         // Store session in localStorage with timestamp
         const registerViewer = () => {
@@ -78,49 +81,23 @@ export function ViewerCounter({ className }: ViewerCounterProps) {
     }, []);
 
     return (
-        <motion.div
-            className={className}
+        <div 
+            className={`relative ${className || ''}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, type: 'spring', stiffness: 300 }}
         >
             <motion.div
-                className="relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-zinc-100/80 backdrop-blur-sm border border-zinc-200/50 cursor-default"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-zinc-100/80 backdrop-blur-sm border border-zinc-200/50 cursor-default"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
             >
-                {/* Live indicator dot */}
-                <div className="relative flex items-center justify-center">
-                    <motion.div
-                        className="w-2 h-2 rounded-full bg-emerald-500"
-                        animate={{
-                            scale: [1, 1.2, 1],
-                            opacity: [1, 0.8, 1],
-                        }}
-                        transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: 'easeInOut',
-                        }}
-                    />
-                    <motion.div
-                        className="absolute w-2 h-2 rounded-full bg-emerald-400"
-                        animate={{
-                            scale: [1, 2, 2],
-                            opacity: [0.6, 0, 0],
-                        }}
-                        transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: 'easeOut',
-                        }}
-                    />
-                </div>
+                {/* Live indicator dot - simple, no glow */}
+                <div className="w-2 h-2 rounded-full bg-emerald-500" />
 
                 {/* Eye icon */}
-                <motion.svg
+                <svg
                     width="14"
                     height="14"
                     viewBox="0 0 24 24"
@@ -130,12 +107,10 @@ export function ViewerCounter({ className }: ViewerCounterProps) {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     className="text-zinc-500"
-                    animate={isHovered ? { scale: 1.1 } : { scale: 1 }}
-                    transition={{ duration: 0.2 }}
                 >
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                     <circle cx="12" cy="12" r="3" />
-                </motion.svg>
+                </svg>
 
                 {/* Viewer count */}
                 <AnimatePresence mode="wait">
@@ -163,24 +138,24 @@ export function ViewerCounter({ className }: ViewerCounterProps) {
                         />
                     )}
                 </AnimatePresence>
-
-                {/* Tooltip on hover */}
-                <AnimatePresence>
-                    {isHovered && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 5, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                            transition={{ duration: 0.15 }}
-                            className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-zinc-800 text-white text-[10px] rounded-md whitespace-nowrap shadow-lg z-50"
-                        >
-                            {viewerCount === 1 ? '1 viewer online' : `${viewerCount} viewers online`}
-                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-800 rotate-45" />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </motion.div>
-        </motion.div>
+
+            {/* Tooltip - positioned relative to outer container */}
+            <AnimatePresence>
+                {isHovered && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute top-full left-0 right-0 mt-2 mx-auto w-fit px-2 py-1 bg-zinc-800 text-white text-[10px] rounded-md whitespace-nowrap shadow-lg z-50"
+                    >
+                        {viewerCount === 1 ? '1 viewer online' : `${viewerCount} viewers online`}
+                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-800 rotate-45" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
     );
 }
 

@@ -485,46 +485,40 @@ body.dark-mode .flame-glow {
     line-height: 1.1;
 }
 
-.context-minimal {
-    display: flex;
+/* Continue Link - Ultra Minimalistic */
+.continue-link {
+    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #e2e8f0;
+    gap: 0.375rem;
+    margin-top: 0.875rem;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.context-label {
+.continue-text {
     font-size: 0.8rem;
     color: #94a3b8;
     font-weight: 400;
 }
 
-.context-module {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    font-size: 0.85rem;
-    font-weight: 500;
+.continue-module {
+    font-size: 0.8rem;
+    font-weight: 600;
     color: #3b82f6;
-    cursor: pointer;
-    transition: all 0.2s ease;
 }
 
-.context-module:hover {
-    color: #2563eb;
-}
-
-.context-module svg {
+.continue-link svg {
     width: 14px;
     height: 14px;
+    color: #3b82f6;
     opacity: 0.7;
     transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.context-module:hover svg {
-    transform: translateX(2px);
+.continue-link:hover svg {
+    transform: translateX(3px);
     opacity: 1;
+    height: 16px;
 }
 
 /* Dark Mode - Minimalistic Greeting */
@@ -536,20 +530,17 @@ body.dark-mode .welcome-name-minimal {
     color: #f1f5f9;
 }
 
-body.dark-mode .context-minimal {
-    border-top-color: #334155;
-}
-
-body.dark-mode .context-label {
+/* Dark Mode - Continue Link */
+body.dark-mode .continue-text {
     color: #64748b;
 }
 
-body.dark-mode .context-module {
+body.dark-mode .continue-module {
     color: #60a5fa;
 }
 
-body.dark-mode .context-module:hover {
-    color: #93c5fd;
+body.dark-mode .continue-link svg {
+    color: #60a5fa;
 }
 
 /* Badges Row - All badges in one row */
@@ -628,6 +619,19 @@ body.dark-mode .context-module:hover {
     color: #92400e;
 }
 
+/* No Deadline Badge - Blue */
+.badge-minimal.no-deadline {
+    background: #dbeafe;
+}
+
+.badge-minimal.no-deadline svg {
+    color: #3b82f6;
+}
+
+.badge-minimal.no-deadline .badge-label {
+    color: #1e40af;
+}
+
 /* Messages Badge */
 .badge-minimal.messages {
     background: #dbeafe;
@@ -685,6 +689,18 @@ body.dark-mode .badge-minimal.deadline svg {
 
 body.dark-mode .badge-minimal.deadline .badge-label {
     color: #fcd34d;
+}
+
+body.dark-mode .badge-minimal.no-deadline {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+body.dark-mode .badge-minimal.no-deadline svg {
+    color: #60a5fa;
+}
+
+body.dark-mode .badge-minimal.no-deadline .badge-label {
+    color: #93c5fd;
 }
 
 body.dark-mode .badge-minimal.messages {
@@ -783,6 +799,73 @@ body.dark-mode .btn-minimal.secondary:hover {
     background: #1e293b;
     border-color: #475569;
     color: #e2e8f0;
+}
+
+/* What's New Button Portal Tooltip */
+.whats-new-tooltip-portal {
+    pointer-events: none;
+}
+
+.whats-new-tooltip-arrow {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #bfdbfe;
+    position: relative;
+}
+
+.whats-new-tooltip-arrow::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: -5px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #eff6ff;
+}
+
+.whats-new-tooltip-portal .whats-new-tooltip-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 6px 10px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
+    white-space: nowrap;
+    margin-top: -1px;
+}
+
+.whats-new-tooltip-portal .whats-new-tooltip-content svg {
+    flex-shrink: 0;
+}
+
+.whats-new-tooltip-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: #1e40af;
+}
+
+/* Dark Mode - What's New Portal Tooltip */
+body.dark-mode .whats-new-tooltip-arrow {
+    border-bottom-color: #2563eb;
+}
+
+body.dark-mode .whats-new-tooltip-arrow::after {
+    border-bottom-color: #1e3a5f;
+}
+
+body.dark-mode .whats-new-tooltip-portal .whats-new-tooltip-content {
+    background: #1e3a5f;
+    border-color: #2563eb;
+}
+
+body.dark-mode .whats-new-tooltip-title {
+    color: #93c5fd;
 }
 
 /* Responsive - Minimalistic Greeting */
@@ -1911,23 +1994,29 @@ body.dark-mode .stat-label-sm {
     font-weight: 700;
 }
 
-.sparkline-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 4px;
+.sparkline-chart-wrapper {
+    position: relative;
+    width: 100%;
     height: 32px;
 }
 
-.sparkline-bar {
-    flex: 1;
-    min-width: 0;
-    border-radius: 3px;
-    transform-origin: bottom;
-    transition: background-color 0.2s ease;
+.sparkline-chart {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
 }
 
-.sparkline-bar.current {
-    border-radius: 3px 3px 3px 3px;
+.sparkline-chart path {
+    transition: all 0.3s ease;
+}
+
+.sparkline-dot {
+    position: absolute;
+    right: -3px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    transform: translateY(-50%);
 }
 
 /* Progress Row with Ring */
@@ -1947,6 +2036,14 @@ body.dark-mode .stat-label-sm {
 .stat-progress-ring {
     width: 100%;
     height: 100%;
+}
+
+.stat-progress-ring .ring-bg {
+    stroke: #f3f4f6;
+}
+
+body.dark-mode .stat-progress-ring .ring-bg {
+    stroke: #334155;
 }
 
 .stat-ring-value {
@@ -2057,6 +2154,109 @@ body.dark-mode .stat-milestone {
 
 body.dark-mode .stat-milestone.reached {
     background: #1e293b;
+}
+
+/* Dark Mode - Footer */
+body.dark-mode .stat-card-footer {
+    border-top-color: #334155;
+}
+
+body.dark-mode .stat-card-comparison.positive {
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.15);
+}
+
+body.dark-mode .stat-card-comparison.negative {
+    color: #f87171;
+    background: rgba(239, 68, 68, 0.15);
+}
+
+body.dark-mode .stat-card-period {
+    color: #64748b;
+}
+
+body.dark-mode .stat-card-expand-btn:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Mode - Tooltip */
+body.dark-mode .stat-progress-tooltip {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .tooltip-message {
+    color: #e2e8f0;
+}
+
+body.dark-mode .tooltip-arrow {
+    border-top-color: #1e293b;
+}
+
+/* Dark Mode - Popup */
+body.dark-mode .stat-card-popup {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .popup-header {
+    border-bottom-color: #334155;
+}
+
+body.dark-mode .popup-title {
+    color: #64748b;
+}
+
+body.dark-mode .popup-item:hover {
+    background: #334155;
+}
+
+body.dark-mode .popup-item-name {
+    color: #e2e8f0;
+}
+
+body.dark-mode .popup-item-value {
+    color: #94a3b8;
+}
+
+/* Dark Mode - Stat Card Details */
+body.dark-mode .stat-card-details {
+    background: #0f172a;
+    border-color: #1e293b;
+}
+
+body.dark-mode .stat-detail-box:not(:last-child)::after {
+    background: #334155;
+}
+
+body.dark-mode .stat-detail-box:hover {
+    background: #1e293b;
+}
+
+body.dark-mode .stat-detail-value {
+    color: #f1f5f9;
+}
+
+body.dark-mode .stat-detail-label {
+    color: #64748b;
+}
+
+body.dark-mode .stat-card-number {
+    color: #f1f5f9;
+}
+
+body.dark-mode .stat-card-label {
+    color: #94a3b8;
+}
+
+body.dark-mode .stat-progress-modules {
+    color: #64748b;
+}
+
+body.dark-mode .popup-items::-webkit-scrollbar-thumb {
+    background: #475569;
 }
 
 /* Footer with comparison */

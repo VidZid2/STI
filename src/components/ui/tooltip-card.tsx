@@ -137,7 +137,7 @@ export const Tooltip = ({
   }, [isVisible, height, mouse.x, mouse.y]);
 
   return (
-    <div
+    <span
       ref={containerRef}
       className={cn("relative inline-block", containerClassName)}
       onMouseEnter={handleMouseEnter}
@@ -153,7 +153,7 @@ export const Tooltip = ({
           {isVisible && (
             <motion.div
               key={String(isVisible)}
-              initial={{ height: 0, opacity: 1 }}
+              initial={{ height: 0, opacity: 0 }}
               animate={{ height, opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{
@@ -178,6 +178,6 @@ export const Tooltip = ({
         </AnimatePresence>,
         document.body
       )}
-    </div>
+    </span>
   );
 };
