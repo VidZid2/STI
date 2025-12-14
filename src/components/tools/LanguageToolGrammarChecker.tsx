@@ -19,7 +19,8 @@ import {
     getLanguageToolStatus,
     getCategoryColor,
     IssueCategory,
-    type GrammarIssue
+    type GrammarIssue,
+    type IssueCategoryType
 } from "../../lib/converters/languageToolService";
 
 interface LanguageToolGrammarCheckerProps {
@@ -181,7 +182,7 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
     }, []);
 
     // Get underline color class
-    const getUnderlineClass = (category: IssueCategory): string => {
+    const getUnderlineClass = (category: IssueCategoryType): string => {
         switch (category) {
             case IssueCategory.Error:
                 return 'underline-error';
