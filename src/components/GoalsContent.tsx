@@ -18,7 +18,7 @@ import {
     getRealTimeProgress,
     getCurrentAbsoluteValue,
     getAggregatedProgressHistory,
-    getSuggestedGoals,
+    // getSuggestedGoals, // Available for future use
     type GoalWithProgress,
     type GoalType,
     type GoalPriority,
