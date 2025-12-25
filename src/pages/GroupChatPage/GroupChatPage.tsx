@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Group Chat Page - Minimalistic real-time chat interface
  */
 
@@ -89,7 +89,7 @@ const GroupChatPage: React.FC = () => {
     const [showGifPicker, setShowGifPicker] = useState(false);
     const gifButtonRef = useRef<HTMLButtonElement>(null);
     const [focusMode, setFocusMode] = useState(false);
-    const [focusModeLoading, setFocusModeLoading] = useState(false);
+    const [focusModeLoading, _setFocusModeLoading] = useState(false);
 
     // Study tools state
     const [showStudyTools, setShowStudyTools] = useState(false);
@@ -491,7 +491,7 @@ const GroupChatPage: React.FC = () => {
 
         // Add reply context if replying
         if (replyingTo) {
-            content = `↩️ @${replyingTo.userName}: "${replyingTo.content}"\n\n${content}`;
+            content = `â†©ï¸ @${replyingTo.userName}: "${replyingTo.content}"\n\n${content}`;
         }
 
         setNewMessage('');
@@ -746,7 +746,7 @@ const GroupChatPage: React.FC = () => {
                         gap: '8px',
                     }}>
                         <span>{groupInfo?.member_count || 0} members</span>
-                        <span style={{ color: '#22c55e' }}>• {groupInfo?.online_count || 0} online</span>
+                        <span style={{ color: '#22c55e' }}>â€¢ {groupInfo?.online_count || 0} online</span>
                     </p>
                 </div>
 
@@ -2555,10 +2555,10 @@ const GroupChatPage: React.FC = () => {
                                                         const badgeIcons: Record<string, { icon: string; label: string }> = {
                                                             'streak-3': { icon: '*', label: '3 Day Streak' },
                                                             'streak-7': { icon: '**', label: '7 Day Streak' },
-                                                            'helper': { icon: '💪', label: 'Helper' },
-                                                            'super-helper': { icon: '🦸', label: 'Super Helper' },
-                                                            'contributor': { icon: '🏆', label: 'Top Contributor' },
-                                                            'early-bird': { icon: '🌅', label: 'Early Bird' },
+                                                            'helper': { icon: 'ðŸ’ª', label: 'Helper' },
+                                                            'super-helper': { icon: 'ðŸ¦¸', label: 'Super Helper' },
+                                                            'contributor': { icon: 'ðŸ†', label: 'Top Contributor' },
+                                                            'early-bird': { icon: 'ðŸŒ…', label: 'Early Bird' },
                                                         };
                                                         const userAchievements = userBadges
                                                             .filter((badge: UserBadge) => badgeIcons[badge.id])
@@ -2913,7 +2913,7 @@ const GroupChatPage: React.FC = () => {
                                                     fontSize: '10px',
                                                     color: isOwn ? 'rgba(255,255,255,0.6)' : colors.textMuted,
                                                 }}>
-                                                    {formatTime(message.created_at)}{message.is_edited && ' • edited'}
+                                                    {formatTime(message.created_at)}{message.is_edited && ' â€¢ edited'}
                                                 </span>
                                                 {/* Right side: Action buttons */}
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -4465,7 +4465,7 @@ const GroupChatPage: React.FC = () => {
                         isOpen={showFlashcardModal}
                         onClose={() => setShowFlashcardModal(false)}
                         onSend={(front, back) => {
-                            const flashcardMsg = `📚 **Flashcard**\n\n**Q:** ${front}\n\n**A:** ${back}`;
+                            const flashcardMsg = `ðŸ“š **Flashcard**\n\n**Q:** ${front}\n\n**A:** ${back}`;
                             setNewMessage(flashcardMsg);
                             inputRef.current?.focus();
                         }}
@@ -4481,7 +4481,7 @@ const GroupChatPage: React.FC = () => {
                         isOpen={showPollModal}
                         onClose={() => setShowPollModal(false)}
                         onSend={(question, options) => {
-                            const pollMsg = `📊 **Poll**\n\n${question}\n\n${options.map((o, i) => `${['🅰️', '🅱️', '🅲', '🅳', '🅴'][i]} ${o}`).join('\n')}`;
+                            const pollMsg = `ðŸ“Š **Poll**\n\n${question}\n\n${options.map((o, i) => `${['ðŸ…°ï¸', 'ðŸ…±ï¸', 'ðŸ…²', 'ðŸ…³', 'ðŸ…´'][i]} ${o}`).join('\n')}`;
                             setNewMessage(pollMsg);
                             inputRef.current?.focus();
                         }}
@@ -4497,7 +4497,7 @@ const GroupChatPage: React.FC = () => {
                         isOpen={showScheduleModal}
                         onClose={() => setShowScheduleModal(false)}
                         onSend={(title, date, time) => {
-                            const scheduleMsg = `📅 **Study Session**\n\n**${title}**\n🗓️ ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}\n⏰ ${time}`;
+                            const scheduleMsg = `ðŸ“… **Study Session**\n\n**${title}**\nðŸ—“ï¸ ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}\nâ° ${time}`;
                             setNewMessage(scheduleMsg);
                             inputRef.current?.focus();
                         }}
@@ -4513,8 +4513,8 @@ const GroupChatPage: React.FC = () => {
                         isOpen={showPinModal}
                         onClose={() => setShowPinModal(false)}
                         onSend={(title, url, description) => {
-                            let pinMsg = `📌 **Pinned Resource**\n\n**${title}**`;
-                            if (url) pinMsg += `\n🔗 ${url}`;
+                            let pinMsg = `ðŸ“Œ **Pinned Resource**\n\n**${title}**`;
+                            if (url) pinMsg += `\nðŸ”— ${url}`;
                             if (description) pinMsg += `\n\n${description}`;
                             setNewMessage(pinMsg);
                             inputRef.current?.focus();
@@ -4531,7 +4531,7 @@ const GroupChatPage: React.FC = () => {
                         isOpen={showWhiteboardModal}
                         onClose={() => setShowWhiteboardModal(false)}
                         onSend={(dataUrl) => {
-                            const whiteboardMsg = `🎨 **Whiteboard Drawing**\n\n[Drawing shared - click to view]\n\n📎 ${dataUrl.substring(0, 50)}...`;
+                            const whiteboardMsg = `ðŸŽ¨ **Whiteboard Drawing**\n\n[Drawing shared - click to view]\n\nðŸ“Ž ${dataUrl.substring(0, 50)}...`;
                             setNewMessage(whiteboardMsg);
                             inputRef.current?.focus();
                         }}
@@ -4547,7 +4547,7 @@ const GroupChatPage: React.FC = () => {
                         isOpen={showVoiceNoteModal}
                         onClose={() => setShowVoiceNoteModal(false)}
                         onSend={(duration, transcript) => {
-                            let voiceMsg = `🎤 **Voice Note** (${duration})`;
+                            let voiceMsg = `ðŸŽ¤ **Voice Note** (${duration})`;
                             if (transcript) voiceMsg += `\n\n"${transcript}"`;
                             setNewMessage(voiceMsg);
                             inputRef.current?.focus();
@@ -4564,10 +4564,10 @@ const GroupChatPage: React.FC = () => {
                         isOpen={showFileShareModal}
                         onClose={() => setShowFileShareModal(false)}
                         onSend={(fileName, fileType, fileSize) => {
-                            const icon = fileType.includes('pdf') ? '📄' :
-                                fileType.includes('image') ? '🖼️' :
-                                    fileType.includes('video') ? '🎬' : '📎';
-                            const fileMsg = `${icon} **Shared File**\n\n**${fileName}**\n📦 ${fileSize}`;
+                            const icon = fileType.includes('pdf') ? 'ðŸ“„' :
+                                fileType.includes('image') ? 'ðŸ–¼ï¸' :
+                                    fileType.includes('video') ? 'ðŸŽ¬' : 'ðŸ“Ž';
+                            const fileMsg = `${icon} **Shared File**\n\n**${fileName}**\nðŸ“¦ ${fileSize}`;
                             setNewMessage(fileMsg);
                             inputRef.current?.focus();
                         }}
@@ -4584,10 +4584,10 @@ const GroupChatPage: React.FC = () => {
                         onClose={() => setShowCourseMaterialModal(false)}
                         onSend={(title, url, type) => {
                             const icons: Record<string, string> = {
-                                lecture: '🎥', notes: '📝', slides: '📊',
-                                textbook: '📖', assignment: '📋', other: '🔗'
+                                lecture: 'ðŸŽ¥', notes: 'ðŸ“', slides: 'ðŸ“Š',
+                                textbook: 'ðŸ“–', assignment: 'ðŸ“‹', other: 'ðŸ”—'
                             };
-                            const materialMsg = `${icons[type] || '🔗'} **Course Material**\n\n**${title}**\n🔗 ${url}`;
+                            const materialMsg = `${icons[type] || 'ðŸ”—'} **Course Material**\n\n**${title}**\nðŸ”— ${url}`;
                             setNewMessage(materialMsg);
                             inputRef.current?.focus();
                         }}
