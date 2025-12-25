@@ -1,18 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
-import Navbar from './components/Navbar'
-import WelcomeNotification from './components/WelcomeNotification'
-import Hero from './components/Hero'
-import Features from './components/Features'
-import NeoLMS from './components/NeoLMS'
-import LoginModal from './components/LoginModal'
-import Footer from './components/Footer'
-import IntroAnimation from './components/IntroAnimation'
+import { Navbar, Hero, Features, NeoLMS, Footer, IntroAnimation } from './components/landing'
+import { LoginModal } from './components/modals'
+import { WelcomeNotification } from './components/shared'
 import { SmoothCursor } from '../@/components/ui/smooth-cursor'
-import StudentLogin from './pages/StudentLogin'
+import StudentLogin from './pages/StudentLogin'  // Now imports from StudentLogin/index.ts
 import DashboardPage from './pages/DashboardPage'
-import JoinGroupPage from './pages/JoinGroupPage'
+import JoinGroupPage from './pages/JoinGroupPage'  // Now imports from JoinGroupPage/index.ts
 import GroupChatPage from './pages/GroupChatPage'
+import FocusModePage from './pages/FocusModePage'
 import { NotificationProvider } from './contexts/NotificationContext'
 import { QuickViewSettingsProvider } from './contexts/QuickViewSettingsContext'
 
@@ -49,7 +45,7 @@ function HomePage() {
     <>
       {/* Fade out overlay when coming from sign out - covers everything */}
       {showFadeIn && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             top: 0,
@@ -98,6 +94,8 @@ function AppContent() {
         <Route path="/dashboard" element={<NotificationProvider><QuickViewSettingsProvider><DashboardPage /></QuickViewSettingsProvider></NotificationProvider>} />
         <Route path="/join/:inviteCode" element={<JoinGroupPage />} />
         <Route path="/chat/:groupId" element={<NotificationProvider><QuickViewSettingsProvider><GroupChatPage /></QuickViewSettingsProvider></NotificationProvider>} />
+        <Route path="/focus" element={<FocusModePage />} />
+        <Route path="/focus/:groupId" element={<FocusModePage />} />
       </Routes>
     </>
   );

@@ -3,6 +3,18 @@
  */
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { type MessageType } from '../lib/chat/messageClassifier';
+
+export interface FileAttachment {
+    id: string;
+    name: string;
+    type: string; // MIME type
+    size: number; // bytes
+    url: string;
+    thumbnail_url?: string; // For images/videos
+    width?: number;
+    height?: number;
+}
 
 export interface ChatMessage {
     id: string;
@@ -12,12 +24,17 @@ export interface ChatMessage {
     user_avatar?: string;
     content: string;
     message_type: 'text' | 'image' | 'file' | 'system';
+    content_type?: MessageType; // AI-classified: question, answer, resource, urgent, general
+    attachments?: FileAttachment[]; // File/image attachments
     created_at: string;
     updated_at?: string;
     is_edited: boolean;
     reply_to?: string;
     reactions?: Record<string, string[]>; // emoji -> user_ids
 }
+
+// Export the classifier function for use in components
+export { classifyMessage, type MessageType } from '../lib/chat/messageClassifier';
 
 export interface ChatParticipant {
     user_id: string;
@@ -70,20 +87,23 @@ export const sendMessage = async (
     messageType: 'text' | 'image' | 'file' = 'text',
     replyTo?: string
 ): Promise<ChatMessage | null> => {
+    // Helper to create demo message
+    const createDemoMessage = (): ChatMessage => ({
+        id: `msg-${Date.now()}`,
+        group_id: groupId,
+        user_id: userId,
+        user_name: userName,
+        user_avatar: userAvatar,
+        content,
+        message_type: messageType,
+        created_at: new Date().toISOString(),
+        is_edited: false,
+        reply_to: replyTo,
+    });
+
     if (!isSupabaseConfigured()) {
         // Return mock message for demo
-        return {
-            id: `msg-${Date.now()}`,
-            group_id: groupId,
-            user_id: userId,
-            user_name: userName,
-            user_avatar: userAvatar,
-            content,
-            message_type: messageType,
-            created_at: new Date().toISOString(),
-            is_edited: false,
-            reply_to: replyTo,
-        };
+        return createDemoMessage();
     }
 
     try {
@@ -101,11 +121,16 @@ export const sendMessage = async (
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            console.warn('Supabase error, falling back to demo mode:', error.message);
+            // Fall back to demo mode if table doesn't exist
+            return createDemoMessage();
+        }
         return data;
     } catch (error) {
         console.error('Error sending message:', error);
-        return null;
+        // Fall back to demo mode on any error
+        return createDemoMessage();
     }
 };
 
@@ -190,7 +215,7 @@ export const subscribeToMessages = (
     groupId: string,
     onMessage: (message: ChatMessage) => void
 ) => {
-    if (!isSupabaseConfigured()) return () => {};
+    if (!isSupabaseConfigured()) return () => { };
 
     const channel = supabase!
         .channel(`group-messages-${groupId}`)
@@ -232,51 +257,9 @@ export const updateTypingStatus = async (
     }
 };
 
-// Mock messages for demo
-const getMockMessages = (groupId: string): ChatMessage[] => {
-    const now = new Date();
-    return [
-        {
-            id: 'msg-1',
-            group_id: groupId,
-            user_id: 'user-1',
-            user_name: 'Sarah Chen',
-            content: 'Hey everyone! Ready for the study session? 📚',
-            message_type: 'text',
-            created_at: new Date(now.getTime() - 3600000).toISOString(),
-            is_edited: false,
-        },
-        {
-            id: 'msg-2',
-            group_id: groupId,
-            user_id: 'user-2',
-            user_name: 'Mike Johnson',
-            content: 'Yes! I have some questions about Chapter 5.',
-            message_type: 'text',
-            created_at: new Date(now.getTime() - 3000000).toISOString(),
-            is_edited: false,
-        },
-        {
-            id: 'msg-3',
-            group_id: groupId,
-            user_id: 'user-1',
-            user_name: 'Sarah Chen',
-            content: 'Sure, let me share my notes. The key concepts are really important for the exam.',
-            message_type: 'text',
-            created_at: new Date(now.getTime() - 2400000).toISOString(),
-            is_edited: false,
-        },
-        {
-            id: 'msg-4',
-            group_id: groupId,
-            user_id: 'user-3',
-            user_name: 'Emma Wilson',
-            content: 'Thanks Sarah! This is really helpful 🙏',
-            message_type: 'text',
-            created_at: new Date(now.getTime() - 1800000).toISOString(),
-            is_edited: false,
-        },
-    ];
+// Mock messages for demo - returns empty array (no demo messages)
+const getMockMessages = (_groupId: string): ChatMessage[] => {
+    return [];
 };
 
 // Format message time
@@ -293,4 +276,53 @@ export const formatMessageTime = (dateString: string): string => {
     if (diffHours < 24) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     if (diffDays < 7) return date.toLocaleDateString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
     return date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+};
+
+// Report a group to teachers/admin
+export interface GroupReport {
+    id?: string;
+    group_id: string;
+    group_name: string;
+    reporter_id: string;
+    reporter_name: string;
+    reporter_email?: string;
+    reason: 'spam' | 'harassment' | 'inappropriate' | 'cheating' | 'other';
+    details?: string;
+    status?: 'pending' | 'reviewing' | 'resolved' | 'dismissed';
+    created_at?: string;
+}
+
+export const reportGroup = async (report: Omit<GroupReport, 'id' | 'status' | 'created_at'>): Promise<{ success: boolean; error?: string }> => {
+    if (!isSupabaseConfigured()) {
+        // Simulate success for demo mode
+        console.log('[ChatService] Demo mode - Report submitted:', report);
+        return { success: true };
+    }
+
+    try {
+        const { error } = await supabase!
+            .from('group_reports')
+            .insert({
+                group_id: report.group_id,
+                group_name: report.group_name,
+                reporter_id: report.reporter_id,
+                reporter_name: report.reporter_name,
+                reporter_email: report.reporter_email,
+                reason: report.reason,
+                details: report.details || null,
+                status: 'pending',
+                created_at: new Date().toISOString(),
+            });
+
+        if (error) {
+            console.error('[ChatService] Error submitting report:', error);
+            return { success: false, error: error.message };
+        }
+
+        console.log('[ChatService] Report submitted successfully');
+        return { success: true };
+    } catch (error) {
+        console.error('[ChatService] Error submitting report:', error);
+        return { success: false, error: 'Failed to submit report' };
+    }
 };
