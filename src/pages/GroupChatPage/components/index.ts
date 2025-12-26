@@ -18,5 +18,7 @@ export { MentionAutocomplete } from './MentionAutocomplete';
 export type { MentionUser } from './MentionAutocomplete';
 export { ChatHeader } from './ChatHeader';
 export { SearchPanel } from './SearchPanel';
+export { MessageBubble } from './MessageBubble';
+export type { MessageBubbleProps } from './MessageBubble';
 
 
