@@ -20,3 +20,13 @@ export interface BaseModalProps {
     onClose: () => void;
     colors: ModalColors;
 }
+
+// File data for file sharing
+export interface FileShareData {
+    name: string;
+    type: string;
+    size: number;
+    lastModified: number;
+    preview?: string;
+    file?: File;
+}

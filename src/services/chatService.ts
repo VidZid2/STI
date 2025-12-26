@@ -85,7 +85,8 @@ export const sendMessage = async (
     userAvatar: string | undefined,
     content: string,
     messageType: 'text' | 'image' | 'file' = 'text',
-    replyTo?: string
+    replyTo?: string,
+    attachments?: FileAttachment[]
 ): Promise<ChatMessage | null> => {
     // Helper to create demo message
     const createDemoMessage = (): ChatMessage => ({
@@ -99,6 +100,7 @@ export const sendMessage = async (
         created_at: new Date().toISOString(),
         is_edited: false,
         reply_to: replyTo,
+        attachments: attachments,
     });
 
     if (!isSupabaseConfigured()) {
@@ -117,6 +119,7 @@ export const sendMessage = async (
                 content,
                 message_type: messageType,
                 reply_to: replyTo,
+                attachments: attachments || [], // Include attachments in the insert
             })
             .select()
             .single();
@@ -326,3 +329,92 @@ export const reportGroup = async (report: Omit<GroupReport, 'id' | 'status' | 'c
         return { success: false, error: 'Failed to submit report' };
     }
 };
+
+export interface ReadReceipt {
+    message_id: string;
+    user_id: string;
+    user_name?: string;
+    user_avatar?: string;
+    read_at: string;
+}
+
+// Mark a message as read
+export const markMessageAsRead = async (
+    messageId: string,
+    userId: string,
+    userName: string,
+    userAvatar?: string
+): Promise<boolean> => {
+    if (!isSupabaseConfigured()) return true;
+
+    try {
+        const { error } = await supabase!
+            .from('message_read_receipts')
+            .upsert({
+                message_id: messageId,
+                user_id: userId,
+                user_name: userName,
+                user_avatar: userAvatar,
+            }, { onConflict: 'message_id,user_id' });
+
+        if (error) throw error;
+        return true;
+    } catch (error) {
+        console.error('Error marking message as read:', error);
+        return false;
+    }
+};
+
+// Get read receipts for a list of messages
+export const getMessageReadReceipts = async (messageIds: string[]): Promise<Record<string, ReadReceipt[]>> => {
+    if (!isSupabaseConfigured() || messageIds.length === 0) return {};
+
+    try {
+        const { data, error } = await supabase!
+            .from('message_read_receipts')
+            .select('*')
+            .in('message_id', messageIds);
+
+        if (error) throw error;
+
+        const receipts: Record<string, ReadReceipt[]> = {};
+        (data || []).forEach((receipt: any) => {
+            if (!receipts[receipt.message_id]) {
+                receipts[receipt.message_id] = [];
+            }
+            receipts[receipt.message_id].push(receipt);
+        });
+
+        return receipts;
+    } catch (error) {
+        console.error('Error fetching read receipts:', error);
+        return {};
+    }
+};
+
+// Subscribe to read receipts
+export const subscribeToReadReceipts = (
+    onReceipt: (receipt: ReadReceipt) => void
+) => {
+    if (!isSupabaseConfigured()) return () => { };
+
+    const channel = supabase!
+        .channel('message-read-receipts')
+        .on(
+            'postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'message_read_receipts',
+            },
+            (payload) => {
+                onReceipt(payload.new as ReadReceipt);
+            }
+        )
+        .subscribe();
+
+    return () => {
+        supabase!.removeChannel(channel);
+    };
+};
+

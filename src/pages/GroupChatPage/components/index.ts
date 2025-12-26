@@ -16,3 +16,7 @@ export { StudyToolsMenu } from './StudyToolsMenu';
 export { GroupInfoModal } from './GroupInfoModal';
 export { MentionAutocomplete } from './MentionAutocomplete';
 export type { MentionUser } from './MentionAutocomplete';
+export { ChatHeader } from './ChatHeader';
+export { SearchPanel } from './SearchPanel';
+
+

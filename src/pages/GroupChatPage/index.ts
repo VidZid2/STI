@@ -4,22 +4,17 @@
  */
 
 // Main component - default export
-export { default } from './GroupChatPage';
+import GroupChatPage from './GroupChatPage';
+export default GroupChatPage;
 
-// Types
-export * from './types';
-
-// Constants
-export * from './constants';
-
-// Utilities
-export * from './utils';
-
-// Modals
-export * from './modals';
-
-// UI Components
-export * from './components';
-
-// Custom Hooks
-export * from './hooks';
+// Re-export types (named exports only, avoid circular dependencies)
+export type {
+    MessageReaction,
+    ReplyInfo,
+    UserBadge,
+    MemberStats,
+    ThreadReply,
+    StudyReaction,
+    ToolColorConfig,
+    ChatColors,
+} from './types';

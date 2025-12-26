@@ -19,12 +19,15 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const [showFullImage, setShowFullImage] = useState(false);
     
-    const isImage = attachment.type.startsWith('image/');
-    const isVideo = attachment.type.startsWith('video/');
-    const isPDF = attachment.type === 'application/pdf';
-    const isDocument = attachment.type.includes('document') || attachment.type.includes('word') || attachment.type.includes('text');
-    const isSpreadsheet = attachment.type.includes('spreadsheet') || attachment.type.includes('excel');
-    const isPresentation = attachment.type.includes('presentation') || attachment.type.includes('powerpoint');
+    // More robust type checking - handle undefined/empty types
+    const fileType = attachment.type || '';
+    const isImage = fileType.startsWith('image/') || 
+        /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(attachment.name);
+    const isVideo = fileType.startsWith('video/');
+    const isPDF = fileType === 'application/pdf' || attachment.name.toLowerCase().endsWith('.pdf');
+    const isDocument = fileType.includes('document') || fileType.includes('word') || fileType.includes('text');
+    const isSpreadsheet = fileType.includes('spreadsheet') || fileType.includes('excel');
+    const isPresentation = fileType.includes('presentation') || fileType.includes('powerpoint');
     
     const getFileIcon = () => {
         if (isImage) return (
@@ -91,8 +94,9 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
         return '#64748b';
     };
 
-    // Image preview
-    if (isImage && attachment.url) {
+    // Image preview - also check thumbnail_url as fallback
+    const imageUrl = attachment.url || attachment.thumbnail_url;
+    if (isImage && imageUrl) {
         return (
             <>
                 <motion.div
@@ -127,7 +131,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                         </div>
                     )}
                     <img
-                        src={attachment.url}
+                        src={imageUrl}
                         alt={attachment.name}
                         onLoad={() => setIsImageLoaded(true)}
                         style={{
@@ -182,7 +186,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                                     initial={{ scale: 0.9 }}
                                     animate={{ scale: 1 }}
                                     exit={{ scale: 0.9 }}
-                                    src={attachment.url}
+                                    src={imageUrl}
                                     alt={attachment.name}
                                     style={{
                                         maxWidth: '90vw',

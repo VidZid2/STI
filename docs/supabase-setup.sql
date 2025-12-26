@@ -808,12 +808,21 @@ CREATE TABLE IF NOT EXISTS group_messages (
     user_avatar TEXT,
     content TEXT NOT NULL,
     message_type TEXT DEFAULT 'text' CHECK (message_type IN ('text', 'image', 'file', 'system')),
+    attachments JSONB DEFAULT '[]', -- File/image attachments array
     reply_to TEXT REFERENCES group_messages(id) ON DELETE SET NULL,
     reactions JSONB DEFAULT '{}',
     is_edited BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Add attachments column if it doesn't exist (for existing tables)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'group_messages' AND column_name = 'attachments') THEN
+        ALTER TABLE group_messages ADD COLUMN attachments JSONB DEFAULT '[]';
+    END IF;
+END $$;
 
 -- Create indexes for faster lookups
 CREATE INDEX IF NOT EXISTS idx_group_messages_group_id ON group_messages(group_id);
@@ -841,6 +850,45 @@ BEGIN
         ALTER PUBLICATION supabase_realtime ADD TABLE group_messages;
     END IF;
 END $$;
+
+-- =====================================================
+-- Chat Attachments Storage Bucket Setup
+-- =====================================================
+-- 
+-- IMPORTANT: You must create the storage bucket FIRST via Supabase Dashboard:
+-- 
+-- 1. Go to your Supabase project
+-- 2. Click on "Storage" in the left sidebar
+-- 3. Click "New bucket"
+-- 4. Create a bucket named: chat-attachments
+-- 5. Make it PUBLIC (toggle the "Public bucket" option)
+-- 6. Click "Create bucket"
+-- 7. THEN come back and run this SQL
+--
+-- =====================================================
+
+-- Storage policies for chat-attachments bucket
+-- These will only work AFTER you create the bucket in the Dashboard
+
+-- Drop existing policies if they exist (to avoid errors on re-run)
+DROP POLICY IF EXISTS "Public read access for chat attachments" ON storage.objects;
+DROP POLICY IF EXISTS "Allow uploads to chat attachments" ON storage.objects;
+DROP POLICY IF EXISTS "Allow deletes from chat attachments" ON storage.objects;
+
+-- Allow public read access to chat attachments
+CREATE POLICY "Public read access for chat attachments"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'chat-attachments');
+
+-- Allow uploads to chat attachments
+CREATE POLICY "Allow uploads to chat attachments"
+ON storage.objects FOR INSERT
+WITH CHECK (bucket_id = 'chat-attachments');
+
+-- Allow deletes from chat attachments
+CREATE POLICY "Allow deletes from chat attachments"
+ON storage.objects FOR DELETE
+USING (bucket_id = 'chat-attachments');
 
 -- =====================================================
 -- Insert Demo Study Groups
@@ -991,3 +1039,43 @@ ON CONFLICT (id) DO NOTHING;
 -- - Messages sync instantly between GroupChat and FocusMode
 -- - New links, code, and resources appear in Study Resources
 -- =====================================================
+
+-- =====================================================
+-- Message Read Receipts Table
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS message_read_receipts (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    message_id TEXT NOT NULL REFERENCES group_messages(id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL,
+    user_name TEXT,
+    user_avatar TEXT,
+    read_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(message_id, user_id)
+);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_read_receipts_message_id ON message_read_receipts(message_id);
+CREATE INDEX IF NOT EXISTS idx_read_receipts_user_id ON message_read_receipts(user_id);
+
+-- RLS
+ALTER TABLE message_read_receipts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow all operations on message_read_receipts" ON message_read_receipts;
+CREATE POLICY "Allow all operations on message_read_receipts" ON message_read_receipts
+    FOR ALL
+    USING (true)
+    WITH CHECK (true);
+
+-- Realtime
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_publication_tables 
+        WHERE pubname = 'supabase_realtime' 
+        AND tablename = 'message_read_receipts'
+    ) THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE message_read_receipts;
+    END IF;
+END $$;
+
