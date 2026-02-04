@@ -4,7 +4,7 @@
  */
 
 import React, { useCallback, useRef, forwardRef } from 'react';
-import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
+import { Virtuoso, type VirtuosoHandle, type Components } from 'react-virtuoso';
 import { AnimatePresence } from 'motion/react';
 import type { ChatMessage, MessageType } from '../../../../services/chatService';
 import type { MessageReaction, MemberStats, ChatColors } from '../types';
@@ -216,6 +216,18 @@ export const VirtualizedMessageList = forwardRef<VirtuosoHandle, VirtualizedMess
             onCancelEdit,
         ]);
 
+        // Custom components for Virtuoso
+        const virtuosoComponents: Components<ChatMessage> = {
+            Scroller: ScrollContainer,
+            Item: (props) => (
+                <div {...props} style={{ ...props.style, padding: '0 20px' }}>
+                    {props.children}
+                </div>
+            ),
+            Header: () => <div style={{ height: 20 }} />,
+            Footer: () => <div style={{ height: 20 }} />,
+        };
+
         return (
             <Virtuoso
                 ref={listRef}
@@ -229,16 +241,7 @@ export const VirtualizedMessageList = forwardRef<VirtuosoHandle, VirtualizedMess
                     height: '100%',
                     width: '100%',
                 }}
-                components={{
-                    Scroller: ScrollContainer,
-                    Item: ({ children, ...props }) => (
-                        <div {...props} style={{ ...props.style, padding: '0 20px' }}>
-                            {children}
-                        </div>
-                    ),
-                    Header: () => <div style={{ height: 20 }} />,
-                    Footer: () => <div style={{ height: 20 }} />,
-                }}
+                components={virtuosoComponents}
             />
         );
     }

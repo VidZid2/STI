@@ -48,7 +48,7 @@ interface MessageBubbleProps {
     messageType?: MessageType;
     reactions: MessageReaction[];
     messageReadBy?: Record<string, { id: string; name: string; avatar?: string }[]>; // Not used yet but kept for future
-    showReadReceipts: boolean;
+    showReadReceipts?: boolean; // Not used yet but kept for future
 
     // Theme
     isDarkMode: boolean;
@@ -80,7 +80,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     userLevel,
     userStreak,
     memberRole,
-    // memberStats, // Not used yet
     isOnline,
     profile,
     isHovered,
@@ -93,8 +92,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     helpfulData,
     messageType,
     reactions,
-    // messageReadBy, // Not used yet
-    showReadReceipts,
+    // showReadReceipts, // Not used yet
     isDarkMode,
     colors,
     onHover,
