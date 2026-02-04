@@ -32,7 +32,7 @@ interface MessageBubbleProps {
     userLevel: number;
     userStreak: number;
     memberRole?: string;
-    memberStats?: MemberStats;
+    memberStats?: MemberStats; // Not used yet but kept for future
     isOnline: boolean;
     profile: any;
 
@@ -47,7 +47,7 @@ interface MessageBubbleProps {
     helpfulData?: { count: number; voted: boolean };
     messageType?: MessageType;
     reactions: MessageReaction[];
-    messageReadBy: Record<string, { id: string; name: string; avatar?: string }[]>;
+    messageReadBy?: Record<string, { id: string; name: string; avatar?: string }[]>; // Not used yet but kept for future
     showReadReceipts: boolean;
 
     // Theme
@@ -80,7 +80,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     userLevel,
     userStreak,
     memberRole,
-    _memberStats,
+    // memberStats, // Not used yet
     isOnline,
     profile,
     isHovered,
@@ -93,7 +93,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     helpfulData,
     messageType,
     reactions,
-    _messageReadBy,
+    // messageReadBy, // Not used yet
     showReadReceipts,
     isDarkMode,
     colors,
