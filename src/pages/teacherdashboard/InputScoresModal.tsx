@@ -1341,7 +1341,7 @@ const ApplyCurveModal: React.FC<{
 // ============================================
 // RUBRIC MODAL COMPONENT
 // ============================================
-const _RubricModal: React.FC<{
+export const RubricModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
     rubricConfig: RubricConfig;

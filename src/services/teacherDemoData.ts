@@ -94,7 +94,7 @@ export interface DemoExamScore {
 const generateDemoSchedule = (): DemoScheduleItem[] => {
     const now = new Date();
     const currentHour = now.getHours();
-    
+
     return [
         {
             id: 'demo-sched-1',
@@ -148,7 +148,7 @@ const generateDemoTasks = (): DemoTaskItem[] => {
     tomorrow.setDate(tomorrow.getDate() + 1);
     const nextWeek = new Date();
     nextWeek.setDate(nextWeek.getDate() + 7);
-    
+
     return [
         {
             id: 'demo-task-1',
@@ -180,7 +180,7 @@ const generateDemoTasks = (): DemoTaskItem[] => {
 
 const generateDemoActivity = (): DemoActivityItem[] => {
     const now = new Date();
-    
+
     return [
         {
             id: 'demo-act-1',
@@ -261,7 +261,7 @@ const generateDemoSubmissions = (): DemoSubmission[] => {
     const now = new Date();
     const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
-    
+
     return [
         {
             id: 'demo-sub-1',
@@ -446,7 +446,7 @@ const generateDemoExams = (): DemoExam[] => {
     const now = new Date();
     const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-    
+
     return [
         {
             id: 'demo-exam-1',
@@ -478,9 +478,9 @@ const generateDemoExams = (): DemoExam[] => {
     ];
 };
 
-const generateDemoExamScores = (examId: string): DemoExamScore[] => {
+const generateDemoExamScores = (_examId: string): DemoExamScore[] => {
     const students = generateDemoStudents().slice(0, 10); // First 10 students
-    
+
     return students.map(student => ({
         student_id: student.student_id,
         student_name: student.full_name,
@@ -499,10 +499,10 @@ const generateDemoExamScores = (examId: string): DemoExamScore[] => {
  */
 export const loadTeacherDemoData = (): void => {
     console.log('[Teacher Demo] Loading demo data...');
-    
+
     // Set demo mode flag
     localStorage.setItem(DEMO_MODE_KEY, 'true');
-    
+
     // Generate and save demo data
     localStorage.setItem(DEMO_SCHEDULE_KEY, JSON.stringify(generateDemoSchedule()));
     localStorage.setItem(DEMO_TASKS_KEY, JSON.stringify(generateDemoTasks()));
@@ -510,7 +510,7 @@ export const loadTeacherDemoData = (): void => {
     localStorage.setItem(DEMO_SUBMISSIONS_KEY, JSON.stringify(generateDemoSubmissions()));
     localStorage.setItem(DEMO_STUDENTS_KEY, JSON.stringify(generateDemoStudents()));
     localStorage.setItem(DEMO_EXAMS_KEY, JSON.stringify(generateDemoExams()));
-    
+
     console.log('[Teacher Demo] Demo data loaded successfully');
 };
 
@@ -526,7 +526,7 @@ export const isTeacherDemoModeActive = (): boolean => {
  */
 export const clearTeacherDemoData = (): void => {
     console.log('[Teacher Demo] Clearing demo data...');
-    
+
     localStorage.removeItem(DEMO_MODE_KEY);
     localStorage.removeItem(DEMO_SCHEDULE_KEY);
     localStorage.removeItem(DEMO_TASKS_KEY);
@@ -534,7 +534,7 @@ export const clearTeacherDemoData = (): void => {
     localStorage.removeItem(DEMO_SUBMISSIONS_KEY);
     localStorage.removeItem(DEMO_STUDENTS_KEY);
     localStorage.removeItem(DEMO_EXAMS_KEY);
-    
+
     console.log('[Teacher Demo] Demo data cleared');
 };
 
@@ -619,6 +619,6 @@ export const getDemoExams = (): DemoExam[] => {
 /**
  * Get demo exam scores for a specific exam
  */
-export const getDemoExamScores = (examId: string): DemoExamScore[] => {
-    return generateDemoExamScores(examId);
+export const getDemoExamScores = (_examId: string): DemoExamScore[] => {
+    return generateDemoExamScores(_examId);
 };
