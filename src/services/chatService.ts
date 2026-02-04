@@ -4,6 +4,7 @@
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { type MessageType } from '../lib/chat/messageClassifier';
+import { uploadFile } from './storageService';
 
 export interface FileAttachment {
     id: string;
@@ -44,6 +45,44 @@ export interface ChatParticipant {
     is_typing: boolean;
     last_seen: string;
 }
+
+/**
+ * Upload attachments to Supabase Storage
+ * Call this before sendMessage to get storage URLs
+ */
+export const uploadAttachments = async (
+    groupId: string,
+    attachments: FileAttachment[]
+): Promise<FileAttachment[]> => {
+    if (!attachments || attachments.length === 0) return [];
+
+    console.log('[ChatService] Uploading', attachments.length, 'attachments to storage...');
+
+    const uploadedAttachments = await Promise.all(
+        attachments.map(async (att) => {
+            // Check if URL is base64 (needs upload)
+            if (att.url && att.url.startsWith('data:')) {
+                const result = await uploadFile(groupId, att.name, att.url, att.type);
+                if (result.success && result.url) {
+                    console.log('[ChatService] Uploaded:', att.name, '→', result.url);
+                    return {
+                        ...att,
+                        url: result.url,
+                        thumbnail_url: result.url, // Use same URL for thumbnail
+                    };
+                } else {
+                    console.warn('[ChatService] Upload failed for:', att.name, result.error);
+                    // Keep original base64 as fallback (will work for current session)
+                    return att;
+                }
+            }
+            // Already has a URL (not base64), keep as-is
+            return att;
+        })
+    );
+
+    return uploadedAttachments;
+};
 
 // Fetch messages for a group
 export const fetchGroupMessages = async (
@@ -105,10 +144,30 @@ export const sendMessage = async (
 
     if (!isSupabaseConfigured()) {
         // Return mock message for demo
+        console.log('[ChatService] Demo mode - returning mock message');
         return createDemoMessage();
     }
 
     try {
+        // Attachments should already have storage URLs from uploadAttachments()
+        // Just store them directly in the database
+        const processedAttachments = attachments?.map(att => ({
+            id: att.id,
+            name: att.name,
+            type: att.type,
+            size: att.size,
+            width: att.width,
+            height: att.height,
+            url: att.url,
+            thumbnail_url: att.thumbnail_url,
+        })) || [];
+
+        console.log('[ChatService] Sending message to Supabase...', {
+            groupId,
+            messageType,
+            attachmentsCount: processedAttachments.length,
+        });
+
         const { data, error } = await supabase!
             .from('group_messages')
             .insert({
@@ -119,19 +178,26 @@ export const sendMessage = async (
                 content,
                 message_type: messageType,
                 reply_to: replyTo,
-                attachments: attachments || [], // Include attachments in the insert
+                attachments: processedAttachments,
             })
             .select()
             .single();
 
         if (error) {
-            console.warn('Supabase error, falling back to demo mode:', error.message);
+            console.error('[ChatService] Supabase error:', error.message, error.details, error.hint);
             // Fall back to demo mode if table doesn't exist
             return createDemoMessage();
         }
-        return data;
+        
+        console.log('[ChatService] Message saved successfully:', data.id);
+        
+        // Return the saved message but with original attachments for display
+        return {
+            ...data,
+            attachments: attachments, // Use original attachments with full data for display
+        };
     } catch (error) {
-        console.error('Error sending message:', error);
+        console.error('[ChatService] Error sending message:', error);
         // Fall back to demo mode on any error
         return createDemoMessage();
     }
