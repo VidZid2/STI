@@ -33,7 +33,7 @@ interface UseKeyboardNavigationReturn {
         onFocus: () => void;
         onKeyDown: (event: React.KeyboardEvent) => void;
     };
-    containerRef: React.RefObject<HTMLDivElement>;
+    containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 // ============================================
@@ -145,7 +145,7 @@ export const useKeyboardNavigation = ({
 
         const items = container.querySelectorAll('[data-keyboard-nav-item]');
         const targetItem = items[focusedIndex] as HTMLElement;
-        
+
         if (targetItem) {
             targetItem.focus();
         }
@@ -230,7 +230,7 @@ export const useFocusTrap = (isActive: boolean) => {
         const focusableElements = container.querySelectorAll<HTMLElement>(
             'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
-        
+
         if (focusableElements.length > 0) {
             focusableElements[0].focus();
         }

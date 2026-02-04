@@ -111,13 +111,7 @@ interface GradeWeightConfig {
     weights: CategoryWeight[];
 }
 
-interface _StudentWeightedGrade {
-    studentId: string;
-    studentName: string;
-    categoryScores: Record<ExamCategory, { score: number; maxScore: number; percentage: number }[]>;
-    weightedAverage: number;
-    finalGrade: number; // transmuted
-}
+
 
 // ============================================
 // RUBRIC TYPES
@@ -1347,7 +1341,7 @@ const ApplyCurveModal: React.FC<{
 // ============================================
 // RUBRIC MODAL COMPONENT
 // ============================================
-const RubricModal: React.FC<{
+const _RubricModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
     rubricConfig: RubricConfig;
