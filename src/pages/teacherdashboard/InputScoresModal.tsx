@@ -20,24 +20,24 @@ import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import { getCatalogCourses } from '../../services/catalogService';
 import { getClassmates, type UserAccount } from '../../services/usersService';
-import { 
-    getExamsByCourse, 
+import {
+    getExamsByCourse,
     getExamScores,
-    saveExamScores, 
+    saveExamScores,
     getExamHistory,
-    type ExamHistoryItem 
+    type ExamHistoryItem
 } from '../../services/examsService';
-import { 
-    calculateGrade, 
-    calculateClassStatistics, 
+import {
+    calculateGrade,
+    calculateClassStatistics,
     getGradeColor,
-    type GradingSystem 
+    type GradingSystem
 } from '../../lib/grading/philippineGrading';
-import { 
-    downloadCSV, 
+import {
+    downloadCSV,
     openPrintView,
     type ExportScoreData,
-    type ExportOptions 
+    type ExportOptions
 } from '../../lib/export/scoreExport';
 import {
     calculateAttendanceFromScores,
@@ -111,7 +111,7 @@ interface GradeWeightConfig {
     weights: CategoryWeight[];
 }
 
-interface StudentWeightedGrade {
+interface _StudentWeightedGrade {
     studentId: string;
     studentName: string;
     categoryScores: Record<ExamCategory, { score: number; maxScore: number; percentage: number }[]>;
@@ -201,7 +201,7 @@ const parseCSV = (text: string): string[][] => {
         const result: string[] = [];
         let current = '';
         let inQuotes = false;
-        
+
         for (let i = 0; i < line.length; i++) {
             const char = line[i];
             if (char === '"') {
@@ -231,7 +231,7 @@ const ImportPreviewModal: React.FC<{
     const [data, setData] = useState<ImportedRow[]>(importedData);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
     const confirmButtonRef = useRef<HTMLButtonElement>(null);
-    
+
     useEffect(() => {
         setData(importedData);
     }, [importedData]);
@@ -260,7 +260,7 @@ const ImportPreviewModal: React.FC<{
 
     const handleScoreChange = (index: number, value: string) => {
         const numVal = value === '' ? null : parseFloat(value);
-        setData(prev => prev.map((row, i) => 
+        setData(prev => prev.map((row, i) =>
             i === index ? { ...row, score: numVal } : row
         ));
     };
@@ -366,7 +366,7 @@ const ImportPreviewModal: React.FC<{
                 </div>
 
                 {/* Stats Bar */}
-                <div 
+                <div
                     style={{
                         padding: '12px 24px',
                         background: 'rgba(59, 130, 246, 0.03)',
@@ -541,8 +541,8 @@ const ImportPreviewModal: React.FC<{
                                 padding: '10px 16px',
                                 borderRadius: '10px',
                                 border: 'none',
-                                background: matchedCount > 0 
-                                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' 
+                                background: matchedCount > 0
+                                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
                                     : 'rgba(0,0,0,0.06)',
                                 fontSize: '13px',
                                 fontWeight: 600,
@@ -747,7 +747,7 @@ const CopyFromExamModal: React.FC<{
                             {availableHistory.map((history, index) => {
                                 const isSelected = selectedExam === history.examId;
                                 const isHovered = hoveredExam === history.examId;
-                                
+
                                 return (
                                     <motion.div
                                         key={history.examId}
@@ -760,13 +760,13 @@ const CopyFromExamModal: React.FC<{
                                         style={{
                                             padding: '14px 16px',
                                             borderRadius: '12px',
-                                            border: isSelected 
-                                                ? '2px solid #8b5cf6' 
+                                            border: isSelected
+                                                ? '2px solid #8b5cf6'
                                                 : `1px solid ${isHovered ? 'rgba(139, 92, 246, 0.3)' : 'rgba(0,0,0,0.06)'}`,
-                                            background: isSelected 
-                                                ? 'rgba(139, 92, 246, 0.05)' 
-                                                : isHovered 
-                                                    ? 'rgba(0,0,0,0.01)' 
+                                            background: isSelected
+                                                ? 'rgba(139, 92, 246, 0.05)'
+                                                : isHovered
+                                                    ? 'rgba(0,0,0,0.01)'
                                                     : '#ffffff',
                                             cursor: 'pointer',
                                             transition: 'all 0.15s ease',
@@ -774,19 +774,19 @@ const CopyFromExamModal: React.FC<{
                                     >
                                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                                             <div style={{ flex: 1 }}>
-                                                <div style={{ 
-                                                    fontSize: '14px', 
-                                                    fontWeight: 600, 
+                                                <div style={{
+                                                    fontSize: '14px',
+                                                    fontWeight: 600,
                                                     color: isSelected ? '#8b5cf6' : '#0f172a',
                                                     marginBottom: '4px',
                                                 }}>
                                                     {history.examTitle}
                                                 </div>
                                                 <div style={{ fontSize: '12px', color: '#94a3b8' }}>
-                                                    {new Date(history.date).toLocaleDateString('en-US', { 
-                                                        month: 'short', 
-                                                        day: 'numeric', 
-                                                        year: 'numeric' 
+                                                    {new Date(history.date).toLocaleDateString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        year: 'numeric'
                                                     })}
                                                 </div>
                                             </div>
@@ -840,7 +840,7 @@ const CopyFromExamModal: React.FC<{
                     justifyContent: 'space-between',
                 }}>
                     <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>
-                        {selectedHistoryItem 
+                        {selectedHistoryItem
                             ? `${selectedHistoryItem.completedCount} scores will be copied`
                             : 'Select an exam to copy from'
                         }
@@ -865,9 +865,9 @@ const CopyFromExamModal: React.FC<{
                             Cancel
                         </motion.button>
                         <motion.button
-                            whileHover={{ 
-                                scale: 1.02, 
-                                boxShadow: '0 6px 20px rgba(139, 92, 246, 0.25)' 
+                            whileHover={{
+                                scale: 1.02,
+                                boxShadow: '0 6px 20px rgba(139, 92, 246, 0.25)'
                             }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => selectedHistoryItem && onSelect(selectedHistoryItem)}
@@ -878,8 +878,8 @@ const CopyFromExamModal: React.FC<{
                                 padding: '10px 16px',
                                 borderRadius: '10px',
                                 border: 'none',
-                                background: selectedHistoryItem 
-                                    ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' 
+                                background: selectedHistoryItem
+                                    ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'
                                     : 'rgba(0,0,0,0.06)',
                                 fontSize: '13px',
                                 fontWeight: 600,
@@ -947,14 +947,14 @@ const ApplyCurveModal: React.FC<{
         }
 
         const beforeAvg = validScores.reduce((sum, s) => sum + (s.score || 0), 0) / validScores.length;
-        
+
         let afterAvg: number;
         if (method === 'percentage') {
             afterAvg = beforeAvg * (1 + adjustment / 100);
         } else {
             afterAvg = beforeAvg + adjustment;
         }
-        
+
         // Cap at max score
         afterAvg = Math.min(afterAvg, maxScore);
 
@@ -1076,11 +1076,11 @@ const ApplyCurveModal: React.FC<{
                 <div style={{ padding: '20px 24px' }}>
                     {/* Quick Presets */}
                     <div style={{ marginBottom: '20px' }}>
-                        <label style={{ 
-                            display: 'block', 
-                            fontSize: '11px', 
-                            fontWeight: 600, 
-                            color: '#64748b', 
+                        <label style={{
+                            display: 'block',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: '#64748b',
                             marginBottom: '8px',
                             textTransform: 'uppercase',
                             letterSpacing: '0.5px',
@@ -1102,11 +1102,11 @@ const ApplyCurveModal: React.FC<{
                                         style={{
                                             padding: '8px 14px',
                                             borderRadius: '8px',
-                                            border: isActive 
-                                                ? '1px solid rgba(245, 158, 11, 0.4)' 
+                                            border: isActive
+                                                ? '1px solid rgba(245, 158, 11, 0.4)'
                                                 : '1px solid rgba(0,0,0,0.08)',
-                                            background: isActive 
-                                                ? 'rgba(245, 158, 11, 0.1)' 
+                                            background: isActive
+                                                ? 'rgba(245, 158, 11, 0.1)'
                                                 : '#ffffff',
                                             color: isActive ? '#f59e0b' : '#64748b',
                                             fontSize: '12px',
@@ -1123,13 +1123,13 @@ const ApplyCurveModal: React.FC<{
 
                     {/* Custom Adjustment */}
                     <div style={{ marginBottom: '20px' }}>
-                        <label 
+                        <label
                             htmlFor="curve-adjustment-input"
-                            style={{ 
-                                display: 'block', 
-                                fontSize: '11px', 
-                                fontWeight: 600, 
-                                color: '#64748b', 
+                            style={{
+                                display: 'block',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                color: '#64748b',
                                 marginBottom: '8px',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.5px',
@@ -1173,10 +1173,10 @@ const ApplyCurveModal: React.FC<{
                                     {method === 'percentage' ? '%' : 'pts'}
                                 </span>
                             </div>
-                            <div 
-                                style={{ 
-                                    display: 'flex', 
-                                    borderRadius: '10px', 
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    borderRadius: '10px',
                                     border: '1px solid rgba(0,0,0,0.08)',
                                     overflow: 'hidden',
                                 }}
@@ -1215,10 +1215,10 @@ const ApplyCurveModal: React.FC<{
                         background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, rgba(245, 158, 11, 0.02) 100%)',
                         border: '1px solid rgba(245, 158, 11, 0.12)',
                     }}>
-                        <div style={{ 
-                            fontSize: '11px', 
-                            fontWeight: 600, 
-                            color: '#64748b', 
+                        <div style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: '#64748b',
                             marginBottom: '12px',
                             textTransform: 'uppercase',
                             letterSpacing: '0.5px',
@@ -1244,9 +1244,9 @@ const ApplyCurveModal: React.FC<{
                                     {previewStats.after}
                                 </div>
                             </div>
-                            <div style={{ 
-                                padding: '8px 12px', 
-                                borderRadius: '8px', 
+                            <div style={{
+                                padding: '8px 12px',
+                                borderRadius: '8px',
                                 background: 'rgba(16, 185, 129, 0.1)',
                             }}>
                                 <div style={{ fontSize: '10px', color: '#64748b', marginBottom: '2px' }}>Change</div>
@@ -1255,9 +1255,9 @@ const ApplyCurveModal: React.FC<{
                                 </div>
                             </div>
                         </div>
-                        <div style={{ 
-                            marginTop: '12px', 
-                            paddingTop: '12px', 
+                        <div style={{
+                            marginTop: '12px',
+                            paddingTop: '12px',
                             borderTop: '1px solid rgba(0,0,0,0.06)',
                             fontSize: '12px',
                             color: '#64748b',
@@ -1269,7 +1269,7 @@ const ApplyCurveModal: React.FC<{
                 </div>
 
                 {/* Footer */}
-                <div 
+                <div
                     style={{
                         padding: '16px 24px',
                         borderTop: '1px solid rgba(0,0,0,0.06)',
@@ -1300,9 +1300,9 @@ const ApplyCurveModal: React.FC<{
                         Cancel
                     </motion.button>
                     <motion.button
-                        whileHover={{ 
-                            scale: 1.02, 
-                            boxShadow: '0 6px 20px rgba(245, 158, 11, 0.25)' 
+                        whileHover={{
+                            scale: 1.02,
+                            boxShadow: '0 6px 20px rgba(245, 158, 11, 0.25)'
                         }}
                         whileTap={{ scale: 0.98 }}
                         onMouseEnter={() => setIsHoveredApply(true)}
@@ -1315,8 +1315,8 @@ const ApplyCurveModal: React.FC<{
                             padding: '10px 16px',
                             borderRadius: '10px',
                             border: 'none',
-                            background: previewStats.affected > 0 
-                                ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' 
+                            background: previewStats.affected > 0
+                                ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
                                 : 'rgba(0,0,0,0.06)',
                             fontSize: '13px',
                             fontWeight: 600,
@@ -1325,8 +1325,8 @@ const ApplyCurveModal: React.FC<{
                             display: 'flex',
                             alignItems: 'center',
                             gap: '6px',
-                            boxShadow: isHoveredApply && previewStats.affected > 0 
-                                ? '0 6px 20px rgba(245, 158, 11, 0.25)' 
+                            boxShadow: isHoveredApply && previewStats.affected > 0
+                                ? '0 6px 20px rgba(245, 158, 11, 0.25)'
                                 : 'none',
                             transition: 'box-shadow 0.2s ease',
                         }}
@@ -1385,7 +1385,7 @@ const RubricModal: React.FC<{
     }, [isOpen, onClose]);
 
     // Calculate total points from criteria
-    const totalPoints = useMemo(() => 
+    const totalPoints = useMemo(() =>
         criteria.reduce((sum, c) => sum + c.maxPoints, 0),
         [criteria]
     );
@@ -1397,13 +1397,13 @@ const RubricModal: React.FC<{
     // Add new criterion
     const handleAddCriterion = () => {
         if (!newCriterionName.trim() || newCriterionPoints <= 0) return;
-        
+
         const newCriterion: RubricCriterion = {
             id: `criterion-${Date.now()}`,
             name: newCriterionName.trim(),
             maxPoints: newCriterionPoints,
         };
-        
+
         setCriteria(prev => [...prev, newCriterion]);
         setNewCriterionName('');
         setNewCriterionPoints(10);
@@ -1416,14 +1416,14 @@ const RubricModal: React.FC<{
 
     // Update criterion points
     const handleUpdatePoints = (id: string, points: number) => {
-        setCriteria(prev => prev.map(c => 
+        setCriteria(prev => prev.map(c =>
             c.id === id ? { ...c, maxPoints: Math.max(0, points) } : c
         ));
     };
 
     // Update criterion name
     const handleUpdateName = (id: string, name: string) => {
-        setCriteria(prev => prev.map(c => 
+        setCriteria(prev => prev.map(c =>
             c.id === id ? { ...c, name } : c
         ));
     };
@@ -1622,10 +1622,10 @@ const RubricModal: React.FC<{
                         <>
                             {/* Quick Templates */}
                             <div style={{ marginBottom: '20px' }}>
-                                <div style={{ 
-                                    fontSize: '11px', 
-                                    fontWeight: 600, 
-                                    color: '#64748b', 
+                                <div style={{
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    color: '#64748b',
                                     marginBottom: '8px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
@@ -1680,15 +1680,15 @@ const RubricModal: React.FC<{
                                         )}
                                     </svg>
                                     <span style={{ fontSize: '13px', fontWeight: 500, color: pointsMatch ? '#10b981' : '#f59e0b' }}>
-                                        {pointsMatch 
-                                            ? 'Points match exam total!' 
+                                        {pointsMatch
+                                            ? 'Points match exam total!'
                                             : `${pointsDiff > 0 ? pointsDiff + ' points remaining' : Math.abs(pointsDiff) + ' points over'}`
                                         }
                                     </span>
                                 </div>
-                                <div style={{ 
-                                    fontSize: '14px', 
-                                    fontWeight: 700, 
+                                <div style={{
+                                    fontSize: '14px',
+                                    fontWeight: 700,
                                     color: pointsMatch ? '#10b981' : '#f59e0b',
                                 }}>
                                     {totalPoints} / {maxScore} pts
@@ -1697,17 +1697,17 @@ const RubricModal: React.FC<{
 
                             {/* Criteria List */}
                             <div style={{ marginBottom: '16px' }}>
-                                <div style={{ 
-                                    fontSize: '11px', 
-                                    fontWeight: 600, 
-                                    color: '#64748b', 
+                                <div style={{
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    color: '#64748b',
                                     marginBottom: '10px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
                                 }}>
                                     Criteria ({criteria.length})
                                 </div>
-                                
+
                                 {criteria.length === 0 ? (
                                     <div style={{
                                         padding: '24px',
@@ -1821,10 +1821,10 @@ const RubricModal: React.FC<{
                                 background: 'rgba(0,0,0,0.02)',
                                 border: '1px solid rgba(0,0,0,0.06)',
                             }}>
-                                <div style={{ 
-                                    fontSize: '11px', 
-                                    fontWeight: 600, 
-                                    color: '#64748b', 
+                                <div style={{
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    color: '#64748b',
                                     marginBottom: '10px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
@@ -2000,7 +2000,7 @@ const GradeWeightingModal: React.FC<{
     }, [isOpen, onClose]);
 
     // Calculate total weight
-    const totalWeight = useMemo(() => 
+    const totalWeight = useMemo(() =>
         weights.reduce((sum, w) => sum + w.weight, 0),
         [weights]
     );
@@ -2010,12 +2010,12 @@ const GradeWeightingModal: React.FC<{
     // Get exam categories from database exams - only exam period types (prelim, midterm, prefinal, final)
     const examCategoriesFromDB = useMemo(() => {
         const categories = new Map<ExamCategory, { count: number; exams: string[] }>();
-        
+
         exams.forEach(exam => {
             // Map exam title to category based on exam period from database
             let category: ExamCategory | null = null;
             const titleLower = exam.title.toLowerCase();
-            
+
             if (titleLower.includes('prelim') || titleLower.includes('preliminary')) {
                 category = 'prelim';
             } else if (titleLower.includes('midterm') || titleLower.includes('mid-term') || titleLower.includes('mid term')) {
@@ -2025,7 +2025,7 @@ const GradeWeightingModal: React.FC<{
             } else if (titleLower.includes('final')) {
                 category = 'final';
             }
-            
+
             if (category) {
                 const existing = categories.get(category) || { count: 0, exams: [] };
                 categories.set(category, {
@@ -2034,13 +2034,13 @@ const GradeWeightingModal: React.FC<{
                 });
             }
         });
-        
+
         return categories;
     }, [exams]);
 
     // Update weight
     const handleUpdateWeight = (category: ExamCategory, newWeight: number) => {
-        setWeights(prev => prev.map(w => 
+        setWeights(prev => prev.map(w =>
             w.category === category ? { ...w, weight: Math.max(0, Math.min(100, newWeight)) } : w
         ));
     };
@@ -2049,9 +2049,9 @@ const GradeWeightingModal: React.FC<{
     const handleAddCategory = (category: ExamCategory, label: string) => {
         if (weights.some(w => w.category === category)) return;
         const examData = examCategoriesFromDB.get(category);
-        setWeights(prev => [...prev, { 
-            category, 
-            weight: 0, 
+        setWeights(prev => [...prev, {
+            category,
+            weight: 0,
             label,
             examCount: examData?.count || 0,
         }]);
@@ -2282,10 +2282,10 @@ const GradeWeightingModal: React.FC<{
                         <>
                             {/* Quick Presets */}
                             <div style={{ marginBottom: '20px' }}>
-                                <div style={{ 
-                                    fontSize: '11px', 
-                                    fontWeight: 600, 
-                                    color: '#64748b', 
+                                <div style={{
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    color: '#64748b',
                                     marginBottom: '8px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
@@ -2341,8 +2341,8 @@ const GradeWeightingModal: React.FC<{
                                         )}
                                     </svg>
                                     <span style={{ fontSize: '13px', fontWeight: 500, color: isValidTotal ? '#10b981' : '#ef4444' }}>
-                                        {isValidTotal 
-                                            ? 'Weights total 100%' 
+                                        {isValidTotal
+                                            ? 'Weights total 100%'
                                             : `Total: ${totalWeight}% (must equal 100%)`
                                         }
                                     </span>
@@ -2351,17 +2351,17 @@ const GradeWeightingModal: React.FC<{
 
                             {/* Weight Sliders */}
                             <div style={{ marginBottom: '16px' }}>
-                                <div style={{ 
-                                    fontSize: '11px', 
-                                    fontWeight: 600, 
-                                    color: '#64748b', 
+                                <div style={{
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    color: '#64748b',
                                     marginBottom: '10px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
                                 }}>
                                     Category Weights
                                 </div>
-                                
+
                                 {weights.length === 0 ? (
                                     <div style={{
                                         padding: '24px',
@@ -2465,18 +2465,18 @@ const GradeWeightingModal: React.FC<{
                                                         </div>
                                                     </div>
                                                     {/* Weight bar */}
-                                                    <div style={{ 
-                                                        height: '6px', 
-                                                        background: 'rgba(0,0,0,0.06)', 
-                                                        borderRadius: '3px', 
+                                                    <div style={{
+                                                        height: '6px',
+                                                        background: 'rgba(0,0,0,0.06)',
+                                                        borderRadius: '3px',
                                                         overflow: 'hidden',
                                                     }}>
                                                         <motion.div
                                                             initial={{ width: 0 }}
                                                             animate={{ width: `${weight.weight}%` }}
                                                             transition={{ duration: 0.3 }}
-                                                            style={{ 
-                                                                height: '100%', 
+                                                            style={{
+                                                                height: '100%',
                                                                 background: 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)',
                                                                 borderRadius: '3px',
                                                             }}
@@ -2497,10 +2497,10 @@ const GradeWeightingModal: React.FC<{
                                     background: 'rgba(0,0,0,0.02)',
                                     border: '1px solid rgba(0,0,0,0.06)',
                                 }}>
-                                    <div style={{ 
-                                        fontSize: '11px', 
-                                        fontWeight: 600, 
-                                        color: '#64748b', 
+                                    <div style={{
+                                        fontSize: '11px',
+                                        fontWeight: 600,
+                                        color: '#64748b',
                                         marginBottom: '8px',
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.5px',
@@ -2648,56 +2648,56 @@ const AuditLogModal: React.FC<{
     const getActionInfo = (action: AuditAction): { label: string; color: string; icon: React.ReactNode } => {
         switch (action) {
             case 'score_entered':
-                return { 
-                    label: 'Score Entered', 
+                return {
+                    label: 'Score Entered',
                     color: '#10b981',
                     icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
                 };
             case 'score_updated':
-                return { 
-                    label: 'Score Updated', 
+                return {
+                    label: 'Score Updated',
                     color: '#3b82f6',
                     icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                 };
             case 'score_deleted':
-                return { 
-                    label: 'Score Deleted', 
+                return {
+                    label: 'Score Deleted',
                     color: '#ef4444',
                     icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
                 };
             case 'marked_absent':
-                return { 
-                    label: 'Marked Absent', 
+                return {
+                    label: 'Marked Absent',
                     color: '#ef4444',
                     icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 };
             case 'marked_excused':
-                return { 
-                    label: 'Marked Excused', 
+                return {
+                    label: 'Marked Excused',
                     color: '#f59e0b',
                     icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
                 };
             case 'marked_present':
-                return { 
-                    label: 'Marked Present', 
+                return {
+                    label: 'Marked Present',
                     color: '#10b981',
                     icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
                 };
             case 'bulk_import':
-                return { 
-                    label: 'Bulk Import', 
+                return {
+                    label: 'Bulk Import',
                     color: '#8b5cf6',
                     icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
                 };
             case 'curve_applied':
-                return { 
-                    label: 'Curve Applied', 
+                return {
+                    label: 'Curve Applied',
                     color: '#f59e0b',
                     icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 20h20" /><path d="M5 20V10l7-7 7 7v10" /></svg>
                 };
             case 'scores_saved':
-                return { 
-                    label: 'Scores Saved', 
+                return {
+                    label: 'Scores Saved',
                     color: '#10b981',
                     icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
                 };
@@ -2713,7 +2713,7 @@ const AuditLogModal: React.FC<{
         const diffMs = now.getTime() - date.getTime();
         const diffMins = Math.floor(diffMs / 60000);
         const diffHours = Math.floor(diffMs / 3600000);
-        
+
         if (diffMins < 1) return 'Just now';
         if (diffMins < 60) return `${diffMins}m ago`;
         if (diffHours < 24) return `${diffHours}h ago`;
@@ -2914,13 +2914,13 @@ const AuditLogModal: React.FC<{
                                                     {formatTime(entry.timestamp)}
                                                 </span>
                                             </div>
-                                            
+
                                             {entry.studentName && (
                                                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginBottom: '2px' }}>
                                                     {entry.studentName}
                                                 </div>
                                             )}
-                                            
+
                                             {(entry.previousValue !== undefined || entry.newValue !== undefined) && (
                                                 <div style={{ fontSize: '12px', color: '#64748b' }}>
                                                     {entry.previousValue !== null && entry.previousValue !== undefined && (
@@ -2938,13 +2938,13 @@ const AuditLogModal: React.FC<{
                                                     )}
                                                 </div>
                                             )}
-                                            
+
                                             {entry.details && (
                                                 <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
                                                     {entry.details}
                                                 </div>
                                             )}
-                                            
+
                                             <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px' }}>
                                                 by {entry.userName}
                                             </div>
@@ -3033,7 +3033,7 @@ const CustomDropdown: React.FC<{
                     {label}
                 </label>
             )}
-            
+
             <motion.button
                 whileTap={isDisabled ? {} : { scale: 0.99 }}
                 onClick={() => !isDisabled && setIsOpen(!isOpen)}
@@ -3045,8 +3045,8 @@ const CustomDropdown: React.FC<{
                     width: '100%',
                     padding: '12px 14px',
                     borderRadius: '12px',
-                    border: isOpen 
-                        ? '1px solid rgba(59, 130, 246, 0.4)' 
+                    border: isOpen
+                        ? '1px solid rgba(59, 130, 246, 0.4)'
                         : '1px solid rgba(0,0,0,0.08)',
                     background: isDisabled ? 'rgba(0,0,0,0.02)' : '#ffffff',
                     color: selectedOption ? '#0f172a' : '#94a3b8',
@@ -3058,12 +3058,12 @@ const CustomDropdown: React.FC<{
                     opacity: isDisabled ? 0.6 : 1,
                 }}
             >
-                <span style={{ 
+                <span style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    overflow: 'hidden', 
-                    textOverflow: 'ellipsis', 
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
                 }}>
                     {isLoading && (
@@ -3126,7 +3126,7 @@ const CustomDropdown: React.FC<{
                             options.map((option, index) => {
                                 const isSelected = option.id === value;
                                 const isHovered = hoveredId === option.id;
-                                
+
                                 return (
                                     <motion.button
                                         key={option.id}
@@ -3147,10 +3147,10 @@ const CustomDropdown: React.FC<{
                                             padding: '10px 12px',
                                             borderRadius: '8px',
                                             border: 'none',
-                                            background: isSelected 
-                                                ? 'rgba(59, 130, 246, 0.1)' 
-                                                : isHovered 
-                                                    ? 'rgba(0,0,0,0.03)' 
+                                            background: isSelected
+                                                ? 'rgba(59, 130, 246, 0.1)'
+                                                : isHovered
+                                                    ? 'rgba(0,0,0,0.03)'
                                                     : 'transparent',
                                             color: isSelected ? '#3b82f6' : '#334155',
                                             fontSize: '14px',
@@ -3291,8 +3291,8 @@ const AttendanceDropdown: React.FC<{
                     gap: '6px',
                     padding: '6px 10px',
                     borderRadius: '8px',
-                    border: isOpen 
-                        ? `1px solid ${selectedOption.color}40` 
+                    border: isOpen
+                        ? `1px solid ${selectedOption.color}40`
                         : '1px solid rgba(0,0,0,0.06)',
                     background: isOpen ? selectedOption.bgColor : '#ffffff',
                     color: selectedOption.color,
@@ -3300,8 +3300,8 @@ const AttendanceDropdown: React.FC<{
                     fontWeight: 600,
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
-                    boxShadow: isOpen 
-                        ? `0 0 0 2px ${selectedOption.color}15` 
+                    boxShadow: isOpen
+                        ? `0 0 0 2px ${selectedOption.color}15`
                         : '0 1px 2px rgba(0,0,0,0.04)',
                     minWidth: '90px',
                 }}
@@ -3341,8 +3341,8 @@ const AttendanceDropdown: React.FC<{
                         aria-label="Select attendance status"
                         style={{
                             position: 'absolute',
-                            ...(dropdownPosition === 'bottom' 
-                                ? { top: 'calc(100% + 4px)' } 
+                            ...(dropdownPosition === 'bottom'
+                                ? { top: 'calc(100% + 4px)' }
                                 : { bottom: 'calc(100% + 4px)' }),
                             left: '50%',
                             transform: 'translateX(-50%)',
@@ -3358,7 +3358,7 @@ const AttendanceDropdown: React.FC<{
                         {options.map((option, index) => {
                             const isSelected = option.id === value;
                             const isHovered = hoveredId === option.id;
-                            
+
                             return (
                                 <motion.button
                                     key={option.id}
@@ -3381,10 +3381,10 @@ const AttendanceDropdown: React.FC<{
                                         padding: '8px 10px',
                                         borderRadius: '6px',
                                         border: 'none',
-                                        background: isSelected 
-                                            ? option.bgColor 
-                                            : isHovered 
-                                                ? 'rgba(0,0,0,0.03)' 
+                                        background: isSelected
+                                            ? option.bgColor
+                                            : isHovered
+                                                ? 'rgba(0,0,0,0.03)'
                                                 : 'transparent',
                                         color: isSelected ? option.color : '#475569',
                                         fontSize: '12px',
@@ -3394,8 +3394,8 @@ const AttendanceDropdown: React.FC<{
                                         transition: 'all 0.1s ease',
                                     }}
                                 >
-                                    <span style={{ 
-                                        display: 'flex', 
+                                    <span style={{
+                                        display: 'flex',
                                         alignItems: 'center',
                                         color: isSelected || isHovered ? option.color : '#94a3b8',
                                         transition: 'color 0.1s ease',
@@ -3457,14 +3457,14 @@ const StudentScoreHistoryModal: React.FC<StudentScoreHistoryModalProps> = ({
     // Calculate statistics
     const validScores = history.filter(h => h.score !== null);
     const percentages = validScores.map(h => (h.score / h.maxScore) * 100);
-    const avgPercentage = percentages.length > 0 
-        ? Math.round(percentages.reduce((a, b) => a + b, 0) / percentages.length) 
+    const avgPercentage = percentages.length > 0
+        ? Math.round(percentages.reduce((a, b) => a + b, 0) / percentages.length)
         : 0;
     const maxPercentage = percentages.length > 0 ? Math.max(...percentages) : 0;
     const minPercentage = percentages.length > 0 ? Math.min(...percentages) : 0;
-    
+
     // Trend calculation
-    const trend = percentages.length >= 2 
+    const trend = percentages.length >= 2
         ? percentages[percentages.length - 1] - percentages[0]
         : 0;
 
@@ -3486,7 +3486,7 @@ const StudentScoreHistoryModal: React.FC<StudentScoreHistoryModalProps> = ({
                             zIndex: 10000,
                         }}
                     />
-                    
+
                     {/* Modal */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -3591,9 +3591,9 @@ const StudentScoreHistoryModal: React.FC<StudentScoreHistoryModalProps> = ({
                                 <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 500 }}>Lowest</div>
                             </div>
                             <div style={{ textAlign: 'center' }}>
-                                <div style={{ 
-                                    fontSize: '20px', 
-                                    fontWeight: 700, 
+                                <div style={{
+                                    fontSize: '20px',
+                                    fontWeight: 700,
                                     color: trend >= 0 ? '#10b981' : '#ef4444',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -3609,8 +3609,8 @@ const StudentScoreHistoryModal: React.FC<StudentScoreHistoryModalProps> = ({
                         {/* Mini Bar Chart */}
                         <div style={{ padding: '20px' }}>
                             {history.length === 0 ? (
-                                <div style={{ 
-                                    textAlign: 'center', 
+                                <div style={{
+                                    textAlign: 'center',
                                     padding: '40px 20px',
                                     color: '#94a3b8',
                                     fontSize: '13px',
@@ -3626,20 +3626,20 @@ const StudentScoreHistoryModal: React.FC<StudentScoreHistoryModalProps> = ({
                             ) : (
                                 <>
                                     {/* Chart */}
-                                    <div style={{ 
-                                        display: 'flex', 
-                                        alignItems: 'flex-end', 
-                                        gap: '8px', 
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'flex-end',
+                                        gap: '8px',
                                         height: '120px',
                                         marginBottom: '12px',
                                     }}>
                                         {history.slice(-8).map((item, index) => {
                                             const percentage = (item.score / item.maxScore) * 100;
-                                            const barColor = percentage >= 75 ? '#10b981' 
-                                                : percentage >= 50 ? '#3b82f6' 
-                                                : percentage >= 25 ? '#f59e0b' 
-                                                : '#ef4444';
-                                            
+                                            const barColor = percentage >= 75 ? '#10b981'
+                                                : percentage >= 50 ? '#3b82f6'
+                                                    : percentage >= 25 ? '#f59e0b'
+                                                        : '#ef4444';
+
                                             return (
                                                 <motion.div
                                                     key={index}
@@ -3673,14 +3673,14 @@ const StudentScoreHistoryModal: React.FC<StudentScoreHistoryModalProps> = ({
                                             );
                                         })}
                                     </div>
-                                    
+
                                     {/* Exam Labels */}
-                                    <div style={{ 
-                                        display: 'flex', 
+                                    <div style={{
+                                        display: 'flex',
                                         gap: '8px',
                                     }}>
                                         {history.slice(-8).map((item, index) => (
-                                            <div 
+                                            <div
                                                 key={index}
                                                 style={{
                                                     flex: 1,
@@ -3693,8 +3693,8 @@ const StudentScoreHistoryModal: React.FC<StudentScoreHistoryModalProps> = ({
                                                 }}
                                                 title={item.examTitle}
                                             >
-                                                {item.examTitle.length > 8 
-                                                    ? item.examTitle.substring(0, 8) + '...' 
+                                                {item.examTitle.length > 8
+                                                    ? item.examTitle.substring(0, 8) + '...'
                                                     : item.examTitle}
                                             </div>
                                         ))}
@@ -3710,10 +3710,10 @@ const StudentScoreHistoryModal: React.FC<StudentScoreHistoryModalProps> = ({
                                 maxHeight: '200px',
                                 overflowY: 'auto',
                             }}>
-                                <div style={{ 
-                                    fontSize: '11px', 
-                                    fontWeight: 600, 
-                                    color: '#64748b', 
+                                <div style={{
+                                    fontSize: '11px',
+                                    fontWeight: 600,
+                                    color: '#64748b',
                                     marginBottom: '8px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
@@ -3722,11 +3722,11 @@ const StudentScoreHistoryModal: React.FC<StudentScoreHistoryModalProps> = ({
                                 </div>
                                 {history.slice().reverse().slice(0, 5).map((item, index) => {
                                     const percentage = (item.score / item.maxScore) * 100;
-                                    const barColor = percentage >= 75 ? '#10b981' 
-                                        : percentage >= 50 ? '#3b82f6' 
-                                        : percentage >= 25 ? '#f59e0b' 
-                                        : '#ef4444';
-                                    
+                                    const barColor = percentage >= 75 ? '#10b981'
+                                        : percentage >= 50 ? '#3b82f6'
+                                            : percentage >= 25 ? '#f59e0b'
+                                                : '#ef4444';
+
                                     return (
                                         <motion.div
                                             key={index}
@@ -3751,14 +3751,14 @@ const StudentScoreHistoryModal: React.FC<StudentScoreHistoryModalProps> = ({
                                                     {new Date(item.date).toLocaleDateString()}
                                                 </div>
                                             </div>
-                                            <div style={{ 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
                                                 gap: '8px',
                                             }}>
-                                                <span style={{ 
-                                                    fontSize: '12px', 
-                                                    fontWeight: 600, 
+                                                <span style={{
+                                                    fontSize: '12px',
+                                                    fontWeight: 600,
                                                     color: '#64748b',
                                                 }}>
                                                     {item.score}/{item.maxScore}
@@ -3797,14 +3797,14 @@ const ScoreStatistics: React.FC<{
 }> = ({ scores, maxScore, gradingSystem = 'sti' }) => {
     const stats = useMemo(() => {
         const validScores = scores.filter(s => s.score !== null).map(s => s.score as number);
-        
+
         if (validScores.length === 0) {
-            return { 
-                avg: 0, 
-                highest: 0, 
-                lowest: 0, 
-                passing: 0, 
-                entered: 0, 
+            return {
+                avg: 0,
+                highest: 0,
+                lowest: 0,
+                passing: 0,
+                entered: 0,
                 total: scores.length,
                 avgTransmuted: 0,
                 avgGPA: 0,
@@ -3851,7 +3851,7 @@ const ScoreStatistics: React.FC<{
                 <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>Entry Progress</span>
                 <span style={{ fontSize: '13px', fontWeight: 700, color: '#3b82f6' }}>{stats.entered}/{stats.total}</span>
             </div>
-            
+
             <div style={{ height: '6px', background: 'rgba(0,0,0,0.06)', borderRadius: '3px', overflow: 'hidden', marginBottom: '16px' }}>
                 <motion.div
                     initial={{ width: 0 }}
@@ -3885,16 +3885,16 @@ const ScoreStatistics: React.FC<{
             {/* Philippine Grading Stats - Only show if there are scores */}
             {stats.entered > 0 && (
                 <>
-                    <div style={{ 
-                        height: '1px', 
-                        background: 'rgba(0,0,0,0.06)', 
+                    <div style={{
+                        height: '1px',
+                        background: 'rgba(0,0,0,0.06)',
                         margin: '12px 0',
                     }} />
-                    
-                    <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '6px', 
+
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
                         marginBottom: '12px',
                     }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
@@ -3910,7 +3910,7 @@ const ScoreStatistics: React.FC<{
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            style={{ 
+                            style={{
                                 textAlign: 'center',
                                 padding: '10px 8px',
                                 borderRadius: '10px',
@@ -3930,7 +3930,7 @@ const ScoreStatistics: React.FC<{
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.05 }}
-                            style={{ 
+                            style={{
                                 textAlign: 'center',
                                 padding: '10px 8px',
                                 borderRadius: '10px',
@@ -3950,7 +3950,7 @@ const ScoreStatistics: React.FC<{
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.1 }}
-                            style={{ 
+                            style={{
                                 textAlign: 'center',
                                 padding: '10px 8px',
                                 borderRadius: '10px',
@@ -3958,9 +3958,9 @@ const ScoreStatistics: React.FC<{
                                 border: `1px solid ${stats.passingRate >= 75 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)'}`,
                             }}
                         >
-                            <div style={{ 
-                                fontSize: '20px', 
-                                fontWeight: 700, 
+                            <div style={{
+                                fontSize: '20px',
+                                fontWeight: 700,
                                 color: stats.passingRate >= 75 ? '#10b981' : '#ef4444',
                             }}>
                                 {stats.passingRate}%
@@ -3974,7 +3974,7 @@ const ScoreStatistics: React.FC<{
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.15 }}
-                            style={{ 
+                            style={{
                                 textAlign: 'center',
                                 padding: '10px 8px',
                                 borderRadius: '10px',
@@ -4068,9 +4068,9 @@ const AttendanceSummary: React.FC<{
             }}
         >
             {/* Header */}
-            <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'space-between',
                 marginBottom: '12px',
             }}>
@@ -4202,10 +4202,10 @@ const AttendanceSummary: React.FC<{
 
             {/* Attendance Bar */}
             <div style={{ marginTop: '12px' }}>
-                <div style={{ 
-                    height: '8px', 
-                    background: 'rgba(0,0,0,0.06)', 
-                    borderRadius: '4px', 
+                <div style={{
+                    height: '8px',
+                    background: 'rgba(0,0,0,0.06)',
+                    borderRadius: '4px',
                     overflow: 'hidden',
                     display: 'flex',
                 }}>
@@ -4214,8 +4214,8 @@ const AttendanceSummary: React.FC<{
                         initial={{ width: 0 }}
                         animate={{ width: `${(present / total) * 100}%` }}
                         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                        style={{ 
-                            height: '100%', 
+                        style={{
+                            height: '100%',
                             background: '#10b981',
                         }}
                     />
@@ -4224,8 +4224,8 @@ const AttendanceSummary: React.FC<{
                         initial={{ width: 0 }}
                         animate={{ width: `${(excused / total) * 100}%` }}
                         transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                        style={{ 
-                            height: '100%', 
+                        style={{
+                            height: '100%',
                             background: '#f59e0b',
                         }}
                     />
@@ -4234,16 +4234,16 @@ const AttendanceSummary: React.FC<{
                         initial={{ width: 0 }}
                         animate={{ width: `${(absent / total) * 100}%` }}
                         transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        style={{ 
-                            height: '100%', 
+                        style={{
+                            height: '100%',
                             background: '#ef4444',
                         }}
                     />
                 </div>
-                <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    gap: '16px', 
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '16px',
                     marginTop: '8px',
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -4323,7 +4323,7 @@ const ScoreInputWithRef = React.forwardRef<
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setLocalValue(val);
-        
+
         if (val === '') {
             setError(null);
             onChange(null);
@@ -4414,54 +4414,54 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     const modalRef = useRef<HTMLDivElement>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
     const previousActiveElement = useRef<HTMLElement | null>(null);
-    
+
     // Students state - fetched from Supabase
     const [students, setStudents] = useState<Student[]>([]);
-    
+
     // Exams state - fetched from Supabase
     const [exams, setExams] = useState<Exam[]>([]);
     const [isLoadingExams, setIsLoadingExams] = useState(false);
-    
+
     // Exam history state - for "Copy from Previous Exam" feature
     const [examHistory, setExamHistory] = useState<ExamHistoryItem[]>([]);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-    
+
     // Import state
     const [showImportPreview, setShowImportPreview] = useState(false);
     const [importedData, setImportedData] = useState<ImportedRow[]>([]);
-    
+
     // Copy from previous exam state
     const [showCopyModal, setShowCopyModal] = useState(false);
-    
+
     // Apply curve state
     const [showCurveModal, setShowCurveModal] = useState(false);
-    
+
     // Grade weighting state
     const [gradeWeightConfig, setGradeWeightConfig] = useState<GradeWeightConfig>({ enabled: false, weights: [] });
     const [showWeightModal, setShowWeightModal] = useState(false);
-    
+
     // Toolbar visibility state
     const [hideToolbar, setHideToolbar] = useState(false);
-    
+
     // Bulk selection state
     const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
     const [bulkSelectionMode, setBulkSelectionMode] = useState(false);
-    
+
     // Audit log state
     const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([]);
     const [showAuditModal, setShowAuditModal] = useState(false);
-    
+
     // Search state
     const [searchQuery, setSearchQuery] = useState('');
-    
+
     // Grading system state (Philippine grading)
     const [gradingSystem, setGradingSystem] = useState<GradingSystem>('sti');
-    
+
     // Confirmation dialog state
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
     const [saveWarningMessage, setSaveWarningMessage] = useState('');
     const saveConfirmGoBackRef = useRef<HTMLButtonElement>(null);
-    
+
     // Save status toast state
     const [saveStatus, setSaveStatus] = useState<{
         show: boolean;
@@ -4469,46 +4469,46 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
         message: string;
     }>({ show: false, type: 'success', message: '' });
     const saveStatusTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    
+
     // Undo state - stores previous scores for undo functionality
     const [scoresHistory, setScoresHistory] = useState<ExamScore[][]>([]);
     const [canUndo, setCanUndo] = useState(false);
-    
+
     // Auto-save state
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [lastAutoSave, setLastAutoSave] = useState<Date | null>(null);
     const [isAutoSaving, setIsAutoSaving] = useState(false);
     const autoSaveIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const AUTO_SAVE_INTERVAL = 30000; // 30 seconds
-    
+
     // Draft mode state - distinguishes between draft saves and final submissions
     const [isDraft, setIsDraft] = useState(true);
     const [lastDraftSave, setLastDraftSave] = useState<Date | null>(null);
-    
+
     // Student score history state - for mini charts
     const [studentScoreHistory, setStudentScoreHistory] = useState<Record<string, { examTitle: string; score: number; maxScore: number; date: string }[]>>({});
     const [showScoreHistoryModal, setShowScoreHistoryModal] = useState(false);
     const [selectedStudentForHistory, setSelectedStudentForHistory] = useState<{ id: string; name: string } | null>(null);
 
     // Get current exam from exams state
-    const currentExam = useMemo(() => 
-        exams.find(e => e.id === selectedExam), 
+    const currentExam = useMemo(() =>
+        exams.find(e => e.id === selectedExam),
         [exams, selectedExam]
     );
 
     // Get filtered students by search query (section is fixed to BSIT101A)
     const filteredStudents = useMemo(() => {
         let filtered = students;
-        
+
         // Filter by search query
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase().trim();
-            filtered = filtered.filter(s => 
+            filtered = filtered.filter(s =>
                 s.name.toLowerCase().includes(query) ||
                 s.studentId.toLowerCase().includes(query)
             );
         }
-        
+
         return filtered;
     }, [students, searchQuery]);
 
@@ -4638,7 +4638,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                 setSelectedExam('');
                 return;
             }
-            
+
             setIsLoadingExams(true);
             try {
                 const courseExams = await getExamsByCourse(selectedCourse);
@@ -4666,7 +4666,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     useEffect(() => {
         const loadHistory = async () => {
             if (!showCopyModal || !selectedCourse) return;
-            
+
             setIsLoadingHistory(true);
             try {
                 const history = await getExamHistory(selectedCourse, selectedExam);
@@ -4684,7 +4684,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     useEffect(() => {
         const initializeScores = async () => {
             if (!selectedExam || filteredStudents.length === 0) return;
-            
+
             // First, initialize all students with null scores
             const initialScores: ExamScore[] = filteredStudents.map(student => ({
                 studentId: student.studentId,
@@ -4694,11 +4694,11 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                 isAbsent: false,
                 isExcused: false,
             }));
-            
+
             // Then try to load existing scores from database/localStorage
             try {
                 const existingScores = await getExamScores(selectedExam);
-                
+
                 if (existingScores.length > 0) {
                     // Merge existing scores with student list
                     const mergedScores = initialScores.map(s => {
@@ -4724,7 +4724,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                 setScores(initialScores);
             }
         };
-        
+
         initializeScores();
     }, [selectedExam, filteredStudents]);
 
@@ -4744,7 +4744,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     // Undo last action
     const handleUndo = useCallback(() => {
         if (scoresHistory.length === 0) return;
-        
+
         const previousScores = scoresHistory[scoresHistory.length - 1];
         setScores(previousScores);
         setScoresHistory(prev => prev.slice(0, -1));
@@ -4802,13 +4802,13 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     const bulkMarkAbsent = useCallback(() => {
         if (selectedStudents.size === 0) return;
         saveToHistory();
-        
+
         setScores(prev => prev.map(s => {
             if (!selectedStudents.has(s.studentId)) return s;
             addAuditEntry('marked_absent', s.studentId, s.studentName, s.isAbsent ? 'Absent' : 'Present', 'Absent', 'Bulk action');
             return { ...s, isAbsent: true, isExcused: false, score: null };
         }));
-        
+
         setHasUnsavedChanges(true);
         clearSelection();
         setBulkSelectionMode(false);
@@ -4818,13 +4818,13 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     const bulkMarkExcused = useCallback(() => {
         if (selectedStudents.size === 0) return;
         saveToHistory();
-        
+
         setScores(prev => prev.map(s => {
             if (!selectedStudents.has(s.studentId)) return s;
             addAuditEntry('marked_excused', s.studentId, s.studentName, s.isAbsent ? 'Absent' : 'Present', 'Excused', 'Bulk action');
             return { ...s, isAbsent: true, isExcused: true, score: null };
         }));
-        
+
         setHasUnsavedChanges(true);
         clearSelection();
         setBulkSelectionMode(false);
@@ -4834,13 +4834,13 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     const bulkMarkPresent = useCallback(() => {
         if (selectedStudents.size === 0) return;
         saveToHistory();
-        
+
         setScores(prev => prev.map(s => {
             if (!selectedStudents.has(s.studentId)) return s;
             addAuditEntry('marked_present', s.studentId, s.studentName, s.isAbsent ? 'Absent' : 'Present', 'Present', 'Bulk action');
             return { ...s, isAbsent: false, isExcused: false };
         }));
-        
+
         setHasUnsavedChanges(true);
         clearSelection();
         setBulkSelectionMode(false);
@@ -4849,23 +4849,23 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     // Mark ALL students as present (quick action - no selection needed)
     const markAllPresent = useCallback(() => {
         saveToHistory();
-        
+
         const absentCount = scores.filter(s => s.isAbsent).length;
-        
+
         setScores(prev => prev.map(s => {
             if (!s.isAbsent) return s; // Already present
             addAuditEntry('marked_present', s.studentId, s.studentName, s.isExcused ? 'Excused' : 'Absent', 'Present', 'Mark all present');
             return { ...s, isAbsent: false, isExcused: false };
         }));
-        
+
         setHasUnsavedChanges(true);
-        
+
         // Show feedback using setSaveStatus directly
-        const message = absentCount > 0 
+        const message = absentCount > 0
             ? `Marked ${absentCount} student${absentCount !== 1 ? 's' : ''} as present`
             : 'All students are already marked present';
         setSaveStatus({ show: true, type: 'success', message });
-        
+
         // Auto-hide after 3 seconds
         if (saveStatusTimeoutRef.current) {
             clearTimeout(saveStatusTimeoutRef.current);
@@ -4879,14 +4879,14 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     const bulkFillScore = useCallback((value: number) => {
         if (selectedStudents.size === 0) return;
         saveToHistory();
-        
+
         setScores(prev => prev.map(s => {
             if (!selectedStudents.has(s.studentId)) return s;
             if (s.isAbsent) return s; // Don't fill absent students
             addAuditEntry('score_entered', s.studentId, s.studentName, s.score, value, 'Bulk action');
             return { ...s, score: value };
         }));
-        
+
         setHasUnsavedChanges(true);
         clearSelection();
         setBulkSelectionMode(false);
@@ -4905,7 +4905,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                 score
             );
         }
-        setScores(prev => prev.map(s => 
+        setScores(prev => prev.map(s =>
             s.studentId === studentId ? { ...s, score } : s
         ));
         setHasUnsavedChanges(true); // Mark as having unsaved changes
@@ -4916,19 +4916,19 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
         const currentScore = scores.find(s => s.studentId === studentId);
         const studentName = currentScore?.studentName || students.find(s => s.studentId === studentId)?.name;
         const previousStatus = currentScore?.isAbsent ? (currentScore?.isExcused ? 'Excused' : 'Absent') : 'Present';
-        
-        const action: AuditAction = status === 'absent' ? 'marked_absent' 
-            : status === 'excused' ? 'marked_excused' 
-            : 'marked_present';
-        
+
+        const action: AuditAction = status === 'absent' ? 'marked_absent'
+            : status === 'excused' ? 'marked_excused'
+                : 'marked_present';
+
         addAuditEntry(action, studentId, studentName, previousStatus, status === 'present' ? 'Present' : status === 'excused' ? 'Excused' : 'Absent');
-        
+
         setScores(prev => prev.map(s => {
             if (s.studentId !== studentId) return s;
-            
+
             const isAbsent = status === 'absent' || status === 'excused';
             const isExcused = status === 'excused';
-            
+
             return {
                 ...s,
                 isAbsent,
@@ -4976,10 +4976,10 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
         reader.onload = (event) => {
             const text = event.target?.result as string;
             const rows = parseCSV(text);
-            
+
             // Skip header row, assume format: StudentID, Name, Score
             const dataRows = rows.slice(1);
-            
+
             const imported: ImportedRow[] = dataRows
                 .filter(row => row.length >= 2) // At least ID and name
                 .map(row => {
@@ -4987,13 +4987,13 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                     const studentName = row[1]?.trim() || '';
                     const scoreStr = row[2]?.trim() || '';
                     const score = scoreStr === '' ? null : parseFloat(scoreStr);
-                    
+
                     // Try to match with existing students from database
-                    const matchedStudent = students.find(s => 
+                    const matchedStudent = students.find(s =>
                         s.studentId.toLowerCase() === studentId.toLowerCase() ||
                         s.name.toLowerCase() === studentName.toLowerCase()
                     );
-                    
+
                     return {
                         studentId,
                         studentName,
@@ -5002,12 +5002,12 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                         matchedStudentId: matchedStudent?.studentId, // Use studentId for database matching
                     };
                 });
-            
+
             setImportedData(imported);
             setShowImportPreview(true);
         };
         reader.readAsText(file);
-        
+
         // Reset file input
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
@@ -5056,18 +5056,18 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
         const maxScoreValue = currentExam?.maxScore || 100;
         setScores(prev => prev.map(s => {
             if (s.score === null) return s;
-            
+
             let newScore: number;
             if (method === 'percentage') {
                 newScore = s.score * (1 + adjustment / 100);
             } else {
                 newScore = s.score + adjustment;
             }
-            
+
             // Cap at max score and floor at 0
             newScore = Math.max(0, Math.min(newScore, maxScoreValue));
             newScore = Math.round(newScore * 10) / 10; // Round to 1 decimal
-            
+
             return { ...s, score: newScore };
         }));
         setShowCurveModal(false);
@@ -5079,9 +5079,9 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
         if (saveStatusTimeoutRef.current) {
             clearTimeout(saveStatusTimeoutRef.current);
         }
-        
+
         setSaveStatus({ show: true, type, message });
-        
+
         // Auto-hide after 4 seconds for success, 6 seconds for error
         saveStatusTimeoutRef.current = setTimeout(() => {
             setSaveStatus(prev => ({ ...prev, show: false }));
@@ -5091,9 +5091,9 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     // Export to CSV (Excel)
     const handleExportCSV = useCallback(() => {
         if (!selectedExam || !currentExam) return;
-        
+
         const selectedCourseData = courses.find(c => c.id === selectedCourse);
-        
+
         const exportData: ExportScoreData[] = scores.map(s => ({
             studentId: s.studentId,
             studentName: s.studentName || '',
@@ -5103,7 +5103,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
             isExcused: s.isExcused,
             remarks: s.remarks,
         }));
-        
+
         const exportOptions: ExportOptions = {
             examTitle: currentExam.title,
             courseTitle: selectedCourseData ? `${selectedCourseData.shortTitle} - ${selectedCourseData.title}` : 'Unknown Course',
@@ -5112,7 +5112,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
             exportDate: new Date(),
             teacherName: 'Instructor',
         };
-        
+
         downloadCSV(exportData, exportOptions);
         showSaveStatus('success', 'Scores exported to Excel (CSV) successfully!');
     }, [selectedExam, currentExam, courses, selectedCourse, scores, selectedSection, gradingSystem, showSaveStatus]);
@@ -5120,9 +5120,9 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     // Export to PDF (Print View)
     const handleExportPDF = useCallback(() => {
         if (!selectedExam || !currentExam) return;
-        
+
         const selectedCourseData = courses.find(c => c.id === selectedCourse);
-        
+
         const exportData: ExportScoreData[] = scores.map(s => ({
             studentId: s.studentId,
             studentName: s.studentName || '',
@@ -5132,7 +5132,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
             isExcused: s.isExcused,
             remarks: s.remarks,
         }));
-        
+
         const exportOptions: ExportOptions = {
             examTitle: currentExam.title,
             courseTitle: selectedCourseData ? `${selectedCourseData.shortTitle} - ${selectedCourseData.title}` : 'Unknown Course',
@@ -5141,7 +5141,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
             exportDate: new Date(),
             teacherName: 'Instructor',
         };
-        
+
         openPrintView(exportData, exportOptions);
     }, [selectedExam, currentExam, courses, selectedCourse, scores, selectedSection, gradingSystem]);
 
@@ -5157,10 +5157,10 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     // Save scores to Supabase
     const handleSave = async (asDraft: boolean = false) => {
         if (!selectedExam) return;
-        
+
         setIsSaving(true);
         const examTitle = currentExam?.title || 'exam';
-        
+
         try {
             // Prepare scores for saving (including attendance and draft status)
             const scoresToSave = scores.map(s => ({
@@ -5171,10 +5171,10 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                 isAbsent: s.isAbsent || false,
                 isExcused: s.isExcused || false,
             }));
-            
+
             // Save to Supabase using the exams service
             const result = await saveExamScores(selectedExam, scoresToSave);
-            
+
             if (!result.success) {
                 throw new Error(result.error || 'Failed to save scores');
             }
@@ -5192,21 +5192,21 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                     isExcused: s.isExcused,
                 }))
             );
-            
+
             // Also call the optional onSave callback if provided
             if (onSave) {
                 await onSave(selectedExam, scores);
             }
-            
+
             // Reset unsaved changes flag
             setHasUnsavedChanges(false);
-            
+
             if (asDraft) {
                 // Draft save - don't close modal
                 setLastDraftSave(new Date());
                 setIsDraft(true);
                 showSaveStatus(
-                    'success', 
+                    'success',
                     `📝 Draft saved! ${result.savedCount} score${result.savedCount !== 1 ? 's' : ''} for "${examTitle}"`
                 );
             } else {
@@ -5214,19 +5214,19 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                 setLastAutoSave(new Date());
                 setIsDraft(false);
                 showSaveStatus(
-                    'success', 
+                    'success',
                     `✅ Finalized! ${result.savedCount} score${result.savedCount !== 1 ? 's' : ''} for "${examTitle}"`
                 );
-                
+
                 // Close modal after a brief delay to show success message
                 setTimeout(() => {
                     onClose();
                 }, 1500);
             }
-            
+
         } catch (error) {
             console.error('Failed to save scores:', error);
-            
+
             // Show error toast with helpful message
             const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
             showSaveStatus(
@@ -5241,13 +5241,13 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     // Auto-save function (silent save without closing modal)
     const performAutoSave = useCallback(async () => {
         if (!selectedExam || !hasUnsavedChanges || isAutoSaving || isSaving) return;
-        
+
         // Only auto-save if there are actual scores entered
         const hasScores = scores.some(s => s.score !== null || s.isAbsent);
         if (!hasScores) return;
-        
+
         setIsAutoSaving(true);
-        
+
         try {
             const scoresToSave = scores.map(s => ({
                 studentId: s.studentId,
@@ -5257,9 +5257,9 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                 isAbsent: s.isAbsent || false,
                 isExcused: s.isExcused || false,
             }));
-            
+
             const result = await saveExamScores(selectedExam, scoresToSave);
-            
+
             if (result.success) {
                 setHasUnsavedChanges(false);
                 setLastAutoSave(new Date());
@@ -5283,12 +5283,12 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
             }
             return;
         }
-        
+
         // Set up auto-save interval
         autoSaveIntervalRef.current = setInterval(() => {
             performAutoSave();
         }, AUTO_SAVE_INTERVAL);
-        
+
         // Cleanup on unmount or when dependencies change
         return () => {
             if (autoSaveIntervalRef.current) {
@@ -5308,31 +5308,31 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     // Validate and initiate save (with confirmation if needed)
     const handleSaveClick = useCallback((asDraft: boolean = false) => {
         if (!selectedExam) return;
-        
+
         const emptyCount = scores.filter(s => s.score === null && !s.isAbsent).length;
         const absentCount = scores.filter(s => s.isAbsent).length;
         const zeroScoreCount = scores.filter(s => s.score === 0 && !s.isAbsent).length;
         const totalCount = scores.length;
         const presentCount = totalCount - absentCount;
-        
+
         // Build detailed warning messages
         const warnings: string[] = [];
-        
+
         if (emptyCount === presentCount && presentCount > 0) {
             warnings.push(`⚠️ All ${presentCount} present students have no scores entered.`);
         } else if (emptyCount > 0) {
             const percentage = Math.round((emptyCount / presentCount) * 100);
             warnings.push(`⚠️ ${emptyCount} student${emptyCount !== 1 ? 's' : ''} (${percentage}%) have no scores entered.`);
         }
-        
+
         if (zeroScoreCount > 0) {
             warnings.push(`📊 ${zeroScoreCount} student${zeroScoreCount !== 1 ? 's' : ''} have a score of 0.`);
         }
-        
+
         if (absentCount > 0) {
             warnings.push(`🚫 ${absentCount} student${absentCount !== 1 ? 's are' : ' is'} marked absent/excused.`);
         }
-        
+
         // If saving as draft, be more lenient
         if (asDraft) {
             setIsDraft(true);
@@ -5357,7 +5357,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
             }
         }
     }, [selectedExam, scores]);
-    
+
     // Handle save as draft (quick save)
     const handleSaveDraft = useCallback(() => {
         handleSaveClick(true);
@@ -5370,13 +5370,13 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
     }, [isDraft]);
 
     // Course options for dropdown
-    const courseOptions = useMemo(() => 
+    const courseOptions = useMemo(() =>
         courses.map(c => ({ id: c.id, label: `${c.shortTitle} - ${c.title}` })),
         [courses]
     );
 
     // Exam options for dropdown (from Supabase)
-    const examOptions = useMemo(() => 
+    const examOptions = useMemo(() =>
         exams.map(e => ({ id: e.id, label: `${e.title} (${e.maxScore} pts)` })),
         [exams]
     );
@@ -5520,7 +5520,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                         </div>
                                         {/* Search Input */}
                                         <div style={{ flex: 1, minWidth: '200px' }}>
-                                            <label 
+                                            <label
                                                 htmlFor="student-search-input"
                                                 style={{
                                                     display: 'block',
@@ -5560,12 +5560,12 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                                         e.target.style.boxShadow = 'none';
                                                     }}
                                                 />
-                                                <svg 
-                                                    width="16" 
-                                                    height="16" 
-                                                    viewBox="0 0 24 24" 
-                                                    fill="none" 
-                                                    stroke="#94a3b8" 
+                                                <svg
+                                                    width="16"
+                                                    height="16"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="#94a3b8"
                                                     strokeWidth="2"
                                                     style={{
                                                         position: 'absolute',
@@ -5611,7 +5611,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                         </div>
                                         {/* Hide Tools Toggle Button - Inline */}
                                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                                            <label 
+                                            <label
                                                 style={{
                                                     display: 'block',
                                                     fontSize: '12px',
@@ -5642,12 +5642,12 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                                     whiteSpace: 'nowrap',
                                                 }}
                                             >
-                                                <motion.svg 
-                                                    width="14" 
-                                                    height="14" 
-                                                    viewBox="0 0 24 24" 
-                                                    fill="none" 
-                                                    stroke="currentColor" 
+                                                <motion.svg
+                                                    width="14"
+                                                    height="14"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
                                                     strokeWidth="2"
                                                     animate={{ rotate: hideToolbar ? 180 : 0 }}
                                                     transition={{ duration: 0.2 }}
@@ -5683,476 +5683,476 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                                 transition={{ duration: 0.2 }}
                                                 style={{ overflow: 'hidden' }}
                                             >
-                                    {/* Row 2: Primary Actions (4 buttons) */}
-                                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }} role="toolbar" aria-label="Primary actions">
-                                        {/* Undo Button */}
-                                        <motion.button
-                                            whileHover={canUndo ? { scale: 1.02 } : {}}
-                                            whileTap={canUndo ? { scale: 0.98 } : {}}
-                                            onClick={handleUndo}
-                                            disabled={!canUndo}
-                                            aria-label="Undo last action"
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '6px',
-                                                padding: '10px 12px',
-                                                background: canUndo ? 'rgba(59, 130, 246, 0.08)' : 'rgba(0,0,0,0.02)',
-                                                color: canUndo ? '#3b82f6' : '#94a3b8',
-                                                border: `1px solid ${canUndo ? 'rgba(59, 130, 246, 0.2)' : 'rgba(0,0,0,0.06)'}`,
-                                                borderRadius: '10px',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                cursor: canUndo ? 'pointer' : 'not-allowed',
-                                            }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7v6h6" /><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" /></svg>
-                                            Undo
-                                        </motion.button>
-                                        <input ref={fileInputRef} type="file" accept=".csv,.txt" onChange={handleFileImport} style={{ display: 'none' }} />
-                                        {/* Import Button */}
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => fileInputRef.current?.click()}
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '6px',
-                                                padding: '10px 12px',
-                                                background: 'rgba(16, 185, 129, 0.08)',
-                                                color: '#10b981',
-                                                border: '1px solid rgba(16, 185, 129, 0.2)',
-                                                borderRadius: '10px',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
-                                            Import
-                                        </motion.button>
-                                        {/* Copy Button */}
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => setShowCopyModal(true)}
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '6px',
-                                                padding: '10px 12px',
-                                                background: 'rgba(139, 92, 246, 0.08)',
-                                                color: '#8b5cf6',
-                                                border: '1px solid rgba(139, 92, 246, 0.2)',
-                                                borderRadius: '10px',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
-                                            Copy
-                                        </motion.button>
-                                        {/* Curve Button */}
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => setShowCurveModal(true)}
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '6px',
-                                                padding: '10px 12px',
-                                                background: 'rgba(245, 158, 11, 0.08)',
-                                                color: '#f59e0b',
-                                                border: '1px solid rgba(245, 158, 11, 0.2)',
-                                                borderRadius: '10px',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 20h20" /><path d="M5 20V10l7-7 7 7v10" /></svg>
-                                            Curve
-                                        </motion.button>
-                                    </div>
-
-                                    {/* Row 3: Secondary Actions (3 buttons) */}
-                                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }} role="toolbar" aria-label="Secondary actions">
-                                        {/* Weights Button */}
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => setShowWeightModal(true)}
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '6px',
-                                                padding: '10px 12px',
-                                                background: gradeWeightConfig.enabled ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.05)',
-                                                color: '#3b82f6',
-                                                border: `1px solid ${gradeWeightConfig.enabled ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.15)'}`,
-                                                borderRadius: '10px',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" /></svg>
-                                            {gradeWeightConfig.enabled ? 'Weights ✓' : 'Weights'}
-                                        </motion.button>
-                                        {/* Fill Button */}
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => handleFillAll(0)}
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '6px',
-                                                padding: '10px 12px',
-                                                borderRadius: '10px',
-                                                border: '1px solid rgba(0,0,0,0.08)',
-                                                background: '#ffffff',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                color: '#64748b',
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
-                                            Fill (0)
-                                        </motion.button>
-                                        {/* Clear Button */}
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={handleClearAll}
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                padding: '10px 12px',
-                                                borderRadius: '10px',
-                                                border: '1px solid rgba(239, 68, 68, 0.2)',
-                                                background: 'rgba(239, 68, 68, 0.05)',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                color: '#ef4444',
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            Clear
-                                        </motion.button>
-                                    </div>
-                                    
-                                    {/* Row 4: Quick Actions & Bulk Selection */}
-                                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }} role="toolbar" aria-label="Bulk actions">
-                                        {/* Mark All Present - Quick Action */}
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={markAllPresent}
-                                            aria-label="Mark all students as present"
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '6px',
-                                                padding: '10px 12px',
-                                                borderRadius: '10px',
-                                                border: '1px solid rgba(16, 185, 129, 0.2)',
-                                                background: 'rgba(16, 185, 129, 0.05)',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                color: '#10b981',
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                                <polyline points="22 4 12 14.01 9 11.01" />
-                                            </svg>
-                                            All Present
-                                        </motion.button>
-                                        {/* Bulk Select Toggle */}
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => {
-                                                setBulkSelectionMode(!bulkSelectionMode);
-                                                if (bulkSelectionMode) clearSelection();
-                                            }}
-                                            aria-label={bulkSelectionMode ? "Exit bulk selection mode" : "Enter bulk selection mode"}
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '6px',
-                                                padding: '10px 12px',
-                                                borderRadius: '10px',
-                                                border: `1px solid ${bulkSelectionMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(0,0,0,0.08)'}`,
-                                                background: bulkSelectionMode ? 'rgba(59, 130, 246, 0.1)' : '#ffffff',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                color: bulkSelectionMode ? '#3b82f6' : '#64748b',
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                                                <rect x="3" y="3" width="7" height="7" />
-                                                <rect x="14" y="3" width="7" height="7" />
-                                                <rect x="14" y="14" width="7" height="7" />
-                                                <rect x="3" y="14" width="7" height="7" />
-                                            </svg>
-                                            {bulkSelectionMode ? `Select (${selectedStudents.size})` : 'Bulk Select'}
-                                        </motion.button>
-                                        {/* History/Audit Log Button */}
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => setShowAuditModal(true)}
-                                            aria-label="View grade history"
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '6px',
-                                                padding: '10px 12px',
-                                                borderRadius: '10px',
-                                                border: '1px solid rgba(100, 116, 139, 0.2)',
-                                                background: auditLog.length > 0 ? 'rgba(100, 116, 139, 0.05)' : '#ffffff',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                color: '#64748b',
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                                                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            History {auditLog.length > 0 && `(${auditLog.length})`}
-                                        </motion.button>
-                                    </div>
-
-                                    {/* Bulk Actions Bar - Only show when in bulk selection mode */}
-                                    <AnimatePresence>
-                                        {bulkSelectionMode && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                style={{
-                                                    marginTop: '8px',
-                                                    padding: '12px',
-                                                    borderRadius: '10px',
-                                                    background: 'rgba(59, 130, 246, 0.05)',
-                                                    border: '1px solid rgba(59, 130, 246, 0.15)',
-                                                }}
-                                            >
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                                                    <span style={{ fontSize: '12px', fontWeight: 600, color: '#3b82f6' }}>
-                                                        {selectedStudents.size} student{selectedStudents.size !== 1 ? 's' : ''} selected
-                                                    </span>
-                                                    <div style={{ display: 'flex', gap: '6px' }}>
-                                                        <motion.button
-                                                            whileHover={{ scale: 1.02 }}
-                                                            whileTap={{ scale: 0.98 }}
-                                                            onClick={selectAllStudents}
-                                                            style={{
-                                                                padding: '4px 8px',
-                                                                borderRadius: '6px',
-                                                                border: 'none',
-                                                                background: 'rgba(59, 130, 246, 0.1)',
-                                                                fontSize: '11px',
-                                                                fontWeight: 600,
-                                                                color: '#3b82f6',
-                                                                cursor: 'pointer',
-                                                            }}
-                                                        >
-                                                            Select All
-                                                        </motion.button>
-                                                        <motion.button
-                                                            whileHover={{ scale: 1.02 }}
-                                                            whileTap={{ scale: 0.98 }}
-                                                            onClick={clearSelection}
-                                                            style={{
-                                                                padding: '4px 8px',
-                                                                borderRadius: '6px',
-                                                                border: 'none',
-                                                                background: 'rgba(0,0,0,0.05)',
-                                                                fontSize: '11px',
-                                                                fontWeight: 600,
-                                                                color: '#64748b',
-                                                                cursor: 'pointer',
-                                                            }}
-                                                        >
-                                                            Clear
-                                                        </motion.button>
-                                                    </div>
-                                                </div>
-                                                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                                {/* Row 2: Primary Actions (4 buttons) */}
+                                                <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }} role="toolbar" aria-label="Primary actions">
+                                                    {/* Undo Button */}
+                                                    <motion.button
+                                                        whileHover={canUndo ? { scale: 1.02 } : {}}
+                                                        whileTap={canUndo ? { scale: 0.98 } : {}}
+                                                        onClick={handleUndo}
+                                                        disabled={!canUndo}
+                                                        aria-label="Undo last action"
+                                                        style={{
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '6px',
+                                                            padding: '10px 12px',
+                                                            background: canUndo ? 'rgba(59, 130, 246, 0.08)' : 'rgba(0,0,0,0.02)',
+                                                            color: canUndo ? '#3b82f6' : '#94a3b8',
+                                                            border: `1px solid ${canUndo ? 'rgba(59, 130, 246, 0.2)' : 'rgba(0,0,0,0.06)'}`,
+                                                            borderRadius: '10px',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            cursor: canUndo ? 'pointer' : 'not-allowed',
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 7v6h6" /><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" /></svg>
+                                                        Undo
+                                                    </motion.button>
+                                                    <input ref={fileInputRef} type="file" accept=".csv,.txt" onChange={handleFileImport} style={{ display: 'none' }} />
+                                                    {/* Import Button */}
                                                     <motion.button
                                                         whileHover={{ scale: 1.02 }}
                                                         whileTap={{ scale: 0.98 }}
-                                                        onClick={bulkMarkAbsent}
-                                                        disabled={selectedStudents.size === 0}
+                                                        onClick={() => fileInputRef.current?.click()}
                                                         style={{
-                                                            padding: '6px 12px',
-                                                            borderRadius: '6px',
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '6px',
+                                                            padding: '10px 12px',
+                                                            background: 'rgba(16, 185, 129, 0.08)',
+                                                            color: '#10b981',
+                                                            border: '1px solid rgba(16, 185, 129, 0.2)',
+                                                            borderRadius: '10px',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                                                        Import
+                                                    </motion.button>
+                                                    {/* Copy Button */}
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={() => setShowCopyModal(true)}
+                                                        style={{
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '6px',
+                                                            padding: '10px 12px',
+                                                            background: 'rgba(139, 92, 246, 0.08)',
+                                                            color: '#8b5cf6',
+                                                            border: '1px solid rgba(139, 92, 246, 0.2)',
+                                                            borderRadius: '10px',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+                                                        Copy
+                                                    </motion.button>
+                                                    {/* Curve Button */}
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={() => setShowCurveModal(true)}
+                                                        style={{
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '6px',
+                                                            padding: '10px 12px',
+                                                            background: 'rgba(245, 158, 11, 0.08)',
+                                                            color: '#f59e0b',
+                                                            border: '1px solid rgba(245, 158, 11, 0.2)',
+                                                            borderRadius: '10px',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 20h20" /><path d="M5 20V10l7-7 7 7v10" /></svg>
+                                                        Curve
+                                                    </motion.button>
+                                                </div>
+
+                                                {/* Row 3: Secondary Actions (3 buttons) */}
+                                                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }} role="toolbar" aria-label="Secondary actions">
+                                                    {/* Weights Button */}
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={() => setShowWeightModal(true)}
+                                                        style={{
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '6px',
+                                                            padding: '10px 12px',
+                                                            background: gradeWeightConfig.enabled ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.05)',
+                                                            color: '#3b82f6',
+                                                            border: `1px solid ${gradeWeightConfig.enabled ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.15)'}`,
+                                                            borderRadius: '10px',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" /></svg>
+                                                        {gradeWeightConfig.enabled ? 'Weights ✓' : 'Weights'}
+                                                    </motion.button>
+                                                    {/* Fill Button */}
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={() => handleFillAll(0)}
+                                                        style={{
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '6px',
+                                                            padding: '10px 12px',
+                                                            borderRadius: '10px',
+                                                            border: '1px solid rgba(0,0,0,0.08)',
+                                                            background: '#ffffff',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            color: '#64748b',
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
+                                                        Fill (0)
+                                                    </motion.button>
+                                                    {/* Clear Button */}
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={handleClearAll}
+                                                        style={{
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            padding: '10px 12px',
+                                                            borderRadius: '10px',
                                                             border: '1px solid rgba(239, 68, 68, 0.2)',
                                                             background: 'rgba(239, 68, 68, 0.05)',
-                                                            fontSize: '11px',
+                                                            fontSize: '12px',
                                                             fontWeight: 600,
-                                                            color: selectedStudents.size > 0 ? '#ef4444' : '#94a3b8',
-                                                            cursor: selectedStudents.size > 0 ? 'pointer' : 'not-allowed',
+                                                            color: '#ef4444',
+                                                            cursor: 'pointer',
                                                         }}
                                                     >
-                                                        Mark Absent
-                                                    </motion.button>
-                                                    <motion.button
-                                                        whileHover={{ scale: 1.02 }}
-                                                        whileTap={{ scale: 0.98 }}
-                                                        onClick={bulkMarkExcused}
-                                                        disabled={selectedStudents.size === 0}
-                                                        style={{
-                                                            padding: '6px 12px',
-                                                            borderRadius: '6px',
-                                                            border: '1px solid rgba(245, 158, 11, 0.2)',
-                                                            background: 'rgba(245, 158, 11, 0.05)',
-                                                            fontSize: '11px',
-                                                            fontWeight: 600,
-                                                            color: selectedStudents.size > 0 ? '#f59e0b' : '#94a3b8',
-                                                            cursor: selectedStudents.size > 0 ? 'pointer' : 'not-allowed',
-                                                        }}
-                                                    >
-                                                        Mark Excused
-                                                    </motion.button>
-                                                    <motion.button
-                                                        whileHover={{ scale: 1.02 }}
-                                                        whileTap={{ scale: 0.98 }}
-                                                        onClick={bulkMarkPresent}
-                                                        disabled={selectedStudents.size === 0}
-                                                        style={{
-                                                            padding: '6px 12px',
-                                                            borderRadius: '6px',
-                                                            border: '1px solid rgba(16, 185, 129, 0.2)',
-                                                            background: 'rgba(16, 185, 129, 0.05)',
-                                                            fontSize: '11px',
-                                                            fontWeight: 600,
-                                                            color: selectedStudents.size > 0 ? '#10b981' : '#94a3b8',
-                                                            cursor: selectedStudents.size > 0 ? 'pointer' : 'not-allowed',
-                                                        }}
-                                                    >
-                                                        Mark Present
-                                                    </motion.button>
-                                                    <motion.button
-                                                        whileHover={{ scale: 1.02 }}
-                                                        whileTap={{ scale: 0.98 }}
-                                                        onClick={() => bulkFillScore(0)}
-                                                        disabled={selectedStudents.size === 0}
-                                                        style={{
-                                                            padding: '6px 12px',
-                                                            borderRadius: '6px',
-                                                            border: '1px solid rgba(59, 130, 246, 0.2)',
-                                                            background: 'rgba(59, 130, 246, 0.05)',
-                                                            fontSize: '11px',
-                                                            fontWeight: 600,
-                                                            color: selectedStudents.size > 0 ? '#3b82f6' : '#94a3b8',
-                                                            cursor: selectedStudents.size > 0 ? 'pointer' : 'not-allowed',
-                                                        }}
-                                                    >
-                                                        Fill Score (0)
+                                                        Clear
                                                     </motion.button>
                                                 </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                    
-                                    {/* Row 4: Export Buttons */}
-                                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }} role="toolbar" aria-label="Export actions">
-                                        {/* Export to Excel/CSV */}
-                                        <motion.button
-                                            whileHover={{ 
-                                                scale: 1.02,
-                                                boxShadow: '0 6px 20px rgba(16, 185, 129, 0.25)',
-                                            }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={handleExportCSV}
-                                            aria-label="Export scores to Excel CSV"
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '6px',
-                                                padding: '10px 12px',
-                                                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)',
-                                                color: '#10b981',
-                                                border: '1px solid rgba(16, 185, 129, 0.2)',
-                                                borderRadius: '10px',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                                <polyline points="7 10 12 15 17 10" />
-                                                <line x1="12" y1="15" x2="12" y2="3" />
-                                            </svg>
-                                            Export to Excel
-                                        </motion.button>
-                                        {/* Export to PDF / Print */}
-                                        <motion.button
-                                            whileHover={{ 
-                                                scale: 1.02,
-                                                boxShadow: '0 6px 20px rgba(59, 130, 246, 0.25)',
-                                            }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={handleExportPDF}
-                                            aria-label="Export scores to PDF for printing"
-                                            style={{
-                                                flex: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '6px',
-                                                padding: '10px 12px',
-                                                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)',
-                                                color: '#3b82f6',
-                                                border: '1px solid rgba(59, 130, 246, 0.2)',
-                                                borderRadius: '10px',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                                                <polyline points="6 9 6 2 18 2 18 9" />
-                                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                                                <rect x="6" y="14" width="12" height="8" />
-                                            </svg>
-                                            Print / PDF
-                                        </motion.button>
-                                    </div>
+
+                                                {/* Row 4: Quick Actions & Bulk Selection */}
+                                                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }} role="toolbar" aria-label="Bulk actions">
+                                                    {/* Mark All Present - Quick Action */}
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={markAllPresent}
+                                                        aria-label="Mark all students as present"
+                                                        style={{
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '6px',
+                                                            padding: '10px 12px',
+                                                            borderRadius: '10px',
+                                                            border: '1px solid rgba(16, 185, 129, 0.2)',
+                                                            background: 'rgba(16, 185, 129, 0.05)',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            color: '#10b981',
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                            <polyline points="22 4 12 14.01 9 11.01" />
+                                                        </svg>
+                                                        All Present
+                                                    </motion.button>
+                                                    {/* Bulk Select Toggle */}
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={() => {
+                                                            setBulkSelectionMode(!bulkSelectionMode);
+                                                            if (bulkSelectionMode) clearSelection();
+                                                        }}
+                                                        aria-label={bulkSelectionMode ? "Exit bulk selection mode" : "Enter bulk selection mode"}
+                                                        style={{
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '6px',
+                                                            padding: '10px 12px',
+                                                            borderRadius: '10px',
+                                                            border: `1px solid ${bulkSelectionMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(0,0,0,0.08)'}`,
+                                                            background: bulkSelectionMode ? 'rgba(59, 130, 246, 0.1)' : '#ffffff',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            color: bulkSelectionMode ? '#3b82f6' : '#64748b',
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                                            <rect x="3" y="3" width="7" height="7" />
+                                                            <rect x="14" y="3" width="7" height="7" />
+                                                            <rect x="14" y="14" width="7" height="7" />
+                                                            <rect x="3" y="14" width="7" height="7" />
+                                                        </svg>
+                                                        {bulkSelectionMode ? `Select (${selectedStudents.size})` : 'Bulk Select'}
+                                                    </motion.button>
+                                                    {/* History/Audit Log Button */}
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={() => setShowAuditModal(true)}
+                                                        aria-label="View grade history"
+                                                        style={{
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '6px',
+                                                            padding: '10px 12px',
+                                                            borderRadius: '10px',
+                                                            border: '1px solid rgba(100, 116, 139, 0.2)',
+                                                            background: auditLog.length > 0 ? 'rgba(100, 116, 139, 0.05)' : '#ffffff',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            color: '#64748b',
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                                            <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        History {auditLog.length > 0 && `(${auditLog.length})`}
+                                                    </motion.button>
+                                                </div>
+
+                                                {/* Bulk Actions Bar - Only show when in bulk selection mode */}
+                                                <AnimatePresence>
+                                                    {bulkSelectionMode && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, height: 0 }}
+                                                            animate={{ opacity: 1, height: 'auto' }}
+                                                            exit={{ opacity: 0, height: 0 }}
+                                                            style={{
+                                                                marginTop: '8px',
+                                                                padding: '12px',
+                                                                borderRadius: '10px',
+                                                                background: 'rgba(59, 130, 246, 0.05)',
+                                                                border: '1px solid rgba(59, 130, 246, 0.15)',
+                                                            }}
+                                                        >
+                                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                                                <span style={{ fontSize: '12px', fontWeight: 600, color: '#3b82f6' }}>
+                                                                    {selectedStudents.size} student{selectedStudents.size !== 1 ? 's' : ''} selected
+                                                                </span>
+                                                                <div style={{ display: 'flex', gap: '6px' }}>
+                                                                    <motion.button
+                                                                        whileHover={{ scale: 1.02 }}
+                                                                        whileTap={{ scale: 0.98 }}
+                                                                        onClick={selectAllStudents}
+                                                                        style={{
+                                                                            padding: '4px 8px',
+                                                                            borderRadius: '6px',
+                                                                            border: 'none',
+                                                                            background: 'rgba(59, 130, 246, 0.1)',
+                                                                            fontSize: '11px',
+                                                                            fontWeight: 600,
+                                                                            color: '#3b82f6',
+                                                                            cursor: 'pointer',
+                                                                        }}
+                                                                    >
+                                                                        Select All
+                                                                    </motion.button>
+                                                                    <motion.button
+                                                                        whileHover={{ scale: 1.02 }}
+                                                                        whileTap={{ scale: 0.98 }}
+                                                                        onClick={clearSelection}
+                                                                        style={{
+                                                                            padding: '4px 8px',
+                                                                            borderRadius: '6px',
+                                                                            border: 'none',
+                                                                            background: 'rgba(0,0,0,0.05)',
+                                                                            fontSize: '11px',
+                                                                            fontWeight: 600,
+                                                                            color: '#64748b',
+                                                                            cursor: 'pointer',
+                                                                        }}
+                                                                    >
+                                                                        Clear
+                                                                    </motion.button>
+                                                                </div>
+                                                            </div>
+                                                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                                                <motion.button
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                    onClick={bulkMarkAbsent}
+                                                                    disabled={selectedStudents.size === 0}
+                                                                    style={{
+                                                                        padding: '6px 12px',
+                                                                        borderRadius: '6px',
+                                                                        border: '1px solid rgba(239, 68, 68, 0.2)',
+                                                                        background: 'rgba(239, 68, 68, 0.05)',
+                                                                        fontSize: '11px',
+                                                                        fontWeight: 600,
+                                                                        color: selectedStudents.size > 0 ? '#ef4444' : '#94a3b8',
+                                                                        cursor: selectedStudents.size > 0 ? 'pointer' : 'not-allowed',
+                                                                    }}
+                                                                >
+                                                                    Mark Absent
+                                                                </motion.button>
+                                                                <motion.button
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                    onClick={bulkMarkExcused}
+                                                                    disabled={selectedStudents.size === 0}
+                                                                    style={{
+                                                                        padding: '6px 12px',
+                                                                        borderRadius: '6px',
+                                                                        border: '1px solid rgba(245, 158, 11, 0.2)',
+                                                                        background: 'rgba(245, 158, 11, 0.05)',
+                                                                        fontSize: '11px',
+                                                                        fontWeight: 600,
+                                                                        color: selectedStudents.size > 0 ? '#f59e0b' : '#94a3b8',
+                                                                        cursor: selectedStudents.size > 0 ? 'pointer' : 'not-allowed',
+                                                                    }}
+                                                                >
+                                                                    Mark Excused
+                                                                </motion.button>
+                                                                <motion.button
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                    onClick={bulkMarkPresent}
+                                                                    disabled={selectedStudents.size === 0}
+                                                                    style={{
+                                                                        padding: '6px 12px',
+                                                                        borderRadius: '6px',
+                                                                        border: '1px solid rgba(16, 185, 129, 0.2)',
+                                                                        background: 'rgba(16, 185, 129, 0.05)',
+                                                                        fontSize: '11px',
+                                                                        fontWeight: 600,
+                                                                        color: selectedStudents.size > 0 ? '#10b981' : '#94a3b8',
+                                                                        cursor: selectedStudents.size > 0 ? 'pointer' : 'not-allowed',
+                                                                    }}
+                                                                >
+                                                                    Mark Present
+                                                                </motion.button>
+                                                                <motion.button
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                    onClick={() => bulkFillScore(0)}
+                                                                    disabled={selectedStudents.size === 0}
+                                                                    style={{
+                                                                        padding: '6px 12px',
+                                                                        borderRadius: '6px',
+                                                                        border: '1px solid rgba(59, 130, 246, 0.2)',
+                                                                        background: 'rgba(59, 130, 246, 0.05)',
+                                                                        fontSize: '11px',
+                                                                        fontWeight: 600,
+                                                                        color: selectedStudents.size > 0 ? '#3b82f6' : '#94a3b8',
+                                                                        cursor: selectedStudents.size > 0 ? 'pointer' : 'not-allowed',
+                                                                    }}
+                                                                >
+                                                                    Fill Score (0)
+                                                                </motion.button>
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+
+                                                {/* Row 4: Export Buttons */}
+                                                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }} role="toolbar" aria-label="Export actions">
+                                                    {/* Export to Excel/CSV */}
+                                                    <motion.button
+                                                        whileHover={{
+                                                            scale: 1.02,
+                                                            boxShadow: '0 6px 20px rgba(16, 185, 129, 0.25)',
+                                                        }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={handleExportCSV}
+                                                        aria-label="Export scores to Excel CSV"
+                                                        style={{
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '6px',
+                                                            padding: '10px 12px',
+                                                            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)',
+                                                            color: '#10b981',
+                                                            border: '1px solid rgba(16, 185, 129, 0.2)',
+                                                            borderRadius: '10px',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                                            <polyline points="7 10 12 15 17 10" />
+                                                            <line x1="12" y1="15" x2="12" y2="3" />
+                                                        </svg>
+                                                        Export to Excel
+                                                    </motion.button>
+                                                    {/* Export to PDF / Print */}
+                                                    <motion.button
+                                                        whileHover={{
+                                                            scale: 1.02,
+                                                            boxShadow: '0 6px 20px rgba(59, 130, 246, 0.25)',
+                                                        }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={handleExportPDF}
+                                                        aria-label="Export scores to PDF for printing"
+                                                        style={{
+                                                            flex: 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '6px',
+                                                            padding: '10px 12px',
+                                                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)',
+                                                            color: '#3b82f6',
+                                                            border: '1px solid rgba(59, 130, 246, 0.2)',
+                                                            borderRadius: '10px',
+                                                            fontSize: '12px',
+                                                            fontWeight: 600,
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                                            <polyline points="6 9 6 2 18 2 18 9" />
+                                                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                                                            <rect x="6" y="14" width="12" height="8" />
+                                                        </svg>
+                                                        Print / PDF
+                                                    </motion.button>
+                                                </div>
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
@@ -6196,15 +6196,15 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                     <ScoreStatistics scores={scores} maxScore={currentExam?.maxScore || 100} gradingSystem={gradingSystem} />
 
                                     {/* Attendance Summary */}
-                                    <AttendanceSummary 
-                                        scores={scores} 
+                                    <AttendanceSummary
+                                        scores={scores}
                                         onExportReport={() => {
                                             // Export attendance data as part of the score export
                                             const attendanceData = scores.map(s => ({
                                                 studentId: s.studentId,
                                                 studentName: s.studentName || '',
-                                                status: s.isAbsent 
-                                                    ? (s.isExcused ? 'Excused' : 'Absent') 
+                                                status: s.isAbsent
+                                                    ? (s.isExcused ? 'Excused' : 'Absent')
                                                     : 'Present',
                                             }));
                                             const csv = [
@@ -6233,8 +6233,8 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                             justifyContent: 'space-between',
                                             padding: '8px 12px',
                                             marginTop: '12px',
-                                            background: hasUnsavedChanges 
-                                                ? 'rgba(245, 158, 11, 0.06)' 
+                                            background: hasUnsavedChanges
+                                                ? 'rgba(245, 158, 11, 0.06)'
                                                 : 'rgba(16, 185, 129, 0.06)',
                                             borderRadius: '8px',
                                             border: `1px solid ${hasUnsavedChanges ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.15)'}`,
@@ -6342,12 +6342,12 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                     </motion.div>
 
                                     {/* Student List */}
-                                    <div 
+                                    <div
                                         style={{ marginTop: '12px' }}
                                         role="table"
                                         aria-label="Student scores list"
                                     >
-                                        <div 
+                                        <div
                                             style={{
                                                 display: 'grid',
                                                 gridTemplateColumns: bulkSelectionMode ? '32px 1fr 100px 90px 80px 90px' : '1fr 100px 90px 80px 90px',
@@ -6439,7 +6439,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                                     No students found
                                                 </p>
                                                 <p style={{ margin: '4px 0 0', fontSize: '12px' }}>
-                                                    {students.length === 0 
+                                                    {students.length === 0
                                                         ? 'No students enrolled in BSIT101A section'
                                                         : 'Try adjusting your search'
                                                     }
@@ -6451,17 +6451,17 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                             const isAbsent = scoreData?.isAbsent || false;
                                             const isExcused = scoreData?.isExcused || false;
                                             const isSelected = selectedStudents.has(student.studentId);
-                                            
+
                                             // Determine attendance status
-                                            const attendanceStatus: AttendanceStatus = isAbsent 
-                                                ? (isExcused ? 'excused' : 'absent') 
+                                            const attendanceStatus: AttendanceStatus = isAbsent
+                                                ? (isExcused ? 'excused' : 'absent')
                                                 : 'present';
-                                            
+
                                             // Calculate Philippine grade if score exists and student is present
                                             const gradeResult = rawScore !== null && rawScore !== undefined && !isAbsent
                                                 ? calculateGrade(rawScore, currentExam?.maxScore || 100, gradingSystem)
                                                 : null;
-                                            
+
                                             return (
                                                 <motion.div
                                                     role="row"
@@ -6477,10 +6477,10 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                                         padding: '12px',
                                                         alignItems: 'center',
                                                         borderRadius: '10px',
-                                                        background: isSelected 
+                                                        background: isSelected
                                                             ? 'rgba(59, 130, 246, 0.08)'
-                                                            : isAbsent 
-                                                                ? 'rgba(239, 68, 68, 0.03)' 
+                                                            : isAbsent
+                                                                ? 'rgba(239, 68, 68, 0.03)'
                                                                 : index % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.01)',
                                                         opacity: isAbsent && !isSelected ? 0.7 : 1,
                                                         border: isSelected ? '1px solid rgba(59, 130, 246, 0.2)' : '1px solid transparent',
@@ -6515,9 +6515,9 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                                     )}
                                                     <div role="cell" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                         <div style={{ flex: 1 }}>
-                                                            <div style={{ 
-                                                                fontSize: '14px', 
-                                                                fontWeight: 600, 
+                                                            <div style={{
+                                                                fontSize: '14px',
+                                                                fontWeight: 600,
                                                                 color: isAbsent ? '#94a3b8' : '#0f172a',
                                                                 textDecoration: isAbsent ? 'line-through' : 'none',
                                                             }}>
@@ -6655,7 +6655,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                         </div>
 
                         {/* Footer */}
-                        <div 
+                        <div
                             style={{
                                 padding: '16px 24px',
                                 borderTop: '1px solid rgba(0,0,0,0.06)',
@@ -6717,7 +6717,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                     </motion.div>
                                 )}
                             </div>
-                            
+
                             {/* Right side - Action buttons */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <motion.button
@@ -6951,9 +6951,9 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                 }}>
                                     {saveWarningMessage}
                                 </p>
-                                
+
                                 {/* Quick stats */}
-                                <div 
+                                <div
                                     style={{
                                         marginTop: '16px',
                                         padding: '12px 16px',
@@ -6990,7 +6990,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                             </div>
 
                             {/* Footer */}
-                            <div 
+                            <div
                                 style={{
                                     padding: '16px 24px',
                                     borderTop: '1px solid rgba(0,0,0,0.06)',
@@ -7074,7 +7074,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                             gap: '12px',
                             padding: '14px 18px',
                             borderRadius: '12px',
-                            background: saveStatus.type === 'success' 
+                            background: saveStatus.type === 'success'
                                 ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
                                 : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                             boxShadow: saveStatus.type === 'success'
@@ -7106,7 +7106,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                 </svg>
                             )}
                         </div>
-                        
+
                         {/* Message */}
                         <div style={{ flex: 1 }}>
                             <div style={{
@@ -7125,7 +7125,7 @@ const InputScoresModal: React.FC<InputScoresModalProps> = ({ isOpen, onClose, on
                                 {saveStatus.message}
                             </div>
                         </div>
-                        
+
                         {/* Close button */}
                         <motion.button
                             whileHover={{ scale: 1.1 }}

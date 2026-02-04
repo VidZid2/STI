@@ -3,7 +3,7 @@
  * TypeScript type definitions for the tools content component
  */
 
-import type { TextStats } from '../../../lib/converters/textAnalysis';
+import type { TextStats } from '../../../../lib/converters/textAnalysis';
 
 // Re-export for convenience
 export type { TextStats };
