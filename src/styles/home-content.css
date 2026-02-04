@@ -2,11 +2,11 @@
 
 .home-content {
     padding: 1.5rem;
+    padding-bottom: 3rem;
     max-width: 1600px;
     margin: 0 auto;
     position: relative;
-    /* Performance optimization */
-    contain: layout style;
+    min-height: 100%;
 }
 
 /* ========================================
@@ -48,19 +48,24 @@
     0% {
         transform: scale(1) rotate(0deg);
     }
+
     50% {
         transform: scale(1.1) rotate(-3deg);
     }
+
     100% {
         transform: scale(1) rotate(3deg);
     }
 }
 
 @keyframes flameGlow {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.4;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.7;
         transform: scale(1.2);
@@ -262,21 +267,17 @@ body.dark-mode .flame-glow {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(
-        to right,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(255, 255, 255, 0.95) 15%,
-        rgba(255, 255, 255, 0.7) 40%,
-        rgba(255, 255, 255, 0.3) 70%,
-        rgba(255, 255, 255, 0) 100%
-    ),
-    linear-gradient(
-        to top,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(255, 255, 255, 0.8) 20%,
-        rgba(255, 255, 255, 0.4) 50%,
-        rgba(255, 255, 255, 0) 100%
-    );
+    background: linear-gradient(to right,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(255, 255, 255, 0.95) 15%,
+            rgba(255, 255, 255, 0.7) 40%,
+            rgba(255, 255, 255, 0.3) 70%,
+            rgba(255, 255, 255, 0) 100%),
+        linear-gradient(to top,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(255, 255, 255, 0.8) 20%,
+            rgba(255, 255, 255, 0.4) 50%,
+            rgba(255, 255, 255, 0) 100%);
 }
 
 .welcome-main-card .welcome-content {
@@ -720,7 +721,7 @@ body.dark-mode .badge-minimal.messages .badge-label {
     .badges-row-minimal {
         gap: 0.375rem;
     }
-    
+
     .welcome-buttons-far-right {
         flex-direction: row;
         align-self: flex-start;
@@ -734,7 +735,7 @@ body.dark-mode .badge-minimal.messages .badge-label {
         font-size: 0.7rem;
         padding: 0.4rem 0.625rem;
     }
-    
+
     .badge-number {
         font-size: 1rem;
     }
@@ -873,7 +874,7 @@ body.dark-mode .whats-new-tooltip-title {
     .welcome-name-minimal {
         font-size: 1.75rem;
     }
-    
+
     .context-minimal {
         flex-direction: column;
         align-items: flex-start;
@@ -885,7 +886,7 @@ body.dark-mode .whats-new-tooltip-title {
     .welcome-name-minimal {
         font-size: 1.5rem;
     }
-    
+
     .greeting-minimal {
         font-size: 0.8rem;
     }
@@ -1717,21 +1718,17 @@ body.dark-mode .welcome-main-card {
 }
 
 body.dark-mode .welcome-card-cover-fade {
-    background: linear-gradient(
-        to right,
-        rgba(30, 41, 59, 1) 0%,
-        rgba(30, 41, 59, 0.95) 15%,
-        rgba(30, 41, 59, 0.7) 40%,
-        rgba(30, 41, 59, 0.3) 70%,
-        rgba(30, 41, 59, 0) 100%
-    ),
-    linear-gradient(
-        to top,
-        rgba(30, 41, 59, 1) 0%,
-        rgba(30, 41, 59, 0.8) 20%,
-        rgba(30, 41, 59, 0.4) 50%,
-        rgba(30, 41, 59, 0) 100%
-    );
+    background: linear-gradient(to right,
+            rgba(30, 41, 59, 1) 0%,
+            rgba(30, 41, 59, 0.95) 15%,
+            rgba(30, 41, 59, 0.7) 40%,
+            rgba(30, 41, 59, 0.3) 70%,
+            rgba(30, 41, 59, 0) 100%),
+        linear-gradient(to top,
+            rgba(30, 41, 59, 1) 0%,
+            rgba(30, 41, 59, 0.8) 20%,
+            rgba(30, 41, 59, 0.4) 50%,
+            rgba(30, 41, 59, 0) 100%);
 }
 
 body.dark-mode .avatar-status {
@@ -2648,11 +2645,11 @@ body.dark-mode .popup-progress-bar {
     .stats-row-cards {
         grid-template-columns: 1fr;
     }
-    
+
     .stat-card-course {
         padding: 1rem;
     }
-    
+
     .stat-card-number {
         font-size: 1.75rem;
     }
@@ -2853,25 +2850,25 @@ body.dark-mode .stat-glow {
     .stats-row-minimal {
         grid-template-columns: 1fr;
     }
-    
+
     .stat-card-minimal {
         padding: 1.25rem;
     }
-    
+
     .stat-number-minimal {
         font-size: 1.5rem;
     }
-    
+
     .stat-icon-minimal {
         width: 42px;
         height: 42px;
     }
-    
+
     .stat-icon-minimal svg {
         width: 20px;
         height: 20px;
     }
-    
+
     .stat-number-minimal {
         font-size: 1.5rem;
     }
@@ -2937,7 +2934,7 @@ body.dark-mode .quick-card-desc {
     .stats-row {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .quick-grid {
         grid-template-columns: repeat(4, 1fr);
     }
@@ -2953,7 +2950,7 @@ body.dark-mode .quick-card-desc {
     .news-slideshow {
         width: 240px;
     }
-    
+
     .news-image {
         height: 80px;
     }
@@ -2963,105 +2960,105 @@ body.dark-mode .quick-card-desc {
     .welcome-cards-row {
         flex-direction: column;
     }
-    
+
     .welcome-content {
         flex-direction: column;
         align-items: flex-start;
         gap: 1.25rem;
     }
-    
+
     .news-slideshow {
         width: 100%;
     }
-    
+
     .news-slide {
         flex-direction: row;
         align-items: center;
     }
-    
+
     .news-image-container {
         width: 120px;
         flex-shrink: 0;
     }
-    
+
     .news-image {
         height: 70px;
     }
-    
+
     .welcome-right {
         width: 100%;
         flex-direction: row;
         flex-wrap: wrap;
         gap: 0.5rem;
     }
-    
+
     .welcome-right .daily-goal-widget,
     .welcome-right .weekly-study-widget {
         flex: 1 1 calc(50% - 0.25rem);
         min-width: unset;
     }
-    
+
     .welcome-right .welcome-right-buttons {
         flex: 1 1 100%;
         flex-direction: row;
     }
-    
+
     .daily-goal-widget {
         flex-direction: row;
         align-items: center;
         gap: 0.75rem;
     }
-    
+
     .weekly-study-widget {
         flex-direction: row;
         align-items: center;
         gap: 0.75rem;
     }
-    
+
     .weekly-study-chart {
         flex: 1;
         height: 24px;
         padding-bottom: 0;
     }
-    
+
     .chart-day {
         display: none;
     }
-    
+
     .chart-bar {
         bottom: 0;
     }
-    
+
     .daily-goal-header {
         flex-shrink: 0;
     }
-    
+
     .daily-goal-bar-container {
         flex: 1;
     }
-    
+
     .daily-goal-hint {
         display: none;
     }
-    
+
     .hero-action-btn {
         flex: 1;
         width: auto;
         height: auto;
     }
-    
+
     .stats-row {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .quick-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .info-pills-row {
         flex-direction: column;
     }
-    
+
     .info-pill {
         width: 100%;
     }
@@ -3071,44 +3068,44 @@ body.dark-mode .quick-card-desc {
     .welcome-main-card {
         padding: 1.25rem;
     }
-    
+
     .welcome-card-cover-bg {
         width: 50%;
         opacity: 0.6;
     }
-    
+
     .welcome-left {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
     }
-    
+
     .welcome-name {
         font-size: 1.5rem;
     }
-    
+
     .welcome-left-buttons {
         flex-direction: column;
         width: 100%;
     }
-    
+
     .welcome-left-buttons .hero-action-btn {
         width: 100%;
     }
-    
+
     .stats-row {
         grid-template-columns: 1fr;
     }
-    
+
     .quick-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .quick-card {
         flex-direction: row;
         align-items: center;
     }
-    
+
     .quick-card-icon {
         flex-shrink: 0;
     }
@@ -3270,26 +3267,26 @@ body.dark-mode .action-card-description {
         grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
     }
-    
+
     .quick-action-card {
         padding: 1rem;
         min-height: 100px;
     }
-    
+
     .action-card-icon {
         width: 38px;
         height: 38px;
     }
-    
+
     .action-card-icon svg {
         width: 18px;
         height: 18px;
     }
-    
+
     .action-card-label {
         font-size: 0.85rem;
     }
-    
+
     .action-card-description {
         font-size: 0.7rem;
     }
@@ -3299,14 +3296,14 @@ body.dark-mode .action-card-description {
     .quick-actions-card-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .quick-action-card {
         flex-direction: row;
         align-items: center;
         min-height: auto;
         padding: 0.875rem 1rem;
     }
-    
+
     .action-card-content {
         flex: 1;
     }
@@ -3646,13 +3643,13 @@ body.dark-mode .drag-handle:hover {
     .reorderable-course-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .reorder-controls {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
-    
+
     .drag-handle {
         width: 28px;
         min-width: 28px;
@@ -3871,12 +3868,12 @@ body.dark-mode .drag-handle:hover {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .welcome-stats-modern {
         width: 100%;
         justify-content: flex-start;
     }
-    
+
     .dashboard-grid-modern {
         grid-template-columns: 1fr;
     }
@@ -3886,43 +3883,43 @@ body.dark-mode .drag-handle:hover {
     .home-content {
         padding: 1rem;
     }
-    
+
     .welcome-banner-modern {
         padding: 1.5rem;
         border-radius: 16px;
     }
-    
+
     .welcome-text h1 {
         font-size: 1.5rem;
     }
-    
+
     .welcome-stats-modern {
         flex-wrap: wrap;
     }
-    
+
     .stat-card {
         padding: 0.75rem 1rem;
         min-width: 70px;
     }
-    
+
     .quick-actions-grid {
         flex-wrap: nowrap;
         overflow-x: auto;
         padding-bottom: 0.5rem;
         -webkit-overflow-scrolling: touch;
     }
-    
+
     .quick-action-pill {
         flex: 0 0 auto;
         min-width: 140px;
     }
-    
+
     .section-header-modern {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.75rem;
     }
-    
+
     .section-nav {
         width: 100%;
         justify-content: space-between;
@@ -3933,7 +3930,7 @@ body.dark-mode .drag-handle:hover {
     .stat-card {
         flex: 1;
     }
-    
+
     .stat-card .stat-value {
         font-size: 1.25rem;
     }
@@ -4113,7 +4110,7 @@ body.dark-mode .activity-item:hover {
 .skeleton-shimmer {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
     transform: translateX(-100%);
 }
 
@@ -4128,39 +4125,33 @@ body.dark-mode .activity-item:hover {
 .skeleton-gradient-bg {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        135deg,
-        #f1f5f9 0%,
-        #e2e8f0 25%,
-        #f1f5f9 50%,
-        #e2e8f0 75%,
-        #f1f5f9 100%
-    );
+    background: linear-gradient(135deg,
+            #f1f5f9 0%,
+            #e2e8f0 25%,
+            #f1f5f9 50%,
+            #e2e8f0 75%,
+            #f1f5f9 100%);
     background-size: 400% 400%;
 }
 
 .skeleton-shimmer-enhanced {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0) 20%,
-        rgba(255, 255, 255, 0.5) 50%,
-        rgba(255, 255, 255, 0) 80%,
-        transparent 100%
-    );
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0) 20%,
+            rgba(255, 255, 255, 0.5) 50%,
+            rgba(255, 255, 255, 0) 80%,
+            transparent 100%);
     width: 50%;
 }
 
 .skeleton-pulse {
     position: absolute;
     inset: 0;
-    background: radial-gradient(
-        ellipse at center,
-        rgba(255, 255, 255, 0.3) 0%,
-        transparent 70%
-    );
+    background: radial-gradient(ellipse at center,
+            rgba(255, 255, 255, 0.3) 0%,
+            transparent 70%);
 }
 
 /* Dark Mode - Enhanced Skeleton */
@@ -4169,44 +4160,39 @@ body.dark-mode .image-skeleton-enhanced {
 }
 
 body.dark-mode .skeleton-gradient-bg {
-    background: linear-gradient(
-        135deg,
-        #1e293b 0%,
-        #334155 25%,
-        #1e293b 50%,
-        #334155 75%,
-        #1e293b 100%
-    );
+    background: linear-gradient(135deg,
+            #1e293b 0%,
+            #334155 25%,
+            #1e293b 50%,
+            #334155 75%,
+            #1e293b 100%);
     background-size: 400% 400%;
 }
 
 body.dark-mode .skeleton-shimmer-enhanced {
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0) 20%,
-        rgba(255, 255, 255, 0.08) 50%,
-        rgba(255, 255, 255, 0) 80%,
-        transparent 100%
-    );
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0) 20%,
+            rgba(255, 255, 255, 0.08) 50%,
+            rgba(255, 255, 255, 0) 80%,
+            transparent 100%);
 }
 
 body.dark-mode .skeleton-pulse {
-    background: radial-gradient(
-        ellipse at center,
-        rgba(255, 255, 255, 0.05) 0%,
-        transparent 70%
-    );
+    background: radial-gradient(ellipse at center,
+            rgba(255, 255, 255, 0.05) 0%,
+            transparent 70%);
 }
 
 /* Reduced Motion - Skeleton */
 @media (prefers-reduced-motion: reduce) {
+
     .skeleton-gradient-bg,
     .skeleton-shimmer-enhanced,
     .skeleton-pulse {
         animation: none !important;
     }
-    
+
     .skeleton-shimmer-enhanced {
         display: none;
     }
@@ -4559,59 +4545,59 @@ body.dark-mode .more-btn.more-btn-outlined.active:hover::before {
     .course-card-premium {
         border-radius: 12px;
     }
-    
+
     .card-image-container {
         height: 120px;
     }
-    
+
     .card-body-premium {
         padding: 0.875rem;
         gap: 0.625rem;
     }
-    
+
     .card-title-premium {
         font-size: 0.9rem;
     }
-    
+
     .card-subtitle-premium {
         font-size: 0.7rem;
     }
-    
+
     .next-lesson-preview,
     .deadline-preview {
         padding: 0.625rem;
     }
-    
+
     .next-lesson-title,
     .deadline-preview-title {
         font-size: 0.75rem;
     }
-    
+
     .stats-row {
         gap: 0.5rem;
     }
-    
+
     .study-streak-display,
     .grade-display {
         padding: 0.375rem 0.5rem;
     }
-    
+
     .streak-number,
     .grade-letter {
         font-size: 0.9rem;
     }
-    
+
     .continue-btn {
         padding: 0.625rem 1rem;
         font-size: 0.8rem;
     }
-    
+
     /* Touch-friendly: always show bookmark on mobile */
     .bookmark-toggle {
         opacity: 1 !important;
         transform: scale(1) !important;
     }
-    
+
     /* Larger touch targets */
     .more-btn {
         width: 36px;
@@ -4623,24 +4609,25 @@ body.dark-mode .more-btn.more-btn-outlined.active:hover::before {
     .card-image-container {
         height: 100px;
     }
-    
+
     .card-body-premium {
         padding: 0.75rem;
         gap: 0.5rem;
     }
-    
+
     .card-title-premium {
         font-size: 0.85rem;
     }
-    
+
     .card-stats-section {
-        display: none; /* Hide stats on very small screens to reduce clutter */
+        display: none;
+        /* Hide stats on very small screens to reduce clutter */
     }
-    
+
     .progress-info {
         font-size: 0.7rem;
     }
-    
+
     .continue-btn span {
         font-size: 0.75rem;
     }
@@ -4648,13 +4635,14 @@ body.dark-mode .more-btn.more-btn-outlined.active:hover::before {
 
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
+
     .course-card-premium,
     .course-card-premium * {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
-    
+
     .skeleton-shimmer {
         animation: none !important;
     }
@@ -5469,7 +5457,7 @@ body.dark-mode .bookmark-tooltip::after {
     display: none;
 }
 
-.stats-row > *:only-child {
+.stats-row>*:only-child {
     flex: 1;
 }
 
@@ -5603,7 +5591,7 @@ body.dark-mode .study-streak-display .streak-label {
     border-radius: 14px;
     padding: 0.375rem;
     min-width: 200px;
-    box-shadow: 
+    box-shadow:
         0 0 0 1px rgba(0, 0, 0, 0.04),
         0 4px 6px -1px rgba(0, 0, 0, 0.06),
         0 12px 24px -4px rgba(0, 0, 0, 0.1);
@@ -5742,7 +5730,7 @@ body.dark-mode .quick-actions-dropdown::after {
 /* Dark Mode - Minimalistic Quick Actions */
 body.dark-mode .quick-actions-dropdown.quick-actions-minimal {
     background: #1e293b;
-    box-shadow: 
+    box-shadow:
         0 0 0 1px rgba(255, 255, 255, 0.06),
         0 4px 6px -1px rgba(0, 0, 0, 0.2),
         0 12px 24px -4px rgba(0, 0, 0, 0.35);
@@ -5920,7 +5908,7 @@ body.dark-mode .progress-tooltip-details {
 .skeleton-image .skeleton-shimmer {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
 }
 
 .skeleton-body {
@@ -6039,7 +6027,7 @@ body.dark-mode .skeleton-image {
 }
 
 body.dark-mode .skeleton-image .skeleton-shimmer {
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
 }
 
 body.dark-mode .skeleton-title {

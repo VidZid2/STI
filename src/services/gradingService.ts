@@ -157,15 +157,15 @@ export const fetchAllSubmissions = async (courseId?: string): Promise<Submission
     try {
         // First get task IDs for the course if specified
         let taskIds: string[] = [];
-        
+
         if (courseId && courseId !== 'all') {
             const { data: tasks } = await supabase
                 .from('course_tasks')
                 .select('id')
                 .eq('course_id', courseId);
-            
+
             taskIds = (tasks || []).map(t => t.id);
-            
+
             if (taskIds.length === 0) {
                 return [];
             }
@@ -212,7 +212,7 @@ export const gradeSubmission = async (input: GradeInput): Promise<boolean> => {
         // First, get the current submission to preserve grade history
         const { data: current } = await supabase
             .from('student_submissions')
-            .select('score, feedback, graded_at, grade_history')
+            .select('score, feedback, graded_at, grade_history, graded_by')
             .eq('id', input.submissionId)
             .single();
 
@@ -274,7 +274,7 @@ export const batchGradeSubmissions = async (
             feedback,
             gradedBy,
         });
-        
+
         if (result) {
             success++;
         } else {
@@ -355,7 +355,7 @@ export const getTaskGradingStats = async (taskId: string): Promise<{
         const graded = data.filter(s => s.status === 'graded').length;
         const pending = data.filter(s => s.status !== 'graded').length;
         const late = data.filter(s => s.is_late || s.status === 'late').length;
-        
+
         const scores = data.filter(s => s.score !== null).map(s => s.score as number);
         const average = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
         const highest = scores.length > 0 ? Math.max(...scores) : 0;
@@ -405,7 +405,7 @@ const mapStatus = (status: string, isLate?: boolean): Submission['status'] => {
     if (isLate && status !== 'graded') {
         return 'late';
     }
-    
+
     switch (status) {
         case 'pending':
         case 'submitted':

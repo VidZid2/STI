@@ -4,7 +4,7 @@
  * Suggests relevant users based on message content
  */
 
-import type { MentionUser } from '../../pages/GroupChatPage/components/MentionAutocomplete';
+import type { MentionUser } from '../../pages/studentdashboard/GroupChatPage/components/MentionAutocomplete';
 
 // Subject categories with keywords
 export const SUBJECT_KEYWORDS: Record<string, string[]> = {

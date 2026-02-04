@@ -86,8 +86,10 @@ export const DEMO_SUBMISSIONS: Submission[] = [
         student_id: 'stu-1',
         student_name: 'Alice Johnson',
         student_email: 'alice.johnson@school.edu',
+        section: 'CS-3A',
         submitted_at: '2024-03-14T22:30:00Z',
         status: 'submitted',
+        score: null,
         attachments: [
             { name: 'essay_final.pdf', type: 'application/pdf', url: '/files/essay1.pdf', size: 245000 },
             { name: 'references.docx', type: 'application/docx', url: '/files/refs1.docx', size: 32000 },
@@ -102,6 +104,7 @@ export const DEMO_SUBMISSIONS: Submission[] = [
         student_id: 'stu-2',
         student_name: 'Bob Smith',
         student_email: 'bob.smith@school.edu',
+        section: 'CS-3A',
         submitted_at: '2024-03-15T08:15:00Z',
         status: 'graded',
         score: 92,
@@ -113,7 +116,7 @@ export const DEMO_SUBMISSIONS: Submission[] = [
         is_flagged: false,
         similarity_score: 8,
         grade_history: [
-            { score: 92, feedback: 'Excellent analysis with strong thesis.', graded_at: '2024-03-16T10:00:00Z', graded_by: 'Prof. Williams' },
+            { score: 92, feedback: 'Excellent analysis with strong thesis.', graded_at: '2024-03-16T10:00:00Z', graded_by: 'Prof. Williams', version: 1 },
         ],
     },
     {
@@ -122,8 +125,10 @@ export const DEMO_SUBMISSIONS: Submission[] = [
         student_id: 'stu-3',
         student_name: 'Carol Davis',
         student_email: 'carol.davis@school.edu',
+        section: 'CS-3A',
         submitted_at: '2024-03-16T02:45:00Z',
         status: 'late',
+        score: null,
         attachments: [
             { name: 'literature_analysis.pdf', type: 'application/pdf', url: '/files/essay3.pdf', size: 198000 },
         ],
@@ -137,6 +142,7 @@ export const DEMO_SUBMISSIONS: Submission[] = [
         student_id: 'stu-4',
         student_name: 'David Lee',
         student_email: 'david.lee@school.edu',
+        section: 'CS-3A',
         submitted_at: '2024-03-15T23:58:00Z',
         status: 'graded',
         score: 78,
@@ -154,8 +160,10 @@ export const DEMO_SUBMISSIONS: Submission[] = [
         student_id: 'stu-5',
         student_name: 'Emma Wilson',
         student_email: 'emma.wilson@school.edu',
+        section: 'CS-3A',
         submitted_at: '2024-03-14T16:20:00Z',
         status: 'resubmitted',
+        score: null,
         attachments: [
             { name: 'essay_revised.pdf', type: 'application/pdf', url: '/files/essay5.pdf', size: 289000 },
             { name: 'outline.docx', type: 'application/docx', url: '/files/outline5.docx', size: 45000 },
@@ -164,7 +172,7 @@ export const DEMO_SUBMISSIONS: Submission[] = [
         is_flagged: false,
         similarity_score: 5,
         grade_history: [
-            { score: 65, feedback: 'Needs revision. See comments.', graded_at: '2024-03-13T14:00:00Z', graded_by: 'Prof. Williams' },
+            { score: 65, feedback: 'Needs revision. See comments.', graded_at: '2024-03-13T14:00:00Z', graded_by: 'Prof. Williams', version: 1 },
         ],
     },
     {
@@ -173,8 +181,10 @@ export const DEMO_SUBMISSIONS: Submission[] = [
         student_id: 'stu-1',
         student_name: 'Alice Johnson',
         student_email: 'alice.johnson@school.edu',
+        section: 'CS-3A',
         submitted_at: '2024-03-19T20:00:00Z',
         status: 'submitted',
+        score: null,
         attachments: [
             { name: 'lab_report.pdf', type: 'application/pdf', url: '/files/lab1.pdf', size: 456000 },
             { name: 'data_charts.xlsx', type: 'application/xlsx', url: '/files/data1.xlsx', size: 78000 },
@@ -188,8 +198,10 @@ export const DEMO_SUBMISSIONS: Submission[] = [
         student_id: 'stu-6',
         student_name: 'Frank Miller',
         student_email: 'frank.miller@school.edu',
+        section: 'CS-3A',
         submitted_at: '2024-03-20T23:55:00Z',
         status: 'submitted',
+        score: null,
         attachments: [
             { name: 'physics_lab.pdf', type: 'application/pdf', url: '/files/lab2.pdf', size: 523000 },
         ],
@@ -231,7 +243,7 @@ export const DEMO_RUBRIC: RubricCriteria[] = [
     },
     {
         id: 'rubric-3',
-        name: 'Presentation',
+        name: 'Organization',
         description: 'Grammar, formatting, and style',
         points: 30,
         max_points: 30,

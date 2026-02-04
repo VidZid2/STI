@@ -49,9 +49,9 @@ interface TaskItem {
 }
 
 // Local imports - Components
-import { 
-    DashboardSkeleton, 
-    ErrorDisplay, 
+import {
+    DashboardSkeleton,
+    ErrorDisplay,
     DashboardHeader,
     type DashboardNotification,
 } from './components';
@@ -90,19 +90,19 @@ interface AtRiskStudentData {
 const TeacherDashboard: React.FC = () => {
     // Responsive state for mobile compatibility
     const { isMobile } = useResponsive();
-    
+
     // At-risk students state (fetched from database)
     const [atRiskStudents, setAtRiskStudents] = useState<AtRiskStudentData[]>([]);
-    
+
     // Notifications state
     const [notifications, setNotifications] = useState<DashboardNotification[]>([]);
     const [isLoadingAtRisk, setIsLoadingAtRisk] = useState(true);
-    
+
     // Schedule and tasks state (fetched from database)
     const [todaysSchedule, setTodaysSchedule] = useState<ScheduleItem[]>([]);
     const [urgentTasks, setUrgentTasks] = useState<TaskItem[]>([]);
     const [isLoadingSchedule, setIsLoadingSchedule] = useState(true);
-    
+
     // Tooltip state for stat cards
     const [hoveredStat, setHoveredStat] = useState<string | null>(null);
 
@@ -120,13 +120,25 @@ const TeacherDashboard: React.FC = () => {
         handleQuickAction,
         getStatValue,
     } = useTeacherDashboard();
-    
+
     // Use demo activity if hook returns empty
+    // Helper to format timestamp to relative time
+    const formatTimeAgo = (date: Date) => {
+        const now = new Date();
+        const diffMs = now.getTime() - date.getTime();
+        const diffMins = Math.round(diffMs / 60000);
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        const diffHours = Math.round(diffMins / 60);
+        if (diffHours < 24) return `${diffHours}h ago`;
+        return `${Math.round(diffHours / 24)}d ago`;
+    };
+
     const activity = hookActivity.length > 0 ? hookActivity : DEMO_ACTIVITY.map(item => ({
         ...item,
-        timestamp: item.timestamp,
+        time: formatTimeAgo(item.timestamp),
     }));
-    
+
     // Tutorial functionality removed - no longer needed
     // Set up global tutorial trigger - REMOVED
     // useEffect(() => {
@@ -155,7 +167,7 @@ const TeacherDashboard: React.FC = () => {
                 // 
                 // For now, we query the database but return empty if no real at-risk data exists
                 // This ensures the dashboard shows realistic data connected to the database
-                
+
                 // Check if there are any student submissions with low grades
                 const { data: lowGradeSubmissions, error: gradeError } = await supabase
                     .from('student_submissions')
@@ -191,7 +203,7 @@ const TeacherDashboard: React.FC = () => {
 
                 if (lowGradeSubmissions && lowGradeSubmissions.length > 0) {
                     // Group by student and calculate average grade
-                    const studentGrades: Record<string, { 
+                    const studentGrades: Record<string, {
                         student: { id: string; full_name: string; section: string; program: string } | null;
                         totalScore: number;
                         totalMaxScore: number;
@@ -202,9 +214,9 @@ const TeacherDashboard: React.FC = () => {
                     lowGradeSubmissions.forEach((submission) => {
                         const users = submission.users as unknown as { id: string; full_name: string; section: string; program: string } | null;
                         const assignments = submission.assignments as unknown as { title: string; course_id: string; courses: { code: string } | null } | null;
-                        
+
                         if (!users || submission.score === null || submission.max_score === null) return;
-                        
+
                         const studentId = submission.student_id;
                         if (!studentGrades[studentId]) {
                             studentGrades[studentId] = {
@@ -223,8 +235,8 @@ const TeacherDashboard: React.FC = () => {
                     // Find students with average grade below 75%
                     const atRisk: AtRiskStudentData[] = Object.entries(studentGrades)
                         .filter(([_, data]) => {
-                            const avgGrade = data.totalMaxScore > 0 
-                                ? (data.totalScore / data.totalMaxScore) * 100 
+                            const avgGrade = data.totalMaxScore > 0
+                                ? (data.totalScore / data.totalMaxScore) * 100
                                 : 0;
                             return avgGrade < 75 && data.count >= 1;
                         })
@@ -288,7 +300,7 @@ const TeacherDashboard: React.FC = () => {
 
                 // Build tasks from database
                 const tasksData: TaskItem[] = [];
-                
+
                 // Only add ungraded submissions if count is greater than 0
                 if (typeof pendingCount === 'number' && pendingCount > 0) {
                     tasksData.push({
@@ -407,10 +419,10 @@ const TeacherDashboard: React.FC = () => {
     // Handle notification click
     const handleNotificationClick = (notification: DashboardNotification) => {
         // Mark as read (in a real app, this would update the database)
-        setNotifications(prev => 
+        setNotifications(prev =>
             prev.map(n => n.id === notification.id ? { ...n, isRead: true } : n)
         );
-        
+
         // Execute the action if defined
         notification.onAction?.();
     };
@@ -456,10 +468,10 @@ const TeacherDashboard: React.FC = () => {
             />
 
             {/* Main Content */}
-            <main style={{ 
-                padding: isMobile ? SPACING.lg : SPACING.xxxl, 
-                maxWidth: '1400px', 
-                margin: '0 auto' 
+            <main style={{
+                padding: isMobile ? SPACING.lg : SPACING.xxxl,
+                maxWidth: '1400px',
+                margin: '0 auto'
             }}>
                 {/* Welcome Header - Matching Groups/Catalog design */}
                 <motion.div
@@ -470,13 +482,13 @@ const TeacherDashboard: React.FC = () => {
                     className="welcome-header-greeting"
                 >
                     <div style={{
-                        display: 'flex', 
-                        alignItems: isMobile ? 'flex-start' : 'center', 
+                        display: 'flex',
+                        alignItems: isMobile ? 'flex-start' : 'center',
                         flexDirection: isMobile ? 'column' : 'row',
-                        gap: SPACING.lg, 
+                        gap: SPACING.lg,
                         padding: isMobile ? '16px' : '18px 22px',
-                        borderRadius: '14px', 
-                        background: COLORS.surface, 
+                        borderRadius: '14px',
+                        background: COLORS.surface,
                         border: `1px solid ${COLORS.border}`,
                         flexWrap: 'wrap',
                     }}>
@@ -493,12 +505,12 @@ const TeacherDashboard: React.FC = () => {
                                 whileHover={{ scale: 1.05, rotate: 5 }}
                                 transition={{ duration: 0.15, ease: 'easeOut' }}
                                 style={{
-                                    width: isMobile ? '40px' : '46px', 
-                                    height: isMobile ? '40px' : '46px', 
+                                    width: isMobile ? '40px' : '46px',
+                                    height: isMobile ? '40px' : '46px',
                                     borderRadius: '12px',
                                     background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)',
-                                    display: 'flex', 
-                                    alignItems: 'center', 
+                                    display: 'flex',
+                                    alignItems: 'center',
                                     justifyContent: 'center',
                                     flexShrink: 0,
                                 }}
@@ -522,11 +534,11 @@ const TeacherDashboard: React.FC = () => {
                                         {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}, {user?.first_name || 'Teacher'}!
                                     </h1>
                                     <span style={{
-                                        padding: '3px 8px', 
+                                        padding: '3px 8px',
                                         borderRadius: '6px',
-                                        background: 'rgba(59, 130, 246, 0.1)', 
+                                        background: 'rgba(59, 130, 246, 0.1)',
                                         fontSize: '11px',
-                                        fontWeight: 600, 
+                                        fontWeight: 600,
                                         color: '#3b82f6',
                                     }}>
                                         Teacher
@@ -548,8 +560,8 @@ const TeacherDashboard: React.FC = () => {
                             initial={{ opacity: 0, x: 10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                            style={{ 
-                                display: 'grid', 
+                            style={{
+                                display: 'grid',
                                 gridTemplateColumns: isMobile ? 'repeat(4, 1fr)' : 'repeat(4, auto)',
                                 gap: isMobile ? '8px' : '10px',
                                 width: isMobile ? '100%' : 'auto',
@@ -571,13 +583,13 @@ const TeacherDashboard: React.FC = () => {
                                     onMouseEnter={() => !isMobile && setHoveredStat(stat.label)}
                                     onMouseLeave={() => setHoveredStat(null)}
                                     style={{
-                                        display: 'flex', 
-                                        flexDirection: 'column', 
+                                        display: 'flex',
+                                        flexDirection: 'column',
                                         alignItems: 'center',
-                                        padding: isMobile ? '8px 6px' : '10px 16px', 
-                                        borderRadius: '10px', 
+                                        padding: isMobile ? '8px 6px' : '10px 16px',
+                                        borderRadius: '10px',
                                         background: stat.bgColor,
-                                        cursor: 'default', 
+                                        cursor: 'default',
                                         minWidth: isMobile ? 'auto' : '72px',
                                         position: 'relative',
                                     }}
@@ -588,7 +600,7 @@ const TeacherDashboard: React.FC = () => {
                                     <span style={{ fontSize: isMobile ? '9px' : '10px', fontWeight: 500, color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                                         {stat.label}
                                     </span>
-                                    
+
                                     {/* Custom Tooltip */}
                                     <AnimatePresence>
                                         {hoveredStat === stat.label && (
@@ -629,18 +641,18 @@ const TeacherDashboard: React.FC = () => {
                                                         borderLeft: `1.5px solid ${stat.color}20`,
                                                         borderTop: `1.5px solid ${stat.color}20`,
                                                     }} />
-                                                    
+
                                                     {/* Tooltip Content */}
-                                                    <div style={{ 
-                                                        fontSize: '13px', 
-                                                        fontWeight: 600, 
+                                                    <div style={{
+                                                        fontSize: '13px',
+                                                        fontWeight: 600,
                                                         color: stat.color,
                                                         marginBottom: '2px',
                                                     }}>
                                                         {stat.value} {stat.label.toLowerCase()}
                                                     </div>
-                                                    <div style={{ 
-                                                        fontSize: '11px', 
+                                                    <div style={{
+                                                        fontSize: '11px',
                                                         color: COLORS.textSecondary,
                                                         fontWeight: 400,
                                                     }}>
@@ -657,11 +669,11 @@ const TeacherDashboard: React.FC = () => {
                 </motion.div>
 
                 {/* Two Column Layout: Today's Schedule + Urgent Tasks */}
-                <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))', 
-                    gap: isMobile ? SPACING.lg : SPACING.xl, 
-                    marginBottom: SPACING.xxl 
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))',
+                    gap: isMobile ? SPACING.lg : SPACING.xl,
+                    marginBottom: SPACING.xxl
                 }}>
                     {/* Today's Schedule Panel */}
                     <motion.div
@@ -699,7 +711,7 @@ const TeacherDashboard: React.FC = () => {
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div style={{ display: 'flex', flexDirection: 'column', gap: SPACING.md }}>
                             {isLoadingSchedule ? (
                                 // Loading skeleton
@@ -718,10 +730,10 @@ const TeacherDashboard: React.FC = () => {
                                 ))
                             ) : todaysSchedule.length === 0 ? (
                                 // Empty state - centered with container
-                                <div style={{ 
-                                    display: 'flex', 
-                                    flexDirection: 'column', 
-                                    alignItems: 'center', 
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
                                     justifyContent: 'center',
                                     padding: `${SPACING.xxxl} ${SPACING.xxl}`,
                                     minHeight: '200px',
@@ -752,19 +764,19 @@ const TeacherDashboard: React.FC = () => {
                                             <path d="M18 18V19M18 27V28M13 23H14M22 23H23M14.5 19.5L15.2 20.2M20.8 25.8L21.5 26.5M21.5 19.5L20.8 20.2M15.2 25.8L14.5 26.5" stroke={COLORS.primary} strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
                                         </svg>
                                     </div>
-                                    
+
                                     {/* Text */}
-                                    <h3 style={{ 
-                                        fontSize: FONT_SIZE.lg, 
-                                        fontWeight: FONT_WEIGHT.semibold, 
+                                    <h3 style={{
+                                        fontSize: FONT_SIZE.lg,
+                                        fontWeight: FONT_WEIGHT.semibold,
                                         color: COLORS.textPrimary,
                                         margin: 0,
                                         marginBottom: SPACING.xs,
                                     }}>
                                         Free day!
                                     </h3>
-                                    <p style={{ 
-                                        fontSize: FONT_SIZE.sm, 
+                                    <p style={{
+                                        fontSize: FONT_SIZE.sm,
                                         color: COLORS.textSecondary,
                                         margin: 0,
                                         textAlign: 'center',
@@ -791,84 +803,84 @@ const TeacherDashboard: React.FC = () => {
                                             cursor: 'pointer',
                                         }}
                                     >
-                                    {/* Status Indicator */}
-                                    <div style={{
-                                        width: '36px',
-                                        height: '36px',
-                                        borderRadius: BORDER_RADIUS.lg,
-                                        background: schedule.status === 'completed' ? COLORS.successLight : 
-                                                   schedule.status === 'ongoing' ? COLORS.primaryLight : 'rgba(0,0,0,0.04)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        color: schedule.status === 'completed' ? COLORS.success : 
-                                               schedule.status === 'ongoing' ? COLORS.primary : COLORS.textMuted,
-                                        flexShrink: 0,
-                                    }}>
-                                        {schedule.status === 'completed' ? <CheckCircleIcon size={18} /> : 
-                                         schedule.status === 'ongoing' ? <PlayCircleIcon size={18} /> : 
-                                         <ClockIcon size={16} />}
-                                    </div>
-                                    
-                                    {/* Schedule Info */}
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                        <div style={{ 
-                                            fontSize: FONT_SIZE.md, 
-                                            fontWeight: FONT_WEIGHT.semibold, 
-                                            color: COLORS.textPrimary,
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                        }}>
-                                            {schedule.subject}
-                                        </div>
-                                        <div style={{ 
-                                            fontSize: FONT_SIZE.sm, 
-                                            color: COLORS.textSecondary,
+                                        {/* Status Indicator */}
+                                        <div style={{
+                                            width: '36px',
+                                            height: '36px',
+                                            borderRadius: BORDER_RADIUS.lg,
+                                            background: schedule.status === 'completed' ? COLORS.successLight :
+                                                schedule.status === 'ongoing' ? COLORS.primaryLight : 'rgba(0,0,0,0.04)',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: SPACING.sm,
-                                            marginTop: '2px',
+                                            justifyContent: 'center',
+                                            color: schedule.status === 'completed' ? COLORS.success :
+                                                schedule.status === 'ongoing' ? COLORS.primary : COLORS.textMuted,
+                                            flexShrink: 0,
                                         }}>
-                                            <span>{schedule.section}</span>
-                                            <span style={{ color: COLORS.textMuted }}>•</span>
-                                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                <MapPinIcon size={12} />
-                                                {schedule.room}
-                                            </span>
+                                            {schedule.status === 'completed' ? <CheckCircleIcon size={18} /> :
+                                                schedule.status === 'ongoing' ? <PlayCircleIcon size={18} /> :
+                                                    <ClockIcon size={16} />}
                                         </div>
-                                    </div>
-                                    
-                                    {/* Time & Status */}
-                                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                                        <div style={{ 
-                                            fontSize: FONT_SIZE.sm, 
-                                            fontWeight: FONT_WEIGHT.medium, 
-                                            color: schedule.status === 'ongoing' ? COLORS.primary : COLORS.textPrimary 
-                                        }}>
-                                            {schedule.startTime} - {schedule.endTime}
+
+                                        {/* Schedule Info */}
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div style={{
+                                                fontSize: FONT_SIZE.md,
+                                                fontWeight: FONT_WEIGHT.semibold,
+                                                color: COLORS.textPrimary,
+                                                whiteSpace: 'nowrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                            }}>
+                                                {schedule.subject}
+                                            </div>
+                                            <div style={{
+                                                fontSize: FONT_SIZE.sm,
+                                                color: COLORS.textSecondary,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: SPACING.sm,
+                                                marginTop: '2px',
+                                            }}>
+                                                <span>{schedule.section}</span>
+                                                <span style={{ color: COLORS.textMuted }}>•</span>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <MapPinIcon size={12} />
+                                                    {schedule.room}
+                                                </span>
+                                            </div>
                                         </div>
-                                        {schedule.status === 'ongoing' && (
-                                            <div style={{ 
-                                                fontSize: FONT_SIZE.xs, 
-                                                color: COLORS.primary,
+
+                                        {/* Time & Status */}
+                                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                            <div style={{
+                                                fontSize: FONT_SIZE.sm,
                                                 fontWeight: FONT_WEIGHT.medium,
-                                                marginTop: '2px',
+                                                color: schedule.status === 'ongoing' ? COLORS.primary : COLORS.textPrimary
                                             }}>
-                                                🔴 LIVE NOW
+                                                {schedule.startTime} - {schedule.endTime}
                                             </div>
-                                        )}
-                                        {schedule.status === 'completed' && schedule.studentsPresent && (
-                                            <div style={{ 
-                                                fontSize: FONT_SIZE.xs, 
-                                                color: COLORS.success,
-                                                marginTop: '2px',
-                                            }}>
-                                                {schedule.studentsPresent}/{schedule.totalStudents} present
-                                            </div>
-                                        )}
-                                    </div>
-                                </motion.div>
+                                            {schedule.status === 'ongoing' && (
+                                                <div style={{
+                                                    fontSize: FONT_SIZE.xs,
+                                                    color: COLORS.primary,
+                                                    fontWeight: FONT_WEIGHT.medium,
+                                                    marginTop: '2px',
+                                                }}>
+                                                    🔴 LIVE NOW
+                                                </div>
+                                            )}
+                                            {schedule.status === 'completed' && schedule.studentsPresent && (
+                                                <div style={{
+                                                    fontSize: FONT_SIZE.xs,
+                                                    color: COLORS.success,
+                                                    marginTop: '2px',
+                                                }}>
+                                                    {schedule.studentsPresent}/{schedule.totalStudents} present
+                                                </div>
+                                            )}
+                                        </div>
+                                    </motion.div>
                                 ))
                             )}
                         </div>
@@ -910,7 +922,7 @@ const TeacherDashboard: React.FC = () => {
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div style={{ display: 'flex', flexDirection: 'column', gap: SPACING.md }}>
                             {isLoadingSchedule ? (
                                 // Loading skeleton
@@ -929,10 +941,10 @@ const TeacherDashboard: React.FC = () => {
                                 ))
                             ) : urgentTasks.length === 0 ? (
                                 // Empty state - centered with container
-                                <div style={{ 
-                                    display: 'flex', 
-                                    flexDirection: 'column', 
-                                    alignItems: 'center', 
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
                                     justifyContent: 'center',
                                     padding: `${SPACING.xxxl} ${SPACING.xxl}`,
                                     minHeight: '200px',
@@ -961,19 +973,19 @@ const TeacherDashboard: React.FC = () => {
                                             <path d="M7 25L7.4 26.6L9 27L7.4 27.4L7 29L6.6 27.4L5 27L6.6 26.6L7 25Z" fill={COLORS.success} opacity="0.4" />
                                         </svg>
                                     </div>
-                                    
+
                                     {/* Text */}
-                                    <h3 style={{ 
-                                        fontSize: FONT_SIZE.lg, 
-                                        fontWeight: FONT_WEIGHT.semibold, 
+                                    <h3 style={{
+                                        fontSize: FONT_SIZE.lg,
+                                        fontWeight: FONT_WEIGHT.semibold,
                                         color: COLORS.textPrimary,
                                         margin: 0,
                                         marginBottom: SPACING.xs,
                                     }}>
                                         All caught up!
                                     </h3>
-                                    <p style={{ 
-                                        fontSize: FONT_SIZE.sm, 
+                                    <p style={{
+                                        fontSize: FONT_SIZE.sm,
                                         color: COLORS.textSecondary,
                                         margin: 0,
                                         textAlign: 'center',
@@ -989,108 +1001,108 @@ const TeacherDashboard: React.FC = () => {
                                     const urgencyColor = isToday ? COLORS.danger : isSoon ? COLORS.warning : COLORS.primary;
                                     const urgencyBg = isToday ? COLORS.dangerLight : isSoon ? COLORS.warningLight : COLORS.primaryLight;
                                     const urgencyBorder = isToday ? COLORS.dangerBorder : isSoon ? COLORS.warningBorder : COLORS.primaryBorder;
-                                    
+
                                     return (
-                                    <motion.div
-                                        key={task.id}
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0, transition: { delay: 0.2 + index * 0.05 } }}
-                                        transition={{ duration: 0.15, ease: 'easeOut' }}
-                                        whileHover={{ scale: 1.01, boxShadow: `0 4px 12px ${urgencyColor}20` }}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: SPACING.lg,
-                                            padding: SPACING.lg,
-                                            borderRadius: BORDER_RADIUS.xl,
-                                            background: `${urgencyColor}04`,
-                                            border: `1px solid ${urgencyBorder}`,
-                                            cursor: 'pointer',
-                                        }}
-                                    >
-                                        {/* Priority Indicator */}
-                                        <div style={{
-                                            width: '40px',
-                                            height: '40px',
-                                            borderRadius: BORDER_RADIUS.lg,
-                                            background: urgencyBg,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: urgencyColor,
-                                            flexShrink: 0,
-                                            position: 'relative',
-                                        }}>
-                                            {task.type === 'grading' ? (
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                                    <polyline points="14 2 14 8 20 8" />
-                                                    <line x1="16" y1="13" x2="8" y2="13" />
-                                                    <line x1="16" y1="17" x2="8" y2="17" />
-                                                </svg>
-                                            ) : task.type === 'deadline' ? (
-                                                <CalendarIcon size={18} />
-                                            ) : (
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                                    <circle cx="9" cy="7" r="4" />
-                                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                                </svg>
-                                            )}
-                                            {task.count && task.count > 0 && (
+                                        <motion.div
+                                            key={task.id}
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0, transition: { delay: 0.2 + index * 0.05 } }}
+                                            transition={{ duration: 0.15, ease: 'easeOut' }}
+                                            whileHover={{ scale: 1.01, boxShadow: `0 4px 12px ${urgencyColor}20` }}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: SPACING.lg,
+                                                padding: SPACING.lg,
+                                                borderRadius: BORDER_RADIUS.xl,
+                                                background: `${urgencyColor}04`,
+                                                border: `1px solid ${urgencyBorder}`,
+                                                cursor: 'pointer',
+                                            }}
+                                        >
+                                            {/* Priority Indicator */}
+                                            <div style={{
+                                                width: '40px',
+                                                height: '40px',
+                                                borderRadius: BORDER_RADIUS.lg,
+                                                background: urgencyBg,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                color: urgencyColor,
+                                                flexShrink: 0,
+                                                position: 'relative',
+                                            }}>
+                                                {task.type === 'grading' ? (
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                        <polyline points="14 2 14 8 20 8" />
+                                                        <line x1="16" y1="13" x2="8" y2="13" />
+                                                        <line x1="16" y1="17" x2="8" y2="17" />
+                                                    </svg>
+                                                ) : task.type === 'deadline' ? (
+                                                    <CalendarIcon size={18} />
+                                                ) : (
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                                        <circle cx="9" cy="7" r="4" />
+                                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                                    </svg>
+                                                )}
+                                                {task.count && task.count > 0 && (
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        top: '-4px',
+                                                        right: '-4px',
+                                                        width: '18px',
+                                                        height: '18px',
+                                                        borderRadius: '50%',
+                                                        background: urgencyColor,
+                                                        color: '#fff',
+                                                        fontSize: '10px',
+                                                        fontWeight: FONT_WEIGHT.bold,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                        {task.count}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Task Info */}
+                                            <div style={{ flex: 1 }}>
                                                 <div style={{
-                                                    position: 'absolute',
-                                                    top: '-4px',
-                                                    right: '-4px',
-                                                    width: '18px',
-                                                    height: '18px',
-                                                    borderRadius: '50%',
-                                                    background: urgencyColor,
-                                                    color: '#fff',
-                                                    fontSize: '10px',
-                                                    fontWeight: FONT_WEIGHT.bold,
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
+                                                    fontSize: FONT_SIZE.md,
+                                                    fontWeight: FONT_WEIGHT.semibold,
+                                                    color: COLORS.textPrimary
                                                 }}>
-                                                    {task.count}
+                                                    {task.title}
                                                 </div>
-                                            )}
-                                        </div>
-                                        
-                                        {/* Task Info */}
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ 
-                                                fontSize: FONT_SIZE.md, 
-                                                fontWeight: FONT_WEIGHT.semibold, 
-                                                color: COLORS.textPrimary 
-                                            }}>
-                                                {task.title}
+                                                <div style={{
+                                                    fontSize: FONT_SIZE.sm,
+                                                    color: COLORS.textSecondary,
+                                                    marginTop: '2px',
+                                                }}>
+                                                    {task.description}
+                                                </div>
                                             </div>
-                                            <div style={{ 
-                                                fontSize: FONT_SIZE.sm, 
-                                                color: COLORS.textSecondary,
-                                                marginTop: '2px',
+
+                                            {/* Due Date Badge - Outline style with urgency colors */}
+                                            <div style={{
+                                                padding: `${SPACING.xs} ${SPACING.md}`,
+                                                borderRadius: BORDER_RADIUS.lg,
+                                                background: 'transparent',
+                                                border: `1.5px solid ${urgencyColor}`,
+                                                color: urgencyColor,
+                                                fontSize: FONT_SIZE.xs,
+                                                fontWeight: FONT_WEIGHT.semibold,
+                                                whiteSpace: 'nowrap',
                                             }}>
-                                                {task.description}
+                                                {task.dueDate}
                                             </div>
-                                        </div>
-                                        
-                                        {/* Due Date Badge - Outline style with urgency colors */}
-                                        <div style={{
-                                            padding: `${SPACING.xs} ${SPACING.md}`,
-                                            borderRadius: BORDER_RADIUS.lg,
-                                            background: 'transparent',
-                                            border: `1.5px solid ${urgencyColor}`,
-                                            color: urgencyColor,
-                                            fontSize: FONT_SIZE.xs,
-                                            fontWeight: FONT_WEIGHT.semibold,
-                                            whiteSpace: 'nowrap',
-                                        }}>
-                                            {task.dueDate}
-                                        </div>
-                                    </motion.div>
+                                        </motion.div>
                                     );
                                 })
                             )}
@@ -1107,11 +1119,11 @@ const TeacherDashboard: React.FC = () => {
                     className="quick-actions-panel"
                 >
                     {/* Section Header */}
-                    <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
                         justifyContent: 'space-between',
-                        marginBottom: SPACING.xl 
+                        marginBottom: SPACING.xl
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.lg }}>
                             <div style={{
@@ -1128,18 +1140,18 @@ const TeacherDashboard: React.FC = () => {
                                 <BoltIcon size={20} />
                             </div>
                             <div>
-                                <h2 style={{ 
-                                    fontSize: FONT_SIZE.xxl, 
-                                    fontWeight: FONT_WEIGHT.semibold, 
-                                    color: COLORS.textPrimary, 
-                                    margin: 0 
+                                <h2 style={{
+                                    fontSize: FONT_SIZE.xxl,
+                                    fontWeight: FONT_WEIGHT.semibold,
+                                    color: COLORS.textPrimary,
+                                    margin: 0
                                 }}>
                                     Quick Actions
                                 </h2>
-                                <p style={{ 
-                                    fontSize: FONT_SIZE.sm, 
-                                    color: COLORS.textSecondary, 
-                                    margin: 0 
+                                <p style={{
+                                    fontSize: FONT_SIZE.sm,
+                                    color: COLORS.textSecondary,
+                                    margin: 0
                                 }}>
                                     Common tasks at your fingertips
                                 </p>
@@ -1148,9 +1160,9 @@ const TeacherDashboard: React.FC = () => {
                     </div>
 
                     {/* Big 4 Action Cards Grid */}
-                    <div style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(260px, 1fr))', 
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(260px, 1fr))',
                         gap: isMobile ? SPACING.md : SPACING.xl,
                     }}>
                         {QUICK_ACTIONS.map((action, index) => (
@@ -1159,8 +1171,8 @@ const TeacherDashboard: React.FC = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0, transition: { delay: 0.2 + index * 0.05 } }}
                                 transition={{ duration: 0.15, ease: 'easeOut' }}
-                                whileHover={isMobile ? {} : { 
-                                    y: -6, 
+                                whileHover={isMobile ? {} : {
+                                    y: -6,
                                     scale: 1.02,
                                     boxShadow: `0 20px 40px ${action.color}25`,
                                 }}
@@ -1190,7 +1202,7 @@ const TeacherDashboard: React.FC = () => {
                                     background: `linear-gradient(135deg, ${action.color}08 0%, transparent 60%)`,
                                     opacity: 0.5,
                                 }} />
-                                
+
                                 {/* Icon Container */}
                                 <motion.div
                                     transition={{ duration: 0.15 }}
@@ -1211,7 +1223,7 @@ const TeacherDashboard: React.FC = () => {
                                 >
                                     {getActionIcon(action.iconType, isMobile ? 22 : 28)}
                                 </motion.div>
-                                
+
                                 {/* Label */}
                                 <span style={{
                                     fontSize: isMobile ? FONT_SIZE.sm : FONT_SIZE.lg,
@@ -1294,7 +1306,7 @@ const TeacherDashboard: React.FC = () => {
                                 </svg>
                             </motion.button>
                         </div>
-                        
+
                         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))', gap: SPACING.md }}>
                             {atRiskStudents.map((student, index) => (
                                 <motion.div
@@ -1330,12 +1342,12 @@ const TeacherDashboard: React.FC = () => {
                                     }}>
                                         {student.name.split(' ').map(n => n[0]).join('')}
                                     </div>
-                                    
+
                                     {/* Student Info */}
                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                        <div style={{ 
-                                            fontSize: FONT_SIZE.md, 
-                                            fontWeight: FONT_WEIGHT.semibold, 
+                                        <div style={{
+                                            fontSize: FONT_SIZE.md,
+                                            fontWeight: FONT_WEIGHT.semibold,
                                             color: COLORS.textPrimary,
                                             whiteSpace: 'nowrap',
                                             overflow: 'hidden',
@@ -1343,8 +1355,8 @@ const TeacherDashboard: React.FC = () => {
                                         }}>
                                             {student.name}
                                         </div>
-                                        <div style={{ 
-                                            fontSize: FONT_SIZE.sm, 
+                                        <div style={{
+                                            fontSize: FONT_SIZE.sm,
                                             color: COLORS.textSecondary,
                                             display: 'flex',
                                             alignItems: 'center',
@@ -1354,8 +1366,8 @@ const TeacherDashboard: React.FC = () => {
                                             <span style={{ color: COLORS.textMuted }}>•</span>
                                             <span>{student.subject}</span>
                                         </div>
-                                        <div style={{ 
-                                            fontSize: FONT_SIZE.xs, 
+                                        <div style={{
+                                            fontSize: FONT_SIZE.xs,
                                             color: COLORS.danger,
                                             marginTop: '4px',
                                             display: 'flex',
@@ -1366,12 +1378,12 @@ const TeacherDashboard: React.FC = () => {
                                             {student.issue}
                                         </div>
                                     </div>
-                                    
+
                                     {/* Grade & Trend */}
                                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                                        <div style={{ 
-                                            fontSize: FONT_SIZE.xl, 
-                                            fontWeight: FONT_WEIGHT.bold, 
+                                        <div style={{
+                                            fontSize: FONT_SIZE.xl,
+                                            fontWeight: FONT_WEIGHT.bold,
                                             color: student.currentGrade < 70 ? COLORS.danger : COLORS.warning,
                                             display: 'flex',
                                             alignItems: 'center',
@@ -1381,8 +1393,8 @@ const TeacherDashboard: React.FC = () => {
                                             {student.currentGrade}%
                                             {student.trend === 'declining' && <TrendDownIcon size={14} />}
                                         </div>
-                                        <div style={{ 
-                                            fontSize: FONT_SIZE.xs, 
+                                        <div style={{
+                                            fontSize: FONT_SIZE.xs,
                                             color: COLORS.textMuted,
                                         }}>
                                             {student.absences} absences
@@ -1408,9 +1420,9 @@ const TeacherDashboard: React.FC = () => {
                     }}
                 >
                     {/* Panel Header - Matching Groups page style */}
-                    <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
                         justifyContent: 'space-between',
                         marginBottom: SPACING.lg,
                     }}>
@@ -1432,11 +1444,11 @@ const TeacherDashboard: React.FC = () => {
                             </motion.div>
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <h2 style={{ 
-                                        fontSize: '16px', 
-                                        fontWeight: 600, 
-                                        color: COLORS.textPrimary, 
-                                        margin: 0 
+                                    <h2 style={{
+                                        fontSize: '16px',
+                                        fontWeight: 600,
+                                        color: COLORS.textPrimary,
+                                        margin: 0
                                     }}>
                                         Recent Activity
                                     </h2>
@@ -1456,7 +1468,7 @@ const TeacherDashboard: React.FC = () => {
                                 </p>
                             </div>
                         </div>
-                        
+
                         {/* View All Button - Matching Groups page "+ New Group" style */}
                         <motion.button
                             whileHover={{ scale: 1.02, boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)' }}
@@ -1487,10 +1499,10 @@ const TeacherDashboard: React.FC = () => {
                     {/* Activity Items - Real data or empty state */}
                     {activity.length === 0 ? (
                         // Empty state - centered with container
-                        <div style={{ 
-                            display: 'flex', 
-                            flexDirection: 'column', 
-                            alignItems: 'center', 
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
                             justifyContent: 'center',
                             padding: `${SPACING.xxxl} ${SPACING.xxl}`,
                             minHeight: '160px',
@@ -1511,17 +1523,17 @@ const TeacherDashboard: React.FC = () => {
                                     <polyline points="12 6 12 12 16 14" />
                                 </svg>
                             </div>
-                            <h3 style={{ 
-                                fontSize: '15px', 
-                                fontWeight: 600, 
+                            <h3 style={{
+                                fontSize: '15px',
+                                fontWeight: 600,
                                 color: COLORS.textPrimary,
                                 margin: 0,
                                 marginBottom: '4px',
                             }}>
                                 No recent activity
                             </h3>
-                            <p style={{ 
-                                fontSize: '13px', 
+                            <p style={{
+                                fontSize: '13px',
                                 color: COLORS.textSecondary,
                                 margin: 0,
                                 textAlign: 'center',
@@ -1530,9 +1542,9 @@ const TeacherDashboard: React.FC = () => {
                             </p>
                         </div>
                     ) : (
-                        <div style={{ 
-                            display: 'grid', 
-                            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(260px, 1fr))', 
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(260px, 1fr))',
                             gap: '12px',
                         }}>
                             {activity.slice(0, isMobile ? 3 : 4).map((item, index) => (
@@ -1559,16 +1571,16 @@ const TeacherDashboard: React.FC = () => {
                                         height: '36px',
                                         borderRadius: '10px',
                                         background: item.type === 'submission' ? 'rgba(59, 130, 246, 0.1)' :
-                                                   item.type === 'grade' ? 'rgba(16, 185, 129, 0.1)' :
-                                                   item.type === 'deadline' ? 'rgba(245, 158, 11, 0.1)' :
-                                                   'rgba(139, 92, 246, 0.1)',
+                                            item.type === 'grade' ? 'rgba(16, 185, 129, 0.1)' :
+                                                item.type === 'deadline' ? 'rgba(245, 158, 11, 0.1)' :
+                                                    'rgba(139, 92, 246, 0.1)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         color: item.type === 'submission' ? '#3b82f6' :
-                                               item.type === 'grade' ? '#10b981' :
-                                               item.type === 'deadline' ? '#f59e0b' :
-                                               '#8b5cf6',
+                                            item.type === 'grade' ? '#10b981' :
+                                                item.type === 'deadline' ? '#f59e0b' :
+                                                    '#8b5cf6',
                                         flexShrink: 0,
                                     }}>
                                         {item.type === 'submission' ? (
@@ -1595,12 +1607,12 @@ const TeacherDashboard: React.FC = () => {
                                             </svg>
                                         )}
                                     </div>
-                                    
+
                                     {/* Activity Info */}
                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                        <div style={{ 
-                                            fontSize: '13px', 
-                                            fontWeight: 600, 
+                                        <div style={{
+                                            fontSize: '13px',
+                                            fontWeight: 600,
                                             color: COLORS.textPrimary,
                                             whiteSpace: 'nowrap',
                                             overflow: 'hidden',
@@ -1608,8 +1620,8 @@ const TeacherDashboard: React.FC = () => {
                                         }}>
                                             {item.action}
                                         </div>
-                                        <div style={{ 
-                                            fontSize: '12px', 
+                                        <div style={{
+                                            fontSize: '12px',
                                             color: COLORS.textSecondary,
                                             whiteSpace: 'nowrap',
                                             overflow: 'hidden',
@@ -1618,7 +1630,7 @@ const TeacherDashboard: React.FC = () => {
                                             {item.student} • {item.course}
                                         </div>
                                     </div>
-                                    
+
                                     {/* Time */}
                                     <span style={{
                                         fontSize: '11px',
@@ -1638,7 +1650,7 @@ const TeacherDashboard: React.FC = () => {
             {/* ============================================ */}
             {/* MODALS */}
             {/* ============================================ */}
-            
+
             {/* Create Assignment Modal */}
             <CreateAssignmentModal
                 isOpen={modals.isCreateAssignmentOpen}
@@ -1647,7 +1659,7 @@ const TeacherDashboard: React.FC = () => {
                     try {
                         const { createAssignment } = await import('../../services/teacherService');
                         const result = await createAssignment(data);
-                        
+
                         if (result.success) {
                             console.log(`Successfully created ${result.createdCount} assignment(s)`);
                             if (result.errors.length > 0) {
@@ -1697,7 +1709,7 @@ const TeacherDashboard: React.FC = () => {
                 isOpen={modals.isActivityModalOpen}
                 onClose={() => closeModal('isActivityModalOpen')}
             />
-            
+
             {/* Teacher Dashboard Intro - DISABLED for first-time users */}
             {/* Intro and tutorial are now hidden by default
             {showIntro && <TeacherDashboardIntro onComplete={() => {
@@ -1705,7 +1717,7 @@ const TeacherDashboard: React.FC = () => {
                 // Tutorial will not auto-start
             }} />}
             */}
-            
+
             {/* Teacher Dashboard Tutorial - DISABLED */}
             {/* Tutorial is hidden and won't appear automatically
             <TeacherDashboardTutorial

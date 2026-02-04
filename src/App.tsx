@@ -4,13 +4,16 @@ import { Navbar, Hero, Features, NeoLMS, Footer, IntroAnimation } from './compon
 import { LoginModal } from './components/modals'
 import { WelcomeNotification } from './components/shared'
 import { SmoothCursor } from '../@/components/ui/smooth-cursor'
-import StudentLogin from './pages/StudentLogin'  // Now imports from StudentLogin/index.ts
-import DashboardPage from './pages/DashboardPage'
-import JoinGroupPage from './pages/JoinGroupPage'  // Now imports from JoinGroupPage/index.ts
-import GroupChatPage from './pages/GroupChatPage'
-import FocusModePage from './pages/FocusModePage'
+import StudentLogin from './pages/studentdashboard/StudentLogin'
+import DashboardPage from './pages/studentdashboard'
+import JoinGroupPage from './pages/studentdashboard/JoinGroupPage'
+import GroupChatPage from './pages/studentdashboard/GroupChatPage'
+import FocusModePage from './pages/studentdashboard/FocusModePage'
+import TeacherDashboard from './pages/teacherdashboard'
 import { NotificationProvider } from './contexts/NotificationContext'
 import { QuickViewSettingsProvider } from './contexts/QuickViewSettingsContext'
+import { DisplaySettingsProvider, useDisplaySettings } from './contexts/DisplaySettingsContext'
+import { NotificationSettingsProvider } from './contexts/NotificationSettingsContext'
 
 function HomePage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -80,10 +83,27 @@ function HomePage() {
   );
 }
 
-// Wrapper component to conditionally render cursor based on route
+// Wrapper component to conditionally render cursor based on route and settings
 function AppContent() {
   const location = useLocation();
-  const hideCustomCursor = location.pathname === '/student-login';
+  const { settings: displaySettings } = useDisplaySettings();
+
+  // Hide cursor on student-login page OR if user has disabled it in settings
+  const hideCustomCursor = location.pathname === '/student-login' || displaySettings.hideCustomCursor;
+
+  // Add/remove class on html element to control default cursor visibility
+  useEffect(() => {
+    if (hideCustomCursor) {
+      document.documentElement.classList.add('show-default-cursor');
+    } else {
+      document.documentElement.classList.remove('show-default-cursor');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.documentElement.classList.remove('show-default-cursor');
+    };
+  }, [hideCustomCursor]);
 
   return (
     <>
@@ -92,6 +112,7 @@ function AppContent() {
         <Route path="/" element={<HomePage />} />
         <Route path="/student-login" element={<StudentLogin />} />
         <Route path="/dashboard" element={<NotificationProvider><QuickViewSettingsProvider><DashboardPage /></QuickViewSettingsProvider></NotificationProvider>} />
+        <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
         <Route path="/join/:inviteCode" element={<JoinGroupPage />} />
         <Route path="/chat/:groupId" element={<NotificationProvider><QuickViewSettingsProvider><GroupChatPage /></QuickViewSettingsProvider></NotificationProvider>} />
         <Route path="/focus" element={<FocusModePage />} />
@@ -104,7 +125,11 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <DisplaySettingsProvider>
+        <NotificationSettingsProvider>
+          <AppContent />
+        </NotificationSettingsProvider>
+      </DisplaySettingsProvider>
     </Router>
   )
 }

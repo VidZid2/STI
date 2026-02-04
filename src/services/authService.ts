@@ -40,16 +40,34 @@ export const loginUser = async (email: string, password: string): Promise<LoginR
     }
 
     try {
-        // Query the users table
-        const { data, error } = await supabase
+        // Query the users table - try exact match first, then lowercase
+        let { data, error } = await supabase
             .from('users')
             .select('*')
-            .eq('email', email.toLowerCase())
+            .eq('email', email)
             .eq('password_hash', password)
             .eq('is_active', true)
             .single();
 
+        // If not found, try lowercase email
         if (error || !data) {
+            const result = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', email.toLowerCase())
+                .eq('password_hash', password)
+                .eq('is_active', true)
+                .single();
+            data = result.data;
+            error = result.error;
+        }
+
+        if (error || !data) {
+            // Try demo fallback if Supabase doesn't have the user
+            const demoResult = loginDemo(email, password);
+            if (demoResult.success) {
+                return demoResult;
+            }
             return {
                 success: false,
                 error: 'Invalid email or password'
@@ -84,6 +102,11 @@ export const loginUser = async (email: string, password: string): Promise<LoginR
         return { success: true, user };
     } catch (err) {
         console.error('[Auth] Login error:', err);
+        // Try demo fallback on error
+        const demoResult = loginDemo(email, password);
+        if (demoResult.success) {
+            return demoResult;
+        }
         return {
             success: false,
             error: 'An error occurred during login'
@@ -124,6 +147,20 @@ const loginDemo = (email: string, password: string): LoginResult => {
                 full_name: 'David Clarence Del Mundo',
                 first_name: 'David',
                 last_name: 'Del Mundo',
+                role: 'teacher' as const,
+                campus: 'Meycauayan',
+            }
+        },
+        {
+            email: 'Testing@testing',
+            password: '123',
+            user: {
+                id: 'demo-teacher-test',
+                student_id: 'TEACHER-TEST',
+                email: 'Testing@testing',
+                full_name: 'Test Teacher',
+                first_name: 'Test',
+                last_name: 'Teacher',
                 role: 'teacher' as const,
                 campus: 'Meycauayan',
             }

@@ -118,7 +118,7 @@ const formatTimeAgo = (date: Date): string => {
 /**
  * Fetch teacher dashboard statistics from real database
  */
-export const getTeacherStats = async (teacherId?: string): Promise<TeacherStats> => {
+export const getTeacherStats = async (_teacherId?: string): Promise<TeacherStats> => {
     try {
         if (!supabase) {
             return DEFAULT_STATS;
@@ -198,7 +198,7 @@ export const getRecentActivity = async (limit = 10): Promise<ActivityItem[]> => 
                 const task = taskMap.get(sub.task_id);
                 let action = 'New submission';
                 let type: ActivityItem['type'] = 'submission';
-                
+
                 if (sub.status === 'graded') {
                     action = 'Submission graded';
                     type = 'grade';
@@ -228,7 +228,7 @@ export const getRecentActivity = async (limit = 10): Promise<ActivityItem[]> => 
 /**
  * Fetch teacher's courses with stats
  */
-export const getTeacherCourses = async (teacherId?: string): Promise<TeacherCourse[]> => {
+export const getTeacherCourses = async (_teacherId?: string): Promise<TeacherCourse[]> => {
     try {
         if (!supabase) {
             return [];
@@ -260,7 +260,7 @@ export const getTeacherCourses = async (teacherId?: string): Promise<TeacherCour
 /**
  * Fetch students summary for a course
  */
-export const getCourseStudents = async (courseId: string): Promise<StudentSummary[]> => {
+export const getCourseStudents = async (_courseId: string): Promise<StudentSummary[]> => {
     try {
         if (!supabase) {
             return [];

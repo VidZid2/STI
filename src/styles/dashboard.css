@@ -51,6 +51,8 @@ html {
     /* Firefox */
     -ms-overflow-style: none;
     /* IE and Edge */
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
 }
 
 html::-webkit-scrollbar {
@@ -68,7 +70,8 @@ body {
     font-feature-settings: 'kern' 1;
     text-rendering: optimizeLegibility;
     color: var(--text-dark);
-    overflow-x: hidden;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
     scrollbar-width: none;
     /* Firefox */
     -ms-overflow-style: none;
@@ -78,6 +81,11 @@ body {
 body::-webkit-scrollbar {
     display: none;
     /* Chrome, Safari, Edge */
+}
+
+/* Modal open state - use class instead of inline styles for better control */
+body.modal-open {
+    overflow: hidden !important;
 }
 
 /* ===== HEADER ===== */
@@ -752,11 +760,10 @@ body::-webkit-scrollbar {
     margin-right: 0;
     /* No space by default - sidebar starts hidden */
     padding: 2.5rem 3rem;
+    padding-bottom: 5rem;
     min-height: calc(100vh - 70px);
     transition: margin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    /* Performance optimization */
-    contain: layout style;
-    will-change: auto;
+    position: relative;
 }
 
 .main-content.sidebar-open {

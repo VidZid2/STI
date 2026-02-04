@@ -10,15 +10,21 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
     const [hoveredRole, setHoveredRole] = useState<'student' | 'admin' | null>(null);
+    const [isTeacherMode, setIsTeacherMode] = useState(false);
     const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleRoleClick = (role: string) => {
         if (role === 'student') {
-            navigate('/student-login');
+            navigate('/student-login', { state: { isTeacherMode } });
             onClose();
         } else if (role === 'admin') {
             window.location.href = 'https://elms.sti.edu/admin';
         }
+    };
+
+    const handleTeacherModeToggle = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsTeacherMode(!isTeacherMode);
     };
 
     const handleMouseEnter = (role: 'student' | 'admin') => {
@@ -103,13 +109,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
                             {/* Role Options */}
                             <div className="flex flex-col gap-3">
-                                {/* Student Option */}
+                                {/* Student/Teacher Option with Toggle */}
                                 <div 
                                     onMouseEnter={() => handleMouseEnter('student')}
                                     onMouseLeave={handleMouseLeave}
                                 >
                                     <motion.button
-                                        className="w-full flex items-center gap-4 p-4 rounded-xl border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-blue-500/10 transition-all text-left group"
+                                        className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left group ${
+                                            isTeacherMode 
+                                                ? 'border-purple-200 dark:border-purple-500/40 bg-purple-50/50 dark:bg-purple-500/10 hover:border-purple-300 dark:hover:border-purple-500/60' 
+                                                : 'border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-blue-500/10'
+                                        }`}
                                         onClick={() => handleRoleClick('student')}
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
@@ -118,15 +128,28 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                         whileTap={{ scale: 0.99 }}
                                     >
                                         <motion.div 
-                                            className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/30 transition-colors"
+                                            className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${
+                                                isTeacherMode 
+                                                    ? 'bg-purple-100 dark:bg-purple-500/20 group-hover:bg-purple-150 dark:group-hover:bg-purple-500/30' 
+                                                    : 'bg-blue-50 dark:bg-blue-500/20 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/30'
+                                            }`}
                                             initial={{ scale: 0, rotate: -10 }}
                                             animate={{ scale: 1, rotate: 0 }}
                                             transition={{ delay: 0.15, type: 'spring', stiffness: 300 }}
                                         >
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                                <circle cx="12" cy="8" r="4"/>
-                                                <path d="M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2"/>
-                                            </svg>
+                                            {isTeacherMode ? (
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                                    <circle cx="9" cy="7" r="4"/>
+                                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                                </svg>
+                                            ) : (
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <circle cx="12" cy="8" r="4"/>
+                                                    <path d="M4 21v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2"/>
+                                                </svg>
+                                            )}
                                         </motion.div>
                                         <div className="flex-1 min-w-0">
                                             <motion.span 
@@ -135,7 +158,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: 0.18 }}
                                             >
-                                                Student
+                                                {isTeacherMode ? 'Teacher' : 'Student'}
                                             </motion.span>
                                             <motion.span 
                                                 className="text-sm text-zinc-400 dark:text-zinc-500"
@@ -143,20 +166,37 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                                 animate={{ opacity: 1 }}
                                                 transition={{ delay: 0.22 }}
                                             >
-                                                Access courses & materials
+                                                {isTeacherMode ? 'Manage courses & students' : 'Access courses & materials'}
                                             </motion.span>
                                         </div>
-                                        <motion.svg 
-                                            className="w-5 h-5 text-zinc-300 dark:text-zinc-600 group-hover:text-blue-400 dark:group-hover:text-blue-400 transition-colors" 
-                                            fill="none" 
-                                            stroke="currentColor" 
-                                            viewBox="0 0 24 24"
-                                            initial={{ opacity: 0, x: -5 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.2 }}
+                                        
+                                        {/* Professional Toggle Switch */}
+                                        <div 
+                                            className="flex items-center gap-2"
+                                            onClick={handleTeacherModeToggle}
                                         >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                        </motion.svg>
+                                            <span className={`text-[11px] font-medium transition-colors ${!isTeacherMode ? 'text-blue-500' : 'text-zinc-400 dark:text-zinc-500'}`}>
+                                                S
+                                            </span>
+                                            <motion.div 
+                                                className={`relative w-11 h-6 rounded-full cursor-pointer transition-colors ${
+                                                    isTeacherMode 
+                                                        ? 'bg-purple-500' 
+                                                        : 'bg-blue-500'
+                                                }`}
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
+                                            >
+                                                <motion.div
+                                                    className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm"
+                                                    animate={{ x: isTeacherMode ? 22 : 2 }}
+                                                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                                                />
+                                            </motion.div>
+                                            <span className={`text-[11px] font-medium transition-colors ${isTeacherMode ? 'text-purple-500' : 'text-zinc-400 dark:text-zinc-500'}`}>
+                                                T
+                                            </span>
+                                        </div>
                                     </motion.button>
                                 </div>
 
@@ -254,15 +294,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                                         animate={{ scale: 1, rotate: 0 }}
                                                         transition={{ delay: 0.1, type: 'spring', stiffness: 400 }}
                                                     >
-                                                        👋
+                                                        {isTeacherMode ? '👨‍🏫' : '👋'}
                                                     </motion.span>
                                                     <motion.span 
-                                                        className="text-sm font-semibold text-blue-600 dark:text-blue-400"
+                                                        className={`text-sm font-semibold ${isTeacherMode ? 'text-purple-600 dark:text-purple-400' : 'text-blue-600 dark:text-blue-400'}`}
                                                         initial={{ opacity: 0, x: -10 }}
                                                         animate={{ opacity: 1, x: 0 }}
                                                         transition={{ delay: 0.08 }}
                                                     >
-                                                        Welcome, Student!
+                                                        {isTeacherMode ? 'Welcome, Teacher!' : 'Welcome, Student!'}
                                                     </motion.span>
                                                 </motion.div>
                                                 <motion.p 
@@ -271,7 +311,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                                     animate={{ opacity: 1, y: 0 }}
                                                     transition={{ delay: 0.12 }}
                                                 >
-                                                    Sign in to access your courses, view grades, and track your progress.
+                                                    {isTeacherMode 
+                                                        ? 'Sign in to manage your courses, view student progress, and create assignments.'
+                                                        : 'Sign in to access your courses, view grades, and track your progress.'}
                                                 </motion.p>
                                             </>
                                         ) : (

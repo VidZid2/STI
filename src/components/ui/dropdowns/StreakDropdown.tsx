@@ -3,7 +3,11 @@
 import * as React from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { getStreakData, getStreakTier, updateStreak, type StreakData } from '../../../services/studyTimeService';
+import { getStreakData, getStreakTier, type StreakData } from '../../../services/studyTimeService';
+import { DailyStreakModal } from '../../modals/DailyStreakModal';
+
+// Session storage key to track if modal was shown this session
+const STREAK_MODAL_SHOWN_KEY = 'streak-modal-shown-session';
 
 interface StreakDropdownProps {
     className?: string;
@@ -13,9 +17,11 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [streakData, setStreakData] = useState<StreakData>(() => getStreakData());
     const [showWelcome, setShowWelcome] = useState(false);
+    const [showStreakModal, setShowStreakModal] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [showAutoTooltip, setShowAutoTooltip] = useState(false);
     const [tutorialsCompleted, setTutorialsCompleted] = useState(false);
+    const [componentReady, setComponentReady] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -55,23 +61,44 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
         return () => observer.disconnect();
     }, []);
 
-    // Update streak on mount and check if first visit today
+    // Mark component as ready after a short delay to ensure DOM is stable
     useEffect(() => {
-        const data = getStreakData();
-        const today = new Date().toISOString().split('T')[0];
-        const wasFirstVisitToday = data.lastActiveDate !== today;
+        const timer = setTimeout(() => {
+            setComponentReady(true);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // Show streak modal on first visit of the day
+    // Shows immediately if tutorials are completed, or after a delay if not
+    useEffect(() => {
+        if (!componentReady) return;
         
-        updateStreak();
-        const updatedData = getStreakData();
-        setStreakData(updatedData);
+        // Check if modal was already shown this session
+        const modalShownThisSession = sessionStorage.getItem(STREAK_MODAL_SHOWN_KEY) === 'true';
+        if (modalShownThisSession) return;
         
-        // Only show welcome animation if tutorials are completed and first visit today
-        if (wasFirstVisitToday && tutorialsCompleted) {
+        // If tutorials are completed, show immediately
+        // If not, wait a bit longer to avoid conflicting with other modals
+        const delay = tutorialsCompleted ? 300 : 2000;
+        
+        const timer = setTimeout(() => {
+            // Double-check session storage in case it was set during the delay
+            if (sessionStorage.getItem(STREAK_MODAL_SHOWN_KEY) === 'true') return;
+            
+            // Get current streak data
+            const data = getStreakData();
+            setStreakData(data);
+            
+            // Show modal and mark as shown for this session
+            sessionStorage.setItem(STREAK_MODAL_SHOWN_KEY, 'true');
             setShowWelcome(true);
-            setIsOpen(true);
+            setShowStreakModal(true);
             setTimeout(() => setShowWelcome(false), 3000);
-        }
-    }, [tutorialsCompleted]);
+        }, delay);
+        
+        return () => clearTimeout(timer);
+    }, [componentReady, tutorialsCompleted]);
 
     // Show auto tooltip only after tutorials are completed
     useEffect(() => {
@@ -223,6 +250,13 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
 
     return (
         <div className={`relative ${className || ''}`}>
+            {/* Daily Streak Modal - shows on first visit of the day */}
+            <DailyStreakModal
+                isOpen={showStreakModal}
+                onClose={() => setShowStreakModal(false)}
+                streakData={streakData}
+            />
+
             {/* Auto-playing tooltip - only show after tutorials are completed */}
             <AnimatePresence>
                 {showAutoTooltip && !isOpen && tutorialsCompleted && (

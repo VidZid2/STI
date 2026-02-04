@@ -162,7 +162,7 @@ export const updateDeadline = (id: string, updates: Partial<Deadline>): Deadline
     const deadlines = getDeadlines();
     const index = deadlines.findIndex(d => d.id === id);
     if (index === -1) return null;
-    
+
     deadlines[index] = { ...deadlines[index], ...updates };
     saveDeadlines(deadlines);
     return deadlines[index];
@@ -173,7 +173,7 @@ export const deleteDeadline = (id: string): boolean => {
     const deadlines = getDeadlines();
     const filtered = deadlines.filter(d => d.id !== id);
     if (filtered.length === deadlines.length) return false;
-    
+
     saveDeadlines(filtered);
     return true;
 };
@@ -183,7 +183,7 @@ export const toggleDeadlineComplete = (id: string): Deadline | null => {
     const deadlines = getDeadlines();
     const deadline = deadlines.find(d => d.id === id);
     if (!deadline) return null;
-    
+
     return updateDeadline(id, { completed: !deadline.completed });
 };
 
@@ -215,7 +215,7 @@ export const getDaysUntil = (dueDate: string): number => {
 // Format days until as string
 export const formatDaysUntil = (dueDate: string): { text: string; color: string } => {
     const days = getDaysUntil(dueDate);
-    
+
     if (days < 0) {
         return { text: 'Overdue', color: 'text-red-600' };
     } else if (days === 0) {

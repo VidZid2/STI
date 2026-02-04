@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['pdfjs-dist'],
+    include: ['pdfjs-dist', 'emoji-mart', '@emoji-mart/react', '@emoji-mart/data'],
   },
   build: {
     rollupOptions: {

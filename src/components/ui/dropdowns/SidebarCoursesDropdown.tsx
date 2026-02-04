@@ -20,78 +20,15 @@ interface SidebarCoursesDropdownProps {
     currentCourseId?: string | null;
 }
 
-// Dark mode color palette
-const getColors = (isDark: boolean) => ({
-    // Backgrounds
-    dropdownBg: isDark ? '#1e293b' : '#ffffff',
-    headerBorder: isDark ? 'rgba(71, 85, 105, 0.5)' : '#f4f4f5',
-    cardBg: isDark 
-        ? 'linear-gradient(135deg, rgba(30, 58, 138, 0.3) 0%, rgba(6, 78, 59, 0.3) 100%)' 
-        : 'linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%)',
-    cardBorder: isDark ? 'rgba(59, 130, 246, 0.3)' : '#e0f2fe',
-    hoverBg: isDark ? 'rgba(51, 65, 85, 0.6)' : 'rgba(244, 244, 245, 0.8)',
-    footerHoverBg: isDark ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff',
-    skeletonBg: isDark ? 'rgba(71, 85, 105, 0.6)' : '#e4e4e7',
-    skeletonShine: isDark ? 'rgba(100, 116, 139, 0.8)' : '#d4d4d8',
-    progressBarBg: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0,0,0,0.2)',
-    
-    // Text colors
-    textPrimary: isDark ? '#f1f5f9' : '#18181b',
-    textSecondary: isDark ? '#94a3b8' : '#71717a',
-    textMuted: isDark ? '#64748b' : '#a1a1aa',
-    textAccent: isDark ? '#60a5fa' : '#3b82f6',
-    headerText: isDark ? '#cbd5e1' : '#52525b',
-    
-    // Shadows
-    boxShadow: isDark 
-        ? '0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(71, 85, 105, 0.3)' 
-        : '0 4px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05)',
-});
-
-// Skeleton Loading Component
-function Skeleton({ style, isDark }: { style?: React.CSSProperties; isDark?: boolean }) {
-    const colors = getColors(isDark || false);
-    return (
-        <motion.div
-            style={{
-                backgroundColor: colors.skeletonBg,
-                borderRadius: '4px',
-                ...style,
-            }}
-            animate={{ 
-                backgroundColor: [colors.skeletonBg, colors.skeletonShine, colors.skeletonBg] 
-            }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-        />
-    );
-}
-
-// Course Skeleton
-function CourseSkeleton({ isDark }: { isDark: boolean }) {
-    return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {[1, 2, 3].map((i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px' }}>
-                    <Skeleton isDark={isDark} style={{ width: '36px', height: '36px', borderRadius: '8px', flexShrink: 0 }} />
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        <Skeleton isDark={isDark} style={{ height: '12px', width: '75%' }} />
-                        <Skeleton isDark={isDark} style={{ height: '10px', width: '50%' }} />
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-// Course item with dark mode support
-const CourseItem = React.memo<{
+// Course Item Component with proper hover state
+const CourseItem: React.FC<{
     course: Course;
     index: number;
     onClick?: (id: string) => void;
-    isDark: boolean;
     isActive?: boolean;
-}>(({ course, index, onClick, isDark, isActive }) => {
-    const colors = getColors(isDark);
+}> = ({ course, index, onClick, isActive }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    
     const displayTitle = useMemo(
         () => course.title.replace(' - SY2526-1T', ''),
         [course.title]
@@ -99,39 +36,42 @@ const CourseItem = React.memo<{
     
     const timeLeft = useMemo(() => getTimeLeftForCourse(course.id), [course.id]);
 
-    // Active state colors
-    const activeBg = isDark ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)';
-    const activeBorder = isDark ? 'rgba(59, 130, 246, 0.4)' : 'rgba(59, 130, 246, 0.3)';
-
     return (
         <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.05, duration: 0.2 }}
+            transition={{ delay: index * 0.03, duration: 0.2 }}
             onClick={() => onClick?.(course.id)}
-            className="group"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                padding: '8px',
-                borderRadius: '8px',
+                gap: '12px',
+                padding: '10px 12px',
+                borderRadius: '10px',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
-                background: isActive ? activeBg : 'transparent',
-                border: isActive ? `1px solid ${activeBorder}` : '1px solid transparent',
+                background: isActive 
+                    ? 'rgba(59, 130, 246, 0.08)' 
+                    : isHovered 
+                        ? 'rgba(0, 0, 0, 0.03)' 
+                        : 'transparent',
+                border: isActive 
+                    ? '1px solid rgba(59, 130, 246, 0.2)' 
+                    : '1px solid transparent',
             }}
-            whileHover={{ backgroundColor: isActive ? activeBg : colors.hoverBg }}
         >
             {/* Course Image */}
             <div
                 style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '8px',
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '10px',
                     overflow: 'hidden',
                     flexShrink: 0,
                     position: 'relative',
+                    border: '1px solid rgba(0, 0, 0, 0.06)',
                 }}
             >
                 <img
@@ -144,27 +84,6 @@ const CourseItem = React.memo<{
                         objectFit: 'cover',
                     }}
                 />
-                {/* Progress bar overlay */}
-                <div
-                    style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        height: '3px',
-                        background: colors.progressBarBg,
-                    }}
-                >
-                    <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${course.progress}%` }}
-                        transition={{ duration: 0.5, delay: index * 0.05 }}
-                        style={{
-                            height: '100%',
-                            background: course.progress === 100 ? '#10b981' : '#3b82f6',
-                        }}
-                    />
-                </div>
             </div>
 
             {/* Course Info */}
@@ -172,9 +91,9 @@ const CourseItem = React.memo<{
                 <p
                     style={{
                         margin: 0,
-                        fontSize: '12px',
+                        fontSize: '13px',
                         fontWeight: 500,
-                        color: colors.textPrimary,
+                        color: '#18181b',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -182,12 +101,18 @@ const CourseItem = React.memo<{
                 >
                     {displayTitle}
                 </p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
-                    <span style={{ fontSize: '10px', color: colors.textSecondary }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '3px' }}>
+                    <span style={{ fontSize: '11px', color: '#71717a' }}>
                         {course.progress}% • {course.subtitle.split(' · ')[0]}
                     </span>
                     {course.progress < 100 && (
-                        <span style={{ fontSize: '9px', color: colors.textMuted, display: 'flex', alignItems: 'center', gap: '2px' }}>
+                        <span style={{ 
+                            fontSize: '10px', 
+                            color: '#a1a1aa', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '3px' 
+                        }}>
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                 <circle cx="12" cy="12" r="10" />
                                 <polyline points="12 6 12 12 16 14" />
@@ -198,29 +123,13 @@ const CourseItem = React.memo<{
                 </div>
             </div>
 
-            {/* Progress indicator / Active indicator */}
-            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                {isActive && (
-                    <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ type: 'spring', stiffness: 400 }}
-                        style={{
-                            width: '6px',
-                            height: '6px',
-                            borderRadius: '50%',
-                            background: '#3b82f6',
-                        }}
-                    />
-                )}
+            {/* Progress */}
+            <div style={{ flexShrink: 0 }}>
                 {course.progress === 100 ? (
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: 'spring', stiffness: 400, delay: index * 0.05 }}
+                    <div
                         style={{
-                            width: '20px',
-                            height: '20px',
+                            width: '22px',
+                            height: '22px',
                             borderRadius: '50%',
                             background: '#10b981',
                             display: 'flex',
@@ -228,16 +137,16 @@ const CourseItem = React.memo<{
                             justifyContent: 'center',
                         }}
                     >
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round">
                             <polyline points="20 6 9 17 4 12" />
                         </svg>
-                    </motion.div>
+                    </div>
                 ) : (
                     <span
                         style={{
-                            fontSize: '10px',
+                            fontSize: '12px',
                             fontWeight: 600,
-                            color: isActive ? '#3b82f6' : colors.textAccent,
+                            color: isActive ? '#3b82f6' : '#3b82f6',
                         }}
                     >
                         {course.progress}%
@@ -246,9 +155,137 @@ const CourseItem = React.memo<{
             </div>
         </motion.div>
     );
-});
+};
 
-CourseItem.displayName = 'CourseItem';
+// Continue Learning Card Component
+const ContinueLearningCard: React.FC<{
+    course: Course;
+    onCourseClick?: (id: string) => void;
+}> = ({ course, onCourseClick }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    const displayTitle = course.title.replace(' - SY2526-1T', '');
+    
+    return (
+        <div
+            style={{
+                margin: '12px',
+                padding: '14px',
+                background: 'rgba(59, 130, 246, 0.04)',
+                borderRadius: '12px',
+                border: '1px solid rgba(59, 130, 246, 0.1)',
+            }}
+        >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <span style={{ 
+                    fontSize: '10px', 
+                    fontWeight: 600, 
+                    color: '#3b82f6', 
+                    textTransform: 'uppercase', 
+                    letterSpacing: '0.05em' 
+                }}>
+                    Continue Learning
+                </span>
+            </div>
+            <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#18181b' }}>
+                {displayTitle}
+            </p>
+            <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#71717a' }}>
+                {course.subtitle.split(' · ')[0]}
+            </p>
+            <button
+                onClick={() => onCourseClick?.(course.id)}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                style={{
+                    marginTop: '12px',
+                    width: '100%',
+                    padding: '10px',
+                    border: 'none',
+                    borderRadius: '10px',
+                    background: '#3b82f6',
+                    color: 'white',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    transform: isHovered ? 'scale(1.02)' : 'scale(1)',
+                    boxShadow: isHovered ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none',
+                }}
+            >
+                Resume
+            </button>
+        </div>
+    );
+};
+
+// Skeleton Loading
+const CourseSkeleton: React.FC = () => (
+    <div style={{ padding: '8px 12px' }}>
+        {[1, 2, 3].map((i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0' }}>
+                <div 
+                    style={{ 
+                        width: '40px', 
+                        height: '40px', 
+                        borderRadius: '10px', 
+                        background: '#f4f4f5',
+                        animation: 'pulse 1.5s ease-in-out infinite',
+                    }} 
+                />
+                <div style={{ flex: 1 }}>
+                    <div 
+                        style={{ 
+                            height: '14px', 
+                            width: '70%', 
+                            background: '#f4f4f5', 
+                            borderRadius: '4px',
+                            marginBottom: '6px',
+                            animation: 'pulse 1.5s ease-in-out infinite',
+                        }} 
+                    />
+                    <div 
+                        style={{ 
+                            height: '10px', 
+                            width: '50%', 
+                            background: '#f4f4f5', 
+                            borderRadius: '4px',
+                            animation: 'pulse 1.5s ease-in-out infinite',
+                        }} 
+                    />
+                </div>
+            </div>
+        ))}
+    </div>
+);
+
+// View All Button Component
+const ViewAllButton: React.FC = () => {
+    const [isHovered, setIsHovered] = useState(false);
+    
+    return (
+        <button
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            style={{
+                width: '100%',
+                padding: '10px',
+                border: 'none',
+                borderRadius: '8px',
+                background: isHovered ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                color: '#3b82f6',
+                fontSize: '12px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+            }}
+        >
+            View All Courses
+        </button>
+    );
+};
 
 const SidebarCoursesDropdown: React.FC<SidebarCoursesDropdownProps> = ({
     isOpen,
@@ -260,36 +297,7 @@ const SidebarCoursesDropdown: React.FC<SidebarCoursesDropdownProps> = ({
 }) => {
     const [position, setPosition] = useState({ top: 0, left: 0 });
     const [isLoading, setIsLoading] = useState(true);
-    // Initialize dark mode state immediately from DOM
-    const [isDarkMode, setIsDarkMode] = useState(() => 
-        typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
-    );
     const closeTimeoutRef = useRef<number | null>(null);
-
-    // Check for dark mode changes
-    useEffect(() => {
-        const checkDarkMode = () => {
-            const isDark = document.body.classList.contains('dark-mode');
-            setIsDarkMode(isDark);
-        };
-        
-        // Check immediately
-        checkDarkMode();
-        
-        const observer = new MutationObserver(checkDarkMode);
-        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-        
-        return () => observer.disconnect();
-    }, []);
-
-    // Also check when dropdown opens
-    useEffect(() => {
-        if (isOpen) {
-            setIsDarkMode(document.body.classList.contains('dark-mode'));
-        }
-    }, [isOpen]);
-
-    const colors = getColors(isDarkMode);
 
     // Calculate stats
     const completedCount = courses.filter(c => c.progress === 100).length;
@@ -300,7 +308,7 @@ const SidebarCoursesDropdown: React.FC<SidebarCoursesDropdownProps> = ({
     useEffect(() => {
         if (isOpen) {
             setIsLoading(true);
-            const timer = setTimeout(() => setIsLoading(false), 400);
+            const timer = setTimeout(() => setIsLoading(false), 300);
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
@@ -337,90 +345,68 @@ const SidebarCoursesDropdown: React.FC<SidebarCoursesDropdownProps> = ({
         <AnimatePresence>
             {isOpen && (
                 <motion.div
-                    initial={{ opacity: 0, x: -8, scale: 0.96 }}
+                    initial={{ opacity: 0, x: -8, scale: 0.98 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
-                    exit={{ opacity: 0, x: -8, scale: 0.96 }}
-                    transition={{ type: 'spring', bounce: 0.1, duration: 0.25 }}
+                    exit={{ opacity: 0, x: -8, scale: 0.98 }}
+                    transition={{ duration: 0.15, ease: 'easeOut' }}
                     onMouseEnter={cancelClose}
                     onMouseLeave={scheduleClose}
                     style={{
                         position: 'fixed',
                         top: position.top,
                         left: position.left,
-                        width: '280px',
-                        background: colors.dropdownBg,
-                        borderRadius: '12px',
-                        boxShadow: colors.boxShadow,
+                        width: '300px',
+                        background: '#ffffff',
+                        borderRadius: '16px',
+                        boxShadow: '0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04)',
                         overflow: 'hidden',
                         zIndex: 10000,
                     }}
                 >
                     {/* Header */}
-                    <div style={{ padding: '12px 14px', borderBottom: `1px solid ${colors.headerBorder}` }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: '11px', fontWeight: 600, color: colors.headerText, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                My Courses
-                            </span>
-                            <span style={{ fontSize: '11px', color: colors.textMuted }}>
-                                {completedCount}/{courses.length} done
-                            </span>
-                        </div>
+                    <div style={{ 
+                        padding: '14px 16px', 
+                        borderBottom: '1px solid #f4f4f5',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                    }}>
+                        <span style={{ 
+                            fontSize: '12px', 
+                            fontWeight: 600, 
+                            color: '#52525b', 
+                            textTransform: 'uppercase', 
+                            letterSpacing: '0.05em' 
+                        }}>
+                            My Courses
+                        </span>
+                        <span style={{ 
+                            fontSize: '11px', 
+                            color: '#a1a1aa',
+                            padding: '2px 8px',
+                            background: '#f4f4f5',
+                            borderRadius: '10px',
+                        }}>
+                            {completedCount}/{courses.length} done
+                        </span>
                     </div>
 
                     {/* Continue Learning Card */}
                     {mostRecentCourse && !isLoading && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            style={{
-                                margin: '10px',
-                                padding: '10px',
-                                background: colors.cardBg,
-                                borderRadius: '8px',
-                                border: `1px solid ${colors.cardBorder}`,
-                            }}
-                        >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={colors.textAccent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polygon points="5 3 19 12 5 21 5 3" />
-                                </svg>
-                                <span style={{ fontSize: '9px', fontWeight: 600, color: colors.textAccent, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                    Continue Learning
-                                </span>
-                            </div>
-                            <p style={{ margin: 0, fontSize: '12px', fontWeight: 500, color: colors.textPrimary }}>
-                                {mostRecentCourse.title.replace(' - SY2526-1T', '')}
-                            </p>
-                            <p style={{ margin: '2px 0 0 0', fontSize: '10px', color: colors.textSecondary }}>
-                                {mostRecentCourse.subtitle.split(' · ')[0]}
-                            </p>
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => onCourseClick?.(mostRecentCourse.id)}
-                                style={{
-                                    marginTop: '8px',
-                                    width: '100%',
-                                    padding: '6px',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    background: '#3b82f6',
-                                    color: 'white',
-                                    fontSize: '11px',
-                                    fontWeight: 500,
-                                    cursor: 'pointer',
-                                }}
-                            >
-                                Resume
-                            </motion.button>
-                        </motion.div>
+                        <ContinueLearningCard 
+                            course={mostRecentCourse} 
+                            onCourseClick={onCourseClick} 
+                        />
                     )}
 
                     {/* Course List */}
-                    <div style={{ maxHeight: '220px', overflowY: 'auto', padding: '4px 6px' }}>
+                    <div style={{ 
+                        maxHeight: '240px', 
+                        overflowY: 'auto', 
+                        padding: '4px 8px',
+                    }}>
                         {isLoading ? (
-                            <CourseSkeleton isDark={isDarkMode} />
+                            <CourseSkeleton />
                         ) : (
                             courses.map((course, index) => (
                                 <CourseItem
@@ -428,7 +414,6 @@ const SidebarCoursesDropdown: React.FC<SidebarCoursesDropdownProps> = ({
                                     course={course}
                                     index={index}
                                     onClick={onCourseClick}
-                                    isDark={isDarkMode}
                                     isActive={currentCourseId === course.id}
                                 />
                             ))
@@ -436,36 +421,12 @@ const SidebarCoursesDropdown: React.FC<SidebarCoursesDropdownProps> = ({
                     </div>
 
                     {/* Footer */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        style={{
-                            padding: '10px 14px',
-                            borderTop: `1px solid ${colors.headerBorder}`,
-                        }}
-                    >
-                        <motion.button
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.99 }}
-                            style={{
-                                width: '100%',
-                                padding: '8px',
-                                border: 'none',
-                                borderRadius: '8px',
-                                background: 'transparent',
-                                color: colors.textAccent,
-                                fontSize: '12px',
-                                fontWeight: 500,
-                                cursor: 'pointer',
-                                transition: 'background 0.15s ease',
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = colors.footerHoverBg)}
-                            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-                        >
-                            View All Courses
-                        </motion.button>
-                    </motion.div>
+                    <div style={{
+                        padding: '10px 12px',
+                        borderTop: '1px solid #f4f4f5',
+                    }}>
+                        <ViewAllButton />
+                    </div>
                 </motion.div>
             )}
         </AnimatePresence>,

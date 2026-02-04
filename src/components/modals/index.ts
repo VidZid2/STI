@@ -6,3 +6,4 @@
 export { default as LoginModal } from './LoginModal';
 export { default as SettingsModal } from './SettingsModal';
 export { default as WelcomeModal } from './WelcomeModal';
+export { DailyStreakModal } from './DailyStreakModal';

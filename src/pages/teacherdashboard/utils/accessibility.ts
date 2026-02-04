@@ -23,7 +23,7 @@ export const getLuminance = (hexColor: string): number => {
     const g = parseInt(hex.substr(2, 2), 16) / 255;
     const b = parseInt(hex.substr(4, 2), 16) / 255;
 
-    const toLinear = (c: number) => 
+    const toLinear = (c: number) =>
         c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
 
     return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
@@ -45,8 +45,8 @@ export const getContrastRatio = (color1: string, color2: string): number => {
  * Check if color combination meets WCAG AA standards
  */
 export const meetsContrastAA = (
-    foreground: string, 
-    background: string, 
+    foreground: string,
+    background: string,
     isLargeText = false
 ): boolean => {
     const ratio = getContrastRatio(foreground, background);
@@ -57,8 +57,8 @@ export const meetsContrastAA = (
  * Check if color combination meets WCAG AAA standards
  */
 export const meetsContrastAAA = (
-    foreground: string, 
-    background: string, 
+    foreground: string,
+    background: string,
     isLargeText = false
 ): boolean => {
     const ratio = getContrastRatio(foreground, background);
@@ -83,7 +83,7 @@ export const getLiveRegionProps = (
 ): AriaLiveRegionProps => ({
     'aria-live': priority,
     'aria-atomic': true,
-    'aria-relevant': 'additions text',
+    'aria-relevant': 'additions',
 });
 
 /**
@@ -159,7 +159,7 @@ let announcer: HTMLDivElement | null = null;
  */
 export const initAnnouncer = (): void => {
     if (typeof document === 'undefined') return;
-    
+
     if (!announcer) {
         announcer = document.createElement('div');
         announcer.setAttribute('aria-live', 'polite');
@@ -184,13 +184,13 @@ export const initAnnouncer = (): void => {
  * Announce a message to screen readers
  */
 export const announce = (
-    message: string, 
+    message: string,
     priority: 'polite' | 'assertive' = 'polite'
 ): void => {
     if (typeof document === 'undefined') return;
-    
+
     initAnnouncer();
-    
+
     if (announcer) {
         announcer.setAttribute('aria-live', priority);
         // Clear and set to trigger announcement

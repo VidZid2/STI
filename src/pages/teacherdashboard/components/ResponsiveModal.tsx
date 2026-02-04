@@ -40,7 +40,7 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
     footerContent,
     noPadding = false,
 }) => {
-    const { isMobile, isSmallMobile } = useResponsive();
+    const { isMobile } = useResponsive();
     const closeButtonRef = useRef<HTMLButtonElement>(null);
 
     // Focus management

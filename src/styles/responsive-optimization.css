@@ -871,14 +871,16 @@ input, textarea, select, button {
 
 /* ===== ENHANCED SCROLLING PERFORMANCE ===== */
 .modal-left,
-.modal-right,
-.main-content {
+.modal-right {
     /* Smooth scrolling with containment */
     overflow-y: auto;
     overflow-x: hidden;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
 }
+
+/* Main content scrolling - handled by body, not main-content itself */
+/* Removed .main-content from here to prevent conflicts with body scrolling */
 
 /* Sidebar scrolling - controlled by dashboard.css state classes */
 .sidebar:not(.closing) {

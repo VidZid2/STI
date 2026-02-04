@@ -23,64 +23,84 @@ type TaskCategory = 'all' | 'assignment' | 'performance' | 'quiz' | 'practical' 
 
 // Task category configuration for the Tasks tab filter
 const TASK_CATEGORIES: { id: TaskCategory; label: string; icon: React.ReactNode; color: string }[] = [
-    { id: 'all', label: 'All', icon: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
-            <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-        </svg>
-    ), color: 'zinc' },
-    { id: 'assignment', label: 'Assignments', icon: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
-        </svg>
-    ), color: 'emerald' },
-    { id: 'performance', label: 'Performance Tasks', icon: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" />
-        </svg>
-    ), color: 'purple' },
-    { id: 'quiz', label: 'Quizzes', icon: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
-        </svg>
-    ), color: 'amber' },
-    { id: 'practical', label: 'Practical Exams', icon: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-        </svg>
-    ), color: 'rose' },
-    { id: 'journal', label: 'Journals', icon: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-        </svg>
-    ), color: 'cyan' },
+    {
+        id: 'all', label: 'All', icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+            </svg>
+        ), color: 'zinc'
+    },
+    {
+        id: 'assignment', label: 'Assignments', icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+        ), color: 'emerald'
+    },
+    {
+        id: 'performance', label: 'Performance Tasks', icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" />
+            </svg>
+        ), color: 'purple'
+    },
+    {
+        id: 'quiz', label: 'Quizzes', icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+        ), color: 'amber'
+    },
+    {
+        id: 'practical', label: 'Practical Exams', icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+            </svg>
+        ), color: 'rose'
+    },
+    {
+        id: 'journal', label: 'Journals', icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+        ), color: 'cyan'
+    },
 ];
 
 // Content type icons for modules
 const CONTENT_TYPE_CONFIG: Record<ContentType, { label: string; icon: React.ReactNode; color: string }> = {
-    'handout-a': { label: 'Handout A', icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
-        </svg>
-    ), color: 'blue' },
-    'handout-b': { label: 'Handout B', icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
-        </svg>
-    ), color: 'indigo' },
-    'slideshow': { label: 'Slideshow', icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" />
-        </svg>
-    ), color: 'amber' },
-    'video': { label: 'Video', icon: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <polygon points="5 3 19 12 5 21 5 3" />
-        </svg>
-    ), color: 'rose' },
+    'handout-a': {
+        label: 'Handout A', icon: (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+        ), color: 'blue'
+    },
+    'handout-b': {
+        label: 'Handout B', icon: (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+        ), color: 'indigo'
+    },
+    'slideshow': {
+        label: 'Slideshow', icon: (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+        ), color: 'amber'
+    },
+    'video': {
+        label: 'Video', icon: (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+        ), color: 'rose'
+    },
 };
 
 // Course-specific data configuration
@@ -91,94 +111,112 @@ const COURSE_DATA: Record<string, {
 }> = {
     'cp1': {
         modules: [
-            { id: 1, title: 'Module 1: Introduction to Programming', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                { type: 'handout-a' as ContentType, title: 'Course Overview', completed: false },
-                { type: 'handout-b' as ContentType, title: 'Getting Started Guide', completed: false },
-                { type: 'slideshow' as ContentType, title: 'Introduction Slides', completed: false },
-                { type: 'video' as ContentType, title: 'Welcome Video', completed: false },
-            ]},
+            {
+                id: 1, title: 'Module 1: Introduction to Programming', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
+                    { type: 'handout-a' as ContentType, title: 'Course Overview', completed: false },
+                    { type: 'handout-b' as ContentType, title: 'Getting Started Guide', completed: false },
+                    { type: 'slideshow' as ContentType, title: 'Introduction Slides', completed: false },
+                    { type: 'video' as ContentType, title: 'Welcome Video', completed: false },
+                ]
+            },
         ],
         tasks: [],
         instructor: { name: 'David Clarence Del Mundo', title: 'Instructor', email: 'd.delmundo@university.edu' }
     },
     'euth1': {
         modules: [
-            { id: 1, title: 'Chapter 1: Introduction to Euthenics', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                { type: 'handout-a' as ContentType, title: 'What is Euthenics?', completed: false },
-                { type: 'slideshow' as ContentType, title: 'Course Introduction', completed: false },
-                { type: 'video' as ContentType, title: 'Welcome to Euthenics', completed: false },
-            ]},
+            {
+                id: 1, title: 'Chapter 1: Introduction to Euthenics', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
+                    { type: 'handout-a' as ContentType, title: 'What is Euthenics?', completed: false },
+                    { type: 'slideshow' as ContentType, title: 'Course Introduction', completed: false },
+                    { type: 'video' as ContentType, title: 'Welcome to Euthenics', completed: false },
+                ]
+            },
         ],
         tasks: [],
         instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
     },
     'itc': {
         modules: [
-            { id: 1, title: 'Module 1: Computer Fundamentals', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                { type: 'handout-a' as ContentType, title: 'History of Computing', completed: false },
-                { type: 'slideshow' as ContentType, title: 'Computer Components', completed: false },
-                { type: 'video' as ContentType, title: 'Inside a Computer', completed: false },
-            ]},
+            {
+                id: 1, title: 'Module 1: Computer Fundamentals', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
+                    { type: 'handout-a' as ContentType, title: 'History of Computing', completed: false },
+                    { type: 'slideshow' as ContentType, title: 'Computer Components', completed: false },
+                    { type: 'video' as ContentType, title: 'Inside a Computer', completed: false },
+                ]
+            },
         ],
         tasks: [],
         instructor: { name: 'Psalmmiracle Mariano', title: 'Instructor', email: 'p.mariano@university.edu' }
     },
     'nstp1': {
         modules: [
-            { id: 1, title: 'Unit 1: NSTP Overview', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                { type: 'handout-a' as ContentType, title: 'NSTP Law & Guidelines', completed: false },
-                { type: 'slideshow' as ContentType, title: 'Program Introduction', completed: false },
-            ]},
+            {
+                id: 1, title: 'Unit 1: NSTP Overview', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
+                    { type: 'handout-a' as ContentType, title: 'NSTP Law & Guidelines', completed: false },
+                    { type: 'slideshow' as ContentType, title: 'Program Introduction', completed: false },
+                ]
+            },
         ],
         tasks: [],
         instructor: { name: 'Dan Risty Montojo', title: 'Instructor', email: 'd.montojo@university.edu' }
     },
     'pe1': {
         modules: [
-            { id: 1, title: 'Week 1: Fitness Assessment', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                { type: 'handout-a' as ContentType, title: 'Fitness Test Guide', completed: false },
-                { type: 'video' as ContentType, title: 'Proper Form Demo', completed: false },
-            ]},
+            {
+                id: 1, title: 'Week 1: Fitness Assessment', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
+                    { type: 'handout-a' as ContentType, title: 'Fitness Test Guide', completed: false },
+                    { type: 'video' as ContentType, title: 'Proper Form Demo', completed: false },
+                ]
+            },
         ],
         tasks: [],
         instructor: { name: 'Mark Joseph Danoy', title: 'Instructor', email: 'm.danoy@university.edu' }
     },
     'ppc': {
         modules: [
-            { id: 1, title: 'Topic 1: Understanding Culture', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                { type: 'handout-a' as ContentType, title: 'What is Culture?', completed: false },
-                { type: 'slideshow' as ContentType, title: 'Cultural Elements', completed: false },
-            ]},
+            {
+                id: 1, title: 'Topic 1: Understanding Culture', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
+                    { type: 'handout-a' as ContentType, title: 'What is Culture?', completed: false },
+                    { type: 'slideshow' as ContentType, title: 'Cultural Elements', completed: false },
+                ]
+            },
         ],
         tasks: [],
         instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
     },
     'purcom': {
         modules: [
-            { id: 1, title: 'Lesson 1: Communication Process', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                { type: 'handout-a' as ContentType, title: 'Elements of Communication', completed: false },
-                { type: 'slideshow' as ContentType, title: 'Communication Models', completed: false },
-            ]},
+            {
+                id: 1, title: 'Lesson 1: Communication Process', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
+                    { type: 'handout-a' as ContentType, title: 'Elements of Communication', completed: false },
+                    { type: 'slideshow' as ContentType, title: 'Communication Models', completed: false },
+                ]
+            },
         ],
         tasks: [],
         instructor: { name: 'John Denielle San Martin', title: 'Instructor', email: 'j.sanmartin@university.edu' }
     },
     'tcw': {
         modules: [
-            { id: 1, title: 'Chapter 1: Globalization', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                { type: 'handout-a' as ContentType, title: 'What is Globalization?', completed: false },
-                { type: 'slideshow' as ContentType, title: 'Global Interconnectedness', completed: false },
-            ]},
+            {
+                id: 1, title: 'Chapter 1: Globalization', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
+                    { type: 'handout-a' as ContentType, title: 'What is Globalization?', completed: false },
+                    { type: 'slideshow' as ContentType, title: 'Global Interconnectedness', completed: false },
+                ]
+            },
         ],
         tasks: [],
         instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
     },
     'uts': {
         modules: [
-            { id: 1, title: 'Module 1: The Self from Various Perspectives', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                { type: 'handout-a' as ContentType, title: 'Philosophical Self', completed: false },
-                { type: 'slideshow' as ContentType, title: 'Who Am I?', completed: false },
-            ]},
+            {
+                id: 1, title: 'Module 1: The Self from Various Perspectives', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
+                    { type: 'handout-a' as ContentType, title: 'Philosophical Self', completed: false },
+                    { type: 'slideshow' as ContentType, title: 'Who Am I?', completed: false },
+                ]
+            },
         ],
         tasks: [],
         instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
@@ -234,7 +272,7 @@ const getCourseData = (courseId: string): CourseDataType => {
             console.error('Failed to load demo modules:', e);
         }
     }
-    
+
     return COURSE_DATA[courseId] || {
         modules: DEFAULT_MODULES,
         tasks: DEFAULT_TASKS,
@@ -316,23 +354,23 @@ const StatCard: React.FC<{
     index: number;
 }> = ({ stat, index }) => {
     const [isHovered, setIsHovered] = useState(false);
-    
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 15 }}
-            animate={{ 
-                opacity: 1, 
+            animate={{
+                opacity: 1,
                 y: isHovered ? -4 : 0,
                 scale: isHovered ? 1.02 : 1,
             }}
-            transition={{ 
+            transition={{
                 opacity: { delay: 0.25 + index * 0.08, duration: 0.4 },
                 y: isHovered ? { duration: 0.1 } : { delay: 0.25 + index * 0.08, duration: 0.4 },
                 scale: { duration: 0.1 },
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            style={{ 
+            style={{
                 background: stat.bgColor,
                 borderColor: stat.borderColor,
                 boxShadow: isHovered ? '0 8px 25px rgba(0,0,0,0.1)' : 'none',
@@ -340,20 +378,20 @@ const StatCard: React.FC<{
             className="flex flex-col items-center p-5 rounded-2xl cursor-default border"
         >
             {/* Icon */}
-            <div 
+            <div
                 className="mb-3 p-3 rounded-xl transition-transform duration-100"
-                style={{ 
-                    background: `${stat.iconColor}15`, 
+                style={{
+                    background: `${stat.iconColor}15`,
                     color: stat.iconColor,
                     transform: isHovered ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)',
                 }}
             >
                 {stat.icon}
             </div>
-        
+
             {/* Value */}
             <div className="flex items-baseline gap-1.5 mb-1">
-                <motion.span 
+                <motion.span
                     className="text-3xl font-bold"
                     style={{ color: stat.color }}
                     initial={{ scale: 0.8, opacity: 0 }}
@@ -366,10 +404,10 @@ const StatCard: React.FC<{
                     <span className="text-sm font-medium text-zinc-600">{stat.subValue}</span>
                 )}
             </div>
-            
+
             {/* Label */}
             <span className="text-xs font-semibold text-zinc-800 mb-0.5">{stat.label}</span>
-            
+
             {/* Description */}
             <span className="text-[10px] text-zinc-500 text-center">{stat.description}</span>
         </motion.div>
@@ -379,7 +417,7 @@ const StatCard: React.FC<{
 // Quick Stats Component - Large cards at bottom with progress bar
 const QuickStatsBar: React.FC<{ courseId: string; progress: number }> = ({ courseId: _courseId, progress }) => {
     void _courseId;
-    
+
     // Fresh start - 0% grade (C) and 0% attendance
     const stats = {
         grade: 0,
@@ -501,9 +539,9 @@ const QuickStatsBar: React.FC<{ courseId: string; progress: number }> = ({ cours
 
                 {/* Large Stats Cards Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {statCards.map((stat, i) => (
-                    <StatCard key={stat.label} stat={stat} index={i} />
-                ))}
+                    {statCards.map((stat, i) => (
+                        <StatCard key={stat.label} stat={stat} index={i} />
+                    ))}
                 </div>
             </div>
         </motion.div>
@@ -512,9 +550,9 @@ const QuickStatsBar: React.FC<{ courseId: string; progress: number }> = ({ cours
 
 
 // Search Bar Component - Enhanced with minimalistic design
-const SearchBar: React.FC<{ 
-    value: string; 
-    onChange: (value: string) => void; 
+const SearchBar: React.FC<{
+    value: string;
+    onChange: (value: string) => void;
     placeholder?: string;
     resultCount?: number;
     totalCount?: number;
@@ -523,9 +561,9 @@ const SearchBar: React.FC<{
     // Suppress unused variable warnings - these props are kept for API compatibility
     void _resultCount;
     void _totalCount;
-    
+
     const [isFocused, setIsFocused] = useState(false);
-    
+
     return (
         <motion.div
             initial={{ opacity: 0, y: -5 }}
@@ -534,14 +572,13 @@ const SearchBar: React.FC<{
             className="relative"
         >
             <motion.div
-                className={`relative flex items-center rounded-xl border bg-white transition-all duration-200 ${
-                    isFocused ? 'border-blue-300 shadow-sm ring-2 ring-blue-500/10' : 'border-zinc-200'
-                }`}
+                className={`relative flex items-center rounded-xl border bg-white transition-all duration-200 ${isFocused ? 'border-blue-300 shadow-sm ring-2 ring-blue-500/10' : 'border-zinc-200'
+                    }`}
             >
-                <motion.svg 
-                    className="absolute left-3.5 w-4 h-4 text-zinc-400" 
-                    fill="none" 
-                    stroke="currentColor" 
+                <motion.svg
+                    className="absolute left-3.5 w-4 h-4 text-zinc-400"
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                     strokeWidth="2"
                     animate={{ scale: isFocused ? 1.05 : 1 }}
@@ -687,11 +724,10 @@ const StudentCard: React.FC<{
             whileHover={{ y: -3, scale: 1.01 }}
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
-            className={`relative p-4 rounded-xl bg-white border cursor-pointer transition-all duration-200 ${
-                isHovered 
-                    ? 'border-blue-200 shadow-lg shadow-blue-500/10' 
+            className={`relative p-4 rounded-xl bg-white border cursor-pointer transition-all duration-200 ${isHovered
+                    ? 'border-blue-200 shadow-lg shadow-blue-500/10'
                     : 'border-zinc-100 hover:border-zinc-200'
-            }`}
+                }`}
         >
             {/* Quick Action Buttons on Hover */}
             <AnimatePresence>
@@ -778,24 +814,24 @@ const StudentCard: React.FC<{
 
             {/* Avatar */}
             <div className="flex flex-col items-center">
-                <motion.div 
+                <motion.div
                     className="relative mb-3"
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                 >
-                    <div 
+                    <div
                         className="w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-semibold shadow-md"
-                        style={{ 
-                            background: student.avatar 
-                                ? 'transparent' 
+                        style={{
+                            background: student.avatar
+                                ? 'transparent'
                                 : `linear-gradient(135deg, ${avatarColor} 0%, ${avatarColor}dd 100%)`,
                             boxShadow: `0 4px 12px ${avatarColor}30`,
                         }}
                     >
                         {student.avatar ? (
-                            <img 
-                                src={student.avatar} 
-                                alt={student.name} 
+                            <img
+                                src={student.avatar}
+                                alt={student.name}
                                 className="w-full h-full rounded-full object-cover"
                             />
                         ) : (
@@ -803,37 +839,34 @@ const StudentCard: React.FC<{
                         )}
                     </div>
                     {/* Online Status Indicator */}
-                    <motion.div 
-                        className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${
-                            student.status === 'online' ? 'bg-emerald-500' : 'bg-zinc-300'
-                        }`}
+                    <motion.div
+                        className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${student.status === 'online' ? 'bg-emerald-500' : 'bg-zinc-300'
+                            }`}
                         animate={student.status === 'online' ? { scale: [1, 1.15, 1] } : {}}
                         transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                     />
                 </motion.div>
-                
+
                 {/* Name */}
                 <p className="text-xs font-semibold text-zinc-800 text-center truncate w-full">
                     {student.name}
                 </p>
-                
+
                 {/* Email - truncated */}
                 <p className="text-[10px] text-zinc-400 text-center truncate w-full mt-0.5">
                     {student.email.split('@')[0]}
                 </p>
-                
+
                 {/* Status Badge */}
-                <motion.span 
-                    className={`inline-flex items-center gap-1 mt-2 px-2 py-0.5 text-[9px] font-medium rounded-full ${
-                        student.status === 'online' 
-                            ? 'bg-emerald-50 text-emerald-600' 
+                <motion.span
+                    className={`inline-flex items-center gap-1 mt-2 px-2 py-0.5 text-[9px] font-medium rounded-full ${student.status === 'online'
+                            ? 'bg-emerald-50 text-emerald-600'
                             : 'bg-zinc-50 text-zinc-500'
-                    }`}
+                        }`}
                     whileHover={{ scale: 1.05 }}
                 >
-                    <span className={`w-1.5 h-1.5 rounded-full ${
-                        student.status === 'online' ? 'bg-emerald-500' : 'bg-zinc-400'
-                    }`} />
+                    <span className={`w-1.5 h-1.5 rounded-full ${student.status === 'online' ? 'bg-emerald-500' : 'bg-zinc-400'
+                        }`} />
                     {student.status === 'online' ? 'Online' : 'Offline'}
                 </motion.span>
             </div>
@@ -871,13 +904,12 @@ const ContentIconWithTooltip: React.FC<{
             >
                 {config.icon}
             </motion.button>
-            
+
             {/* Tooltip - CSS only approach for reliable positioning */}
             {!isLocked && (
-                <div 
-                    className={`absolute z-50 pointer-events-none transition-all duration-150 ${
-                        isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'
-                    }`}
+                <div
+                    className={`absolute z-50 pointer-events-none transition-all duration-150 ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'
+                        }`}
                     style={{
                         bottom: 'calc(100% + 12px)',
                         left: '50%',
@@ -896,7 +928,7 @@ const ContentIconWithTooltip: React.FC<{
                             </span>
                         )}
                         {/* Arrow pointing down */}
-                        <div 
+                        <div
                             className="absolute w-2.5 h-2.5 bg-white border-r border-b border-blue-200"
                             style={{
                                 bottom: '-5px',
@@ -920,7 +952,7 @@ const TeacherActionButton: React.FC<{
     onClick?: () => void;
 }> = ({ variant, icon, label, onClick }) => {
     const [isHovered, setIsHovered] = useState(false);
-    
+
     if (variant === 'primary') {
         return (
             <button
@@ -941,7 +973,7 @@ const TeacherActionButton: React.FC<{
             </button>
         );
     }
-    
+
     if (variant === 'secondary') {
         return (
             <button
@@ -961,7 +993,7 @@ const TeacherActionButton: React.FC<{
             </button>
         );
     }
-    
+
     // icon variant
     return (
         <button
@@ -996,7 +1028,7 @@ const ModuleCard: React.FC<{
     const [isHovered, setIsHovered] = useState(false);
     const completedContents = module.contents.filter(c => c.completed).length;
     const progressPercent = module.contents.length > 0 ? Math.round((completedContents / module.contents.length) * 100) : 0;
-    
+
     // Professional badge config - Minimalistic blue theme
     const termBadgeConfig: Record<string, { label: string; bg: string; border: string; text: string }> = {
         prelims: { label: 'Prelim', bg: 'rgba(59, 130, 246, 0.08)', border: 'rgba(59, 130, 246, 0.2)', text: '#3b82f6' },
@@ -1004,48 +1036,47 @@ const ModuleCard: React.FC<{
         prefinals: { label: 'Pre-Finals', bg: 'rgba(249, 115, 22, 0.08)', border: 'rgba(249, 115, 22, 0.2)', text: '#f97316' },
         finals: { label: 'Finals', bg: 'rgba(16, 185, 129, 0.08)', border: 'rgba(16, 185, 129, 0.2)', text: '#10b981' },
     };
-    
+
     const semesterBadgeConfig: Record<string, { label: string; bg: string; border: string; text: string }> = {
         first: { label: '1st Sem', bg: 'rgba(139, 92, 246, 0.08)', border: 'rgba(139, 92, 246, 0.2)', text: '#8b5cf6' },
         second: { label: '2nd Sem', bg: 'rgba(99, 102, 241, 0.08)', border: 'rgba(99, 102, 241, 0.2)', text: '#6366f1' },
     };
-    
+
     const moduleTerm = module.term || 'prelims';
     const moduleSemester = module.semester || 'first';
-    
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ 
-                opacity: 1, 
+            animate={{
+                opacity: 1,
                 y: isHovered ? -4 : 0,
                 scale: isHovered ? 1.01 : 1,
             }}
-            transition={{ 
+            transition={{
                 opacity: { delay: index * 0.05, duration: 0.4 },
                 y: isHovered ? { duration: 0.1 } : { delay: index * 0.05, duration: 0.4 },
                 scale: { duration: 0.1 },
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className={`group rounded-2xl border cursor-pointer relative ${
-                module.status === 'locked' 
-                    ? 'bg-zinc-50/50 border-zinc-100 opacity-60' 
+            className={`group rounded-2xl border cursor-pointer relative ${module.status === 'locked'
+                    ? 'bg-zinc-50/50 border-zinc-100 opacity-60'
                     : 'bg-white border-zinc-100'
-            }`}
+                }`}
             style={{
-                boxShadow: isHovered && module.status !== 'locked' 
-                    ? '0 12px 32px rgba(59, 130, 246, 0.12)' 
+                boxShadow: isHovered && module.status !== 'locked'
+                    ? '0 12px 32px rgba(59, 130, 246, 0.12)'
                     : 'none',
-                borderColor: isHovered && module.status !== 'locked' 
-                    ? 'rgba(59, 130, 246, 0.3)' 
+                borderColor: isHovered && module.status !== 'locked'
+                    ? 'rgba(59, 130, 246, 0.3)'
                     : undefined,
             }}
         >
             {/* Professional Badges - Top Right */}
             <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
                 {/* Term Badge */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 + 0.15, duration: 0.3 }}
@@ -1058,9 +1089,9 @@ const ModuleCard: React.FC<{
                 >
                     {termBadgeConfig[moduleTerm].label}
                 </motion.div>
-                
+
                 {/* Semester Badge */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 + 0.2, duration: 0.3 }}
@@ -1074,18 +1105,17 @@ const ModuleCard: React.FC<{
                     {semesterBadgeConfig[moduleSemester].label}
                 </motion.div>
             </div>
-            
+
             {/* Module Card Content */}
             <div className="p-5 pt-6 flex flex-col items-center text-center overflow-hidden rounded-2xl">
                 {/* Icon - Centered */}
-                <div 
-                    className={`w-14 h-14 rounded-xl flex items-center justify-center transition-transform duration-100 mb-3 ${
-                        module.status === 'completed' 
-                            ? 'bg-gradient-to-br from-emerald-400 to-emerald-500 text-white shadow-lg shadow-emerald-500/20' 
-                            : module.status === 'in-progress' 
-                            ? 'bg-gradient-to-br from-blue-400 to-blue-500 text-white shadow-lg shadow-blue-500/20' 
-                            : 'bg-zinc-200 text-zinc-400'
-                    }`}
+                <div
+                    className={`w-14 h-14 rounded-xl flex items-center justify-center transition-transform duration-100 mb-3 ${module.status === 'completed'
+                            ? 'bg-gradient-to-br from-emerald-400 to-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+                            : module.status === 'in-progress'
+                                ? 'bg-gradient-to-br from-blue-400 to-blue-500 text-white shadow-lg shadow-blue-500/20'
+                                : 'bg-zinc-200 text-zinc-400'
+                        }`}
                     style={{ transform: isHovered ? 'scale(1.05) rotate(3deg)' : 'scale(1) rotate(0deg)' }}
                 >
                     {module.status === 'completed' ? (
@@ -1096,22 +1126,21 @@ const ModuleCard: React.FC<{
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
                     )}
                 </div>
-                
+
                 {/* Status Badge - Centered */}
                 {module.status !== 'locked' && (
-                    <span className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg mb-3 ${
-                        module.status === 'completed' 
-                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' 
+                    <span className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg mb-3 ${module.status === 'completed'
+                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
                             : 'bg-blue-50 text-blue-600 border border-blue-100'
-                    }`}>
+                        }`}>
                         {module.status === 'completed' ? 'Completed' : 'In Progress'}
                     </span>
                 )}
-                
+
                 {/* Title & Items Count - Centered */}
                 <h3 className="text-sm font-semibold text-zinc-800 mb-1 line-clamp-2">{module.title}</h3>
                 <p className="text-xs text-zinc-500 mb-4">{completedContents}/{module.contents.length} items completed</p>
-                
+
                 {/* Progress Section */}
                 <div className="mb-4 w-full">
                     <div className="flex items-center justify-between mb-1.5">
@@ -1129,30 +1158,30 @@ const ModuleCard: React.FC<{
                         />
                     </div>
                 </div>
-                
+
                 {/* Content Type Icons - Centered */}
                 <div className="flex items-center justify-center gap-2 mb-4">
                     {module.contents.slice(0, 4).map((content, cIndex) => {
                         const config = CONTENT_TYPE_CONFIG[content.type];
                         const colorClasses: Record<string, { base: string; hover: string }> = {
-                            blue: { 
+                            blue: {
                                 base: content.completed ? 'bg-blue-50 text-blue-500 border-blue-100' : 'bg-zinc-50 text-zinc-400 border-zinc-100',
                                 hover: content.completed ? 'hover:bg-blue-100' : 'hover:bg-zinc-100'
                             },
-                            indigo: { 
+                            indigo: {
                                 base: content.completed ? 'bg-indigo-50 text-indigo-500 border-indigo-100' : 'bg-zinc-50 text-zinc-400 border-zinc-100',
                                 hover: content.completed ? 'hover:bg-indigo-100' : 'hover:bg-zinc-100'
                             },
-                            amber: { 
+                            amber: {
                                 base: content.completed ? 'bg-amber-50 text-amber-500 border-amber-100' : 'bg-zinc-50 text-zinc-400 border-zinc-100',
                                 hover: content.completed ? 'hover:bg-amber-100' : 'hover:bg-zinc-100'
                             },
-                            rose: { 
+                            rose: {
                                 base: content.completed ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-zinc-50 text-zinc-400 border-zinc-100',
                                 hover: content.completed ? 'hover:bg-rose-100' : 'hover:bg-zinc-100'
                             },
                         };
-                        
+
                         return (
                             <ContentIconWithTooltip
                                 key={cIndex}
@@ -1171,16 +1200,15 @@ const ModuleCard: React.FC<{
                         </span>
                     )}
                 </div>
-                
+
                 {/* Action Button - Full width */}
                 <button
-                    className={`w-full py-2.5 text-xs font-semibold rounded-xl transition-all duration-100 ${
-                        module.status === 'locked' 
+                    className={`w-full py-2.5 text-xs font-semibold rounded-xl transition-all duration-100 ${module.status === 'locked'
                             ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed'
                             : module.status === 'completed'
-                            ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100'
-                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-100'
-                    }`}
+                                ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100'
+                                : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-100'
+                        }`}
                     disabled={module.status === 'locked'}
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -1405,10 +1433,10 @@ const ActionsDropdown: React.FC<{ activeTab: TabType }> = ({ activeTab }) => {
                     padding: '0 14px',
                     borderRadius: '12px',
                     border: `1px solid ${isOpen ? '#3b82f6' : 'rgba(59, 130, 246, 0.2)'}`,
-                    background: isOpen 
-                        ? 'rgba(59, 130, 246, 0.1)' 
-                        : isHovered 
-                            ? 'rgba(59, 130, 246, 0.08)' 
+                    background: isOpen
+                        ? 'rgba(59, 130, 246, 0.1)'
+                        : isHovered
+                            ? 'rgba(59, 130, 246, 0.08)'
                             : 'rgba(59, 130, 246, 0.05)',
                     color: '#3b82f6',
                     fontSize: '13px',
@@ -1545,9 +1573,9 @@ const ActionMenuItem: React.FC<{
             <span style={{ whiteSpace: 'nowrap' }}>{action.label}</span>
             <motion.svg
                 initial={false}
-                animate={{ 
-                    opacity: isHovered ? 1 : 0, 
-                    x: isHovered ? 0 : -4 
+                animate={{
+                    opacity: isHovered ? 1 : 0,
+                    x: isHovered ? 0 : -4
                 }}
                 transition={{ duration: 0.1 }}
                 width="10"
@@ -1571,7 +1599,7 @@ const PaginationButton: React.FC<{
     direction: 'prev' | 'next';
 }> = ({ onClick, disabled, direction }) => {
     const [isHovered, setIsHovered] = useState(false);
-    
+
     return (
         <motion.button
             onClick={onClick}
@@ -1584,10 +1612,10 @@ const PaginationButton: React.FC<{
                 padding: '8px 12px',
                 borderRadius: '8px',
                 border: `1px solid ${disabled ? 'rgba(0, 0, 0, 0.06)' : isHovered ? '#3b82f6' : 'rgba(59, 130, 246, 0.2)'}`,
-                background: disabled 
-                    ? 'transparent' 
-                    : isHovered 
-                        ? 'rgba(59, 130, 246, 0.1)' 
+                background: disabled
+                    ? 'transparent'
+                    : isHovered
+                        ? 'rgba(59, 130, 246, 0.1)'
                         : 'rgba(59, 130, 246, 0.05)',
                 color: disabled ? '#cbd5e1' : '#3b82f6',
                 fontSize: '12px',
@@ -1622,7 +1650,7 @@ const PageNumberButton: React.FC<{
     onClick: () => void;
 }> = ({ page, isActive, onClick }) => {
     const [isHovered, setIsHovered] = useState(false);
-    
+
     return (
         <motion.button
             onClick={onClick}
@@ -1634,13 +1662,13 @@ const PageNumberButton: React.FC<{
                 width: '32px',
                 height: '32px',
                 borderRadius: '8px',
-                border: isActive 
-                    ? '1px solid #3b82f6' 
+                border: isActive
+                    ? '1px solid #3b82f6'
                     : `1px solid ${isHovered ? 'rgba(59, 130, 246, 0.3)' : 'transparent'}`,
-                background: isActive 
-                    ? '#3b82f6' 
-                    : isHovered 
-                        ? 'rgba(59, 130, 246, 0.08)' 
+                background: isActive
+                    ? '#3b82f6'
+                    : isHovered
+                        ? 'rgba(59, 130, 246, 0.08)'
                         : 'transparent',
                 color: isActive ? '#ffffff' : isHovered ? '#3b82f6' : '#64748b',
                 fontSize: '12px',
@@ -1755,7 +1783,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const studentsScrollRef = useRef<HTMLDivElement>(null);
     const submissionsScrollRef = useRef<HTMLDivElement>(null);
     const tabsContainerRef = useRef<HTMLDivElement>(null);
-    
+
     const [taskFilter, setTaskFilter] = useState<TaskCategory>('all');
     const [termFilter, setTermFilter] = useState<'all' | 'prelims' | 'midterm' | 'prefinals' | 'finals'>('all');
     const [semesterFilter, setSemesterFilter] = useState<'first' | 'second'>('first');
@@ -1763,13 +1791,13 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [modulesPage, setModulesPage] = useState(1);
     const MODULES_PER_PAGE = 6;
     const [tabIndicatorStyle, setTabIndicatorStyle] = useState({ left: 4, width: 80 });
-    
+
     // Supabase students data
     const [supabaseStudents, setSupabaseStudents] = useState<UserAccount[]>([]);
     const [isLoadingStudents, setIsLoadingStudents] = useState(true);
-    
+
     // Teacher Mode State - persist across page refreshes
-    const [isTeacherMode, setIsTeacherMode] = useState(() => {
+    const [isTeacherMode, _setIsTeacherMode] = useState(() => {
         return sessionStorage.getItem('teacher_mode_active') === 'true';
     });
     const [teacherTab, setTeacherTab] = useState<TeacherTabType>(() => {
@@ -1779,7 +1807,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [isTeacherLoading, setIsTeacherLoading] = useState(false);
     const [yearLevelFilter, setYearLevelFilter] = useState<YearLevel>('all');
     const [sectionFilter, setSectionFilter] = useState<Section>('all');
-    
+
     // One-time migration: Clear old ai-grading data for fresh start
     useEffect(() => {
         const migrationKey = 'ai-grading-reset-v2';
@@ -1804,12 +1832,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             setIsSearching(false);
         }
     }, [searchQuery]);
-    
+
     // Reset pagination when filters change
     useEffect(() => {
         setModulesPage(1);
     }, [termFilter, semesterFilter, searchQuery]);
-    
+
     const [submissions, setSubmissions] = useState(() => {
         // Check if demo mode is active - only then load from localStorage
         const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
@@ -1827,7 +1855,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         // Fresh start - no submissions (empty array)
         return SAMPLE_SUBMISSIONS;
     });
-    
+
     // Save submissions to localStorage when they change (only in demo mode)
     useEffect(() => {
         const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
@@ -1838,7 +1866,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     }, [submissions, course.id]);
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
     const [selectedTaskType, setSelectedTaskType] = useState<TaskCategory>('assignment');
-    
+
     // Add Task Form State
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [newTaskDescription, setNewTaskDescription] = useState('');
@@ -1848,7 +1876,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [newTaskFiles, setNewTaskFiles] = useState<File[]>([]);
     const [isCreatingTask, setIsCreatingTask] = useState(false);
     const taskFileInputRef = useRef<HTMLInputElement>(null);
-    
+
     const [isAiGrading, setIsAiGrading] = useState(false);
     const [aiGradingProgress, setAiGradingProgress] = useState(0);
     const [showAiWarning, setShowAiWarning] = useState(false);
@@ -1873,7 +1901,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         const currentTab = isTeacherMode ? teacherTab : activeTab;
         const buttons = tabsContainerRef.current.querySelectorAll<HTMLButtonElement>('button[data-tab-id]');
         const activeButton = Array.from(buttons).find(btn => btn.dataset.tabId === currentTab);
-        
+
         if (activeButton) {
             const containerRect = tabsContainerRef.current.getBoundingClientRect();
             const buttonRect = activeButton.getBoundingClientRect();
@@ -1891,7 +1919,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             const currentTab = isTeacherMode ? teacherTab : activeTab;
             const buttons = tabsContainerRef.current.querySelectorAll<HTMLButtonElement>('button[data-tab-id]');
             const activeButton = Array.from(buttons).find(btn => btn.dataset.tabId === currentTab);
-            
+
             if (activeButton) {
                 const containerRect = tabsContainerRef.current.getBoundingClientRect();
                 const buttonRect = activeButton.getBoundingClientRect();
@@ -2052,7 +2080,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     // Auto-switch tabs based on tutorial step
     useEffect(() => {
         if (!showTeacherTutorial) return;
-        
+
         // Step 3 = Manage Tasks (index 2), Step 4 = Grade Students (index 3), Step 5 = Analytics (index 4), Step 6 = Stats (index 5)
         if (tutorialStep === 2) {
             setTeacherTab('manage-tasks');
@@ -2071,7 +2099,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         }
 
         const step = TEACHER_TUTORIAL_STEPS[tutorialStep];
-        
+
         // Handle noHighlight steps (like step 7)
         if (step?.noHighlight || !step?.target) {
             setHighlightRect(null);
@@ -2092,7 +2120,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 });
                 return;
             }
-            
+
             const element = document.querySelector(step.target);
             if (!element) {
                 setHighlightRect(null);
@@ -2105,10 +2133,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
             const rect = element.getBoundingClientRect();
             const padding = 8;
-            
+
             // Apply offset if specified
             const offset = step.highlightOffset || { top: 0, left: 0, width: 0, height: 0 };
-            
+
             // Check for secondary target to combine bounding boxes
             let combinedRect = {
                 top: rect.top,
@@ -2116,7 +2144,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 right: rect.right,
                 bottom: rect.bottom
             };
-            
+
             if (step.secondaryTarget) {
                 const secondaryElement = document.querySelector(step.secondaryTarget);
                 if (secondaryElement) {
@@ -2129,7 +2157,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                     };
                 }
             }
-            
+
             // Set highlight rect with offset (using combined rect)
             setHighlightRect({
                 top: combinedRect.top - padding + offset.top,
@@ -2182,7 +2210,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
         // Initial calculation (with delay to allow scroll to complete)
         const timer = setTimeout(calculatePositions, step.autoScroll ? 400 : 100);
-        
+
         // Recalculate on resize/scroll
         window.addEventListener('resize', calculatePositions);
         window.addEventListener('scroll', calculatePositions);
@@ -2238,14 +2266,14 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     };
 
     const instructor = getInstructor();
-    
+
     // Get course-specific data
     const courseData = useMemo(() => getCourseData(course.id), [course.id]);
     const courseModules = courseData.modules;
     const courseTasks = courseData.tasks;
 
     // Filtered data based on search and filters
-    const filteredModules = useMemo(() => 
+    const filteredModules = useMemo(() =>
         courseModules.filter(m => {
             const matchesSearch = m.title.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesTerm = termFilter === 'all' || (m.term || 'prelims') === termFilter;
@@ -2256,7 +2284,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     );
 
     // Filtered tasks based on search and category
-    const filteredTasks = useMemo(() => 
+    const filteredTasks = useMemo(() =>
         courseTasks.filter(t => {
             const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesCategory = taskFilter === 'all' || t.category === taskFilter;
@@ -2265,7 +2293,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         [searchQuery, taskFilter, courseTasks]
     );
 
-    const filteredNews = useMemo(() => 
+    const filteredNews = useMemo(() =>
         SAMPLE_NEWS.filter(n => n.title.toLowerCase().includes(searchQuery.toLowerCase())),
         [searchQuery]
     );
@@ -2302,21 +2330,21 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         }
         return getStudentsData();
     }, [supabaseStudents]);
-    
-    const filteredStudents = useMemo(() => 
+
+    const filteredStudents = useMemo(() =>
         studentsData.filter((s: { name: string; email: string; status: string }) => {
             const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                  s.email.toLowerCase().includes(searchQuery.toLowerCase());
+                s.email.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesFilter = studentFilter === 'all' || s.status === studentFilter;
             return matchesSearch && matchesFilter;
         }),
         [searchQuery, studentFilter, studentsData]
     );
-    
+
     // Get teachers data for this course (with demo mode support)
     // @ts-ignore - Reserved for future use
     const _teachersData = useMemo(() => getTeachersData(course.id), [course.id]);
-    
+
     // Get AI grading data for this course (with demo mode support)
     // @ts-ignore - Reserved for future use
     const _aiGradingData = useMemo(() => getAIGradingData(course.id), [course.id]);
@@ -2325,28 +2353,28 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     useEffect(() => {
         const modulesContainer = modulesScrollRef.current;
         if (!modulesContainer || activeTab !== 'modules' || isLoading) return;
-        
+
         let isHoveringContainer = false;
-        
+
         const handleMouseEnter = () => { isHoveringContainer = true; };
         const handleMouseLeave = () => { isHoveringContainer = false; };
-        
+
         const handleWheel = (e: WheelEvent) => {
             // Only intercept scroll when hovering over the container
             if (!isHoveringContainer) return;
-            
+
             // Check if there's horizontal scroll available
             const hasHorizontalScroll = modulesContainer.scrollWidth > modulesContainer.clientWidth;
             if (!hasHorizontalScroll) return;
-            
+
             // Prevent default vertical scroll behavior
             e.preventDefault();
-            
+
             // Card width (w-80 = 320px) + gap (gap-4 = 16px) = 336px per card
             const cardWidth = 336;
             const currentScroll = modulesContainer.scrollLeft;
             const maxScroll = modulesContainer.scrollWidth - modulesContainer.clientWidth;
-            
+
             // Determine scroll direction and calculate target
             if (e.deltaY > 0) {
                 // Scroll down = scroll right by one card
@@ -2358,12 +2386,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 modulesContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
             }
         };
-        
+
         modulesContainer.addEventListener('mouseenter', handleMouseEnter);
         modulesContainer.addEventListener('mouseleave', handleMouseLeave);
         // Use passive: false to allow preventDefault
         modulesContainer.addEventListener('wheel', handleWheel, { passive: false });
-        
+
         return () => {
             modulesContainer.removeEventListener('mouseenter', handleMouseEnter);
             modulesContainer.removeEventListener('mouseleave', handleMouseLeave);
@@ -2375,28 +2403,28 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     useEffect(() => {
         const tasksContainer = tasksScrollRef.current;
         if (!tasksContainer || activeTab !== 'assignments' || isLoading) return;
-        
+
         let isHoveringContainer = false;
-        
+
         const handleMouseEnter = () => { isHoveringContainer = true; };
         const handleMouseLeave = () => { isHoveringContainer = false; };
-        
+
         const handleWheel = (e: WheelEvent) => {
             // Only intercept scroll when hovering over the container
             if (!isHoveringContainer) return;
-            
+
             // Check if there's horizontal scroll available
             const hasHorizontalScroll = tasksContainer.scrollWidth > tasksContainer.clientWidth;
             if (!hasHorizontalScroll) return;
-            
+
             // Prevent default vertical scroll behavior
             e.preventDefault();
-            
+
             // Card width (w-56 = 224px) + gap (gap-3 = 12px) = 236px per card
             const cardWidth = 236;
             const currentScroll = tasksContainer.scrollLeft;
             const maxScroll = tasksContainer.scrollWidth - tasksContainer.clientWidth;
-            
+
             // Determine scroll direction and calculate target
             if (e.deltaY > 0) {
                 // Scroll down = scroll right by one card
@@ -2408,12 +2436,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 tasksContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
             }
         };
-        
+
         tasksContainer.addEventListener('mouseenter', handleMouseEnter);
         tasksContainer.addEventListener('mouseleave', handleMouseLeave);
         // Use passive: false to allow preventDefault
         tasksContainer.addEventListener('wheel', handleWheel, { passive: false });
-        
+
         return () => {
             tasksContainer.removeEventListener('mouseenter', handleMouseEnter);
             tasksContainer.removeEventListener('mouseleave', handleMouseLeave);
@@ -2425,28 +2453,28 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     useEffect(() => {
         const studentsContainer = studentsScrollRef.current;
         if (!studentsContainer || activeTab !== 'students' || isLoading) return;
-        
+
         let isHoveringContainer = false;
-        
+
         const handleMouseEnter = () => { isHoveringContainer = true; };
         const handleMouseLeave = () => { isHoveringContainer = false; };
-        
+
         const handleWheel = (e: WheelEvent) => {
             // Only intercept scroll when hovering over the container
             if (!isHoveringContainer) return;
-            
+
             // Check if there's horizontal scroll available
             const hasHorizontalScroll = studentsContainer.scrollWidth > studentsContainer.clientWidth;
             if (!hasHorizontalScroll) return;
-            
+
             // Prevent default vertical scroll behavior
             e.preventDefault();
-            
+
             // Card width (w-40 = 160px) + gap (gap-3 = 12px) = 172px per card
             const cardWidth = 172;
             const currentScroll = studentsContainer.scrollLeft;
             const maxScroll = studentsContainer.scrollWidth - studentsContainer.clientWidth;
-            
+
             // Determine scroll direction and calculate target
             if (e.deltaY > 0) {
                 // Scroll down = scroll right by one card
@@ -2458,12 +2486,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 studentsContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
             }
         };
-        
+
         studentsContainer.addEventListener('mouseenter', handleMouseEnter);
         studentsContainer.addEventListener('mouseleave', handleMouseLeave);
         // Use passive: false to allow preventDefault
         studentsContainer.addEventListener('wheel', handleWheel, { passive: false });
-        
+
         return () => {
             studentsContainer.removeEventListener('mouseenter', handleMouseEnter);
             studentsContainer.removeEventListener('mouseleave', handleMouseLeave);
@@ -2475,27 +2503,27 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     useEffect(() => {
         const submissionsContainer = submissionsScrollRef.current;
         if (!submissionsContainer || !isTeacherMode || teacherTab !== 'grade-students') return;
-        
+
         let isHoveringContainer = false;
-        
+
         const handleMouseEnter = () => { isHoveringContainer = true; };
         const handleMouseLeave = () => { isHoveringContainer = false; };
-        
+
         const handleWheel = (e: WheelEvent) => {
             // Only intercept scroll when hovering over the container
             if (!isHoveringContainer) return;
-            
+
             // Check if there's horizontal scroll available
             const hasHorizontalScroll = submissionsContainer.scrollWidth > submissionsContainer.clientWidth;
             if (!hasHorizontalScroll) return;
-            
+
             e.preventDefault();
-            
+
             // Card width (w-72 = 288px) + gap (gap-4 = 16px) = 304px per card
             const cardWidth = 304;
             const currentScroll = submissionsContainer.scrollLeft;
             const maxScroll = submissionsContainer.scrollWidth - submissionsContainer.clientWidth;
-            
+
             if (e.deltaY > 0) {
                 const targetScroll = Math.min(currentScroll + cardWidth, maxScroll);
                 submissionsContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
@@ -2504,11 +2532,11 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 submissionsContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
             }
         };
-        
+
         submissionsContainer.addEventListener('mouseenter', handleMouseEnter);
         submissionsContainer.addEventListener('mouseleave', handleMouseLeave);
         submissionsContainer.addEventListener('wheel', handleWheel, { passive: false });
-        
+
         return () => {
             submissionsContainer.removeEventListener('mouseenter', handleMouseEnter);
             submissionsContainer.removeEventListener('mouseleave', handleMouseLeave);
@@ -2520,27 +2548,27 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     useEffect(() => {
         const tasksContainer = tasksScrollRef.current;
         if (!tasksContainer || !isTeacherMode || teacherTab !== 'manage-tasks') return;
-        
+
         let isHoveringContainer = false;
-        
+
         const handleMouseEnter = () => { isHoveringContainer = true; };
         const handleMouseLeave = () => { isHoveringContainer = false; };
-        
+
         const handleWheel = (e: WheelEvent) => {
             // Only intercept scroll when hovering over the container
             if (!isHoveringContainer) return;
-            
+
             // Check if there's horizontal scroll available
             const hasHorizontalScroll = tasksContainer.scrollWidth > tasksContainer.clientWidth;
             if (!hasHorizontalScroll) return;
-            
+
             e.preventDefault();
-            
+
             // Card width (w-64 = 256px) + gap (gap-4 = 16px) = 272px per card
             const cardWidth = 272;
             const currentScroll = tasksContainer.scrollLeft;
             const maxScroll = tasksContainer.scrollWidth - tasksContainer.clientWidth;
-            
+
             if (e.deltaY > 0) {
                 const targetScroll = Math.min(currentScroll + cardWidth, maxScroll);
                 tasksContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
@@ -2549,11 +2577,11 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 tasksContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
             }
         };
-        
+
         tasksContainer.addEventListener('mouseenter', handleMouseEnter);
         tasksContainer.addEventListener('mouseleave', handleMouseLeave);
         tasksContainer.addEventListener('wheel', handleWheel, { passive: false });
-        
+
         return () => {
             tasksContainer.removeEventListener('mouseenter', handleMouseEnter);
             tasksContainer.removeEventListener('mouseleave', handleMouseLeave);
@@ -2581,7 +2609,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                             <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1">
                                 {[0, 1, 2, 3].map((i) => (
-                                    <motion.div 
+                                    <motion.div
                                         key={i}
                                         className="flex-shrink-0 w-80 h-64 bg-zinc-100 rounded-xl"
                                         animate={{ opacity: [0.5, 0.8, 0.5] }}
@@ -2592,7 +2620,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         </motion.div>
                     );
                 }
-                
+
                 return (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
                         {/* Container with Semester Switch on left and Term Filter on right */}
@@ -2602,11 +2630,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-zinc-50 border border-zinc-100">
                                     <motion.button
                                         onClick={() => setSemesterFilter('first')}
-                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
-                                            semesterFilter === 'first' 
-                                                ? 'bg-white text-blue-600 shadow-sm border border-blue-100' 
+                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${semesterFilter === 'first'
+                                                ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
                                                 : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
-                                        }`}
+                                            }`}
                                         whileTap={{ scale: 0.97 }}
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={semesterFilter === 'first' ? 'text-blue-500' : 'text-zinc-400'}>
@@ -2620,11 +2647,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     </motion.button>
                                     <motion.button
                                         onClick={() => setSemesterFilter('second')}
-                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
-                                            semesterFilter === 'second' 
-                                                ? 'bg-white text-blue-600 shadow-sm border border-blue-100' 
+                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${semesterFilter === 'second'
+                                                ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
                                                 : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
-                                        }`}
+                                            }`}
                                         whileTap={{ scale: 0.97 }}
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={semesterFilter === 'second' ? 'text-blue-500' : 'text-zinc-400'}>
@@ -2637,45 +2663,54 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         2nd Semester
                                     </motion.button>
                                 </div>
-                                
+
                                 {/* Term Filter - Far Right */}
                                 <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-zinc-50 border border-zinc-100">
                                     {[
-                                        { id: 'all' as const, label: 'All', icon: (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
-                                                <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-                                            </svg>
-                                        )},
-                                        { id: 'prelims' as const, label: 'Preliminaries', icon: (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" />
-                                            </svg>
-                                        )},
-                                        { id: 'midterm' as const, label: 'Midterm', icon: (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
-                                            </svg>
-                                        )},
-                                        { id: 'prefinals' as const, label: 'Pre-Finals', icon: (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-                                            </svg>
-                                        )},
-                                        { id: 'finals' as const, label: 'Finals', icon: (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                            </svg>
-                                        )},
+                                        {
+                                            id: 'all' as const, label: 'All', icon: (
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                    <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+                                                    <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+                                                </svg>
+                                            )
+                                        },
+                                        {
+                                            id: 'prelims' as const, label: 'Preliminaries', icon: (
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                    <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" />
+                                                </svg>
+                                            )
+                                        },
+                                        {
+                                            id: 'midterm' as const, label: 'Midterm', icon: (
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                    <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+                                                </svg>
+                                            )
+                                        },
+                                        {
+                                            id: 'prefinals' as const, label: 'Pre-Finals', icon: (
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+                                                </svg>
+                                            )
+                                        },
+                                        {
+                                            id: 'finals' as const, label: 'Finals', icon: (
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                                </svg>
+                                            )
+                                        },
                                     ].map((term) => (
                                         <motion.button
                                             key={term.id}
                                             onClick={() => setTermFilter(term.id)}
-                                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
-                                                termFilter === term.id 
-                                                    ? 'bg-white text-blue-600 shadow-sm border border-blue-100' 
+                                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${termFilter === term.id
+                                                    ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
                                                     : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
-                                            }`}
+                                                }`}
                                             whileTap={{ scale: 0.97 }}
                                         >
                                             <span className={termFilter === term.id ? 'text-blue-500' : 'text-zinc-400'}>{term.icon}</span>
@@ -2685,7 +2720,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         {filteredModules.length === 0 ? (
                             <EmptyState
                                 icon={
@@ -2706,10 +2741,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     const totalPages = Math.ceil(filteredModules.length / MODULES_PER_PAGE);
                                     const startIndex = (modulesPage - 1) * MODULES_PER_PAGE;
                                     const paginatedModules = filteredModules.slice(startIndex, startIndex + MODULES_PER_PAGE);
-                                    
+
                                     return (
                                         <>
-                                            <div 
+                                            <div
                                                 ref={modulesScrollRef}
                                                 className="flex flex-wrap justify-center gap-4"
                                             >
@@ -2719,7 +2754,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     </div>
                                                 ))}
                                             </div>
-                                            
+
                                             {/* Pagination Controls - Minimalistic Design */}
                                             {totalPages > 1 && (
                                                 <motion.div
@@ -2742,24 +2777,24 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                         disabled={modulesPage === 1}
                                                         direction="prev"
                                                     />
-                                                    
+
                                                     {/* Page Numbers */}
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
                                                             // Show first, last, current, and adjacent pages
-                                                            const showPage = page === 1 || 
-                                                                page === totalPages || 
+                                                            const showPage = page === 1 ||
+                                                                page === totalPages ||
                                                                 Math.abs(page - modulesPage) <= 1;
-                                                            const showEllipsis = (page === 2 && modulesPage > 3) || 
+                                                            const showEllipsis = (page === 2 && modulesPage > 3) ||
                                                                 (page === totalPages - 1 && modulesPage < totalPages - 2);
-                                                            
+
                                                             if (!showPage && !showEllipsis) return null;
                                                             if (showEllipsis && !showPage) {
                                                                 return (
-                                                                    <span 
+                                                                    <span
                                                                         key={`ellipsis-${page}`}
-                                                                        style={{ 
-                                                                            padding: '0 4px', 
+                                                                        style={{
+                                                                            padding: '0 4px',
                                                                             color: '#94a3b8',
                                                                             fontSize: '12px',
                                                                         }}
@@ -2768,7 +2803,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                     </span>
                                                                 );
                                                             }
-                                                            
+
                                                             return (
                                                                 <PageNumberButton
                                                                     key={page}
@@ -2779,7 +2814,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                             );
                                                         })}
                                                     </div>
-                                                    
+
                                                     {/* Next Button */}
                                                     <PaginationButton
                                                         onClick={() => setModulesPage(Math.min(totalPages, modulesPage + 1))}
@@ -2788,7 +2823,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     />
                                                 </motion.div>
                                             )}
-                                            
+
                                             {/* Results Info */}
                                             {filteredModules.length > MODULES_PER_PAGE && (
                                                 <motion.p
@@ -2819,7 +2854,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             {/* Filter skeleton */}
                             <div className="flex gap-2 overflow-x-auto pb-2">
                                 {[0, 1, 2, 3, 4, 5].map((i) => (
-                                    <motion.div 
+                                    <motion.div
                                         key={i}
                                         className="h-8 w-28 bg-zinc-100 rounded-lg flex-shrink-0"
                                         animate={{ opacity: [0.5, 0.8, 0.5] }}
@@ -2829,7 +2864,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             </div>
                             <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
                                 {[0, 1, 2, 3].map((i) => (
-                                    <motion.div 
+                                    <motion.div
                                         key={i}
                                         className="flex-shrink-0 w-56 h-44 bg-zinc-100 rounded-xl"
                                         animate={{ opacity: [0.5, 0.8, 0.5] }}
@@ -2840,13 +2875,13 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         </motion.div>
                     );
                 }
-                
+
                 // Get counts for each task category
                 const getTaskCategoryCount = (cat: TaskCategory) => {
                     if (cat === 'all') return courseTasks.length;
                     return courseTasks.filter((t: { category: TaskCategory }) => t.category === cat).length;
                 };
-                
+
                 return (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
                         {/* Container matching modules section design */}
@@ -2857,24 +2892,22 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     {TASK_CATEGORIES.map((cat) => {
                                         const count = getTaskCategoryCount(cat.id);
                                         const isActive = taskFilter === cat.id;
-                                        
+
                                         return (
                                             <motion.button
                                                 key={cat.id}
                                                 onClick={() => setTaskFilter(cat.id)}
-                                                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
-                                                    isActive 
-                                                        ? 'bg-white text-blue-600 shadow-sm border border-blue-100' 
+                                                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${isActive
+                                                        ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
                                                         : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
-                                                }`}
+                                                    }`}
                                                 whileTap={{ scale: 0.97 }}
                                             >
                                                 <span className={isActive ? 'text-blue-500' : 'text-zinc-400'}>{cat.icon}</span>
                                                 {cat.label}
                                                 {count > 0 && (
-                                                    <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                                                        isActive ? 'bg-blue-50 text-blue-600' : 'bg-zinc-100 text-zinc-500'
-                                                    }`}>
+                                                    <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${isActive ? 'bg-blue-50 text-blue-600' : 'bg-zinc-100 text-zinc-500'
+                                                        }`}>
                                                         {count}
                                                     </span>
                                                 )}
@@ -2884,7 +2917,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         {/* Task List */}
                         {filteredTasks.length === 0 ? (
                             <EmptyState
@@ -2896,13 +2929,13 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 }
                                 title={taskFilter !== 'all' ? `No ${TASK_CATEGORIES.find(c => c.id === taskFilter)?.label.toLowerCase()} found` : "No tasks found"}
                                 description={searchQuery ? `No tasks match "${searchQuery}"` : taskFilter !== 'all' ? `No ${TASK_CATEGORIES.find(c => c.id === taskFilter)?.label.toLowerCase()} yet` : "You're all caught up!"}
-                                action={(searchQuery || taskFilter !== 'all') ? { 
-                                    label: searchQuery ? 'Clear search' : 'Show all', 
-                                    onClick: () => { setSearchQuery(''); setTaskFilter('all'); } 
+                                action={(searchQuery || taskFilter !== 'all') ? {
+                                    label: searchQuery ? 'Clear search' : 'Show all',
+                                    onClick: () => { setSearchQuery(''); setTaskFilter('all'); }
                                 } : undefined}
                             />
                         ) : (
-                            <div 
+                            <div
                                 ref={tasksScrollRef}
                                 className="flex gap-3 overflow-x-auto pt-1 pb-4 -mx-1 px-1 snap-x snap-mandatory scroll-smooth"
                             >
@@ -2915,7 +2948,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         practical: 'bg-rose-50 text-rose-600 border-rose-100',
                                         journal: 'bg-cyan-50 text-cyan-600 border-cyan-100',
                                     };
-                                    
+
                                     return (
                                         <motion.div
                                             key={task.id}
@@ -2931,20 +2964,19 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     <span className={`px-2 py-1 text-[9px] font-semibold rounded-lg border ${categoryColors[task.category] || 'bg-zinc-50 text-zinc-600 border-zinc-100'}`}>
                                                         {categoryConfig?.label.replace('s', '').toUpperCase()}
                                                     </span>
-                                                    <span className={`text-[9px] font-semibold px-2 py-1 rounded-full uppercase tracking-wide ${
-                                                        task.status === 'submitted' ? 'bg-emerald-100 text-emerald-700' :
-                                                        task.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-zinc-100 text-zinc-600'
-                                                    }`}>
+                                                    <span className={`text-[9px] font-semibold px-2 py-1 rounded-full uppercase tracking-wide ${task.status === 'submitted' ? 'bg-emerald-100 text-emerald-700' :
+                                                            task.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-zinc-100 text-zinc-600'
+                                                        }`}>
                                                         {task.status === 'submitted' ? 'Done' : task.status === 'pending' ? 'Pending' : 'Upcoming'}
                                                     </span>
                                                 </div>
-                                                
+
                                                 {/* Title */}
                                                 <p className="text-sm font-semibold text-zinc-800 line-clamp-2 mb-1">{task.title}</p>
-                                                
+
                                                 {/* Due Date */}
                                                 <p className="text-xs text-zinc-500 mb-3">Due: {task.due}</p>
-                                                
+
                                                 {/* Score or Action */}
                                                 <div className="mt-auto">
                                                     {task.score ? (
@@ -2979,7 +3011,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                             <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
                                 {[0, 1, 2].map((i) => (
-                                    <motion.div 
+                                    <motion.div
                                         key={i}
                                         className="flex-shrink-0 w-64 h-44 bg-zinc-100 rounded-xl"
                                         animate={{ opacity: [0.5, 0.8, 0.5] }}
@@ -3014,17 +3046,15 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 25 }}
                                         whileHover={{ y: -4, transition: { duration: 0.15 } }}
-                                        className={`group flex-shrink-0 w-64 p-4 rounded-xl border bg-white hover:shadow-lg cursor-pointer transition-all snap-start ${
-                                            news.unread ? 'border-blue-200 bg-gradient-to-br from-blue-50/50 to-white' : 'border-zinc-100 hover:border-blue-200'
-                                        }`}
+                                        className={`group flex-shrink-0 w-64 p-4 rounded-xl border bg-white hover:shadow-lg cursor-pointer transition-all snap-start ${news.unread ? 'border-blue-200 bg-gradient-to-br from-blue-50/50 to-white' : 'border-zinc-100 hover:border-blue-200'
+                                            }`}
                                     >
                                         <div className="flex flex-col h-full">
                                             {/* Header with unread indicator */}
                                             <div className="flex items-start justify-between mb-2">
                                                 <div className="flex items-center gap-2">
-                                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                                        news.unread ? 'bg-blue-100 text-blue-600' : 'bg-zinc-100 text-zinc-500'
-                                                    }`}>
+                                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${news.unread ? 'bg-blue-100 text-blue-600' : 'bg-zinc-100 text-zinc-500'
+                                                        }`}>
                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                                                             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
@@ -3033,24 +3063,24 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     <span className="text-[10px] text-zinc-500">{news.date}</span>
                                                 </div>
                                                 {news.unread && (
-                                                    <motion.div 
+                                                    <motion.div
                                                         className="w-2 h-2 rounded-full bg-blue-500"
                                                         animate={{ scale: [1, 1.2, 1] }}
                                                         transition={{ duration: 2, repeat: Infinity }}
                                                     />
                                                 )}
                                             </div>
-                                            
+
                                             {/* Title */}
                                             <p className={`text-sm font-semibold line-clamp-2 mb-2 ${news.unread ? 'text-zinc-900' : 'text-zinc-700'}`}>
                                                 {news.title}
                                             </p>
-                                            
+
                                             {/* Preview */}
                                             <p className="text-xs text-zinc-500 line-clamp-3 leading-relaxed flex-1">
                                                 {news.preview}
                                             </p>
-                                            
+
                                             {/* Read More */}
                                             <motion.button
                                                 whileHover={{ x: 3 }}
@@ -3093,7 +3123,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             {/* Cards Skeleton */}
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                 {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-                                    <motion.div 
+                                    <motion.div
                                         key={i}
                                         className="p-4 bg-white rounded-xl border border-zinc-100"
                                         initial={{ opacity: 0, y: 10 }}
@@ -3111,35 +3141,41 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         </motion.div>
                     );
                 }
-                
+
                 const onlineCount = studentsData.filter((s: { status: string }) => s.status === 'online').length;
                 const offlineCount = studentsData.filter((s: { status: string }) => s.status === 'offline').length;
                 const totalStudents = studentsData.length;
-                
+
                 // Student filter tabs config
                 const studentFilterTabs: { id: 'all' | 'online' | 'offline'; label: string; count: number; icon: React.ReactNode }[] = [
-                    { id: 'all', label: 'All', count: totalStudents, icon: (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                    )},
-                    { id: 'online', label: 'Online', count: onlineCount, icon: (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="12" cy="12" r="10" />
-                            <path d="M8 12l2 2 4-4" />
-                        </svg>
-                    )},
-                    { id: 'offline', label: 'Offline', count: offlineCount, icon: (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-                        </svg>
-                    )},
+                    {
+                        id: 'all', label: 'All', count: totalStudents, icon: (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        )
+                    },
+                    {
+                        id: 'online', label: 'Online', count: onlineCount, icon: (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M8 12l2 2 4-4" />
+                            </svg>
+                        )
+                    },
+                    {
+                        id: 'offline', label: 'Offline', count: offlineCount, icon: (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                            </svg>
+                        )
+                    },
                 ];
-                
+
                 return (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         {/* Container matching modules/tasks section design */}
@@ -3147,7 +3183,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             <div className="flex items-center justify-between">
                                 {/* Section Info - Left */}
                                 <div className="flex items-center gap-3">
-                                    <motion.div 
+                                    <motion.div
                                         className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20"
                                         whileHover={{ scale: 1.05, rotate: 3 }}
                                         transition={{ type: 'spring', stiffness: 400, damping: 15 }}
@@ -3166,25 +3202,23 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         </p>
                                     </div>
                                 </div>
-                                
+
                                 {/* Filter Tabs - Right - Matching modules/tasks design */}
                                 <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-zinc-50 border border-zinc-100">
                                     {studentFilterTabs.map((tab) => (
                                         <motion.button
                                             key={tab.id}
                                             onClick={() => setStudentFilter(tab.id)}
-                                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
-                                                studentFilter === tab.id 
-                                                    ? 'bg-white text-blue-600 shadow-sm border border-blue-100' 
+                                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${studentFilter === tab.id
+                                                    ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
                                                     : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
-                                            }`}
+                                                }`}
                                             whileTap={{ scale: 0.97 }}
                                         >
                                             <span className={studentFilter === tab.id ? 'text-blue-500' : 'text-zinc-400'}>{tab.icon}</span>
                                             {tab.label}
-                                            <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                                                studentFilter === tab.id ? 'bg-blue-50 text-blue-600' : 'bg-zinc-100 text-zinc-500'
-                                            }`}>
+                                            <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${studentFilter === tab.id ? 'bg-blue-50 text-blue-600' : 'bg-zinc-100 text-zinc-500'
+                                                }`}>
                                                 {tab.count}
                                             </span>
                                         </motion.button>
@@ -3192,7 +3226,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         {filteredStudents.length === 0 && !isSearching ? (
                             <EmptyState
                                 icon={
@@ -3205,20 +3239,20 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 }
                                 title="No students found"
                                 description={searchQuery ? `No students match "${searchQuery}"` : studentFilter !== 'all' ? `No ${studentFilter} students` : "No students enrolled yet"}
-                                action={searchQuery || studentFilter !== 'all' ? { 
-                                    label: searchQuery ? 'Clear search' : 'Show all', 
-                                    onClick: () => { setSearchQuery(''); setStudentFilter('all'); } 
+                                action={searchQuery || studentFilter !== 'all' ? {
+                                    label: searchQuery ? 'Clear search' : 'Show all',
+                                    onClick: () => { setSearchQuery(''); setStudentFilter('all'); }
                                 } : undefined}
                             />
                         ) : isSearching ? (
                             /* Search Skeleton Loading */
-                            <motion.div 
+                            <motion.div
                                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                             >
                                 {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
-                                    <motion.div 
+                                    <motion.div
                                         key={i}
                                         className="p-4 bg-white rounded-xl border border-zinc-100"
                                         initial={{ opacity: 0.5 }}
@@ -3235,17 +3269,17 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 ))}
                             </motion.div>
                         ) : (
-                            <motion.div 
+                            <motion.div
                                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.1 }}
                             >
                                 {filteredStudents.map((student: { id: number; name: string; status: string; role: string; email: string; avatar?: string }, index: number) => (
-                                    <StudentCard 
-                                        key={student.id} 
-                                        student={student} 
-                                        index={index} 
+                                    <StudentCard
+                                        key={student.id}
+                                        student={student}
+                                        index={index}
                                     />
                                 ))}
                             </motion.div>
@@ -3258,18 +3292,18 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                     return (
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-5 rounded-2xl border border-zinc-100 bg-white shadow-sm">
                             <div className="flex items-center gap-4">
-                                <motion.div 
+                                <motion.div
                                     className="w-14 h-14 rounded-full bg-zinc-100"
                                     animate={{ opacity: [0.5, 0.8, 0.5] }}
                                     transition={{ duration: 1.5, repeat: Infinity }}
                                 />
                                 <div className="flex-1 space-y-2">
-                                    <motion.div 
+                                    <motion.div
                                         className="h-5 bg-zinc-100 rounded-md w-2/3"
                                         animate={{ opacity: [0.5, 0.8, 0.5] }}
                                         transition={{ duration: 1.5, repeat: Infinity, delay: 0.1 }}
                                     />
-                                    <motion.div 
+                                    <motion.div
                                         className="h-4 bg-zinc-100 rounded-md w-1/3"
                                         animate={{ opacity: [0.4, 0.7, 0.4] }}
                                         transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
@@ -3291,7 +3325,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     </div>
                                     <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white" />
                                 </div>
-                                
+
                                 {/* Info */}
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-0.5">
@@ -3301,7 +3335,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         </span>
                                     </div>
                                     <p className="text-xs text-zinc-500">{instructor.title} · Computer Science Department</p>
-                                    <a 
+                                    <a
                                         href={`mailto:${instructor.email}`}
                                         className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors mt-1"
                                     >
@@ -3311,7 +3345,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         </svg>
                                         {instructor.email}
                                     </a>
-                                    
+
                                     {/* Quick Info */}
                                     <div className="flex items-center gap-4 mt-2">
                                         <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
@@ -3331,10 +3365,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {/* Action Buttons - Professional Style */}
                             <div className="mt-4 pt-4 border-t border-zinc-100 flex gap-2">
-                                <TeacherActionButton 
+                                <TeacherActionButton
                                     variant="primary"
                                     icon={
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -3343,7 +3377,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     }
                                     label="Send Message"
                                 />
-                                <TeacherActionButton 
+                                <TeacherActionButton
                                     variant="secondary"
                                     icon={
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -3355,7 +3389,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     }
                                     label="Schedule Meeting"
                                 />
-                                <TeacherActionButton 
+                                <TeacherActionButton
                                     variant="icon"
                                     icon={
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -3482,7 +3516,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             <line x1="3" y1="10" x2="21" y2="10" />
                                         </svg>
                                         {yearLevelFilter === 'all' ? 'All Years' : `${yearLevelFilter} Year`}
-                                        <motion.svg 
+                                        <motion.svg
                                             width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
                                             className="absolute right-2.5"
                                             animate={{ rotate: showYearDropdown ? 180 : 0 }}
@@ -3501,12 +3535,14 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                 className="absolute top-full left-0 mt-1 w-40 bg-white rounded-xl shadow-xl border border-zinc-100 overflow-hidden z-50"
                                             >
                                                 {[
-                                                    { value: 'all', label: 'All Years', icon: (
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                            <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
-                                                            <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-                                                        </svg>
-                                                    )},
+                                                    {
+                                                        value: 'all', label: 'All Years', icon: (
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+                                                                <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+                                                            </svg>
+                                                        )
+                                                    },
                                                     { value: '1st', label: '1st Year', icon: <span className="text-[11px] font-bold text-blue-600">1</span> },
                                                     { value: '2nd', label: '2nd Year', icon: <span className="text-[11px] font-bold text-blue-600">2</span> },
                                                     { value: '3rd', label: '3rd Year', icon: <span className="text-[11px] font-bold text-blue-600">3</span> },
@@ -3515,17 +3551,15 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     <motion.button
                                                         key={option.value}
                                                         onClick={() => { setYearLevelFilter(option.value as YearLevel); setShowYearDropdown(false); }}
-                                                        className={`w-full px-3 py-2.5 text-[11px] font-medium flex items-center gap-2.5 transition-colors ${
-                                                            yearLevelFilter === option.value 
-                                                                ? 'bg-blue-50 text-blue-600' 
+                                                        className={`w-full px-3 py-2.5 text-[11px] font-medium flex items-center gap-2.5 transition-colors ${yearLevelFilter === option.value
+                                                                ? 'bg-blue-50 text-blue-600'
                                                                 : 'text-zinc-700 hover:bg-zinc-50'
-                                                        }`}
+                                                            }`}
                                                         whileHover={{ x: 2 }}
                                                         transition={{ duration: 0.1 }}
                                                     >
-                                                        <span className={`w-5 h-5 rounded-md flex items-center justify-center ${
-                                                            yearLevelFilter === option.value ? 'bg-blue-100' : 'bg-zinc-100'
-                                                        }`}>
+                                                        <span className={`w-5 h-5 rounded-md flex items-center justify-center ${yearLevelFilter === option.value ? 'bg-blue-100' : 'bg-zinc-100'
+                                                            }`}>
                                                             {option.icon}
                                                         </span>
                                                         {option.label}
@@ -3540,7 +3574,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         )}
                                     </AnimatePresence>
                                 </div>
-                                
+
                                 {/* Section Filter - Custom Dropdown */}
                                 <div className="relative" onClick={(e) => e.stopPropagation()}>
                                     <motion.button
@@ -3555,7 +3589,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                         </svg>
                                         {sectionFilter === 'all' ? 'All Sections' : `Section ${sectionFilter}`}
-                                        <motion.svg 
+                                        <motion.svg
                                             width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
                                             className="absolute right-2.5"
                                             animate={{ rotate: showSectionDropdown ? 180 : 0 }}
@@ -3574,12 +3608,14 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                 className="absolute top-full left-0 mt-1 w-40 bg-white rounded-xl shadow-xl border border-zinc-100 overflow-hidden z-50"
                                             >
                                                 {[
-                                                    { value: 'all', label: 'All Sections', icon: (
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                            <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
-                                                            <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-                                                        </svg>
-                                                    )},
+                                                    {
+                                                        value: 'all', label: 'All Sections', icon: (
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+                                                                <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+                                                            </svg>
+                                                        )
+                                                    },
                                                     { value: 'A', label: 'Section A', icon: <span className="text-[11px] font-bold text-blue-600">A</span> },
                                                     { value: 'B', label: 'Section B', icon: <span className="text-[11px] font-bold text-blue-600">B</span> },
                                                     { value: 'C', label: 'Section C', icon: <span className="text-[11px] font-bold text-blue-600">C</span> },
@@ -3588,17 +3624,15 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     <motion.button
                                                         key={option.value}
                                                         onClick={() => { setSectionFilter(option.value as Section); setShowSectionDropdown(false); }}
-                                                        className={`w-full px-3 py-2.5 text-[11px] font-medium flex items-center gap-2.5 transition-colors ${
-                                                            sectionFilter === option.value 
-                                                                ? 'bg-blue-50 text-blue-600' 
+                                                        className={`w-full px-3 py-2.5 text-[11px] font-medium flex items-center gap-2.5 transition-colors ${sectionFilter === option.value
+                                                                ? 'bg-blue-50 text-blue-600'
                                                                 : 'text-zinc-700 hover:bg-zinc-50'
-                                                        }`}
+                                                            }`}
                                                         whileHover={{ x: 2 }}
                                                         transition={{ duration: 0.1 }}
                                                     >
-                                                        <span className={`w-5 h-5 rounded-md flex items-center justify-center ${
-                                                            sectionFilter === option.value ? 'bg-blue-100' : 'bg-zinc-100'
-                                                        }`}>
+                                                        <span className={`w-5 h-5 rounded-md flex items-center justify-center ${sectionFilter === option.value ? 'bg-blue-100' : 'bg-zinc-100'
+                                                            }`}>
                                                             {option.icon}
                                                         </span>
                                                         {option.label}
@@ -3623,7 +3657,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             <div className="px-6 pt-2 pb-4">
                 <div className="p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm">
                     <div className="flex items-center justify-center">
-                        <div 
+                        <div
                             ref={tabsContainerRef}
                             className="relative flex gap-1 p-1 rounded-xl bg-zinc-50"
                         >
@@ -3632,43 +3666,48 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 className="absolute top-1 bottom-1 rounded-lg bg-white border border-blue-100 shadow-sm"
                                 style={{ zIndex: 0 }}
                                 initial={false}
-                                animate={{ 
-                                    left: tabIndicatorStyle.left, 
-                                    width: tabIndicatorStyle.width 
+                                animate={{
+                                    left: tabIndicatorStyle.left,
+                                    width: tabIndicatorStyle.width
                                 }}
                                 transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                             />
-                            
+
                             {isTeacherMode ? (
                                 // Teacher Mode Tabs
                                 <>
                                     {[
-                                        { id: 'manage-tasks' as TeacherTabType, label: 'Manage Tasks', icon: (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                                <path d="M14 2v6h6" /><path d="M12 18v-6" /><path d="M9 15h6" />
-                                            </svg>
-                                        )},
-                                        { id: 'grade-students' as TeacherTabType, label: 'Grade Students', icon: (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                                            </svg>
-                                        )},
-                                        { id: 'analytics' as TeacherTabType, label: 'Analytics', icon: (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <path d="M3 3v18h18" /><path d="M7 16l4-4 4 4 5-6" />
-                                            </svg>
-                                        )},
+                                        {
+                                            id: 'manage-tasks' as TeacherTabType, label: 'Manage Tasks', icon: (
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                    <path d="M14 2v6h6" /><path d="M12 18v-6" /><path d="M9 15h6" />
+                                                </svg>
+                                            )
+                                        },
+                                        {
+                                            id: 'grade-students' as TeacherTabType, label: 'Grade Students', icon: (
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                    <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                                                </svg>
+                                            )
+                                        },
+                                        {
+                                            id: 'analytics' as TeacherTabType, label: 'Analytics', icon: (
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                    <path d="M3 3v18h18" /><path d="M7 16l4-4 4 4 5-6" />
+                                                </svg>
+                                            )
+                                        },
                                     ].map((tab) => (
                                         <motion.button
                                             key={tab.id}
                                             data-tab-id={tab.id}
                                             onClick={() => setTeacherTab(tab.id)}
-                                            className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-colors duration-100 whitespace-nowrap ${
-                                                teacherTab === tab.id 
-                                                    ? 'text-blue-600' 
+                                            className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-colors duration-100 whitespace-nowrap ${teacherTab === tab.id
+                                                    ? 'text-blue-600'
                                                     : 'text-zinc-500 hover:text-zinc-700'
-                                            }`}
+                                                }`}
                                         >
                                             {tab.icon}
                                             {tab.label}
@@ -3682,11 +3721,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         key={tab.id}
                                         data-tab-id={tab.id}
                                         onClick={() => { setActiveTab(tab.id); setSearchQuery(''); }}
-                                        className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-colors duration-100 whitespace-nowrap ${
-                                            activeTab === tab.id 
-                                                ? 'text-blue-600' 
+                                        className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-colors duration-100 whitespace-nowrap ${activeTab === tab.id
+                                                ? 'text-blue-600'
                                                 : 'text-zinc-500 hover:text-zinc-700'
-                                        }`}
+                                            }`}
                                     >
                                         {tab.icon}
                                         {tab.label}
@@ -3735,191 +3773,187 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         </div>
                                     </motion.div>
                                 ) : (
-                                <div className="space-y-4">
-                                    {/* Header with Add Button */}
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h2 className="text-sm font-semibold text-zinc-800">Course Tasks</h2>
-                                            <p className="text-[11px] text-zinc-500 mt-0.5">Manage assignments, quizzes, and activities</p>
-                                        </div>
-                                        <motion.button
-                                            onClick={() => setShowAddTaskModal(true)}
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            transition={{ duration: 0.1 }}
-                                            className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl"
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <path d="M12 5v14M5 12h14" />
-                                            </svg>
-                                            Add Task
-                                        </motion.button>
-                                    </div>
-                                    
-                                    {/* Task Type Filters - Horizontal Pills */}
-                                    <div className="flex gap-2 overflow-x-auto pb-1">
-                                        {TASK_CATEGORIES.map((cat) => (
-                                            <motion.button
-                                                key={cat.id}
-                                                onClick={() => setSelectedTaskType(cat.id)}
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                transition={{ duration: 0.1 }}
-                                                className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium rounded-lg whitespace-nowrap ${
-                                                    selectedTaskType === cat.id 
-                                                        ? 'bg-blue-600 text-white' 
-                                                        : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-                                                }`}
-                                            >
-                                                {cat.icon}
-                                                {cat.label}
-                                            </motion.button>
-                                        ))}
-                                    </div>
-                                    
-                                    {/* Tasks Cards - Horizontal Scroll */}
-                                    {courseTasks.filter((t: { category: TaskCategory }) => selectedTaskType === 'all' || t.category === selectedTaskType).length === 0 ? (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="flex flex-col items-center justify-center py-16 px-6 text-center"
-                                        >
-                                            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-50 to-zinc-50 flex items-center justify-center mb-5 border border-blue-100">
-                                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round">
-                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                                    <polyline points="14 2 14 8 20 8" />
-                                                    <line x1="12" y1="18" x2="12" y2="12" />
-                                                    <line x1="9" y1="15" x2="15" y2="15" />
-                                                </svg>
+                                    <div className="space-y-4">
+                                        {/* Header with Add Button */}
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <h2 className="text-sm font-semibold text-zinc-800">Course Tasks</h2>
+                                                <p className="text-[11px] text-zinc-500 mt-0.5">Manage assignments, quizzes, and activities</p>
                                             </div>
-                                            <p className="text-base font-semibold text-zinc-800 mb-2">No tasks yet</p>
-                                            <p className="text-sm text-zinc-500 max-w-sm mb-6">Create your first task to get started. Add assignments, quizzes, performance tasks, and more for your students.</p>
                                             <motion.button
                                                 onClick={() => setShowAddTaskModal(true)}
                                                 whileHover={{ scale: 1.02 }}
                                                 whileTap={{ scale: 0.98 }}
-                                                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-500/25"
+                                                transition={{ duration: 0.1 }}
+                                                className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl"
                                             >
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                                     <path d="M12 5v14M5 12h14" />
                                                 </svg>
-                                                Create First Task
+                                                Add Task
                                             </motion.button>
-                                        </motion.div>
-                                    ) : (
-                                    <div 
-                                        ref={tasksScrollRef}
-                                        className="flex gap-4 overflow-x-auto pt-2 pb-4 -mx-1 px-1 snap-x snap-mandatory scroll-smooth"
-                                        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                                    >
-                                        {courseTasks.filter((t: { category: TaskCategory }) => selectedTaskType === 'all' || t.category === selectedTaskType).map((task: typeof courseTasks[0], index: number) => (
+                                        </div>
+
+                                        {/* Task Type Filters - Horizontal Pills */}
+                                        <div className="flex gap-2 overflow-x-auto pb-1">
+                                            {TASK_CATEGORIES.map((cat) => (
+                                                <motion.button
+                                                    key={cat.id}
+                                                    onClick={() => setSelectedTaskType(cat.id)}
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    transition={{ duration: 0.1 }}
+                                                    className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium rounded-lg whitespace-nowrap ${selectedTaskType === cat.id
+                                                            ? 'bg-blue-600 text-white'
+                                                            : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                                                        }`}
+                                                >
+                                                    {cat.icon}
+                                                    {cat.label}
+                                                </motion.button>
+                                            ))}
+                                        </div>
+
+                                        {/* Tasks Cards - Horizontal Scroll */}
+                                        {courseTasks.filter((t: { category: TaskCategory }) => selectedTaskType === 'all' || t.category === selectedTaskType).length === 0 ? (
                                             <motion.div
-                                                key={task.id}
-                                                initial={{ opacity: 0, scale: 0.95 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                whileHover={{ 
-                                                    y: -6, 
-                                                    scale: 1.02,
-                                                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)'
-                                                }}
-                                                transition={{ 
-                                                    type: 'spring', 
-                                                    stiffness: 400, 
-                                                    damping: 25,
-                                                    delay: index * 0.03
-                                                }}
-                                                className="flex-shrink-0 w-64 bg-white rounded-2xl border border-blue-100 hover:border-blue-300 snap-start overflow-hidden cursor-pointer"
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="flex flex-col items-center justify-center py-16 px-6 text-center"
                                             >
-                                                {/* Card Header with Category Color */}
-                                                <div className={`h-1.5 ${
-                                                    task.category === 'assignment' ? 'bg-blue-500' :
-                                                    task.category === 'quiz' ? 'bg-yellow-500' :
-                                                    task.category === 'performance' ? 'bg-blue-600' :
-                                                    task.category === 'practical' ? 'bg-blue-700' :
-                                                    'bg-blue-400'
-                                                }`} />
-                                                
-                                                <div className="p-4">
-                                                    {/* Category Badge */}
-                                                    <div className="flex items-center justify-between mb-3">
-                                                        <span className={`px-2 py-0.5 text-[9px] font-semibold rounded-full uppercase tracking-wide ${
-                                                            task.category === 'assignment' ? 'bg-blue-50 text-blue-600' :
-                                                            task.category === 'quiz' ? 'bg-yellow-50 text-yellow-600' :
-                                                            task.category === 'performance' ? 'bg-blue-50 text-blue-700' :
-                                                            task.category === 'practical' ? 'bg-blue-50 text-blue-700' :
-                                                            'bg-blue-50 text-blue-600'
-                                                        }`}>
-                                                            {task.category}
-                                                        </span>
-                                                        <span className={`text-[10px] font-medium ${
-                                                            task.status === 'submitted' ? 'text-blue-600' :
-                                                            task.status === 'pending' ? 'text-yellow-600' :
-                                                            'text-zinc-400'
-                                                        }`}>
-                                                            {task.status === 'submitted' ? 'Active' : task.status === 'pending' ? 'Due Soon' : 'Upcoming'}
-                                                        </span>
-                                                    </div>
-                                                    
-                                                    {/* Task Title */}
-                                                    <h3 className="text-sm font-semibold text-zinc-800 line-clamp-2 mb-2">{task.title}</h3>
-                                                    
-                                                    {/* Due Date */}
-                                                    <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 mb-4">
-                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                                            <line x1="16" y1="2" x2="16" y2="6" />
-                                                            <line x1="8" y1="2" x2="8" y2="6" />
-                                                            <line x1="3" y1="10" x2="21" y2="10" />
-                                                        </svg>
-                                                        Due: {task.due}
-                                                    </div>
-                                                    
-                                                    {/* Action Buttons */}
-                                                    <div className="flex items-center gap-2">
-                                                        <motion.button
-                                                            whileHover={{ scale: 1.02 }}
-                                                            whileTap={{ scale: 0.98 }}
-                                                            transition={{ duration: 0.1 }}
-                                                            className="flex-1 py-2 text-[10px] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg flex items-center justify-center gap-1.5"
-                                                        >
-                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                                <path d="M12 20h9" />
-                                                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                                                            </svg>
-                                                            Edit
-                                                        </motion.button>
-                                                        <motion.button
-                                                            whileHover={{ scale: 1.02 }}
-                                                            whileTap={{ scale: 0.98 }}
-                                                            transition={{ duration: 0.1 }}
-                                                            className="flex-1 py-2 text-[10px] font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg flex items-center justify-center gap-1.5"
-                                                        >
-                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                                                <circle cx="12" cy="12" r="3" />
-                                                            </svg>
-                                                            View
-                                                        </motion.button>
-                                                        <motion.button
-                                                            whileHover={{ scale: 1.05 }}
-                                                            whileTap={{ scale: 0.95 }}
-                                                            transition={{ duration: 0.1 }}
-                                                            className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg"
-                                                        >
-                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                                            </svg>
-                                                        </motion.button>
-                                                    </div>
+                                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-50 to-zinc-50 flex items-center justify-center mb-5 border border-blue-100">
+                                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round">
+                                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                        <polyline points="14 2 14 8 20 8" />
+                                                        <line x1="12" y1="18" x2="12" y2="12" />
+                                                        <line x1="9" y1="15" x2="15" y2="15" />
+                                                    </svg>
                                                 </div>
+                                                <p className="text-base font-semibold text-zinc-800 mb-2">No tasks yet</p>
+                                                <p className="text-sm text-zinc-500 max-w-sm mb-6">Create your first task to get started. Add assignments, quizzes, performance tasks, and more for your students.</p>
+                                                <motion.button
+                                                    onClick={() => setShowAddTaskModal(true)}
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-500/25"
+                                                >
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                        <path d="M12 5v14M5 12h14" />
+                                                    </svg>
+                                                    Create First Task
+                                                </motion.button>
                                             </motion.div>
-                                        ))}
+                                        ) : (
+                                            <div
+                                                ref={tasksScrollRef}
+                                                className="flex gap-4 overflow-x-auto pt-2 pb-4 -mx-1 px-1 snap-x snap-mandatory scroll-smooth"
+                                                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                                            >
+                                                {courseTasks.filter((t: { category: TaskCategory }) => selectedTaskType === 'all' || t.category === selectedTaskType).map((task: typeof courseTasks[0], index: number) => (
+                                                    <motion.div
+                                                        key={task.id}
+                                                        initial={{ opacity: 0, scale: 0.95 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        whileHover={{
+                                                            y: -6,
+                                                            scale: 1.02,
+                                                            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)'
+                                                        }}
+                                                        transition={{
+                                                            type: 'spring',
+                                                            stiffness: 400,
+                                                            damping: 25,
+                                                            delay: index * 0.03
+                                                        }}
+                                                        className="flex-shrink-0 w-64 bg-white rounded-2xl border border-blue-100 hover:border-blue-300 snap-start overflow-hidden cursor-pointer"
+                                                    >
+                                                        {/* Card Header with Category Color */}
+                                                        <div className={`h-1.5 ${task.category === 'assignment' ? 'bg-blue-500' :
+                                                                task.category === 'quiz' ? 'bg-yellow-500' :
+                                                                    task.category === 'performance' ? 'bg-blue-600' :
+                                                                        task.category === 'practical' ? 'bg-blue-700' :
+                                                                            'bg-blue-400'
+                                                            }`} />
+
+                                                        <div className="p-4">
+                                                            {/* Category Badge */}
+                                                            <div className="flex items-center justify-between mb-3">
+                                                                <span className={`px-2 py-0.5 text-[9px] font-semibold rounded-full uppercase tracking-wide ${task.category === 'assignment' ? 'bg-blue-50 text-blue-600' :
+                                                                        task.category === 'quiz' ? 'bg-yellow-50 text-yellow-600' :
+                                                                            task.category === 'performance' ? 'bg-blue-50 text-blue-700' :
+                                                                                task.category === 'practical' ? 'bg-blue-50 text-blue-700' :
+                                                                                    'bg-blue-50 text-blue-600'
+                                                                    }`}>
+                                                                    {task.category}
+                                                                </span>
+                                                                <span className={`text-[10px] font-medium ${task.status === 'submitted' ? 'text-blue-600' :
+                                                                        task.status === 'pending' ? 'text-yellow-600' :
+                                                                            'text-zinc-400'
+                                                                    }`}>
+                                                                    {task.status === 'submitted' ? 'Active' : task.status === 'pending' ? 'Due Soon' : 'Upcoming'}
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Task Title */}
+                                                            <h3 className="text-sm font-semibold text-zinc-800 line-clamp-2 mb-2">{task.title}</h3>
+
+                                                            {/* Due Date */}
+                                                            <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 mb-4">
+                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                                                </svg>
+                                                                Due: {task.due}
+                                                            </div>
+
+                                                            {/* Action Buttons */}
+                                                            <div className="flex items-center gap-2">
+                                                                <motion.button
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                    transition={{ duration: 0.1 }}
+                                                                    className="flex-1 py-2 text-[10px] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg flex items-center justify-center gap-1.5"
+                                                                >
+                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                                        <path d="M12 20h9" />
+                                                                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                                                    </svg>
+                                                                    Edit
+                                                                </motion.button>
+                                                                <motion.button
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                    transition={{ duration: 0.1 }}
+                                                                    className="flex-1 py-2 text-[10px] font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg flex items-center justify-center gap-1.5"
+                                                                >
+                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                                        <circle cx="12" cy="12" r="3" />
+                                                                    </svg>
+                                                                    View
+                                                                </motion.button>
+                                                                <motion.button
+                                                                    whileHover={{ scale: 1.05 }}
+                                                                    whileTap={{ scale: 0.95 }}
+                                                                    transition={{ duration: 0.1 }}
+                                                                    className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg"
+                                                                >
+                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                                        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                                                    </svg>
+                                                                </motion.button>
+                                                            </div>
+                                                        </div>
+                                                    </motion.div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
-                                    )}
-                                </div>
                                 )
                             )}
-                            
+
                             {teacherTab === 'grade-students' && (
                                 isTeacherLoading ? (
                                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
@@ -3955,259 +3989,258 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         </div>
                                     </motion.div>
                                 ) : (
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="text-sm font-semibold text-zinc-800">Student Submissions</h2>
-                                        <div className="flex items-center gap-2">
-                                            <motion.button
-                                                whileHover={!isAiGrading ? { scale: 1.02 } : {}}
-                                                whileTap={!isAiGrading ? { scale: 0.98 } : {}}
-                                                disabled={isAiGrading}
-                                                onClick={() => {
-                                                    // AI Grade All - grade all pending submissions
-                                                    const pendingSubmissions = submissions.filter(
-                                                        (s: Submission) => s.status === 'pending' && 
-                                                        (yearLevelFilter === 'all' || s.yearLevel === yearLevelFilter) && 
-                                                        (sectionFilter === 'all' || s.section === sectionFilter)
-                                                    );
-                                                    
-                                                    if (pendingSubmissions.length === 0) return;
-                                                    
-                                                    setIsAiGrading(true);
-                                                    setAiGradingProgress(0);
-                                                    setShowAiWarning(true);
-                                                    
-                                                    // Auto-hide warning after 10 seconds
-                                                    setTimeout(() => setShowAiWarning(false), 10000);
-                                                    
-                                                    // Simulate AI grading with staggered updates
-                                                    pendingSubmissions.forEach((sub: Submission, index: number) => {
-                                                        setTimeout(() => {
-                                                            setSubmissions((prev: Submission[]) => prev.map((s: Submission) => 
-                                                                s.id === sub.id 
-                                                                    ? { ...s, status: 'ai-checked', aiScore: Math.floor(Math.random() * 25) + 75 } 
-                                                                    : s
-                                                            ));
-                                                            setAiGradingProgress(Math.round(((index + 1) / pendingSubmissions.length) * 100));
-                                                            
-                                                            // End grading when all done
-                                                            if (index === pendingSubmissions.length - 1) {
-                                                                setTimeout(() => {
-                                                                    setIsAiGrading(false);
-                                                                    setAiGradingProgress(0);
-                                                                }, 500);
-                                                            }
-                                                        }, (index + 1) * 500); // Stagger by 500ms
-                                                    });
-                                                }}
-                                                className={`flex items-center gap-2 px-3 py-2 text-[11px] font-medium rounded-lg transition-colors ${
-                                                    isAiGrading 
-                                                        ? 'text-blue-400 bg-blue-100 cursor-not-allowed' 
-                                                        : 'text-white bg-blue-600 hover:bg-blue-700'
-                                                }`}
-                                            >
-                                                {isAiGrading ? (
-                                                    <motion.svg 
-                                                        width="12" 
-                                                        height="12" 
-                                                        viewBox="0 0 24 24" 
-                                                        fill="none" 
-                                                        stroke="currentColor" 
-                                                        strokeWidth="2"
-                                                        animate={{ rotate: 360 }}
-                                                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                                    >
-                                                        <path d="M21 12a9 9 0 1 1-6.219-8.56" strokeLinecap="round" />
-                                                    </motion.svg>
-                                                ) : (
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                        <path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
-                                                        <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
-                                                    </svg>
-                                                )}
-                                                {isAiGrading ? `Grading... ${aiGradingProgress}%` : 'AI Grade All'}
-                                            </motion.button>
-                                        </div>
-                                    </div>
-                                    
-                                    {/* AI Grading Loading Overlay - Minimalistic */}
-                                    <AnimatePresence>
-                                        {isAiGrading && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: -10, scale: 0.98 }}
-                                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                exit={{ opacity: 0, y: -10, scale: 0.98 }}
-                                                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                                                className="p-4 bg-white rounded-xl border border-blue-100 shadow-sm"
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    {/* Circular Progress */}
-                                                    <div className="relative w-11 h-11 flex-shrink-0">
-                                                        <svg className="w-11 h-11 -rotate-90" viewBox="0 0 44 44">
-                                                            <circle
-                                                                cx="22"
-                                                                cy="22"
-                                                                r="18"
-                                                                fill="none"
-                                                                stroke="#e5e7eb"
-                                                                strokeWidth="4"
-                                                            />
-                                                            <motion.circle
-                                                                cx="22"
-                                                                cy="22"
-                                                                r="18"
-                                                                fill="none"
-                                                                stroke="#2563eb"
-                                                                strokeWidth="4"
-                                                                strokeLinecap="round"
-                                                                initial={{ pathLength: 0 }}
-                                                                animate={{ pathLength: aiGradingProgress / 100 }}
-                                                                transition={{ duration: 0.3, ease: 'easeOut' }}
-                                                                style={{ strokeDasharray: '113.1', strokeDashoffset: '0' }}
-                                                            />
-                                                        </svg>
-                                                        <div className="absolute inset-0 flex items-center justify-center">
-                                                            <span className="text-[10px] font-bold text-blue-600">{aiGradingProgress}%</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div className="flex-1 min-w-0">
-                                                        {/* Animated Status Text */}
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <AnimatePresence mode="wait">
-                                                                <motion.div
-                                                                    key={aiGradingProgress < 50 ? 'analyzing' : aiGradingProgress < 80 ? 'grading' : 'finishing'}
-                                                                    initial={{ opacity: 0, y: 8 }}
-                                                                    animate={{ opacity: 1, y: 0 }}
-                                                                    exit={{ opacity: 0, y: -8 }}
-                                                                    transition={{ duration: 0.2 }}
-                                                                    className="flex items-center gap-2"
-                                                                >
-                                                                    {/* SVG Icons based on progress */}
-                                                                    {aiGradingProgress < 50 ? (
-                                                                        <motion.svg 
-                                                                            width="14" 
-                                                                            height="14" 
-                                                                            viewBox="0 0 24 24" 
-                                                                            fill="none" 
-                                                                            stroke="#2563eb" 
-                                                                            strokeWidth="2" 
-                                                                            strokeLinecap="round"
-                                                                            animate={{ scale: [1, 1.1, 1] }}
-                                                                            transition={{ duration: 1.5, repeat: Infinity }}
-                                                                        >
-                                                                            <circle cx="11" cy="11" r="8" />
-                                                                            <path d="m21 21-4.35-4.35" />
-                                                                        </motion.svg>
-                                                                    ) : aiGradingProgress < 80 ? (
-                                                                        <motion.svg 
-                                                                            width="14" 
-                                                                            height="14" 
-                                                                            viewBox="0 0 24 24" 
-                                                                            fill="none" 
-                                                                            stroke="#2563eb" 
-                                                                            strokeWidth="2" 
-                                                                            strokeLinecap="round"
-                                                                            animate={{ y: [0, -2, 0] }}
-                                                                            transition={{ duration: 0.8, repeat: Infinity }}
-                                                                        >
-                                                                            <path d="M12 20h9" />
-                                                                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                                                                        </motion.svg>
-                                                                    ) : (
-                                                                        <motion.svg 
-                                                                            width="14" 
-                                                                            height="14" 
-                                                                            viewBox="0 0 24 24" 
-                                                                            fill="none" 
-                                                                            stroke="#2563eb" 
-                                                                            strokeWidth="2" 
-                                                                            strokeLinecap="round"
-                                                                            initial={{ scale: 0 }}
-                                                                            animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
-                                                                            transition={{ duration: 0.5 }}
-                                                                        >
-                                                                            <polyline points="20 6 9 17 4 12" />
-                                                                        </motion.svg>
-                                                                    )}
-                                                                    <span className="text-sm font-medium text-zinc-800">
-                                                                        {aiGradingProgress < 50 ? 'Analyzing submissions...' : aiGradingProgress < 80 ? 'Grading in progress...' : 'Almost done...'}
-                                                                    </span>
-                                                                </motion.div>
-                                                            </AnimatePresence>
-                                                        </div>
-                                                        <p className="text-[11px] text-zinc-500">Please wait a moment</p>
-                                                        
-                                                        {/* Progress Bar - Solid Blue */}
-                                                        <div className="mt-2 h-1 bg-zinc-100 rounded-full overflow-hidden">
-                                                            <motion.div
-                                                                className="h-full bg-blue-600 rounded-full"
-                                                                initial={{ width: 0 }}
-                                                                animate={{ width: `${aiGradingProgress}%` }}
-                                                                transition={{ duration: 0.3, ease: 'easeOut' }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                    
-                                    {/* AI Warning Tooltip */}
-                                    <AnimatePresence>
-                                        {showAiWarning && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                                                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                                                className="relative flex items-start gap-3 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200 shadow-sm"
-                                            >
-                                                {/* Warning Icon */}
-                                                <motion.div 
-                                                    className="flex-shrink-0 w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"
-                                                    animate={{ scale: [1, 1.05, 1] }}
-                                                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                                                >
-                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                                                        <line x1="12" y1="9" x2="12" y2="13" />
-                                                        <line x1="12" y1="17" x2="12.01" y2="17" />
-                                                    </svg>
-                                                </motion.div>
-                                                
-                                                {/* Content */}
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-semibold text-amber-800">AI Grading Notice</p>
-                                                    <p className="text-[11px] text-amber-700 mt-0.5 leading-relaxed">
-                                                        Please double-check the graded submissions. AI can sometimes make mistakes in evaluating answers.
-                                                    </p>
-                                                </div>
-                                                
-                                                {/* Close Button */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <h2 className="text-sm font-semibold text-zinc-800">Student Submissions</h2>
+                                            <div className="flex items-center gap-2">
                                                 <motion.button
-                                                    onClick={() => setShowAiWarning(false)}
-                                                    whileHover={{ scale: 1.1, backgroundColor: 'rgba(217, 119, 6, 0.1)' }}
-                                                    whileTap={{ scale: 0.95 }}
-                                                    className="flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center text-amber-500 hover:text-amber-700 transition-colors"
+                                                    whileHover={!isAiGrading ? { scale: 1.02 } : {}}
+                                                    whileTap={!isAiGrading ? { scale: 0.98 } : {}}
+                                                    disabled={isAiGrading}
+                                                    onClick={() => {
+                                                        // AI Grade All - grade all pending submissions
+                                                        const pendingSubmissions = submissions.filter(
+                                                            (s: Submission) => s.status === 'pending' &&
+                                                                (yearLevelFilter === 'all' || s.yearLevel === yearLevelFilter) &&
+                                                                (sectionFilter === 'all' || s.section === sectionFilter)
+                                                        );
+
+                                                        if (pendingSubmissions.length === 0) return;
+
+                                                        setIsAiGrading(true);
+                                                        setAiGradingProgress(0);
+                                                        setShowAiWarning(true);
+
+                                                        // Auto-hide warning after 10 seconds
+                                                        setTimeout(() => setShowAiWarning(false), 10000);
+
+                                                        // Simulate AI grading with staggered updates
+                                                        pendingSubmissions.forEach((sub: Submission, index: number) => {
+                                                            setTimeout(() => {
+                                                                setSubmissions((prev: Submission[]) => prev.map((s: Submission) =>
+                                                                    s.id === sub.id
+                                                                        ? { ...s, status: 'ai-checked', aiScore: Math.floor(Math.random() * 25) + 75 }
+                                                                        : s
+                                                                ));
+                                                                setAiGradingProgress(Math.round(((index + 1) / pendingSubmissions.length) * 100));
+
+                                                                // End grading when all done
+                                                                if (index === pendingSubmissions.length - 1) {
+                                                                    setTimeout(() => {
+                                                                        setIsAiGrading(false);
+                                                                        setAiGradingProgress(0);
+                                                                    }, 500);
+                                                                }
+                                                            }, (index + 1) * 500); // Stagger by 500ms
+                                                        });
+                                                    }}
+                                                    className={`flex items-center gap-2 px-3 py-2 text-[11px] font-medium rounded-lg transition-colors ${isAiGrading
+                                                            ? 'text-blue-400 bg-blue-100 cursor-not-allowed'
+                                                            : 'text-white bg-blue-600 hover:bg-blue-700'
+                                                        }`}
                                                 >
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                        <path d="M18 6L6 18M6 6l12 12" />
-                                                    </svg>
+                                                    {isAiGrading ? (
+                                                        <motion.svg
+                                                            width="12"
+                                                            height="12"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            animate={{ rotate: 360 }}
+                                                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                                                        >
+                                                            <path d="M21 12a9 9 0 1 1-6.219-8.56" strokeLinecap="round" />
+                                                        </motion.svg>
+                                                    ) : (
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                            <path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
+                                                            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+                                                        </svg>
+                                                    )}
+                                                    {isAiGrading ? `Grading... ${aiGradingProgress}%` : 'AI Grade All'}
                                                 </motion.button>
-                                                
-                                                {/* Progress bar for auto-dismiss */}
+                                            </div>
+                                        </div>
+
+                                        {/* AI Grading Loading Overlay - Minimalistic */}
+                                        <AnimatePresence>
+                                            {isAiGrading && (
                                                 <motion.div
-                                                    className="absolute bottom-0 left-0 h-1 bg-amber-400 rounded-b-xl"
-                                                    initial={{ width: '100%' }}
-                                                    animate={{ width: '0%' }}
-                                                    transition={{ duration: 10, ease: 'linear' }}
-                                                />
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                    
-                                    {/* Submissions List - Horizontal Scrolling Cards */}
+                                                    initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                    exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                                                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                                                    className="p-4 bg-white rounded-xl border border-blue-100 shadow-sm"
+                                                >
+                                                    <div className="flex items-center gap-4">
+                                                        {/* Circular Progress */}
+                                                        <div className="relative w-11 h-11 flex-shrink-0">
+                                                            <svg className="w-11 h-11 -rotate-90" viewBox="0 0 44 44">
+                                                                <circle
+                                                                    cx="22"
+                                                                    cy="22"
+                                                                    r="18"
+                                                                    fill="none"
+                                                                    stroke="#e5e7eb"
+                                                                    strokeWidth="4"
+                                                                />
+                                                                <motion.circle
+                                                                    cx="22"
+                                                                    cy="22"
+                                                                    r="18"
+                                                                    fill="none"
+                                                                    stroke="#2563eb"
+                                                                    strokeWidth="4"
+                                                                    strokeLinecap="round"
+                                                                    initial={{ pathLength: 0 }}
+                                                                    animate={{ pathLength: aiGradingProgress / 100 }}
+                                                                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                                                                    style={{ strokeDasharray: '113.1', strokeDashoffset: '0' }}
+                                                                />
+                                                            </svg>
+                                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                                <span className="text-[10px] font-bold text-blue-600">{aiGradingProgress}%</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex-1 min-w-0">
+                                                            {/* Animated Status Text */}
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <AnimatePresence mode="wait">
+                                                                    <motion.div
+                                                                        key={aiGradingProgress < 50 ? 'analyzing' : aiGradingProgress < 80 ? 'grading' : 'finishing'}
+                                                                        initial={{ opacity: 0, y: 8 }}
+                                                                        animate={{ opacity: 1, y: 0 }}
+                                                                        exit={{ opacity: 0, y: -8 }}
+                                                                        transition={{ duration: 0.2 }}
+                                                                        className="flex items-center gap-2"
+                                                                    >
+                                                                        {/* SVG Icons based on progress */}
+                                                                        {aiGradingProgress < 50 ? (
+                                                                            <motion.svg
+                                                                                width="14"
+                                                                                height="14"
+                                                                                viewBox="0 0 24 24"
+                                                                                fill="none"
+                                                                                stroke="#2563eb"
+                                                                                strokeWidth="2"
+                                                                                strokeLinecap="round"
+                                                                                animate={{ scale: [1, 1.1, 1] }}
+                                                                                transition={{ duration: 1.5, repeat: Infinity }}
+                                                                            >
+                                                                                <circle cx="11" cy="11" r="8" />
+                                                                                <path d="m21 21-4.35-4.35" />
+                                                                            </motion.svg>
+                                                                        ) : aiGradingProgress < 80 ? (
+                                                                            <motion.svg
+                                                                                width="14"
+                                                                                height="14"
+                                                                                viewBox="0 0 24 24"
+                                                                                fill="none"
+                                                                                stroke="#2563eb"
+                                                                                strokeWidth="2"
+                                                                                strokeLinecap="round"
+                                                                                animate={{ y: [0, -2, 0] }}
+                                                                                transition={{ duration: 0.8, repeat: Infinity }}
+                                                                            >
+                                                                                <path d="M12 20h9" />
+                                                                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                                                            </motion.svg>
+                                                                        ) : (
+                                                                            <motion.svg
+                                                                                width="14"
+                                                                                height="14"
+                                                                                viewBox="0 0 24 24"
+                                                                                fill="none"
+                                                                                stroke="#2563eb"
+                                                                                strokeWidth="2"
+                                                                                strokeLinecap="round"
+                                                                                initial={{ scale: 0 }}
+                                                                                animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
+                                                                                transition={{ duration: 0.5 }}
+                                                                            >
+                                                                                <polyline points="20 6 9 17 4 12" />
+                                                                            </motion.svg>
+                                                                        )}
+                                                                        <span className="text-sm font-medium text-zinc-800">
+                                                                            {aiGradingProgress < 50 ? 'Analyzing submissions...' : aiGradingProgress < 80 ? 'Grading in progress...' : 'Almost done...'}
+                                                                        </span>
+                                                                    </motion.div>
+                                                                </AnimatePresence>
+                                                            </div>
+                                                            <p className="text-[11px] text-zinc-500">Please wait a moment</p>
+
+                                                            {/* Progress Bar - Solid Blue */}
+                                                            <div className="mt-2 h-1 bg-zinc-100 rounded-full overflow-hidden">
+                                                                <motion.div
+                                                                    className="h-full bg-blue-600 rounded-full"
+                                                                    initial={{ width: 0 }}
+                                                                    animate={{ width: `${aiGradingProgress}%` }}
+                                                                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+
+                                        {/* AI Warning Tooltip */}
+                                        <AnimatePresence>
+                                            {showAiWarning && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                                                    className="relative flex items-start gap-3 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200 shadow-sm"
+                                                >
+                                                    {/* Warning Icon */}
+                                                    <motion.div
+                                                        className="flex-shrink-0 w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"
+                                                        animate={{ scale: [1, 1.05, 1] }}
+                                                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                                                    >
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                                            <line x1="12" y1="9" x2="12" y2="13" />
+                                                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                                                        </svg>
+                                                    </motion.div>
+
+                                                    {/* Content */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-semibold text-amber-800">AI Grading Notice</p>
+                                                        <p className="text-[11px] text-amber-700 mt-0.5 leading-relaxed">
+                                                            Please double-check the graded submissions. AI can sometimes make mistakes in evaluating answers.
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Close Button */}
+                                                    <motion.button
+                                                        onClick={() => setShowAiWarning(false)}
+                                                        whileHover={{ scale: 1.1, backgroundColor: 'rgba(217, 119, 6, 0.1)' }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                        className="flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center text-amber-500 hover:text-amber-700 transition-colors"
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                            <path d="M18 6L6 18M6 6l12 12" />
+                                                        </svg>
+                                                    </motion.button>
+
+                                                    {/* Progress bar for auto-dismiss */}
+                                                    <motion.div
+                                                        className="absolute bottom-0 left-0 h-1 bg-amber-400 rounded-b-xl"
+                                                        initial={{ width: '100%' }}
+                                                        animate={{ width: '0%' }}
+                                                        transition={{ duration: 10, ease: 'linear' }}
+                                                    />
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+
+                                        {/* Submissions List - Horizontal Scrolling Cards */}
                                         {submissions.length === 0 ? (
                                             <motion.div
                                                 initial={{ opacity: 0, y: 10 }}
@@ -4226,150 +4259,149 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                 <p className="text-xs text-zinc-500 max-w-xs">Student submissions will appear here once they submit their assignments.</p>
                                             </motion.div>
                                         ) : (
-                                        /* Cards Container */
-                                        <div 
-                                            ref={submissionsScrollRef}
-                                            className="flex gap-4 overflow-x-auto pt-2 pb-4 px-1 -mx-1 snap-x snap-mandatory scroll-smooth"
-                                            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                                        >
-                                            {submissions
-                                                .filter((s: Submission) => (yearLevelFilter === 'all' || s.yearLevel === yearLevelFilter) && (sectionFilter === 'all' || s.section === sectionFilter))
-                                                .map((submission: Submission, index: number) => (
-                                                <motion.div
-                                                    key={submission.id}
-                                                    initial={{ opacity: 0, scale: 0.95 }}
-                                                    animate={{ opacity: 1, scale: 1 }}
-                                                    whileHover={{ 
-                                                        y: -6, 
-                                                        scale: 1.02,
-                                                        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)'
-                                                    }}
-                                                    transition={{ 
-                                                        type: 'spring', 
-                                                        stiffness: 400, 
-                                                        damping: 25,
-                                                        delay: index * 0.05
-                                                    }}
-                                                    className="flex-shrink-0 w-72 bg-white rounded-2xl border border-blue-100 hover:border-blue-300 snap-start overflow-hidden cursor-pointer"
-                                                >
-                                                {/* Card Header */}
-                                                <div className="p-4 pb-3">
-                                                    <div className="flex items-center gap-3">
-                                                        <motion.div 
-                                                            className="w-11 h-11 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                                                            whileHover={{ scale: 1.05 }}
-                                                            transition={{ type: 'spring', stiffness: 400 }}
+                                            /* Cards Container */
+                                            <div
+                                                ref={submissionsScrollRef}
+                                                className="flex gap-4 overflow-x-auto pt-2 pb-4 px-1 -mx-1 snap-x snap-mandatory scroll-smooth"
+                                                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                                            >
+                                                {submissions
+                                                    .filter((s: Submission) => (yearLevelFilter === 'all' || s.yearLevel === yearLevelFilter) && (sectionFilter === 'all' || s.section === sectionFilter))
+                                                    .map((submission: Submission, index: number) => (
+                                                        <motion.div
+                                                            key={submission.id}
+                                                            initial={{ opacity: 0, scale: 0.95 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            whileHover={{
+                                                                y: -6,
+                                                                scale: 1.02,
+                                                                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)'
+                                                            }}
+                                                            transition={{
+                                                                type: 'spring',
+                                                                stiffness: 400,
+                                                                damping: 25,
+                                                                delay: index * 0.05
+                                                            }}
+                                                            className="flex-shrink-0 w-72 bg-white rounded-2xl border border-blue-100 hover:border-blue-300 snap-start overflow-hidden cursor-pointer"
                                                         >
-                                                            {submission.studentName.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
+                                                            {/* Card Header */}
+                                                            <div className="p-4 pb-3">
+                                                                <div className="flex items-center gap-3">
+                                                                    <motion.div
+                                                                        className="w-11 h-11 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+                                                                        whileHover={{ scale: 1.05 }}
+                                                                        transition={{ type: 'spring', stiffness: 400 }}
+                                                                    >
+                                                                        {submission.studentName.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
+                                                                    </motion.div>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="text-sm font-semibold text-zinc-800 truncate">{submission.studentName}</p>
+                                                                        <p className="text-[10px] text-zinc-400">{submission.yearLevel} Year · Section {submission.section}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Task Info */}
+                                                            <div className="px-4 pb-3">
+                                                                <p className="text-[11px] text-zinc-600 truncate">{submission.task}</p>
+                                                                <p className="text-[10px] text-zinc-400 mt-0.5">Submitted: {submission.submitted}</p>
+                                                            </div>
+
+                                                            {/* Score & Status Section */}
+                                                            <div className="px-4 pb-3 flex items-center justify-between">
+                                                                {/* Status Badge */}
+                                                                <motion.span
+                                                                    layout
+                                                                    className={`px-2.5 py-1 text-[10px] font-semibold rounded-full ${submission.status === 'pending' ? 'bg-yellow-50 text-yellow-600' :
+                                                                            submission.status === 'ai-checked' ? 'bg-blue-50 text-blue-600' :
+                                                                                'bg-blue-600 text-white'
+                                                                        }`}
+                                                                >
+                                                                    {submission.status === 'pending' ? 'Pending' : submission.status === 'ai-checked' ? 'AI Checked' : 'Graded'}
+                                                                </motion.span>
+
+                                                                {/* AI Score */}
+                                                                <AnimatePresence>
+                                                                    {submission.aiScore && (
+                                                                        <motion.div
+                                                                            initial={{ opacity: 0, scale: 0.8 }}
+                                                                            animate={{ opacity: 1, scale: 1 }}
+                                                                            className="text-right"
+                                                                        >
+                                                                            <p className="text-xl font-bold text-blue-600">{submission.aiScore}</p>
+                                                                            <p className="text-[9px] text-zinc-400 -mt-0.5">AI Score</p>
+                                                                        </motion.div>
+                                                                    )}
+                                                                </AnimatePresence>
+                                                            </div>
+
+                                                            {/* Action Buttons */}
+                                                            <div className="px-4 pb-4 flex items-center gap-2">
+                                                                <motion.button
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                    onClick={() => {
+                                                                        setSubmissions((prev: Submission[]) => prev.map((s: Submission) =>
+                                                                            s.id === submission.id ? { ...s, status: 'ai-checked', aiScore: Math.floor(Math.random() * 25) + 75 } : s
+                                                                        ));
+                                                                    }}
+                                                                    className="flex-1 py-2 text-[10px] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+                                                                >
+                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                                        <path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
+                                                                        <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+                                                                    </svg>
+                                                                    AI Check
+                                                                </motion.button>
+                                                                <motion.button
+                                                                    whileHover={{ scale: 1.02 }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                    className="flex-1 py-2 text-[10px] font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+                                                                >
+                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                                        <path d="M12 20h9" />
+                                                                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                                                    </svg>
+                                                                    Grade
+                                                                </motion.button>
+                                                                <motion.button
+                                                                    whileHover={{ scale: 1.05 }}
+                                                                    whileTap={{ scale: 0.95 }}
+                                                                    onClick={() => {
+                                                                        setSubmissions((prev: Submission[]) => prev.map((s: Submission) =>
+                                                                            s.id === submission.id ? { ...s, status: 'graded' } : s
+                                                                        ));
+                                                                    }}
+                                                                    className="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                                >
+                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                                        <polyline points="20 6 9 17 4 12" />
+                                                                    </svg>
+                                                                </motion.button>
+                                                            </div>
                                                         </motion.div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className="text-sm font-semibold text-zinc-800 truncate">{submission.studentName}</p>
-                                                            <p className="text-[10px] text-zinc-400">{submission.yearLevel} Year · Section {submission.section}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                {/* Task Info */}
-                                                <div className="px-4 pb-3">
-                                                    <p className="text-[11px] text-zinc-600 truncate">{submission.task}</p>
-                                                    <p className="text-[10px] text-zinc-400 mt-0.5">Submitted: {submission.submitted}</p>
-                                                </div>
-                                                
-                                                {/* Score & Status Section */}
-                                                <div className="px-4 pb-3 flex items-center justify-between">
-                                                    {/* Status Badge */}
-                                                    <motion.span 
-                                                        layout
-                                                        className={`px-2.5 py-1 text-[10px] font-semibold rounded-full ${
-                                                            submission.status === 'pending' ? 'bg-yellow-50 text-yellow-600' :
-                                                            submission.status === 'ai-checked' ? 'bg-blue-50 text-blue-600' :
-                                                            'bg-blue-600 text-white'
-                                                        }`}
-                                                    >
-                                                        {submission.status === 'pending' ? 'Pending' : submission.status === 'ai-checked' ? 'AI Checked' : 'Graded'}
-                                                    </motion.span>
-                                                    
-                                                    {/* AI Score */}
-                                                    <AnimatePresence>
-                                                        {submission.aiScore && (
-                                                            <motion.div 
-                                                                initial={{ opacity: 0, scale: 0.8 }}
-                                                                animate={{ opacity: 1, scale: 1 }}
-                                                                className="text-right"
-                                                            >
-                                                                <p className="text-xl font-bold text-blue-600">{submission.aiScore}</p>
-                                                                <p className="text-[9px] text-zinc-400 -mt-0.5">AI Score</p>
-                                                            </motion.div>
-                                                        )}
-                                                    </AnimatePresence>
-                                                </div>
-                                                
-                                                {/* Action Buttons */}
-                                                <div className="px-4 pb-4 flex items-center gap-2">
-                                                    <motion.button
-                                                        whileHover={{ scale: 1.02 }}
-                                                        whileTap={{ scale: 0.98 }}
-                                                        onClick={() => {
-                                                            setSubmissions((prev: Submission[]) => prev.map((s: Submission) => 
-                                                                s.id === submission.id ? { ...s, status: 'ai-checked', aiScore: Math.floor(Math.random() * 25) + 75 } : s
-                                                            ));
-                                                        }}
-                                                        className="flex-1 py-2 text-[10px] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors flex items-center justify-center gap-1.5"
-                                                    >
-                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                            <path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
-                                                            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
-                                                        </svg>
-                                                        AI Check
-                                                    </motion.button>
-                                                    <motion.button
-                                                        whileHover={{ scale: 1.02 }}
-                                                        whileTap={{ scale: 0.98 }}
-                                                        className="flex-1 py-2 text-[10px] font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors flex items-center justify-center gap-1.5"
-                                                    >
-                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                            <path d="M12 20h9" />
-                                                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                                                        </svg>
-                                                        Grade
-                                                    </motion.button>
-                                                    <motion.button
-                                                        whileHover={{ scale: 1.05 }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                        onClick={() => {
-                                                            setSubmissions((prev: Submission[]) => prev.map((s: Submission) => 
-                                                                s.id === submission.id ? { ...s, status: 'graded' } : s
-                                                            ));
-                                                        }}
-                                                        className="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    >
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                            <polyline points="20 6 9 17 4 12" />
-                                                        </svg>
-                                                    </motion.button>
-                                                </div>
-                                            </motion.div>
-                                        ))}
-                                        </div>
+                                                    ))}
+                                            </div>
                                         )}
-                                </div>
+                                    </div>
                                 )
                             )}
-                            
+
                             {teacherTab === 'analytics' && (() => {
                                 // Calculate real statistics from submissions
                                 const totalStudents = studentsData.length;
                                 const totalSubmissions = submissions.length;
                                 const pendingCount = submissions.filter((s: Submission) => s.status === 'pending').length;
                                 const gradedSubmissions = submissions.filter((s: Submission) => s.aiScore !== null);
-                                const averageGrade = gradedSubmissions.length > 0 
+                                const averageGrade = gradedSubmissions.length > 0
                                     ? Math.round(gradedSubmissions.reduce((sum: number, s: Submission) => sum + (s.aiScore || 0), 0) / gradedSubmissions.length)
                                     : 0;
-                                const completionRate = totalSubmissions > 0 
+                                const completionRate = totalSubmissions > 0
                                     ? Math.round(((totalSubmissions - pendingCount) / totalSubmissions) * 100)
                                     : 0;
                                 const onlineStudents = studentsData.filter((s: { status: string }) => s.status === 'online').length;
-                                
+
                                 if (isTeacherLoading) {
                                     return (
                                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -4433,314 +4465,310 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         </motion.div>
                                     );
                                 }
-                                
-                                return (
-                                <div className="space-y-6">
-                                    {/* Header */}
-                                    <motion.div
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="flex items-center gap-3"
-                                    >
-                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
-                                                <path d="M3 3v18h18" /><path d="M7 16l4-4 4 4 5-6" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h2 className="text-base font-semibold text-zinc-800">Class Analytics</h2>
-                                            <p className="text-[11px] text-zinc-500">Overview of class performance</p>
-                                        </div>
-                                    </motion.div>
 
-                                    {/* Stats Cards - Grid Layout */}
-                                    <div className="analytics-stats-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                                        {[
-                                            { 
-                                                label: 'TOTAL STUDENTS', 
-                                                value: String(totalStudents), 
-                                                subtext: 'enrolled',
-                                                lordIcon: 'https://cdn.lordicon.com/atzcyedn.json',
-                                                trigger: 'hover',
-                                                color: 'blue'
-                                            },
-                                            { 
-                                                label: 'AVERAGE GRADE', 
-                                                value: `${averageGrade}%`, 
-                                                subtext: 'class avg',
-                                                trend: averageGrade >= 80 ? '+3%' : '-2%',
-                                                lordIcon: 'https://cdn.lordicon.com/excswhey.json',
-                                                lordIconDown: 'https://cdn.lordicon.com/zwtssiaj.json',
-                                                trigger: 'hover',
-                                                color: 'blue'
-                                            },
-                                            { 
-                                                label: 'SUBMISSIONS', 
-                                                value: String(totalSubmissions), 
-                                                subtext: 'total',
-                                                lordIcon: 'https://cdn.lordicon.com/mubdgyyw.json',
-                                                trigger: 'hover',
-                                                color: 'yellow'
-                                            },
-                                            { 
-                                                label: 'PENDING', 
-                                                value: String(pendingCount), 
-                                                subtext: 'to review',
-                                                lordIcon: 'https://cdn.lordicon.com/okqjaags.json',
-                                                trigger: 'hover',
-                                                color: 'yellow'
-                                            },
-                                            { 
-                                                label: 'COMPLETION', 
-                                                value: `${completionRate}%`, 
-                                                subtext: 'graded',
-                                                lordIcon: 'https://cdn.lordicon.com/uvofdfal.json',
-                                                trigger: 'hover',
-                                                color: 'blue'
-                                            },
-                                            { 
-                                                label: 'ACTIVE NOW', 
-                                                value: String(onlineStudents), 
-                                                subtext: 'online',
-                                                lordIcon: 'https://cdn.lordicon.com/kthkkwpi.json',
-                                                trigger: 'hover',
-                                                color: 'green'
-                                            },
-                                        ].map((stat, index) => {
-                                            // Determine icon colors based on stat color
-                                            const primaryColor = stat.color === 'blue' ? '#3b82f6' : 
-                                                                stat.color === 'yellow' ? '#eab308' : '#22c55e';
-                                            const secondaryColor = stat.color === 'blue' ? '#93c5fd' : 
-                                                                  stat.color === 'yellow' ? '#fde047' : '#86efac';
-                                            
-                                            // For average grade, check if trend is negative
-                                            const isNegativeTrend = stat.trend && stat.trend.startsWith('-');
-                                            const iconSrc = isNegativeTrend && stat.lordIconDown ? stat.lordIconDown : stat.lordIcon;
-                                            const iconPrimary = isNegativeTrend ? '#ef4444' : primaryColor;
-                                            const iconSecondary = isNegativeTrend ? '#fca5a5' : secondaryColor;
-                                            
-                                            return (
-                                            <motion.div
-                                                key={stat.label}
-                                                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                transition={{ delay: index * 0.08, type: 'spring', stiffness: 300, damping: 25 }}
-                                                whileHover={{ y: -4, scale: 1.02 }}
-                                                className="relative bg-white rounded-2xl border border-zinc-100 p-5 cursor-pointer group overflow-hidden"
-                                            >
-                                                {/* Lord Icon */}
-                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110 ${
-                                                    stat.color === 'blue' ? 'bg-blue-50' : 
-                                                    stat.color === 'yellow' ? 'bg-yellow-50' : 'bg-green-50'
-                                                }`}>
-                                                    <lord-icon
-                                                        src={iconSrc}
-                                                        trigger={stat.trigger}
-                                                        colors={`primary:${iconPrimary},secondary:${iconSecondary}`}
-                                                        style={{ width: '32px', height: '32px' }}
-                                                    />
-                                                </div>
-                                                
-                                                {/* Label */}
-                                                <p className="text-[10px] font-semibold text-zinc-400 tracking-wider mb-1">{stat.label}</p>
-                                                
-                                                {/* Value */}
-                                                <div className="flex items-baseline gap-2">
-                                                    <p className={`text-2xl font-bold ${
-                                                        isNegativeTrend ? 'text-red-600' :
-                                                        stat.color === 'blue' ? 'text-blue-600' : 
-                                                        stat.color === 'yellow' ? 'text-yellow-600' : 'text-green-600'
-                                                    }`}>
-                                                        {stat.value}
-                                                    </p>
-                                                    {stat.trend && (
-                                                        <span className={`text-[10px] font-semibold flex items-center gap-0.5 ${
-                                                            isNegativeTrend ? 'text-red-500' : 'text-green-500'
-                                                        }`}>
-                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                                                                <path d={isNegativeTrend ? "M6 9l6 6 6-6" : "M18 15l-6-6-6 6"} />
-                                                            </svg>
-                                                            {stat.trend}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                
-                                                {/* Subtext */}
-                                                <p className="text-[11px] text-zinc-500 mt-0.5">{stat.subtext}</p>
-                                            </motion.div>
-                                        );
-                                        })}
-                                    </div>
-                                    
-                                    {/* Grade Distribution Card */}
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.3 }}
-                                        className="bg-white rounded-2xl border border-zinc-100 p-6 overflow-hidden relative"
-                                    >
-                                        {/* Decorative Background */}
-                                        <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-blue-50 opacity-50" />
-                                        <div className="absolute -left-10 -bottom-10 w-32 h-32 rounded-full bg-yellow-50 opacity-50" />
-                                        
-                                        <div className="relative">
-                                            {/* Header */}
-                                            <div className="flex items-center gap-3 mb-6">
-                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
-                                                        <path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" />
-                                                    </svg>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-semibold text-zinc-800">Grade Distribution</p>
-                                                    <p className="text-[10px] text-zinc-500">Performance breakdown by grade</p>
-                                                </div>
+                                return (
+                                    <div className="space-y-6">
+                                        {/* Header */}
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="flex items-center gap-3"
+                                        >
+                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
+                                                    <path d="M3 3v18h18" /><path d="M7 16l4-4 4 4 5-6" />
+                                                </svg>
                                             </div>
-                                            
-                                            {/* Grade Bars */}
-                                            <div className="space-y-4">
-                                                {[
-                                                    { grade: 'A', range: '90-100', percent: 25, count: 11, color: 'from-blue-500 to-blue-600' },
-                                                    { grade: 'B', range: '80-89', percent: 35, count: 16, color: 'from-blue-400 to-blue-500' },
-                                                    { grade: 'C', range: '70-79', percent: 25, count: 11, color: 'from-yellow-400 to-yellow-500' },
-                                                    { grade: 'D', range: '60-69', percent: 10, count: 5, color: 'from-orange-400 to-orange-500' },
-                                                    { grade: 'F', range: 'Below 60', percent: 5, count: 2, color: 'from-red-400 to-red-500' },
-                                                ].map((item, index) => (
-                                                    <motion.div 
-                                                        key={item.grade} 
-                                                        initial={{ opacity: 0, x: -20 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        transition={{ delay: 0.4 + index * 0.08 }}
-                                                        className="flex items-center gap-4"
+                                            <div>
+                                                <h2 className="text-base font-semibold text-zinc-800">Class Analytics</h2>
+                                                <p className="text-[11px] text-zinc-500">Overview of class performance</p>
+                                            </div>
+                                        </motion.div>
+
+                                        {/* Stats Cards - Grid Layout */}
+                                        <div className="analytics-stats-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                                            {[
+                                                {
+                                                    label: 'TOTAL STUDENTS',
+                                                    value: String(totalStudents),
+                                                    subtext: 'enrolled',
+                                                    lordIcon: 'https://cdn.lordicon.com/atzcyedn.json',
+                                                    trigger: 'hover',
+                                                    color: 'blue'
+                                                },
+                                                {
+                                                    label: 'AVERAGE GRADE',
+                                                    value: `${averageGrade}%`,
+                                                    subtext: 'class avg',
+                                                    trend: averageGrade >= 80 ? '+3%' : '-2%',
+                                                    lordIcon: 'https://cdn.lordicon.com/excswhey.json',
+                                                    lordIconDown: 'https://cdn.lordicon.com/zwtssiaj.json',
+                                                    trigger: 'hover',
+                                                    color: 'blue'
+                                                },
+                                                {
+                                                    label: 'SUBMISSIONS',
+                                                    value: String(totalSubmissions),
+                                                    subtext: 'total',
+                                                    lordIcon: 'https://cdn.lordicon.com/mubdgyyw.json',
+                                                    trigger: 'hover',
+                                                    color: 'yellow'
+                                                },
+                                                {
+                                                    label: 'PENDING',
+                                                    value: String(pendingCount),
+                                                    subtext: 'to review',
+                                                    lordIcon: 'https://cdn.lordicon.com/okqjaags.json',
+                                                    trigger: 'hover',
+                                                    color: 'yellow'
+                                                },
+                                                {
+                                                    label: 'COMPLETION',
+                                                    value: `${completionRate}%`,
+                                                    subtext: 'graded',
+                                                    lordIcon: 'https://cdn.lordicon.com/uvofdfal.json',
+                                                    trigger: 'hover',
+                                                    color: 'blue'
+                                                },
+                                                {
+                                                    label: 'ACTIVE NOW',
+                                                    value: String(onlineStudents),
+                                                    subtext: 'online',
+                                                    lordIcon: 'https://cdn.lordicon.com/kthkkwpi.json',
+                                                    trigger: 'hover',
+                                                    color: 'green'
+                                                },
+                                            ].map((stat, index) => {
+                                                // Determine icon colors based on stat color
+                                                const primaryColor = stat.color === 'blue' ? '#3b82f6' :
+                                                    stat.color === 'yellow' ? '#eab308' : '#22c55e';
+                                                const secondaryColor = stat.color === 'blue' ? '#93c5fd' :
+                                                    stat.color === 'yellow' ? '#fde047' : '#86efac';
+
+                                                // For average grade, check if trend is negative
+                                                const isNegativeTrend = stat.trend && stat.trend.startsWith('-');
+                                                const iconSrc = isNegativeTrend && stat.lordIconDown ? stat.lordIconDown : stat.lordIcon;
+                                                const iconPrimary = isNegativeTrend ? '#ef4444' : primaryColor;
+                                                const iconSecondary = isNegativeTrend ? '#fca5a5' : secondaryColor;
+
+                                                return (
+                                                    <motion.div
+                                                        key={stat.label}
+                                                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                        transition={{ delay: index * 0.08, type: 'spring', stiffness: 300, damping: 25 }}
+                                                        whileHover={{ y: -4, scale: 1.02 }}
+                                                        className="relative bg-white rounded-2xl border border-zinc-100 p-5 cursor-pointer group overflow-hidden"
                                                     >
-                                                        {/* Grade Badge */}
-                                                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-sm`}>
-                                                            <span className="text-sm font-bold text-white">{item.grade}</span>
-                                                        </div>
-                                                        
-                                                        {/* Progress Section */}
-                                                        <div className="flex-1">
-                                                            <div className="flex items-center justify-between mb-1.5">
-                                                                <span className="text-[11px] text-zinc-600 font-medium">{item.range}</span>
-                                                                <span className="text-[11px] text-zinc-500">{item.count} students</span>
-                                                            </div>
-                                                            <div className="h-2.5 bg-zinc-100 rounded-full overflow-hidden">
-                                                                <motion.div
-                                                                    initial={{ width: 0 }}
-                                                                    animate={{ width: `${item.percent}%` }}
-                                                                    transition={{ duration: 0.6, delay: 0.5 + index * 0.1, ease: 'easeOut' }}
-                                                                    className={`h-full bg-gradient-to-r ${item.color} rounded-full`}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        {/* Percentage */}
-                                                        <div className="w-12 text-right">
-                                                            <span className="text-sm font-bold text-zinc-700">{item.percent}%</span>
-                                                        </div>
-                                                    </motion.div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                    
-                                    {/* Quick Stats Row - Minimalistic White Cards */}
-                                    <div className="analytics-quick-stats grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                        {[
-                                            {
-                                                label: 'TOP PERFORMER',
-                                                value: 'Maria Santos',
-                                                subtext: '98% Average',
-                                                badge: { text: '#1', color: 'blue' },
-                                                lordIcon: 'https://cdn.lordicon.com/namwvlmv.json',
-                                                iconBg: 'bg-blue-50',
-                                                primaryColor: '#3b82f6',
-                                                secondaryColor: '#93c5fd'
-                                            },
-                                            {
-                                                label: 'NEEDS ATTENTION',
-                                                value: '3 Students',
-                                                subtext: 'Below passing grade',
-                                                badge: { text: 'Alert', color: 'yellow' },
-                                                lordIcon: 'https://cdn.lordicon.com/jzwvffwx.json',
-                                                iconBg: 'bg-yellow-50',
-                                                primaryColor: '#eab308',
-                                                secondaryColor: '#fde047'
-                                            },
-                                            {
-                                                label: 'MOST IMPROVED',
-                                                value: 'Juan Dela Cruz',
-                                                subtext: '+15% this month',
-                                                badge: { text: '↑ Rising', color: 'green' },
-                                                lordIcon: 'https://cdn.lordicon.com/excswhey.json',
-                                                iconBg: 'bg-green-50',
-                                                primaryColor: '#22c55e',
-                                                secondaryColor: '#86efac'
-                                            },
-                                            {
-                                                label: 'CLASS ENGAGEMENT',
-                                                value: '87%',
-                                                subtext: 'Active participation',
-                                                badge: { text: 'High', color: 'blue' },
-                                                lordIcon: 'https://cdn.lordicon.com/dutqakce.json',
-                                                iconBg: 'bg-blue-50',
-                                                primaryColor: '#3b82f6',
-                                                secondaryColor: '#93c5fd'
-                                            },
-                                        ].map((card, index) => (
-                                            <motion.div
-                                                key={card.label}
-                                                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                                                animate={{ opacity: 1, y: 0, scale: 1, transition: { delay: 0.5 + index * 0.08, type: 'spring', stiffness: 300, damping: 25 } }}
-                                                whileHover={{ y: -6, scale: 1.02, boxShadow: '0 12px 24px -8px rgba(0,0,0,0.1)' }}
-                                                transition={{ duration: 0.1 }}
-                                                className="bg-white rounded-2xl border border-zinc-100 p-5 cursor-pointer group"
-                                            >
-                                                <div>
-                                                    {/* Header with Icon and Badge */}
-                                                    <div className="flex items-start justify-between mb-4">
                                                         {/* Lord Icon */}
-                                                        <motion.div 
-                                                            className={`w-11 h-11 rounded-xl ${card.iconBg} flex items-center justify-center`}
-                                                            whileHover={{ scale: 1.1, rotate: 5 }}
-                                                            transition={{ duration: 0.1 }}
-                                                        >
+                                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110 ${stat.color === 'blue' ? 'bg-blue-50' :
+                                                                stat.color === 'yellow' ? 'bg-yellow-50' : 'bg-green-50'
+                                                            }`}>
                                                             <lord-icon
-                                                                src={card.lordIcon}
-                                                                trigger="hover"
-                                                                colors={`primary:${card.primaryColor},secondary:${card.secondaryColor}`}
-                                                                style={{ width: '28px', height: '28px' }}
+                                                                src={iconSrc}
+                                                                trigger={stat.trigger}
+                                                                colors={`primary:${iconPrimary},secondary:${iconSecondary}`}
+                                                                style={{ width: '32px', height: '32px' }}
                                                             />
-                                                        </motion.div>
-                                                        
-                                                        {/* Badge */}
-                                                        <motion.span 
-                                                            initial={{ scale: 0 }}
-                                                            animate={{ scale: 1 }}
-                                                            transition={{ delay: 0.7 + index * 0.08, type: 'spring', stiffness: 500 }}
-                                                            className={`px-2.5 py-1 text-[10px] font-bold rounded-full ${
-                                                                card.badge.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                                                card.badge.color === 'yellow' ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'
-                                                            }`}
-                                                        >
-                                                            {card.badge.text}
-                                                        </motion.span>
+                                                        </div>
+
+                                                        {/* Label */}
+                                                        <p className="text-[10px] font-semibold text-zinc-400 tracking-wider mb-1">{stat.label}</p>
+
+                                                        {/* Value */}
+                                                        <div className="flex items-baseline gap-2">
+                                                            <p className={`text-2xl font-bold ${isNegativeTrend ? 'text-red-600' :
+                                                                    stat.color === 'blue' ? 'text-blue-600' :
+                                                                        stat.color === 'yellow' ? 'text-yellow-600' : 'text-green-600'
+                                                                }`}>
+                                                                {stat.value}
+                                                            </p>
+                                                            {stat.trend && (
+                                                                <span className={`text-[10px] font-semibold flex items-center gap-0.5 ${isNegativeTrend ? 'text-red-500' : 'text-green-500'
+                                                                    }`}>
+                                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                                                                        <path d={isNegativeTrend ? "M6 9l6 6 6-6" : "M18 15l-6-6-6 6"} />
+                                                                    </svg>
+                                                                    {stat.trend}
+                                                                </span>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Subtext */}
+                                                        <p className="text-[11px] text-zinc-500 mt-0.5">{stat.subtext}</p>
+                                                    </motion.div>
+                                                );
+                                            })}
+                                        </div>
+
+                                        {/* Grade Distribution Card */}
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: 0.3 }}
+                                            className="bg-white rounded-2xl border border-zinc-100 p-6 overflow-hidden relative"
+                                        >
+                                            {/* Decorative Background */}
+                                            <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-blue-50 opacity-50" />
+                                            <div className="absolute -left-10 -bottom-10 w-32 h-32 rounded-full bg-yellow-50 opacity-50" />
+
+                                            <div className="relative">
+                                                {/* Header */}
+                                                <div className="flex items-center gap-3 mb-6">
+                                                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
+                                                            <path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" />
+                                                        </svg>
                                                     </div>
-                                                    
-                                                    {/* Label */}
-                                                    <p className="text-[10px] font-semibold text-zinc-600 tracking-wider mb-1">{card.label}</p>
-                                                    
-                                                    {/* Value */}
-                                                    <p className="text-lg font-bold text-zinc-900 mb-0.5">{card.value}</p>
-                                                    
-                                                    {/* Subtext */}
-                                                    <p className="text-[11px] text-zinc-700">{card.subtext}</p>
+                                                    <div>
+                                                        <p className="text-sm font-semibold text-zinc-800">Grade Distribution</p>
+                                                        <p className="text-[10px] text-zinc-500">Performance breakdown by grade</p>
+                                                    </div>
                                                 </div>
-                                            </motion.div>
-                                        ))}
+
+                                                {/* Grade Bars */}
+                                                <div className="space-y-4">
+                                                    {[
+                                                        { grade: 'A', range: '90-100', percent: 25, count: 11, color: 'from-blue-500 to-blue-600' },
+                                                        { grade: 'B', range: '80-89', percent: 35, count: 16, color: 'from-blue-400 to-blue-500' },
+                                                        { grade: 'C', range: '70-79', percent: 25, count: 11, color: 'from-yellow-400 to-yellow-500' },
+                                                        { grade: 'D', range: '60-69', percent: 10, count: 5, color: 'from-orange-400 to-orange-500' },
+                                                        { grade: 'F', range: 'Below 60', percent: 5, count: 2, color: 'from-red-400 to-red-500' },
+                                                    ].map((item, index) => (
+                                                        <motion.div
+                                                            key={item.grade}
+                                                            initial={{ opacity: 0, x: -20 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            transition={{ delay: 0.4 + index * 0.08 }}
+                                                            className="flex items-center gap-4"
+                                                        >
+                                                            {/* Grade Badge */}
+                                                            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-sm`}>
+                                                                <span className="text-sm font-bold text-white">{item.grade}</span>
+                                                            </div>
+
+                                                            {/* Progress Section */}
+                                                            <div className="flex-1">
+                                                                <div className="flex items-center justify-between mb-1.5">
+                                                                    <span className="text-[11px] text-zinc-600 font-medium">{item.range}</span>
+                                                                    <span className="text-[11px] text-zinc-500">{item.count} students</span>
+                                                                </div>
+                                                                <div className="h-2.5 bg-zinc-100 rounded-full overflow-hidden">
+                                                                    <motion.div
+                                                                        initial={{ width: 0 }}
+                                                                        animate={{ width: `${item.percent}%` }}
+                                                                        transition={{ duration: 0.6, delay: 0.5 + index * 0.1, ease: 'easeOut' }}
+                                                                        className={`h-full bg-gradient-to-r ${item.color} rounded-full`}
+                                                                    />
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Percentage */}
+                                                            <div className="w-12 text-right">
+                                                                <span className="text-sm font-bold text-zinc-700">{item.percent}%</span>
+                                                            </div>
+                                                        </motion.div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </motion.div>
+
+                                        {/* Quick Stats Row - Minimalistic White Cards */}
+                                        <div className="analytics-quick-stats grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                            {[
+                                                {
+                                                    label: 'TOP PERFORMER',
+                                                    value: 'Maria Santos',
+                                                    subtext: '98% Average',
+                                                    badge: { text: '#1', color: 'blue' },
+                                                    lordIcon: 'https://cdn.lordicon.com/namwvlmv.json',
+                                                    iconBg: 'bg-blue-50',
+                                                    primaryColor: '#3b82f6',
+                                                    secondaryColor: '#93c5fd'
+                                                },
+                                                {
+                                                    label: 'NEEDS ATTENTION',
+                                                    value: '3 Students',
+                                                    subtext: 'Below passing grade',
+                                                    badge: { text: 'Alert', color: 'yellow' },
+                                                    lordIcon: 'https://cdn.lordicon.com/jzwvffwx.json',
+                                                    iconBg: 'bg-yellow-50',
+                                                    primaryColor: '#eab308',
+                                                    secondaryColor: '#fde047'
+                                                },
+                                                {
+                                                    label: 'MOST IMPROVED',
+                                                    value: 'Juan Dela Cruz',
+                                                    subtext: '+15% this month',
+                                                    badge: { text: '↑ Rising', color: 'green' },
+                                                    lordIcon: 'https://cdn.lordicon.com/excswhey.json',
+                                                    iconBg: 'bg-green-50',
+                                                    primaryColor: '#22c55e',
+                                                    secondaryColor: '#86efac'
+                                                },
+                                                {
+                                                    label: 'CLASS ENGAGEMENT',
+                                                    value: '87%',
+                                                    subtext: 'Active participation',
+                                                    badge: { text: 'High', color: 'blue' },
+                                                    lordIcon: 'https://cdn.lordicon.com/dutqakce.json',
+                                                    iconBg: 'bg-blue-50',
+                                                    primaryColor: '#3b82f6',
+                                                    secondaryColor: '#93c5fd'
+                                                },
+                                            ].map((card, index) => (
+                                                <motion.div
+                                                    key={card.label}
+                                                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                                                    animate={{ opacity: 1, y: 0, scale: 1, transition: { delay: 0.5 + index * 0.08, type: 'spring', stiffness: 300, damping: 25 } }}
+                                                    whileHover={{ y: -6, scale: 1.02, boxShadow: '0 12px 24px -8px rgba(0,0,0,0.1)' }}
+                                                    transition={{ duration: 0.1 }}
+                                                    className="bg-white rounded-2xl border border-zinc-100 p-5 cursor-pointer group"
+                                                >
+                                                    <div>
+                                                        {/* Header with Icon and Badge */}
+                                                        <div className="flex items-start justify-between mb-4">
+                                                            {/* Lord Icon */}
+                                                            <motion.div
+                                                                className={`w-11 h-11 rounded-xl ${card.iconBg} flex items-center justify-center`}
+                                                                whileHover={{ scale: 1.1, rotate: 5 }}
+                                                                transition={{ duration: 0.1 }}
+                                                            >
+                                                                <lord-icon
+                                                                    src={card.lordIcon}
+                                                                    trigger="hover"
+                                                                    colors={`primary:${card.primaryColor},secondary:${card.secondaryColor}`}
+                                                                    style={{ width: '28px', height: '28px' }}
+                                                                />
+                                                            </motion.div>
+
+                                                            {/* Badge */}
+                                                            <motion.span
+                                                                initial={{ scale: 0 }}
+                                                                animate={{ scale: 1 }}
+                                                                transition={{ delay: 0.7 + index * 0.08, type: 'spring', stiffness: 500 }}
+                                                                className={`px-2.5 py-1 text-[10px] font-bold rounded-full ${card.badge.color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                                                                        card.badge.color === 'yellow' ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'
+                                                                    }`}
+                                                            >
+                                                                {card.badge.text}
+                                                            </motion.span>
+                                                        </div>
+
+                                                        {/* Label */}
+                                                        <p className="text-[10px] font-semibold text-zinc-600 tracking-wider mb-1">{card.label}</p>
+
+                                                        {/* Value */}
+                                                        <p className="text-lg font-bold text-zinc-900 mb-0.5">{card.value}</p>
+
+                                                        {/* Subtext */}
+                                                        <p className="text-[11px] text-zinc-700">{card.subtext}</p>
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            );
+                                );
                             })()}
                         </motion.div>
                     ) : (
@@ -4750,22 +4778,22 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             {activeTab !== 'teachers' && (
                                 <div className="flex items-start gap-3 mb-4">
                                     <div className="flex-1">
-                                        <SearchBar 
-                                            value={searchQuery} 
-                                            onChange={setSearchQuery} 
+                                        <SearchBar
+                                            value={searchQuery}
+                                            onChange={setSearchQuery}
                                             placeholder={getSearchPlaceholder()}
                                             isSearching={isSearching}
                                             resultCount={
                                                 activeTab === 'modules' ? filteredModules.length :
-                                                activeTab === 'assignments' ? filteredTasks.length :
-                                                activeTab === 'news' ? filteredNews.length :
-                                                activeTab === 'students' ? filteredStudents.length : undefined
+                                                    activeTab === 'assignments' ? filteredTasks.length :
+                                                        activeTab === 'news' ? filteredNews.length :
+                                                            activeTab === 'students' ? filteredStudents.length : undefined
                                             }
                                             totalCount={
                                                 activeTab === 'modules' ? courseModules.length :
-                                                activeTab === 'assignments' ? courseTasks.length :
-                                                activeTab === 'news' ? SAMPLE_NEWS.length :
-                                                activeTab === 'students' ? studentsData.length : undefined
+                                                    activeTab === 'assignments' ? courseTasks.length :
+                                                        activeTab === 'news' ? SAMPLE_NEWS.length :
+                                                            activeTab === 'students' ? studentsData.length : undefined
                                             }
                                         />
                                     </div>
@@ -4778,7 +4806,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                     )}
                 </AnimatePresence>
             </div>
-            
+
             {/* Add Task Modal - Clean & Minimalistic */}
             <AnimatePresence>
                 {showAddTaskModal && (
@@ -4796,14 +4824,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             exit={{ opacity: 0, scale: 0.96 }}
                             transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
                             onClick={(e) => e.stopPropagation()}
-                            className={`rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-full ${
-                                isTeacherMode ? 'bg-zinc-900' : 'bg-white'
-                            }`}
+                            className={`rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-full ${isTeacherMode ? 'bg-zinc-900' : 'bg-white'
+                                }`}
                         >
                             {/* Modal Header - Compact */}
-                            <div className={`flex items-center justify-between px-5 py-4 border-b ${
-                                isTeacherMode ? 'border-zinc-700' : 'border-zinc-100'
-                            }`}>
+                            <div className={`flex items-center justify-between px-5 py-4 border-b ${isTeacherMode ? 'border-zinc-700' : 'border-zinc-100'
+                                }`}>
                                 <div>
                                     <h3 className={`text-base font-semibold ${isTeacherMode ? 'text-white' : 'text-zinc-800'}`}>Create Task</h3>
                                     <p className={`text-xs mt-0.5 ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Add a new task for your students</p>
@@ -4812,16 +4838,15 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => setShowAddTaskModal(false)}
-                                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                                        isTeacherMode ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400' : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-600'
-                                    }`}
+                                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isTeacherMode ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400' : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-600'
+                                        }`}
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                         <path d="M18 6L6 18M6 6l12 12" />
                                     </svg>
                                 </motion.button>
                             </div>
-                            
+
                             {/* Modal Body - Scrollable */}
                             <div className="flex-1 overflow-y-auto p-5 space-y-4">
                                 {/* Task Type - Compact Pills */}
@@ -4832,13 +4857,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             <motion.button
                                                 key={cat.id}
                                                 whileTap={{ scale: 0.97 }}
-                                                className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all ${
-                                                    selectedTaskType === cat.id 
-                                                        ? 'bg-blue-600 text-white' 
-                                                        : isTeacherMode 
+                                                className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all ${selectedTaskType === cat.id
+                                                        ? 'bg-blue-600 text-white'
+                                                        : isTeacherMode
                                                             ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
                                                             : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-                                                }`}
+                                                    }`}
                                                 onClick={() => setSelectedTaskType(cat.id)}
                                             >
                                                 {cat.icon}
@@ -4847,7 +4871,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         ))}
                                     </div>
                                 </div>
-                                
+
                                 {/* Title */}
                                 <div>
                                     <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>
@@ -4858,14 +4882,13 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         value={newTaskTitle}
                                         onChange={(e) => setNewTaskTitle(e.target.value)}
                                         placeholder="Enter task title..."
-                                        className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${
-                                            isTeacherMode 
-                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500' 
+                                        className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${isTeacherMode
+                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
                                                 : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
-                                        }`}
+                                            }`}
                                     />
                                 </div>
-                                
+
                                 {/* Due Date and Points */}
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
@@ -4876,11 +4899,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             type="datetime-local"
                                             value={newTaskDueDate}
                                             onChange={(e) => setNewTaskDueDate(e.target.value)}
-                                            className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${
-                                                isTeacherMode 
-                                                    ? 'bg-zinc-800 border-zinc-700 text-white [color-scheme:dark]' 
+                                            className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${isTeacherMode
+                                                    ? 'bg-zinc-800 border-zinc-700 text-white [color-scheme:dark]'
                                                     : 'bg-white border border-zinc-200 text-zinc-900'
-                                            }`}
+                                                }`}
                                         />
                                     </div>
                                     <div>
@@ -4891,15 +4913,14 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             onChange={(e) => setNewTaskPoints(e.target.value)}
                                             placeholder="100"
                                             min="0"
-                                            className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${
-                                                isTeacherMode 
-                                                    ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500' 
+                                            className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${isTeacherMode
+                                                    ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
                                                     : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
-                                            }`}
+                                                }`}
                                         />
                                     </div>
                                 </div>
-                                
+
                                 {/* Description */}
                                 <div>
                                     <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Description</label>
@@ -4908,14 +4929,13 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         onChange={(e) => setNewTaskDescription(e.target.value)}
                                         placeholder="Brief description..."
                                         rows={2}
-                                        className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none ${
-                                            isTeacherMode 
-                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500' 
+                                        className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none ${isTeacherMode
+                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
                                                 : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
-                                        }`}
+                                            }`}
                                     />
                                 </div>
-                                
+
                                 {/* Instructions */}
                                 <div>
                                     <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Instructions</label>
@@ -4924,14 +4944,13 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         onChange={(e) => setNewTaskInstructions(e.target.value)}
                                         placeholder="Detailed instructions for students..."
                                         rows={3}
-                                        className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none ${
-                                            isTeacherMode 
-                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500' 
+                                        className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none ${isTeacherMode
+                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
                                                 : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
-                                        }`}
+                                            }`}
                                     />
                                 </div>
-                                
+
                                 {/* File Attachments - Matching Tools Page Style */}
                                 <div>
                                     <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Attachments</label>
@@ -4947,19 +4966,18 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         className="hidden"
                                         accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.zip,.rar,.jpg,.jpeg,.png,.gif"
                                     />
-                                    
+
                                     <motion.div
                                         onClick={() => newTaskFiles.length === 0 && taskFileInputRef.current?.click()}
                                         whileHover={newTaskFiles.length === 0 ? "animate" : undefined}
-                                        className={`p-6 group/file block rounded-2xl w-full relative border-2 border-dashed transition-colors ${
-                                            newTaskFiles.length === 0
-                                                ? isTeacherMode 
+                                        className={`p-6 group/file block rounded-2xl w-full relative border-2 border-dashed transition-colors ${newTaskFiles.length === 0
+                                                ? isTeacherMode
                                                     ? "cursor-pointer border-zinc-700 hover:border-blue-500 bg-zinc-800/50"
                                                     : "cursor-pointer border-gray-200 hover:border-blue-400 bg-gray-50/50"
                                                 : isTeacherMode
                                                     ? "border-zinc-700 bg-zinc-800/50"
                                                     : "border-gray-200 bg-gray-50/50"
-                                        }`}
+                                            }`}
                                     >
                                         <AnimatePresence mode="wait">
                                             {newTaskFiles.length === 0 ? (
@@ -4983,11 +5001,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                     stiffness: 300,
                                                                     damping: 20,
                                                                 }}
-                                                                className={`relative group-hover/file:shadow-xl z-40 flex items-center justify-center h-20 w-20 rounded-xl shadow-md ${
-                                                                    isTeacherMode 
-                                                                        ? 'bg-zinc-800 border border-zinc-600' 
+                                                                className={`relative group-hover/file:shadow-xl z-40 flex items-center justify-center h-20 w-20 rounded-xl shadow-md ${isTeacherMode
+                                                                        ? 'bg-zinc-800 border border-zinc-600'
                                                                         : 'bg-white border border-gray-200'
-                                                                }`}
+                                                                    }`}
                                                             >
                                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={isTeacherMode ? "#71717a" : "#9ca3af"} strokeWidth="2" strokeLinecap="round">
                                                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -5029,22 +5046,20 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                 animate={{ opacity: 1, y: 0 }}
                                                                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                                 transition={{ delay: idx * 0.05, type: "spring", stiffness: 300, damping: 25 }}
-                                                                className={`relative overflow-hidden z-40 flex flex-col items-start justify-start p-3 w-full rounded-xl shadow-sm ${
-                                                                    isTeacherMode 
-                                                                        ? 'bg-zinc-800 border border-zinc-700' 
+                                                                className={`relative overflow-hidden z-40 flex flex-col items-start justify-start p-3 w-full rounded-xl shadow-sm ${isTeacherMode
+                                                                        ? 'bg-zinc-800 border border-zinc-700'
                                                                         : 'bg-white border border-gray-200'
-                                                                }`}
+                                                                    }`}
                                                             >
                                                                 <div className="flex justify-between w-full items-center gap-3">
                                                                     <p className={`text-sm font-medium truncate flex-1 min-w-0 ${isTeacherMode ? 'text-zinc-200' : 'text-gray-800'}`}>
                                                                         {file.name}
                                                                     </p>
                                                                     <div className="flex items-center gap-2">
-                                                                        <span className={`rounded-lg px-2 py-0.5 text-xs ${
-                                                                            isTeacherMode 
-                                                                                ? 'text-emerald-400 bg-emerald-900/30 border border-emerald-800' 
+                                                                        <span className={`rounded-lg px-2 py-0.5 text-xs ${isTeacherMode
+                                                                                ? 'text-emerald-400 bg-emerald-900/30 border border-emerald-800'
                                                                                 : 'text-emerald-600 bg-emerald-50 border border-emerald-200'
-                                                                        }`}>
+                                                                            }`}>
                                                                             {(file.size / (1024 * 1024)).toFixed(2)} MB
                                                                         </span>
                                                                         <button
@@ -5052,9 +5067,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                                 e.stopPropagation();
                                                                                 setNewTaskFiles(prev => prev.filter((_, i) => i !== idx));
                                                                             }}
-                                                                            className={`p-1 rounded-full transition-colors ${
-                                                                                isTeacherMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'
-                                                                            }`}
+                                                                            className={`p-1 rounded-full transition-colors ${isTeacherMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'
+                                                                                }`}
                                                                         >
                                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={isTeacherMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-400 hover:text-gray-600'}>
                                                                                 <path d="M18 6L6 18M6 6l12 12" />
@@ -5081,11 +5095,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                 animate={{ opacity: 1, y: 0 }}
                                                                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                                                                className={`relative z-40 flex items-center p-3 w-full rounded-xl ${
-                                                                    isTeacherMode 
-                                                                        ? 'bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-800' 
+                                                                className={`relative z-40 flex items-center p-3 w-full rounded-xl ${isTeacherMode
+                                                                        ? 'bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-800'
                                                                         : 'bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200'
-                                                                }`}
+                                                                    }`}
                                                             >
                                                                 <div className="flex items-center gap-3">
                                                                     <div className="flex -space-x-2">
@@ -5095,11 +5108,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                                 initial={{ scale: 0, opacity: 0 }}
                                                                                 animate={{ scale: 1, opacity: 1 }}
                                                                                 transition={{ delay: i * 0.1 }}
-                                                                                className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-sm ${
-                                                                                    isTeacherMode 
-                                                                                        ? 'bg-zinc-800 border border-blue-700' 
+                                                                                className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-sm ${isTeacherMode
+                                                                                        ? 'bg-zinc-800 border border-blue-700'
                                                                                         : 'bg-white border border-blue-200'
-                                                                                }`}
+                                                                                    }`}
                                                                             >
                                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round">
                                                                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -5129,11 +5141,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                             e.stopPropagation();
                                                             taskFileInputRef.current?.click();
                                                         }}
-                                                        className={`w-full py-2.5 px-4 rounded-xl border-2 border-dashed text-sm font-medium hover:border-blue-400 hover:text-blue-500 transition-colors mt-1 ${
-                                                            isTeacherMode 
-                                                                ? 'border-zinc-600 text-zinc-400' 
+                                                        className={`w-full py-2.5 px-4 rounded-xl border-2 border-dashed text-sm font-medium hover:border-blue-400 hover:text-blue-500 transition-colors mt-1 ${isTeacherMode
+                                                                ? 'border-zinc-600 text-zinc-400'
                                                                 : 'border-gray-300 text-gray-500'
-                                                        }`}
+                                                            }`}
                                                     >
                                                         + Add more files
                                                     </motion.button>
@@ -5143,11 +5154,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     </motion.div>
                                 </div>
                             </div>
-                            
+
                             {/* Modal Footer - Compact */}
-                            <div className={`px-5 py-3 border-t flex items-center justify-end gap-2 ${
-                                isTeacherMode ? 'border-zinc-700' : 'border-zinc-100'
-                            }`}>
+                            <div className={`px-5 py-3 border-t flex items-center justify-end gap-2 ${isTeacherMode ? 'border-zinc-700' : 'border-zinc-100'
+                                }`}>
                                 <motion.button
                                     whileTap={{ scale: 0.97 }}
                                     onClick={() => {
@@ -5159,11 +5169,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         setNewTaskInstructions('');
                                         setNewTaskFiles([]);
                                     }}
-                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                        isTeacherMode 
-                                            ? 'text-zinc-400 hover:bg-zinc-800' 
+                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${isTeacherMode
+                                            ? 'text-zinc-400 hover:bg-zinc-800'
                                             : 'text-zinc-600 hover:bg-zinc-100'
-                                    }`}
+                                        }`}
                                 >
                                     Cancel
                                 </motion.button>
@@ -5200,11 +5209,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             setNewTaskFiles([]);
                                         }
                                     }}
-                                    className={`px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all flex items-center gap-1.5 ${
-                                        !newTaskTitle || !newTaskDueDate || isCreatingTask
+                                    className={`px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all flex items-center gap-1.5 ${!newTaskTitle || !newTaskDueDate || isCreatingTask
                                             ? 'bg-blue-400 cursor-not-allowed'
                                             : 'bg-blue-600 hover:bg-blue-700'
-                                    }`}
+                                        }`}
                                 >
                                     {isCreatingTask ? (
                                         <>
@@ -5224,12 +5232,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             </AnimatePresence>
 
             {/* Floating Action Button */}
-            <FloatingActionButton 
-                activeTab={activeTab} 
+            <FloatingActionButton
+                activeTab={activeTab}
                 onAction={(action) => {
                     console.log(`FAB action: ${action} for course: ${course.title}`);
                     // Handle actions here - can be extended with actual functionality
-                }} 
+                }}
             />
 
             {/* Teacher Mode Tutorial Modal */}
@@ -5271,7 +5279,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     mask="url(#teacher-tutorial-mask)"
                                 />
                             </svg>
-                            
+
                             {/* Highlight border glow */}
                             {highlightRect && (
                                 <motion.div
@@ -5287,7 +5295,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 />
                             )}
                         </motion.div>
-                        
+
                         {/* Tutorial Modal */}
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -5308,129 +5316,126 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 onClick={(e) => e.stopPropagation()}
                                 className="bg-white rounded-2xl w-80 overflow-hidden shadow-2xl pointer-events-auto"
                             >
-                            {/* Progress Bar */}
-                            <div className="h-1 bg-zinc-100">
-                                <motion.div
-                                    className="h-full bg-gradient-to-r from-blue-500 to-blue-600"
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${((tutorialStep + 1) / TEACHER_TUTORIAL_STEPS.length) * 100}%` }}
-                                    transition={{ duration: 0.3 }}
-                                />
-                            </div>
-                            
-                            {/* Content */}
-                            <div className="p-5">
-                                {/* Step Indicator */}
-                                <div className="flex items-center justify-between mb-4">
-                                    <span className="text-[11px] font-semibold text-zinc-400 tracking-wider">
-                                        STEP {tutorialStep + 1} OF {TEACHER_TUTORIAL_STEPS.length}
-                                    </span>
-                                    <motion.button
-                                        onClick={handleTutorialSkip}
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        className="text-[11px] font-medium text-zinc-500 hover:text-zinc-700 transition-colors"
-                                    >
-                                        Skip Tutorial
-                                    </motion.button>
+                                {/* Progress Bar */}
+                                <div className="h-1 bg-zinc-100">
+                                    <motion.div
+                                        className="h-full bg-gradient-to-r from-blue-500 to-blue-600"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${((tutorialStep + 1) / TEACHER_TUTORIAL_STEPS.length) * 100}%` }}
+                                        transition={{ duration: 0.3 }}
+                                    />
                                 </div>
-                                
-                                {/* Icon */}
-                                <motion.div
-                                    key={tutorialStep}
-                                    initial={{ scale: 0, rotate: -180 }}
-                                    animate={{ scale: 1, rotate: 0 }}
-                                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                                    className={`w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center ${
-                                        TEACHER_TUTORIAL_STEPS[tutorialStep].color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                        TEACHER_TUTORIAL_STEPS[tutorialStep].color === 'yellow' ? 'bg-yellow-100 text-yellow-600' :
-                                        'bg-green-100 text-green-600'
-                                    }`}
-                                >
-                                    <div className="scale-75">{TEACHER_TUTORIAL_STEPS[tutorialStep].icon}</div>
-                                </motion.div>
-                                
-                                {/* Title & Description */}
-                                <AnimatePresence mode="wait">
+
+                                {/* Content */}
+                                <div className="p-5">
+                                    {/* Step Indicator */}
+                                    <div className="flex items-center justify-between mb-4">
+                                        <span className="text-[11px] font-semibold text-zinc-400 tracking-wider">
+                                            STEP {tutorialStep + 1} OF {TEACHER_TUTORIAL_STEPS.length}
+                                        </span>
+                                        <motion.button
+                                            onClick={handleTutorialSkip}
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            className="text-[11px] font-medium text-zinc-500 hover:text-zinc-700 transition-colors"
+                                        >
+                                            Skip Tutorial
+                                        </motion.button>
+                                    </div>
+
+                                    {/* Icon */}
                                     <motion.div
                                         key={tutorialStep}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="text-center mb-5"
-                                    >
-                                        <h3 className="text-base font-bold text-zinc-900 mb-2">
-                                            {TEACHER_TUTORIAL_STEPS[tutorialStep].title}
-                                        </h3>
-                                        <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line">
-                                            {TEACHER_TUTORIAL_STEPS[tutorialStep].description}
-                                        </p>
-                                    </motion.div>
-                                </AnimatePresence>
-                                
-                                {/* Step Dots */}
-                                <div className="flex items-center justify-center gap-2 mb-6">
-                                    {TEACHER_TUTORIAL_STEPS.map((_, index) => (
-                                        <motion.button
-                                            key={index}
-                                            onClick={() => setTutorialStep(index)}
-                                            className={`w-2 h-2 rounded-full transition-colors ${
-                                                index === tutorialStep ? 'bg-blue-600' : 
-                                                index < tutorialStep ? 'bg-blue-300' : 'bg-zinc-200'
+                                        initial={{ scale: 0, rotate: -180 }}
+                                        animate={{ scale: 1, rotate: 0 }}
+                                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                                        className={`w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center ${TEACHER_TUTORIAL_STEPS[tutorialStep].color === 'blue' ? 'bg-blue-100 text-blue-600' :
+                                                TEACHER_TUTORIAL_STEPS[tutorialStep].color === 'yellow' ? 'bg-yellow-100 text-yellow-600' :
+                                                    'bg-green-100 text-green-600'
                                             }`}
-                                            whileHover={{ scale: 1.3 }}
-                                            whileTap={{ scale: 0.9 }}
-                                        />
-                                    ))}
-                                </div>
-                                
-                                {/* Navigation Buttons */}
-                                <div className="flex items-center gap-3">
-                                    {tutorialStep > 0 && (
+                                    >
+                                        <div className="scale-75">{TEACHER_TUTORIAL_STEPS[tutorialStep].icon}</div>
+                                    </motion.div>
+
+                                    {/* Title & Description */}
+                                    <AnimatePresence mode="wait">
+                                        <motion.div
+                                            key={tutorialStep}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -10 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="text-center mb-5"
+                                        >
+                                            <h3 className="text-base font-bold text-zinc-900 mb-2">
+                                                {TEACHER_TUTORIAL_STEPS[tutorialStep].title}
+                                            </h3>
+                                            <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line">
+                                                {TEACHER_TUTORIAL_STEPS[tutorialStep].description}
+                                            </p>
+                                        </motion.div>
+                                    </AnimatePresence>
+
+                                    {/* Step Dots */}
+                                    <div className="flex items-center justify-center gap-2 mb-6">
+                                        {TEACHER_TUTORIAL_STEPS.map((_, index) => (
+                                            <motion.button
+                                                key={index}
+                                                onClick={() => setTutorialStep(index)}
+                                                className={`w-2 h-2 rounded-full transition-colors ${index === tutorialStep ? 'bg-blue-600' :
+                                                        index < tutorialStep ? 'bg-blue-300' : 'bg-zinc-200'
+                                                    }`}
+                                                whileHover={{ scale: 1.3 }}
+                                                whileTap={{ scale: 0.9 }}
+                                            />
+                                        ))}
+                                    </div>
+
+                                    {/* Navigation Buttons */}
+                                    <div className="flex items-center gap-3">
+                                        {tutorialStep > 0 && (
+                                            <motion.button
+                                                onClick={handleTutorialPrev}
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                className="flex-1 py-3 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                                                </svg>
+                                                Back
+                                            </motion.button>
+                                        )}
                                         <motion.button
-                                            onClick={handleTutorialPrev}
+                                            onClick={handleTutorialNext}
                                             whileHover={{ scale: 1.02 }}
                                             whileTap={{ scale: 0.98 }}
-                                            className="flex-1 py-3 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                            className={`flex-1 py-3 text-sm font-semibold text-white rounded-xl transition-colors flex items-center justify-center gap-2 ${tutorialStep === TEACHER_TUTORIAL_STEPS.length - 1
+                                                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
+                                                    : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+                                                }`}
                                         >
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <path d="M19 12H5M12 19l-7-7 7-7" />
-                                            </svg>
-                                            Back
+                                            {tutorialStep === TEACHER_TUTORIAL_STEPS.length - 1 ? (
+                                                <>
+                                                    Get Started
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                        <polyline points="22 4 12 14.01 9 11.01" />
+                                                    </svg>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Next
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                        <path d="M5 12h14M12 5l7 7-7 7" />
+                                                    </svg>
+                                                </>
+                                            )}
                                         </motion.button>
-                                    )}
-                                    <motion.button
-                                        onClick={handleTutorialNext}
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        className={`flex-1 py-3 text-sm font-semibold text-white rounded-xl transition-colors flex items-center justify-center gap-2 ${
-                                            tutorialStep === TEACHER_TUTORIAL_STEPS.length - 1
-                                                ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
-                                                : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
-                                        }`}
-                                    >
-                                        {tutorialStep === TEACHER_TUTORIAL_STEPS.length - 1 ? (
-                                            <>
-                                                Get Started
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                                    <polyline points="22 4 12 14.01 9 11.01" />
-                                                </svg>
-                                            </>
-                                        ) : (
-                                            <>
-                                                Next
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                                </svg>
-                                            </>
-                                        )}
-                                    </motion.button>
+                                    </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
                     </>
                 )}
             </AnimatePresence>

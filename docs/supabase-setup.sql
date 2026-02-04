@@ -282,10 +282,17 @@ CREATE TABLE IF NOT EXISTS student_submissions (
     student_id TEXT NOT NULL,
     student_name TEXT NOT NULL,
     attachments JSONB DEFAULT '[]',
-    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'submitted', 'graded', 'ai-checked')),
+    text_content TEXT,                              -- For direct text submissions
+    section TEXT DEFAULT 'BSIT101A',                -- For filtering by section
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'submitted', 'graded', 'late', 'resubmitted', 'ai-checked')),
     score INTEGER,
     ai_score INTEGER,
     feedback TEXT,
+    is_late BOOLEAN DEFAULT false,                  -- Late submission flag
+    is_flagged BOOLEAN DEFAULT false,               -- Teacher review flag
+    similarity_score INTEGER,                       -- Plagiarism detection score (0-100)
+    rubric_scores JSONB,                            -- Rubric-based grading breakdown
+    grade_history JSONB DEFAULT '[]',               -- Track grade changes over time
     submitted_at TIMESTAMPTZ DEFAULT NOW(),
     graded_at TIMESTAMPTZ,
     graded_by TEXT
@@ -295,6 +302,8 @@ CREATE TABLE IF NOT EXISTS student_submissions (
 CREATE INDEX IF NOT EXISTS idx_submissions_task_id ON student_submissions(task_id);
 CREATE INDEX IF NOT EXISTS idx_submissions_student_id ON student_submissions(student_id);
 CREATE INDEX IF NOT EXISTS idx_submissions_status ON student_submissions(status);
+CREATE INDEX IF NOT EXISTS idx_submissions_section ON student_submissions(section);
+CREATE INDEX IF NOT EXISTS idx_submissions_flagged ON student_submissions(is_flagged) WHERE is_flagged = true;
 
 -- Enable Row Level Security
 ALTER TABLE student_submissions ENABLE ROW LEVEL SECURITY;
@@ -310,7 +319,7 @@ CREATE POLICY "Allow all operations on submissions" ON student_submissions
 -- Storage Bucket Setup
 -- =====================================================
 -- 
--- IMPORTANT: You must create the storage bucket FIRST via Supabase Dashboard:
+-- IMPORTANT: You must create the storage buckets FIRST via Supabase Dashboard:
 -- 
 -- 1. Go to your Supabase project
 -- 2. Click on "Storage" in the left sidebar
@@ -318,7 +327,8 @@ CREATE POLICY "Allow all operations on submissions" ON student_submissions
 -- 4. Create a bucket named: task-attachments
 -- 5. Make it PUBLIC (toggle the "Public bucket" option)
 -- 6. Click "Create bucket"
--- 7. THEN come back and run this SQL
+-- 7. Repeat steps 3-6 for bucket: chat-attachments
+-- 8. THEN come back and run this SQL
 --
 -- =====================================================
 
@@ -346,6 +356,29 @@ ON storage.objects FOR DELETE
 USING (bucket_id = 'task-attachments');
 
 -- =====================================================
+-- Storage policies for chat-attachments bucket (Group Chat)
+-- =====================================================
+
+DROP POLICY IF EXISTS "Public read access for chat attachments" ON storage.objects;
+DROP POLICY IF EXISTS "Allow uploads to chat attachments" ON storage.objects;
+DROP POLICY IF EXISTS "Allow deletes from chat attachments" ON storage.objects;
+
+-- Allow public read access to chat attachments
+CREATE POLICY "Public read access for chat attachments"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'chat-attachments');
+
+-- Allow uploads to chat attachments
+CREATE POLICY "Allow uploads to chat attachments"
+ON storage.objects FOR INSERT
+WITH CHECK (bucket_id = 'chat-attachments');
+
+-- Allow deletes from chat attachments
+CREATE POLICY "Allow deletes from chat attachments"
+ON storage.objects FOR DELETE
+USING (bucket_id = 'chat-attachments');
+
+-- =====================================================
 -- Quick Fix: Add missing columns to existing tables
 -- Run this if you're getting errors about missing columns
 -- =====================================================
@@ -355,13 +388,33 @@ ALTER TABLE student_stats ADD COLUMN IF NOT EXISTS recent_activity JSONB DEFAULT
 ALTER TABLE student_stats ADD COLUMN IF NOT EXISTS read_faqs JSONB DEFAULT '[]';
 ALTER TABLE student_stats ADD COLUMN IF NOT EXISTS favorites JSONB DEFAULT '[]';
 
+-- Add new columns to student_submissions for AI grading system
+ALTER TABLE student_submissions ADD COLUMN IF NOT EXISTS text_content TEXT;
+ALTER TABLE student_submissions ADD COLUMN IF NOT EXISTS section TEXT DEFAULT 'BSIT101A';
+ALTER TABLE student_submissions ADD COLUMN IF NOT EXISTS is_late BOOLEAN DEFAULT false;
+ALTER TABLE student_submissions ADD COLUMN IF NOT EXISTS is_flagged BOOLEAN DEFAULT false;
+ALTER TABLE student_submissions ADD COLUMN IF NOT EXISTS similarity_score INTEGER;
+ALTER TABLE student_submissions ADD COLUMN IF NOT EXISTS rubric_scores JSONB;
+ALTER TABLE student_submissions ADD COLUMN IF NOT EXISTS grade_history JSONB DEFAULT '[]';
+
+-- Add new indexes for student_submissions
+CREATE INDEX IF NOT EXISTS idx_submissions_section ON student_submissions(section);
+CREATE INDEX IF NOT EXISTS idx_submissions_flagged ON student_submissions(is_flagged) WHERE is_flagged = true;
+
+-- Update status constraint to include new statuses (requires dropping and recreating)
+-- Note: Run this only if you need to add 'late' and 'resubmitted' statuses
+-- ALTER TABLE student_submissions DROP CONSTRAINT IF EXISTS student_submissions_status_check;
+-- ALTER TABLE student_submissions ADD CONSTRAINT student_submissions_status_check 
+--     CHECK (status IN ('pending', 'submitted', 'graded', 'late', 'resubmitted', 'ai-checked'));
+
 -- =====================================================
 -- SUCCESS! Your database is ready.
 -- 
 -- SETUP ORDER:
 -- 1. First, create the 'task-attachments' bucket in Storage
--- 2. Then run this entire SQL script
--- 3. Go to Settings > API and copy your URL and anon key
+-- 2. Create the 'chat-attachments' bucket in Storage
+-- 3. Then run this entire SQL script
+-- 4. Go to Settings > API and copy your URL and anon key
 -- =====================================================
 
 
@@ -1079,3 +1132,1041 @@ BEGIN
     END IF;
 END $$;
 
+
+
+-- =====================================================
+-- Group Resources Table (for AI/Groq context)
+-- Stores shared files/images as searchable resources
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS group_resources (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    group_id TEXT NOT NULL REFERENCES study_groups(id) ON DELETE CASCADE,
+    message_id TEXT REFERENCES group_messages(id) ON DELETE SET NULL,
+    user_id TEXT NOT NULL,
+    user_name TEXT NOT NULL,
+    
+    -- Resource metadata
+    name TEXT NOT NULL,
+    type TEXT NOT NULL, -- MIME type (image/jpeg, application/pdf, etc.)
+    size INTEGER DEFAULT 0,
+    url TEXT NOT NULL, -- Base64 data URL or storage URL
+    thumbnail_url TEXT,
+    
+    -- AI/Search metadata
+    resource_type TEXT DEFAULT 'file' CHECK (resource_type IN ('image', 'document', 'file', 'link')),
+    tags TEXT[] DEFAULT '{}', -- AI-generated or user tags
+    description TEXT, -- AI-generated description
+    is_indexed BOOLEAN DEFAULT false, -- Whether AI has processed this
+    
+    -- Timestamps
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create indexes for faster lookups
+CREATE INDEX IF NOT EXISTS idx_group_resources_group_id ON group_resources(group_id);
+CREATE INDEX IF NOT EXISTS idx_group_resources_user_id ON group_resources(user_id);
+CREATE INDEX IF NOT EXISTS idx_group_resources_resource_type ON group_resources(resource_type);
+CREATE INDEX IF NOT EXISTS idx_group_resources_tags ON group_resources USING GIN(tags);
+CREATE INDEX IF NOT EXISTS idx_group_resources_created_at ON group_resources(created_at);
+
+-- Enable Row Level Security
+ALTER TABLE group_resources ENABLE ROW LEVEL SECURITY;
+
+-- Create policy
+DROP POLICY IF EXISTS "Allow all operations on group_resources" ON group_resources;
+CREATE POLICY "Allow all operations on group_resources" ON group_resources
+    FOR ALL
+    USING (true)
+    WITH CHECK (true);
+
+-- Create trigger for updated_at
+DROP TRIGGER IF EXISTS update_group_resources_updated_at ON group_resources;
+CREATE TRIGGER update_group_resources_updated_at
+    BEFORE UPDATE ON group_resources
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- Enable realtime for group_resources
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_publication_tables 
+        WHERE pubname = 'supabase_realtime' 
+        AND tablename = 'group_resources'
+    ) THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE group_resources;
+    END IF;
+END $$;
+
+
+-- =====================================================
+-- Test Teacher Account
+-- =====================================================
+-- Email: Testing@testing
+-- Password: 123
+-- =====================================================
+
+INSERT INTO users (student_id, email, password_hash, full_name, first_name, last_name, role, campus)
+VALUES 
+    ('TEACHER-TEST', 'Testing@testing', '123', 'Test Teacher', 'Test', 'Teacher', 'teacher', 'Meycauayan')
+ON CONFLICT (student_id) DO UPDATE SET
+    email = 'Testing@testing',
+    password_hash = '123',
+    full_name = 'Test Teacher',
+    role = 'teacher';
+
+-- =====================================================
+-- SUCCESS! Test Teacher account is ready.
+-- 
+-- Login credentials:
+-- Email: Testing@testing
+-- Password: 123
+-- Role: teacher
+-- =====================================================
+
+
+-- =====================================================
+-- Teacher Student View (for Student List Modal)
+-- =====================================================
+-- This view provides a convenient way for teachers to 
+-- query student information with additional computed fields
+-- =====================================================
+
+-- Create a view for teacher's student list
+CREATE OR REPLACE VIEW teacher_student_view AS
+SELECT 
+    id,
+    student_id,
+    email,
+    full_name,
+    first_name,
+    last_name,
+    role,
+    campus,
+    program,
+    year_level,
+    section,
+    profile_image,
+    is_active,
+    last_login,
+    created_at,
+    updated_at,
+    -- Computed fields
+    CASE 
+        WHEN last_login > NOW() - INTERVAL '5 minutes' THEN true 
+        ELSE false 
+    END as is_online,
+    CASE 
+        WHEN last_login IS NOT NULL THEN last_login
+        ELSE created_at 
+    END as last_active
+FROM users
+WHERE role = 'student' AND is_active = true
+ORDER BY full_name ASC;
+
+-- Grant access to the view
+GRANT SELECT ON teacher_student_view TO authenticated;
+GRANT SELECT ON teacher_student_view TO anon;
+
+-- =====================================================
+-- Function to get students by section (for filtering)
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION get_students_by_section(section_filter TEXT DEFAULT NULL)
+RETURNS TABLE (
+    id UUID,
+    student_id TEXT,
+    email TEXT,
+    full_name TEXT,
+    first_name TEXT,
+    last_name TEXT,
+    section TEXT,
+    program TEXT,
+    year_level TEXT,
+    campus TEXT,
+    profile_image TEXT,
+    is_active BOOLEAN,
+    last_login TIMESTAMPTZ,
+    is_online BOOLEAN
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        u.id,
+        u.student_id,
+        u.email,
+        u.full_name,
+        u.first_name,
+        u.last_name,
+        u.section,
+        u.program,
+        u.year_level,
+        u.campus,
+        u.profile_image,
+        u.is_active,
+        u.last_login,
+        CASE 
+            WHEN u.last_login > NOW() - INTERVAL '5 minutes' THEN true 
+            ELSE false 
+        END as is_online
+    FROM users u
+    WHERE u.role = 'student' 
+        AND u.is_active = true
+        AND (section_filter IS NULL OR u.section = section_filter)
+    ORDER BY u.full_name ASC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- Function to search students (for search functionality)
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION search_students(search_query TEXT)
+RETURNS TABLE (
+    id UUID,
+    student_id TEXT,
+    email TEXT,
+    full_name TEXT,
+    first_name TEXT,
+    last_name TEXT,
+    section TEXT,
+    program TEXT,
+    year_level TEXT,
+    campus TEXT,
+    profile_image TEXT,
+    is_active BOOLEAN,
+    last_login TIMESTAMPTZ,
+    is_online BOOLEAN
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        u.id,
+        u.student_id,
+        u.email,
+        u.full_name,
+        u.first_name,
+        u.last_name,
+        u.section,
+        u.program,
+        u.year_level,
+        u.campus,
+        u.profile_image,
+        u.is_active,
+        u.last_login,
+        CASE 
+            WHEN u.last_login > NOW() - INTERVAL '5 minutes' THEN true 
+            ELSE false 
+        END as is_online
+    FROM users u
+    WHERE u.role = 'student' 
+        AND u.is_active = true
+        AND (
+            u.full_name ILIKE '%' || search_query || '%'
+            OR u.email ILIKE '%' || search_query || '%'
+            OR u.student_id ILIKE '%' || search_query || '%'
+        )
+    ORDER BY u.full_name ASC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- SUCCESS! Teacher Student View and Functions are ready.
+-- 
+-- Usage:
+-- 1. SELECT * FROM teacher_student_view;
+-- 2. SELECT * FROM get_students_by_section('BSIT101A');
+-- 3. SELECT * FROM search_students('Josiah');
+-- =====================================================
+
+
+-- =====================================================
+-- EXAM SCORES SYSTEM (for InputScoresModal)
+-- =====================================================
+-- Tables for managing exams and student scores
+-- Supports: Course exams, score entry, grade history
+-- =====================================================
+
+-- =====================================================
+-- Exams Table
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS exams (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    description TEXT,
+    max_score INTEGER NOT NULL DEFAULT 100,
+    passing_score INTEGER DEFAULT 60,
+    exam_type TEXT DEFAULT 'quiz' CHECK (exam_type IN ('quiz', 'midterm', 'final', 'practical', 'project')),
+    exam_date DATE NOT NULL,
+    term TEXT DEFAULT 'prelim' CHECK (term IN ('prelim', 'midterm', 'finals')),
+    is_published BOOLEAN DEFAULT false,
+    created_by TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_exams_course_id ON exams(course_id);
+CREATE INDEX IF NOT EXISTS idx_exams_exam_date ON exams(exam_date);
+CREATE INDEX IF NOT EXISTS idx_exams_term ON exams(term);
+CREATE INDEX IF NOT EXISTS idx_exams_is_published ON exams(is_published);
+
+-- Enable Row Level Security
+ALTER TABLE exams ENABLE ROW LEVEL SECURITY;
+
+-- Create policy
+DROP POLICY IF EXISTS "Allow all operations on exams" ON exams;
+CREATE POLICY "Allow all operations on exams" ON exams
+    FOR ALL
+    USING (true)
+    WITH CHECK (true);
+
+-- Create trigger for updated_at
+DROP TRIGGER IF EXISTS update_exams_updated_at ON exams;
+CREATE TRIGGER update_exams_updated_at
+    BEFORE UPDATE ON exams
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- =====================================================
+-- Exam Scores Table
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS exam_scores (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    exam_id TEXT NOT NULL REFERENCES exams(id) ON DELETE CASCADE,
+    student_id TEXT NOT NULL,
+    student_name TEXT NOT NULL,
+    section TEXT DEFAULT 'BSIT101A',
+    score NUMERIC(5,2),
+    remarks TEXT,
+    is_absent BOOLEAN DEFAULT false,
+    is_excused BOOLEAN DEFAULT false,
+    graded_by TEXT,
+    graded_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(exam_id, student_id)
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_exam_scores_exam_id ON exam_scores(exam_id);
+CREATE INDEX IF NOT EXISTS idx_exam_scores_student_id ON exam_scores(student_id);
+CREATE INDEX IF NOT EXISTS idx_exam_scores_section ON exam_scores(section);
+
+-- Enable Row Level Security
+ALTER TABLE exam_scores ENABLE ROW LEVEL SECURITY;
+
+-- Create policy
+DROP POLICY IF EXISTS "Allow all operations on exam_scores" ON exam_scores;
+CREATE POLICY "Allow all operations on exam_scores" ON exam_scores
+    FOR ALL
+    USING (true)
+    WITH CHECK (true);
+
+-- Create trigger for updated_at
+DROP TRIGGER IF EXISTS update_exam_scores_updated_at ON exam_scores;
+CREATE TRIGGER update_exam_scores_updated_at
+    BEFORE UPDATE ON exam_scores
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- =====================================================
+-- Score History Table (for tracking changes/undo)
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS score_history (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    exam_score_id TEXT NOT NULL REFERENCES exam_scores(id) ON DELETE CASCADE,
+    previous_score NUMERIC(5,2),
+    new_score NUMERIC(5,2),
+    changed_by TEXT NOT NULL,
+    change_reason TEXT,
+    changed_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_score_history_exam_score_id ON score_history(exam_score_id);
+CREATE INDEX IF NOT EXISTS idx_score_history_changed_at ON score_history(changed_at);
+
+-- Enable Row Level Security
+ALTER TABLE score_history ENABLE ROW LEVEL SECURITY;
+
+-- Create policy
+DROP POLICY IF EXISTS "Allow all operations on score_history" ON score_history;
+CREATE POLICY "Allow all operations on score_history" ON score_history
+    FOR ALL
+    USING (true)
+    WITH CHECK (true);
+
+-- =====================================================
+-- Insert Demo Exams for BSIT101A Courses
+-- =====================================================
+
+-- Computer Programming 1 (cp1) Exams
+INSERT INTO exams (id, course_id, title, description, max_score, exam_type, exam_date, term, is_published, created_by) VALUES
+    ('exam-cp1-quiz1', 'cp1', 'Quiz 1 - Variables & Data Types', 'Basic concepts of variables, data types, and operators in C#', 50, 'quiz', '2026-01-10', 'prelim', true, 'TEACHER001'),
+    ('exam-cp1-quiz2', 'cp1', 'Quiz 2 - Control Structures', 'If-else statements, switch cases, and loops', 50, 'quiz', '2026-01-18', 'prelim', true, 'TEACHER001'),
+    ('exam-cp1-midterm', 'cp1', 'Midterm Examination', 'Comprehensive exam covering all prelim topics', 100, 'midterm', '2026-01-25', 'midterm', true, 'TEACHER001'),
+    ('exam-cp1-quiz3', 'cp1', 'Quiz 3 - Arrays & Methods', 'Array manipulation and method creation', 50, 'quiz', '2026-02-05', 'midterm', true, 'TEACHER001'),
+    ('exam-cp1-final', 'cp1', 'Final Examination', 'Comprehensive final exam', 100, 'final', '2026-02-20', 'finals', false, 'TEACHER001')
+ON CONFLICT (id) DO UPDATE SET
+    title = EXCLUDED.title,
+    max_score = EXCLUDED.max_score;
+
+-- Introduction to Computing (itc) Exams
+INSERT INTO exams (id, course_id, title, description, max_score, exam_type, exam_date, term, is_published, created_by) VALUES
+    ('exam-itc-quiz1', 'itc', 'Quiz 1 - Computer Basics', 'Hardware, software, and basic computer concepts', 30, 'quiz', '2026-01-08', 'prelim', true, 'TEACHER002'),
+    ('exam-itc-midterm', 'itc', 'Midterm Examination', 'Computer systems and networking basics', 100, 'midterm', '2026-01-24', 'midterm', true, 'TEACHER002'),
+    ('exam-itc-final', 'itc', 'Final Examination', 'Comprehensive final exam', 100, 'final', '2026-02-18', 'finals', false, 'TEACHER002')
+ON CONFLICT (id) DO UPDATE SET
+    title = EXCLUDED.title,
+    max_score = EXCLUDED.max_score;
+
+-- Euthenics 1 (euth1) Exams
+INSERT INTO exams (id, course_id, title, description, max_score, exam_type, exam_date, term, is_published, created_by) VALUES
+    ('exam-euth1-quiz1', 'euth1', 'Quiz 1 - Personal Development', 'Self-awareness and personal growth', 40, 'quiz', '2026-01-09', 'prelim', true, 'TEACHER003'),
+    ('exam-euth1-midterm', 'euth1', 'Midterm Examination', 'Life skills and values formation', 100, 'midterm', '2026-01-26', 'midterm', true, 'TEACHER003'),
+    ('exam-euth1-final', 'euth1', 'Final Examination', 'Comprehensive final exam', 100, 'final', '2026-02-19', 'finals', false, 'TEACHER003')
+ON CONFLICT (id) DO UPDATE SET
+    title = EXCLUDED.title,
+    max_score = EXCLUDED.max_score;
+
+-- Purposive Communication (purcom) Exams
+INSERT INTO exams (id, course_id, title, description, max_score, exam_type, exam_date, term, is_published, created_by) VALUES
+    ('exam-purcom-quiz1', 'purcom', 'Quiz 1 - Communication Process', 'Elements and types of communication', 50, 'quiz', '2026-01-11', 'prelim', true, 'TEACHER004'),
+    ('exam-purcom-midterm', 'purcom', 'Midterm Examination', 'Written and oral communication', 100, 'midterm', '2026-01-27', 'midterm', true, 'TEACHER004'),
+    ('exam-purcom-final', 'purcom', 'Final Examination', 'Comprehensive final exam', 100, 'final', '2026-02-21', 'finals', false, 'TEACHER004')
+ON CONFLICT (id) DO UPDATE SET
+    title = EXCLUDED.title,
+    max_score = EXCLUDED.max_score;
+
+-- =====================================================
+-- Insert Demo Scores for CP1 Quiz 1 (for testing)
+-- =====================================================
+
+INSERT INTO exam_scores (exam_id, student_id, student_name, section, score, graded_by, graded_at) VALUES
+    ('exam-cp1-quiz1', '02000543210', 'Josiah P. De Asis', 'BSIT101A', 45, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz1', '02000543211', 'Divine Maureen Acorda', 'BSIT101A', 48, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz1', '02000543212', 'Rogini Adel', 'BSIT101A', 42, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz1', '02000543213', 'Justin Dominick Agao', 'BSIT101A', 50, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz1', '02000543214', 'Don Benn Federico Antolin', 'BSIT101A', 38, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz1', '02000543215', 'Blake Cedrick Baldivas', 'BSIT101A', 44, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz1', '02000543216', 'Mark Lawrence Bendolo', 'BSIT101A', 46, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz1', '02000543217', 'Jai Brielle Bergania', 'BSIT101A', 40, 'TEACHER001', NOW())
+ON CONFLICT (exam_id, student_id) DO UPDATE SET
+    score = EXCLUDED.score,
+    graded_at = NOW();
+
+-- Insert Demo Scores for CP1 Quiz 2 (for "Copy from Previous" feature)
+INSERT INTO exam_scores (exam_id, student_id, student_name, section, score, graded_by, graded_at) VALUES
+    ('exam-cp1-quiz2', '02000543210', 'Josiah P. De Asis', 'BSIT101A', 47, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz2', '02000543211', 'Divine Maureen Acorda', 'BSIT101A', 50, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz2', '02000543212', 'Rogini Adel', 'BSIT101A', 44, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz2', '02000543213', 'Justin Dominick Agao', 'BSIT101A', 48, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz2', '02000543214', 'Don Benn Federico Antolin', 'BSIT101A', 41, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz2', '02000543215', 'Blake Cedrick Baldivas', 'BSIT101A', 45, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz2', '02000543216', 'Mark Lawrence Bendolo', 'BSIT101A', 49, 'TEACHER001', NOW()),
+    ('exam-cp1-quiz2', '02000543217', 'Jai Brielle Bergania', 'BSIT101A', 43, 'TEACHER001', NOW())
+ON CONFLICT (exam_id, student_id) DO UPDATE SET
+    score = EXCLUDED.score,
+    graded_at = NOW();
+
+-- =====================================================
+-- Helper Functions for Exam Scores
+-- =====================================================
+
+-- Function to get exams by course
+CREATE OR REPLACE FUNCTION get_exams_by_course(p_course_id TEXT)
+RETURNS TABLE (
+    id TEXT,
+    course_id TEXT,
+    title TEXT,
+    description TEXT,
+    max_score INTEGER,
+    exam_type TEXT,
+    exam_date DATE,
+    term TEXT,
+    is_published BOOLEAN,
+    scores_count BIGINT,
+    avg_score NUMERIC
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        e.id,
+        e.course_id,
+        e.title,
+        e.description,
+        e.max_score,
+        e.exam_type,
+        e.exam_date,
+        e.term,
+        e.is_published,
+        COUNT(es.id) as scores_count,
+        ROUND(AVG(es.score), 1) as avg_score
+    FROM exams e
+    LEFT JOIN exam_scores es ON e.id = es.exam_id
+    WHERE e.course_id = p_course_id
+    GROUP BY e.id
+    ORDER BY e.exam_date DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to get exam scores with student info
+CREATE OR REPLACE FUNCTION get_exam_scores(p_exam_id TEXT, p_section TEXT DEFAULT NULL)
+RETURNS TABLE (
+    id TEXT,
+    exam_id TEXT,
+    student_id TEXT,
+    student_name TEXT,
+    section TEXT,
+    score NUMERIC,
+    remarks TEXT,
+    is_absent BOOLEAN,
+    graded_at TIMESTAMPTZ
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        es.id,
+        es.exam_id,
+        es.student_id,
+        es.student_name,
+        es.section,
+        es.score,
+        es.remarks,
+        es.is_absent,
+        es.graded_at
+    FROM exam_scores es
+    WHERE es.exam_id = p_exam_id
+        AND (p_section IS NULL OR es.section = p_section)
+    ORDER BY es.student_name ASC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to get exam statistics
+CREATE OR REPLACE FUNCTION get_exam_statistics(p_exam_id TEXT)
+RETURNS TABLE (
+    total_students BIGINT,
+    graded_count BIGINT,
+    avg_score NUMERIC,
+    highest_score NUMERIC,
+    lowest_score NUMERIC,
+    passing_count BIGINT,
+    passing_rate NUMERIC
+) AS $$
+DECLARE
+    v_max_score INTEGER;
+    v_passing_score INTEGER;
+BEGIN
+    -- Get exam max and passing scores
+    SELECT e.max_score, e.passing_score INTO v_max_score, v_passing_score
+    FROM exams e WHERE e.id = p_exam_id;
+    
+    RETURN QUERY
+    SELECT 
+        COUNT(*) as total_students,
+        COUNT(es.score) as graded_count,
+        ROUND(AVG(es.score), 1) as avg_score,
+        MAX(es.score) as highest_score,
+        MIN(es.score) as lowest_score,
+        COUNT(CASE WHEN es.score >= (v_max_score * 0.6) THEN 1 END) as passing_count,
+        ROUND(
+            (COUNT(CASE WHEN es.score >= (v_max_score * 0.6) THEN 1 END)::NUMERIC / 
+            NULLIF(COUNT(es.score), 0)) * 100, 1
+        ) as passing_rate
+    FROM exam_scores es
+    WHERE es.exam_id = p_exam_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to bulk upsert scores (for batch operations)
+CREATE OR REPLACE FUNCTION upsert_exam_scores(
+    p_exam_id TEXT,
+    p_scores JSONB,
+    p_graded_by TEXT
+)
+RETURNS INTEGER AS $$
+DECLARE
+    v_count INTEGER := 0;
+    v_score JSONB;
+BEGIN
+    FOR v_score IN SELECT * FROM jsonb_array_elements(p_scores)
+    LOOP
+        INSERT INTO exam_scores (exam_id, student_id, student_name, section, score, graded_by, graded_at)
+        VALUES (
+            p_exam_id,
+            v_score->>'studentId',
+            v_score->>'studentName',
+            COALESCE(v_score->>'section', 'BSIT101A'),
+            (v_score->>'score')::NUMERIC,
+            p_graded_by,
+            NOW()
+        )
+        ON CONFLICT (exam_id, student_id) DO UPDATE SET
+            score = (v_score->>'score')::NUMERIC,
+            graded_by = p_graded_by,
+            graded_at = NOW(),
+            updated_at = NOW();
+        
+        v_count := v_count + 1;
+    END LOOP;
+    
+    RETURN v_count;
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- SUCCESS! Exam Scores System is ready.
+-- 
+-- Tables created:
+-- - exams: Stores exam definitions per course
+-- - exam_scores: Stores individual student scores
+-- - score_history: Tracks score changes for audit
+-- 
+-- Demo data includes:
+-- - 14 exams across 4 courses (CP1, ITC, EUTH1, PURCOM)
+-- - Sample scores for CP1 Quiz 1 and Quiz 2
+-- 
+-- Helper functions:
+-- - get_exams_by_course(course_id)
+-- - get_exam_scores(exam_id, section)
+-- - get_exam_statistics(exam_id)
+-- - upsert_exam_scores(exam_id, scores_json, graded_by)
+-- =====================================================
+
+
+-- =====================================================
+-- PHILIPPINE GRADING SYSTEM TABLES
+-- =====================================================
+-- Supports DepEd K-12, CHED, and STI grading scales
+-- Includes transmutation tables for raw score conversion
+-- =====================================================
+
+-- =====================================================
+-- Grading Systems Configuration Table
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS grading_systems (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    passing_grade NUMERIC(5,2) NOT NULL DEFAULT 75,
+    min_grade NUMERIC(5,2) NOT NULL DEFAULT 60,
+    max_grade NUMERIC(5,2) NOT NULL DEFAULT 100,
+    is_default BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Insert default grading systems
+INSERT INTO grading_systems (id, name, description, passing_grade, min_grade, max_grade, is_default) VALUES
+    ('sti', 'STI College Grading System', 'Standard STI College 1.0-5.0 grading scale with 75 passing', 75, 60, 100, true),
+    ('deped', 'DepEd K-12 Grading System', 'Department of Education K-12 grading with descriptors', 75, 60, 100, false),
+    ('ched', 'CHED Standard Grading', 'Commission on Higher Education standard grading', 70, 60, 100, false)
+ON CONFLICT (id) DO NOTHING;
+
+-- =====================================================
+-- Grade Scale Table (1.0-5.0 equivalents)
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS grade_scales (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    system_id TEXT NOT NULL REFERENCES grading_systems(id) ON DELETE CASCADE,
+    min_grade NUMERIC(5,2) NOT NULL,
+    max_grade NUMERIC(5,2) NOT NULL,
+    grade_point NUMERIC(3,2) NOT NULL,
+    letter_grade TEXT NOT NULL,
+    descriptor TEXT NOT NULL,
+    description TEXT,
+    display_order INTEGER DEFAULT 0
+);
+
+-- Create index
+CREATE INDEX IF NOT EXISTS idx_grade_scales_system_id ON grade_scales(system_id);
+
+-- Enable RLS
+ALTER TABLE grade_scales ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all operations on grade_scales" ON grade_scales;
+CREATE POLICY "Allow all operations on grade_scales" ON grade_scales FOR ALL USING (true) WITH CHECK (true);
+
+-- Insert STI Grade Scale
+INSERT INTO grade_scales (system_id, min_grade, max_grade, grade_point, letter_grade, descriptor, description, display_order) VALUES
+    ('sti', 97, 100, 1.00, '1.0', 'Excellent', 'Outstanding performance', 1),
+    ('sti', 94, 96, 1.25, '1.25', 'Excellent', 'Excellent performance', 2),
+    ('sti', 91, 93, 1.50, '1.5', 'Very Good', 'Very good performance', 3),
+    ('sti', 88, 90, 1.75, '1.75', 'Very Good', 'Above average performance', 4),
+    ('sti', 85, 87, 2.00, '2.0', 'Good', 'Good performance', 5),
+    ('sti', 82, 84, 2.25, '2.25', 'Good', 'Satisfactory performance', 6),
+    ('sti', 79, 81, 2.50, '2.5', 'Satisfactory', 'Fair performance', 7),
+    ('sti', 76, 78, 2.75, '2.75', 'Satisfactory', 'Passing performance', 8),
+    ('sti', 75, 75, 3.00, '3.0', 'Passing', 'Minimum passing grade', 9),
+    ('sti', 0, 74, 5.00, '5.0', 'Failed', 'Did not meet requirements', 10)
+ON CONFLICT (id) DO NOTHING;
+
+-- Insert DepEd Grade Scale
+INSERT INTO grade_scales (system_id, min_grade, max_grade, grade_point, letter_grade, descriptor, description, display_order) VALUES
+    ('deped', 90, 100, 1.00, 'O', 'Outstanding', 'Exceeds expectations consistently', 1),
+    ('deped', 85, 89, 1.50, 'VS', 'Very Satisfactory', 'Meets expectations with distinction', 2),
+    ('deped', 80, 84, 2.00, 'S', 'Satisfactory', 'Meets expectations adequately', 3),
+    ('deped', 75, 79, 2.50, 'FS', 'Fairly Satisfactory', 'Meets minimum expectations', 4),
+    ('deped', 0, 74, 5.00, 'DND', 'Did Not Meet Expectations', 'Below passing standard', 5)
+ON CONFLICT (id) DO NOTHING;
+
+-- Insert CHED Grade Scale
+INSERT INTO grade_scales (system_id, min_grade, max_grade, grade_point, letter_grade, descriptor, description, display_order) VALUES
+    ('ched', 96, 100, 1.00, 'A+', 'Excellent', 'Superior performance', 1),
+    ('ched', 93, 95, 1.25, 'A', 'Excellent', 'Excellent performance', 2),
+    ('ched', 90, 92, 1.50, 'A-', 'Very Good', 'Very good performance', 3),
+    ('ched', 87, 89, 1.75, 'B+', 'Very Good', 'Above average', 4),
+    ('ched', 84, 86, 2.00, 'B', 'Good', 'Good performance', 5),
+    ('ched', 81, 83, 2.25, 'B-', 'Good', 'Satisfactory', 6),
+    ('ched', 78, 80, 2.50, 'C+', 'Satisfactory', 'Fair performance', 7),
+    ('ched', 75, 77, 2.75, 'C', 'Satisfactory', 'Passing', 8),
+    ('ched', 70, 74, 3.00, 'C-', 'Passing', 'Conditional', 9),
+    ('ched', 0, 69, 5.00, 'F', 'Failed', 'Failed', 10)
+ON CONFLICT (id) DO NOTHING;
+
+-- =====================================================
+-- Transmutation Table (DepEd Standard)
+-- Converts percentage scores to 75-100 scale
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS transmutation_table (
+    id SERIAL PRIMARY KEY,
+    min_percent NUMERIC(5,2) NOT NULL,
+    max_percent NUMERIC(5,2) NOT NULL,
+    transmuted_grade INTEGER NOT NULL,
+    UNIQUE(min_percent, max_percent)
+);
+
+-- Enable RLS
+ALTER TABLE transmutation_table ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all operations on transmutation_table" ON transmutation_table;
+CREATE POLICY "Allow all operations on transmutation_table" ON transmutation_table FOR ALL USING (true) WITH CHECK (true);
+
+-- Insert DepEd Transmutation Table
+INSERT INTO transmutation_table (min_percent, max_percent, transmuted_grade) VALUES
+    (100.00, 100.00, 100),
+    (98.40, 99.99, 99),
+    (96.80, 98.39, 98),
+    (95.20, 96.79, 97),
+    (93.60, 95.19, 96),
+    (92.00, 93.59, 95),
+    (90.40, 91.99, 94),
+    (88.80, 90.39, 93),
+    (87.20, 88.79, 92),
+    (85.60, 87.19, 91),
+    (84.00, 85.59, 90),
+    (82.40, 83.99, 89),
+    (80.80, 82.39, 88),
+    (79.20, 80.79, 87),
+    (77.60, 79.19, 86),
+    (76.00, 77.59, 85),
+    (74.40, 75.99, 84),
+    (72.80, 74.39, 83),
+    (71.20, 72.79, 82),
+    (69.60, 71.19, 81),
+    (68.00, 69.59, 80),
+    (66.40, 67.99, 79),
+    (64.80, 66.39, 78),
+    (63.20, 64.79, 77),
+    (61.60, 63.19, 76),
+    (60.00, 61.59, 75),
+    (56.00, 59.99, 74),
+    (52.00, 55.99, 73),
+    (48.00, 51.99, 72),
+    (44.00, 47.99, 71),
+    (40.00, 43.99, 70),
+    (36.00, 39.99, 69),
+    (32.00, 35.99, 68),
+    (28.00, 31.99, 67),
+    (24.00, 27.99, 66),
+    (20.00, 23.99, 65),
+    (16.00, 19.99, 64),
+    (12.00, 15.99, 63),
+    (8.00, 11.99, 62),
+    (4.00, 7.99, 61),
+    (0.00, 3.99, 60)
+ON CONFLICT (min_percent, max_percent) DO NOTHING;
+
+-- =====================================================
+-- Add grading columns to exam_scores table
+-- =====================================================
+
+ALTER TABLE exam_scores ADD COLUMN IF NOT EXISTS percentage_score NUMERIC(5,2);
+ALTER TABLE exam_scores ADD COLUMN IF NOT EXISTS transmuted_grade INTEGER;
+ALTER TABLE exam_scores ADD COLUMN IF NOT EXISTS grade_point NUMERIC(3,2);
+ALTER TABLE exam_scores ADD COLUMN IF NOT EXISTS letter_grade TEXT;
+ALTER TABLE exam_scores ADD COLUMN IF NOT EXISTS descriptor TEXT;
+ALTER TABLE exam_scores ADD COLUMN IF NOT EXISTS grading_system TEXT DEFAULT 'sti';
+
+-- =====================================================
+-- Function to transmute a percentage score
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION transmute_score(p_percentage NUMERIC)
+RETURNS INTEGER AS $$
+DECLARE
+    v_transmuted INTEGER;
+BEGIN
+    SELECT transmuted_grade INTO v_transmuted
+    FROM transmutation_table
+    WHERE p_percentage >= min_percent AND p_percentage <= max_percent
+    LIMIT 1;
+    
+    RETURN COALESCE(v_transmuted, 60);
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- Function to get grade info from transmuted grade
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION get_grade_info(
+    p_transmuted_grade INTEGER,
+    p_system_id TEXT DEFAULT 'sti'
+)
+RETURNS TABLE (
+    grade_point NUMERIC,
+    letter_grade TEXT,
+    descriptor TEXT,
+    description TEXT,
+    remarks TEXT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        gs.grade_point,
+        gs.letter_grade,
+        gs.descriptor,
+        gs.description,
+        CASE 
+            WHEN p_transmuted_grade >= (SELECT passing_grade FROM grading_systems WHERE id = p_system_id)
+            THEN 'PASSED'
+            ELSE 'FAILED'
+        END as remarks
+    FROM grade_scales gs
+    WHERE gs.system_id = p_system_id
+        AND p_transmuted_grade >= gs.min_grade 
+        AND p_transmuted_grade <= gs.max_grade
+    ORDER BY gs.display_order
+    LIMIT 1;
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- Function to calculate and save grade for a score
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION calculate_grade(
+    p_raw_score NUMERIC,
+    p_max_score INTEGER,
+    p_system_id TEXT DEFAULT 'sti'
+)
+RETURNS TABLE (
+    percentage_score NUMERIC,
+    transmuted_grade INTEGER,
+    grade_point NUMERIC,
+    letter_grade TEXT,
+    descriptor TEXT,
+    remarks TEXT
+) AS $$
+DECLARE
+    v_percentage NUMERIC;
+    v_transmuted INTEGER;
+BEGIN
+    -- Calculate percentage
+    v_percentage := ROUND((p_raw_score / p_max_score) * 100, 2);
+    
+    -- Transmute score
+    v_transmuted := transmute_score(v_percentage);
+    
+    -- Return complete grade info
+    RETURN QUERY
+    SELECT 
+        v_percentage as percentage_score,
+        v_transmuted as transmuted_grade,
+        gi.grade_point,
+        gi.letter_grade,
+        gi.descriptor,
+        gi.remarks
+    FROM get_grade_info(v_transmuted, p_system_id) gi;
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- Function to bulk calculate grades for an exam
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION calculate_exam_grades(
+    p_exam_id TEXT,
+    p_system_id TEXT DEFAULT 'sti'
+)
+RETURNS INTEGER AS $$
+DECLARE
+    v_max_score INTEGER;
+    v_count INTEGER := 0;
+    v_score RECORD;
+    v_grade RECORD;
+BEGIN
+    -- Get exam max score
+    SELECT max_score INTO v_max_score FROM exams WHERE id = p_exam_id;
+    
+    IF v_max_score IS NULL THEN
+        RAISE EXCEPTION 'Exam not found: %', p_exam_id;
+    END IF;
+    
+    -- Calculate grades for all scores
+    FOR v_score IN 
+        SELECT id, score FROM exam_scores 
+        WHERE exam_id = p_exam_id AND score IS NOT NULL
+    LOOP
+        SELECT * INTO v_grade FROM calculate_grade(v_score.score, v_max_score, p_system_id);
+        
+        UPDATE exam_scores SET
+            percentage_score = v_grade.percentage_score,
+            transmuted_grade = v_grade.transmuted_grade,
+            grade_point = v_grade.grade_point,
+            letter_grade = v_grade.letter_grade,
+            descriptor = v_grade.descriptor,
+            grading_system = p_system_id,
+            updated_at = NOW()
+        WHERE id = v_score.id;
+        
+        v_count := v_count + 1;
+    END LOOP;
+    
+    RETURN v_count;
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- View for exam scores with computed grades
+-- =====================================================
+
+CREATE OR REPLACE VIEW exam_scores_with_grades AS
+SELECT 
+    es.id,
+    es.exam_id,
+    es.student_id,
+    es.student_name,
+    es.section,
+    es.score as raw_score,
+    e.max_score,
+    ROUND((es.score / e.max_score) * 100, 2) as percentage_score,
+    transmute_score(ROUND((es.score / e.max_score) * 100, 2)) as transmuted_grade,
+    gs.grade_point,
+    gs.letter_grade,
+    gs.descriptor,
+    CASE 
+        WHEN transmute_score(ROUND((es.score / e.max_score) * 100, 2)) >= 75 
+        THEN 'PASSED' 
+        ELSE 'FAILED' 
+    END as remarks,
+    es.is_absent,
+    es.graded_at,
+    es.graded_by
+FROM exam_scores es
+JOIN exams e ON es.exam_id = e.id
+LEFT JOIN grade_scales gs ON 
+    gs.system_id = COALESCE(es.grading_system, 'sti')
+    AND transmute_score(ROUND((es.score / e.max_score) * 100, 2)) >= gs.min_grade
+    AND transmute_score(ROUND((es.score / e.max_score) * 100, 2)) <= gs.max_grade;
+
+-- Grant access
+GRANT SELECT ON exam_scores_with_grades TO authenticated;
+GRANT SELECT ON exam_scores_with_grades TO anon;
+
+-- =====================================================
+-- Function to get class grade statistics
+-- =====================================================
+
+CREATE OR REPLACE FUNCTION get_class_grade_statistics(
+    p_exam_id TEXT,
+    p_section TEXT DEFAULT NULL
+)
+RETURNS TABLE (
+    total_students BIGINT,
+    graded_count BIGINT,
+    average_raw NUMERIC,
+    average_transmuted NUMERIC,
+    average_gpa NUMERIC,
+    highest_score NUMERIC,
+    lowest_score NUMERIC,
+    passing_count BIGINT,
+    failing_count BIGINT,
+    passing_rate NUMERIC,
+    grade_distribution JSONB
+) AS $$
+BEGIN
+    RETURN QUERY
+    WITH scores AS (
+        SELECT 
+            es.score,
+            transmute_score(ROUND((es.score / e.max_score) * 100, 2)) as transmuted,
+            gs.grade_point,
+            gs.descriptor
+        FROM exam_scores es
+        JOIN exams e ON es.exam_id = e.id
+        LEFT JOIN grade_scales gs ON 
+            gs.system_id = 'sti'
+            AND transmute_score(ROUND((es.score / e.max_score) * 100, 2)) >= gs.min_grade
+            AND transmute_score(ROUND((es.score / e.max_score) * 100, 2)) <= gs.max_grade
+        WHERE es.exam_id = p_exam_id
+            AND (p_section IS NULL OR es.section = p_section)
+            AND es.score IS NOT NULL
+    ),
+    distribution AS (
+        SELECT descriptor, COUNT(*) as count
+        FROM scores
+        GROUP BY descriptor
+    )
+    SELECT 
+        (SELECT COUNT(*) FROM exam_scores WHERE exam_id = p_exam_id AND (p_section IS NULL OR section = p_section)),
+        COUNT(s.score),
+        ROUND(AVG(s.score), 1),
+        ROUND(AVG(s.transmuted), 1),
+        ROUND(AVG(s.grade_point), 2),
+        MAX(s.score),
+        MIN(s.score),
+        COUNT(CASE WHEN s.transmuted >= 75 THEN 1 END),
+        COUNT(CASE WHEN s.transmuted < 75 THEN 1 END),
+        ROUND((COUNT(CASE WHEN s.transmuted >= 75 THEN 1 END)::NUMERIC / NULLIF(COUNT(*), 0)) * 100, 1),
+        (SELECT jsonb_object_agg(descriptor, count) FROM distribution)
+    FROM scores s;
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- Update existing demo scores with grades
+-- =====================================================
+
+-- Calculate grades for CP1 Quiz 1
+SELECT calculate_exam_grades('exam-cp1-quiz1', 'sti');
+
+-- Calculate grades for CP1 Quiz 2
+SELECT calculate_exam_grades('exam-cp1-quiz2', 'sti');
+
+-- =====================================================
+-- SUCCESS! Philippine Grading System is ready.
+-- 
+-- Tables created:
+-- - grading_systems: STI, DepEd, CHED configurations
+-- - grade_scales: 1.0-5.0 equivalents per system
+-- - transmutation_table: DepEd standard transmutation
+-- 
+-- Functions:
+-- - transmute_score(percentage): Convert % to 75-100
+-- - get_grade_info(transmuted, system): Get grade details
+-- - calculate_grade(raw, max, system): Full grade calculation
+-- - calculate_exam_grades(exam_id, system): Bulk calculate
+-- - get_class_grade_statistics(exam_id, section): Class stats
+-- 
+-- View:
+-- - exam_scores_with_grades: Scores with computed grades
+-- =====================================================
