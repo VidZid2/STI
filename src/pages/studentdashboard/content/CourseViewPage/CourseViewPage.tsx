@@ -6075,6 +6075,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 />,
                 document.body
             )}
+        </motion.div>
     );
 };
 
