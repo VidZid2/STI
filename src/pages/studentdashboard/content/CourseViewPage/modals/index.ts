@@ -4,3 +4,4 @@
  */
 
 export { default as InstructionsModal } from './InstructionsModal';
+export { default as SubmitModal } from './SubmitModal';
