@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import { supabase, isSupabaseConfigured } from '../../../../../lib/supabase';
 import { createGroup, type GroupCategory } from '../../../../../services/groupsService';
+import GroupIcon from '../components/GroupIcon';
 
 interface CreateGroupModalProps {
     isOpen: boolean;
