@@ -74,6 +74,8 @@ export interface ModalState {
     isInputScoresOpen: boolean;
     isAtRiskStudentsOpen: boolean;
     isActivityModalOpen: boolean;
+    isReportAdminOpen: boolean;
+    isQRAttendanceOpen: boolean;
 }
 
 // ============================================

@@ -1,9 +1,14 @@
 import * as React from 'react';
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import { createTask, type CreateTaskInput } from '../../../../services/taskService';
+import { createSubmission } from '../../../../services/submissionService';
 import { getClassmates, type UserAccount } from '../../../../services/usersService';
+import { supabase } from '../../../../lib/supabase';
+import { getCurrentUser } from '../../../../services/authService';
+import { FileUpload } from '../../../../components/ui/file-upload';
+import { useSystemConfig } from '../../../../contexts/SystemConfigContext';
 
 interface CourseViewPageProps {
     course: {
@@ -19,7 +24,7 @@ interface CourseViewPageProps {
 
 type TabType = 'modules' | 'assignments' | 'news' | 'students' | 'teachers';
 type ContentType = 'handout-a' | 'handout-b' | 'slideshow' | 'video';
-type TaskCategory = 'all' | 'assignment' | 'performance' | 'quiz' | 'practical' | 'journal';
+type TaskCategory = 'all' | 'assignment' | 'performance' | 'quiz' | 'practical' | 'journal' | 'overdue';
 
 // Task category configuration for the Tasks tab filter
 const TASK_CATEGORIES: { id: TaskCategory; label: string; icon: React.ReactNode; color: string }[] = [
@@ -67,6 +72,15 @@ const TASK_CATEGORIES: { id: TaskCategory; label: string; icon: React.ReactNode;
             </svg>
         ), color: 'cyan'
     },
+    {
+        id: 'overdue', label: 'Overdue', icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+        ), color: 'red'
+    }
 ];
 
 // Content type icons for modules
@@ -725,8 +739,8 @@ const StudentCard: React.FC<{
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
             className={`relative p-4 rounded-xl bg-white border cursor-pointer transition-all duration-200 ${isHovered
-                    ? 'border-blue-200 shadow-lg shadow-blue-500/10'
-                    : 'border-zinc-100 hover:border-zinc-200'
+                ? 'border-blue-200 shadow-lg shadow-blue-500/10'
+                : 'border-zinc-100 hover:border-zinc-200'
                 }`}
         >
             {/* Quick Action Buttons on Hover */}
@@ -860,8 +874,8 @@ const StudentCard: React.FC<{
                 {/* Status Badge */}
                 <motion.span
                     className={`inline-flex items-center gap-1 mt-2 px-2 py-0.5 text-[9px] font-medium rounded-full ${student.status === 'online'
-                            ? 'bg-emerald-50 text-emerald-600'
-                            : 'bg-zinc-50 text-zinc-500'
+                        ? 'bg-emerald-50 text-emerald-600'
+                        : 'bg-zinc-50 text-zinc-500'
                         }`}
                     whileHover={{ scale: 1.05 }}
                 >
@@ -1061,8 +1075,8 @@ const ModuleCard: React.FC<{
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className={`group rounded-2xl border cursor-pointer relative ${module.status === 'locked'
-                    ? 'bg-zinc-50/50 border-zinc-100 opacity-60'
-                    : 'bg-white border-zinc-100'
+                ? 'bg-zinc-50/50 border-zinc-100 opacity-60'
+                : 'bg-white border-zinc-100'
                 }`}
             style={{
                 boxShadow: isHovered && module.status !== 'locked'
@@ -1111,10 +1125,10 @@ const ModuleCard: React.FC<{
                 {/* Icon - Centered */}
                 <div
                     className={`w-14 h-14 rounded-xl flex items-center justify-center transition-transform duration-100 mb-3 ${module.status === 'completed'
-                            ? 'bg-gradient-to-br from-emerald-400 to-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-                            : module.status === 'in-progress'
-                                ? 'bg-gradient-to-br from-blue-400 to-blue-500 text-white shadow-lg shadow-blue-500/20'
-                                : 'bg-zinc-200 text-zinc-400'
+                        ? 'bg-gradient-to-br from-emerald-400 to-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+                        : module.status === 'in-progress'
+                            ? 'bg-gradient-to-br from-blue-400 to-blue-500 text-white shadow-lg shadow-blue-500/20'
+                            : 'bg-zinc-200 text-zinc-400'
                         }`}
                     style={{ transform: isHovered ? 'scale(1.05) rotate(3deg)' : 'scale(1) rotate(0deg)' }}
                 >
@@ -1130,8 +1144,8 @@ const ModuleCard: React.FC<{
                 {/* Status Badge - Centered */}
                 {module.status !== 'locked' && (
                     <span className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg mb-3 ${module.status === 'completed'
-                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                            : 'bg-blue-50 text-blue-600 border border-blue-100'
+                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                        : 'bg-blue-50 text-blue-600 border border-blue-100'
                         }`}>
                         {module.status === 'completed' ? 'Completed' : 'In Progress'}
                     </span>
@@ -1204,10 +1218,10 @@ const ModuleCard: React.FC<{
                 {/* Action Button - Full width */}
                 <button
                     className={`w-full py-2.5 text-xs font-semibold rounded-xl transition-all duration-100 ${module.status === 'locked'
-                            ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed'
-                            : module.status === 'completed'
-                                ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100'
-                                : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-100'
+                        ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed'
+                        : module.status === 'completed'
+                            ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100'
+                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-100'
                         }`}
                     disabled={module.status === 'locked'}
                     onClick={(e) => e.stopPropagation()}
@@ -1695,6 +1709,104 @@ const FloatingActionButton: React.FC<{
     void _onAction;
     return null;
 };
+// Preview Icon with Tooltip Component 
+const PreviewIconWithTooltip: React.FC<{
+    label: string;
+    subtitle: string;
+    color: string;
+    bgColor: string;
+    borderColor: string;
+    children: React.ReactNode;
+}> = ({ label, subtitle, color, bgColor, borderColor, children }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
+    return (
+        <div style={{ position: 'relative', display: 'inline-flex' }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}>
+            <motion.div
+                whileHover={{ scale: 1.1, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '8px',
+                    background: bgColor,
+                    border: `1px solid ${borderColor}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                }}
+            >
+                {children}
+            </motion.div>
+
+            {/* Tooltip - White with colored border and arrow */}
+            <AnimatePresence>
+                {isHovered && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 4 }}
+                        transition={{ duration: 0.15 }}
+                        style={{
+                            position: 'absolute',
+                            bottom: 'calc(100% + 12px)',
+                            left: '50%',
+                            zIndex: 100,
+                            pointerEvents: 'none',
+                        }}
+                    >
+                        <div style={{
+                            position: 'relative',
+                            background: '#fff',
+                            border: `1px solid ${color}30`,
+                            borderRadius: '10px',
+                            padding: '8px 12px',
+                            boxShadow: `0 4px 16px ${color}15`,
+                            whiteSpace: 'nowrap',
+                            transform: 'translateX(-50%)',
+                        }}>
+                            <p style={{
+                                margin: 0,
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                color: color,
+                                textAlign: 'center',
+                            }}>
+                                {label}
+                            </p>
+                            <p style={{
+                                margin: '2px 0 0 0',
+                                fontSize: '10px',
+                                color: `${color}cc`,
+                                maxWidth: '140px',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                textAlign: 'center',
+                            }}>
+                                {subtitle}
+                            </p>
+                            {/* Arrow pointing down */}
+                            <div style={{
+                                position: 'absolute',
+                                width: '10px',
+                                height: '10px',
+                                background: '#fff',
+                                borderRight: `1px solid ${color}30`,
+                                borderBottom: `1px solid ${color}30`,
+                                bottom: '-6px',
+                                left: '50%',
+                                transform: 'translateX(-50%) rotate(45deg)',
+                            }} />
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+};
 
 const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
     {
@@ -1774,6 +1886,7 @@ interface Submission {
 const SAMPLE_SUBMISSIONS: Submission[] = [];
 
 const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
+    const { systemConfig } = useSystemConfig();
     const [activeTab, setActiveTab] = useState<TabType>('modules');
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
@@ -1795,6 +1908,175 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     // Supabase students data
     const [supabaseStudents, setSupabaseStudents] = useState<UserAccount[]>([]);
     const [isLoadingStudents, setIsLoadingStudents] = useState(true);
+
+    // Supabase tasks data - fetch real assignments from database
+    const [supabaseTasks, setSupabaseTasks] = useState<{ id: string | number; title: string; due: string; status: string; score: string | number | null; category: TaskCategory, points?: number, dueDate?: string, description?: string, instructions?: string, allowLateSubmission?: boolean, latePenalty?: number, maxAttempts?: number, rubricEnabled?: boolean, prerequisiteAssignmentId?: string | null, rubricCriteria?: any[], submissionCount?: number, attachments?: any[] }[]>([]);
+    const [_isLoadingTasks, setIsLoadingTasks] = useState(true);
+
+    // Fetch tasks from Supabase course_tasks table
+    const fetchSupabaseTasks = useCallback(async () => {
+        if (!supabase) {
+            setIsLoadingTasks(false);
+            return;
+        }
+        try {
+            setIsLoadingTasks(true);
+
+            // Get current student's section for filtering
+            const currentUser = getCurrentUser();
+            const studentSection = currentUser?.section || 'BSIT101A';
+
+            const { data: tasks, error } = await supabase
+                .from('course_tasks')
+                .select('id, title, type, due_date, points, status, section, description, instructions, allow_late_submission, late_penalty, max_attempts, rubric_enabled, rubric_criteria, prerequisite_assignment_id, attachments')
+                .eq('course_id', course.id)
+                .eq('section', studentSection)
+                .eq('status', 'published')
+                .order('due_date', { ascending: true });
+
+            if (error) {
+                console.error('Failed to fetch tasks from Supabase:', error);
+                setIsLoadingTasks(false);
+                return;
+            }
+
+            // Fetch student submissions for these tasks (including count for max attempts)
+            let submissionsMap: Record<string, { score: number | null, status: string, count: number }> = {};
+            if (tasks && tasks.length > 0 && currentUser?.id) {
+                const taskIds = tasks.map(t => t.id);
+                // Use student_id field (the actual student ID) to match how submissions are stored
+                const studentIdForQuery = currentUser.student_id || currentUser.id;
+                const { data: subs } = await supabase
+                    .from('student_submissions')
+                    .select('task_id, score, status')
+                    .eq('student_id', studentIdForQuery)
+                    .in('task_id', taskIds);
+
+                if (subs) {
+                    subs.forEach(sub => {
+                        const existing = submissionsMap[sub.task_id];
+                        if (existing) {
+                            // Count multiple submissions for max attempts tracking
+                            existing.count += 1;
+                            // Keep the latest submission's score/status
+                            if (sub.score !== null) {
+                                existing.score = sub.score;
+                                existing.status = sub.status;
+                            }
+                        } else {
+                            submissionsMap[sub.task_id] = { score: sub.score, status: sub.status, count: 1 };
+                        }
+                    });
+                }
+            }
+
+            if (tasks && tasks.length > 0) {
+                const mappedTasks = tasks.map((task) => {
+                    // Get student submission
+                    const submission = submissionsMap[task.id];
+                    // Format due date for display
+                    const dueDate = new Date(task.due_date);
+                    const now = new Date();
+                    const diffDays = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                    let dueLabel = '';
+                    if (diffDays < 0) {
+                        dueLabel = `Overdue by ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''}`;
+                    } else if (diffDays === 0) {
+                        dueLabel = 'Due Today';
+                    } else if (diffDays === 1) {
+                        dueLabel = 'Due Tomorrow';
+                    } else if (diffDays <= 7) {
+                        dueLabel = `Due in ${diffDays} days`;
+                    } else {
+                        dueLabel = `Due ${dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+                    }
+
+                    // Map DB type to TaskCategory
+                    const categoryMap: Record<string, TaskCategory> = {
+                        'assignment': 'assignment',
+                        'quiz': 'quiz',
+                        'performance': 'performance',
+                        'practical': 'practical',
+                        'journal': 'journal',
+                    };
+
+                    return {
+                        id: task.id, // Use real UUID
+                        title: task.title,
+                        due: dueLabel,
+                        status: submission?.status || (diffDays < 0 ? 'overdue' : 'pending'),
+                        score: submission?.score ?? null,
+                        category: categoryMap[task.type] || ('assignment' as TaskCategory),
+                        points: task.points || 100,
+                        dueDate: task.due_date,
+                        description: task.description,
+                        instructions: task.instructions,
+                        allowLateSubmission: (task as any).allow_late_submission || false,
+                        latePenalty: (task as any).late_penalty || 0,
+                        maxAttempts: (task as any).max_attempts || 1,
+                        rubricEnabled: (task as any).rubric_enabled || false,
+                        rubricCriteria: (task as any).rubric_criteria || [],
+                        prerequisiteAssignmentId: (task as any).prerequisite_assignment_id || null,
+                        attachments: (task as any).attachments || [],
+                        submissionCount: submission?.count || 0,
+                        _diffDays: diffDays, // Internal use
+                    };
+                }).map((t: any) => {
+                    // Feature Request (eLMS Unique Backend-safe auto-locking):
+                    // If a task is past 15 days and never submitted, it gets explicitly locked forever instead of deleted.
+                    if (t.status === 'overdue' && t._diffDays <= -15) {
+                        return { ...t, status: 'locked' };
+                    }
+                    return t;
+                });
+
+                setSupabaseTasks(mappedTasks);
+            } else {
+                setSupabaseTasks([]);
+            }
+        } catch (err) {
+            console.error('Error fetching tasks:', err);
+        } finally {
+            setIsLoadingTasks(false);
+        }
+    }, [course.id]);
+
+    useEffect(() => {
+        fetchSupabaseTasks();
+    }, [fetchSupabaseTasks]);
+
+    // Listen for realtime grading updates
+    useEffect(() => {
+        if (!supabase) return;
+        const currentUser = getCurrentUser();
+        if (!currentUser) return;
+
+        const studentIdForSubscription = currentUser.student_id || currentUser.id;
+        const channel = supabase
+            .channel('student_grade_updates')
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'student_submissions', filter: `student_id=eq.${studentIdForSubscription}` },
+                (payload) => {
+                    const updatedSub = payload.new;
+                    setSupabaseTasks(prev => prev.map(t => {
+                        if (t.id === updatedSub.task_id) {
+                            return {
+                                ...t,
+                                score: updatedSub.score,
+                                status: updatedSub.status
+                            };
+                        }
+                        return t;
+                    }));
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase?.removeChannel(channel);
+        };
+    }, []);
 
     // Teacher Mode State - persist across page refreshes
     const [isTeacherMode, _setIsTeacherMode] = useState(() => {
@@ -1864,6 +2146,16 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             localStorage.setItem(storageKey, JSON.stringify(submissions));
         }
     }, [submissions, course.id]);
+
+    // State for viewing task details in a modal
+    const [instructionsModalTask, setInstructionsModalTask] = useState<any>(null);
+    // State for the separate Submit Assignment modal
+    const [submitModalTask, setSubmitModalTask] = useState<any>(null);
+    const [submissionText, setSubmissionText] = useState('');
+    const [submissionFiles, setSubmissionFiles] = useState<File[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
+
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
     const [selectedTaskType, setSelectedTaskType] = useState<TaskCategory>('assignment');
 
@@ -1884,6 +2176,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [showSectionDropdown, setShowSectionDropdown] = useState(false);
     const [showTeacherTutorial, setShowTeacherTutorial] = useState(false);
     const [tutorialStep, setTutorialStep] = useState(0);
+    const [contactTooltip, setContactTooltip] = useState<{ visible: boolean; x: number; y: number }>({ visible: false, x: 0, y: 0 });
 
     // Persist teacher mode state to sessionStorage
     useEffect(() => {
@@ -2270,7 +2563,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     // Get course-specific data
     const courseData = useMemo(() => getCourseData(course.id), [course.id]);
     const courseModules = courseData.modules;
-    const courseTasks = courseData.tasks;
+    // Merge demo tasks with real Supabase tasks
+    const courseTasks = useMemo(() => {
+        const demoTasks = courseData.tasks || [];
+        // Combine: demo tasks first, then Supabase tasks
+        return [...demoTasks, ...supabaseTasks];
+    }, [courseData.tasks, supabaseTasks]);
 
     // Filtered data based on search and filters
     const filteredModules = useMemo(() =>
@@ -2287,7 +2585,34 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const filteredTasks = useMemo(() =>
         courseTasks.filter(t => {
             const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesCategory = taskFilter === 'all' || t.category === taskFilter;
+            let matchesCategory = false;
+
+            if (taskFilter === 'all') {
+                const taskAny = t as any;
+                // Visual Clutter Rule: Do not show heavily overdue or locked tasks in the 'All' feed
+                if ((t.status === 'overdue' && taskAny._diffDays < -7) || t.status === 'locked') {
+                    matchesCategory = false;
+                } else {
+                    matchesCategory = true;
+                }
+            } else if (taskFilter === 'overdue') {
+                const isOverdueDemo = t.due.toLowerCase().includes('overdue');
+                let isRealtimeOverdue = false;
+                // Determine if a supabase task is genuinely overdue by time
+                const taskAny = t as any;
+                if (taskAny.id && taskAny.due_date) {
+                    const dueDate = new Date(taskAny.due_date);
+                    if (new Date() > dueDate && t.status !== 'submitted') {
+                        isRealtimeOverdue = true;
+                    }
+                }
+
+                // If they specifically clicked the Overdue filter, SHOW everything overdue AND locked!
+                matchesCategory = isOverdueDemo || isRealtimeOverdue || t.status === 'locked';
+            } else {
+                matchesCategory = t.category === taskFilter;
+            }
+
             return matchesSearch && matchesCategory;
         }),
         [searchQuery, taskFilter, courseTasks]
@@ -2631,8 +2956,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     <motion.button
                                         onClick={() => setSemesterFilter('first')}
                                         className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${semesterFilter === 'first'
-                                                ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
-                                                : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
+                                            ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
+                                            : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
                                             }`}
                                         whileTap={{ scale: 0.97 }}
                                     >
@@ -2648,8 +2973,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     <motion.button
                                         onClick={() => setSemesterFilter('second')}
                                         className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${semesterFilter === 'second'
-                                                ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
-                                                : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
+                                            ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
+                                            : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
                                             }`}
                                         whileTap={{ scale: 0.97 }}
                                     >
@@ -2708,8 +3033,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             key={term.id}
                                             onClick={() => setTermFilter(term.id)}
                                             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${termFilter === term.id
-                                                    ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
-                                                    : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
+                                                ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
+                                                : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
                                                 }`}
                                             whileTap={{ scale: 0.97 }}
                                         >
@@ -2878,7 +3203,25 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
                 // Get counts for each task category
                 const getTaskCategoryCount = (cat: TaskCategory) => {
-                    if (cat === 'all') return courseTasks.length;
+                    if (cat === 'all') {
+                        return courseTasks.filter((t: any) => {
+                            if ((t.status === 'overdue' && t._diffDays < -7) || t.status === 'locked') return false;
+                            return true;
+                        }).length;
+                    }
+                    if (cat === 'overdue') {
+                        return courseTasks.filter((t: any) => {
+                            const isOverdueDemo = t.due?.toLowerCase().includes('overdue');
+                            let isRealtimeOverdue = false;
+                            if (t.id && t.due_date) {
+                                const dueDate = new Date(t.due_date);
+                                if (new Date() > dueDate && t.status !== 'submitted') {
+                                    isRealtimeOverdue = true;
+                                }
+                            }
+                            return isOverdueDemo || isRealtimeOverdue || t.status === 'locked';
+                        }).length;
+                    }
                     return courseTasks.filter((t: { category: TaskCategory }) => t.category === cat).length;
                 };
 
@@ -2898,8 +3241,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                 key={cat.id}
                                                 onClick={() => setTaskFilter(cat.id)}
                                                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${isActive
-                                                        ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
-                                                        : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
+                                                    ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
+                                                    : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
                                                     }`}
                                                 whileTap={{ scale: 0.97 }}
                                             >
@@ -2937,17 +3280,32 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         ) : (
                             <div
                                 ref={tasksScrollRef}
-                                className="flex gap-3 overflow-x-auto pt-1 pb-4 -mx-1 px-1 snap-x snap-mandatory scroll-smooth"
+                                className="flex gap-4 overflow-x-auto pt-4 pb-12 -mx-6 px-6 snap-x snap-mandatory scroll-smooth"
+                                style={{ scrollPaddingLeft: '24px' }}
                             >
                                 {filteredTasks.map((task, index) => {
                                     const categoryConfig = TASK_CATEGORIES.find(c => c.id === task.category);
-                                    const categoryColors: Record<string, string> = {
-                                        assignment: 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                                        performance: 'bg-purple-50 text-purple-600 border-purple-100',
-                                        quiz: 'bg-amber-50 text-amber-600 border-amber-100',
-                                        practical: 'bg-rose-50 text-rose-600 border-rose-100',
-                                        journal: 'bg-cyan-50 text-cyan-600 border-cyan-100',
+
+                                    // Color configs matching teacher preview
+                                    const typeColors: Record<string, { bg: string; text: string; border: string }> = {
+                                        assignment: { bg: 'rgba(16, 185, 129, 0.1)', text: '#059669', border: 'rgba(16, 185, 129, 0.2)' },
+                                        performance: { bg: 'rgba(139, 92, 246, 0.1)', text: '#7c3aed', border: 'rgba(139, 92, 246, 0.2)' },
+                                        quiz: { bg: 'rgba(245, 158, 11, 0.1)', text: '#d97706', border: 'rgba(245, 158, 11, 0.2)' },
+                                        practical: { bg: 'rgba(244, 63, 94, 0.1)', text: '#e11d48', border: 'rgba(244, 63, 94, 0.2)' },
+                                        journal: { bg: 'rgba(6, 182, 212, 0.1)', text: '#0891b2', border: 'rgba(6, 182, 212, 0.2)' },
                                     };
+
+                                    const typeColor = typeColors[task.category] || typeColors.assignment;
+
+                                    let isOverdue = task.due.toLowerCase().includes('overdue');
+                                    const taskAny = task as any;
+                                    if (taskAny.id && taskAny.due_date) {
+                                        const dueDate = new Date(taskAny.due_date);
+                                        if (new Date() > dueDate && task.status !== 'submitted') {
+                                            isOverdue = true;
+                                        }
+                                    }
+                                    const studentSection = getCurrentUser()?.section || 'BSIT101A';
 
                                     return (
                                         <motion.div
@@ -2955,46 +3313,598 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             initial={{ opacity: 0, x: 20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 25 }}
-                                            whileHover={{ y: -4, transition: { duration: 0.15 } }}
-                                            className="group flex-shrink-0 w-56 p-4 rounded-xl border border-zinc-100 bg-white hover:border-blue-200 hover:shadow-lg cursor-pointer transition-all snap-start"
+                                            whileHover={{ y: -4, boxShadow: '0 12px 32px rgba(59, 130, 246, 0.15)' }}
+                                            style={{
+                                                flexShrink: 0,
+                                                width: '320px',
+                                                borderRadius: '20px',
+                                                border: '1px solid rgba(59, 130, 246, 0.12)',
+                                                background: '#fff',
+                                                cursor: 'pointer',
+                                                position: 'relative',
+                                                scrollSnapAlign: 'start',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                overflow: 'hidden'
+                                            }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                console.log("Card clicked", task.id);
+                                            }}
                                         >
-                                            <div className="flex flex-col h-full">
-                                                {/* Category & Status */}
-                                                <div className="flex items-start justify-between mb-3">
-                                                    <span className={`px-2 py-1 text-[9px] font-semibold rounded-lg border ${categoryColors[task.category] || 'bg-zinc-50 text-zinc-600 border-zinc-100'}`}>
-                                                        {categoryConfig?.label.replace('s', '').toUpperCase()}
-                                                    </span>
-                                                    <span className={`text-[9px] font-semibold px-2 py-1 rounded-full uppercase tracking-wide ${task.status === 'submitted' ? 'bg-emerald-100 text-emerald-700' :
-                                                            task.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-zinc-100 text-zinc-600'
-                                                        }`}>
-                                                        {task.status === 'submitted' ? 'Done' : task.status === 'pending' ? 'Pending' : 'Upcoming'}
-                                                    </span>
+                                            {/* Completed Badge */}
+                                            {(task.status === 'submitted' || task.status === 'resubmitted' || task.status === 'graded' || (task.score !== null && task.score !== undefined && Number(task.score) > 0)) && (
+                                                <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 2 }}>
+                                                    <motion.div
+                                                        initial={{ opacity: 0, scale: 0.8 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        whileHover={{ scale: 1.05, boxShadow: task.status === 'resubmitted' ? '0 4px 12px rgba(168, 85, 247, 0.25)' : '0 4px 12px rgba(16, 185, 129, 0.25)' }}
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '6px',
+                                                            padding: '4px 10px',
+                                                            background: 'rgba(255, 255, 255, 0.9)',
+                                                            backdropFilter: 'blur(8px)',
+                                                            border: task.status === 'resubmitted' ? '1px solid rgba(168, 85, 247, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)',
+                                                            borderRadius: '20px',
+                                                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                                                            cursor: 'default'
+                                                        }}
+                                                    >
+                                                        {task.status === 'resubmitted' ? (
+                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                <polyline points="1 4 1 10 7 10"></polyline>
+                                                                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                                                            </svg>
+                                                        ) : (
+                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M20 6L9 17l-5-5" />
+                                                            </svg>
+                                                        )}
+                                                        <span style={{ fontSize: '10px', fontWeight: 700, color: task.status === 'resubmitted' ? '#a855f7' : '#10b981', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                                                            {task.status === 'resubmitted' ? 'Resubmitted' : 'Completed'}
+                                                        </span>
+                                                    </motion.div>
                                                 </div>
+                                            )}
 
-                                                {/* Title */}
-                                                <p className="text-sm font-semibold text-zinc-800 line-clamp-2 mb-1">{task.title}</p>
-
-                                                {/* Due Date */}
-                                                <p className="text-xs text-zinc-500 mb-3">Due: {task.due}</p>
-
-                                                {/* Score or Action */}
-                                                <div className="mt-auto">
-                                                    {task.score ? (
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="text-[10px] text-zinc-500 uppercase tracking-wide">Score</span>
-                                                            <span className="text-sm font-bold text-blue-600">{task.score}</span>
-                                                        </div>
+                                            {/* Contact Teacher icon – top right corner for overdue tasks */}
+                                            {isOverdue && (
+                                                <div
+                                                    style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 2 }}
+                                                    onMouseEnter={(e) => {
+                                                        const rect = e.currentTarget.getBoundingClientRect();
+                                                        setContactTooltip({
+                                                            visible: true,
+                                                            x: rect.left + rect.width / 2,
+                                                            y: rect.bottom + 10,
+                                                        });
+                                                    }}
+                                                    onMouseLeave={() => {
+                                                        setContactTooltip(prev => ({ ...prev, visible: false }));
+                                                    }}
+                                                >
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.12, boxShadow: '0 4px 14px rgba(239, 68, 68, 0.3)' }}
+                                                        whileTap={{ scale: 0.92 }}
+                                                        onClick={async (e) => {
+                                                            e.stopPropagation();
+                                                            try {
+                                                                const client = supabase;
+                                                                if (!client) {
+                                                                    window.location.href = `mailto:Testing@testing?subject=Regarding Overdue Task: ${task.title}`;
+                                                                    return;
+                                                                }
+                                                                const { data } = await client
+                                                                    .from('users')
+                                                                    .select('email')
+                                                                    .eq('email', 'Testing@testing')
+                                                                    .single();
+                                                                if (data && data.email) {
+                                                                    window.location.href = `mailto:${data.email}?subject=Regarding Overdue Task: ${task.title}`;
+                                                                } else {
+                                                                    window.location.href = `mailto:Testing@testing?subject=Regarding Overdue Task: ${task.title}`;
+                                                                }
+                                                            } catch (err) {
+                                                                window.location.href = `mailto:Testing@testing?subject=Regarding Overdue Task: ${task.title}`;
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '34px',
+                                                            height: '34px',
+                                                            borderRadius: '10px',
+                                                            background: 'rgba(239, 68, 68, 0.08)',
+                                                            border: '1px solid rgba(239, 68, 68, 0.18)',
+                                                            color: '#dc2626',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            cursor: 'pointer',
+                                                            padding: 0
+                                                        }}
+                                                    >
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                                            <polyline points="22,6 12,13 2,6" />
+                                                        </svg>
+                                                    </motion.button>
+                                                </div>
+                                            )}
+                                            <div style={{ padding: '24px 20px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', flex: 1 }}>
+                                                {/* Large Icon at Top with Gradient */}
+                                                <div style={{
+                                                    width: '56px', height: '56px', borderRadius: '14px',
+                                                    background: task.category === 'quiz' ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' : task.category === 'performance' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : task.category === 'journal' || task.category === 'practical' ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    marginBottom: '12px',
+                                                    boxShadow: task.category === 'quiz' ? '0 8px 20px rgba(245, 158, 11, 0.25)' : task.category === 'performance' ? '0 8px 20px rgba(16, 185, 129, 0.25)' : task.category === 'journal' || task.category === 'practical' ? '0 8px 20px rgba(239, 68, 68, 0.25)' : '0 8px 20px rgba(59, 130, 246, 0.25)'
+                                                }}>
+                                                    {task.category === 'quiz' ? (
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+                                                            <circle cx="12" cy="12" r="10" />
+                                                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                                                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                                                        </svg>
+                                                    ) : task.category === 'performance' ? (
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+                                                            <circle cx="12" cy="12" r="10" />
+                                                            <circle cx="12" cy="12" r="6" />
+                                                            <circle cx="12" cy="12" r="2" />
+                                                        </svg>
+                                                    ) : task.category === 'journal' || task.category === 'practical' ? (
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+                                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                                            <line x1="9" y1="7" x2="17" y2="7" />
+                                                            <line x1="9" y1="11" x2="15" y2="11" />
+                                                        </svg>
                                                     ) : (
-                                                        <motion.button
-                                                            whileHover={{ scale: 1.02 }}
-                                                            whileTap={{ scale: 0.98 }}
-                                                            className="w-full py-2 text-[10px] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                        >
-                                                            {task.status === 'pending' ? 'Submit Now' : 'View Details'}
-                                                        </motion.button>
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+                                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                            <polyline points="14 2 14 8 20 8" />
+                                                            <line x1="16" y1="13" x2="8" y2="13" />
+                                                            <line x1="16" y1="17" x2="8" y2="17" />
+                                                        </svg>
                                                     )}
                                                 </div>
+
+                                                {/* Type Badge */}
+                                                <span style={{
+                                                    padding: '5px 12px', borderRadius: '8px',
+                                                    background: typeColor.bg, border: `1px solid ${typeColor.border}`,
+                                                    color: typeColor.text, fontSize: '10px', fontWeight: 600,
+                                                    textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px'
+                                                }}>
+                                                    {categoryConfig?.label || 'Assignment'}
+                                                </span>
+
+                                                {/* Title */}
+                                                <h3 style={{
+                                                    margin: '0 0 6px 0', fontSize: '15px', fontWeight: 600, color: '#1e293b',
+                                                    lineHeight: 1.4, minHeight: '42px', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis',
+                                                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'
+                                                }}>
+                                                    {task.title}
+                                                </h3>
+
+                                                {/* Course & Section Subtitle Redesign */}
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center', marginBottom: '16px', minHeight: '26px' }}>
+                                                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center', padding: '4px 8px', background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '6px', color: '#64748b', fontSize: '11px', fontWeight: 500, maxWidth: '100%' }}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+                                                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                                        </svg>
+                                                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '150px' }} title={course.title}>
+                                                            {course.title.split('-')[0].trim()}
+                                                        </span>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center', padding: '4px 8px', background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '6px', color: '#64748b', fontSize: '11px', fontWeight: 500 }}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+                                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                                            <circle cx="11" cy="7" r="4" />
+                                                        </svg>
+                                                        {studentSection}
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ flexGrow: 1 }} />
+
+                                                {/* Points & Progress */}
+                                                <div style={{ width: '100%', marginBottom: '16px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                                        <span style={{ fontSize: '10px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Points</span>
+                                                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#3b82f6' }}>{task.score ?? 0} / {(task as any).points || 100} pts</span>
+                                                    </div>
+                                                    <div style={{ height: '6px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '999px', overflow: 'hidden' }}>
+                                                        <motion.div
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: `${Math.min((Number(task.score ?? 0) / ((task as any).points || 100)) * 100, 100)}%` }}
+                                                            transition={{ duration: 0.8 }}
+                                                            style={{ height: '100%', borderRadius: '999px', background: 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)' }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Icons Row */}
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}>
+                                                    {/* Due Date Icon */}
+                                                    <PreviewIconWithTooltip
+                                                        label="Due Date"
+                                                        subtitle={(task as any).dueDate ? new Date((task as any).dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Not set'}
+                                                        color={(task as any).dueDate ? '#3b82f6' : '#94a3b8'}
+                                                        bgColor={(task as any).dueDate ? 'rgba(59, 130, 246, 0.1)' : 'rgba(148, 163, 184, 0.1)'}
+                                                        borderColor={(task as any).dueDate ? 'rgba(59, 130, 246, 0.15)' : 'rgba(148, 163, 184, 0.15)'}
+                                                    >
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={(task as any).dueDate ? '#3b82f6' : '#94a3b8'} strokeWidth="2">
+                                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                                            <line x1="16" y1="2" x2="16" y2="6" />
+                                                            <line x1="8" y1="2" x2="8" y2="6" />
+                                                            <line x1="3" y1="10" x2="21" y2="10" />
+                                                        </svg>
+                                                    </PreviewIconWithTooltip>
+
+                                                    {/* Attempts Icon with Tooltip */}
+                                                    <PreviewIconWithTooltip
+                                                        label="Attempts"
+                                                        subtitle={`${(task as any).maxAttempts || 1} attempt${((task as any).maxAttempts || 1) > 1 ? 's' : ''} allowed`}
+                                                        color="#003DA5"
+                                                        bgColor="rgba(0, 61, 165, 0.1)"
+                                                        borderColor="rgba(0, 61, 165, 0.15)"
+                                                    >
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#003DA5" strokeWidth="2">
+                                                            <polyline points="1 4 1 10 7 10" />
+                                                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                                                        </svg>
+                                                    </PreviewIconWithTooltip>
+
+                                                    {/* Late Submission Icon with Tooltip */}
+                                                    <PreviewIconWithTooltip
+                                                        label="Late Submission"
+                                                        subtitle={(task as any).allowLateSubmission ? 'Allowed' : 'Not allowed'}
+                                                        color={(task as any).allowLateSubmission ? '#10b981' : '#ef4444'}
+                                                        bgColor={(task as any).allowLateSubmission ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}
+                                                        borderColor={(task as any).allowLateSubmission ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)'}
+                                                    >
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={(task as any).allowLateSubmission ? '#10b981' : '#ef4444'} strokeWidth="2">
+                                                            {(task as any).allowLateSubmission ? (
+                                                                <polyline points="20 6 9 17 4 12" />
+                                                            ) : (
+                                                                <>
+                                                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                                                </>
+                                                            )}
+                                                        </svg>
+                                                    </PreviewIconWithTooltip>
+
+                                                    {/* Attachments Icon with Tooltip */}
+                                                    {((task as any).attachments?.length > 0) && (
+                                                        <PreviewIconWithTooltip
+                                                            label="Attachments"
+                                                            subtitle={`${(task as any).attachments.length} file${(task as any).attachments.length > 1 ? 's' : ''}`}
+                                                            color="#f59e0b"
+                                                            bgColor="rgba(245, 158, 11, 0.1)"
+                                                            borderColor="rgba(245, 158, 11, 0.15)"
+                                                        >
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
+                                                                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                                                            </svg>
+                                                        </PreviewIconWithTooltip>
+                                                    )}
+
+                                                    {/* Rubric Icon with Tooltip */}
+                                                    {((task as any).rubricCriteria?.length > 0) && (
+                                                        <PreviewIconWithTooltip
+                                                            label="Rubric"
+                                                            subtitle={`${(task as any).rubricCriteria.length} criteria`}
+                                                            color="#ec4899"
+                                                            bgColor="rgba(236, 72, 153, 0.1)"
+                                                            borderColor="rgba(236, 72, 153, 0.15)"
+                                                        >
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2">
+                                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                                                <line x1="3" y1="9" x2="21" y2="9" />
+                                                                <line x1="9" y1="21" x2="9" y2="9" />
+                                                            </svg>
+                                                        </PreviewIconWithTooltip>
+                                                    )}
+                                                </div>
+
+                                                {/* Styled Due Date Badge */}
+                                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                                    <div style={{
+                                                        display: 'inline-flex', alignItems: 'center', gap: '6px',
+                                                        padding: '4px 10px', borderRadius: '12px',
+                                                        background: isOverdue ? 'rgba(239, 68, 68, 0.1)' : 'rgba(241, 245, 249, 1)',
+                                                        border: `1px solid ${isOverdue ? 'rgba(239, 68, 68, 0.2)' : 'rgba(226, 232, 240, 1)'}`,
+                                                        color: isOverdue ? '#dc2626' : '#64748b',
+                                                        fontSize: '11px', fontWeight: 600
+                                                    }}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                            <circle cx="12" cy="12" r="10" />
+                                                            <path d="M12 6v6l4 2" />
+                                                        </svg>
+                                                        {task.due}
+                                                    </div>
+
+                                                    {(task as any).dueDate && (
+                                                        <div style={{
+                                                            display: 'inline-flex', alignItems: 'center', gap: '6px',
+                                                            padding: '4px 10px', borderRadius: '12px',
+                                                            background: 'rgba(241, 245, 249, 1)',
+                                                            border: '1px solid rgba(226, 232, 240, 1)',
+                                                            color: '#475569',
+                                                            fontSize: '11px', fontWeight: 600
+                                                        }}>
+                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                                                <line x1="16" y1="2" x2="16" y2="6" />
+                                                                <line x1="8" y1="2" x2="8" y2="6" />
+                                                                <line x1="3" y1="10" x2="21" y2="10" />
+                                                            </svg>
+                                                            Date to submit: {new Date((task as any).dueDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Bottom Button Area */}
+                                            <div style={{ padding: '0 20px 24px 20px', marginTop: 'auto' }}>
+                                                {(task.score !== null && task.score !== undefined) ? (
+                                                    <div style={{
+                                                        width: '100%', padding: '12px', borderRadius: '12px',
+                                                        background: 'rgba(59, 130, 246, 0.06)', border: '1px solid rgba(59, 130, 246, 0.12)',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                                                    }}>
+                                                        <span style={{ fontSize: '13px', fontWeight: 600, color: '#3b82f6' }}>Score: {task.score} / {(task as any).points || 100} pts</span>
+                                                    </div>
+                                                ) : (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                        {(() => {
+                                                            const maxAttempts = (task as any).maxAttempts || 1;
+                                                            const submissionCount = (task as any).submissionCount || 0;
+                                                            const attemptsExhausted = maxAttempts > 1 && submissionCount >= maxAttempts;
+                                                            const allowLate = (task as any).allowLateSubmission || false;
+                                                            const latePenalty = (task as any).latePenalty || 0;
+                                                            const isOverdue = task.status === 'overdue' || (task.due && task.due.toLowerCase().includes('overdue'));
+
+                                                            // Calculate days late for penalty display
+                                                            let daysLate = 0;
+                                                            if (isOverdue && (task as any).dueDate) {
+                                                                const dueDate = new Date((task as any).dueDate);
+                                                                const now = new Date();
+                                                                daysLate = Math.ceil((now.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+                                                            }
+                                                            const totalPenalty = Math.min(100, daysLate * latePenalty);
+
+                                                            // Case 1: All attempts used up
+                                                            if (attemptsExhausted) {
+                                                                return (
+                                                                    <div style={{
+                                                                        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                        gap: '6px', padding: '8px 14px',
+                                                                        background: 'rgba(239, 68, 68, 0.06)', color: '#ef4444',
+                                                                        border: '1px solid rgba(239, 68, 68, 0.15)', borderRadius: '10px',
+                                                                        fontSize: '12px', fontWeight: 600,
+                                                                    }}>
+                                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                                                        </svg>
+                                                                        No attempts remaining ({submissionCount}/{maxAttempts} used)
+                                                                    </div>
+                                                                );
+                                                            }
+
+                                                            // Case 2: Overdue and late submissions NOT allowed
+                                                            if (isOverdue && !allowLate) {
+                                                                return (
+                                                                    <div style={{
+                                                                        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                        gap: '6px', padding: '8px 14px',
+                                                                        background: 'rgba(239, 68, 68, 0.06)', color: '#ef4444',
+                                                                        border: '1px solid rgba(239, 68, 68, 0.15)', borderRadius: '10px',
+                                                                        fontSize: '12px', fontWeight: 600,
+                                                                    }}>
+                                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                                                        </svg>
+                                                                        Submission closed — past due date
+                                                                    </div>
+                                                                );
+                                                            }
+
+                                                            // Case 3: Overdue but late submissions ARE allowed
+                                                            if (isOverdue && allowLate) {
+                                                                return (
+                                                                    <>
+                                                                        {/* Late penalty warning */}
+                                                                        {latePenalty > 0 && (
+                                                                            <div style={{
+                                                                                width: '100%', display: 'flex', alignItems: 'center', gap: '6px',
+                                                                                padding: '6px 12px',
+                                                                                background: 'rgba(245, 158, 11, 0.08)',
+                                                                                border: '1px solid rgba(245, 158, 11, 0.15)',
+                                                                                borderRadius: '8px',
+                                                                                fontSize: '11px', fontWeight: 500, color: '#92400e',
+                                                                            }}>
+                                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
+                                                                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                                                                    <line x1="12" y1="9" x2="12" y2="13" />
+                                                                                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                                                                                </svg>
+                                                                                {daysLate} day{daysLate !== 1 ? 's' : ''} late · -{totalPenalty}% penalty applied
+                                                                            </div>
+                                                                        )}
+                                                                        {!systemConfig.submissions_enabled ? (
+                                                                            <div style={{
+                                                                                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                                gap: '6px', padding: '8px 14px',
+                                                                                background: 'rgba(100, 116, 139, 0.08)', color: '#64748b',
+                                                                                border: '1px solid rgba(100, 116, 139, 0.2)', borderRadius: '10px',
+                                                                                fontSize: '13px', fontWeight: 600, cursor: 'not-allowed'
+                                                                            }}>
+                                                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                                                                </svg>
+                                                                                Submissions Locked
+                                                                            </div>
+                                                                        ) : (
+                                                                            <motion.button
+                                                                                initial={{ opacity: 0, x: 10 }}
+                                                                                animate={{ opacity: 1, x: 0 }}
+                                                                            transition={{
+                                                                                default: { duration: 0.15, ease: 'easeOut' },
+                                                                                opacity: { delay: 0.35, duration: 0.3 },
+                                                                                x: { delay: 0.35, duration: 0.3 }
+                                                                            }}
+                                                                            whileHover={{ scale: 1.02, boxShadow: '0 6px 20px rgba(245, 158, 11, 0.25)' }}
+                                                                            whileTap={{ scale: 0.98 }}
+                                                                            onClick={(e) => { e.stopPropagation(); setSubmitModalTask(task); }}
+                                                                            style={{
+                                                                                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                                gap: '6px', padding: '8px 14px',
+                                                                                background: 'rgba(245, 158, 11, 0.08)', color: '#f59e0b',
+                                                                                border: '1px solid rgba(245, 158, 11, 0.2)', borderRadius: '10px',
+                                                                                fontSize: '13px', fontWeight: 600, cursor: 'pointer'
+                                                                            }}
+                                                                        >
+                                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                                                <circle cx="12" cy="12" r="10" />
+                                                                                <polyline points="12 6 12 12 16 14" />
+                                                                            </svg>
+                                                                            Submit Late
+                                                                            {maxAttempts > 1 && (
+                                                                                <span style={{
+                                                                                    fontSize: '10px', padding: '1px 6px', borderRadius: '6px',
+                                                                                    background: 'rgba(245, 158, 11, 0.12)', marginLeft: '2px',
+                                                                                }}>
+                                                                                    {maxAttempts - submissionCount} left
+                                                                                </span>
+                                                                            )}
+                                                                        </motion.button>
+                                                                        )}
+                                                                    </>
+                                                                );
+                                                            }
+
+                                                            // Case 4: Normal — on time, can submit
+                                                            if (!systemConfig.submissions_enabled) {
+                                                                return (
+                                                                    <div style={{
+                                                                        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                        gap: '6px', padding: '8px 14px',
+                                                                        background: 'rgba(100, 116, 139, 0.08)', color: '#64748b',
+                                                                        border: '1px solid rgba(100, 116, 139, 0.2)', borderRadius: '10px',
+                                                                        fontSize: '13px', fontWeight: 600, cursor: 'not-allowed'
+                                                                    }}>
+                                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                                                        </svg>
+                                                                        Submissions Locked
+                                                                    </div>
+                                                                );
+                                                            }
+
+                                                            return (
+                                                                <motion.button
+                                                                    initial={{ opacity: 0, x: 10 }}
+                                                                    animate={{ opacity: 1, x: 0 }}
+                                                                    transition={{
+                                                                        default: { duration: 0.15, ease: 'easeOut' },
+                                                                        opacity: { delay: 0.35, duration: 0.3 },
+                                                                        x: { delay: 0.35, duration: 0.3 }
+                                                                    }}
+                                                                    whileHover={{ scale: 1.02, boxShadow: '0 6px 20px rgba(59, 130, 246, 0.25)' }}
+                                                                    whileTap={{ scale: 0.98 }}
+                                                                    onClick={(e) => { e.stopPropagation(); setSubmitModalTask(task); }}
+                                                                    style={{
+                                                                        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                        gap: '6px', padding: '8px 14px',
+                                                                        background: 'rgba(59, 130, 246, 0.08)', color: '#3b82f6',
+                                                                        border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: '10px',
+                                                                        fontSize: '13px', fontWeight: 600, cursor: 'pointer'
+                                                                    }}
+                                                                >
+                                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                                        <circle cx="12" cy="12" r="3" />
+                                                                    </svg>
+                                                                    Submit Task
+                                                                    {maxAttempts > 1 && (
+                                                                        <span style={{
+                                                                            fontSize: '10px', padding: '1px 6px', borderRadius: '6px',
+                                                                            background: 'rgba(59, 130, 246, 0.12)', marginLeft: '2px',
+                                                                        }}>
+                                                                            {maxAttempts - submissionCount} left
+                                                                        </span>
+                                                                    )}
+                                                                </motion.button>
+                                                            );
+                                                        })()}
+
+                                                    </div>
+                                                )}
+
+                                                <motion.button
+                                                    initial={{ opacity: 0, x: 10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{
+                                                        default: { duration: 0.15, ease: 'easeOut' },
+                                                        opacity: { delay: 0.35, duration: 0.3 },
+                                                        x: { delay: 0.35, duration: 0.3 }
+                                                    }}
+                                                    whileHover={{
+                                                        scale: 1.02,
+                                                        boxShadow: '0 6px 20px rgba(236, 72, 153, 0.25)',
+                                                        borderColor: 'rgba(236, 72, 153, 0.5)',
+                                                    }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setInstructionsModalTask(task);
+                                                    }}
+                                                    style={{
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '6px',
+                                                        padding: '8px 14px',
+                                                        background: document.documentElement.classList.contains('dark') ? 'linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(71, 85, 105, 0.6) 50%, rgba(236, 72, 153, 0.15))' : 'linear-gradient(135deg, #f8fafc, #f1f5f9 50%, #fdf2f8)',
+                                                        color: document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#475569',
+                                                        border: `1px solid ${document.documentElement.classList.contains('dark') ? 'rgba(236, 72, 153, 0.25)' : 'rgba(236, 72, 153, 0.2)'}`,
+                                                        borderRadius: '10px',
+                                                        fontSize: '13px',
+                                                        fontWeight: 600,
+                                                        cursor: 'pointer',
+                                                        marginTop: '12px',
+                                                        flexShrink: 0,
+                                                        position: 'relative',
+                                                        overflow: 'hidden',
+                                                        transition: 'border-color 0.2s ease',
+                                                    }}
+                                                >
+                                                    <div style={{
+                                                        position: 'absolute', inset: 0,
+                                                        background: 'linear-gradient(135deg, transparent, rgba(236, 72, 153, 0.08), transparent)',
+                                                        opacity: 0.8, pointerEvents: 'none',
+                                                    }} />
+                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginRight: '2px' }}>
+                                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                        <polyline points="14 2 14 8 20 8" />
+                                                        <line x1="16" y1="13" x2="8" y2="13" />
+                                                        <line x1="16" y1="17" x2="8" y2="17" />
+                                                        <polyline points="10 9 9 9 8 9" />
+                                                    </svg>
+                                                    <span style={{ color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#475569' }}>View Instructions</span>
+                                                    <span style={{ margin: '0 2px', color: '#ec4899', fontWeight: 800 }}>&amp;</span>
+                                                    <span style={{ color: document.documentElement.classList.contains('dark') ? '#f472b6' : '#db2777' }}>Rubrics</span>
+                                                </motion.button>
                                             </div>
                                         </motion.div>
                                     );
@@ -3210,8 +4120,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             key={tab.id}
                                             onClick={() => setStudentFilter(tab.id)}
                                             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${studentFilter === tab.id
-                                                    ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
-                                                    : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
+                                                ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
+                                                : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
                                                 }`}
                                             whileTap={{ scale: 0.97 }}
                                         >
@@ -3552,8 +4462,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                         key={option.value}
                                                         onClick={() => { setYearLevelFilter(option.value as YearLevel); setShowYearDropdown(false); }}
                                                         className={`w-full px-3 py-2.5 text-[11px] font-medium flex items-center gap-2.5 transition-colors ${yearLevelFilter === option.value
-                                                                ? 'bg-blue-50 text-blue-600'
-                                                                : 'text-zinc-700 hover:bg-zinc-50'
+                                                            ? 'bg-blue-50 text-blue-600'
+                                                            : 'text-zinc-700 hover:bg-zinc-50'
                                                             }`}
                                                         whileHover={{ x: 2 }}
                                                         transition={{ duration: 0.1 }}
@@ -3625,8 +4535,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                         key={option.value}
                                                         onClick={() => { setSectionFilter(option.value as Section); setShowSectionDropdown(false); }}
                                                         className={`w-full px-3 py-2.5 text-[11px] font-medium flex items-center gap-2.5 transition-colors ${sectionFilter === option.value
-                                                                ? 'bg-blue-50 text-blue-600'
-                                                                : 'text-zinc-700 hover:bg-zinc-50'
+                                                            ? 'bg-blue-50 text-blue-600'
+                                                            : 'text-zinc-700 hover:bg-zinc-50'
                                                             }`}
                                                         whileHover={{ x: 2 }}
                                                         transition={{ duration: 0.1 }}
@@ -3705,8 +4615,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             data-tab-id={tab.id}
                                             onClick={() => setTeacherTab(tab.id)}
                                             className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-colors duration-100 whitespace-nowrap ${teacherTab === tab.id
-                                                    ? 'text-blue-600'
-                                                    : 'text-zinc-500 hover:text-zinc-700'
+                                                ? 'text-blue-600'
+                                                : 'text-zinc-500 hover:text-zinc-700'
                                                 }`}
                                         >
                                             {tab.icon}
@@ -3722,8 +4632,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         data-tab-id={tab.id}
                                         onClick={() => { setActiveTab(tab.id); setSearchQuery(''); }}
                                         className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-colors duration-100 whitespace-nowrap ${activeTab === tab.id
-                                                ? 'text-blue-600'
-                                                : 'text-zinc-500 hover:text-zinc-700'
+                                            ? 'text-blue-600'
+                                            : 'text-zinc-500 hover:text-zinc-700'
                                             }`}
                                     >
                                         {tab.icon}
@@ -3804,8 +4714,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     whileTap={{ scale: 0.98 }}
                                                     transition={{ duration: 0.1 }}
                                                     className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-medium rounded-lg whitespace-nowrap ${selectedTaskType === cat.id
-                                                            ? 'bg-blue-600 text-white'
-                                                            : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                                                        ? 'bg-blue-600 text-white'
+                                                        : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
                                                         }`}
                                                 >
                                                     {cat.icon}
@@ -3869,26 +4779,26 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     >
                                                         {/* Card Header with Category Color */}
                                                         <div className={`h-1.5 ${task.category === 'assignment' ? 'bg-blue-500' :
-                                                                task.category === 'quiz' ? 'bg-yellow-500' :
-                                                                    task.category === 'performance' ? 'bg-blue-600' :
-                                                                        task.category === 'practical' ? 'bg-blue-700' :
-                                                                            'bg-blue-400'
+                                                            task.category === 'quiz' ? 'bg-yellow-500' :
+                                                                task.category === 'performance' ? 'bg-blue-600' :
+                                                                    task.category === 'practical' ? 'bg-blue-700' :
+                                                                        'bg-blue-400'
                                                             }`} />
 
                                                         <div className="p-4">
                                                             {/* Category Badge */}
                                                             <div className="flex items-center justify-between mb-3">
                                                                 <span className={`px-2 py-0.5 text-[9px] font-semibold rounded-full uppercase tracking-wide ${task.category === 'assignment' ? 'bg-blue-50 text-blue-600' :
-                                                                        task.category === 'quiz' ? 'bg-yellow-50 text-yellow-600' :
-                                                                            task.category === 'performance' ? 'bg-blue-50 text-blue-700' :
-                                                                                task.category === 'practical' ? 'bg-blue-50 text-blue-700' :
-                                                                                    'bg-blue-50 text-blue-600'
+                                                                    task.category === 'quiz' ? 'bg-yellow-50 text-yellow-600' :
+                                                                        task.category === 'performance' ? 'bg-blue-50 text-blue-700' :
+                                                                            task.category === 'practical' ? 'bg-blue-50 text-blue-700' :
+                                                                                'bg-blue-50 text-blue-600'
                                                                     }`}>
                                                                     {task.category}
                                                                 </span>
                                                                 <span className={`text-[10px] font-medium ${task.status === 'submitted' ? 'text-blue-600' :
-                                                                        task.status === 'pending' ? 'text-yellow-600' :
-                                                                            'text-zinc-400'
+                                                                    task.status === 'pending' ? 'text-yellow-600' :
+                                                                        'text-zinc-400'
                                                                     }`}>
                                                                     {task.status === 'submitted' ? 'Active' : task.status === 'pending' ? 'Due Soon' : 'Upcoming'}
                                                                 </span>
@@ -4035,8 +4945,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                         });
                                                     }}
                                                     className={`flex items-center gap-2 px-3 py-2 text-[11px] font-medium rounded-lg transition-colors ${isAiGrading
-                                                            ? 'text-blue-400 bg-blue-100 cursor-not-allowed'
-                                                            : 'text-white bg-blue-600 hover:bg-blue-700'
+                                                        ? 'text-blue-400 bg-blue-100 cursor-not-allowed'
+                                                        : 'text-white bg-blue-600 hover:bg-blue-700'
                                                         }`}
                                                 >
                                                     {isAiGrading ? (
@@ -4314,8 +5224,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                 <motion.span
                                                                     layout
                                                                     className={`px-2.5 py-1 text-[10px] font-semibold rounded-full ${submission.status === 'pending' ? 'bg-yellow-50 text-yellow-600' :
-                                                                            submission.status === 'ai-checked' ? 'bg-blue-50 text-blue-600' :
-                                                                                'bg-blue-600 text-white'
+                                                                        submission.status === 'ai-checked' ? 'bg-blue-50 text-blue-600' :
+                                                                            'bg-blue-600 text-white'
                                                                         }`}
                                                                 >
                                                                     {submission.status === 'pending' ? 'Pending' : submission.status === 'ai-checked' ? 'AI Checked' : 'Graded'}
@@ -4562,7 +5472,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     >
                                                         {/* Lord Icon */}
                                                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110 ${stat.color === 'blue' ? 'bg-blue-50' :
-                                                                stat.color === 'yellow' ? 'bg-yellow-50' : 'bg-green-50'
+                                                            stat.color === 'yellow' ? 'bg-yellow-50' : 'bg-green-50'
                                                             }`}>
                                                             <lord-icon
                                                                 src={iconSrc}
@@ -4578,8 +5488,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                         {/* Value */}
                                                         <div className="flex items-baseline gap-2">
                                                             <p className={`text-2xl font-bold ${isNegativeTrend ? 'text-red-600' :
-                                                                    stat.color === 'blue' ? 'text-blue-600' :
-                                                                        stat.color === 'yellow' ? 'text-yellow-600' : 'text-green-600'
+                                                                stat.color === 'blue' ? 'text-blue-600' :
+                                                                    stat.color === 'yellow' ? 'text-yellow-600' : 'text-green-600'
                                                                 }`}>
                                                                 {stat.value}
                                                             </p>
@@ -4748,7 +5658,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                 animate={{ scale: 1 }}
                                                                 transition={{ delay: 0.7 + index * 0.08, type: 'spring', stiffness: 500 }}
                                                                 className={`px-2.5 py-1 text-[10px] font-bold rounded-full ${card.badge.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                                                        card.badge.color === 'yellow' ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'
+                                                                    card.badge.color === 'yellow' ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'
                                                                     }`}
                                                             >
                                                                 {card.badge.text}
@@ -4858,10 +5768,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                 key={cat.id}
                                                 whileTap={{ scale: 0.97 }}
                                                 className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all ${selectedTaskType === cat.id
-                                                        ? 'bg-blue-600 text-white'
-                                                        : isTeacherMode
-                                                            ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-                                                            : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                                                    ? 'bg-blue-600 text-white'
+                                                    : isTeacherMode
+                                                        ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                                                        : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
                                                     }`}
                                                 onClick={() => setSelectedTaskType(cat.id)}
                                             >
@@ -4883,8 +5793,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         onChange={(e) => setNewTaskTitle(e.target.value)}
                                         placeholder="Enter task title..."
                                         className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${isTeacherMode
-                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
-                                                : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                            ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
+                                            : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
                                             }`}
                                     />
                                 </div>
@@ -4900,8 +5810,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             value={newTaskDueDate}
                                             onChange={(e) => setNewTaskDueDate(e.target.value)}
                                             className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${isTeacherMode
-                                                    ? 'bg-zinc-800 border-zinc-700 text-white [color-scheme:dark]'
-                                                    : 'bg-white border border-zinc-200 text-zinc-900'
+                                                ? 'bg-zinc-800 border-zinc-700 text-white [color-scheme:dark]'
+                                                : 'bg-white border border-zinc-200 text-zinc-900'
                                                 }`}
                                         />
                                     </div>
@@ -4914,8 +5824,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             placeholder="100"
                                             min="0"
                                             className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${isTeacherMode
-                                                    ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
-                                                    : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
+                                                : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
                                                 }`}
                                         />
                                     </div>
@@ -4930,8 +5840,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         placeholder="Brief description..."
                                         rows={2}
                                         className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none ${isTeacherMode
-                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
-                                                : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                            ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
+                                            : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
                                             }`}
                                     />
                                 </div>
@@ -4945,8 +5855,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         placeholder="Detailed instructions for students..."
                                         rows={3}
                                         className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none ${isTeacherMode
-                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
-                                                : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                            ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
+                                            : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
                                             }`}
                                     />
                                 </div>
@@ -4971,12 +5881,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         onClick={() => newTaskFiles.length === 0 && taskFileInputRef.current?.click()}
                                         whileHover={newTaskFiles.length === 0 ? "animate" : undefined}
                                         className={`p-6 group/file block rounded-2xl w-full relative border-2 border-dashed transition-colors ${newTaskFiles.length === 0
-                                                ? isTeacherMode
-                                                    ? "cursor-pointer border-zinc-700 hover:border-blue-500 bg-zinc-800/50"
-                                                    : "cursor-pointer border-gray-200 hover:border-blue-400 bg-gray-50/50"
-                                                : isTeacherMode
-                                                    ? "border-zinc-700 bg-zinc-800/50"
-                                                    : "border-gray-200 bg-gray-50/50"
+                                            ? isTeacherMode
+                                                ? "cursor-pointer border-zinc-700 hover:border-blue-500 bg-zinc-800/50"
+                                                : "cursor-pointer border-gray-200 hover:border-blue-400 bg-gray-50/50"
+                                            : isTeacherMode
+                                                ? "border-zinc-700 bg-zinc-800/50"
+                                                : "border-gray-200 bg-gray-50/50"
                                             }`}
                                     >
                                         <AnimatePresence mode="wait">
@@ -5002,8 +5912,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                     damping: 20,
                                                                 }}
                                                                 className={`relative group-hover/file:shadow-xl z-40 flex items-center justify-center h-20 w-20 rounded-xl shadow-md ${isTeacherMode
-                                                                        ? 'bg-zinc-800 border border-zinc-600'
-                                                                        : 'bg-white border border-gray-200'
+                                                                    ? 'bg-zinc-800 border border-zinc-600'
+                                                                    : 'bg-white border border-gray-200'
                                                                     }`}
                                                             >
                                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={isTeacherMode ? "#71717a" : "#9ca3af"} strokeWidth="2" strokeLinecap="round">
@@ -5047,8 +5957,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                                 transition={{ delay: idx * 0.05, type: "spring", stiffness: 300, damping: 25 }}
                                                                 className={`relative overflow-hidden z-40 flex flex-col items-start justify-start p-3 w-full rounded-xl shadow-sm ${isTeacherMode
-                                                                        ? 'bg-zinc-800 border border-zinc-700'
-                                                                        : 'bg-white border border-gray-200'
+                                                                    ? 'bg-zinc-800 border border-zinc-700'
+                                                                    : 'bg-white border border-gray-200'
                                                                     }`}
                                                             >
                                                                 <div className="flex justify-between w-full items-center gap-3">
@@ -5057,8 +5967,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                     </p>
                                                                     <div className="flex items-center gap-2">
                                                                         <span className={`rounded-lg px-2 py-0.5 text-xs ${isTeacherMode
-                                                                                ? 'text-emerald-400 bg-emerald-900/30 border border-emerald-800'
-                                                                                : 'text-emerald-600 bg-emerald-50 border border-emerald-200'
+                                                                            ? 'text-emerald-400 bg-emerald-900/30 border border-emerald-800'
+                                                                            : 'text-emerald-600 bg-emerald-50 border border-emerald-200'
                                                                             }`}>
                                                                             {(file.size / (1024 * 1024)).toFixed(2)} MB
                                                                         </span>
@@ -5096,8 +6006,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
                                                                 className={`relative z-40 flex items-center p-3 w-full rounded-xl ${isTeacherMode
-                                                                        ? 'bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-800'
-                                                                        : 'bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200'
+                                                                    ? 'bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-800'
+                                                                    : 'bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200'
                                                                     }`}
                                                             >
                                                                 <div className="flex items-center gap-3">
@@ -5109,8 +6019,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                                 animate={{ scale: 1, opacity: 1 }}
                                                                                 transition={{ delay: i * 0.1 }}
                                                                                 className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-sm ${isTeacherMode
-                                                                                        ? 'bg-zinc-800 border border-blue-700'
-                                                                                        : 'bg-white border border-blue-200'
+                                                                                    ? 'bg-zinc-800 border border-blue-700'
+                                                                                    : 'bg-white border border-blue-200'
                                                                                     }`}
                                                                             >
                                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round">
@@ -5142,8 +6052,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                             taskFileInputRef.current?.click();
                                                         }}
                                                         className={`w-full py-2.5 px-4 rounded-xl border-2 border-dashed text-sm font-medium hover:border-blue-400 hover:text-blue-500 transition-colors mt-1 ${isTeacherMode
-                                                                ? 'border-zinc-600 text-zinc-400'
-                                                                : 'border-gray-300 text-gray-500'
+                                                            ? 'border-zinc-600 text-zinc-400'
+                                                            : 'border-gray-300 text-gray-500'
                                                             }`}
                                                     >
                                                         + Add more files
@@ -5170,8 +6080,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         setNewTaskFiles([]);
                                     }}
                                     className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${isTeacherMode
-                                            ? 'text-zinc-400 hover:bg-zinc-800'
-                                            : 'text-zinc-600 hover:bg-zinc-100'
+                                        ? 'text-zinc-400 hover:bg-zinc-800'
+                                        : 'text-zinc-600 hover:bg-zinc-100'
                                         }`}
                                 >
                                     Cancel
@@ -5184,7 +6094,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         try {
                                             const taskInput: CreateTaskInput = {
                                                 courseId: course.id,
-                                                type: selectedTaskType === 'all' ? 'assignment' : selectedTaskType,
+                                                type: (selectedTaskType === 'all' || selectedTaskType === 'overdue') ? 'assignment' : selectedTaskType,
                                                 title: newTaskTitle,
                                                 description: newTaskDescription,
                                                 instructions: newTaskInstructions,
@@ -5210,8 +6120,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         }
                                     }}
                                     className={`px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all flex items-center gap-1.5 ${!newTaskTitle || !newTaskDueDate || isCreatingTask
-                                            ? 'bg-blue-400 cursor-not-allowed'
-                                            : 'bg-blue-600 hover:bg-blue-700'
+                                        ? 'bg-blue-400 cursor-not-allowed'
+                                        : 'bg-blue-600 hover:bg-blue-700'
                                         }`}
                                 >
                                     {isCreatingTask ? (
@@ -5350,8 +6260,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         animate={{ scale: 1, rotate: 0 }}
                                         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                                         className={`w-14 h-14 rounded-xl mx-auto mb-4 flex items-center justify-center ${TEACHER_TUTORIAL_STEPS[tutorialStep].color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                                TEACHER_TUTORIAL_STEPS[tutorialStep].color === 'yellow' ? 'bg-yellow-100 text-yellow-600' :
-                                                    'bg-green-100 text-green-600'
+                                            TEACHER_TUTORIAL_STEPS[tutorialStep].color === 'yellow' ? 'bg-yellow-100 text-yellow-600' :
+                                                'bg-green-100 text-green-600'
                                             }`}
                                     >
                                         <div className="scale-75">{TEACHER_TUTORIAL_STEPS[tutorialStep].icon}</div>
@@ -5383,7 +6293,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                 key={index}
                                                 onClick={() => setTutorialStep(index)}
                                                 className={`w-2 h-2 rounded-full transition-colors ${index === tutorialStep ? 'bg-blue-600' :
-                                                        index < tutorialStep ? 'bg-blue-300' : 'bg-zinc-200'
+                                                    index < tutorialStep ? 'bg-blue-300' : 'bg-zinc-200'
                                                     }`}
                                                 whileHover={{ scale: 1.3 }}
                                                 whileTap={{ scale: 0.9 }}
@@ -5411,8 +6321,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             whileHover={{ scale: 1.02 }}
                                             whileTap={{ scale: 0.98 }}
                                             className={`flex-1 py-3 text-sm font-semibold text-white rounded-xl transition-colors flex items-center justify-center gap-2 ${tutorialStep === TEACHER_TUTORIAL_STEPS.length - 1
-                                                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
-                                                    : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+                                                ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
+                                                : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
                                                 }`}
                                         >
                                             {tutorialStep === TEACHER_TUTORIAL_STEPS.length - 1 ? (
@@ -5439,6 +6349,703 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                     </>
                 )}
             </AnimatePresence>
+
+            {/* Contact Instructor Tooltip - Portal */}
+            {createPortal(
+                <AnimatePresence>
+                    {contactTooltip.visible && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -6, x: '-50%' }}
+                            animate={{ opacity: 1, y: 0, x: '-50%' }}
+                            exit={{ opacity: 0, y: -6, x: '-50%' }}
+                            transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+                            style={{
+                                position: 'fixed',
+                                top: contactTooltip.y,
+                                left: contactTooltip.x,
+                                zIndex: 99999,
+                                pointerEvents: 'none',
+                            }}
+                        >
+                            {/* Arrow pointing up */}
+                            <div style={{
+                                position: 'absolute',
+                                top: '-6px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                width: '12px',
+                                height: '6px',
+                                overflow: 'hidden',
+                            }}>
+                                <div style={{
+                                    width: '10px',
+                                    height: '10px',
+                                    background: '#ffffff',
+                                    border: '1px solid rgba(0, 0, 0, 0.06)',
+                                    transform: 'rotate(45deg)',
+                                    position: 'absolute',
+                                    top: '3px',
+                                    left: '1px',
+                                    boxShadow: '0 -1px 3px rgba(0, 0, 0, 0.04)',
+                                }} />
+                            </div>
+                            {/* Tooltip body */}
+                            <div style={{
+                                background: '#ffffff',
+                                borderRadius: '8px',
+                                padding: '6px 8px',
+                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)',
+                                border: '1px solid rgba(0, 0, 0, 0.06)',
+                                whiteSpace: 'nowrap',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '4px',
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <div style={{
+                                        width: '22px',
+                                        height: '22px',
+                                        borderRadius: '5px',
+                                        background: 'rgba(239, 68, 68, 0.08)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        flexShrink: 0,
+                                    }}>
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                            <polyline points="22,6 12,13 2,6" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a' }}>
+                                            Contact Instructor
+                                        </div>
+                                        <div style={{ fontSize: '11px', color: '#0f172a', marginTop: '1px' }}>
+                                            Reach out regarding this overdue task
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                    padding: '2px 5px',
+                                    borderRadius: '4px',
+                                    background: 'rgba(245, 158, 11, 0.06)',
+                                    border: '1px solid rgba(245, 158, 11, 0.12)',
+                                }}>
+                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                        <line x1="12" y1="9" x2="12" y2="13" />
+                                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                                    </svg>
+                                    <span style={{ fontSize: '10px', color: '#92400e', fontWeight: 500 }}>
+                                        Please ensure you have a valid reason
+                                    </span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
+
+            {/* View Instructions Modal */}
+            <AnimatePresence>
+                {instructionsModalTask && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-sm"
+                        onClick={() => setInstructionsModalTask(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                            transition={{ type: "spring", duration: 0.4 }}
+                            className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Modal Header */}
+                            <div className="px-8 py-6 flex items-start justify-between bg-white relative border-b border-zinc-200/80">
+                                <div className="pr-8">
+                                    <h3 className="text-2xl font-bold text-zinc-900 tracking-tight mb-1.5">
+                                        {instructionsModalTask.title}
+                                    </h3>
+                                    <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Task Instructions & Details</p>
+                                </div>
+                                <button
+                                    onClick={() => setInstructionsModalTask(null)}
+                                    className="absolute right-6 top-6 p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-full transition-all"
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Modal Content */}
+                            <div className="px-8 pb-8 pt-6 overflow-y-auto custom-scrollbar flex-1 bg-white">
+                                <div className="space-y-6">
+                                    {(instructionsModalTask as any).description && (
+                                        <div className="border border-zinc-200/80 rounded-2xl p-6 bg-zinc-50/30">
+                                            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <circle cx="12" cy="12" r="10" />
+                                                    <line x1="12" y1="16" x2="12" y2="12" />
+                                                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                                                </svg>
+                                                Description
+                                            </h4>
+                                            <div className="text-[15px] text-zinc-700 leading-relaxed whitespace-pre-wrap font-normal">
+                                                {(instructionsModalTask as any).description}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {(instructionsModalTask as any).instructions ? (
+                                        <div className="border border-zinc-200/80 rounded-2xl p-6 bg-zinc-50/30">
+                                            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                                                </svg>
+                                                Detailed Instructions
+                                            </h4>
+                                            <div
+                                                className="text-[15px] text-zinc-700 leading-relaxed whitespace-pre-wrap prose prose-zinc prose-sm max-w-none font-normal"
+                                                dangerouslySetInnerHTML={{ __html: (instructionsModalTask as any).instructions }}
+                                            />
+                                        </div>
+                                    ) : (
+                                        !((instructionsModalTask as any).description) && (
+                                            <div className="flex flex-col items-center justify-center py-12 text-center text-zinc-400">
+                                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-4 opacity-50">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                                    <line x1="9" y1="3" x2="9" y2="21" />
+                                                </svg>
+                                                <p className="text-[15px] font-medium">No additional details provided.</p>
+                                            </div>
+                                        )
+                                    )}
+
+                                    {/* Assignment Rules - show teacher's configured settings */}
+                                    {((instructionsModalTask as any).allowLateSubmission !== undefined ||
+                                        (instructionsModalTask as any).maxAttempts > 1 ||
+                                        (instructionsModalTask as any).rubricEnabled) && (
+                                            <div className="border border-zinc-200/80 rounded-2xl p-6 bg-zinc-50/30">
+                                                <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                                    </svg>
+                                                    Assignment Rules
+                                                </h4>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                    {/* Late Submission Policy */}
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '10px',
+                                                        padding: '10px 14px',
+                                                        borderRadius: '12px',
+                                                        background: (instructionsModalTask as any).allowLateSubmission
+                                                            ? 'rgba(245, 158, 11, 0.08)'
+                                                            : 'rgba(239, 68, 68, 0.06)',
+                                                        border: (instructionsModalTask as any).allowLateSubmission
+                                                            ? '1px solid rgba(245, 158, 11, 0.15)'
+                                                            : '1px solid rgba(239, 68, 68, 0.12)',
+                                                    }}>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                            stroke={(instructionsModalTask as any).allowLateSubmission ? '#f59e0b' : '#ef4444'}
+                                                            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <circle cx="12" cy="12" r="10" />
+                                                            <polyline points="12 6 12 12 16 14" />
+                                                        </svg>
+                                                        <div>
+                                                            <div style={{
+                                                                fontSize: '13px',
+                                                                fontWeight: 600,
+                                                                color: (instructionsModalTask as any).allowLateSubmission ? '#92400e' : '#991b1b',
+                                                            }}>
+                                                                {(instructionsModalTask as any).allowLateSubmission
+                                                                    ? 'Late submissions allowed'
+                                                                    : 'No late submissions'}
+                                                            </div>
+                                                            {(instructionsModalTask as any).allowLateSubmission && (instructionsModalTask as any).latePenalty > 0 && (
+                                                                <div style={{ fontSize: '11px', color: '#b45309', marginTop: '2px' }}>
+                                                                    {(instructionsModalTask as any).latePenalty}% penalty per day late
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Max Attempts */}
+                                                    {(instructionsModalTask as any).maxAttempts > 1 && (
+                                                        <div style={{
+                                                            padding: '10px 14px',
+                                                            borderRadius: '12px',
+                                                            background: 'rgba(59, 130, 246, 0.06)',
+                                                            border: '1px solid rgba(59, 130, 246, 0.12)',
+                                                        }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <polyline points="1 4 1 10 7 10" />
+                                                                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                                                                </svg>
+                                                                <div>
+                                                                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#1e40af' }}>
+                                                                        {(instructionsModalTask as any).maxAttempts} attempts allowed
+                                                                    </div>
+                                                                    <div style={{ fontSize: '11px', color: '#3b82f6', marginTop: '2px' }}>
+                                                                        {(() => {
+                                                                            const used = (instructionsModalTask as any).submissionCount || 0;
+                                                                            const max = (instructionsModalTask as any).maxAttempts || 1;
+                                                                            const remaining = Math.max(0, max - used);
+                                                                            if (used === 0) return `You have ${max} attempts remaining`;
+                                                                            if (remaining === 0) return '⚠ No attempts remaining';
+                                                                            return `${used} used · ${remaining} remaining`;
+                                                                        })()}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Rubric Criteria Display */}
+                                                    {(instructionsModalTask as any).rubricEnabled && (
+                                                        <div style={{
+                                                            padding: '14px',
+                                                            borderRadius: '12px',
+                                                            background: 'rgba(16, 185, 129, 0.06)',
+                                                            border: '1px solid rgba(16, 185, 129, 0.12)',
+                                                        }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: (instructionsModalTask as any).rubricCriteria?.length > 0 ? '12px' : '0' }}>
+                                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                                                    <line x1="3" y1="9" x2="21" y2="9" />
+                                                                    <line x1="9" y1="21" x2="9" y2="9" />
+                                                                </svg>
+                                                                <div style={{ fontSize: '13px', fontWeight: 600, color: '#065f46' }}>
+                                                                    Graded with rubric
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Show actual rubric criteria if available */}
+                                                            {(instructionsModalTask as any).rubricCriteria?.length > 0 && (
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                                    {((instructionsModalTask as any).rubricCriteria as any[]).map((criterion: any, idx: number) => (
+                                                                        <div key={criterion.id || idx} style={{
+                                                                            padding: '10px 12px',
+                                                                            borderRadius: '8px',
+                                                                            background: 'rgba(255, 255, 255, 0.7)',
+                                                                            border: '1px solid rgba(16, 185, 129, 0.1)',
+                                                                        }}>
+                                                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: criterion.description ? '4px' : '0' }}>
+                                                                                <span style={{ fontSize: '12px', fontWeight: 600, color: '#334155' }}>
+                                                                                    {criterion.name}
+                                                                                </span>
+                                                                                <span style={{
+                                                                                    fontSize: '11px',
+                                                                                    fontWeight: 600,
+                                                                                    padding: '2px 8px',
+                                                                                    borderRadius: '6px',
+                                                                                    background: 'rgba(16, 185, 129, 0.1)',
+                                                                                    color: '#10b981',
+                                                                                }}>
+                                                                                    {criterion.points} pts
+                                                                                </span>
+                                                                            </div>
+                                                                            {criterion.description && (
+                                                                                <p style={{ fontSize: '11px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>
+                                                                                    {criterion.description}
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                </div>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="px-8 py-5 flex justify-end gap-3 bg-white border-t border-zinc-100/50">
+                                <motion.button
+                                    whileHover={{ scale: 1.02, backgroundColor: 'rgba(244, 244, 245, 1)' }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => setInstructionsModalTask(null)}
+                                    className="px-6 py-2.5 text-sm font-semibold text-zinc-600 bg-zinc-50 border border-zinc-200 rounded-xl transition-all"
+                                >
+                                    Close
+                                </motion.button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ======================= SUBMIT ASSIGNMENT MODAL ======================= */}
+            {createPortal(
+                <AnimatePresence>
+                    {submitModalTask && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            onClick={() => {
+                                if (!isSubmitting) {
+                                    setSubmitModalTask(null);
+                                    setSubmissionText('');
+                                    setSubmissionFiles([]);
+                                    setSubmitSuccess(false);
+                                }
+                            }}
+                            style={{
+                                position: 'fixed', inset: 0, zIndex: 99999,
+                                background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(8px)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                padding: '24px',
+                            }}
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                                transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+                                onClick={(e) => e.stopPropagation()}
+                                style={{
+                                    width: '100%', maxWidth: '520px',
+                                    background: document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff',
+                                    borderRadius: '20px',
+                                    boxShadow: '0 25px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.05)',
+                                    overflow: 'hidden',
+                                    display: 'flex', flexDirection: 'column' as const,
+                                }}
+                            >
+                                {/* Success State */}
+                                {submitSuccess ? (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        style={{ padding: '48px 32px', textAlign: 'center' as const }}
+                                    >
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 0.1 }}
+                                            style={{
+                                                width: '90px', height: '90px', borderRadius: '50%',
+                                                background: document.documentElement.classList.contains('dark') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                margin: '0 auto 24px',
+                                                boxShadow: document.documentElement.classList.contains('dark') ? 'inset 0 0 20px rgba(16, 185, 129, 0.05)' : 'inset 0 0 20px rgba(16, 185, 129, 0.1)',
+                                            }}
+                                        >
+                                            {/* @ts-ignore */}
+                                            <lord-icon
+                                                src="https://cdn.lordicon.com/uvofdfal.json"
+                                                trigger="hover"
+                                                colors="primary:#10b981,secondary:#059669"
+                                                style={{ width: '64px', height: '64px' }}
+                                            ></lord-icon>
+                                        </motion.div>
+                                        <h3 style={{
+                                            fontSize: '22px', fontWeight: 800, marginBottom: '10px',
+                                            color: document.documentElement.classList.contains('dark') ? '#f1f5f9' : '#0f172a',
+                                        }}>Submission Successful!</h3>
+                                        <p style={{
+                                            fontSize: '14px', marginBottom: '36px', lineHeight: 1.6,
+                                            color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b',
+                                            maxWidth: '90%', margin: '0 auto 36px'
+                                        }}>
+                                            Your assignment has been submitted to your teacher for grading. You'll be notified once it's graded.
+                                        </p>
+                                        <motion.button
+                                            whileHover={{
+                                                scale: 1.02,
+                                                boxShadow: '0 6px 20px rgba(16, 185, 129, 0.25)',
+                                            }}
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={() => {
+                                                setSubmitModalTask(null);
+                                                setSubmitSuccess(false);
+                                                setSubmissionText('');
+                                                setSubmissionFiles([]);
+                                                fetchSupabaseTasks(); // Refresh task list to show updated status
+                                            }}
+                                            style={{
+                                                margin: '0 auto',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '6px',
+                                                padding: '10px 32px',
+                                                background: document.documentElement.classList.contains('dark') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.08)',
+                                                color: '#10b981',
+                                                border: `1px solid ${document.documentElement.classList.contains('dark') ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.2)'}`,
+                                                borderRadius: '10px',
+                                                fontSize: '14px',
+                                                fontWeight: 600,
+                                                cursor: 'pointer',
+                                            }}
+                                        >
+                                            Done
+                                        </motion.button>
+                                    </motion.div>
+                                ) : (
+                                    <>
+                                        {/* Header */}
+                                        <div style={{
+                                            padding: '24px 28px 0',
+                                            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+                                        }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1 }}>
+                                                <div style={{
+                                                    width: '48px', height: '48px', borderRadius: '14px',
+                                                    background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)',
+                                                    flexShrink: 0,
+                                                }}>
+                                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M22 2L11 13" />
+                                                        <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h2 style={{
+                                                        fontSize: '17px', fontWeight: 700, margin: 0, lineHeight: 1.3,
+                                                        color: document.documentElement.classList.contains('dark') ? '#f1f5f9' : '#0f172a',
+                                                    }}>Submit Assignment</h2>
+                                                    <p style={{
+                                                        fontSize: '12px', margin: 0, marginTop: '2px',
+                                                        color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b',
+                                                    }}>{submitModalTask?.title}</p>
+                                                </div>
+                                            </div>
+                                            <motion.button
+                                                whileHover={{ scale: 1.1, backgroundColor: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)' }}
+                                                whileTap={{ scale: 0.9 }}
+                                                onClick={() => {
+                                                    setSubmitModalTask(null);
+                                                    setSubmissionText('');
+                                                    setSubmissionFiles([]);
+                                                }}
+                                                style={{
+                                                    width: '32px', height: '32px', borderRadius: '10px',
+                                                    border: 'none', background: 'transparent',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    cursor: 'pointer', flexShrink: 0,
+                                                    color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#94a3b8',
+                                                }}
+                                            >
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                                </svg>
+                                            </motion.button>
+                                        </div>
+
+                                        {/* Task Info Badges */}
+                                        <div style={{
+                                            padding: '16px 28px',
+                                            display: 'flex', gap: '8px', flexWrap: 'wrap' as const,
+                                        }}>
+                                            <span style={{
+                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
+                                                background: document.documentElement.classList.contains('dark') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
+                                                color: '#3b82f6',
+                                            }}>
+                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                    <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+                                                </svg>
+                                                {submitModalTask?.due}
+                                            </span>
+                                            <span style={{
+                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
+                                                background: document.documentElement.classList.contains('dark') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.08)',
+                                                color: '#10b981',
+                                            }}>
+                                                {(submitModalTask as any)?.points || 100} pts
+                                            </span>
+                                            {((submitModalTask as any)?.maxAttempts || 1) > 1 && (
+                                                <span style={{
+                                                    display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                    padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
+                                                    background: document.documentElement.classList.contains('dark') ? 'rgba(0, 61, 165, 0.15)' : 'rgba(0, 61, 165, 0.08)',
+                                                    color: '#003DA5',
+                                                }}>
+                                                    {((submitModalTask as any)?.maxAttempts || 1) - ((submitModalTask as any)?.submissionCount || 0)} attempt{((submitModalTask as any)?.maxAttempts || 1) - ((submitModalTask as any)?.submissionCount || 0) !== 1 ? 's' : ''} left
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Divider */}
+                                        <div style={{
+                                            height: '1px', margin: '0 28px',
+                                            background: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                                        }} />
+
+                                        {/* Submission Content */}
+                                        <div style={{ padding: '20px 28px', flex: 1 }}>
+                                            {/* Text Area */}
+                                            <label style={{
+                                                display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '8px',
+                                                color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b',
+                                                textTransform: 'uppercase' as const, letterSpacing: '0.5px',
+                                            }}>
+                                                Your Answer / Comments
+                                            </label>
+                                            <textarea
+                                                value={submissionText}
+                                                onChange={(e) => setSubmissionText(e.target.value)}
+                                                placeholder="Type your answer, solution, or any comments here..."
+                                                style={{
+                                                    width: '100%', minHeight: '120px', padding: '14px 16px',
+                                                    borderRadius: '14px', border: `1.5px solid ${document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+                                                    background: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.05)' : 'rgba(248, 250, 252, 1)',
+                                                    color: document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#1e293b',
+                                                    fontSize: '14px', lineHeight: 1.6, resize: 'vertical' as const,
+                                                    outline: 'none', fontFamily: 'inherit',
+                                                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                                                }}
+                                                onFocus={(e) => {
+                                                    e.currentTarget.style.borderColor = '#3b82f6';
+                                                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                                                }}
+                                                onBlur={(e) => {
+                                                    e.currentTarget.style.borderColor = document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)';
+                                                    e.currentTarget.style.boxShadow = 'none';
+                                                }}
+                                            />
+
+                                            {/* File Attachments Section */}
+                                            <div style={{ marginTop: '16px' }}>
+                                                <label style={{
+                                                    display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '8px',
+                                                    color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b',
+                                                    textTransform: 'uppercase' as const, letterSpacing: '0.5px',
+                                                }}>
+                                                    Attachments
+                                                </label>
+
+                                                <FileUpload
+                                                    files={submissionFiles}
+                                                    onChange={setSubmissionFiles}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Footer */}
+                                        <div style={{
+                                            padding: '16px 28px 24px',
+                                            display: 'flex', gap: '10px', justifyContent: 'flex-end',
+                                            borderTop: `1px solid ${document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'}`,
+                                        }}>
+                                            <motion.button
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                onClick={() => {
+                                                    setSubmitModalTask(null);
+                                                    setSubmissionText('');
+                                                    setSubmissionFiles([]);
+                                                }}
+                                                disabled={isSubmitting}
+                                                style={{
+                                                    padding: '10px 22px', borderRadius: '12px', fontSize: '13px', fontWeight: 600,
+                                                    border: `1px solid ${document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)'}`,
+                                                    background: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.05)' : '#f8fafc',
+                                                    color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b',
+                                                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                                                    opacity: isSubmitting ? 0.5 : 1,
+                                                }}
+                                            >
+                                                Cancel
+                                            </motion.button>
+
+                                            <motion.button
+                                                whileHover={!isSubmitting && (submissionText.trim() || submissionFiles.length > 0) ? { scale: 1.02, boxShadow: '0 8px 24px rgba(59, 130, 246, 0.3)' } : {}}
+                                                whileTap={!isSubmitting && (submissionText.trim() || submissionFiles.length > 0) ? { scale: 0.98 } : {}}
+                                                disabled={isSubmitting || (!submissionText.trim() && submissionFiles.length === 0)}
+                                                onClick={async () => {
+                                                    const currentUser = getCurrentUser();
+                                                    if (!currentUser) return;
+
+                                                    setIsSubmitting(true);
+                                                    try {
+                                                        const result = await createSubmission({
+                                                            taskId: submitModalTask.id,
+                                                            studentId: currentUser.student_id || currentUser.id,
+                                                            studentName: currentUser.full_name,
+                                                            section: currentUser.section || 'BSIT101A',
+                                                            textContent: submissionText,
+                                                            files: submissionFiles.length > 0 ? submissionFiles : undefined
+                                                        });
+
+                                                        if (result) {
+                                                            setSubmissions((prev: any[]) => [...prev, result as any]);
+                                                            setSubmitSuccess(true);
+                                                        }
+                                                    } catch (err) {
+                                                        console.error('Failed to submit:', err);
+                                                    } finally {
+                                                        setIsSubmitting(false);
+                                                    }
+                                                }}
+                                                style={{
+                                                    padding: '10px 28px', borderRadius: '12px', fontSize: '13px', fontWeight: 700,
+                                                    border: 'none',
+                                                    background: isSubmitting || (!submissionText.trim() && submissionFiles.length === 0)
+                                                        ? (document.documentElement.classList.contains('dark') ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)')
+                                                        : 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                                                    color: '#fff',
+                                                    cursor: isSubmitting || (!submissionText.trim() && submissionFiles.length === 0) ? 'not-allowed' : 'pointer',
+                                                    display: 'flex', alignItems: 'center', gap: '8px',
+                                                    boxShadow: isSubmitting || (!submissionText.trim() && submissionFiles.length === 0)
+                                                        ? 'none'
+                                                        : '0 4px 14px rgba(59, 130, 246, 0.25)',
+                                                }}
+                                            >
+                                                {isSubmitting ? (
+                                                    <>
+                                                        <motion.svg
+                                                            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                                                            animate={{ rotate: 360 }}
+                                                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                                                        >
+                                                            <path d="M21 12a9 9 0 1 1-6.219-8.56" strokeLinecap="round" />
+                                                        </motion.svg>
+                                                        Submitting...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M22 2L11 13" />
+                                                            <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+                                                        </svg>
+                                                        Submit Assignment
+                                                    </>
+                                                )}
+                                            </motion.button>
+                                        </div>
+                                    </>
+                                )}
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
         </motion.div>
     );
 };

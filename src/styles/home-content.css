@@ -3249,6 +3249,16 @@ body.dark-mode .action-card-description {
     color: #94a3b8;
 }
 
+/* Pink Dark Mode - Quick Actions Cards */
+html.pink-theme.dark .quick-action-card {
+    background: #2d1220 !important;
+    border-color: rgba(236, 72, 153, 0.2) !important;
+}
+
+html.pink-theme.dark .quick-action-card:hover {
+    border-color: rgba(236, 72, 153, 0.4) !important;
+}
+
 /* Responsive - Quick Actions Cards */
 @media (max-width: 1200px) {
     .quick-actions-card-grid {
@@ -3461,11 +3471,17 @@ body.dark-mode .view-mode-btn.active {
     overflow: visible;
     margin: 0 -0.75rem;
     padding: 2.5rem 0.75rem 0.5rem 0.75rem;
+    perspective: 1200px;
+    perspective-origin: center center;
 }
 
 .courses-track-premium {
     display: flex;
     overflow: visible;
+    transform-style: preserve-3d;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
 }
 
 .course-card-wrapper-premium {
@@ -3473,6 +3489,7 @@ body.dark-mode .view-mode-btn.active {
     box-sizing: border-box;
     flex-shrink: 0;
     overflow: visible;
+    transform-style: preserve-3d;
 }
 
 /* Reorderable Course Grid */
@@ -4069,12 +4086,14 @@ body.dark-mode .activity-item:hover {
     height: 100%;
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+    transform-style: preserve-3d;
+    will-change: transform;
 }
 
 .course-card-premium:hover {
     border-color: #d1d5db;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 /* Image Container */

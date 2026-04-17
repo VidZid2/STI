@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['pdfjs-dist', 'emoji-mart', '@emoji-mart/react', '@emoji-mart/data'],
+    include: ['pdfjs-dist', 'emoji-mart', '@emoji-mart/react'],
   },
   build: {
     rollupOptions: {
@@ -23,3 +23,5 @@ export default defineConfig({
     },
   },
 })
+
+// Triggered a safe restart to load new environment variables.

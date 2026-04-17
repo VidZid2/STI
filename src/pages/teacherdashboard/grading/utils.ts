@@ -56,7 +56,7 @@ export function formatSeconds(totalSeconds: number): string {
  * Get the color for a submission status
  */
 export function getStatusColor(status: SubmissionStatus): string {
-    return STATUS_CONFIG[status]?.color || '#64748b';
+    return STATUS_CONFIG[status]?.color || 'var(--text-secondary)';
 }
 
 /**
@@ -74,10 +74,10 @@ export function getStatusLabel(status: SubmissionStatus): string {
  * Get color based on similarity score
  */
 export function getSimilarityColor(score: number): string {
-    if (score >= SIMILARITY_THRESHOLDS.high) return '#ef4444'; // danger
-    if (score >= SIMILARITY_THRESHOLDS.medium) return '#f59e0b'; // warning
+    if (score >= SIMILARITY_THRESHOLDS.high) return 'var(--color-danger)'; // danger
+    if (score >= SIMILARITY_THRESHOLDS.medium) return 'var(--color-warning)'; // warning
     if (score >= SIMILARITY_THRESHOLDS.low) return '#f97316'; // orange
-    return '#10b981'; // success
+    return 'var(--color-success)'; // success
 }
 
 /**
@@ -96,11 +96,11 @@ export function hasSimilarityWarning(score: number | undefined): boolean {
  */
 export function getScoreColor(score: number, maxPoints: number): string {
     const percent = (score / maxPoints) * 100;
-    if (percent >= 90) return '#10b981'; // A
+    if (percent >= 90) return 'var(--color-success)'; // A
     if (percent >= 80) return '#3b82f6'; // B
-    if (percent >= 70) return '#f59e0b'; // C
+    if (percent >= 70) return 'var(--color-warning)'; // C
     if (percent >= 60) return '#f97316'; // D
-    return '#ef4444'; // F
+    return 'var(--color-danger)'; // F
 }
 
 /**

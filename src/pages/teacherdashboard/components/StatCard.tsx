@@ -5,16 +5,16 @@
 
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, ANIMATION } from '../constants';
+import { ANIMATION } from '../constants';
 import type { StatCardProps } from '../types';
 
-const StatCard: React.FC<StatCardProps> = ({ 
-    title, 
-    value, 
-    subtitle, 
-    icon, 
-    color, 
-    index 
+const StatCard: React.FC<StatCardProps> = ({
+    title,
+    value,
+    subtitle,
+    icon,
+    color,
+    index,
 }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -22,66 +22,46 @@ const StatCard: React.FC<StatCardProps> = ({
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ 
-                delay: index * 0.1, 
-                duration: ANIMATION.duration.slow, 
-                ease: ANIMATION.ease.smooth 
+            transition={{
+                delay: index * 0.1,
+                duration: ANIMATION.duration.slow,
+                ease: ANIMATION.ease.smooth,
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             role="article"
             aria-label={`${title}: ${value}`}
+            className="rounded-2xl p-6 cursor-pointer transition-all"
             style={{
-                background: COLORS.surface,
-                borderRadius: BORDER_RADIUS.xxxl,
-                padding: SPACING.xxl,
-                border: `1px solid ${isHovered ? `${color}40` : COLORS.border}`,
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
+                background: 'var(--bg-surface)',
+                border: `1px solid ${isHovered ? `${color}40` : 'var(--border-subtle)'}`,
                 boxShadow: isHovered ? `0 8px 24px ${color}15` : 'none',
                 transform: isHovered ? 'translateY(-2px)' : 'none',
             }}
         >
-            {/* Icon Container */}
-            <div style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: BORDER_RADIUS.xxl,
-                background: `linear-gradient(135deg, ${color}15 0%, ${color}08 100%)`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: color,
-                marginBottom: SPACING.lg,
-            }}>
+            {/* Icon */}
+            <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-2.5"
+                style={{
+                    background: `linear-gradient(135deg, ${color}15 0%, ${color}08 100%)`,
+                    color,
+                }}
+            >
                 {icon}
             </div>
 
             {/* Value */}
-            <div style={{ 
-                fontSize: FONT_SIZE.xxxl, 
-                fontWeight: FONT_WEIGHT.bold, 
-                color: COLORS.textPrimary, 
-                marginBottom: SPACING.xs 
-            }}>
+            <div className="text-[18px] font-bold mb-0.5" style={{ color: 'var(--text-primary)' }}>
                 {value}
             </div>
 
             {/* Title */}
-            <div style={{ 
-                fontSize: FONT_SIZE.base, 
-                fontWeight: FONT_WEIGHT.medium, 
-                color: COLORS.textSecondary 
-            }}>
+            <div className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
                 {title}
             </div>
 
             {/* Subtitle */}
-            <div style={{ 
-                fontSize: FONT_SIZE.sm, 
-                color: COLORS.textMuted, 
-                marginTop: SPACING.xs 
-            }}>
+            <div className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
                 {subtitle}
             </div>
         </motion.div>

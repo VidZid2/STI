@@ -52,13 +52,8 @@ export type {
     KeyboardShortcut,
 } from './types';
 
-// Mock Data
-export {
-    FALLBACK_COURSES,
-    DEMO_TASKS,
-    DEMO_SUBMISSIONS,
-    DEMO_RUBRIC,
-} from './mockData';
+// Mock Data — DEMO_RUBRIC intentionally not re-exported.
+// RubricSection now uses task.rubric directly; no demo fallback in production.
 
 // Utilities
 export {

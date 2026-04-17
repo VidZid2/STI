@@ -18,7 +18,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             navigate('/student-login', { state: { isTeacherMode } });
             onClose();
         } else if (role === 'admin') {
-            window.location.href = 'https://elms.sti.edu/admin';
+            navigate('/admin-login');
+            onClose();
         }
     };
 
@@ -206,18 +207,21 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                     onMouseLeave={handleMouseLeave}
                                 >
                                     <motion.button
-                                        className="w-full flex items-center gap-4 p-4 rounded-xl border border-zinc-200 dark:border-slate-600 bg-zinc-50/50 dark:bg-slate-700/30 transition-all text-left group cursor-not-allowed"
+                                        className="w-full flex items-center gap-4 p-4 rounded-xl border border-zinc-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-amber-500/10 transition-all text-left group cursor-pointer"
+                                        onClick={() => handleRoleClick('admin')}
                                         initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 0.7, x: 0 }}
+                                        animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.15 }}
+                                        whileHover={{ scale: 1.01 }}
+                                        whileTap={{ scale: 0.99 }}
                                     >
                                         <motion.div 
-                                            className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-slate-600/50 flex items-center justify-center flex-shrink-0 transition-colors"
+                                            className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 transition-colors bg-amber-50 dark:bg-amber-500/20 group-hover:bg-amber-100 dark:group-hover:bg-amber-500/30"
                                             initial={{ scale: 0, rotate: -10 }}
                                             animate={{ scale: 1, rotate: 0 }}
                                             transition={{ delay: 0.2, type: 'spring', stiffness: 300 }}
                                         >
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                                                 <circle cx="12" cy="16" r="1"/>
@@ -241,14 +245,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                                 Manage & configure system
                                             </motion.span>
                                         </div>
-                                        <motion.div
-                                            className="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-500/20"
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            transition={{ delay: 0.25, type: 'spring' }}
-                                        >
-                                            <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wide">Soon</span>
-                                        </motion.div>
                                     </motion.button>
                                 </div>
                             </div>
@@ -330,7 +326,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                                         animate={{ scale: 1, rotate: 0 }}
                                                         transition={{ delay: 0.1, type: 'spring', stiffness: 400 }}
                                                     >
-                                                        🚧
+                                                        🛡️
                                                     </motion.span>
                                                     <motion.span 
                                                         className="text-sm font-semibold text-amber-500 dark:text-amber-400"
@@ -338,7 +334,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                                         animate={{ opacity: 1, x: 0 }}
                                                         transition={{ delay: 0.08 }}
                                                     >
-                                                        Under Construction
+                                                        Welcome, Admin!
                                                     </motion.span>
                                                 </motion.div>
                                                 <motion.p 
@@ -347,7 +343,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                                     animate={{ opacity: 1, y: 0 }}
                                                     transition={{ delay: 0.12 }}
                                                 >
-                                                    Admin portal is being developed. Check back later for updates.
+                                                    Sign in to oversee the platform, manage users, and configure system settings.
                                                 </motion.p>
                                             </>
                                         )}

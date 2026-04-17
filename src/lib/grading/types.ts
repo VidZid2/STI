@@ -37,6 +37,7 @@ export interface GradingRequest {
     maxPoints: number;
     rubric?: RubricCriteriaInput[];
     studentName?: string;           // For personalized feedback
+    attachments?: Array<{ name: string; url: string; type: string }>; // For file content analysis
 }
 
 export interface BatchGradingProgress {

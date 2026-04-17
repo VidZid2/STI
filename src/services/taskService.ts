@@ -112,14 +112,14 @@ export const uploadTaskFiles = async (
     taskId: string
 ): Promise<TaskAttachment[]> => {
     const attachments: TaskAttachment[] = [];
-    
+
     for (const file of files) {
         const attachment = await uploadTaskFile(file, courseId, taskId);
         if (attachment) {
             attachments.push(attachment);
         }
     }
-    
+
     return attachments;
 };
 
@@ -155,7 +155,7 @@ export const deleteTaskFile = async (
  */
 export const createTask = async (input: CreateTaskInput): Promise<CourseTask | null> => {
     const taskId = `task_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-    
+
     // Upload files first if any
     let attachments: TaskAttachment[] = [];
     if (input.files && input.files.length > 0) {
@@ -175,7 +175,7 @@ export const createTask = async (input: CreateTaskInput): Promise<CourseTask | n
         status: 'published',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        createdBy: localStorage.getItem('student_id') || 'unknown'
+        createdBy: sessionStorage.getItem('student_id') || 'unknown'
     };
 
     // Save to Supabase if configured
@@ -210,7 +210,7 @@ export const createTask = async (input: CreateTaskInput): Promise<CourseTask | n
 
     // Also save to localStorage for offline support
     saveTaskLocally(task);
-    
+
     return task;
 };
 
@@ -244,10 +244,10 @@ export const getCourseTasks = async (courseId: string): Promise<CourseTask[]> =>
                     updatedAt: row.updated_at,
                     createdBy: row.created_by
                 }));
-                
+
                 // Update local cache
                 tasks.forEach(task => saveTaskLocally(task));
-                
+
                 return tasks;
             }
         } catch (err) {
@@ -299,7 +299,7 @@ export const deleteTask = async (taskId: string, courseId: string): Promise<bool
 
     // Remove from localStorage
     removeTaskLocally(taskId, courseId);
-    
+
     return true;
 };
 
@@ -314,7 +314,7 @@ const saveTaskLocally = (task: CourseTask): void => {
     try {
         const existing = localStorage.getItem(key);
         const tasks: CourseTask[] = existing ? JSON.parse(existing) : [];
-        
+
         // Update or add task
         const index = tasks.findIndex(t => t.id === task.id);
         if (index >= 0) {
@@ -322,7 +322,7 @@ const saveTaskLocally = (task: CourseTask): void => {
         } else {
             tasks.unshift(task);
         }
-        
+
         localStorage.setItem(key, JSON.stringify(tasks));
     } catch (err) {
         console.error('[TaskService] Local save error:', err);

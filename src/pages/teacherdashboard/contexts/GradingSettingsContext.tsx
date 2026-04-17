@@ -52,8 +52,8 @@ export const GradingSettingsProvider: React.FC<{ children: React.ReactNode }> = 
             if (stored) {
                 return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
             }
-        } catch (e) {
-            console.error('Failed to load grading settings:', e);
+        } catch {
+            // localStorage unavailable — use defaults
         }
         return DEFAULT_SETTINGS;
     });
@@ -62,8 +62,8 @@ export const GradingSettingsProvider: React.FC<{ children: React.ReactNode }> = 
     useEffect(() => {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-        } catch (e) {
-            console.error('Failed to save grading settings:', e);
+        } catch {
+            // Storage quota exceeded — settings won't persist but app continues
         }
     }, [settings]);
 

@@ -2,23 +2,126 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   DESIGN TOKENS - DYNAMIC MODAL THEME VARIABLES
+   ============================================ */
+
+:root {
+    --bg-canvas: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-surface-alt: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-strong: rgba(0, 0, 0, 0.15);
+    --accent-primary: #3b82f6;
+    --accent-bg: rgba(59, 130, 246, 0.08);
+    --ring-focus: rgba(59, 130, 246, 0.15);
+    /* Semantic status colors — consistent across all themes */
+    --color-success: #10b981;
+    --color-success-bg: rgba(16, 185, 129, 0.1);
+    --color-warning: #f59e0b;
+    --color-warning-bg: rgba(245, 158, 11, 0.1);
+    --color-danger: #ef4444;
+    --color-danger-bg: rgba(239, 68, 68, 0.1);
+    --color-purple: #8b5cf6;
+    --color-purple-bg: rgba(139, 92, 246, 0.1);
+}
+
+html.dark {
+    --bg-canvas: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-surface-alt: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.15);
+    --accent-primary: #60a5fa;
+    --accent-bg: rgba(96, 165, 250, 0.1);
+    --ring-focus: rgba(96, 165, 250, 0.2);
+    /* Status colors stay the same in dark mode — they're semantic */
+}
+
+html.pink-theme {
+    --bg-canvas: #fdf2f8;
+    --bg-surface: #fff5f9;
+    --bg-surface-alt: #fce7f3;
+    --text-primary: #831843;
+    --text-secondary: #db2777;
+    --border-subtle: rgba(236, 72, 153, 0.12);
+    --border-strong: rgba(236, 72, 153, 0.25);
+    --accent-primary: #ec4899;
+    --accent-bg: rgba(236, 72, 153, 0.08);
+    --ring-focus: rgba(236, 72, 153, 0.15);
+}
+
+html.pink-theme.dark {
+    --bg-canvas: #1a0a12;
+    --bg-surface: #2d1220;
+    --bg-surface-alt: #3d1b2e;
+    --text-primary: #fce7f3;
+    --text-secondary: #f472b6;
+    --border-subtle: rgba(236, 72, 153, 0.15);
+    --border-strong: rgba(236, 72, 153, 0.3);
+    --accent-primary: #f472b6;
+    --accent-bg: rgba(244, 114, 182, 0.1);
+    --ring-focus: rgba(244, 114, 182, 0.2);
+}
+
+/* ---- QUICK ACTION CARD PINK GLOW ---- */
+/* Framer Motion sets boxShadow inline on hover, so !important is required */
+html.pink-theme .quick-action-card:hover {
+    box-shadow: 0 20px 40px rgba(236, 72, 153, 0.15) !important;
+}
+
+html.pink-theme.dark .quick-action-card:hover {
+    box-shadow: 0 20px 40px rgba(236, 72, 153, 0.25) !important;
+}
+
+/* ---- DASHBOARD BUTTONS (View All, etc.) PINK GLOW ---- */
+/* Light pink theme */
+html.pink-theme .dashboard-btn {
+    background: rgba(236, 72, 153, 0.08) !important;
+    color: #ec4899 !important;
+    border-color: rgba(236, 72, 153, 0.2) !important;
+}
+
+html.pink-theme .dashboard-btn:hover {
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25) !important;
+}
+
+/* Dark + pink theme */
+html.pink-theme.dark .dashboard-btn {
+    background: rgba(236, 72, 153, 0.1) !important;
+    color: #f472b6 !important;
+    border-color: rgba(236, 72, 153, 0.25) !important;
+}
+
+html.pink-theme.dark .dashboard-btn:hover {
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35) !important;
+}
+
 /* Skeleton Loading Animations */
 @keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 @keyframes shimmerSlide {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
 }
 
 /* ============================================
@@ -112,6 +215,865 @@ html.dark [class*="card"],
 html.dark [class*="Card"] {
     background: #1e293b !important;
     border-color: #334155 !important;
+}
+
+/* ============================================
+   PINK THEME STYLES - Using html.pink-theme class
+   Complete pink aesthetic transformation
+   ============================================ */
+
+/* Pink Theme - CSS Variables */
+html.pink-theme {
+    --pink-primary: #ec4899;
+    --pink-primary-dark: #db2777;
+    --pink-primary-light: rgba(236, 72, 153, 0.1);
+    --pink-primary-lighter: rgba(236, 72, 153, 0.05);
+    --pink-primary-border: rgba(236, 72, 153, 0.15);
+    --pink-gradient-start: #ec4899;
+    --pink-gradient-end: #f472b6;
+}
+
+/* ---- BACKGROUNDS ---- */
+
+/* Main page background - soft pinkish white */
+html.pink-theme {
+    background: #fdf2f8 !important;
+}
+
+html.pink-theme body {
+    background: #fdf2f8 !important;
+}
+
+html.pink-theme #root,
+html.pink-theme .App {
+    background: #fdf2f8 !important;
+}
+
+/* Surface / card backgrounds - very light pink-white */
+html.pink-theme [style*="background: #ffffff"],
+html.pink-theme [style*="background: #fff"],
+html.pink-theme [style*="background: white"],
+html.pink-theme [style*="background: rgb(255, 255, 255)"] {
+    background: #fff5f9 !important;
+}
+
+html.pink-theme [style*="background: #f8fafc"],
+html.pink-theme [style*="background: rgb(248, 250, 252)"],
+html.pink-theme [style*="background: #f1f5f9"] {
+    background: #fce7f3 !important;
+}
+
+html.pink-theme [style*="background: #fafbfc"] {
+    background: #fdf2f8 !important;
+}
+
+/* Pink-only Submission Card — make sure text stays visible on light pink */
+html.pink-theme:not(.dark) .submission-item-wrapper span[style*="color: #0f172a"],
+html.pink-theme:not(.dark) .submission-item-wrapper span[style*="color: rgb(15, 23, 42)"] {
+    color: #831843 !important;
+}
+
+html.pink-theme:not(.dark) .submission-item-wrapper {
+    border-color: rgba(236, 72, 153, 0.12) !important;
+}
+
+/* ---- QUICK ACTIONS PINK THEME SAFE OVERRIDES ---- */
+/* Smooth transition for the hover shadow override */
+html.pink-theme .dashboard-btn {
+    transition: all 0.15s ease-out !important;
+}
+
+/* Enforce the pink glow safely on hover, overriding framer motion's inline shadow */
+html.pink-theme .dashboard-btn:hover {
+    box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3) !important;
+    transform: scale(1.02) !important;
+}
+
+/* Override button backgrounds/borders/colors to pink */
+html.pink-theme .dashboard-btn[style*="59, 130, 246"],
+html.pink-theme .dashboard-btn[style*="3b82f6"] {
+    background: rgba(236, 72, 153, 0.08) !important;
+    color: #ec4899 !important;
+    border-color: rgba(236, 72, 153, 0.2) !important;
+}
+
+html.pink-theme .dashboard-btn[style*="239, 68, 68"],
+html.pink-theme .dashboard-btn[style*="ef4444"],
+html.pink-theme .dashboard-btn[style*="dc2626"] {
+    background: linear-gradient(135deg, #ec4899 0%, #db2777 100%) !important;
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25) !important;
+}
+
+/* Uniform light pink styling across ALL quick action buttons safely.
+   We use [style] attribute selectors to boost specificity, overriding any other global [style*="..."] rules */
+html.pink-theme div.quick-action-bg[style] {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.02) 0%, transparent 60%) !important;
+}
+
+html.pink-theme div.quick-action-icon-wrapper[style] {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0.08) 100%) !important;
+    border: 1px solid rgba(236, 72, 153, 0.25) !important;
+    color: #ec4899 !important;
+}
+
+html.pink-theme div.quick-action-icon-wrapper[style] svg,
+html.pink-theme div.quick-action-icon-wrapper[style] path,
+html.pink-theme div.quick-action-icon-wrapper[style] circle,
+html.pink-theme div.quick-action-icon-wrapper[style] rect,
+html.pink-theme div.quick-action-icon-wrapper[style] polyline,
+html.pink-theme div.quick-action-icon-wrapper[style] line {
+    stroke: #ec4899 !important;
+}
+
+/* ---- QUICK ACTION CARDS: PINK DARK MODE FIX ---- */
+/* The .quick-action-card CSS class has background:white which wins over var(--bg-surface).
+   Force the dark surface and correct text/icon colors in pink+dark mode. */
+html.pink-theme.dark .quick-action-card {
+    background: #2d1220 !important;
+    border-color: rgba(236, 72, 153, 0.2) !important;
+}
+
+html.pink-theme.dark .quick-action-card span {
+    color: #fce7f3 !important;
+}
+
+html.pink-theme.dark div.quick-action-bg[style] {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.06) 0%, transparent 60%) !important;
+}
+
+html.pink-theme.dark div.quick-action-icon-wrapper[style] {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(236, 72, 153, 0.1) 100%) !important;
+    border: 1px solid rgba(236, 72, 153, 0.35) !important;
+    color: #f472b6 !important;
+}
+
+html.pink-theme.dark div.quick-action-icon-wrapper[style] svg,
+html.pink-theme.dark div.quick-action-icon-wrapper[style] path,
+html.pink-theme.dark div.quick-action-icon-wrapper[style] circle,
+html.pink-theme.dark div.quick-action-icon-wrapper[style] rect,
+html.pink-theme.dark div.quick-action-icon-wrapper[style] polyline,
+html.pink-theme.dark div.quick-action-icon-wrapper[style] line {
+    stroke: #f472b6 !important;
+}
+
+/* ---- ACTIVITY CARDS PINK THEME OVERRIDES ---- */
+html.pink-theme .activity-card-icon[style*="10b981"],
+html.pink-theme .activity-card-icon[style*="16, 185, 129"],
+html.pink-theme .activity-card-icon[style*="3b82f6"],
+html.pink-theme .activity-card-icon[style*="59, 130, 246"] {
+    background: rgba(236, 72, 153, 0.15) !important;
+    color: #ec4899 !important;
+}
+
+html.pink-theme .activity-card-badge[style*="10b981"],
+html.pink-theme .activity-card-badge[style*="16, 185, 129"],
+html.pink-theme .activity-card-badge[style*="3b82f6"],
+html.pink-theme .activity-card-badge[style*="59, 130, 246"] {
+    background: rgba(236, 72, 153, 0.1) !important;
+    border-color: rgba(236, 72, 153, 0.25) !important;
+    color: #ec4899 !important;
+}
+
+html.pink-theme .activity-card-icon svg,
+html.pink-theme .activity-card-icon path,
+html.pink-theme .activity-card-icon circle,
+html.pink-theme .activity-card-icon rect,
+html.pink-theme .activity-card-icon polyline,
+html.pink-theme .activity-card-icon line {
+    stroke: currentColor;
+}
+
+/* ---- ACTIVITY CARDS PINK DARK MODE OVERRIDES ---- */
+/* Override ALL type colors (blue, green, amber, red) to pink in dark mode */
+html.pink-theme.dark .activity-card-icon[style] {
+    background: rgba(236, 72, 153, 0.2) !important;
+    color: #f472b6 !important;
+}
+
+html.pink-theme.dark .activity-card-badge[style] {
+    background: rgba(236, 72, 153, 0.15) !important;
+    border-color: rgba(236, 72, 153, 0.35) !important;
+    color: #f9a8d4 !important;
+}
+
+html.pink-theme.dark .activity-card-icon svg,
+html.pink-theme.dark .activity-card-icon path,
+html.pink-theme.dark .activity-card-icon circle,
+html.pink-theme.dark .activity-card-icon rect,
+html.pink-theme.dark .activity-card-icon polyline,
+html.pink-theme.dark .activity-card-icon line {
+    stroke: #f472b6 !important;
+}
+
+/* ---- SETTINGS MODAL PINK THEME OVERRIDES ---- */
+
+/* Settings tab buttons: active blue → pink */
+html.pink-theme .settings-tab-btn[style*="59, 130, 246"] {
+    background: rgba(236, 72, 153, 0.1) !important;
+    color: #ec4899 !important;
+}
+
+html.pink-theme .settings-tab-btn[style*="59, 130, 246"] div[style] {
+    background: rgba(236, 72, 153, 0.15) !important;
+}
+
+/* Settings header icon: purple → pink */
+html.pink-theme .settings-header-icon[style] {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0.08) 100%) !important;
+    border-color: rgba(236, 72, 153, 0.25) !important;
+    color: #ec4899 !important;
+}
+
+/* Toggle switches: override all category colors to pink when active */
+html.pink-theme .settings-toggle-on {
+    background-color: #ec4899 !important;
+    border-color: #ec4899 !important;
+}
+
+/* ---- QUICK STAT CARDS (Dashboard 4 metrics) ---- */
+html.pink-theme .quick-stat-card[style] {
+    background: rgba(236, 72, 153, 0.1) !important;
+}
+
+html.pink-theme .quick-stat-card span:first-of-type {
+    color: #ec4899 !important;
+}
+
+html.pink-theme .quick-stat-card {
+    border-color: rgba(236, 72, 153, 0.25) !important;
+}
+
+html.pink-theme .quick-stat-tooltip {
+    border-color: rgba(236, 72, 153, 0.35) !important;
+    box-shadow: 0 4px 20px rgba(236, 72, 153, 0.2), 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+html.pink-theme .quick-stat-tooltip-arrow {
+    border-left-color: rgba(236, 72, 153, 0.35) !important;
+    border-top-color: rgba(236, 72, 153, 0.35) !important;
+}
+
+html.pink-theme .quick-stat-tooltip > div:nth-child(2) {
+    color: #ec4899 !important;
+}
+
+/* Pink + Dark mode — all 4 cards uniform pink */
+html.pink-theme.dark .quick-stat-card,
+html.pink-theme.dark .quick-stat-card[style],
+html.pink-theme.dark .quick-stat-card--students,
+html.pink-theme.dark .quick-stat-card[style*="rgba(16, 185, 129"],
+html.pink-theme.dark .quick-stat-card[style*="rgba(245, 158, 11"],
+html.pink-theme.dark .quick-stat-card[style*="rgba(139, 92, 246"] {
+    background: rgba(236, 72, 153, 0.14) !important;
+    border-color: rgba(236, 72, 153, 0.35) !important;
+}
+
+html.pink-theme.dark .quick-stat-card span:first-of-type,
+html.pink-theme.dark .quick-stat-card--students span:first-of-type {
+    color: #f472b6 !important;
+}
+
+html.pink-theme.dark .quick-stat-tooltip {
+    border-color: rgba(236, 72, 153, 0.4) !important;
+    box-shadow: 0 4px 20px rgba(236, 72, 153, 0.25), 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+
+html.pink-theme.dark .quick-stat-tooltip-arrow {
+    border-left-color: rgba(236, 72, 153, 0.4) !important;
+    border-top-color: rgba(236, 72, 153, 0.4) !important;
+}
+
+html.pink-theme.dark .quick-stat-tooltip > div:nth-child(2) {
+    color: #f472b6 !important;
+}
+
+/* ---- BLUE → PINK ACCENT OVERRIDES ---- */
+
+/* Solid blue → pink */
+html.pink-theme [style*="color: #3b82f6"],
+html.pink-theme [style*="color: rgb(59, 130, 246)"] {
+    color: #ec4899 !important;
+}
+
+html.pink-theme [style*="color: #1e40af"] {
+    color: #be185d !important;
+}
+
+/* Dark blue (#003DA5 / rgb(0, 61, 165)) → darker pink */
+html.pink-theme *[stroke="#003DA5"] {
+    stroke: #be185d !important;
+}
+
+html.pink-theme [style*="color: #003DA5"] {
+    color: #be185d !important;
+}
+
+html.pink-theme [style*="background: rgba(0, 61, 165"] {
+    background: rgba(190, 24, 93, 0.08) !important;
+}
+
+html.pink-theme [style*="border: 1px solid rgba(0, 61, 165"] {
+    border-color: rgba(190, 24, 93, 0.15) !important;
+}
+
+/* SVG strokes and fills (for React elements where it's an attribute, not inline style) */
+html.pink-theme *[stroke="#3b82f6"],
+html.pink-theme *[stroke="rgb(59, 130, 246)"] {
+    stroke: #ec4899 !important;
+}
+
+html.pink-theme *[fill="#3b82f6"],
+html.pink-theme *[fill="rgb(59, 130, 246)"] {
+    fill: #ec4899 !important;
+}
+
+html.pink-theme [style*="stroke: #3b82f6"],
+html.pink-theme [style*="stroke: rgb(59, 130, 246)"] {
+    stroke: #ec4899 !important;
+}
+
+/* Green → Pink (from Quick Stats / Dashboard) */
+html.pink-theme *[stroke="#10b981"] {
+    stroke: #db2777 !important;
+}
+
+html.pink-theme *[fill="#10b981"] {
+    fill: #db2777 !important;
+}
+
+html.pink-theme [style*="color: #10b981"] {
+    color: #db2777 !important;
+}
+
+html.pink-theme [style*="background: linear-gradient(135deg, rgba(16, 185, 129"] {
+    background: linear-gradient(135deg, rgba(219, 39, 119, 0.15) 0%, rgba(219, 39, 119, 0.05) 100%) !important;
+}
+
+html.pink-theme [style*="border: 1px solid rgba(16, 185, 129"] {
+    border-color: rgba(219, 39, 119, 0.25) !important;
+}
+
+/* Orange → Pink */
+html.pink-theme *[stroke="#f59e0b"] {
+    stroke: #ec4899 !important;
+}
+
+html.pink-theme [style*="color: #f59e0b"] {
+    color: #ec4899 !important;
+}
+
+/* Red → Dark Pink */
+html.pink-theme *[stroke="#ef4444"] {
+    stroke: #be185d !important;
+}
+
+html.pink-theme [style*="color: #ef4444"] {
+    color: #be185d !important;
+}
+
+/* Cyan → Light Pink */
+html.pink-theme *[stroke="#06b6d4"] {
+    stroke: #f472b6 !important;
+}
+
+html.pink-theme [style*="color: #06b6d4"] {
+    color: #f472b6 !important;
+}
+
+/* ---- QUICK START TEMPLATES (Create Assignment) ---- */
+html.pink-theme .quick-template-btn span[style*="600"] {
+    color: #ec4899 !important;
+}
+
+html.pink-theme .quick-template-btn svg,
+html.pink-theme .quick-template-btn svg path,
+html.pink-theme .quick-template-btn svg circle,
+html.pink-theme .quick-template-btn svg rect,
+html.pink-theme .quick-template-btn svg polyline,
+html.pink-theme .quick-template-btn svg line {
+    stroke: #ec4899 !important;
+}
+
+/* "Use Previous Assignment" list overrides */
+html.pink-theme .previous-assignment-title[style],
+html.pink-theme .previous-assignment-badge[style] {
+    color: #be185d !important;
+}
+
+/* "Assignment Type" selector boxes */
+html.pink-theme .assignment-type-btn.selected {
+    border-color: #ec4899 !important;
+    background-color: rgba(236, 72, 153, 0.08) !important;
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.15) !important;
+}
+
+html.pink-theme .assignment-type-btn.selected * {
+    color: #ec4899 !important;
+}
+
+html.pink-theme .assignment-type-btn.selected svg rect,
+html.pink-theme .assignment-type-btn.selected svg path,
+html.pink-theme .assignment-type-btn.selected svg circle,
+html.pink-theme .assignment-type-btn.selected svg polyline,
+html.pink-theme .assignment-type-btn.selected svg line {
+    stroke: #ec4899 !important;
+}
+
+/* Fix background generic mappers from overriding card borders if needed */
+html.pink-theme [style*="background: linear-gradient(135deg, rgba(16, 185, 129"] {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0.05) 100%) !important;
+}
+
+html.pink-theme [style*="border: 1px solid rgba(16, 185, 129"] {
+    border-color: rgba(236, 72, 153, 0.25) !important;
+}
+
+/* Blue backgrounds → pink */
+html.pink-theme [style*="background: #3b82f6"] {
+    background: #ec4899 !important;
+}
+
+html.pink-theme [style*="background: rgba(59, 130, 246"] {
+    background: rgba(236, 72, 153, 0.1) !important;
+}
+
+html.pink-theme [style*="background: linear-gradient(135deg, rgba(59, 130, 246"] {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0.05) 100%) !important;
+}
+
+/* Blue borders → pink */
+html.pink-theme [style*="border: 1px solid rgba(59, 130, 246"],
+html.pink-theme [style*="border-color: rgba(59, 130, 246"],
+html.pink-theme [style*="border: 1.5px solid #3b82f6"] {
+    border-color: rgba(236, 72, 153, 0.25) !important;
+}
+
+html.pink-theme [style*="border: 1px solid rgba(59, 130, 246, 0.1)"] {
+    border-color: rgba(236, 72, 153, 0.1) !important;
+}
+
+/* Box shadows */
+html.pink-theme [style*="box-shadow: 0 4px 12px rgba(59, 130, 246"] {
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.15) !important;
+}
+
+html.pink-theme [style*="box-shadow: 0 2px 6px rgba(59, 130, 246"] {
+    box-shadow: 0 2px 6px rgba(236, 72, 153, 0.25) !important;
+}
+
+html.pink-theme [style*="box-shadow: 0 0 0 3px rgba(59, 130, 246"] {
+    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1) !important;
+}
+
+/* ---- BORDERS ---- */
+
+/* General borders get a pink tint */
+html.pink-theme [style*="border: 1px solid rgba(0, 0, 0, 0.06)"],
+html.pink-theme [style*="border-bottom: 1px solid rgba(0,0,0,0.06)"],
+html.pink-theme [style*="border-bottom: 1px solid rgba(0, 0, 0, 0.06)"] {
+    border-color: rgba(236, 72, 153, 0.08) !important;
+}
+
+html.pink-theme [style*="border: 1px solid rgba(0, 0, 0, 0.08)"],
+html.pink-theme [style*="border: 1px solid rgba(0,0,0,0.08)"] {
+    border-color: rgba(236, 72, 153, 0.12) !important;
+}
+
+/* ---- INPUTS & FORM ELEMENTS ---- */
+
+html.pink-theme input,
+html.pink-theme textarea,
+html.pink-theme select {
+    background: #fff5f9 !important;
+    border-color: rgba(236, 72, 153, 0.15) !important;
+}
+
+html.pink-theme input:focus,
+html.pink-theme textarea:focus,
+html.pink-theme select:focus {
+    border-color: #ec4899 !important;
+    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1) !important;
+}
+
+html.pink-theme input::placeholder,
+html.pink-theme textarea::placeholder {
+    color: #f9a8d4 !important;
+}
+
+/* ---- CARDS ---- */
+
+html.pink-theme .card,
+html.pink-theme [class*="card"],
+html.pink-theme [class*="Card"] {
+    background: #fff5f9 !important;
+    border-color: rgba(236, 72, 153, 0.1) !important;
+}
+
+/* ---- LIGHT GRAY AREAS → PINK TINT ---- */
+
+html.pink-theme [style*="background: rgba(0, 0, 0, 0.02)"],
+html.pink-theme [style*="background: rgba(0,0,0,0.02)"] {
+    background: rgba(236, 72, 153, 0.04) !important;
+}
+
+html.pink-theme [style*="background: rgba(0, 0, 0, 0.04)"],
+html.pink-theme [style*="background: rgba(0,0,0,0.04)"] {
+    background: rgba(236, 72, 153, 0.06) !important;
+}
+
+/* ---- HEADER & STICKY ELEMENTS ---- */
+
+html.pink-theme header,
+html.pink-theme [style*="position: sticky"] {
+    background: #fff5f9 !important;
+}
+
+html.pink-theme.dark header,
+html.pink-theme.dark [style*="position: sticky"] {
+    background: #2d1220 !important;
+}
+
+/* ---- SCROLLBAR ---- */
+
+html.pink-theme ::-webkit-scrollbar {
+    width: 6px;
+}
+
+html.pink-theme ::-webkit-scrollbar-track {
+    background: #fdf2f8;
+}
+
+html.pink-theme ::-webkit-scrollbar-thumb {
+    background: rgba(236, 72, 153, 0.2);
+    border-radius: 3px;
+}
+
+html.pink-theme ::-webkit-scrollbar-thumb:hover {
+    background: rgba(236, 72, 153, 0.35);
+}
+
+/* ---- PURPLE → DARK PINK ACCENTS ---- */
+
+html.pink-theme [style*="color: #8b5cf6"] {
+    color: #db2777 !important;
+}
+
+html.pink-theme [style*="background: rgba(139, 92, 246"],
+html.pink-theme [style*="background: linear-gradient(135deg, rgba(139, 92, 246"] {
+    background: rgba(219, 39, 119, 0.1) !important;
+}
+
+html.pink-theme [style*="border: 1px solid rgba(139, 92, 246"] {
+    border-color: rgba(219, 39, 119, 0.15) !important;
+}
+
+/* ---- TEACHER BADGE ---- */
+
+html.pink-theme [style*="background: rgba(59, 130, 246, 0.1)"][style*="text-transform: uppercase"] {
+    background: rgba(236, 72, 153, 0.1) !important;
+    color: #ec4899 !important;
+}
+
+/* ---- TAILWIND OVERRIDES FOR PINK THEME ---- */
+
+/* ---- TAILWIND PHASE 3 DASHBOARD OVERRIDES FOR PINK THEME ---- */
+/* Map explicit Tailwind color classes to Pink Theme aesthetics */
+
+/* Surfaces */
+html.pink-theme .bg-white { background-color: #fff5f9 !important; }
+html.pink-theme .border-black\/5 { border-color: rgba(236, 72, 153, 0.08) !important; }
+html.pink-theme .bg-black\/\[0\.015\] { background-color: rgba(236, 72, 153, 0.04) !important; }
+html.pink-theme .hover\:bg-black\/\[0\.02\]:hover { background-color: rgba(236, 72, 153, 0.06) !important; }
+html.pink-theme .bg-slate-50 { background-color: #fdf2f8 !important; }
+
+/* BLUE -> PINK */
+html.pink-theme .text-blue-500 { color: #ec4899 !important; }
+html.pink-theme .bg-blue-500\/\[0\.06\] { background-color: rgba(236, 72, 153, 0.06) !important; }
+html.pink-theme .bg-blue-500\/\[0\.08\] { background-color: rgba(236, 72, 153, 0.08) !important; }
+html.pink-theme .bg-blue-500\/10 { background-color: rgba(236, 72, 153, 0.1) !important; }
+html.pink-theme .bg-blue-500\/15 { background-color: rgba(236, 72, 153, 0.15) !important; }
+html.pink-theme .border-blue-500\/20 { border-color: rgba(236, 72, 153, 0.2) !important; }
+html.pink-theme .border-blue-500\/10 { border-color: rgba(236, 72, 153, 0.1) !important; }
+html.pink-theme .shadow-\[0_4px_20px_rgba\(59\,130\,246\,0\.15\)\] { box-shadow: 0 4px 20px rgba(236, 72, 153, 0.15) !important; }
+html.pink-theme .shadow-\[0_4px_12px_rgba\(59\,130\,246\,0\.2\)\] { box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2) !important; }
+html.pink-theme .shadow-\[0_4px_12px_rgba\(59\,130\,246\,0\.15\)\] { box-shadow: 0 4px 12px rgba(236, 72, 153, 0.15) !important; }
+
+
+/* EMERALD -> PINK */
+html.pink-theme .text-emerald-500 { color: #db2777 !important; }
+html.pink-theme .bg-emerald-500\/10 { background-color: rgba(219, 39, 119, 0.1) !important; }
+html.pink-theme .bg-emerald-500\/15 { background-color: rgba(219, 39, 119, 0.15) !important; }
+html.pink-theme .border-emerald-500\/20 { border-color: rgba(219, 39, 119, 0.2) !important; }
+
+/* AMBER -> PINK */
+html.pink-theme .text-amber-500 { color: #ec4899 !important; }
+html.pink-theme .bg-amber-500\/10 { background-color: rgba(236, 72, 153, 0.1) !important; }
+html.pink-theme .bg-amber-500\/15 { background-color: rgba(236, 72, 153, 0.15) !important; }
+html.pink-theme .border-amber-500\/20 { border-color: rgba(236, 72, 153, 0.2) !important; }
+
+/* RED -> DARK PINK */
+html.pink-theme .text-red-500 { color: #be185d !important; }
+html.pink-theme .bg-red-500\/15 { background-color: rgba(190, 24, 93, 0.15) !important; }
+html.pink-theme .border-red-500\/20 { border-color: rgba(190, 24, 93, 0.2) !important; }
+html.pink-theme .bg-gradient-to-br.from-red-500\/\[0\.04\] { --tw-gradient-from: rgba(190, 24, 93, 0.04) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+
+/* PURPLE -> PINK */
+html.pink-theme .text-purple-500 { color: #db2777 !important; }
+html.pink-theme .bg-purple-500\/10 { background-color: rgba(219, 39, 119, 0.1) !important; }
+
+/* Quick Action Cards linear gradients override */
+html.pink-theme .bg-blue-500\/\[0\.04\] { background-color: rgba(236, 72, 153, 0.04) !important; }
+html.pink-theme .hover\:bg-blue-500\/\[0\.08\]:hover { background-color: rgba(236, 72, 153, 0.08) !important; }
+
+/* Text colors */
+html.pink-theme .text-slate-900 { color: #831843 !important; }
+
+
+
+/* Override Tailwind blue hover classes to pink */
+html.pink-theme .hover\:bg-indigo-500\/10:hover {
+    background-color: rgba(236, 72, 153, 0.1) !important;
+}
+
+html.pink-theme .hover\:border-indigo-500\/20:hover {
+    border-color: rgba(236, 72, 153, 0.2) !important;
+}
+
+html.pink-theme .hover\:text-indigo-500:hover {
+    color: #ec4899 !important;
+}
+
+/* ---- DARK MODE TAILWIND OVERRIDES ---- */
+html.dark .bg-white { background-color: #1e293b !important; }
+html.dark .bg-slate-50 { background-color: #0f172a !important; }
+html.dark .text-slate-900 { color: #f1f5f9 !important; }
+html.dark .text-slate-500, html.dark .text-slate-400 { color: #94a3b8 !important; }
+html.dark .border-black\/5 { border-color: rgba(255, 255, 255, 0.08) !important; }
+html.dark .bg-black\/\[0\.015\] { background-color: rgba(255, 255, 255, 0.03) !important; }
+html.dark .bg-black\/5 { background-color: rgba(255, 255, 255, 0.05) !important; }
+
+/* ---- DARK MODE QUICK STAT CARDS ---- */
+/* Boost card backgrounds and borders so they're visible on dark surfaces */
+html.dark .quick-stat-card--students {
+    background: rgba(96, 165, 250, 0.14) !important;
+    border-color: rgba(96, 165, 250, 0.30) !important;
+}
+html.dark .quick-stat-card--students span:first-of-type {
+    color: #60a5fa !important;
+}
+html.dark .quick-stat-card[style*="rgba(16, 185, 129"] {
+    background: rgba(16, 185, 129, 0.14) !important;
+    border-color: rgba(16, 185, 129, 0.30) !important;
+}
+html.dark .quick-stat-card[style*="rgba(245, 158, 11"] {
+    background: rgba(245, 158, 11, 0.14) !important;
+    border-color: rgba(245, 158, 11, 0.30) !important;
+}
+html.dark .quick-stat-card[style*="rgba(139, 92, 246"] {
+    background: rgba(139, 92, 246, 0.14) !important;
+    border-color: rgba(139, 92, 246, 0.30) !important;
+}
+/* Students card uses CSS var — boost via accent-bg override in dark */
+html.dark .quick-stat-card[style*="var(--accent-bg)"] {
+    border-color: rgba(96, 165, 250, 0.30) !important;
+}
+
+/* Pink + Dark mode — override all 4 cards to uniform pink (must be after html.dark rules) */
+html.pink-theme.dark .quick-stat-card,
+html.pink-theme.dark .quick-stat-card[style],
+html.pink-theme.dark .quick-stat-card--students,
+html.pink-theme.dark .quick-stat-card[style*="rgba(16, 185, 129"],
+html.pink-theme.dark .quick-stat-card[style*="rgba(245, 158, 11"],
+html.pink-theme.dark .quick-stat-card[style*="rgba(139, 92, 246"] {
+    background: rgba(236, 72, 153, 0.14) !important;
+    border-color: rgba(236, 72, 153, 0.35) !important;
+}
+
+html.pink-theme.dark .quick-stat-card span:first-of-type,
+html.pink-theme.dark .quick-stat-card--students span:first-of-type {
+    color: #f472b6 !important;
+}
+
+html.pink-theme.dark .quick-stat-tooltip {
+    border-color: rgba(236, 72, 153, 0.4) !important;
+    box-shadow: 0 4px 20px rgba(236, 72, 153, 0.25), 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+
+html.pink-theme.dark .quick-stat-tooltip-arrow {
+    border-left-color: rgba(236, 72, 153, 0.4) !important;
+    border-top-color: rgba(236, 72, 153, 0.4) !important;
+}
+
+html.pink-theme.dark .quick-stat-tooltip > div:nth-child(2) {
+    color: #f472b6 !important;
+}
+
+/* ---- DARK MODE ACTIVITY MODAL FILTER TABS ---- */
+html.dark .activity-filter-tabs {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+html.dark .activity-filter-indicator {
+    background: rgba(96, 165, 250, 0.15) !important;
+    border-color: rgba(96, 165, 250, 0.25) !important;
+}
+html.dark .activity-filter-badge {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: var(--text-secondary) !important;
+}
+html.dark .activity-filter-badge--active {
+    background: rgba(96, 165, 250, 0.25) !important;
+    color: #60a5fa !important;
+}
+
+/* ---- PINK+DARK ACTIVITY MODAL FILTER TABS ---- */
+html.pink-theme.dark .activity-filter-tabs {
+    background: rgba(236, 72, 153, 0.08) !important;
+}
+html.pink-theme.dark .activity-filter-indicator {
+    background: rgba(236, 72, 153, 0.18) !important;
+    border-color: rgba(236, 72, 153, 0.35) !important;
+}
+html.pink-theme.dark .activity-filter-badge {
+    background: rgba(236, 72, 153, 0.1) !important;
+    color: #f9a8d4 !important;
+}
+html.pink-theme.dark .activity-filter-badge--active {
+    background: rgba(236, 72, 153, 0.25) !important;
+    color: #f472b6 !important;
+}
+
+/* ---- PINK THEME + DARK MODE COMBO ---- */
+
+/* Pink Theme + Dark Mode Tailwind Mappings */
+html.pink-theme.dark .bg-white { background-color: #2d1220 !important; }
+html.pink-theme.dark .bg-slate-50 { background-color: #1a0a12 !important; }
+html.pink-theme.dark .text-slate-900 { color: #fce7f3 !important; }
+html.pink-theme.dark .text-slate-500, html.pink-theme.dark .text-slate-400 { color: #f9a8d4 !important; }
+
+/* Pink+Dark: Blue Tailwind class overrides → pink */
+html.pink-theme.dark .bg-blue-500\/10 { background-color: rgba(236, 72, 153, 0.12) !important; }
+html.pink-theme.dark .bg-blue-500\/\[0\.06\] { background-color: rgba(236, 72, 153, 0.08) !important; }
+html.pink-theme.dark .bg-blue-500\/\[0\.08\] { background-color: rgba(236, 72, 153, 0.1) !important; }
+html.pink-theme.dark .bg-blue-500\/15 { background-color: rgba(236, 72, 153, 0.15) !important; }
+html.pink-theme.dark .border-blue-500\/20 { border-color: rgba(236, 72, 153, 0.25) !important; }
+html.pink-theme.dark .border-blue-500\/10 { border-color: rgba(236, 72, 153, 0.15) !important; }
+html.pink-theme.dark .text-blue-500 { color: #f472b6 !important; }
+html.pink-theme.dark .border-black\/5 { border-color: rgba(236, 72, 153, 0.12) !important; }
+html.pink-theme.dark .text-slate-500 { color: #f9a8d4 !important; }
+
+/* Pink+Dark: inline gradient overrides for icon wrappers */
+html.pink-theme.dark [style*="rgba(59, 130, 246, 0.15)"] {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.18) 0%, rgba(236, 72, 153, 0.06) 100%) !important;
+}
+html.pink-theme.dark [style*="rgba(59, 130, 246, 0.08)"] {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0.06) 100%) !important;
+}
+
+
+
+html.pink-theme.dark {
+    background: #1a0a12 !important;
+}
+
+html.pink-theme.dark body {
+    background: #1a0a12 !important;
+}
+
+html.pink-theme.dark #root,
+html.pink-theme.dark .App {
+    background: #1a0a12 !important;
+}
+
+/* Override light background inline styles to dark pink surfaces */
+html.pink-theme.dark [style*="background: #ffffff"],
+html.pink-theme.dark [style*="background: #fff"],
+html.pink-theme.dark [style*="background: white"],
+html.pink-theme.dark [style*="background: rgb(255, 255, 255)"] {
+    background: #2d1220 !important;
+}
+
+html.pink-theme.dark [style*="background: #f8fafc"],
+html.pink-theme.dark [style*="background: rgb(248, 250, 252)"],
+html.pink-theme.dark [style*="background: #f1f5f9"] {
+    background: #1a0a12 !important;
+}
+
+/* Also override dark inline styles just in case */
+html.pink-theme.dark [style*="background: #1e293b"],
+html.pink-theme.dark [style*="background: rgb(30, 41, 59)"] {
+    background: #2d1220 !important;
+}
+
+html.pink-theme.dark [style*="background: #0f172a"],
+html.pink-theme.dark [style*="background: rgb(15, 23, 42)"] {
+    background: #1a0a12 !important;
+}
+
+/* Explicit Grade Submissions Modal Classes (Bulletproof) */
+html.pink-theme.dark .modal-sidebar {
+    background: #2d1220 !important;
+    border-color: rgba(255,255,255,0.08) !important;
+}
+
+html.pink-theme.dark .modal-list-wrapper {
+    background: #1a0a12 !important;
+}
+
+/* Submission Card Text Fixes for pink+dark */
+html.pink-theme.dark .submission-item-wrapper {
+    border-color: rgba(236, 72, 153, 0.1) !important;
+}
+
+html.pink-theme.dark .submission-item-wrapper span[style*="color: #0f172a"],
+html.pink-theme.dark .submission-item-wrapper span[style*="color: rgb(15, 23, 42)"] {
+    color: #fce7f3 !important;
+}
+
+html.pink-theme.dark .submission-item-wrapper span[style*="color: #64748b"] {
+    color: #f9a8d4 !important;
+}
+
+html.pink-theme.dark .submission-item-wrapper span[style*="color: #94a3b8"] {
+    color: #f9a8d4 !important;
+}
+
+/* Fix Text Colors */
+html.pink-theme.dark [style*="color: #1e293b"],
+html.pink-theme.dark [style*="color: #0f172a"],
+html.pink-theme.dark [style*="color: rgb(15, 23, 42)"] {
+    color: #fce7f3 !important;
+}
+
+html.pink-theme.dark [style*="color: #f1f5f9"],
+html.pink-theme.dark [style*="color: #e2e8f0"] {
+    color: #fce7f3 !important;
+}
+
+/* Fix Inputs and Selects */
+html.pink-theme.dark input,
+html.pink-theme.dark textarea,
+html.pink-theme.dark select {
+    background: #2d1220 !important;
+    border-color: rgba(236, 72, 153, 0.2) !important;
+    color: #fce7f3 !important;
+}
+
+html.pink-theme.dark input::placeholder,
+html.pink-theme.dark textarea::placeholder {
+    color: rgba(252, 231, 243, 0.6) !important;
+}
+
+/* Fix modal backgrounds */
+html.pink-theme.dark [role="dialog"],
+html.pink-theme.dark [aria-modal="true"],
+html.pink-theme.dark .responsive-modal-container {
+    background: #1a0a12 !important;
+}
+
+html.pink-theme.dark .responsive-modal-header,
+html.pink-theme.dark .responsive-modal-footer {
+    background: #2d1220 !important;
+    border-color: rgba(236, 72, 153, 0.2) !important;
 }
 
 /* Hide default cursor globally - smooth cursor will replace it */
@@ -210,6 +1172,16 @@ html {
 }
 
 html::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar utility class */
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
     display: none;
 }
 
@@ -4735,7 +5707,7 @@ html.compact-view [class*="Card"] {
 }
 
 html.compact-view [class*="modal-content"],
-html.compact-view [role="dialog"] > div {
+html.compact-view [role="dialog"]>div {
     padding: 16px !important;
 }
 
@@ -4778,6 +5750,7 @@ html.hide-avatars [class*="avatar-container"] {
     0% {
         background-position: -200% 0;
     }
+
     100% {
         background-position: 200% 0;
     }

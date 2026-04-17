@@ -23,6 +23,7 @@ import {
     type CourseProgressData,
 } from '../../../../services/studyTimeService';
 import { getUpcomingDeadlines } from '../../../../services/deadlinesService';
+import BroadcastBanner from '../../../../components/shared/BroadcastBanner';
 
 // Animation variants for staggered children - optimized for performance
 const containerVariants = {
@@ -787,7 +788,9 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
     const [viewMode, setViewMode] = useState<'carousel' | 'grid'>(() => {
         try {
             const saved = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
-            return (saved as 'carousel' | 'grid') || 'carousel';
+            const savedMode = saved as 'carousel' | 'grid' | '3d';
+            // If saved mode is '3d', default to 'carousel'
+            return (savedMode === '3d' ? 'carousel' : savedMode) || 'carousel';
         } catch {
             return 'carousel';
         }
@@ -1077,6 +1080,10 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                 icon={achievement.icon}
                 onClose={() => setShowAchievement(false)}
             />
+
+            {/* Admin Broadcast Banners — Real-time from Supabase */}
+            <BroadcastBanner role="student" />
+
             {/* Welcome Hero - Blue & Yellow Theme with InView Animations */}
             <motion.section
                 className="welcome-hero"
@@ -1957,7 +1964,13 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                 </motion.div>
 
                 {viewMode === 'carousel' ? (
-                    <div className="courses-viewport-premium">
+                    <div 
+                        className="courses-viewport-premium"
+                        style={{ 
+                            perspective: '1200px',
+                            perspectiveOrigin: 'center center'
+                        }}
+                    >
                         <motion.div 
                             className="courses-track-premium"
                             animate={{ x: `-${currentSlide * (100 / coursesPerView)}%` }}
@@ -1967,12 +1980,18 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                 damping: 30,
                                 mass: 0.8
                             }}
+                            style={{ 
+                                transformStyle: 'preserve-3d'
+                            }}
                         >
                             {courses.map((course, index) => (
                                 <motion.div
                                     key={course.id}
                                     className="course-card-wrapper-premium"
-                                    style={{ width: `${100 / coursesPerView}%` }}
+                                    style={{ 
+                                        width: `${100 / coursesPerView}%`,
+                                        transformStyle: 'preserve-3d'
+                                    }}
                                 >
                                     <CourseCard 
                                         title={course.title}

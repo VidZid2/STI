@@ -116,10 +116,10 @@ export function SmoothCursor({
       const isSmallScreen = window.innerWidth <= 768
       setIsMobile(isTouchDevice || isSmallScreen)
     }
-    
+
     checkMobile()
     window.addEventListener('resize', checkMobile)
-    
+
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
@@ -231,7 +231,7 @@ export function SmoothCursor({
         translateY: "-50%",
         rotate: rotation,
         scale: scale,
-        zIndex: 99999,
+        zIndex: 999999,
         pointerEvents: "none",
         willChange: "transform",
       }}

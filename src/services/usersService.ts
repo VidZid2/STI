@@ -246,18 +246,18 @@ const enhanceWithCurrentUserProfile = (users: UserAccount[]): UserAccount[] => {
     const profile = getProfile();
     const images = getImages();
     const settings = getSettings();
-    
+
     // Find the current user by email or student ID
     const currentUserStudentId = profile.studentId || '02000543210';
-    
+
     return users.map(user => {
         // Check if this is the current logged-in user
-        const isCurrentUser = 
-            user.email.toLowerCase().includes('deasis') || 
+        const isCurrentUser =
+            user.email.toLowerCase().includes('deasis') ||
             user.student_id === currentUserStudentId ||
             user.student_id === '02000543210' ||
             user.id === 'demo-user-1';
-        
+
         if (isCurrentUser) {
             return {
                 ...user,
@@ -279,8 +279,8 @@ const enhanceWithCurrentUserProfile = (users: UserAccount[]): UserAccount[] => {
  */
 export const fetchUsers = async (filter: UserFilter = 'all'): Promise<UserAccount[]> => {
     if (!isSupabaseConfigured() || !supabase) {
-        const users = filter === 'all' 
-            ? DEMO_USERS 
+        const users = filter === 'all'
+            ? DEMO_USERS
             : DEMO_USERS.filter(u => u.role === filter);
         return enhanceWithCurrentUserProfile(users);
     }
@@ -299,8 +299,8 @@ export const fetchUsers = async (filter: UserFilter = 'all'): Promise<UserAccoun
 
         if (error) {
             console.error('[Users] Fetch error:', error);
-            return filter === 'all' 
-                ? DEMO_USERS 
+            return filter === 'all'
+                ? DEMO_USERS
                 : DEMO_USERS.filter(u => u.role === filter);
         }
 
@@ -309,30 +309,30 @@ export const fetchUsers = async (filter: UserFilter = 'all'): Promise<UserAccoun
             // Filter out example/demo emails from database results
             const exampleEmails = ['teacher@meycauayan.sti.edu.ph', 'student@meycauayan.sti.edu.ph', 'admin@meycauayan.sti.edu.ph'];
             const filteredData = data.filter((u: UserAccount) => !exampleEmails.includes(u.email.toLowerCase()));
-            
+
             const dbStudentIds = new Set(filteredData.map((u: UserAccount) => u.student_id.toLowerCase()));
-            
+
             // Add all DEMO_USERS that aren't in the database (both students and teachers)
             const missingUsers = DEMO_USERS.filter(u => !dbStudentIds.has(u.student_id.toLowerCase()));
-            
+
             const mergedUsers = [...filteredData, ...missingUsers];
-            
+
             // Apply filter if needed
             if (filter !== 'all') {
                 return enhanceWithCurrentUserProfile(mergedUsers.filter(u => u.role === filter));
             }
-            
+
             return enhanceWithCurrentUserProfile(mergedUsers.sort((a, b) => a.full_name.localeCompare(b.full_name)));
         }
 
-        const fallbackUsers = filter === 'all' 
-            ? DEMO_USERS 
+        const fallbackUsers = filter === 'all'
+            ? DEMO_USERS
             : DEMO_USERS.filter(u => u.role === filter);
         return enhanceWithCurrentUserProfile(fallbackUsers);
     } catch (err) {
         console.error('[Users] Fetch error:', err);
-        const fallbackUsers = filter === 'all' 
-            ? DEMO_USERS 
+        const fallbackUsers = filter === 'all'
+            ? DEMO_USERS
             : DEMO_USERS.filter(u => u.role === filter);
         return enhanceWithCurrentUserProfile(fallbackUsers);
     }
@@ -344,7 +344,7 @@ export const fetchUsers = async (filter: UserFilter = 'all'): Promise<UserAccoun
 export const getUserStats = async (): Promise<UserStats> => {
     // Use fetchUsers to get the merged list (includes demo teachers)
     const allUsers = await fetchUsers('all');
-    
+
     return {
         totalUsers: allUsers.length,
         activeUsers: allUsers.filter(u => u.is_active).length,
@@ -360,16 +360,16 @@ export const getUserStats = async (): Promise<UserStats> => {
  */
 export const searchUsers = async (query: string): Promise<UserAccount[]> => {
     const searchTerm = query.toLowerCase().trim();
-    
+
     if (!searchTerm) {
         return fetchUsers();
     }
 
     // Get all users (merged with demo teachers)
     const allUsers = await fetchUsers('all');
-    
+
     // Filter by search term
-    return allUsers.filter(u => 
+    return allUsers.filter(u =>
         u.full_name.toLowerCase().includes(searchTerm) ||
         u.email.toLowerCase().includes(searchTerm) ||
         u.student_id.toLowerCase().includes(searchTerm)

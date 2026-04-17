@@ -8,6 +8,23 @@ interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<"butt
   duration?: number
 }
 
+/**
+ * Get the current teacher's user ID for per-user theme storage.
+ * Falls back to 'default' if no user is found.
+ */
+const getTeacherUserId = (): string => {
+  try {
+    const saved = sessionStorage.getItem('elms_current_user')
+    if (saved) {
+      const user = JSON.parse(saved)
+      return user.student_id || user.id || 'default'
+    }
+  } catch {
+    // ignore
+  }
+  return 'default'
+}
+
 export const AnimatedThemeToggler = ({
   className,
   duration = 500,
@@ -36,12 +53,17 @@ export const AnimatedThemeToggler = ({
     if (!buttonRef.current) return
 
     const newTheme = !isDark
+    const userId = getTeacherUserId()
 
     // Check if View Transitions API is supported
     if (!document.startViewTransition) {
       // Fallback: just toggle without animation
       setIsDark(newTheme)
       document.documentElement.classList.toggle("dark")
+      document.body.classList.toggle("dark-mode")
+      // Store per-user preference
+      localStorage.setItem(`theme_${userId}`, newTheme ? "dark" : "light")
+      // Keep legacy key for backward compat
       localStorage.setItem("theme", newTheme ? "dark" : "light")
       return
     }
@@ -60,6 +82,8 @@ export const AnimatedThemeToggler = ({
         flushSync(() => {
           setIsDark(newTheme)
           document.documentElement.classList.toggle("dark")
+          document.body.classList.toggle("dark-mode")
+          localStorage.setItem(`theme_${userId}`, newTheme ? "dark" : "light")
           localStorage.setItem("theme", newTheme ? "dark" : "light")
         })
       })
@@ -67,8 +91,6 @@ export const AnimatedThemeToggler = ({
       await transition.ready
 
       // Animate the NEW view (the one we're transitioning TO)
-      // For dark mode: circle expands revealing dark
-      // For light mode: circle expands revealing light
       document.documentElement.animate(
         {
           clipPath: [
@@ -88,9 +110,12 @@ export const AnimatedThemeToggler = ({
       setIsDark(newTheme)
       if (newTheme) {
         document.documentElement.classList.add("dark")
+        document.body.classList.add("dark-mode")
       } else {
         document.documentElement.classList.remove("dark")
+        document.body.classList.remove("dark-mode")
       }
+      localStorage.setItem(`theme_${userId}`, newTheme ? "dark" : "light")
       localStorage.setItem("theme", newTheme ? "dark" : "light")
     }
   }, [isDark, duration])

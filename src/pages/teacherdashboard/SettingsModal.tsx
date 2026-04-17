@@ -10,6 +10,7 @@ import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT } from './consta
 import { useGradingSettings } from './contexts';
 import { useDisplaySettings } from '../../contexts/DisplaySettingsContext';
 import { useNotificationSettings } from '../../contexts/NotificationSettingsContext';
+import { useFocusTrap } from './hooks';
 
 // ============================================
 // TYPES
@@ -91,7 +92,7 @@ const ToggleSwitch: React.FC<{
             onChange={(e) => onChange(e.target.checked)}
             style={toggleStyles.input}
         />
-        <span style={toggleStyles.slider(enabled, color)}>
+        <span className={enabled ? 'settings-toggle settings-toggle-on' : 'settings-toggle'} style={toggleStyles.slider(enabled, color)}>
             <span style={toggleStyles.sliderBefore(enabled)} />
         </span>
     </label>
@@ -156,6 +157,7 @@ const TabButton: React.FC<{
     onClick: () => void;
 }> = ({ tab, isActive, onClick }) => (
     <motion.button
+        className="settings-tab-btn"
         onClick={onClick}
         whileHover={{ x: 2 }}
         whileTap={{ scale: 0.98 }}
@@ -196,6 +198,7 @@ const TabButton: React.FC<{
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     const [activeTab, setActiveTab] = useState<SettingsTab>('notifications');
     const modalRef = useRef<HTMLDivElement>(null);
+    const focusTrapRef = useFocusTrap(isOpen);
     
     // Use grading settings from context
     const { settings: gradingCtx, updateSetting: updateGradingSetting } = useGradingSettings();
@@ -333,9 +336,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     // Get current settings based on active tab
     const getCurrentSettings = () => {
         switch (activeTab) {
-            case 'notifications': return { settings: notificationSettings, handler: handleNotificationToggle, color: '#f59e0b' };
-            case 'display': return { settings: displaySettings, handler: handleDisplayToggle, color: '#8b5cf6' };
-            case 'grading': return { settings: gradingSettings, handler: handleGradingToggle, color: '#10b981' };
+            case 'notifications': return { settings: notificationSettings, handler: handleNotificationToggle, color: 'var(--color-warning)' };
+            case 'display': return { settings: displaySettings, handler: handleDisplayToggle, color: 'var(--color-purple)' };
+            case 'grading': return { settings: gradingSettings, handler: handleGradingToggle, color: 'var(--color-success)' };
         }
     };
 
@@ -365,7 +368,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     }}
                 >
                     <motion.div
-                        ref={modalRef}
+                        ref={focusTrapRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="settings-modal-title"
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -392,6 +398,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.lg }}>
                                     <motion.div
+                                        className="settings-header-icon"
                                         whileHover={{ scale: 1.05, rotate: 15 }}
                                         transition={{ duration: 0.15, ease: 'easeOut' }}
                                         style={{
@@ -403,7 +410,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            color: '#8b5cf6',
+                                            color: 'var(--color-purple)',
                                         }}
                                     >
                                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -412,7 +419,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                         </svg>
                                     </motion.div>
                                     <div>
-                                        <h2 style={{
+                                        <h2 id="settings-modal-title" style={{
                                             fontSize: FONT_SIZE.xxl,
                                             fontWeight: FONT_WEIGHT.semibold,
                                             color: COLORS.textPrimary,
@@ -571,30 +578,28 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                 Cancel
                             </motion.button>
                             <motion.button
-                                whileHover={{ 
-                                    background: '#2563eb',
-                                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
-                                }}
+                                className="dashboard-btn settings-save-btn"
+                                whileHover={{ scale: 1.02, boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)' }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={onClose}
                                 style={{
-                                    padding: '10px 20px',
-                                    borderRadius: BORDER_RADIUS.lg,
-                                    border: 'none',
-                                    background: ACCENT_COLOR,
-                                    color: '#fff',
-                                    fontSize: FONT_SIZE.md,
-                                    fontWeight: FONT_WEIGHT.medium,
-                                    cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '8px',
+                                    gap: '6px',
+                                    padding: '8px 12px',
+                                    background: 'rgba(59, 130, 246, 0.08)',
+                                    color: '#3b82f6',
+                                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                                    borderRadius: '10px',
+                                    fontSize: '12px',
+                                    fontWeight: 500,
+                                    cursor: 'pointer',
                                 }}
                             >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                     <polyline points="20 6 9 17 4 12" />
                                 </svg>
-                                Save Changes
+                                Save
                             </motion.button>
                         </div>
                     </motion.div>

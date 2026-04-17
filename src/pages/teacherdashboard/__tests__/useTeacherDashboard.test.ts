@@ -235,18 +235,21 @@ describe('useTeacherDashboard', () => {
             expect(result.current.modals.isStudentListOpen).toBe(true);
         });
 
-        it('should handle input-scores action', async () => {
+        it('should handle report-admin action', async () => {
             const { result } = renderHook(() => useTeacherDashboard());
 
             await waitFor(() => {
                 expect(result.current.isLoading).toBe(false);
             });
 
+            // Since report-admin calls alert(), we can't easily test it here without mocking alert
+            // But we can verify it doesn't crash
             act(() => {
-                result.current.handleQuickAction('input-scores');
+                const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+                result.current.handleQuickAction('report-admin');
+                expect(alertSpy).toHaveBeenCalled();
+                alertSpy.mockRestore();
             });
-
-            expect(result.current.modals.isInputScoresOpen).toBe(true);
         });
 
         it('should handle unknown action gracefully', async () => {

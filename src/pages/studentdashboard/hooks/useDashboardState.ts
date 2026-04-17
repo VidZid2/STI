@@ -4,6 +4,8 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getCurrentUser } from '../../../services/authService';
 import type { DashboardView, PreviousView, SelectedCourse } from '../types';
 
 interface UseDashboardStateReturn {
@@ -11,54 +13,69 @@ interface UseDashboardStateReturn {
     sidebarActive: boolean;
     setSidebarActive: (active: boolean) => void;
     toggleSidebar: () => void;
-    
+
     // Widgets sidebar state
     widgetsSidebarActive: boolean;
     setWidgetsSidebarActive: (active: boolean) => void;
     toggleWidgetsSidebar: () => void;
-    
+
     // Modal state
     settingsModalActive: boolean;
     setSettingsModalActive: (active: boolean) => void;
     openSettingsModal: () => void;
     closeSettingsModal: () => void;
-    
+
     welcomeModalActive: boolean;
     setWelcomeModalActive: (active: boolean) => void;
     showWelcomeModal: () => void;
     closeWelcomeModal: () => void;
-    
+
     tutorialActive: boolean;
     setTutorialActive: (active: boolean) => void;
     closeTutorial: () => void;
-    
+
     // View state
     activeView: DashboardView;
     setActiveView: (view: DashboardView) => void;
     previousView: PreviousView;
     setPreviousView: (view: PreviousView) => void;
-    
+
     // Course state
     selectedCourse: SelectedCourse | null;
     setSelectedCourse: (course: SelectedCourse | null) => void;
-    
+
     // Confetti state
     showConfetti: boolean;
     setShowConfetti: (show: boolean) => void;
-    
+
     // Intro state
     showIntro: boolean;
     setShowIntro: (show: boolean) => void;
-    
+
     // Demo mode
     isDemoMode: boolean;
 }
 
 export const useDashboardState = (): UseDashboardStateReturn => {
+    const navigate = useNavigate();
+
+    // Authentication and Role check
+    useEffect(() => {
+        const currentUser = getCurrentUser();
+        if (!currentUser) {
+            navigate('/student-login');
+            return;
+        }
+        if (currentUser.role === 'teacher') {
+            navigate('/teacher-dashboard');
+            return;
+        }
+    }, [navigate]);
+
     // Sidebar state
     const [sidebarActive, setSidebarActive] = useState(false);
     const [widgetsSidebarActive, setWidgetsSidebarActive] = useState(false);
-    
+
     // Modal state
     const [settingsModalActive, setSettingsModalActive] = useState(false);
     const [welcomeModalActive, setWelcomeModalActive] = useState(() => {
@@ -68,19 +85,19 @@ export const useDashboardState = (): UseDashboardStateReturn => {
         return localStorage.getItem('welcome-modal-completed') !== 'true';
     });
     const [tutorialActive, setTutorialActive] = useState(false);
-    
+
     // Demo mode state
     const [isDemoMode] = useState(() => {
         return localStorage.getItem('demo-mode-active') === 'true';
     });
-    
+
     // View state - persist across page refreshes
     const [activeView, setActiveView] = useState<DashboardView>(() => {
         const saved = sessionStorage.getItem('dashboard_active_view');
         return (saved as DashboardView) || 'home';
     });
     const [previousView, setPreviousView] = useState<PreviousView>('home');
-    
+
     // Course state - persist across page refreshes
     const [selectedCourse, setSelectedCourse] = useState<SelectedCourse | null>(() => {
         try {
@@ -90,7 +107,7 @@ export const useDashboardState = (): UseDashboardStateReturn => {
             return null;
         }
     });
-    
+
     // Confetti and intro state
     const [showConfetti, setShowConfetti] = useState(false);
     const [showIntro, setShowIntro] = useState(() => {
@@ -126,15 +143,15 @@ export const useDashboardState = (): UseDashboardStateReturn => {
     // Handlers
     const toggleSidebar = () => setSidebarActive(!sidebarActive);
     const toggleWidgetsSidebar = () => setWidgetsSidebarActive(!widgetsSidebarActive);
-    
+
     const openSettingsModal = () => setSettingsModalActive(true);
     const closeSettingsModal = () => setSettingsModalActive(false);
-    
+
     const showWelcomeModal = () => {
         setWelcomeModalActive(true);
         setShowConfetti(false);
     };
-    
+
     const closeWelcomeModal = () => {
         setWelcomeModalActive(false);
         localStorage.setItem('welcome-modal-completed', 'true');
@@ -143,7 +160,7 @@ export const useDashboardState = (): UseDashboardStateReturn => {
             setTimeout(() => setTutorialActive(true), 300);
         }
     };
-    
+
     const closeTutorial = () => {
         setTutorialActive(false);
         localStorage.setItem('tutorial-completed', 'true');
@@ -157,7 +174,7 @@ export const useDashboardState = (): UseDashboardStateReturn => {
         widgetsSidebarActive,
         setWidgetsSidebarActive,
         toggleWidgetsSidebar,
-        
+
         // Modals
         settingsModalActive,
         setSettingsModalActive,
@@ -170,23 +187,23 @@ export const useDashboardState = (): UseDashboardStateReturn => {
         tutorialActive,
         setTutorialActive,
         closeTutorial,
-        
+
         // Views
         activeView,
         setActiveView,
         previousView,
         setPreviousView,
-        
+
         // Course
         selectedCourse,
         setSelectedCourse,
-        
+
         // Confetti & Intro
         showConfetti,
         setShowConfetti,
         showIntro,
         setShowIntro,
-        
+
         // Demo
         isDemoMode,
     };

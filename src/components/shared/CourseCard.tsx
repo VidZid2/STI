@@ -183,7 +183,11 @@ const CourseCard = ({
             initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, delay: animationDelay, ease: 'easeOut' }}
-            whileHover={prefersReducedMotion ? undefined : { y: -4, transition: { duration: 0.15, ease: 'easeOut' } }}
+            whileHover={prefersReducedMotion ? undefined : { 
+                y: -8, 
+                scale: 1.02,
+                transition: { duration: 0.3, ease: 'easeOut' } 
+            }}
         >
             {/* Bookmark Toggle with Tooltip */}
             <div className="bookmark-wrapper">

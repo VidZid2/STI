@@ -11,9 +11,23 @@ export { default as ActivityItem } from './ActivityItem';
 export { default as DashboardHeader } from './DashboardHeader';
 export { default as ComingSoonModal } from './ComingSoonModal';
 export { ResponsiveModal, useResponsiveModalStyles } from './ResponsiveModal';
-export { default as TeacherDashboardIntro } from './DashboardIntro';
-export { default as TeacherDashboardTutorial } from './TeacherDashboardTutorial';
+export { default as ModalBackdrop } from './ModalBackdrop';
+export { default as ModalCloseButton } from './ModalCloseButton';
+export { default as ModalSearchInput } from './ModalSearchInput';
+export { default as ModalContainer } from './ModalContainer';
 
-// Export notification types
+// Export notification types./_deprecated/TeacherDashboardTutorial
 export type { DashboardNotification, NotificationType } from './DashboardHeader';
 export type { ResponsiveModalProps } from './ResponsiveModal';
+
+// Panels
+export * from './WelcomeBanner';
+export * from './SchedulePanel';
+export * from './UrgentTasksPanel';
+export * from './QuickActionsPanel';
+export * from './AtRiskPanel';
+export * from './ActivityPanel';
+
+export type { ScheduleItem } from './SchedulePanel';
+export type { TaskItem } from './UrgentTasksPanel';
+export type { AtRiskStudentData } from './AtRiskPanel';

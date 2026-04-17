@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { Toaster } from 'sonner'
 import { Navbar, Hero, Features, NeoLMS, Footer, IntroAnimation } from './components/landing'
 import { LoginModal } from './components/modals'
 import { WelcomeNotification } from './components/shared'
@@ -10,10 +11,18 @@ import JoinGroupPage from './pages/studentdashboard/JoinGroupPage'
 import GroupChatPage from './pages/studentdashboard/GroupChatPage'
 import FocusModePage from './pages/studentdashboard/FocusModePage'
 import TeacherDashboard from './pages/teacherdashboard'
+import AdminDashboard from './pages/admindashboard'
+import MaintenanceGuard from './components/MaintenanceGuard'
+import AdminLogin from './pages/admindashboard/AdminLogin'
+import AdminRouteGuard from './components/guards/AdminRouteGuard'
+import TeacherRouteGuard from './components/guards/TeacherRouteGuard'
 import { NotificationProvider } from './contexts/NotificationContext'
 import { QuickViewSettingsProvider } from './contexts/QuickViewSettingsContext'
 import { DisplaySettingsProvider, useDisplaySettings } from './contexts/DisplaySettingsContext'
 import { NotificationSettingsProvider } from './contexts/NotificationSettingsContext'
+import { SystemConfigProvider } from './contexts/SystemConfigContext'
+import { ErrorBoundary } from './components/shared'
+
 
 function HomePage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -110,13 +119,15 @@ function AppContent() {
       {!hideCustomCursor && <SmoothCursor />}
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/student-login" element={<StudentLogin />} />
-        <Route path="/dashboard" element={<NotificationProvider><QuickViewSettingsProvider><DashboardPage /></QuickViewSettingsProvider></NotificationProvider>} />
-        <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-        <Route path="/join/:inviteCode" element={<JoinGroupPage />} />
-        <Route path="/chat/:groupId" element={<NotificationProvider><QuickViewSettingsProvider><GroupChatPage /></QuickViewSettingsProvider></NotificationProvider>} />
-        <Route path="/focus" element={<FocusModePage />} />
-        <Route path="/focus/:groupId" element={<FocusModePage />} />
+        <Route path="/student-login" element={<MaintenanceGuard><StudentLogin /></MaintenanceGuard>} />
+        <Route path="/dashboard" element={<MaintenanceGuard><NotificationProvider><QuickViewSettingsProvider><DashboardPage /></QuickViewSettingsProvider></NotificationProvider></MaintenanceGuard>} />
+        <Route path="/teacher-dashboard" element={<TeacherRouteGuard><ErrorBoundary name="TeacherDashboard"><MaintenanceGuard><TeacherDashboard /></MaintenanceGuard></ErrorBoundary></TeacherRouteGuard>} />
+        <Route path="/admin-dashboard" element={<AdminRouteGuard><AdminDashboard /></AdminRouteGuard>} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/join/:inviteCode" element={<MaintenanceGuard><JoinGroupPage /></MaintenanceGuard>} />
+        <Route path="/chat/:groupId" element={<MaintenanceGuard><NotificationProvider><QuickViewSettingsProvider><GroupChatPage /></QuickViewSettingsProvider></NotificationProvider></MaintenanceGuard>} />
+        <Route path="/focus" element={<MaintenanceGuard><FocusModePage /></MaintenanceGuard>} />
+        <Route path="/focus/:groupId" element={<MaintenanceGuard><FocusModePage /></MaintenanceGuard>} />
       </Routes>
     </>
   );
@@ -125,11 +136,24 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <DisplaySettingsProvider>
-        <NotificationSettingsProvider>
-          <AppContent />
-        </NotificationSettingsProvider>
-      </DisplaySettingsProvider>
+      <SystemConfigProvider>
+        <DisplaySettingsProvider>
+          <NotificationSettingsProvider>
+            <AppContent />
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  borderRadius: '12px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                },
+              }}
+            />
+          </NotificationSettingsProvider>
+        </DisplaySettingsProvider>
+      </SystemConfigProvider>
     </Router>
   )
 }

@@ -28,7 +28,7 @@ export interface Task {
 // SUBMISSION TYPES
 // ============================================
 
-export type SubmissionStatus = 'pending' | 'submitted' | 'graded' | 'late' | 'resubmitted';
+export type SubmissionStatus = 'pending' | 'submitted' | 'graded' | 'late' | 'resubmitted' | 'ai-checked';
 
 export interface Attachment {
     name: string;
@@ -112,7 +112,7 @@ export interface DraftGrade {
 }
 
 export type ViewMode = 'list' | 'split' | 'focus' | 'batch';
-export type FilterStatus = 'all' | 'pending' | 'graded' | 'late' | 'flagged';
+export type FilterStatus = 'all' | 'pending' | 'graded' | 'late' | 'flagged' | 'history';
 export type SortOption = 'name' | 'date' | 'status' | 'score' | 'smart' | 'submitted';
 
 // ============================================

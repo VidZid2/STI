@@ -12,6 +12,8 @@ import { WelcomeModal, SettingsModal } from '../../components/modals';
 import { Confetti } from '../../components/shared';
 import ToolbarExpandable from '../../components/ui/toolbar/ToolbarExpandable';
 import UserProfileDropdown from '../../components/ui/dropdowns/UserProfileDropdown';
+import NotificationBell from '../../components/shared/NotificationBell';
+import MaintenanceBanner from '../../components/shared/MaintenanceBanner';
 import ToolsContent from './content/ToolsContent';
 import HomeContent from './content/HomeContent';
 import { ContainerTextFlip } from '../../components/ui/primitives/container-text-flip';
@@ -222,6 +224,8 @@ const DashboardPage: React.FC = () => {
 
     return (
         <div className="dashboard-container">
+            {/* Maintenance countdown banner */}
+            <MaintenanceBanner />
             {/* Header */}
             <header className="header">
                 <div className="header-content">
@@ -266,7 +270,17 @@ const DashboardPage: React.FC = () => {
                                 />
                             </svg>
                         </motion.button>
-                        <div className="logo">
+                        <motion.div 
+                            className="logo"
+                            onClick={() => {
+                                setActiveView('home');
+                                setSidebarActive(false);
+                            }}
+                            style={{ cursor: 'pointer' }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ duration: 0.2 }}
+                        >
                             {/* STI Logo Image */}
                             <div
                                 className="logo-icon-wrapper"
@@ -314,7 +328,7 @@ const DashboardPage: React.FC = () => {
                                     Learning Portal
                                 </span>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Divider */}
                         <div style={{ width: 1, height: 24, backgroundColor: '#e4e4e7', marginLeft: 12, marginRight: 4 }} />
@@ -420,6 +434,7 @@ const DashboardPage: React.FC = () => {
                             </motion.button>
                         )}
                         <ToolbarExpandable />
+                        <NotificationBell />
                         <UserProfileDropdown />
                     </div>
                 </div>

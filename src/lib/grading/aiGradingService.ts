@@ -35,11 +35,11 @@ export function extractSubmissionContent(submission: {
     // Add attachment information
     if (submission.attachments && submission.attachments.length > 0) {
         parts.push('\n=== SUBMITTED FILES ===');
-        
+
         submission.attachments.forEach((file, index) => {
             parts.push(`\nFile ${index + 1}: ${file.name}`);
             parts.push(`Type: ${file.type}`);
-            
+
             // If text content was extracted from the file
             if (file.textContent && file.textContent.trim()) {
                 parts.push('Content:');
@@ -80,44 +80,46 @@ export function analyzeSubmissionQuality(content: string): {
         hasContent: hasTextContent || hasFiles,
         wordCount,
         hasFiles,
-        contentType: hasTextContent && hasFiles ? 'both' 
-            : hasTextContent ? 'text' 
-            : hasFiles ? 'files' 
-            : 'none',
+        contentType: hasTextContent && hasFiles ? 'both'
+            : hasTextContent ? 'text'
+                : hasFiles ? 'files'
+                    : 'none',
     };
 }
 
-interface GroqAccount {
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+interface GeminiAccount {
     apiKey: string;
     index: number;
 }
 
 // Load all API keys from environment
-const getGroqAccounts = (): GroqAccount[] => {
-    const accounts: GroqAccount[] = [];
-    
+const getGeminiAccounts = (): GeminiAccount[] => {
+    const accounts: GeminiAccount[] = [];
+
     for (let i = 1; i <= 5; i++) {
-        const apiKey = import.meta.env[`VITE_GROQ_API_KEY_${i}`] || '';
+        const apiKey = import.meta.env[`VITE_GEMINI_API_KEY_${i}`] || '';
         if (apiKey) {
             accounts.push({ apiKey, index: i });
         }
     }
-    
+
     // Fallback to single key format
     if (accounts.length === 0) {
-        const singleKey = import.meta.env.VITE_GROQ_API_KEY || '';
+        const singleKey = import.meta.env.VITE_GEMINI_API_KEY || '';
         if (singleKey) {
             accounts.push({ apiKey: singleKey, index: 1 });
         }
     }
-    
+
     return accounts;
 };
 
 // Track current account index and failed accounts
 let currentAccountIndex = 0;
 const failedAccounts = new Set<number>();
-const STORAGE_KEY = 'groq_grading_account';
+const STORAGE_KEY = 'gemini_grading_account';
 
 // Load saved account index
 const loadCurrentAccount = (): void => {
@@ -145,7 +147,7 @@ loadCurrentAccount();
 const buildGradingPrompt = (request: GradingRequest): string => {
     // Analyze the submission content
     const quality = analyzeSubmissionQuality(request.submissionContent);
-    
+
     let prompt = `You are an expert academic grader for a Philippine college. Analyze this student submission and provide a fair, constructive evaluation.
 
 TASK INFORMATION:
@@ -179,71 +181,42 @@ RESPOND IN THIS EXACT JSON FORMAT (no markdown, just raw JSON):
     "feedback": "<constructive feedback for the student, 80-150 words, encouraging and specific>"
 }
 
-GRADING GUIDELINES:
-1. Be fair and consistent - grade based on content quality and task requirements
-2. If no content is submitted, give a low score (0-20%) with feedback to submit work
-3. If only file names are visible (no extracted text), grade conservatively (40-60%) and note that full content wasn't available
-4. Provide specific, actionable feedback that helps the student improve
-5. Maintain an encouraging, professional tone appropriate for Filipino college students
-6. Consider effort and attempt even if the answer isn't perfect
-7. For programming tasks, look for logic, structure, and problem-solving approach`;
+GRADING GUIDELINES & ANTI-HALLUCINATION RULES:
+1. NEVER INVENT OR GUESS CONTENT. If the submission says "placeholder/mock URL", "Note: Failed to download", or if no text/files are attached, YOU MUST GIVE A SCORE OF 0. 
+2. If the submission has no content, your feedback MUST BE exactly: "Your file could not be read or was a corrupted empty upload. Please resubmit your file."
+3. Do not blindly praise the student if you did not read actual sentences written by them in the text or attached binary files.
+4. Be fair and consistent - grade based ONLY on the actual extracted content or binary files attached.
+5. Provide specific, actionable feedback that quotes directly from their work to prove you read it.
+6. For programming tasks, look for logic, structure, and problem-solving approach.
+7. Maintain an encouraging tone, but do not hallucinate positive qualities that aren't visible in the text.`;
 
     return prompt;
 };
 
-// Call GROQ API
-async function callGroqAPI(
+// Call Gemini API
+async function callGeminiAPI(
     apiKey: string,
-    prompt: string
+    promptParts: any[]
 ): Promise<{ success: boolean; data?: AIGradingResult; rateLimited?: boolean; error?: string }> {
     try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'llama-3.1-8b-instant',
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'You are an expert academic grader. Always respond with valid JSON only, no markdown formatting.',
-                    },
-                    {
-                        role: 'user',
-                        content: prompt,
-                    },
-                ],
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({
+            model: "gemini-2.5-flash",
+            generationConfig: {
                 temperature: 0.3, // Lower temperature for consistent grading
-                max_tokens: 500,
-            }),
+                responseMimeType: "application/json",
+            }
         });
 
-        // Check for rate limiting
-        if (response.status === 429) {
-            return { success: false, rateLimited: true, error: 'Rate limit exceeded' };
-        }
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            const isRateLimit = errorData.error?.message?.toLowerCase().includes('rate') ||
-                               errorData.error?.message?.toLowerCase().includes('quota');
-            return {
-                success: false,
-                rateLimited: isRateLimit,
-                error: errorData.error?.message || `API error: ${response.status}`,
-            };
-        }
-
-        const data = await response.json();
-        let content = data.choices?.[0]?.message?.content?.trim();
+        const result = await model.generateContent(promptParts);
+        const response = result.response;
+        let content = response.text();
 
         if (!content) {
-            return { success: false, error: 'No response from API' };
+            return { success: false, error: 'No response from AI' };
         }
 
-        // Clean up response - remove markdown code blocks if present
+        // Clean up response just in case the model returns markdown despite JSON mime type
         content = content
             .replace(/^```json\s*/i, '')
             .replace(/^```\s*/i, '')
@@ -266,10 +239,19 @@ async function callGroqAPI(
         } catch {
             return { success: false, error: 'Failed to parse AI response' };
         }
-    } catch (error) {
+    } catch (error: any) {
+        // Log to console and send the exact error back to the screen
+        console.error("Gemini API Error:", error);
+
+        let errorMsg = error instanceof Error ? error.message : 'Unknown Network error';
+        if (error?.status) {
+            errorMsg += ` (Status: ${error.status})`;
+        }
+
+        // Bypassing rate limit hiding so the true error shows up on screen
         return {
             success: false,
-            error: error instanceof Error ? error.message : 'Network error',
+            error: `API Error: ${errorMsg}`,
         };
     }
 }
@@ -278,8 +260,8 @@ async function callGroqAPI(
  * Grade a single submission using AI
  */
 export async function gradeSubmission(request: GradingRequest): Promise<AIGradingResult> {
-    const accounts = getGroqAccounts();
-    
+    const accounts = getGeminiAccounts();
+
     if (accounts.length === 0) {
         return {
             success: false,
@@ -287,7 +269,7 @@ export async function gradeSubmission(request: GradingRequest): Promise<AIGradin
             confidence: 0,
             reasoning: '',
             feedback: '',
-            error: 'No GROQ API keys configured. Add VITE_GROQ_API_KEY_1 to VITE_GROQ_API_KEY_5 in your .env.local file.',
+            error: 'No GEMINI API keys configured. Add VITE_GEMINI_API_KEY_1 to VITE_GEMINI_API_KEY_5 in your .env.local file.',
         };
     }
 
@@ -297,7 +279,69 @@ export async function gradeSubmission(request: GradingRequest): Promise<AIGradin
         currentAccountIndex = 0;
     }
 
-    const prompt = buildGradingPrompt(request);
+    const promptParts: any[] = [];
+    let extraText = '';
+
+    if (request.attachments && request.attachments.length > 0) {
+        for (const att of request.attachments) {
+            if (att.url.includes('pdfobject.com') || att.url.includes('dummy.pdf') || att.url.includes('picsum.photos')) {
+                extraText += `\n\n[Note: The file ${att.name} was a placeholder/mock URL and could not be analyzed.]\n`;
+                continue;
+            }
+
+            try {
+                const resp = await fetch(att.url);
+                if (!resp.ok) continue;
+
+                const isPdf = att.type.includes('pdf') || att.name.toLowerCase().endsWith('.pdf');
+                const isImage = att.type.includes('image') || /\.(png|jpg|jpeg|gif|webp)$/i.test(att.name);
+                const isText = att.type.includes('text') || /\.(txt|csv|md|json|html|xml|java|js|ts|py|c|cpp|cs|php|rb|go|rs|sql|css)$/i.test(att.name);
+
+                if (isPdf || isImage) {
+                    const blob = await resp.blob();
+                    const base64Data = await new Promise<string>((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            const result = reader.result as string;
+                            resolve(result.split(',')[1]);
+                        };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    });
+
+                    // Add inline data part for Gemini
+                    promptParts.push({
+                        inlineData: {
+                            data: base64Data,
+                            mimeType: isPdf ? 'application/pdf' : (att.type || 'image/jpeg')
+                        }
+                    });
+                    extraText += `\n\n[The file ${att.name} has been attached as binary content for your analysis. Read it before answering!]`;
+                } else if (isText) {
+                    const text = await resp.text();
+                    extraText += `\n\n=== TEXT CONTENTS OF FILE: ${att.name} ===\n`;
+                    extraText += text.substring(0, 50000); // 50k char max limit per file to avoid prompt blowing up
+                    if (text.length > 50000) extraText += '\n[...CONTENT TRUNCATED FOR LENGTH...]';
+                } else {
+                    extraText += `\n\n[Note: The file ${att.name} is an unsupported format and its contents could not be extracted.]\n`;
+                }
+            } catch (err) {
+                console.error(`[AI Grading] Failed to fetch attachment ${att.name}:`, err);
+                extraText += `\n\n[Note: Failed to download file ${att.name} for analysis.]\n`;
+            }
+        }
+    }
+
+    if (extraText) {
+        request.submissionContent += extraText;
+    }
+
+    const textPrompt = buildGradingPrompt(request);
+
+    // Most crucial step: push the text prompt to the BEGINNING of the parts array, or at the end.
+    // Usually it's better to put files first, then the instruction prompt at the end
+    promptParts.push({ text: textPrompt });
+
     let attempts = 0;
     const maxAttempts = accounts.length;
 
@@ -310,9 +354,9 @@ export async function gradeSubmission(request: GradingRequest): Promise<AIGradin
         if (attempts >= maxAttempts) break;
 
         const account = accounts[currentAccountIndex];
-        console.log(`[AI Grading] Using account ${account.index}`);
+        console.log(`[AI Grading] Using Gemini account ${account.index}`);
 
-        const result = await callGroqAPI(account.apiKey, prompt);
+        const result = await callGeminiAPI(account.apiKey, promptParts);
 
         if (result.success && result.data) {
             saveCurrentAccount();
@@ -323,7 +367,7 @@ export async function gradeSubmission(request: GradingRequest): Promise<AIGradin
         }
 
         if (result.rateLimited) {
-            console.log(`[AI Grading] Account ${account.index} rate limited, switching...`);
+            console.log(`[AI Grading] Gemini Account ${account.index} rate limited, switching...`);
             failedAccounts.add(currentAccountIndex);
             currentAccountIndex = (currentAccountIndex + 1) % accounts.length;
             saveCurrentAccount();
@@ -347,7 +391,7 @@ export async function gradeSubmission(request: GradingRequest): Promise<AIGradin
         confidence: 0,
         reasoning: '',
         feedback: '',
-        error: 'All GROQ accounts have reached their rate limits. Please try again later.',
+        error: 'All GEMINI accounts have reached their rate limits. Please try again later.',
     };
 }
 
@@ -360,8 +404,8 @@ export async function generateFeedback(
     maxPoints: number,
     taskTitle: string
 ): Promise<{ success: boolean; feedback: string; error?: string }> {
-    const accounts = getGroqAccounts();
-    
+    const accounts = getGeminiAccounts();
+
     if (accounts.length === 0) {
         return { success: false, feedback: '', error: 'No API keys configured' };
     }
@@ -378,39 +422,29 @@ Write 50-150 words of personalized, encouraging feedback that:
 2. Suggests specific improvements
 3. Maintains a professional, supportive tone
 
-Respond with ONLY the feedback text, no JSON or formatting.`;
+Respond with ONLY the feedback text, no Markdown blocks or JSON or other formatting.`;
 
     // Use first available account
     const account = accounts[currentAccountIndex % accounts.length];
-    
+
     try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${account.apiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'llama-3.1-8b-instant',
-                messages: [{ role: 'user', content: prompt }],
+        const genAI = new GoogleGenerativeAI(account.apiKey);
+        const model = genAI.getGenerativeModel({
+            model: "gemini-2.5-flash",
+            generationConfig: {
                 temperature: 0.7,
-                max_tokens: 300,
-            }),
+            }
         });
 
-        if (!response.ok) {
-            return { success: false, feedback: '', error: 'API request failed' };
-        }
+        const result = await model.generateContent(prompt);
+        const feedback = result.response.text().trim() || '';
 
-        const data = await response.json();
-        const feedback = data.choices?.[0]?.message?.content?.trim() || '';
-        
         return { success: true, feedback };
-    } catch (error) {
-        return { 
-            success: false, 
-            feedback: '', 
-            error: error instanceof Error ? error.message : 'Network error' 
+    } catch (error: any) {
+        return {
+            success: false,
+            feedback: '',
+            error: error instanceof Error ? error.message : 'Network error'
         };
     }
 }
@@ -419,14 +453,14 @@ Respond with ONLY the feedback text, no JSON or formatting.`;
  * Check if AI grading is configured
  */
 export function isAIGradingConfigured(): boolean {
-    return getGroqAccounts().length > 0;
+    return getGeminiAccounts().length > 0;
 }
 
 /**
  * Get number of configured accounts
  */
 export function getConfiguredAccountCount(): number {
-    return getGroqAccounts().length;
+    return getGeminiAccounts().length;
 }
 
 /**
@@ -465,7 +499,7 @@ export async function batchGradeSubmissions(
 
     for (let i = 0; i < submissions.length; i++) {
         const submission = submissions[i];
-        
+
         // Report progress
         if (onProgress) {
             onProgress(i + 1, submissions.length, submission.studentName);
@@ -533,20 +567,20 @@ export function detectOutliers(
     }
 ): Map<string, { type: 'exceptional' | 'concerning' | 'plagiarism'; reason: string; confidence: number }> {
     const outliers = new Map<string, { type: 'exceptional' | 'concerning' | 'plagiarism'; reason: string; confidence: number }>();
-    
+
     // Calculate class stats if not provided
     const gradedSubmissions = submissions.filter(s => s.score !== null);
     const scores = gradedSubmissions.map(s => s.score as number);
-    
+
     let avgScore = classStats?.avgScore ?? 0;
     let stdDev = classStats?.stdDev ?? 0;
-    
+
     if (!classStats && scores.length > 0) {
         avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
         const squaredDiffs = scores.map(s => Math.pow(s - avgScore, 2));
         stdDev = Math.sqrt(squaredDiffs.reduce((a, b) => a + b, 0) / scores.length);
     }
-    
+
     for (const submission of submissions) {
         // Check for plagiarism first (highest priority)
         if (submission.similarityScore && submission.similarityScore > 30) {
@@ -557,12 +591,12 @@ export function detectOutliers(
             });
             continue;
         }
-        
+
         // Only check graded submissions for quality outliers
         if (submission.score === null) continue;
-        
+
         const percentage = (submission.score / submission.maxPoints) * 100;
-        
+
         // Exceptional: Score significantly above average (>1.5 std dev) or perfect/near-perfect
         if (percentage >= 95 || (stdDev > 0 && submission.score > avgScore + 1.5 * stdDev)) {
             outliers.set(submission.id, {
@@ -572,14 +606,14 @@ export function detectOutliers(
             });
             continue;
         }
-        
+
         // Concerning: Score significantly below average (>1.5 std dev) or very low
         if (percentage < 50 || (stdDev > 0 && submission.score < avgScore - 1.5 * stdDev)) {
             let reason = 'Below expectations';
             if (percentage < 40) reason = 'Needs significant improvement';
             if (submission.attachmentCount === 0) reason = 'No files submitted';
             if (submission.isLate) reason = 'Late submission with low score';
-            
+
             outliers.set(submission.id, {
                 type: 'concerning',
                 reason,
@@ -587,7 +621,7 @@ export function detectOutliers(
             });
         }
     }
-    
+
     return outliers;
 }
 
@@ -608,7 +642,7 @@ export function getOutlierIndicator(
             reason: `${similarityScore}% similarity - review for plagiarism`,
         };
     }
-    
+
     if (score === null) {
         // No files submitted is concerning
         if (attachmentCount === 0) {
@@ -619,9 +653,9 @@ export function getOutlierIndicator(
         }
         return null;
     }
-    
+
     const percentage = (score / maxPoints) * 100;
-    
+
     // Exceptional
     if (percentage >= 95) {
         return {
@@ -629,7 +663,7 @@ export function getOutlierIndicator(
             reason: percentage >= 98 ? 'Outstanding work!' : 'Excellent performance',
         };
     }
-    
+
     // Concerning
     if (percentage < 50) {
         let reason = 'Needs improvement';
@@ -640,6 +674,6 @@ export function getOutlierIndicator(
             reason,
         };
     }
-    
+
     return null;
 }

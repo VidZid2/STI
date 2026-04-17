@@ -25,7 +25,7 @@ interface UseTeacherDashboardReturn {
     stats: TeacherStats;
     activity: ActivityItem[];
     modals: ModalState;
-    
+
     // Actions
     initializeDashboard: () => Promise<void>;
     refreshStats: () => Promise<void>;
@@ -54,6 +54,8 @@ const DEFAULT_MODALS: ModalState = {
     isInputScoresOpen: false,
     isAtRiskStudentsOpen: false,
     isActivityModalOpen: false,
+    isReportAdminOpen: false,
+    isQRAttendanceOpen: false,
 };
 
 // ============================================
@@ -61,7 +63,7 @@ const DEFAULT_MODALS: ModalState = {
 // ============================================
 export const useTeacherDashboard = (): UseTeacherDashboardReturn => {
     const navigate = useNavigate();
-    
+
     // Core state
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -77,8 +79,8 @@ export const useTeacherDashboard = (): UseTeacherDashboardReturn => {
         try {
             const teacherStats = await teacherService.getStats();
             setStats(teacherStats);
-        } catch (err) {
-            console.error('Failed to refresh stats:', err);
+        } catch {
+            // Stats failure is non-critical — dashboard still renders with zeros
         }
     }, []);
 
@@ -86,10 +88,8 @@ export const useTeacherDashboard = (): UseTeacherDashboardReturn => {
         try {
             const activityData = await teacherService.getActivity(10);
             setActivity(activityData);
-        } catch (err) {
-            console.error('Failed to refresh activity:', err);
-            // On error or no data, activity will remain empty
-            // Demo data will be added in the dashboard component if needed
+        } catch {
+            // Activity failure is non-critical — panel shows empty state
         }
     }, []);
 
@@ -99,10 +99,10 @@ export const useTeacherDashboard = (): UseTeacherDashboardReturn => {
     const initializeDashboard = useCallback(async () => {
         setIsLoading(true);
         setError(null);
-        
+
         try {
             const currentUser = getCurrentUser();
-            
+
             // Auth checks
             if (!currentUser) {
                 navigate('/student-login');
@@ -115,17 +115,16 @@ export const useTeacherDashboard = (): UseTeacherDashboardReturn => {
             }
 
             setUser(currentUser);
-            
+
             // Fetch real data from service
             await Promise.all([
                 refreshStats(),
                 refreshActivity(),
             ]);
-            
+
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to load dashboard';
             setError(errorMessage);
-            console.error('Dashboard initialization error:', err);
         } finally {
             setIsLoading(false);
         }
@@ -139,9 +138,57 @@ export const useTeacherDashboard = (): UseTeacherDashboardReturn => {
     }, [initializeDashboard]);
 
     // ============================================
+    // TEACHER-SCOPED THEME MANAGEMENT
+    // Apply the logged-in teacher's theme preferences on mount,
+    // and clean up on unmount so the student dashboard is unaffected.
+    // ============================================
+    useEffect(() => {
+        if (!user) return;
+
+        const userId = user.student_id || user.id || 'default';
+
+        // Apply this teacher's dark mode preference
+        const savedTheme = localStorage.getItem(`theme_${userId}`);
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.body.classList.add('dark-mode');
+        } else {
+            document.documentElement.classList.remove('dark');
+            document.body.classList.remove('dark-mode');
+        }
+        // Keep legacy key in sync
+        localStorage.setItem('theme', savedTheme || 'light');
+
+        // Apply this teacher's pink theme preference
+        const savedPink = localStorage.getItem(`pinkTheme_${userId}`);
+        if (savedPink === 'enabled') {
+            document.documentElement.classList.add('pink-theme');
+        } else {
+            document.documentElement.classList.remove('pink-theme');
+        }
+        localStorage.setItem('pinkTheme', savedPink || 'disabled');
+
+        // Cleanup: remove ALL theme classes when leaving the teacher dashboard
+        return () => {
+            document.documentElement.classList.remove('dark');
+            document.body.classList.remove('dark-mode');
+            document.documentElement.classList.remove('pink-theme');
+            // Reset legacy keys so student dashboard is never affected
+            localStorage.setItem('theme', 'light');
+            localStorage.setItem('pinkTheme', 'disabled');
+        };
+    }, [user]);
+
+    // ============================================
     // ACTIONS
     // ============================================
     const handleLogout = useCallback(() => {
+        // Clean up themes before navigating away
+        document.documentElement.classList.remove('dark');
+        document.body.classList.remove('dark-mode');
+        document.documentElement.classList.remove('pink-theme');
+        localStorage.setItem('theme', 'light');
+        localStorage.setItem('pinkTheme', 'disabled');
         logoutUser();
         navigate('/');
     }, [navigate]);
@@ -165,11 +212,15 @@ export const useTeacherDashboard = (): UseTeacherDashboardReturn => {
             case 'view-students':
                 openModal('isStudentListOpen');
                 break;
-            case 'input-scores':
-                openModal('isInputScoresOpen');
+            case 'report-admin':
+                openModal('isReportAdminOpen');
+                break;
+            case 'qr-attendance':
+                openModal('isQRAttendanceOpen');
                 break;
             default:
-                console.warn(`Unknown action: ${actionId}`);
+                // Unknown action — silently ignore
+                break;
         }
     }, [openModal]);
 
@@ -194,7 +245,7 @@ export const useTeacherDashboard = (): UseTeacherDashboardReturn => {
         stats,
         activity,
         modals,
-        
+
         // Actions
         initializeDashboard,
         refreshStats,

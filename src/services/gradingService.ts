@@ -23,7 +23,7 @@ export interface Submission {
     section: string;
     text_content?: string;
     attachments: SubmissionAttachment[];
-    status: 'pending' | 'submitted' | 'graded' | 'late' | 'resubmitted';
+    status: 'pending' | 'submitted' | 'graded' | 'late' | 'resubmitted' | 'ai-checked';
     score: number | null;
     feedback: string | null;
     submitted_at: string;
@@ -75,30 +75,55 @@ export interface GradeInput {
 // ============================================
 
 /**
- * Fetch all tasks for grading (published tasks with submissions)
+ * Fetch all tasks for grading (published tasks with submissions).
+ *
+ * Phase 9.2 — Data-level access control:
+ * If teacherId is provided, only returns tasks for courses the teacher is
+ * assigned to (via the `course_enrollments` table with role='teacher').
+ * Falls back to all published tasks when teacherId is absent (demo/admin mode).
  */
-export const fetchTasksForGrading = async (courseId?: string): Promise<Task[]> => {
+export const fetchTasksForGrading = async (courseId?: string, teacherId?: string): Promise<Task[]> => {
     if (!isSupabaseConfigured() || !supabase) {
-        console.log('[GradingService] Supabase not configured, returning empty');
         return [];
     }
 
     try {
+        // Resolve the set of course IDs this teacher is allowed to see
+        let allowedCourseIds: string[] | null = null;
+
+        if (teacherId) {
+            const { data: enrollments } = await supabase
+                .from('course_enrollments')
+                .select('course_id')
+                .eq('user_id', teacherId)
+                .eq('role', 'teacher');
+
+            if (enrollments && enrollments.length > 0) {
+                allowedCourseIds = enrollments.map((e: { course_id: string }) => e.course_id);
+            } else {
+                // Teacher has no assigned courses — return empty rather than all
+                return [];
+            }
+        }
+
         let query = supabase
             .from('course_tasks')
-            .select('*')
+            .select('id, course_id, type, title, description, due_date, points, status')
             .eq('status', 'published')
             .order('due_date', { ascending: false });
 
+        // Scope to a specific course if requested
         if (courseId && courseId !== 'all') {
             query = query.eq('course_id', courseId);
+        } else if (allowedCourseIds) {
+            // Scope to teacher's assigned courses
+            query = query.in('course_id', allowedCourseIds);
         }
 
         const { data, error } = await query;
 
         if (error) {
-            console.error('[GradingService] Error fetching tasks:', error);
-            return [];
+            throw error;
         }
 
         return (data || []).map(row => ({
@@ -112,8 +137,7 @@ export const fetchTasksForGrading = async (courseId?: string): Promise<Task[]> =
             status: row.status,
         }));
     } catch (err) {
-        console.error('[GradingService] Failed to fetch tasks:', err);
-        return [];
+        throw new Error(`[GradingService] Failed to fetch tasks: ${err}`);
     }
 };
 
@@ -122,59 +146,86 @@ export const fetchTasksForGrading = async (courseId?: string): Promise<Task[]> =
  */
 export const fetchSubmissionsForTask = async (taskId: string): Promise<Submission[]> => {
     if (!isSupabaseConfigured() || !supabase) {
-        console.log('[GradingService] Supabase not configured');
         return [];
     }
 
     try {
         const { data, error } = await supabase
             .from('student_submissions')
-            .select('*')
+            .select('id, task_id, student_id, student_name, section, text_content, attachments, status, score, feedback, submitted_at, graded_at, graded_by, is_late, is_flagged, similarity_score, rubric_scores, grade_history')
             .eq('task_id', taskId)
             .order('submitted_at', { ascending: false });
 
-        if (error) {
-            console.error('[GradingService] Error fetching submissions:', error);
-            return [];
-        }
+        if (error) throw error;
 
         return (data || []).map(mapDbToSubmission);
     } catch (err) {
-        console.error('[GradingService] Failed to fetch submissions:', err);
-        return [];
+        throw new Error(`[GradingService] Failed to fetch submissions for task: ${err}`);
     }
 };
 
 /**
- * Fetch all submissions across all tasks (for a course or all courses)
+ * Fetch all submissions across all tasks (for a course or all courses).
+ *
+ * Phase 9.2 — Data-level access control:
+ * If teacherId is provided, submissions are scoped to tasks belonging to
+ * courses the teacher is assigned to. Never returns submissions outside
+ * the teacher's scope.
  */
-export const fetchAllSubmissions = async (courseId?: string): Promise<Submission[]> => {
+export const fetchAllSubmissions = async (courseId?: string, teacherId?: string): Promise<Submission[]> => {
     if (!isSupabaseConfigured() || !supabase) {
-        console.log('[GradingService] Supabase not configured');
         return [];
     }
 
     try {
-        // First get task IDs for the course if specified
+        // Resolve allowed task IDs based on teacher scope
         let taskIds: string[] = [];
 
         if (courseId && courseId !== 'all') {
+            // Specific course requested — verify teacher has access if teacherId given
+            if (teacherId) {
+                const { data: enrollment } = await supabase
+                    .from('course_enrollments')
+                    .select('course_id')
+                    .eq('user_id', teacherId)
+                    .eq('course_id', courseId)
+                    .eq('role', 'teacher')
+                    .maybeSingle();
+
+                if (!enrollment) return []; // Teacher not assigned to this course
+            }
+
             const { data: tasks } = await supabase
                 .from('course_tasks')
                 .select('id')
                 .eq('course_id', courseId);
 
-            taskIds = (tasks || []).map(t => t.id);
+            taskIds = (tasks || []).map((t: { id: string }) => t.id);
+            if (taskIds.length === 0) return [];
 
-            if (taskIds.length === 0) {
-                return [];
-            }
+        } else if (teacherId) {
+            // All courses — scope to teacher's assigned courses
+            const { data: enrollments } = await supabase
+                .from('course_enrollments')
+                .select('course_id')
+                .eq('user_id', teacherId)
+                .eq('role', 'teacher');
+
+            const assignedCourseIds = (enrollments || []).map((e: { course_id: string }) => e.course_id);
+            if (assignedCourseIds.length === 0) return [];
+
+            const { data: tasks } = await supabase
+                .from('course_tasks')
+                .select('id')
+                .in('course_id', assignedCourseIds);
+
+            taskIds = (tasks || []).map((t: { id: string }) => t.id);
+            if (taskIds.length === 0) return [];
         }
 
-        // Fetch submissions
         let query = supabase
             .from('student_submissions')
-            .select('*')
+            .select('id, task_id, student_id, student_name, section, text_content, attachments, status, score, feedback, submitted_at, graded_at, graded_by, is_late, is_flagged, similarity_score, rubric_scores, grade_history')
             .order('submitted_at', { ascending: false });
 
         if (taskIds.length > 0) {
@@ -184,14 +235,12 @@ export const fetchAllSubmissions = async (courseId?: string): Promise<Submission
         const { data, error } = await query;
 
         if (error) {
-            console.error('[GradingService] Error fetching submissions:', error);
-            return [];
+            throw error;
         }
 
         return (data || []).map(mapDbToSubmission);
     } catch (err) {
-        console.error('[GradingService] Failed to fetch submissions:', err);
-        return [];
+        throw new Error(`[GradingService] Failed to fetch submissions: ${err}`);
     }
 };
 
@@ -200,24 +249,25 @@ export const fetchAllSubmissions = async (courseId?: string): Promise<Submission
 // ============================================
 
 /**
- * Grade a single submission
+ * Grade a single submission.
+ *
+ * Phase 9.3 — gradedBy must be the authenticated user's real ID.
  */
 export const gradeSubmission = async (input: GradeInput): Promise<boolean> => {
     if (!isSupabaseConfigured() || !supabase) {
-        console.error('[GradingService] Supabase not configured');
         return false;
     }
 
     try {
-        // First, get the current submission to preserve grade history
+        // Get current submission to preserve grade history
         const { data: current } = await supabase
             .from('student_submissions')
             .select('score, feedback, graded_at, grade_history, graded_by')
             .eq('id', input.submissionId)
             .single();
 
-        // Build grade history
-        let gradeHistory: GradeHistory[] = current?.grade_history || [];
+        // Build grade history — always preserve previous grade if one exists
+        const gradeHistory: GradeHistory[] = current?.grade_history || [];
         if (current?.score !== null && current?.graded_at) {
             gradeHistory.push({
                 score: current.score,
@@ -228,7 +278,6 @@ export const gradeSubmission = async (input: GradeInput): Promise<boolean> => {
             });
         }
 
-        // Update the submission
         const { error } = await supabase
             .from('student_submissions')
             .update({
@@ -242,16 +291,11 @@ export const gradeSubmission = async (input: GradeInput): Promise<boolean> => {
             })
             .eq('id', input.submissionId);
 
-        if (error) {
-            console.error('[GradingService] Error grading submission:', error);
-            return false;
-        }
+        if (error) throw error;
 
-        console.log(`[GradingService] Graded submission ${input.submissionId}: ${input.score} points`);
         return true;
     } catch (err) {
-        console.error('[GradingService] Failed to grade submission:', err);
-        return false;
+        throw new Error(`[GradingService] Failed to grade submission: ${err}`);
     }
 };
 
@@ -268,21 +312,14 @@ export const batchGradeSubmissions = async (
     let failed = 0;
 
     for (const id of submissionIds) {
-        const result = await gradeSubmission({
-            submissionId: id,
-            score,
-            feedback,
-            gradedBy,
-        });
-
-        if (result) {
+        try {
+            await gradeSubmission({ submissionId: id, score, feedback, gradedBy });
             success++;
-        } else {
+        } catch {
             failed++;
         }
     }
 
-    console.log(`[GradingService] Batch graded: ${success} success, ${failed} failed`);
     return { success, failed };
 };
 
@@ -295,29 +332,22 @@ export const toggleSubmissionFlag = async (submissionId: string): Promise<boolea
     }
 
     try {
-        // Get current flag status
         const { data: current } = await supabase
             .from('student_submissions')
             .select('is_flagged')
             .eq('id', submissionId)
             .single();
 
-        const newFlagStatus = !(current?.is_flagged || false);
-
         const { error } = await supabase
             .from('student_submissions')
-            .update({ is_flagged: newFlagStatus })
+            .update({ is_flagged: !(current?.is_flagged || false) })
             .eq('id', submissionId);
 
-        if (error) {
-            console.error('[GradingService] Error toggling flag:', error);
-            return false;
-        }
+        if (error) throw error;
 
         return true;
     } catch (err) {
-        console.error('[GradingService] Failed to toggle flag:', err);
-        return false;
+        throw new Error(`[GradingService] Failed to toggle flag: ${err}`);
     }
 };
 
@@ -350,7 +380,6 @@ export const getTaskGradingStats = async (taskId: string): Promise<{
         if (error || !data) {
             return { total: 0, graded: 0, pending: 0, late: 0, average: 0, highest: 0, lowest: 0 };
         }
-
         const total = data.length;
         const graded = data.filter(s => s.status === 'graded').length;
         const pending = data.filter(s => s.status !== 'graded').length;
@@ -362,8 +391,7 @@ export const getTaskGradingStats = async (taskId: string): Promise<{
         const lowest = scores.length > 0 ? Math.min(...scores) : 0;
 
         return { total, graded, pending, late, average, highest, lowest };
-    } catch (err) {
-        console.error('[GradingService] Failed to get stats:', err);
+    } catch {
         return { total: 0, graded: 0, pending: 0, late: 0, average: 0, highest: 0, lowest: 0 };
     }
 };

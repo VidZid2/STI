@@ -1,6 +1,16 @@
 /**
- * Authentication Service
- * Handles user login/logout with Supabase database
+ * Authentication Service — Supabase Auth migration (Step 3)
+ *
+ * Login flow:
+ *  1. Try supabase.auth.signInWithPassword() — real JWT session
+ *  2. On success, fetch the user's profile from the `users` table
+ *     (role, student_id, section, etc. live there, not in auth.users)
+ *  3. Store the profile in sessionStorage for fast synchronous reads
+ *     (getCurrentUser() is called in many places synchronously)
+ *  4. If Supabase is not configured, fall back to demo credentials
+ *
+ * Logout: calls supabase.auth.signOut() to invalidate the JWT server-side,
+ * then clears sessionStorage.
  */
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -26,100 +36,114 @@ export interface LoginResult {
     error?: string;
 }
 
-// Storage key for current user
 const USER_STORAGE_KEY = 'elms_current_user';
 
-/**
- * Login with email and password
- */
+// ============================================
+// LOGIN
+// ============================================
+
 export const loginUser = async (email: string, password: string): Promise<LoginResult> => {
-    // Check if Supabase is configured
     if (!isSupabaseConfigured() || !supabase) {
-        // Fallback to demo mode
         return loginDemo(email, password);
     }
 
     try {
-        // Query the users table - try exact match first, then lowercase
-        let { data, error } = await supabase
+        // Step 1: Authenticate via Supabase Auth (real JWT)
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email: email.toLowerCase().trim(),
+            password,
+        });
+
+        if (authError || !authData.user) {
+            // Auth failed — try demo fallback for dev convenience
+            const demoResult = loginDemo(email, password);
+            if (demoResult.success) return demoResult;
+            return { success: false, error: 'Invalid email or password' };
+        }
+
+        // Step 2: Fetch the user's profile from the `users` table
+        // (Supabase Auth only stores email + id; role/section/etc. live in our table)
+        const { data: profile, error: profileError } = await supabase
             .from('users')
-            .select('*')
-            .eq('email', email)
-            .eq('password_hash', password)
-            .eq('is_active', true)
+            .select('id, student_id, email, full_name, first_name, last_name, role, campus, program, year_level, section, profile_image')
+            .eq('id', authData.user.id)
             .single();
 
-        // If not found, try lowercase email
-        if (error || !data) {
-            const result = await supabase
+        // Fallback: try matching by email if id lookup fails
+        // (handles edge case where auth.id doesn't match users.id)
+        let finalProfile = profile;
+        if (profileError || !profile) {
+            const { data: profileByEmail } = await supabase
                 .from('users')
-                .select('*')
-                .eq('email', email.toLowerCase())
-                .eq('password_hash', password)
-                .eq('is_active', true)
+                .select('id, student_id, email, full_name, first_name, last_name, role, campus, program, year_level, section, profile_image')
+                .eq('email', authData.user.email?.toLowerCase() ?? '')
                 .single();
-            data = result.data;
-            error = result.error;
+            finalProfile = profileByEmail;
         }
 
-        if (error || !data) {
-            // Try demo fallback if Supabase doesn't have the user
-            const demoResult = loginDemo(email, password);
-            if (demoResult.success) {
-                return demoResult;
-            }
-            return {
-                success: false,
-                error: 'Invalid email or password'
-            };
+        if (!finalProfile) {
+            await supabase.auth.signOut();
+            return { success: false, error: 'Account not found. Please contact your administrator.' };
         }
 
-        // Update last login
+        // Step 3: Update last_login timestamp
         await supabase
             .from('users')
             .update({ last_login: new Date().toISOString() })
-            .eq('id', data.id);
+            .eq('id', finalProfile.id);
 
         const user: User = {
-            id: data.id,
-            student_id: data.student_id,
-            email: data.email,
-            full_name: data.full_name,
-            first_name: data.first_name,
-            last_name: data.last_name,
-            role: data.role,
-            campus: data.campus,
-            program: data.program,
-            year_level: data.year_level,
-            section: data.section,
-            profile_image: data.profile_image,
+            id: finalProfile.id,
+            student_id: finalProfile.student_id,
+            email: finalProfile.email,
+            full_name: finalProfile.full_name,
+            first_name: finalProfile.first_name,
+            last_name: finalProfile.last_name,
+            role: finalProfile.role,
+            campus: finalProfile.campus,
+            program: finalProfile.program,
+            year_level: finalProfile.year_level,
+            section: finalProfile.section,
+            profile_image: finalProfile.profile_image,
         };
 
-        // Save to localStorage
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-        localStorage.setItem('student_id', user.student_id);
+        // Step 4: Cache profile for synchronous reads throughout the app
+        sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+        sessionStorage.setItem('student_id', user.student_id);
 
         return { success: true, user };
-    } catch (err) {
-        console.error('[Auth] Login error:', err);
-        // Try demo fallback on error
+
+    } catch {
+        // Network error — try demo fallback
         const demoResult = loginDemo(email, password);
-        if (demoResult.success) {
-            return demoResult;
-        }
-        return {
-            success: false,
-            error: 'An error occurred during login'
-        };
+        if (demoResult.success) return demoResult;
+        return { success: false, error: 'An error occurred during login' };
     }
 };
 
-/**
- * Demo login fallback when Supabase is not configured
- */
+// ============================================
+// DEMO FALLBACK (when Supabase is not configured or unreachable)
+// ============================================
+
 const loginDemo = (email: string, password: string): LoginResult => {
-    // Demo credentials
     const demoUsers = [
+        {
+            email: 'deasis.student1@meycauayan.sti.edu.ph',
+            password: '123',
+            user: {
+                id: 'demo-student-josiah',
+                student_id: '02000543210',
+                email: 'deasis.student1@meycauayan.sti.edu.ph',
+                full_name: 'Josiah De Asis',
+                first_name: 'Josiah',
+                last_name: 'De Asis',
+                role: 'student' as const,
+                campus: 'Meycauayan',
+                program: 'BSIT',
+                year_level: '1st Year',
+                section: 'BSIT101A',
+            },
+        },
         {
             email: 'deasis.462124@meycauayan.sti.edu.ph',
             password: 'testing101',
@@ -134,8 +158,8 @@ const loginDemo = (email: string, password: string): LoginResult => {
                 campus: 'Meycauayan',
                 program: 'BSIT',
                 year_level: '1st Year',
-                section: 'A',
-            }
+                section: 'BSIT101A',
+            },
         },
         {
             email: 'teacher@meycauayan.sti.edu.ph',
@@ -149,22 +173,22 @@ const loginDemo = (email: string, password: string): LoginResult => {
                 last_name: 'Del Mundo',
                 role: 'teacher' as const,
                 campus: 'Meycauayan',
-            }
+            },
         },
         {
-            email: 'Testing@testing',
+            email: 'david.teacher1@meycauayan.sti.edu.ph',
             password: '123',
             user: {
-                id: 'demo-teacher-test',
-                student_id: 'TEACHER-TEST',
-                email: 'Testing@testing',
-                full_name: 'Test Teacher',
-                first_name: 'Test',
-                last_name: 'Teacher',
+                id: 'demo-teacher-david',
+                student_id: 'TEACHER001',
+                email: 'david.teacher1@meycauayan.sti.edu.ph',
+                full_name: 'David Clarence Del Mundo',
+                first_name: 'David Clarence',
+                last_name: 'Del Mundo',
                 role: 'teacher' as const,
                 campus: 'Meycauayan',
-            }
-        }
+            },
+        },
     ];
 
     const found = demoUsers.find(
@@ -172,77 +196,69 @@ const loginDemo = (email: string, password: string): LoginResult => {
     );
 
     if (found) {
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(found.user));
-        localStorage.setItem('student_id', found.user.student_id);
+        sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(found.user));
+        sessionStorage.setItem('student_id', found.user.student_id);
         return { success: true, user: found.user };
     }
 
-    return {
-        success: false,
-        error: 'Invalid email or password'
-    };
+    return { success: false, error: 'Invalid email or password' };
 };
 
+// ============================================
+// SESSION
+// ============================================
+
 /**
- * Get current logged in user
+ * Synchronous read of the cached user profile.
+ * Fast — reads from sessionStorage, no network call.
  */
 export const getCurrentUser = (): User | null => {
     try {
-        const saved = localStorage.getItem(USER_STORAGE_KEY);
-        if (saved) {
-            return JSON.parse(saved);
-        }
-    } catch (e) {
-        console.error('[Auth] Failed to get current user:', e);
+        const saved = sessionStorage.getItem(USER_STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+    } catch {
+        // Corrupted storage — clear it
+        sessionStorage.removeItem(USER_STORAGE_KEY);
     }
     return null;
 };
 
-/**
- * Check if user is logged in
- */
-export const isLoggedIn = (): boolean => {
-    return getCurrentUser() !== null;
-};
+export const isLoggedIn = (): boolean => getCurrentUser() !== null;
 
 /**
- * Logout current user
+ * Sign out — invalidates the Supabase JWT server-side, then clears local cache.
  */
-export const logoutUser = (): void => {
-    localStorage.removeItem(USER_STORAGE_KEY);
-    localStorage.removeItem('student_id');
+export const logoutUser = async (): Promise<void> => {
+    if (isSupabaseConfigured() && supabase) {
+        // Fire and forget — don't block the UI on network
+        supabase.auth.signOut().catch(() => {});
+    }
+    sessionStorage.removeItem(USER_STORAGE_KEY);
+    sessionStorage.removeItem('student_id');
 };
 
-/**
- * Get user by email (for "Pick an account" feature)
- */
+// ============================================
+// SAVED ACCOUNTS ("Pick an account" feature)
+// ============================================
+
 export const getSavedAccounts = (): { email: string; name: string }[] => {
     try {
         const saved = localStorage.getItem('elms_saved_accounts');
-        if (saved) {
-            return JSON.parse(saved);
-        }
-    } catch (e) {
-        console.error('[Auth] Failed to get saved accounts:', e);
+        if (saved) return JSON.parse(saved);
+    } catch {
+        localStorage.removeItem('elms_saved_accounts');
     }
     return [];
 };
 
-/**
- * Save account for "Pick an account" feature
- */
 export const saveAccount = (email: string, name: string): void => {
     const accounts = getSavedAccounts();
-    const exists = accounts.find(a => a.email === email);
-    if (!exists) {
+    if (!accounts.find(a => a.email === email)) {
         accounts.push({ email, name });
         localStorage.setItem('elms_saved_accounts', JSON.stringify(accounts));
     }
 };
 
-/**
- * Remove saved account
- */
 export const removeSavedAccount = (email: string): void => {
     const accounts = getSavedAccounts().filter(a => a.email !== email);
     localStorage.setItem('elms_saved_accounts', JSON.stringify(accounts));

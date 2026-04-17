@@ -11,40 +11,40 @@ export const GRADING_COLORS = {
     primary: '#3b82f6',
     primaryLight: 'rgba(59, 130, 246, 0.1)',
     primaryBorder: 'rgba(59, 130, 246, 0.2)',
-    
+
     // Status colors
-    success: '#10b981',
+    success: 'var(--color-success)',
     successLight: 'rgba(16, 185, 129, 0.1)',
     successBorder: 'rgba(16, 185, 129, 0.2)',
-    
-    warning: '#f59e0b',
+
+    warning: 'var(--color-warning)',
     warningLight: 'rgba(245, 158, 11, 0.1)',
     warningBorder: 'rgba(245, 158, 11, 0.2)',
-    
-    danger: '#ef4444',
+
+    danger: 'var(--color-danger)',
     dangerLight: 'rgba(239, 68, 68, 0.1)',
     dangerBorder: 'rgba(239, 68, 68, 0.2)',
-    
-    purple: '#8b5cf6',
+
+    purple: 'var(--color-purple)',
     purpleLight: 'rgba(139, 92, 246, 0.1)',
     purpleBorder: 'rgba(139, 92, 246, 0.2)',
-    
+
     orange: '#f97316',
-    
+
     // Text colors
-    textPrimary: '#0f172a',
-    textSecondary: '#64748b',
-    textMuted: '#94a3b8',
-    
+    textPrimary: 'var(--text-primary)',
+    textSecondary: 'var(--text-secondary)',
+    textMuted: 'var(--text-muted)',
+
     // Background colors
-    background: '#f8fafc',
-    surface: '#ffffff',
-    
+    background: 'var(--bg-canvas)',
+    surface: 'var(--bg-surface)',
+
     // Border colors
-    border: 'rgba(0,0,0,0.08)',
+    border: 'var(--border-subtle)',
     borderLight: 'rgba(0,0,0,0.04)',
     borderDark: 'rgba(0,0,0,0.1)',
-    
+
     // Overlay
     overlay: 'rgba(15, 23, 42, 0.6)',
 } as const;
@@ -104,11 +104,11 @@ export const GRADING_FONT_WEIGHT = {
 // GRADE COLORS (for distribution chart)
 // ============================================
 export const GRADE_COLORS: Record<string, string> = {
-    A: '#10b981',
+    A: 'var(--color-success)',
     B: '#3b82f6',
-    C: '#f59e0b',
+    C: 'var(--color-warning)',
     D: '#f97316',
-    F: '#ef4444',
+    F: 'var(--color-danger)',
 };
 
 // ============================================
@@ -182,7 +182,7 @@ export const AI_FEEDBACK_SUGGESTIONS = {
 // ============================================
 export const STATUS_CONFIG = {
     pending: {
-        color: '#94a3b8',
+        color: 'var(--text-muted)',
         label: 'Pending',
         bgColor: 'rgba(148, 163, 184, 0.1)',
     },
@@ -192,19 +192,24 @@ export const STATUS_CONFIG = {
         bgColor: 'rgba(59, 130, 246, 0.1)',
     },
     graded: {
-        color: '#10b981',
+        color: 'var(--color-success)',
         label: 'Graded',
         bgColor: 'rgba(16, 185, 129, 0.1)',
     },
     late: {
-        color: '#ef4444',
+        color: 'var(--color-danger)',
         label: 'Late',
         bgColor: 'rgba(239, 68, 68, 0.1)',
     },
     resubmitted: {
-        color: '#8b5cf6',
+        color: 'var(--color-purple)',
         label: 'Resubmitted',
         bgColor: 'rgba(139, 92, 246, 0.1)',
+    },
+    'ai-checked': {
+        color: '#fbbf24',
+        label: 'AI Checked',
+        bgColor: 'rgba(251, 191, 36, 0.1)',
     },
 } as const;
 

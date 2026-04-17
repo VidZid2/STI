@@ -81,10 +81,10 @@ export default function UserProfileDropdown() {
             if (currentData.totalXP > lastTotalXP) {
                 const gained = currentData.totalXP - lastTotalXP;
                 setXpGain(gained);
-                setLastTotalXP(currentData.totalXP);
+                setLastTotalXP(currentData.totalXP); // Update the tracked XP
                 
-                // Hide the +XP popup after 2 seconds
-                setTimeout(() => setXpGain(null), 2000);
+                // Hide the +XP popup after 6 seconds (as per requirement)
+                setTimeout(() => setXpGain(null), 6000);
             }
             
             setXpProgress(newProgress);
@@ -102,7 +102,7 @@ export default function UserProfileDropdown() {
         checkXP();
         const interval = setInterval(checkXP, 5000);
         return () => clearInterval(interval);
-    }, []);
+    }, [lastTotalXP]); // Add lastTotalXP to dependency array to fix the bug
 
     // Handle sign out with fade transition
     const handleSignOut = () => {

@@ -1,13 +1,12 @@
 /**
  * StatsBar Component
  * Phase 2B: Extracted from GradeSubmissionsModal
- * 
- * Professional stats bar showing grading progress and grade distribution.
+ * Migrated: inline styles → Tailwind + CSS variables
  */
 
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { GRADE_COLORS, GRADE_LABELS, GRADING_COLORS } from '../constants';
+import { GRADE_COLORS, GRADE_LABELS } from '../constants';
 import type { Submission, Task } from '../types';
 
 export interface StatsBarProps {
@@ -26,8 +25,6 @@ export const StatsBar: React.FC<StatsBarProps> = ({ submissions, tasks }) => {
         const avg = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
         const highest = scores.length > 0 ? Math.max(...scores) : 0;
         const lowest = scores.length > 0 ? Math.min(...scores) : 0;
-
-        // Grade distribution
         const distribution = { A: 0, B: 0, C: 0, D: 0, F: 0 };
         graded.forEach((s) => {
             const task = tasks.find((t) => t.id === s.task_id);
@@ -38,277 +35,99 @@ export const StatsBar: React.FC<StatsBarProps> = ({ submissions, tasks }) => {
             else if (percent >= 60) distribution.D++;
             else distribution.F++;
         });
-
-        return {
-            graded: graded.length,
-            pending: pending.length,
-            late: late.length,
-            avg,
-            highest,
-            lowest,
-            distribution,
-            total: submissions.length,
-        };
+        return { graded: graded.length, pending: pending.length, late: late.length, avg, highest, lowest, distribution, total: submissions.length };
     }, [submissions, tasks]);
 
     const progressPercent = stats.total > 0 ? (stats.graded / stats.total) * 100 : 0;
+    const progressColor = progressPercent === 100 ? 'var(--color-success)' : 'var(--accent-primary)';
 
     return (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-                padding: '14px 16px',
-                background: GRADING_COLORS.surface,
-                borderRadius: '12px',
-                border: '1px solid rgba(0,0,0,0.06)',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-            }}
-        >
-            {/* Top Row - Progress & Key Stats */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                {/* Grading Progress */}
-                <div style={{ flex: 1 }}>
-                    <div
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            marginBottom: '6px',
-                        }}
-                    >
-                        <span style={{ fontSize: '11px', fontWeight: 600, color: GRADING_COLORS.textSecondary }}>
-                            Grading Progress
-                        </span>
-                        <span
-                            style={{
-                                fontSize: '12px',
-                                fontWeight: 700,
-                                color: progressPercent === 100 ? GRADING_COLORS.success : GRADING_COLORS.primary,
-                            }}
-                        >
-                            {stats.graded} of {stats.total} graded
-                        </span>
+        <div className="flex flex-col gap-3 px-4 py-3.5 rounded-xl"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+
+            {/* Top row: progress + stats */}
+            <div className="flex items-center gap-3">
+                <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>Grading Progress</span>
+                        <span className="text-xs font-bold" style={{ color: progressColor }}>{stats.graded} of {stats.total} graded</span>
                     </div>
-                    <div
-                        style={{
-                            height: '8px',
-                            background: 'rgba(0,0,0,0.04)',
-                            borderRadius: '4px',
-                            overflow: 'hidden',
-                        }}
-                    >
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${progressPercent}%` }}
+                    <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,0.04)' }}>
+                        <motion.div initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }}
                             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                            style={{
-                                height: '100%',
-                                background: progressPercent === 100 ? GRADING_COLORS.success : GRADING_COLORS.primary,
-                                borderRadius: '4px',
-                            }}
-                        />
+                            className="h-full rounded-full" style={{ background: progressColor }} />
                     </div>
                 </div>
-
-                {/* Vertical Divider */}
-                <div style={{ width: '1px', height: '36px', background: 'rgba(0,0,0,0.06)' }} />
-
-                {/* Quick Stats */}
-                <div style={{ display: 'flex', gap: '16px' }}>
-                    {/* Average Score */}
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '18px', fontWeight: 700, color: GRADING_COLORS.textPrimary, lineHeight: 1 }}>
-                            {stats.avg.toFixed(1)}
+                <div className="w-px h-9" style={{ background: 'var(--border-subtle)' }} />
+                <div className="flex gap-4">
+                    {[
+                        { label: 'AVG', value: stats.avg.toFixed(1), color: 'var(--text-primary)', size: 'text-[18px]' },
+                        { label: 'HIGH', value: stats.highest, color: 'var(--color-success)', size: 'text-sm' },
+                        { label: 'LOW', value: stats.lowest, color: 'var(--color-danger)', size: 'text-sm' },
+                    ].map(({ label, value, color, size }) => (
+                        <div key={label} className="text-center">
+                            <div className={`${size} font-bold leading-none`} style={{ color }}>{value}</div>
+                            <div className="text-[10px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>{label}</div>
                         </div>
-                        <div style={{ fontSize: '10px', color: GRADING_COLORS.textSecondary, marginTop: '2px' }}>AVG</div>
-                    </div>
-                    {/* Highest */}
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '14px', fontWeight: 600, color: GRADING_COLORS.success, lineHeight: 1 }}>
-                            {stats.highest}
-                        </div>
-                        <div style={{ fontSize: '10px', color: GRADING_COLORS.textSecondary, marginTop: '2px' }}>HIGH</div>
-                    </div>
-                    {/* Lowest */}
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '14px', fontWeight: 600, color: GRADING_COLORS.danger, lineHeight: 1 }}>
-                            {stats.lowest}
-                        </div>
-                        <div style={{ fontSize: '10px', color: GRADING_COLORS.textSecondary, marginTop: '2px' }}>LOW</div>
-                    </div>
+                    ))}
                 </div>
             </div>
 
-            {/* Bottom Row - Grade Distribution */}
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '10px 12px',
-                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(139, 92, 246, 0.03) 100%)',
-                    borderRadius: '8px',
-                }}
-            >
-                {/* Distribution Label */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: '80px' }}>
-                    <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke={GRADING_COLORS.textSecondary}
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    >
-                        <line x1="18" y1="20" x2="18" y2="10" />
-                        <line x1="12" y1="20" x2="12" y2="4" />
-                        <line x1="6" y1="20" x2="6" y2="14" />
+            {/* Bottom row: grade distribution */}
+            <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg"
+                style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.03) 0%, rgba(139,92,246,0.03) 100%)' }}>
+                <div className="flex items-center gap-1.5 min-w-[80px]">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-secondary)' }}>
+                        <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
                     </svg>
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: GRADING_COLORS.textSecondary }}>
-                        Distribution
-                    </span>
+                    <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>Distribution</span>
                 </div>
 
-                {/* Grade Bars */}
-                <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: '6px', height: '28px' }}>
+                {/* Grade bars */}
+                <div className="flex-1 flex items-end gap-1.5 h-7">
                     {Object.entries(stats.distribution).map(([grade, count]) => {
                         const maxCount = Math.max(...Object.values(stats.distribution), 1);
                         const height = stats.graded > 0 ? (count / maxCount) * 18 + 4 : 4;
-                        const isHovered = hoveredGrade === grade;
+                        const isHov = hoveredGrade === grade;
                         const gradeColor = GRADE_COLORS[grade];
-
                         return (
-                            <div
-                                key={grade}
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    gap: '2px',
-                                    flex: 1,
-                                    position: 'relative',
-                                    justifyContent: 'flex-end',
-                                    height: '100%',
-                                }}
-                                onMouseEnter={() => setHoveredGrade(grade)}
-                                onMouseLeave={() => setHoveredGrade(null)}
-                            >
-                                {/* Tooltip */}
+                            <div key={grade} className="flex flex-col items-center gap-0.5 flex-1 relative justify-end h-full"
+                                onMouseEnter={() => setHoveredGrade(grade)} onMouseLeave={() => setHoveredGrade(null)}>
                                 <AnimatePresence>
-                                    {isHovered && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 4, scale: 0.9 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: 2, scale: 0.95 }}
-                                            style={{
-                                                position: 'absolute',
-                                                bottom: '100%',
-                                                marginBottom: '4px',
-                                                padding: '4px 8px',
-                                                background: GRADING_COLORS.surface,
-                                                borderRadius: '6px',
-                                                boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                                                border: `1px solid ${gradeColor}30`,
-                                                whiteSpace: 'nowrap',
-                                                zIndex: 10,
-                                            }}
-                                        >
-                                            <div style={{ fontSize: '11px', fontWeight: 600, color: gradeColor }}>
-                                                {count} student{count !== 1 ? 's' : ''}
-                                            </div>
-                                            <div style={{ fontSize: '9px', color: GRADING_COLORS.textMuted }}>
-                                                {GRADE_LABELS[grade]}
-                                            </div>
+                                    {isHov && (
+                                        <motion.div initial={{ opacity: 0, y: 4, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 2, scale: 0.95 }}
+                                            className="absolute bottom-full mb-1 px-2 py-1 rounded-md whitespace-nowrap z-10"
+                                            style={{ background: 'var(--bg-surface)', boxShadow: '0 2px 8px rgba(0,0,0,0.12)', border: `1px solid ${gradeColor}30` }}>
+                                            <div className="text-[11px] font-semibold" style={{ color: gradeColor }}>{count} student{count !== 1 ? 's' : ''}</div>
+                                            <div className="text-[9px]" style={{ color: 'var(--text-muted)' }}>{GRADE_LABELS[grade]}</div>
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
-
-                                {/* Bar */}
-                                <motion.div
-                                    initial={{ height: 4 }}
-                                    animate={{ height, scale: isHovered ? 1.1 : 1 }}
-                                    transition={{ duration: 0.3 }}
+                                <motion.div initial={{ height: 4 }} animate={{ height, scale: isHov ? 1.1 : 1 }} transition={{ duration: 0.3 }}
+                                    className="w-full max-w-[28px] rounded-[4px] cursor-pointer"
                                     style={{
-                                        width: '100%',
-                                        maxWidth: '28px',
-                                        background:
-                                            count > 0
-                                                ? `linear-gradient(180deg, ${gradeColor} 0%, ${gradeColor}cc 100%)`
-                                                : 'rgba(0,0,0,0.06)',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        boxShadow: count > 0 && isHovered ? `0 2px 8px ${gradeColor}40` : 'none',
-                                    }}
-                                />
-                                {/* Grade Label */}
-                                <span
-                                    style={{
-                                        fontSize: '9px',
-                                        fontWeight: 600,
-                                        color: isHovered ? gradeColor : GRADING_COLORS.textMuted,
-                                        transition: 'color 0.15s ease',
-                                        lineHeight: 1,
-                                    }}
-                                >
-                                    {grade}
-                                </span>
+                                        background: count > 0 ? `linear-gradient(180deg, ${gradeColor} 0%, ${gradeColor}cc 100%)` : 'rgba(0,0,0,0.06)',
+                                        boxShadow: count > 0 && isHov ? `0 2px 8px ${gradeColor}40` : 'none',
+                                    }} />
+                                <span className="text-[9px] font-semibold leading-none transition-colors"
+                                    style={{ color: isHov ? gradeColor : 'var(--text-muted)' }}>{grade}</span>
                             </div>
                         );
                     })}
                 </div>
 
-                {/* Status Counts */}
-                <div style={{ display: 'flex', gap: '8px', marginLeft: '8px' }}>
+                {/* Status counts */}
+                <div className="flex gap-2 ml-2">
                     {stats.pending > 0 && (
-                        <div
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                padding: '4px 8px',
-                                borderRadius: '6px',
-                                background: GRADING_COLORS.primaryLight,
-                            }}
-                        >
-                            <div
-                                style={{
-                                    width: '6px',
-                                    height: '6px',
-                                    borderRadius: '50%',
-                                    background: GRADING_COLORS.primary,
-                                }}
-                            />
-                            <span style={{ fontSize: '10px', fontWeight: 600, color: GRADING_COLORS.primary }}>
-                                {stats.pending} pending
-                            </span>
+                        <div className="flex items-center gap-1 px-2 py-1 rounded-md" style={{ background: 'var(--accent-bg)' }}>
+                            <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--accent-primary)' }} />
+                            <span className="text-[10px] font-semibold" style={{ color: 'var(--accent-primary)' }}>{stats.pending} pending</span>
                         </div>
                     )}
                     {stats.late > 0 && (
-                        <div
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                padding: '4px 8px',
-                                borderRadius: '6px',
-                                background: GRADING_COLORS.dangerLight,
-                            }}
-                        >
-                            <div
-                                style={{
-                                    width: '6px',
-                                    height: '6px',
-                                    borderRadius: '50%',
-                                    background: GRADING_COLORS.danger,
-                                }}
-                            />
-                            <span style={{ fontSize: '10px', fontWeight: 600, color: GRADING_COLORS.danger }}>
-                                {stats.late} late
-                            </span>
+                        <div className="flex items-center gap-1 px-2 py-1 rounded-md" style={{ background: 'var(--color-danger-bg)' }}>
+                            <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--color-danger)' }} />
+                            <span className="text-[10px] font-semibold" style={{ color: 'var(--color-danger)' }}>{stats.late} late</span>
                         </div>
                     )}
                 </div>

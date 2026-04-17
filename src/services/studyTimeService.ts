@@ -5,9 +5,9 @@
  * Now with Supabase database sync! Data is saved both locally and to the cloud.
  */
 
-import { 
-    saveStudyTimeToDb, 
-    saveStreakToDb, 
+import {
+    saveStudyTimeToDb,
+    saveStreakToDb,
     saveCourseProgressToDb,
     initializeDatabase,
 } from './databaseService';
@@ -74,7 +74,7 @@ const getDefaultStudyTimeData = (): StudyTimeData => {
             minutes: 0,
         };
     });
-    
+
     return {
         totalMinutes: 0,
         monthlyMinutes: 0,
@@ -100,19 +100,19 @@ const getDefaultStudyTimeData = (): StudyTimeData => {
 const getDefaultStreakData = (): StreakData => {
     const now = new Date();
     const today = now.toISOString().split('T')[0];
-    
+
     // Generate last 7 days with only today as active
     const last7Days: { date: string; active: boolean }[] = [];
     for (let i = 6; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
-        last7Days.push({ 
-            date: dateStr, 
+        last7Days.push({
+            date: dateStr,
             active: i === 0 // Only today is active
         });
     }
-    
+
     return {
         currentStreak: 1, // Start at day 1
         bestStreak: 1,
@@ -159,7 +159,7 @@ export const getStreakData = (): StreakData => {
         localStorage.setItem(STORAGE_KEYS.STREAK_DATA, JSON.stringify(freshData));
         return freshData;
     }
-    
+
     try {
         const saved = localStorage.getItem(STORAGE_KEYS.STREAK_DATA);
         if (saved) {
@@ -235,30 +235,30 @@ export const resetStreakData = (): StreakData => {
 const validateStreakHistory = (data: StreakData): StreakData => {
     const now = new Date();
     const today = now.toISOString().split('T')[0];
-    
+
     // Handle missing or invalid data - return fresh defaults
     if (!data || !data.lastActiveDate) {
         return getDefaultStreakData();
     }
-    
+
     // Ensure streakHistory is an array (might be undefined from database)
     const streakHistory = Array.isArray(data.streakHistory) ? data.streakHistory : [];
-    
+
     // Check if this is old fake data (migration check)
     // If lastActiveDate is way in the past or data looks suspicious, reset
     const lastActiveDate = new Date(data.lastActiveDate);
     const daysSinceLastActive = Math.floor((now.getTime() - lastActiveDate.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     // If more than 1 day has passed (not yesterday, not today), streak should be reset
     const shouldResetStreak = daysSinceLastActive > 1;
-    
+
     // Generate accurate last 7 days
     const last7Days: { date: string; active: boolean }[] = [];
     for (let i = 6; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
-        
+
         // Only keep active status for dates that were actually tracked
         // and only if the streak hasn't been broken
         let isActive = false;
@@ -266,15 +266,15 @@ const validateStreakHistory = (data: StreakData): StreakData => {
             const existingEntry = streakHistory.find(h => h.date === dateStr);
             isActive = existingEntry?.active || false;
         }
-        
+
         // If lastActiveDate is today, mark today as active
         if (dateStr === today && data.lastActiveDate === today) {
             isActive = true;
         }
-        
+
         last7Days.push({ date: dateStr, active: isActive });
     }
-    
+
     // Only reset streak if it's been broken (more than 1 day since last active)
     // Don't modify streak if user was active yesterday or today - let updateStreak handle that
     let currentStreak = data.currentStreak || 0;
@@ -282,7 +282,7 @@ const validateStreakHistory = (data: StreakData): StreakData => {
         // Streak is broken - but don't set to 1 yet, let updateStreak do that when user logs in
         currentStreak = 0;
     }
-    
+
     return {
         currentStreak: currentStreak,
         bestStreak: data.bestStreak || 0,
@@ -307,14 +307,14 @@ export const startStudySession = (): void => {
 export const endStudySession = (courseId?: string): number => {
     const startTime = localStorage.getItem(STORAGE_KEYS.SESSION_START);
     if (!startTime) return 0;
-    
+
     const sessionMinutes = Math.floor((Date.now() - parseInt(startTime)) / 60000);
     localStorage.removeItem(STORAGE_KEYS.SESSION_START);
-    
+
     if (sessionMinutes > 0) {
         addStudyTime(sessionMinutes, courseId);
     }
-    
+
     return sessionMinutes;
 };
 
@@ -322,17 +322,17 @@ export const endStudySession = (courseId?: string): number => {
 export const addStudyTime = (minutes: number, courseId?: string): void => {
     const data = getStudyTimeData();
     const today = new Date().toISOString().split('T')[0];
-    
+
     data.totalMinutes += minutes;
     data.monthlyMinutes += minutes;
     data.weeklyMinutes += minutes;
     data.dailyMinutes += minutes;
     data.lastUpdated = new Date().toISOString();
-    
+
     if (courseId) {
         data.courseMinutes[courseId] = (data.courseMinutes[courseId] || 0) + minutes;
     }
-    
+
     // Update daily history
     const todayEntry = data.dailyHistory.find(d => d.date === today);
     if (todayEntry) {
@@ -344,7 +344,7 @@ export const addStudyTime = (minutes: number, courseId?: string): void => {
             data.dailyHistory = data.dailyHistory.slice(-30);
         }
     }
-    
+
     saveStudyTimeData(data);
     updateStreak();
 };
@@ -357,12 +357,12 @@ export const updateStreak = (): void => {
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = yesterday.toISOString().split('T')[0];
-    
+
     // Already logged in today - no update needed
     if (data.lastActiveDate === today) {
         return;
     }
-    
+
     // Check if user logged in yesterday (continuing streak)
     if (data.lastActiveDate === yesterdayStr) {
         // Continuing streak - increment by 1
@@ -374,9 +374,9 @@ export const updateStreak = (): void => {
         // Streak broken or first login - start at day 1
         data.currentStreak = 1;
     }
-    
+
     data.lastActiveDate = today;
-    
+
     // Update history - mark today as active
     const todayEntry = data.streakHistory.find(h => h.date === today);
     if (todayEntry) {
@@ -388,9 +388,9 @@ export const updateStreak = (): void => {
             data.streakHistory = data.streakHistory.slice(-30);
         }
     }
-    
+
     saveStreakData(data);
-    
+
     // Award XP based on streak tier (daily login bonus)
     const tier = getStreakTier(data.currentStreak);
     addXP(tier.xpBonus);
@@ -398,7 +398,7 @@ export const updateStreak = (): void => {
 };
 
 // Get streak tier info based on current streak
-export const getStreakTier = (streak: number): { 
+export const getStreakTier = (streak: number): {
     tier: 'starter' | 'warming' | 'blazing' | 'legendary';
     bgGradient: string;
     borderColor: string;
@@ -448,7 +448,7 @@ export const calculateOverallProgress = (): number => {
     const courseData = getCourseProgressData();
     const courses = Object.values(courseData);
     if (courses.length === 0) return 0;
-    
+
     const totalProgress = courses.reduce((sum, c) => sum + c.progress, 0);
     return Math.round(totalProgress / courses.length);
 };
@@ -508,11 +508,11 @@ export const getTimeLeftForCourse = (courseId: string): string => {
     const courseData = getCourseProgressData();
     const course = courseData[courseId];
     if (!course || course.progress === 100) return '0h';
-    
+
     const avgTimePerModule = course.timeSpent / Math.max(course.completedModules, 1);
     const remainingModules = course.totalModules - course.completedModules;
     const estimatedMinutes = Math.round(avgTimePerModule * remainingModules);
-    
+
     return formatMinutesToHours(estimatedMinutes);
 };
 
@@ -520,7 +520,7 @@ export const getTimeLeftForCourse = (courseId: string): string => {
 export const initializeTracking = async (): Promise<void> => {
     // Check if demo mode is active - skip database sync to preserve demo data
     const isDemoMode = localStorage.getItem(STORAGE_KEYS.DEMO_MODE) === 'true';
-    
+
     // Try to load from database first (only if NOT in demo mode)
     if (isSupabaseConfigured() && !isDemoMode) {
         try {
@@ -546,7 +546,7 @@ export const initializeTracking = async (): Promise<void> => {
                 }
                 console.log('[StudyTime] Loaded data from database');
             }
-            
+
             // Also load XP data from database
             await initializeXP();
         } catch (err) {
@@ -555,7 +555,7 @@ export const initializeTracking = async (): Promise<void> => {
     } else if (isDemoMode) {
         console.log('[StudyTime] Demo mode active - skipping database sync');
     }
-    
+
     // Ensure data exists (creates defaults if needed)
     getStudyTimeData();
     getStreakData();
@@ -574,7 +574,7 @@ export const initializeTracking = async (): Promise<void> => {
     if (!isDemoMode) {
         updateStreak();
     }
-    
+
     // Set up periodic save (every minute) - skip in demo mode
     if (!isDemoMode) {
         setInterval(() => {
@@ -617,11 +617,11 @@ const calculateLevel = (totalXP: number): { level: number; xpInLevel: number } =
 // Save XP to database
 const saveXPToDatabase = async (data: XPData): Promise<void> => {
     if (!isSupabaseConfigured() || !supabase) return;
-    
+
     try {
-        const studentId = localStorage.getItem('student_id');
+        const studentId = sessionStorage.getItem('student_id');
         if (!studentId) return;
-        
+
         await supabase
             .from('student_stats')
             .upsert({
@@ -640,19 +640,19 @@ const saveXPToDatabase = async (data: XPData): Promise<void> => {
 // Load XP from database
 const loadXPFromDatabase = async (): Promise<XPData | null> => {
     if (!isSupabaseConfigured() || !supabase) return null;
-    
+
     try {
-        const studentId = localStorage.getItem('student_id');
+        const studentId = sessionStorage.getItem('student_id');
         if (!studentId) return null;
-        
+
         const { data, error } = await supabase
             .from('student_stats')
             .select('xp_data')
             .eq('student_id', studentId)
             .single();
-        
+
         if (error || !data?.xp_data) return null;
-        
+
         console.log('[XP] Loaded from database');
         return data.xp_data as XPData;
     } catch (err) {
@@ -684,7 +684,7 @@ export const getXPData = (): XPData => {
         saveXPToDatabase(freshData);
         return freshData;
     }
-    
+
     try {
         const saved = localStorage.getItem(XP_STORAGE_KEY);
         if (saved) {
@@ -693,7 +693,7 @@ export const getXPData = (): XPData => {
     } catch (e) {
         console.error('Failed to load XP data:', e);
     }
-    
+
     const defaultData = getDefaultXPData();
     localStorage.setItem(XP_STORAGE_KEY, JSON.stringify(defaultData));
     return defaultData;
@@ -719,17 +719,17 @@ export const saveXPData = (data: XPData): void => {
 export const addXP = (amount: number): { leveledUp: boolean; newLevel: number } => {
     const data = getXPData();
     const oldLevel = data.currentLevel;
-    
+
     data.totalXP += amount;
     const { level, xpInLevel } = calculateLevel(data.totalXP);
     data.currentLevel = level;
     data.xpInCurrentLevel = xpInLevel;
-    
+
     const leveledUp = level > oldLevel;
     if (leveledUp) {
         data.lastLevelUp = new Date().toISOString();
     }
-    
+
     saveXPData(data);
     return { leveledUp, newLevel: level };
 };
@@ -749,7 +749,7 @@ export const getCurrentLevel = (): number => {
 export const checkRecentLevelUp = (): boolean => {
     const data = getXPData();
     if (!data.lastLevelUp) return false;
-    
+
     const levelUpTime = new Date(data.lastLevelUp).getTime();
     const now = Date.now();
     return (now - levelUpTime) < 5000; // Within 5 seconds
@@ -806,7 +806,7 @@ export const clearDemoMode = (): void => {
 // Reset all data to defaults (clears localStorage and database)
 export const resetAllData = async (): Promise<void> => {
     console.log('[StudyTime] Resetting all data...');
-    
+
     // Clear all localStorage keys (study time service keys)
     Object.values(STORAGE_KEYS).forEach(key => {
         localStorage.removeItem(key);
@@ -814,8 +814,8 @@ export const resetAllData = async (): Promise<void> => {
     localStorage.removeItem(XP_STORAGE_KEY);
     localStorage.removeItem(XP_MIGRATED_KEY);
     localStorage.removeItem(STREAK_XP_AWARDED_KEY);
-    localStorage.removeItem('student_id'); // Reset student ID too
-    
+    sessionStorage.removeItem('student_id'); // Reset student ID too
+
     // Clear demo-specific data
     localStorage.removeItem('demo-course-modules');
     localStorage.removeItem('demo-students');
@@ -823,23 +823,23 @@ export const resetAllData = async (): Promise<void> => {
     localStorage.removeItem('demo-ai-grades');
     localStorage.removeItem('dashboard-deadlines');
     localStorage.removeItem('dashboard-todos');
-    
+
     // Clear teacher mode and AI grading data for all courses
     const courseIds = ['cp1', 'euth1', 'itc', 'nstp1', 'pe1', 'ppc', 'purcom', 'tcw', 'uts'];
     courseIds.forEach(courseId => {
         localStorage.removeItem(`ai-grading-${courseId}`);
     });
-    
+
     // Clear teacher mode session state
     sessionStorage.removeItem('teacher_mode_active');
     sessionStorage.removeItem('teacher_mode_tab');
-    
+
     // Reset to fresh defaults
     const freshStudyTime = getDefaultStudyTimeData();
     const freshStreak = getDefaultStreakData();
     const freshCourseProgress = DEFAULT_COURSE_PROGRESS;
     const freshXP = getDefaultXPData();
-    
+
     // Save fresh data to localStorage
     localStorage.setItem(STORAGE_KEYS.STUDY_TIME, JSON.stringify(freshStudyTime));
     localStorage.setItem(STORAGE_KEYS.STREAK_DATA, JSON.stringify(freshStreak));
@@ -847,7 +847,7 @@ export const resetAllData = async (): Promise<void> => {
     localStorage.setItem(XP_STORAGE_KEY, JSON.stringify(freshXP));
     localStorage.setItem(STORAGE_KEYS.STREAK_MIGRATED_V2, 'true');
     localStorage.setItem(XP_MIGRATED_KEY, 'true');
-    
+
     // Reset Supabase database to fresh defaults
     if (isSupabaseConfigured() && supabase) {
         try {
@@ -858,7 +858,7 @@ export const resetAllData = async (): Promise<void> => {
             console.error('[StudyTime] Failed to reset database:', err);
         }
     }
-    
+
     console.log('[StudyTime] All data reset successfully (localStorage + Database)');
 };
 
@@ -878,7 +878,7 @@ const DEMO_COURSE_PROGRESS: CourseProgressData = {
 // Load demo data (temporary - does NOT sync to database, clears on refresh)
 export const loadDemoData = (): void => {
     console.log('[Demo] Loading demo data...');
-    
+
     const now = new Date();
     const last7Days = Array.from({ length: 7 }, (_, i) => {
         const date = new Date(now);
@@ -888,9 +888,9 @@ export const loadDemoData = (): void => {
             minutes: Math.floor(Math.random() * 60) + 30 + (i * 10),
         };
     });
-    
+
     const totalFromHistory = last7Days.reduce((sum, d) => sum + d.minutes, 0);
-    
+
     // Demo study time data
     const demoStudyTime: StudyTimeData = {
         totalMinutes: 2640,
@@ -911,21 +911,21 @@ export const loadDemoData = (): void => {
         },
         dailyHistory: last7Days,
     };
-    
+
     // Demo streak data
     const streakHistory = Array.from({ length: 7 }, (_, i) => {
         const date = new Date(now);
         date.setDate(date.getDate() - (6 - i));
         return { date: date.toISOString().split('T')[0], active: i >= 4 }; // Last 3 days active
     });
-    
+
     const demoStreak: StreakData = {
         currentStreak: 12,
         bestStreak: 15,
         lastActiveDate: now.toISOString().split('T')[0],
         streakHistory,
     };
-    
+
     // Demo XP data
     const demoXP: XPData = {
         totalXP: 450,
@@ -933,13 +933,13 @@ export const loadDemoData = (): void => {
         xpInCurrentLevel: 50,
         lastLevelUp: null,
     };
-    
+
     // Save to localStorage only (NOT to database - temporary demo)
     localStorage.setItem(STORAGE_KEYS.STUDY_TIME, JSON.stringify(demoStudyTime));
     localStorage.setItem(STORAGE_KEYS.STREAK_DATA, JSON.stringify(demoStreak));
     localStorage.setItem(STORAGE_KEYS.COURSE_PROGRESS, JSON.stringify(DEMO_COURSE_PROGRESS));
     localStorage.setItem(XP_STORAGE_KEY, JSON.stringify(demoXP));
-    
+
     // Also load demo deadlines
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -947,14 +947,14 @@ export const loadDemoData = (): void => {
     threeDays.setDate(threeDays.getDate() + 3);
     const fiveDays = new Date(now);
     fiveDays.setDate(fiveDays.getDate() + 5);
-    
+
     const demoDeadlines = [
         { id: '1', title: 'Quiz: Programming Basics', type: 'quiz', courseId: 'cp1', courseName: 'Computer Programming 1', dueDate: tomorrow.toISOString(), completed: false, createdAt: now.toISOString() },
         { id: '2', title: 'Assignment: Essay Draft', type: 'assignment', courseId: 'purcom', courseName: 'Purposive Communication', dueDate: threeDays.toISOString(), completed: false, createdAt: now.toISOString() },
         { id: '3', title: 'Performance Task', type: 'performance', courseId: 'ppc', courseName: 'Philippine Popular Culture', dueDate: fiveDays.toISOString(), completed: false, createdAt: now.toISOString() },
     ];
     localStorage.setItem('dashboard-deadlines', JSON.stringify(demoDeadlines));
-    
+
     // Demo to-do items
     const demoTodos = [
         { id: '1', text: 'Review Chapter 5 notes', completed: true, createdAt: new Date(now.getTime() - 86400000).toISOString() },
@@ -963,55 +963,71 @@ export const loadDemoData = (): void => {
         { id: '4', text: 'Submit essay outline', completed: false, createdAt: now.toISOString() },
     ];
     localStorage.setItem('dashboard-todos', JSON.stringify(demoTodos));
-    
+
     // Demo course modules with progress
     const demoCourseModules = {
         'cp1': {
             modules: [
-                { id: 1, title: 'Module 1: Introduction to Programming', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Course Overview', completed: true },
-                    { type: 'handout-b', title: 'Getting Started Guide', completed: true },
-                    { type: 'slideshow', title: 'Introduction Slides', completed: true },
-                    { type: 'video', title: 'Welcome Video', completed: true },
-                ]},
-                { id: 2, title: 'Module 2: Variables and Data Types', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Variables Explained', completed: true },
-                    { type: 'handout-b', title: 'Data Types Reference', completed: true },
-                    { type: 'slideshow', title: 'Variables & Types Slides', completed: true },
-                    { type: 'video', title: 'Coding Demo: Variables', completed: true },
-                ]},
-                { id: 3, title: 'Module 3: Control Structures', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'If-Else Statements', completed: true },
-                    { type: 'handout-b', title: 'Loops Guide', completed: true },
-                    { type: 'slideshow', title: 'Control Flow Slides', completed: true },
-                    { type: 'video', title: 'Loop Examples Video', completed: true },
-                ]},
-                { id: 4, title: 'Module 4: Functions and Methods', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Functions Basics', completed: true },
-                    { type: 'handout-b', title: 'Method Parameters', completed: true },
-                    { type: 'slideshow', title: 'Functions Slides', completed: true },
-                    { type: 'video', title: 'Function Demo', completed: true },
-                ]},
-                { id: 5, title: 'Module 5: Arrays and Collections', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Arrays Introduction', completed: true },
-                    { type: 'handout-b', title: 'List Operations', completed: true },
-                    { type: 'slideshow', title: 'Collections Slides', completed: true },
-                    { type: 'video', title: 'Array Demo', completed: true },
-                ]},
-                { id: 6, title: 'Module 6: Object-Oriented Programming', status: 'in-progress', contents: [
-                    { type: 'handout-a', title: 'OOP Concepts', completed: true },
-                    { type: 'handout-b', title: 'Classes and Objects', completed: true },
-                    { type: 'slideshow', title: 'OOP Slides', completed: false },
-                    { type: 'video', title: 'OOP Demo', completed: false },
-                ]},
-                { id: 7, title: 'Module 7: File Handling', status: 'locked', contents: [
-                    { type: 'handout-a', title: 'File I/O Basics', completed: false },
-                    { type: 'slideshow', title: 'File Operations', completed: false },
-                ]},
-                { id: 8, title: 'Module 8: Final Project', status: 'locked', contents: [
-                    { type: 'handout-a', title: 'Project Guidelines', completed: false },
-                    { type: 'video', title: 'Project Overview', completed: false },
-                ]},
+                {
+                    id: 1, title: 'Module 1: Introduction to Programming', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Course Overview', completed: true },
+                        { type: 'handout-b', title: 'Getting Started Guide', completed: true },
+                        { type: 'slideshow', title: 'Introduction Slides', completed: true },
+                        { type: 'video', title: 'Welcome Video', completed: true },
+                    ]
+                },
+                {
+                    id: 2, title: 'Module 2: Variables and Data Types', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Variables Explained', completed: true },
+                        { type: 'handout-b', title: 'Data Types Reference', completed: true },
+                        { type: 'slideshow', title: 'Variables & Types Slides', completed: true },
+                        { type: 'video', title: 'Coding Demo: Variables', completed: true },
+                    ]
+                },
+                {
+                    id: 3, title: 'Module 3: Control Structures', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'If-Else Statements', completed: true },
+                        { type: 'handout-b', title: 'Loops Guide', completed: true },
+                        { type: 'slideshow', title: 'Control Flow Slides', completed: true },
+                        { type: 'video', title: 'Loop Examples Video', completed: true },
+                    ]
+                },
+                {
+                    id: 4, title: 'Module 4: Functions and Methods', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Functions Basics', completed: true },
+                        { type: 'handout-b', title: 'Method Parameters', completed: true },
+                        { type: 'slideshow', title: 'Functions Slides', completed: true },
+                        { type: 'video', title: 'Function Demo', completed: true },
+                    ]
+                },
+                {
+                    id: 5, title: 'Module 5: Arrays and Collections', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Arrays Introduction', completed: true },
+                        { type: 'handout-b', title: 'List Operations', completed: true },
+                        { type: 'slideshow', title: 'Collections Slides', completed: true },
+                        { type: 'video', title: 'Array Demo', completed: true },
+                    ]
+                },
+                {
+                    id: 6, title: 'Module 6: Object-Oriented Programming', status: 'in-progress', contents: [
+                        { type: 'handout-a', title: 'OOP Concepts', completed: true },
+                        { type: 'handout-b', title: 'Classes and Objects', completed: true },
+                        { type: 'slideshow', title: 'OOP Slides', completed: false },
+                        { type: 'video', title: 'OOP Demo', completed: false },
+                    ]
+                },
+                {
+                    id: 7, title: 'Module 7: File Handling', status: 'locked', contents: [
+                        { type: 'handout-a', title: 'File I/O Basics', completed: false },
+                        { type: 'slideshow', title: 'File Operations', completed: false },
+                    ]
+                },
+                {
+                    id: 8, title: 'Module 8: Final Project', status: 'locked', contents: [
+                        { type: 'handout-a', title: 'Project Guidelines', completed: false },
+                        { type: 'video', title: 'Project Overview', completed: false },
+                    ]
+                },
             ],
             tasks: [
                 { id: 1, title: 'Assignment 1: Hello World Program', due: 'Nov 10, 2025', status: 'submitted', score: '95/100', category: 'assignment' },
@@ -1024,32 +1040,44 @@ export const loadDemoData = (): void => {
         },
         'euth1': {
             modules: [
-                { id: 1, title: 'Chapter 1: Introduction to Euthenics', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'What is Euthenics?', completed: true },
-                    { type: 'slideshow', title: 'Course Introduction', completed: true },
-                    { type: 'video', title: 'Welcome to Euthenics', completed: true },
-                ]},
-                { id: 2, title: 'Chapter 2: Personal Development', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Self-Improvement Guide', completed: true },
-                    { type: 'handout-b', title: 'Goal Setting Worksheet', completed: true },
-                    { type: 'slideshow', title: 'Personal Growth Slides', completed: true },
-                ]},
-                { id: 3, title: 'Chapter 3: Home Management', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Home Organization Tips', completed: true },
-                    { type: 'video', title: 'Efficient Living Spaces', completed: true },
-                ]},
-                { id: 4, title: 'Chapter 4: Environmental Awareness', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Sustainability Basics', completed: true },
-                    { type: 'slideshow', title: 'Green Living', completed: true },
-                ]},
-                { id: 5, title: 'Chapter 5: Health and Wellness', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Healthy Lifestyle', completed: true },
-                    { type: 'video', title: 'Wellness Tips', completed: true },
-                ]},
-                { id: 6, title: 'Chapter 6: Community Living', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Social Responsibility', completed: true },
-                    { type: 'slideshow', title: 'Community Engagement', completed: true },
-                ]},
+                {
+                    id: 1, title: 'Chapter 1: Introduction to Euthenics', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'What is Euthenics?', completed: true },
+                        { type: 'slideshow', title: 'Course Introduction', completed: true },
+                        { type: 'video', title: 'Welcome to Euthenics', completed: true },
+                    ]
+                },
+                {
+                    id: 2, title: 'Chapter 2: Personal Development', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Self-Improvement Guide', completed: true },
+                        { type: 'handout-b', title: 'Goal Setting Worksheet', completed: true },
+                        { type: 'slideshow', title: 'Personal Growth Slides', completed: true },
+                    ]
+                },
+                {
+                    id: 3, title: 'Chapter 3: Home Management', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Home Organization Tips', completed: true },
+                        { type: 'video', title: 'Efficient Living Spaces', completed: true },
+                    ]
+                },
+                {
+                    id: 4, title: 'Chapter 4: Environmental Awareness', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Sustainability Basics', completed: true },
+                        { type: 'slideshow', title: 'Green Living', completed: true },
+                    ]
+                },
+                {
+                    id: 5, title: 'Chapter 5: Health and Wellness', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Healthy Lifestyle', completed: true },
+                        { type: 'video', title: 'Wellness Tips', completed: true },
+                    ]
+                },
+                {
+                    id: 6, title: 'Chapter 6: Community Living', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Social Responsibility', completed: true },
+                        { type: 'slideshow', title: 'Community Engagement', completed: true },
+                    ]
+                },
             ],
             tasks: [
                 { id: 1, title: 'Reflection Paper 1: Personal Goals', due: 'Nov 8, 2025', status: 'submitted', score: '92/100', category: 'journal' },
@@ -1059,77 +1087,107 @@ export const loadDemoData = (): void => {
         },
         'itc': {
             modules: [
-                { id: 1, title: 'Module 1: What is Computing?', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Computing Basics', completed: true },
-                    { type: 'slideshow', title: 'History of Computing', completed: true },
-                ]},
-                { id: 2, title: 'Module 2: Hardware Components', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'CPU and Memory', completed: true },
-                    { type: 'video', title: 'Inside a Computer', completed: true },
-                ]},
-                { id: 3, title: 'Module 3: Software Fundamentals', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Operating Systems', completed: true },
-                    { type: 'slideshow', title: 'Software Types', completed: true },
-                ]},
-                { id: 4, title: 'Module 4: Networking Basics', status: 'in-progress', contents: [
-                    { type: 'handout-a', title: 'Internet Fundamentals', completed: true },
-                    { type: 'video', title: 'How Networks Work', completed: false },
-                ]},
-                { id: 5, title: 'Module 5: Cybersecurity', status: 'locked', contents: [
-                    { type: 'handout-a', title: 'Security Basics', completed: false },
-                ]},
+                {
+                    id: 1, title: 'Module 1: What is Computing?', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Computing Basics', completed: true },
+                        { type: 'slideshow', title: 'History of Computing', completed: true },
+                    ]
+                },
+                {
+                    id: 2, title: 'Module 2: Hardware Components', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'CPU and Memory', completed: true },
+                        { type: 'video', title: 'Inside a Computer', completed: true },
+                    ]
+                },
+                {
+                    id: 3, title: 'Module 3: Software Fundamentals', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Operating Systems', completed: true },
+                        { type: 'slideshow', title: 'Software Types', completed: true },
+                    ]
+                },
+                {
+                    id: 4, title: 'Module 4: Networking Basics', status: 'in-progress', contents: [
+                        { type: 'handout-a', title: 'Internet Fundamentals', completed: true },
+                        { type: 'video', title: 'How Networks Work', completed: false },
+                    ]
+                },
+                {
+                    id: 5, title: 'Module 5: Cybersecurity', status: 'locked', contents: [
+                        { type: 'handout-a', title: 'Security Basics', completed: false },
+                    ]
+                },
             ],
         },
         'purcom': {
             modules: [
-                { id: 1, title: 'Lesson 1: Communication Basics', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Communication Process', completed: true },
-                    { type: 'slideshow', title: 'Effective Communication', completed: true },
-                ]},
-                { id: 2, title: 'Lesson 2: Written Communication', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Writing Techniques', completed: true },
-                    { type: 'handout-b', title: 'Grammar Guide', completed: true },
-                ]},
-                { id: 3, title: 'Lesson 3: Oral Communication', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Public Speaking', completed: true },
-                    { type: 'video', title: 'Presentation Skills', completed: true },
-                ]},
-                { id: 4, title: 'Lesson 4: Visual Communication', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Visual Aids', completed: true },
-                    { type: 'slideshow', title: 'Design Principles', completed: true },
-                ]},
-                { id: 5, title: 'Lesson 5: Digital Communication', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Online Etiquette', completed: true },
-                ]},
-                { id: 6, title: 'Lesson 6: Academic Writing', status: 'in-progress', contents: [
-                    { type: 'handout-a', title: 'Research Papers', completed: true },
-                    { type: 'video', title: 'Citation Guide', completed: false },
-                ]},
+                {
+                    id: 1, title: 'Lesson 1: Communication Basics', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Communication Process', completed: true },
+                        { type: 'slideshow', title: 'Effective Communication', completed: true },
+                    ]
+                },
+                {
+                    id: 2, title: 'Lesson 2: Written Communication', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Writing Techniques', completed: true },
+                        { type: 'handout-b', title: 'Grammar Guide', completed: true },
+                    ]
+                },
+                {
+                    id: 3, title: 'Lesson 3: Oral Communication', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Public Speaking', completed: true },
+                        { type: 'video', title: 'Presentation Skills', completed: true },
+                    ]
+                },
+                {
+                    id: 4, title: 'Lesson 4: Visual Communication', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Visual Aids', completed: true },
+                        { type: 'slideshow', title: 'Design Principles', completed: true },
+                    ]
+                },
+                {
+                    id: 5, title: 'Lesson 5: Digital Communication', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Online Etiquette', completed: true },
+                    ]
+                },
+                {
+                    id: 6, title: 'Lesson 6: Academic Writing', status: 'in-progress', contents: [
+                        { type: 'handout-a', title: 'Research Papers', completed: true },
+                        { type: 'video', title: 'Citation Guide', completed: false },
+                    ]
+                },
             ],
         },
         'uts': {
             modules: [
-                { id: 1, title: 'Module 1: The Self', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Philosophical Self', completed: true },
-                    { type: 'slideshow', title: 'Who Am I?', completed: true },
-                ]},
-                { id: 2, title: 'Module 2: Psychological Self', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Personality Theories', completed: true },
-                    { type: 'video', title: 'Self-Awareness', completed: true },
-                ]},
-                { id: 3, title: 'Module 3: Sociological Self', status: 'completed', contents: [
-                    { type: 'handout-a', title: 'Social Identity', completed: true },
-                    { type: 'slideshow', title: 'Society and Self', completed: true },
-                ]},
-                { id: 4, title: 'Module 4: Anthropological Self', status: 'in-progress', contents: [
-                    { type: 'handout-a', title: 'Cultural Identity', completed: true },
-                    { type: 'video', title: 'Culture and Self', completed: false },
-                ]},
+                {
+                    id: 1, title: 'Module 1: The Self', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Philosophical Self', completed: true },
+                        { type: 'slideshow', title: 'Who Am I?', completed: true },
+                    ]
+                },
+                {
+                    id: 2, title: 'Module 2: Psychological Self', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Personality Theories', completed: true },
+                        { type: 'video', title: 'Self-Awareness', completed: true },
+                    ]
+                },
+                {
+                    id: 3, title: 'Module 3: Sociological Self', status: 'completed', contents: [
+                        { type: 'handout-a', title: 'Social Identity', completed: true },
+                        { type: 'slideshow', title: 'Society and Self', completed: true },
+                    ]
+                },
+                {
+                    id: 4, title: 'Module 4: Anthropological Self', status: 'in-progress', contents: [
+                        { type: 'handout-a', title: 'Cultural Identity', completed: true },
+                        { type: 'video', title: 'Culture and Self', completed: false },
+                    ]
+                },
             ],
         },
     };
     localStorage.setItem('demo-course-modules', JSON.stringify(demoCourseModules));
-    
+
     // Demo students with grades and AI grading status
     const demoStudents = [
         { id: 1, name: 'Juan Dela Cruz', status: 'online', role: 'Student', email: 'j.delacruz@university.edu', grade: 92, attendance: 95, submissions: 8, aiGraded: true },
@@ -1146,7 +1204,7 @@ export const loadDemoData = (): void => {
         { id: 12, name: 'Lucia Martinez', status: 'offline', role: 'Student', email: 'l.martinez@university.edu', grade: 87, attendance: 91, submissions: 7, aiGraded: true },
     ];
     localStorage.setItem('demo-students', JSON.stringify(demoStudents));
-    
+
     // Demo teachers/instructors
     const demoTeachers = [
         { id: 1, name: 'David Clarence Del Mundo', title: 'Senior Instructor', email: 'd.delmundo@university.edu', department: 'Computer Science', courses: ['cp1', 'itc'], status: 'online', canAIGrade: true },
@@ -1159,7 +1217,7 @@ export const loadDemoData = (): void => {
         { id: 6, name: 'Mark Joseph Danoy', title: 'PE Instructor', email: 'm.danoy@university.edu', department: 'Physical Education', courses: ['pe1'], status: 'online', canAIGrade: false },
     ];
     localStorage.setItem('demo-teachers', JSON.stringify(demoTeachers));
-    
+
     // Demo student submissions for teacher grading (per course)
     const demoSubmissions = {
         'cp1': [
@@ -1188,12 +1246,12 @@ export const loadDemoData = (): void => {
             { id: 2, studentName: 'Maria Santos', studentId: 'STU001', task: 'Assignment: Network Diagram', submitted: '2025-11-22', status: 'pending', yearLevel: '1st Year', section: 'B', aiScore: null },
         ],
     };
-    
+
     // Save demo submissions per course
     Object.entries(demoSubmissions).forEach(([courseId, submissions]) => {
         localStorage.setItem(`ai-grading-${courseId}`, JSON.stringify(submissions));
     });
-    
+
     // Demo AI grading results
     const demoAIGrades = {
         'cp1': {
@@ -1229,7 +1287,7 @@ export const loadDemoData = (): void => {
         }
     };
     localStorage.setItem('demo-ai-grades', JSON.stringify(demoAIGrades));
-    
+
     // Demo Learning Paths - Additional paths for recommendations
     const demoPaths = [
         {
@@ -1294,10 +1352,10 @@ export const loadDemoData = (): void => {
         },
     ];
     localStorage.setItem('demo-learning-paths', JSON.stringify(demoPaths));
-    
+
     // Set demo mode flag to prevent database sync from overwriting demo data
     localStorage.setItem(STORAGE_KEYS.DEMO_MODE, 'true');
-    
+
     console.log('[Demo] Demo data loaded successfully! Refresh to clear.');
 };
 

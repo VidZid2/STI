@@ -145,10 +145,10 @@ export const SKELETON = {
 export const getColorClasses = (color: string) => {
     const colorMap: Record<string, { bg: string; border: string; text: string; light: string }> = {
         '#3b82f6': { bg: 'bg-blue-500', border: 'border-blue-500/20', text: 'text-blue-500', light: 'bg-blue-500/10' },
-        '#10b981': { bg: 'bg-emerald-500', border: 'border-emerald-500/20', text: 'text-emerald-500', light: 'bg-emerald-500/10' },
-        '#f59e0b': { bg: 'bg-amber-500', border: 'border-amber-500/20', text: 'text-amber-500', light: 'bg-amber-500/10' },
-        '#8b5cf6': { bg: 'bg-violet-500', border: 'border-violet-500/20', text: 'text-violet-500', light: 'bg-violet-500/10' },
-        '#ef4444': { bg: 'bg-red-500', border: 'border-red-500/20', text: 'text-red-500', light: 'bg-red-500/10' },
+        'var(--color-success)': { bg: 'bg-emerald-500', border: 'border-emerald-500/20', text: 'text-emerald-500', light: 'bg-emerald-500/10' },
+        'var(--color-warning)': { bg: 'bg-amber-500', border: 'border-amber-500/20', text: 'text-amber-500', light: 'bg-amber-500/10' },
+        'var(--color-purple)': { bg: 'bg-violet-500', border: 'border-violet-500/20', text: 'text-violet-500', light: 'bg-violet-500/10' },
+        'var(--color-danger)': { bg: 'bg-red-500', border: 'border-red-500/20', text: 'text-red-500', light: 'bg-red-500/10' },
     };
     return colorMap[color] || colorMap['#3b82f6'];
 };

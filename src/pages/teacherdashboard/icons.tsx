@@ -75,6 +75,16 @@ export const ExamIcon: React.FC<IconProps> = ({ size = 20, strokeWidth = 2 }) =>
     </svg>
 );
 
+export const QrCodeIcon: React.FC<IconProps> = ({ size = 20, strokeWidth = 2 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth}>
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <path d="M7 7h.01M18 7h.01M18 18h.01M7 18h.01" />
+    </svg>
+);
+
 // ============================================
 // ACTIVITY ICONS
 // ============================================
@@ -228,6 +238,8 @@ export const getActionIcon = (iconType: string, size = 20): React.ReactNode => {
         case 'grade': return <GradeIcon size={size} />;
         case 'students': return <StudentsIcon size={size} />;
         case 'exam': return <ExamIcon size={size} />;
+        case 'alert': return <AlertTriangleIcon size={size} />;
+        case 'qr': return <QrCodeIcon size={size} />;
         default: return <AssignmentIcon size={size} />;
     }
 };

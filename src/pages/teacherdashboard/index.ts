@@ -20,7 +20,7 @@ export { default as TeacherDashboard } from './TeacherDashboard';
 export { default as CreateAssignmentModal } from './CreateAssignmentModal';
 export { default as StudentListModal } from './StudentListModal';
 export { default as GradeSubmissionsModal } from './GradeSubmissionsModal';
-export { default as InputScoresModal } from './InputScoresModal';
+export { default as ReportAdminModal } from './ReportAdminModal';
 
 // ============================================
 // UI COMPONENTS (Phase 2)
@@ -33,6 +33,8 @@ export {
     ActivityItem,
     DashboardHeader,
     ComingSoonModal,
+    ResponsiveModal,
+    useResponsiveModalStyles,
 } from './components';
 
 // ============================================

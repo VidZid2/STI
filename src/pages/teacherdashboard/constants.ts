@@ -9,40 +9,40 @@
 
 export const COLORS = {
     // Primary colors
-    primary: '#3b82f6',
-    primaryLight: 'rgba(59, 130, 246, 0.15)',
-    primaryBorder: 'rgba(59, 130, 246, 0.2)',
-    
-    // Semantic colors
-    success: '#10b981',
-    successLight: 'rgba(16, 185, 129, 0.15)',
+    primary: 'var(--accent-primary)',
+    primaryLight: 'var(--accent-bg)',
+    primaryBorder: 'var(--ring-focus)',
+
+    // Semantic colors — use CSS variables so themes can override
+    success: 'var(--color-success)',
+    successLight: 'var(--color-success-bg)',
     successBorder: 'rgba(16, 185, 129, 0.2)',
-    
-    warning: '#f59e0b',
-    warningLight: 'rgba(245, 158, 11, 0.15)',
+
+    warning: 'var(--color-warning)',
+    warningLight: 'var(--color-warning-bg)',
     warningBorder: 'rgba(245, 158, 11, 0.2)',
-    
-    danger: '#ef4444',
-    dangerLight: 'rgba(239, 68, 68, 0.15)',
+
+    danger: 'var(--color-danger)',
+    dangerLight: 'var(--color-danger-bg)',
     dangerBorder: 'rgba(239, 68, 68, 0.2)',
-    
-    purple: '#8b5cf6',
-    purpleLight: 'rgba(139, 92, 246, 0.15)',
+
+    purple: 'var(--color-purple)',
+    purpleLight: 'var(--color-purple-bg)',
     purpleBorder: 'rgba(139, 92, 246, 0.2)',
-    
+
     // Text colors
-    textPrimary: '#0f172a',
-    textSecondary: '#64748b',
-    textMuted: '#94a3b8',
-    textLight: '#cbd5e1',
-    
+    textPrimary: 'var(--text-primary)',
+    textSecondary: 'var(--text-secondary)',
+    textMuted: 'var(--text-muted)',
+    textLight: 'var(--text-muted)',
+
     // Background colors
-    background: '#f8fafc',
-    surface: '#ffffff',
+    background: 'var(--bg-canvas)',
+    surface: 'var(--bg-surface)',
     surfaceHover: 'rgba(0, 0, 0, 0.02)',
-    
+
     // Border colors
-    border: 'rgba(0, 0, 0, 0.06)',
+    border: 'var(--border-subtle)',
     borderLight: 'rgba(0, 0, 0, 0.04)',
     borderHover: 'rgba(0, 0, 0, 0.08)',
 } as const;
@@ -135,36 +135,36 @@ export interface ActivityItem {
 }
 
 export const RECENT_ACTIVITY: ActivityItem[] = [
-    { 
-        action: 'New submission', 
-        student: 'Josiah De Asis', 
-        course: 'CP1', 
-        time: '2 hours ago', 
-        color: COLORS.primary,
+    {
+        action: 'New submission',
+        student: 'Josiah De Asis',
+        course: 'CP1',
+        time: '2 hours ago',
+        color: '#3b82f6',
         iconType: 'submission',
     },
-    { 
-        action: 'Assignment due', 
-        student: 'BSIT101A', 
-        course: 'ITC', 
-        time: '5 hours ago', 
-        color: COLORS.warning,
+    {
+        action: 'Assignment due',
+        student: 'BSIT101A',
+        course: 'ITC',
+        time: '5 hours ago',
+        color: '#f59e0b',
         iconType: 'deadline',
     },
-    { 
-        action: 'Quiz completed', 
-        student: 'Divine Acorda', 
-        course: 'CP1', 
-        time: '1 day ago', 
-        color: COLORS.success,
+    {
+        action: 'Quiz completed',
+        student: 'Divine Acorda',
+        course: 'CP1',
+        time: '1 day ago',
+        color: '#10b981',
         iconType: 'quiz',
     },
-    { 
-        action: 'New enrollment', 
-        student: 'Blake Baldivas', 
-        course: 'PURCOM', 
-        time: '2 days ago', 
-        color: COLORS.purple,
+    {
+        action: 'New enrollment',
+        student: 'Blake Baldivas',
+        course: 'PURCOM',
+        time: '2 days ago',
+        color: '#8b5cf6',
         iconType: 'enrollment',
     },
 ];
@@ -241,14 +241,14 @@ export interface QuickAction {
     id: string;
     label: string;
     color: string;
-    iconType: 'assignment' | 'grade' | 'students' | 'exam';
+    iconType: 'assignment' | 'grade' | 'students' | 'exam' | 'alert' | 'qr';
 }
 
 export const QUICK_ACTIONS: QuickAction[] = [
-    { id: 'create-assignment', label: 'Create Assignment', color: COLORS.primary, iconType: 'assignment' },
-    { id: 'grade-submissions', label: 'Grade Submissions', color: COLORS.warning, iconType: 'grade' },
-    { id: 'view-students', label: 'View Student List', color: COLORS.success, iconType: 'students' },
-    { id: 'input-scores', label: 'Input Exam Scores', color: COLORS.purple, iconType: 'exam' },
+    { id: 'create-assignment', label: 'Create Assignment', color: '#3b82f6', iconType: 'assignment' },
+    { id: 'grade-submissions', label: 'Grade Submissions', color: '#f59e0b', iconType: 'grade' },
+    { id: 'view-students', label: 'View Student List', color: '#10b981', iconType: 'students' },
+    { id: 'report-admin', label: 'Report to admin', color: '#ef4444', iconType: 'alert' },
 ];
 
 // ============================================
@@ -264,8 +264,8 @@ export interface StatDefinition {
 }
 
 export const STAT_DEFINITIONS: StatDefinition[] = [
-    { id: 'students', title: 'Total Students', subtitle: 'Across all sections', color: COLORS.primary, iconType: 'students' },
-    { id: 'courses', title: 'Active Courses', subtitle: 'This semester', color: COLORS.success, iconType: 'courses' },
-    { id: 'pending', title: 'Pending Reviews', subtitle: 'Submissions to grade', color: COLORS.warning, iconType: 'pending' },
-    { id: 'average', title: 'Class Average', subtitle: 'Overall performance', color: COLORS.purple, iconType: 'average' },
+    { id: 'students', title: 'Total Students', subtitle: 'Across all sections', color: '#3b82f6', iconType: 'students' },
+    { id: 'courses', title: 'Active Courses', subtitle: 'This semester', color: '#10b981', iconType: 'courses' },
+    { id: 'pending', title: 'Pending Reviews', subtitle: 'Submissions to grade', color: '#f59e0b', iconType: 'pending' },
+    { id: 'average', title: 'Class Average', subtitle: 'Overall performance', color: '#8b5cf6', iconType: 'average' },
 ];

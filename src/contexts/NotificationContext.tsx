@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { getSettings } from '../services/profileService';
+import { supabase } from '../lib/supabase';
 
 // Shared notification types
 export type NotificationCategory = 'all' | 'assignment' | 'quiz' | 'announcement';
@@ -58,7 +59,7 @@ const BASE_NOTIFICATIONS: Notification[] = [
 const getInitialNotifications = (): Notification[] => {
     const readIds = getStoredIds(STORAGE_KEYS.READ_IDS);
     const deletedIds = getStoredIds(STORAGE_KEYS.DELETED_IDS);
-    
+
     return BASE_NOTIFICATIONS
         .filter(n => !deletedIds.has(n.id))
         .map(n => ({
@@ -74,10 +75,10 @@ interface NotificationContextType {
     // All notifications (for toolbar)
     notifications: Notification[];
     setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
-    
+
     // Toast notifications (unread ones shown as popups)
     toastNotifications: Notification[];
-    
+
     // Actions
     dismissNotification: (id: number) => void;
     dismissToast: (id: number) => void;
@@ -86,7 +87,7 @@ interface NotificationContextType {
     clearAllNotifications: () => void;
     clearAllToasts: () => void;
     addNotification: (title: string, message: string, type: 'assignment' | 'grade' | 'announcement' | 'system' | 'warning') => void;
-    
+
     // Counts
     unreadCount: number;
 }
@@ -120,7 +121,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         const deletedIds = getStoredIds(STORAGE_KEYS.DELETED_IDS);
         deletedIds.add(id);
         saveStoredIds(STORAGE_KEYS.DELETED_IDS, deletedIds);
-        
+
         setNotifications(prev => prev.filter(n => n.id !== id));
         setDismissedToastIds(prev => {
             const next = new Set(prev);
@@ -134,13 +135,13 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         // Also mark as read so it won't show again on refresh
         setDismissedToastIds(prev => new Set(prev).add(id));
         // Mark as read when dismissing toast
-        setNotifications(prev => prev.map(n => 
+        setNotifications(prev => prev.map(n =>
             n.id === id ? { ...n, isRead: true } : n
         ));
     }, []);
 
     const markAsRead = useCallback((id: number) => {
-        setNotifications(prev => prev.map(n => 
+        setNotifications(prev => prev.map(n =>
             n.id === id ? { ...n, isRead: true } : n
         ));
     }, []);
@@ -154,7 +155,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         const deletedIds = getStoredIds(STORAGE_KEYS.DELETED_IDS);
         notifications.forEach(n => deletedIds.add(n.id));
         saveStoredIds(STORAGE_KEYS.DELETED_IDS, deletedIds);
-        
+
         setNotifications([]);
         setDismissedToastIds(new Set());
     }, [notifications]);
@@ -169,7 +170,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     const addNotification = useCallback((title: string, message: string, type: 'assignment' | 'grade' | 'announcement' | 'system' | 'warning') => {
         const settings = getSettings();
-        
+
         // Check if this type of notification is enabled (warning always shows)
         if (type === 'assignment' && !settings.assignmentAlerts) return;
         if (type === 'grade' && !settings.gradeUpdates) return;
@@ -195,11 +196,126 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
         setNotifications(prev => [...prev, newNotification]);
 
-        // Browser notification if enabled
         if (settings.pushNotifications && 'Notification' in window && Notification.permission === 'granted') {
             new Notification(title, { body: message, icon: '/vite.svg' });
         }
     }, []);
+
+    // Listen for real-time assignment insertions
+    useEffect(() => {
+        if (!supabase) return;
+
+        // Map course IDs to readable names
+        const COURSES_MAP: Record<string, string> = {
+            'cp1': 'Computer Programming 1',
+            'nstp1': 'NSTP 1',
+            'pe1': 'Physical Education 1',
+            'ppc': 'Philippine Popular Culture',
+            'purcom': 'Purposive Communication',
+            'tcw': 'The Contemporary World',
+            'uts': 'Understanding the Self'
+        };
+
+        const channel = supabase
+            .channel('public:course_tasks')
+            .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'course_tasks' },
+                (payload) => {
+                    const task = payload.new;
+
+                    // Respect the teacher's "Notify Students" toggle
+                    // If notify_students is explicitly false, skip the notification
+                    if (task.notify_students === false) {
+                        console.log(`Notification suppressed for "${task.title}" (notify_students: false)`);
+                        return;
+                    }
+
+                    const courseName = COURSES_MAP[task.course_id] || task.course_id;
+                    const typeLabel = task.type === 'quiz' ? 'Quiz' : 'Assignment';
+
+                    // Build a richer notification message
+                    let message = `A new ${task.type} "${task.title}" has been posted.`;
+                    if (task.due_date) {
+                        const dueDate = new Date(task.due_date);
+                        const formattedDate = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        message += ` Due: ${formattedDate}.`;
+                    }
+                    if (task.points) {
+                        message += ` Worth ${task.points} points.`;
+                    }
+
+                    // Trigger the notification!
+                    addNotification(
+                        `New ${typeLabel} added in ${courseName}`,
+                        message,
+                        task.type === 'quiz' ? 'assignment' : 'assignment'
+                    );
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase?.removeChannel(channel);
+        };
+    }, [addNotification]);
+
+    // Listen for tasks becoming overdue
+    useEffect(() => {
+        const client = supabase;
+        if (!client) return;
+
+        const checkOverdueTasks = async () => {
+            try {
+                const { data: tasks, error } = await client
+                    .from('course_tasks')
+                    .select('id, title, course_id, due_date')
+                    .neq('status', 'draft');
+
+                if (error || !tasks) return;
+
+                // We need to store string IDs for overdue tracking
+                let alreadyNotified: string[] = [];
+                try {
+                    const stored = localStorage.getItem('overdue_notified_keys');
+                    if (stored) alreadyNotified = JSON.parse(stored);
+                } catch (e) { }
+
+                const now = new Date();
+                let hasNewOverdue = false;
+
+                tasks.forEach(task => {
+                    if (task.due_date && !alreadyNotified.includes(task.id)) {
+                        const dueDate = new Date(task.due_date);
+                        if (now > dueDate) {
+                            // If overdue within the last 24 hours, fire notification
+                            const diffHours = (now.getTime() - dueDate.getTime()) / (1000 * 60 * 60);
+                            if (diffHours < 24) {
+                                addNotification(
+                                    `Task Overdue`,
+                                    `Your task "${task.title}" just missed the deadline! Check your Missed Activities.`,
+                                    'warning'
+                                );
+                            }
+                            alreadyNotified.push(task.id);
+                            hasNewOverdue = true;
+                        }
+                    }
+                });
+
+                if (hasNewOverdue) {
+                    localStorage.setItem('overdue_notified_keys', JSON.stringify(alreadyNotified));
+                }
+            } catch (err) {
+                console.error('Error checking overdue tasks', err);
+            }
+        };
+
+        checkOverdueTasks();
+        const intervalId = setInterval(checkOverdueTasks, 60000); // Check every minute
+
+        return () => clearInterval(intervalId);
+    }, [addNotification]);
 
     return (
         <NotificationContext.Provider value={{

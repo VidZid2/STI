@@ -23,6 +23,7 @@ export interface ResponsiveModalProps {
     headerContent?: React.ReactNode;
     footerContent?: React.ReactNode;
     noPadding?: boolean;
+    hideScrollbar?: boolean;
 }
 
 export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
@@ -39,6 +40,7 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
     headerContent,
     footerContent,
     noPadding = false,
+    hideScrollbar = false,
 }) => {
     const { isMobile } = useResponsive();
     const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -96,6 +98,9 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
                     }}
                 >
                     <motion.div
+                        role="dialog"
+                        aria-modal="true"
+                        className="responsive-modal-container"
                         initial={{ opacity: 0, scale: isFullScreen ? 1 : 0.95, y: isFullScreen ? '100%' : 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: isFullScreen ? 1 : 0.95, y: isFullScreen ? '100%' : 20 }}
@@ -116,7 +121,7 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
                     >
                         {/* Header */}
                         {showHeader && (
-                            <div style={{
+                            <div className="responsive-modal-header" style={{
                                 padding: isMobile ? '16px' : '20px 24px',
                                 borderBottom: `1px solid ${COLORS.border}`,
                                 display: 'flex',
@@ -202,18 +207,21 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
                         )}
 
                         {/* Content */}
-                        <div style={{
-                            flex: 1,
-                            overflow: 'auto',
-                            padding: noPadding ? 0 : (isMobile ? '16px' : '24px'),
-                            WebkitOverflowScrolling: 'touch',
-                        }}>
+                        <div 
+                            className={`responsive-modal-content ${hideScrollbar ? 'hide-scrollbar' : ''}`}
+                            style={{
+                                flex: 1,
+                                overflow: 'auto',
+                                padding: noPadding ? 0 : (isMobile ? '16px' : '24px'),
+                                WebkitOverflowScrolling: 'touch',
+                            }}
+                        >
                             {children}
                         </div>
 
                         {/* Footer */}
                         {footerContent && (
-                            <div style={{
+                            <div className="responsive-modal-footer" style={{
                                 padding: isMobile ? '12px 16px' : '16px 24px',
                                 borderTop: `1px solid ${COLORS.border}`,
                                 background: COLORS.surface,

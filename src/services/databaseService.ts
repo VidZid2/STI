@@ -29,20 +29,20 @@ import type { StudyTimeData, StreakData, CourseProgressData } from './studyTimeS
 
 const TABLE_NAME = 'student_stats';
 
-// Get or create student ID (persisted in localStorage)
+// Get or create student ID (persisted in sessionStorage)
 export const getStudentId = (): string => {
-    let studentId = localStorage.getItem('student_id');
+    let studentId = sessionStorage.getItem('student_id');
     if (!studentId) {
         // Generate a unique student ID
         studentId = `student_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-        localStorage.setItem('student_id', studentId);
+        sessionStorage.setItem('student_id', studentId);
     }
     return studentId;
 };
 
 // Set a custom student ID (e.g., from login)
 export const setStudentId = (id: string): void => {
-    localStorage.setItem('student_id', id);
+    sessionStorage.setItem('student_id', id);
 };
 
 interface StudentStats {
@@ -164,7 +164,7 @@ export const initializeDatabase = async (): Promise<StudentStats | null> => {
         console.log('[DB] Supabase not configured - running in offline mode');
         return null;
     }
-    
+
     console.log('[DB] Initializing database connection...');
     return fetchStudentStats();
 };
@@ -183,7 +183,7 @@ export const resetDatabaseToDefaults = async (): Promise<boolean> => {
         const studentId = getStudentId();
         const now = new Date();
         const today = now.toISOString().split('T')[0];
-        
+
         // Fresh study time data (0 hours)
         const freshStudyTime = {
             totalMinutes: 0,
@@ -201,7 +201,7 @@ export const resetDatabaseToDefaults = async (): Promise<boolean> => {
                 return { date: date.toISOString().split('T')[0], minutes: 0 };
             }),
         };
-        
+
         // Fresh streak data (day 1)
         const freshStreak = {
             currentStreak: 1,
@@ -213,7 +213,7 @@ export const resetDatabaseToDefaults = async (): Promise<boolean> => {
                 return { date: date.toISOString().split('T')[0], active: i === 6 };
             }),
         };
-        
+
         // Fresh course progress (0% for all courses)
         const freshCourseProgress = {
             'cp1': { progress: 0, completedModules: 0, totalModules: 8, lastAccessed: now.toISOString(), timeSpent: 0 },
@@ -226,7 +226,7 @@ export const resetDatabaseToDefaults = async (): Promise<boolean> => {
             'tcw': { progress: 0, completedModules: 0, totalModules: 9, lastAccessed: now.toISOString(), timeSpent: 0 },
             'uts': { progress: 0, completedModules: 0, totalModules: 8, lastAccessed: now.toISOString(), timeSpent: 0 },
         };
-        
+
         const { error } = await supabase
             .from(TABLE_NAME)
             .upsert({

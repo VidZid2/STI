@@ -26,7 +26,7 @@ export type TabType = 'modules' | 'assignments' | 'news' | 'students' | 'teacher
 export type ContentType = 'handout-a' | 'handout-b' | 'slideshow' | 'video';
 
 // Task categories
-export type TaskCategory = 'all' | 'assignment' | 'performance' | 'quiz' | 'practical' | 'journal';
+export type TaskCategory = 'all' | 'assignment' | 'performance' | 'quiz' | 'practical' | 'journal' | 'overdue';
 
 // Task category config
 export interface TaskCategoryConfig {
