@@ -1,13 +1,14 @@
-﻿import * as React from 'react';
+import * as React from 'react';
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import { createTask, type CreateTaskInput } from '../../../../services/taskService';
+import { createSubmission } from '../../../../services/submissionService';
 import { getClassmates, type UserAccount } from '../../../../services/usersService';
 import { supabase } from '../../../../lib/supabase';
 import { getCurrentUser } from '../../../../services/authService';
+import { FileUpload } from '../../../../components/ui/file-upload';
 import { useSystemConfig } from '../../../../contexts/SystemConfigContext';
-import { InstructionsModal, SubmitModal, AddTaskModal } from './modals';
 
 interface CourseViewPageProps {
     course: {
@@ -2269,7 +2270,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     // Teacher Tutorial Steps with target selectors for highlighting
     const TEACHER_TUTORIAL_STEPS = [
         {
-            title: 'Welcome to Teacher Mode! ðŸ‘‹',
+            title: 'Welcome to Teacher Mode! 👋',
             description: 'This powerful dashboard helps you manage your class efficiently. Let\'s walk through the key features.',
             icon: (
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -2349,7 +2350,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             autoScroll: true
         },
         {
-            title: 'You\'re Ready! ðŸŽ‰',
+            title: 'You\'re Ready! 🎉',
             description: 'That\'s everything! Start managing your class with confidence. You can always toggle Teacher Mode on/off using the button in the header.\n\nNote: This is still in example phase po sir/ma\'am, so this is purely for visual demonstration but everything is working with functioning systems.',
             icon: (
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -2539,7 +2540,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     };
 
     const displayTitle = course.title.replace(' - SY2526-1T', '');
-    const courseCode = course.subtitle.split(' Â· ')[0];
+    const courseCode = course.subtitle.split(' · ')[0];
 
     // Get instructor based on course
     const getInstructor = () => {
@@ -3368,7 +3369,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                 </div>
                                             )}
 
-                                            {/* Contact Teacher icon â€“ top right corner for overdue tasks */}
+                                            {/* Contact Teacher icon – top right corner for overdue tasks */}
                                             {isOverdue && (
                                                 <div
                                                     style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 2 }}
@@ -3710,7 +3711,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                                                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                                                                         </svg>
-                                                                        Submission closed â€” past due date
+                                                                        Submission closed — past due date
                                                                     </div>
                                                                 );
                                                             }
@@ -3734,7 +3735,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                                     <line x1="12" y1="9" x2="12" y2="13" />
                                                                                     <line x1="12" y1="17" x2="12.01" y2="17" />
                                                                                 </svg>
-                                                                                {daysLate} day{daysLate !== 1 ? 's' : ''} late Â· -{totalPenalty}% penalty applied
+                                                                                {daysLate} day{daysLate !== 1 ? 's' : ''} late · -{totalPenalty}% penalty applied
                                                                             </div>
                                                                         )}
                                                                         {!systemConfig.submissions_enabled ? (
@@ -3790,7 +3791,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                 );
                                                             }
 
-                                                            // Case 4: Normal â€” on time, can submit
+                                                            // Case 4: Normal — on time, can submit
                                                             if (!systemConfig.submissions_enabled) {
                                                                 return (
                                                                     <div style={{
@@ -4243,7 +4244,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             INSTRUCTOR
                                         </span>
                                     </div>
-                                    <p className="text-xs text-zinc-500">{instructor.title} Â· Computer Science Department</p>
+                                    <p className="text-xs text-zinc-500">{instructor.title} · Computer Science Department</p>
                                     <a
                                         href={`mailto:${instructor.email}`}
                                         className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors mt-1"
@@ -4379,7 +4380,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             </motion.span>
                         </div>
                         <p className="text-xs text-zinc-500 font-normal">
-                            {course.instructor || 'Instructor'} Â· BSIT101-A
+                            {course.instructor || 'Instructor'} · BSIT101-A
                         </p>
                     </motion.div>
                 </div>
@@ -5206,7 +5207,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                     </motion.div>
                                                                     <div className="flex-1 min-w-0">
                                                                         <p className="text-sm font-semibold text-zinc-800 truncate">{submission.studentName}</p>
-                                                                        <p className="text-[10px] text-zinc-400">{submission.yearLevel} Year Â· Section {submission.section}</p>
+                                                                        <p className="text-[10px] text-zinc-400">{submission.yearLevel} Year · Section {submission.section}</p>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -5609,7 +5610,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     label: 'MOST IMPROVED',
                                                     value: 'Juan Dela Cruz',
                                                     subtext: '+15% this month',
-                                                    badge: { text: 'â†‘ Rising', color: 'green' },
+                                                    badge: { text: '↑ Rising', color: 'green' },
                                                     lordIcon: 'https://cdn.lordicon.com/excswhey.json',
                                                     iconBg: 'bg-green-50',
                                                     primaryColor: '#22c55e',
@@ -5718,29 +5719,428 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
             {/* Add Task Modal - Clean & Minimalistic */}
             <AnimatePresence>
-                <AddTaskModal
-                    isOpen={showAddTaskModal}
-                    onClose={() => setShowAddTaskModal(false)}
-                    courseId={course.id}
-                    isTeacherMode={isTeacherMode}
-                    selectedTaskType={selectedTaskType}
-                    setSelectedTaskType={setSelectedTaskType}
-                    newTaskTitle={newTaskTitle}
-                    setNewTaskTitle={setNewTaskTitle}
-                    newTaskDescription={newTaskDescription}
-                    setNewTaskDescription={setNewTaskDescription}
-                    newTaskDueDate={newTaskDueDate}
-                    setNewTaskDueDate={setNewTaskDueDate}
-                    newTaskPoints={newTaskPoints}
-                    setNewTaskPoints={setNewTaskPoints}
-                    newTaskInstructions={newTaskInstructions}
-                    setNewTaskInstructions={setNewTaskInstructions}
-                    newTaskFiles={newTaskFiles}
-                    setNewTaskFiles={setNewTaskFiles}
-                    isCreatingTask={isCreatingTask}
-                    setIsCreatingTask={setIsCreatingTask}
-                />
+                {showAddTaskModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 pt-16 pb-4 px-4"
+                        onClick={() => setShowAddTaskModal(false)}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.96 }}
+                            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                            onClick={(e) => e.stopPropagation()}
+                            className={`rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-full ${isTeacherMode ? 'bg-zinc-900' : 'bg-white'
+                                }`}
+                        >
+                            {/* Modal Header - Compact */}
+                            <div className={`flex items-center justify-between px-5 py-4 border-b ${isTeacherMode ? 'border-zinc-700' : 'border-zinc-100'
+                                }`}>
+                                <div>
+                                    <h3 className={`text-base font-semibold ${isTeacherMode ? 'text-white' : 'text-zinc-800'}`}>Create Task</h3>
+                                    <p className={`text-xs mt-0.5 ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Add a new task for your students</p>
+                                </div>
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => setShowAddTaskModal(false)}
+                                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isTeacherMode ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400' : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-600'
+                                        }`}
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                        <path d="M18 6L6 18M6 6l12 12" />
+                                    </svg>
+                                </motion.button>
+                            </div>
+
+                            {/* Modal Body - Scrollable */}
+                            <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                                {/* Task Type - Compact Pills */}
+                                <div>
+                                    <label className={`text-xs font-medium mb-2 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Type</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {TASK_CATEGORIES.filter(c => c.id !== 'all').map((cat) => (
+                                            <motion.button
+                                                key={cat.id}
+                                                whileTap={{ scale: 0.97 }}
+                                                className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all ${selectedTaskType === cat.id
+                                                    ? 'bg-blue-600 text-white'
+                                                    : isTeacherMode
+                                                        ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                                                        : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                                                    }`}
+                                                onClick={() => setSelectedTaskType(cat.id)}
+                                            >
+                                                {cat.icon}
+                                                {cat.label.replace('s', '')}
+                                            </motion.button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Title */}
+                                <div>
+                                    <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                                        Title <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={newTaskTitle}
+                                        onChange={(e) => setNewTaskTitle(e.target.value)}
+                                        placeholder="Enter task title..."
+                                        className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${isTeacherMode
+                                            ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
+                                            : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                            }`}
+                                    />
+                                </div>
+
+                                {/* Due Date and Points */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                                            Due Date <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="datetime-local"
+                                            value={newTaskDueDate}
+                                            onChange={(e) => setNewTaskDueDate(e.target.value)}
+                                            className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${isTeacherMode
+                                                ? 'bg-zinc-800 border-zinc-700 text-white [color-scheme:dark]'
+                                                : 'bg-white border border-zinc-200 text-zinc-900'
+                                                }`}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Points</label>
+                                        <input
+                                            type="number"
+                                            value={newTaskPoints}
+                                            onChange={(e) => setNewTaskPoints(e.target.value)}
+                                            placeholder="100"
+                                            min="0"
+                                            className={`w-full h-10 px-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${isTeacherMode
+                                                ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
+                                                : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                                }`}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Description */}
+                                <div>
+                                    <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Description</label>
+                                    <textarea
+                                        value={newTaskDescription}
+                                        onChange={(e) => setNewTaskDescription(e.target.value)}
+                                        placeholder="Brief description..."
+                                        rows={2}
+                                        className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none ${isTeacherMode
+                                            ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
+                                            : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                            }`}
+                                    />
+                                </div>
+
+                                {/* Instructions */}
+                                <div>
+                                    <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Instructions</label>
+                                    <textarea
+                                        value={newTaskInstructions}
+                                        onChange={(e) => setNewTaskInstructions(e.target.value)}
+                                        placeholder="Detailed instructions for students..."
+                                        rows={3}
+                                        className={`w-full px-3 py-2 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none ${isTeacherMode
+                                            ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500'
+                                            : 'bg-white border border-zinc-200 text-zinc-900 placeholder-zinc-400'
+                                            }`}
+                                    />
+                                </div>
+
+                                {/* File Attachments - Matching Tools Page Style */}
+                                <div>
+                                    <label className={`text-xs font-medium mb-1.5 block ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-600'}`}>Attachments</label>
+                                    <input
+                                        ref={taskFileInputRef}
+                                        type="file"
+                                        multiple
+                                        onChange={(e) => {
+                                            if (e.target.files) {
+                                                setNewTaskFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+                                            }
+                                        }}
+                                        className="hidden"
+                                        accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.zip,.rar,.jpg,.jpeg,.png,.gif"
+                                    />
+
+                                    <motion.div
+                                        onClick={() => newTaskFiles.length === 0 && taskFileInputRef.current?.click()}
+                                        whileHover={newTaskFiles.length === 0 ? "animate" : undefined}
+                                        className={`p-6 group/file block rounded-2xl w-full relative border-2 border-dashed transition-colors ${newTaskFiles.length === 0
+                                            ? isTeacherMode
+                                                ? "cursor-pointer border-zinc-700 hover:border-blue-500 bg-zinc-800/50"
+                                                : "cursor-pointer border-gray-200 hover:border-blue-400 bg-gray-50/50"
+                                            : isTeacherMode
+                                                ? "border-zinc-700 bg-zinc-800/50"
+                                                : "border-gray-200 bg-gray-50/50"
+                                            }`}
+                                    >
+                                        <AnimatePresence mode="wait">
+                                            {newTaskFiles.length === 0 ? (
+                                                <motion.div
+                                                    key="upload-area"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    className="flex flex-col items-center justify-center"
+                                                >
+                                                    <div className="relative w-full max-w-xl mx-auto mb-4 flex items-center justify-center">
+                                                        <div className="relative h-20 w-20">
+                                                            {/* Animated upload icon card with hover effect */}
+                                                            <motion.div
+                                                                variants={{
+                                                                    initial: { x: 0, y: 0 },
+                                                                    animate: { x: 20, y: -20, opacity: 0.9 }
+                                                                }}
+                                                                transition={{
+                                                                    type: "spring",
+                                                                    stiffness: 300,
+                                                                    damping: 20,
+                                                                }}
+                                                                className={`relative group-hover/file:shadow-xl z-40 flex items-center justify-center h-20 w-20 rounded-xl shadow-md ${isTeacherMode
+                                                                    ? 'bg-zinc-800 border border-zinc-600'
+                                                                    : 'bg-white border border-gray-200'
+                                                                    }`}
+                                                            >
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={isTeacherMode ? "#71717a" : "#9ca3af"} strokeWidth="2" strokeLinecap="round">
+                                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                                                    <polyline points="17 8 12 3 7 8" />
+                                                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                                                </svg>
+                                                            </motion.div>
+                                                            {/* Secondary dashed border that appears on hover */}
+                                                            <motion.div
+                                                                variants={{
+                                                                    initial: { opacity: 0 },
+                                                                    animate: { opacity: 1 }
+                                                                }}
+                                                                className="absolute top-0 left-0 opacity-0 border-2 border-dashed border-blue-400 z-30 bg-transparent h-20 w-20 rounded-xl"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <p className={`font-semibold text-sm ${isTeacherMode ? 'text-zinc-300' : 'text-gray-700'}`}>
+                                                        Upload files
+                                                    </p>
+                                                    <p className={`font-normal text-xs mt-1 ${isTeacherMode ? 'text-zinc-500' : 'text-gray-400'}`}>
+                                                        PDF, DOC, PPT, Images (Max 10MB)
+                                                    </p>
+                                                </motion.div>
+                                            ) : (
+                                                <motion.div
+                                                    key="file-list"
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    className="flex flex-col gap-2"
+                                                >
+                                                    <AnimatePresence mode="popLayout">
+                                                        {newTaskFiles.slice(0, 2).map((file, idx) => (
+                                                            <motion.div
+                                                                key={"file" + idx}
+                                                                layout
+                                                                initial={{ opacity: 0, y: 10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                                                transition={{ delay: idx * 0.05, type: "spring", stiffness: 300, damping: 25 }}
+                                                                className={`relative overflow-hidden z-40 flex flex-col items-start justify-start p-3 w-full rounded-xl shadow-sm ${isTeacherMode
+                                                                    ? 'bg-zinc-800 border border-zinc-700'
+                                                                    : 'bg-white border border-gray-200'
+                                                                    }`}
+                                                            >
+                                                                <div className="flex justify-between w-full items-center gap-3">
+                                                                    <p className={`text-sm font-medium truncate flex-1 min-w-0 ${isTeacherMode ? 'text-zinc-200' : 'text-gray-800'}`}>
+                                                                        {file.name}
+                                                                    </p>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className={`rounded-lg px-2 py-0.5 text-xs ${isTeacherMode
+                                                                            ? 'text-emerald-400 bg-emerald-900/30 border border-emerald-800'
+                                                                            : 'text-emerald-600 bg-emerald-50 border border-emerald-200'
+                                                                            }`}>
+                                                                            {(file.size / (1024 * 1024)).toFixed(2)} MB
+                                                                        </span>
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                setNewTaskFiles(prev => prev.filter((_, i) => i !== idx));
+                                                                            }}
+                                                                            className={`p-1 rounded-full transition-colors ${isTeacherMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'
+                                                                                }`}
+                                                                        >
+                                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={isTeacherMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-400 hover:text-gray-600'}>
+                                                                                <path d="M18 6L6 18M6 6l12 12" />
+                                                                            </svg>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div className={`flex text-xs flex-row items-center w-full mt-1.5 justify-between ${isTeacherMode ? 'text-zinc-500' : 'text-gray-500'}`}>
+                                                                    <span className={`px-2 py-0.5 rounded-md ${isTeacherMode ? 'bg-zinc-700' : 'bg-gray-100'}`}>
+                                                                        {file.type || "Unknown type"}
+                                                                    </span>
+                                                                    <span>
+                                                                        modified {new Date(file.lastModified).toLocaleDateString()}
+                                                                    </span>
+                                                                </div>
+                                                            </motion.div>
+                                                        ))}
+
+                                                        {newTaskFiles.length > 2 && (
+                                                            <motion.div
+                                                                key="collapsed-summary"
+                                                                layout
+                                                                initial={{ opacity: 0, y: 10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                                                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                                                                className={`relative z-40 flex items-center p-3 w-full rounded-xl ${isTeacherMode
+                                                                    ? 'bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border border-blue-800'
+                                                                    : 'bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200'
+                                                                    }`}
+                                                            >
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="flex -space-x-2">
+                                                                        {newTaskFiles.slice(2, 5).map((_, i) => (
+                                                                            <motion.div
+                                                                                key={i}
+                                                                                initial={{ scale: 0, opacity: 0 }}
+                                                                                animate={{ scale: 1, opacity: 1 }}
+                                                                                transition={{ delay: i * 0.1 }}
+                                                                                className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-sm ${isTeacherMode
+                                                                                    ? 'bg-zinc-800 border border-blue-700'
+                                                                                    : 'bg-white border border-blue-200'
+                                                                                    }`}
+                                                                            >
+                                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round">
+                                                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                                                    <polyline points="14 2 14 8 20 8" />
+                                                                                </svg>
+                                                                            </motion.div>
+                                                                        ))}
+                                                                    </div>
+                                                                    <div className="text-left">
+                                                                        <p className={`text-xs font-medium ${isTeacherMode ? 'text-blue-400' : 'text-blue-700'}`}>
+                                                                            +{newTaskFiles.length - 2} more {newTaskFiles.length - 2 === 1 ? 'file' : 'files'}
+                                                                        </p>
+                                                                        <p className={`text-[10px] ${isTeacherMode ? 'text-blue-500' : 'text-blue-500'}`}>
+                                                                            {(newTaskFiles.slice(2).reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(2)} MB total
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+
+                                                    <motion.button
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: 0.1 }}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            taskFileInputRef.current?.click();
+                                                        }}
+                                                        className={`w-full py-2.5 px-4 rounded-xl border-2 border-dashed text-sm font-medium hover:border-blue-400 hover:text-blue-500 transition-colors mt-1 ${isTeacherMode
+                                                            ? 'border-zinc-600 text-zinc-400'
+                                                            : 'border-gray-300 text-gray-500'
+                                                            }`}
+                                                    >
+                                                        + Add more files
+                                                    </motion.button>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </motion.div>
+                                </div>
+                            </div>
+
+                            {/* Modal Footer - Compact */}
+                            <div className={`px-5 py-3 border-t flex items-center justify-end gap-2 ${isTeacherMode ? 'border-zinc-700' : 'border-zinc-100'
+                                }`}>
+                                <motion.button
+                                    whileTap={{ scale: 0.97 }}
+                                    onClick={() => {
+                                        setShowAddTaskModal(false);
+                                        setNewTaskTitle('');
+                                        setNewTaskDescription('');
+                                        setNewTaskDueDate('');
+                                        setNewTaskPoints('100');
+                                        setNewTaskInstructions('');
+                                        setNewTaskFiles([]);
+                                    }}
+                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${isTeacherMode
+                                        ? 'text-zinc-400 hover:bg-zinc-800'
+                                        : 'text-zinc-600 hover:bg-zinc-100'
+                                        }`}
+                                >
+                                    Cancel
+                                </motion.button>
+                                <motion.button
+                                    whileTap={{ scale: 0.97 }}
+                                    disabled={!newTaskTitle || !newTaskDueDate || isCreatingTask}
+                                    onClick={async () => {
+                                        setIsCreatingTask(true);
+                                        try {
+                                            const taskInput: CreateTaskInput = {
+                                                courseId: course.id,
+                                                type: (selectedTaskType === 'all' || selectedTaskType === 'overdue') ? 'assignment' : selectedTaskType,
+                                                title: newTaskTitle,
+                                                description: newTaskDescription,
+                                                instructions: newTaskInstructions,
+                                                dueDate: newTaskDueDate,
+                                                points: parseInt(newTaskPoints) || 100,
+                                                files: newTaskFiles.length > 0 ? newTaskFiles : undefined
+                                            };
+                                            const createdTask = await createTask(taskInput);
+                                            if (createdTask) {
+                                                console.log('[CourseView] Task created:', createdTask.id);
+                                            }
+                                        } catch (err) {
+                                            console.error('[CourseView] Error:', err);
+                                        } finally {
+                                            setIsCreatingTask(false);
+                                            setShowAddTaskModal(false);
+                                            setNewTaskTitle('');
+                                            setNewTaskDescription('');
+                                            setNewTaskDueDate('');
+                                            setNewTaskPoints('100');
+                                            setNewTaskInstructions('');
+                                            setNewTaskFiles([]);
+                                        }
+                                    }}
+                                    className={`px-4 py-2 text-sm font-semibold text-white rounded-lg transition-all flex items-center gap-1.5 ${!newTaskTitle || !newTaskDueDate || isCreatingTask
+                                        ? 'bg-blue-400 cursor-not-allowed'
+                                        : 'bg-blue-600 hover:bg-blue-700'
+                                        }`}
+                                >
+                                    {isCreatingTask ? (
+                                        <>
+                                            <motion.svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+                                                <path d="M21 12a9 9 0 1 1-6.219-8.56" strokeLinecap="round" />
+                                            </motion.svg>
+                                            Creating...
+                                        </>
+                                    ) : (
+                                        'Create Task'
+                                    )}
+                                </motion.button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
             </AnimatePresence>
+
             {/* Floating Action Button */}
             <FloatingActionButton
                 activeTab={activeTab}
@@ -6052,27 +6452,598 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             )}
 
             {/* View Instructions Modal */}
-            <InstructionsModal
-                task={instructionsModalTask}
-                onClose={() => setInstructionsModalTask(null)}
-            />
+            <AnimatePresence>
+                {instructionsModalTask && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-sm"
+                        onClick={() => setInstructionsModalTask(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                            transition={{ type: "spring", duration: 0.4 }}
+                            className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Modal Header */}
+                            <div className="px-8 py-6 flex items-start justify-between bg-white relative border-b border-zinc-200/80">
+                                <div className="pr-8">
+                                    <h3 className="text-2xl font-bold text-zinc-900 tracking-tight mb-1.5">
+                                        {instructionsModalTask.title}
+                                    </h3>
+                                    <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Task Instructions & Details</p>
+                                </div>
+                                <button
+                                    onClick={() => setInstructionsModalTask(null)}
+                                    className="absolute right-6 top-6 p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-full transition-all"
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Modal Content */}
+                            <div className="px-8 pb-8 pt-6 overflow-y-auto custom-scrollbar flex-1 bg-white">
+                                <div className="space-y-6">
+                                    {(instructionsModalTask as any).description && (
+                                        <div className="border border-zinc-200/80 rounded-2xl p-6 bg-zinc-50/30">
+                                            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <circle cx="12" cy="12" r="10" />
+                                                    <line x1="12" y1="16" x2="12" y2="12" />
+                                                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                                                </svg>
+                                                Description
+                                            </h4>
+                                            <div className="text-[15px] text-zinc-700 leading-relaxed whitespace-pre-wrap font-normal">
+                                                {(instructionsModalTask as any).description}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {(instructionsModalTask as any).instructions ? (
+                                        <div className="border border-zinc-200/80 rounded-2xl p-6 bg-zinc-50/30">
+                                            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                                                </svg>
+                                                Detailed Instructions
+                                            </h4>
+                                            <div
+                                                className="text-[15px] text-zinc-700 leading-relaxed whitespace-pre-wrap prose prose-zinc prose-sm max-w-none font-normal"
+                                                dangerouslySetInnerHTML={{ __html: (instructionsModalTask as any).instructions }}
+                                            />
+                                        </div>
+                                    ) : (
+                                        !((instructionsModalTask as any).description) && (
+                                            <div className="flex flex-col items-center justify-center py-12 text-center text-zinc-400">
+                                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-4 opacity-50">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                                    <line x1="9" y1="3" x2="9" y2="21" />
+                                                </svg>
+                                                <p className="text-[15px] font-medium">No additional details provided.</p>
+                                            </div>
+                                        )
+                                    )}
+
+                                    {/* Assignment Rules - show teacher's configured settings */}
+                                    {((instructionsModalTask as any).allowLateSubmission !== undefined ||
+                                        (instructionsModalTask as any).maxAttempts > 1 ||
+                                        (instructionsModalTask as any).rubricEnabled) && (
+                                            <div className="border border-zinc-200/80 rounded-2xl p-6 bg-zinc-50/30">
+                                                <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                                    </svg>
+                                                    Assignment Rules
+                                                </h4>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                    {/* Late Submission Policy */}
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '10px',
+                                                        padding: '10px 14px',
+                                                        borderRadius: '12px',
+                                                        background: (instructionsModalTask as any).allowLateSubmission
+                                                            ? 'rgba(245, 158, 11, 0.08)'
+                                                            : 'rgba(239, 68, 68, 0.06)',
+                                                        border: (instructionsModalTask as any).allowLateSubmission
+                                                            ? '1px solid rgba(245, 158, 11, 0.15)'
+                                                            : '1px solid rgba(239, 68, 68, 0.12)',
+                                                    }}>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                            stroke={(instructionsModalTask as any).allowLateSubmission ? '#f59e0b' : '#ef4444'}
+                                                            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <circle cx="12" cy="12" r="10" />
+                                                            <polyline points="12 6 12 12 16 14" />
+                                                        </svg>
+                                                        <div>
+                                                            <div style={{
+                                                                fontSize: '13px',
+                                                                fontWeight: 600,
+                                                                color: (instructionsModalTask as any).allowLateSubmission ? '#92400e' : '#991b1b',
+                                                            }}>
+                                                                {(instructionsModalTask as any).allowLateSubmission
+                                                                    ? 'Late submissions allowed'
+                                                                    : 'No late submissions'}
+                                                            </div>
+                                                            {(instructionsModalTask as any).allowLateSubmission && (instructionsModalTask as any).latePenalty > 0 && (
+                                                                <div style={{ fontSize: '11px', color: '#b45309', marginTop: '2px' }}>
+                                                                    {(instructionsModalTask as any).latePenalty}% penalty per day late
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Max Attempts */}
+                                                    {(instructionsModalTask as any).maxAttempts > 1 && (
+                                                        <div style={{
+                                                            padding: '10px 14px',
+                                                            borderRadius: '12px',
+                                                            background: 'rgba(59, 130, 246, 0.06)',
+                                                            border: '1px solid rgba(59, 130, 246, 0.12)',
+                                                        }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <polyline points="1 4 1 10 7 10" />
+                                                                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                                                                </svg>
+                                                                <div>
+                                                                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#1e40af' }}>
+                                                                        {(instructionsModalTask as any).maxAttempts} attempts allowed
+                                                                    </div>
+                                                                    <div style={{ fontSize: '11px', color: '#3b82f6', marginTop: '2px' }}>
+                                                                        {(() => {
+                                                                            const used = (instructionsModalTask as any).submissionCount || 0;
+                                                                            const max = (instructionsModalTask as any).maxAttempts || 1;
+                                                                            const remaining = Math.max(0, max - used);
+                                                                            if (used === 0) return `You have ${max} attempts remaining`;
+                                                                            if (remaining === 0) return '⚠ No attempts remaining';
+                                                                            return `${used} used · ${remaining} remaining`;
+                                                                        })()}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Rubric Criteria Display */}
+                                                    {(instructionsModalTask as any).rubricEnabled && (
+                                                        <div style={{
+                                                            padding: '14px',
+                                                            borderRadius: '12px',
+                                                            background: 'rgba(16, 185, 129, 0.06)',
+                                                            border: '1px solid rgba(16, 185, 129, 0.12)',
+                                                        }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: (instructionsModalTask as any).rubricCriteria?.length > 0 ? '12px' : '0' }}>
+                                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                                                    <line x1="3" y1="9" x2="21" y2="9" />
+                                                                    <line x1="9" y1="21" x2="9" y2="9" />
+                                                                </svg>
+                                                                <div style={{ fontSize: '13px', fontWeight: 600, color: '#065f46' }}>
+                                                                    Graded with rubric
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Show actual rubric criteria if available */}
+                                                            {(instructionsModalTask as any).rubricCriteria?.length > 0 && (
+                                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                                    {((instructionsModalTask as any).rubricCriteria as any[]).map((criterion: any, idx: number) => (
+                                                                        <div key={criterion.id || idx} style={{
+                                                                            padding: '10px 12px',
+                                                                            borderRadius: '8px',
+                                                                            background: 'rgba(255, 255, 255, 0.7)',
+                                                                            border: '1px solid rgba(16, 185, 129, 0.1)',
+                                                                        }}>
+                                                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: criterion.description ? '4px' : '0' }}>
+                                                                                <span style={{ fontSize: '12px', fontWeight: 600, color: '#334155' }}>
+                                                                                    {criterion.name}
+                                                                                </span>
+                                                                                <span style={{
+                                                                                    fontSize: '11px',
+                                                                                    fontWeight: 600,
+                                                                                    padding: '2px 8px',
+                                                                                    borderRadius: '6px',
+                                                                                    background: 'rgba(16, 185, 129, 0.1)',
+                                                                                    color: '#10b981',
+                                                                                }}>
+                                                                                    {criterion.points} pts
+                                                                                </span>
+                                                                            </div>
+                                                                            {criterion.description && (
+                                                                                <p style={{ fontSize: '11px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>
+                                                                                    {criterion.description}
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                </div>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="px-8 py-5 flex justify-end gap-3 bg-white border-t border-zinc-100/50">
+                                <motion.button
+                                    whileHover={{ scale: 1.02, backgroundColor: 'rgba(244, 244, 245, 1)' }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => setInstructionsModalTask(null)}
+                                    className="px-6 py-2.5 text-sm font-semibold text-zinc-600 bg-zinc-50 border border-zinc-200 rounded-xl transition-all"
+                                >
+                                    Close
+                                </motion.button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* ======================= SUBMIT ASSIGNMENT MODAL ======================= */}
             {createPortal(
-                <SubmitModal
-                    task={submitModalTask}
-                    submissionText={submissionText}
-                    setSubmissionText={setSubmissionText}
-                    submissionFiles={submissionFiles}
-                    setSubmissionFiles={setSubmissionFiles}
-                    isSubmitting={isSubmitting}
-                    setIsSubmitting={setIsSubmitting}
-                    submitSuccess={submitSuccess}
-                    setSubmitSuccess={setSubmitSuccess}
-                    onClose={() => setSubmitModalTask(null)}
-                    onSubmitSuccess={fetchSupabaseTasks}
-                    onAddSubmission={(sub) => setSubmissions((prev: any[]) => [...prev, sub])}
-                />,
+                <AnimatePresence>
+                    {submitModalTask && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            onClick={() => {
+                                if (!isSubmitting) {
+                                    setSubmitModalTask(null);
+                                    setSubmissionText('');
+                                    setSubmissionFiles([]);
+                                    setSubmitSuccess(false);
+                                }
+                            }}
+                            style={{
+                                position: 'fixed', inset: 0, zIndex: 99999,
+                                background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(8px)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                padding: '24px',
+                            }}
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                                transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+                                onClick={(e) => e.stopPropagation()}
+                                style={{
+                                    width: '100%', maxWidth: '520px',
+                                    background: document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff',
+                                    borderRadius: '20px',
+                                    boxShadow: '0 25px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.05)',
+                                    overflow: 'hidden',
+                                    display: 'flex', flexDirection: 'column' as const,
+                                }}
+                            >
+                                {/* Success State */}
+                                {submitSuccess ? (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        style={{ padding: '48px 32px', textAlign: 'center' as const }}
+                                    >
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 0.1 }}
+                                            style={{
+                                                width: '90px', height: '90px', borderRadius: '50%',
+                                                background: document.documentElement.classList.contains('dark') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                margin: '0 auto 24px',
+                                                boxShadow: document.documentElement.classList.contains('dark') ? 'inset 0 0 20px rgba(16, 185, 129, 0.05)' : 'inset 0 0 20px rgba(16, 185, 129, 0.1)',
+                                            }}
+                                        >
+                                            {/* @ts-ignore */}
+                                            <lord-icon
+                                                src="https://cdn.lordicon.com/uvofdfal.json"
+                                                trigger="hover"
+                                                colors="primary:#10b981,secondary:#059669"
+                                                style={{ width: '64px', height: '64px' }}
+                                            ></lord-icon>
+                                        </motion.div>
+                                        <h3 style={{
+                                            fontSize: '22px', fontWeight: 800, marginBottom: '10px',
+                                            color: document.documentElement.classList.contains('dark') ? '#f1f5f9' : '#0f172a',
+                                        }}>Submission Successful!</h3>
+                                        <p style={{
+                                            fontSize: '14px', marginBottom: '36px', lineHeight: 1.6,
+                                            color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b',
+                                            maxWidth: '90%', margin: '0 auto 36px'
+                                        }}>
+                                            Your assignment has been submitted to your teacher for grading. You'll be notified once it's graded.
+                                        </p>
+                                        <motion.button
+                                            whileHover={{
+                                                scale: 1.02,
+                                                boxShadow: '0 6px 20px rgba(16, 185, 129, 0.25)',
+                                            }}
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={() => {
+                                                setSubmitModalTask(null);
+                                                setSubmitSuccess(false);
+                                                setSubmissionText('');
+                                                setSubmissionFiles([]);
+                                                fetchSupabaseTasks(); // Refresh task list to show updated status
+                                            }}
+                                            style={{
+                                                margin: '0 auto',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '6px',
+                                                padding: '10px 32px',
+                                                background: document.documentElement.classList.contains('dark') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.08)',
+                                                color: '#10b981',
+                                                border: `1px solid ${document.documentElement.classList.contains('dark') ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.2)'}`,
+                                                borderRadius: '10px',
+                                                fontSize: '14px',
+                                                fontWeight: 600,
+                                                cursor: 'pointer',
+                                            }}
+                                        >
+                                            Done
+                                        </motion.button>
+                                    </motion.div>
+                                ) : (
+                                    <>
+                                        {/* Header */}
+                                        <div style={{
+                                            padding: '24px 28px 0',
+                                            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+                                        }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1 }}>
+                                                <div style={{
+                                                    width: '48px', height: '48px', borderRadius: '14px',
+                                                    background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)',
+                                                    flexShrink: 0,
+                                                }}>
+                                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M22 2L11 13" />
+                                                        <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <h2 style={{
+                                                        fontSize: '17px', fontWeight: 700, margin: 0, lineHeight: 1.3,
+                                                        color: document.documentElement.classList.contains('dark') ? '#f1f5f9' : '#0f172a',
+                                                    }}>Submit Assignment</h2>
+                                                    <p style={{
+                                                        fontSize: '12px', margin: 0, marginTop: '2px',
+                                                        color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b',
+                                                    }}>{submitModalTask?.title}</p>
+                                                </div>
+                                            </div>
+                                            <motion.button
+                                                whileHover={{ scale: 1.1, backgroundColor: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)' }}
+                                                whileTap={{ scale: 0.9 }}
+                                                onClick={() => {
+                                                    setSubmitModalTask(null);
+                                                    setSubmissionText('');
+                                                    setSubmissionFiles([]);
+                                                }}
+                                                style={{
+                                                    width: '32px', height: '32px', borderRadius: '10px',
+                                                    border: 'none', background: 'transparent',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    cursor: 'pointer', flexShrink: 0,
+                                                    color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#94a3b8',
+                                                }}
+                                            >
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                                </svg>
+                                            </motion.button>
+                                        </div>
+
+                                        {/* Task Info Badges */}
+                                        <div style={{
+                                            padding: '16px 28px',
+                                            display: 'flex', gap: '8px', flexWrap: 'wrap' as const,
+                                        }}>
+                                            <span style={{
+                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
+                                                background: document.documentElement.classList.contains('dark') ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
+                                                color: '#3b82f6',
+                                            }}>
+                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                    <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+                                                </svg>
+                                                {submitModalTask?.due}
+                                            </span>
+                                            <span style={{
+                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
+                                                background: document.documentElement.classList.contains('dark') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.08)',
+                                                color: '#10b981',
+                                            }}>
+                                                {(submitModalTask as any)?.points || 100} pts
+                                            </span>
+                                            {((submitModalTask as any)?.maxAttempts || 1) > 1 && (
+                                                <span style={{
+                                                    display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                                    padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
+                                                    background: document.documentElement.classList.contains('dark') ? 'rgba(0, 61, 165, 0.15)' : 'rgba(0, 61, 165, 0.08)',
+                                                    color: '#003DA5',
+                                                }}>
+                                                    {((submitModalTask as any)?.maxAttempts || 1) - ((submitModalTask as any)?.submissionCount || 0)} attempt{((submitModalTask as any)?.maxAttempts || 1) - ((submitModalTask as any)?.submissionCount || 0) !== 1 ? 's' : ''} left
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Divider */}
+                                        <div style={{
+                                            height: '1px', margin: '0 28px',
+                                            background: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                                        }} />
+
+                                        {/* Submission Content */}
+                                        <div style={{ padding: '20px 28px', flex: 1 }}>
+                                            {/* Text Area */}
+                                            <label style={{
+                                                display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '8px',
+                                                color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b',
+                                                textTransform: 'uppercase' as const, letterSpacing: '0.5px',
+                                            }}>
+                                                Your Answer / Comments
+                                            </label>
+                                            <textarea
+                                                value={submissionText}
+                                                onChange={(e) => setSubmissionText(e.target.value)}
+                                                placeholder="Type your answer, solution, or any comments here..."
+                                                style={{
+                                                    width: '100%', minHeight: '120px', padding: '14px 16px',
+                                                    borderRadius: '14px', border: `1.5px solid ${document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+                                                    background: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.05)' : 'rgba(248, 250, 252, 1)',
+                                                    color: document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#1e293b',
+                                                    fontSize: '14px', lineHeight: 1.6, resize: 'vertical' as const,
+                                                    outline: 'none', fontFamily: 'inherit',
+                                                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                                                }}
+                                                onFocus={(e) => {
+                                                    e.currentTarget.style.borderColor = '#3b82f6';
+                                                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                                                }}
+                                                onBlur={(e) => {
+                                                    e.currentTarget.style.borderColor = document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)';
+                                                    e.currentTarget.style.boxShadow = 'none';
+                                                }}
+                                            />
+
+                                            {/* File Attachments Section */}
+                                            <div style={{ marginTop: '16px' }}>
+                                                <label style={{
+                                                    display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '8px',
+                                                    color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b',
+                                                    textTransform: 'uppercase' as const, letterSpacing: '0.5px',
+                                                }}>
+                                                    Attachments
+                                                </label>
+
+                                                <FileUpload
+                                                    files={submissionFiles}
+                                                    onChange={setSubmissionFiles}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Footer */}
+                                        <div style={{
+                                            padding: '16px 28px 24px',
+                                            display: 'flex', gap: '10px', justifyContent: 'flex-end',
+                                            borderTop: `1px solid ${document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'}`,
+                                        }}>
+                                            <motion.button
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                onClick={() => {
+                                                    setSubmitModalTask(null);
+                                                    setSubmissionText('');
+                                                    setSubmissionFiles([]);
+                                                }}
+                                                disabled={isSubmitting}
+                                                style={{
+                                                    padding: '10px 22px', borderRadius: '12px', fontSize: '13px', fontWeight: 600,
+                                                    border: `1px solid ${document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)'}`,
+                                                    background: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.05)' : '#f8fafc',
+                                                    color: document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b',
+                                                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                                                    opacity: isSubmitting ? 0.5 : 1,
+                                                }}
+                                            >
+                                                Cancel
+                                            </motion.button>
+
+                                            <motion.button
+                                                whileHover={!isSubmitting && (submissionText.trim() || submissionFiles.length > 0) ? { scale: 1.02, boxShadow: '0 8px 24px rgba(59, 130, 246, 0.3)' } : {}}
+                                                whileTap={!isSubmitting && (submissionText.trim() || submissionFiles.length > 0) ? { scale: 0.98 } : {}}
+                                                disabled={isSubmitting || (!submissionText.trim() && submissionFiles.length === 0)}
+                                                onClick={async () => {
+                                                    const currentUser = getCurrentUser();
+                                                    if (!currentUser) return;
+
+                                                    setIsSubmitting(true);
+                                                    try {
+                                                        const result = await createSubmission({
+                                                            taskId: submitModalTask.id,
+                                                            studentId: currentUser.student_id || currentUser.id,
+                                                            studentName: currentUser.full_name,
+                                                            section: currentUser.section || 'BSIT101A',
+                                                            textContent: submissionText,
+                                                            files: submissionFiles.length > 0 ? submissionFiles : undefined
+                                                        });
+
+                                                        if (result) {
+                                                            setSubmissions((prev: any[]) => [...prev, result as any]);
+                                                            setSubmitSuccess(true);
+                                                        }
+                                                    } catch (err) {
+                                                        console.error('Failed to submit:', err);
+                                                    } finally {
+                                                        setIsSubmitting(false);
+                                                    }
+                                                }}
+                                                style={{
+                                                    padding: '10px 28px', borderRadius: '12px', fontSize: '13px', fontWeight: 700,
+                                                    border: 'none',
+                                                    background: isSubmitting || (!submissionText.trim() && submissionFiles.length === 0)
+                                                        ? (document.documentElement.classList.contains('dark') ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)')
+                                                        : 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                                                    color: '#fff',
+                                                    cursor: isSubmitting || (!submissionText.trim() && submissionFiles.length === 0) ? 'not-allowed' : 'pointer',
+                                                    display: 'flex', alignItems: 'center', gap: '8px',
+                                                    boxShadow: isSubmitting || (!submissionText.trim() && submissionFiles.length === 0)
+                                                        ? 'none'
+                                                        : '0 4px 14px rgba(59, 130, 246, 0.25)',
+                                                }}
+                                            >
+                                                {isSubmitting ? (
+                                                    <>
+                                                        <motion.svg
+                                                            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                                                            animate={{ rotate: 360 }}
+                                                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                                                        >
+                                                            <path d="M21 12a9 9 0 1 1-6.219-8.56" strokeLinecap="round" />
+                                                        </motion.svg>
+                                                        Submitting...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M22 2L11 13" />
+                                                            <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+                                                        </svg>
+                                                        Submit Assignment
+                                                    </>
+                                                )}
+                                            </motion.button>
+                                        </div>
+                                    </>
+                                )}
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>,
                 document.body
             )}
         </motion.div>
