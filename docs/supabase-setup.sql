@@ -2567,8 +2567,8 @@ END $$;
 -- Run this block in Supabase SQL Editor.
 --
 -- New tables:
---   broadcasts   ó system-wide banners (replaces audit_log hack)
---   notifications ó per-user inbox for admin-triggered alerts
+--   broadcasts   ÔøΩ system-wide banners (replaces audit_log hack)
+--   notifications ÔøΩ per-user inbox for admin-triggered alerts
 -- =====================================================
 
 
@@ -2628,7 +2628,7 @@ VALUES (
     'maintenance_window',
     false,
     'Scheduled Maintenance Window',
-    'Upcoming maintenance window ó JSON: {start_time, end_time, reason}',
+    'Upcoming maintenance window ÔøΩ JSON: {start_time, end_time, reason}',
     '{"start_time": null, "end_time": null, "reason": null}'
 ) ON CONFLICT (key) DO NOTHING;
 
@@ -2677,7 +2677,7 @@ ALTER TABLE audit_log ADD CONSTRAINT audit_log_event_type_check
         'security_alert', 'system_broadcast'
     ));
 
--- Fix 2: Real RLS policy ó users can only read/update their own notifications
+-- Fix 2: Real RLS policy ÔøΩ users can only read/update their own notifications
 -- Drop the permissive catch-all and replace with targeted policies
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
@@ -2707,7 +2707,7 @@ CREATE POLICY "Users update own notifications" ON notifications
 
 
 -- ==============================================================================
--- FIX: broadcasts RLS ó remove conflicting policies, replace with clean set
+-- FIX: broadcasts RLS ÔøΩ remove conflicting policies, replace with clean set
 -- ==============================================================================
 
 ALTER TABLE broadcasts ENABLE ROW LEVEL SECURITY;
@@ -2734,7 +2734,7 @@ CREATE POLICY "Admins manage broadcasts" ON broadcasts
 
 
 -- ==============================================================================
--- FIX: audit_log RLS ó restrict reads to admin role only
+-- FIX: audit_log RLS ÔøΩ restrict reads to admin role only
 -- ==============================================================================
 
 ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
@@ -2753,7 +2753,7 @@ CREATE POLICY "Admins read audit_log" ON audit_log
         )
     );
 
--- Anyone (system) can insert audit log entries ó needed for client-side logging
+-- Anyone (system) can insert audit log entries ÔøΩ needed for client-side logging
 DROP POLICY IF EXISTS "System insert audit_log" ON audit_log;
 CREATE POLICY "System insert audit_log" ON audit_log
     FOR INSERT WITH CHECK (true);
@@ -2805,3 +2805,67 @@ DROP POLICY IF EXISTS "Users update own notifications" ON notifications;
 CREATE POLICY "Users update own notifications" ON notifications
     FOR UPDATE USING (true) WITH CHECK (true);
 
+
+
+-- =====================================================
+-- PHASE 2 PATCHES (Student Dashboard Upgrade)
+-- Run these after the main setup above.
+-- SAFE TO RE-RUN ‚Äî all use IF NOT EXISTS / ADD COLUMN IF NOT EXISTS
+-- =====================================================
+
+-- PATCH 1: Add is_typing to group_members
+-- chatService.ts calls .update({ is_typing: isTyping }) ‚Äî column was missing.
+ALTER TABLE group_members ADD COLUMN IF NOT EXISTS is_typing BOOLEAN DEFAULT false;
+CREATE INDEX IF NOT EXISTS idx_group_members_is_typing ON group_members(group_id, is_typing) WHERE is_typing = true;
+
+-- PATCH 2: student_submissions ‚Üí Realtime
+-- CourseViewPage subscribes to live grade updates on this table.
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'student_submissions') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE student_submissions;
+    END IF;
+END $$;
+
+-- PATCH 3: group_members ‚Üí Realtime
+-- groupsService.ts subscribes to online/offline presence on this table.
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'group_members') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE group_members;
+    END IF;
+END $$;
+
+-- PATCH 4: student_goals ‚Üí Realtime (Phase 4 prep)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'student_goals') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE student_goals;
+    END IF;
+END $$;
+
+-- PATCH 5: course_tasks ‚Üí Realtime (Phase 4 prep)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'course_tasks') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE course_tasks;
+    END IF;
+END $$;
+
+-- PATCH 6: goal_progress_history ‚Üí Realtime (Phase 4 prep)
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_publication_tables WHERE pubname = 'supabase_realtime' AND tablename = 'goal_progress_history') THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE goal_progress_history;
+    END IF;
+END $$;
+
+-- Verification ‚Äî every student dashboard table should show its realtime status:
+SELECT
+    t.tablename,
+    CASE WHEN t.rowsecurity THEN '‚úÖ RLS ON' ELSE '‚ùå RLS OFF' END AS rls_status,
+    CASE WHEN pt.tablename IS NOT NULL THEN '‚úÖ Realtime ON' ELSE '‚ö†Ô∏è  Realtime OFF' END AS realtime_status
+FROM pg_tables t
+LEFT JOIN pg_publication_tables pt ON pt.tablename = t.tablename AND pt.pubname = 'supabase_realtime'
+WHERE t.tablename IN (
+    'users','courses','course_tasks','course_enrollments','student_submissions',
+    'student_stats','student_goals','goal_progress_history','study_groups',
+    'group_members','group_messages','group_invites','group_resources',
+    'message_read_receipts','learning_paths','path_progress','term_grades'
+)
+ORDER BY t.tablename;
