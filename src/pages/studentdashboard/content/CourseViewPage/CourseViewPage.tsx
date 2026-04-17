@@ -2,12 +2,9 @@ import * as React from 'react';
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
-import { createTask, type CreateTaskInput } from '../../../../services/taskService';
-import { createSubmission } from '../../../../services/submissionService';
 import { getClassmates, type UserAccount } from '../../../../services/usersService';
 import { supabase } from '../../../../lib/supabase';
 import { getCurrentUser } from '../../../../services/authService';
-import { FileUpload } from '../../../../components/ui/file-upload';
 import { useSystemConfig } from '../../../../contexts/SystemConfigContext';
 import { InstructionsModal, SubmitModal, AddTaskModal } from './modals';
 

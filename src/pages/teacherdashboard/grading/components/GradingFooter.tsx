@@ -21,7 +21,7 @@ const GradingFooter: React.FC<GradingFooterProps> = ({
             {/* Prev / Next */}
             <div className={`flex ${isMobile ? 'gap-1' : 'gap-1.5'}`}>
                 {([
-                    { label: 'Prev', icon: <polyline points="15 18 9 12 15 6" />, enabled: hasPrevious, onClick: onPrevious },
+                    { label: 'Prev', icon: <polyline points="15 18 9 12 15 6" />, enabled: hasPrevious, onClick: onPrevious, iconRight: false },
                     { label: 'Next', icon: <polyline points="9 18 15 12 9 6" />, enabled: hasNext, onClick: onNext, iconRight: true },
                 ] as const).map(({ label, icon, enabled, onClick, iconRight }) => (
                     <motion.button
