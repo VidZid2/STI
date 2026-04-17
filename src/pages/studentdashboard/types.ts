@@ -1,124 +1,49 @@
 /**
- * DashboardPage Types
- * Centralized type definitions for the dashboard
+ * Student Dashboard Type Definitions
+ * Created during Phase 0: Baseline & Safety Verification
+ * 
+ * Purpose: Ensure type safety for routing and prevent string literal bugs
+ * during component extraction phases.
  */
 
-// Notification types
-export interface ToastNotification {
-    id: number;
-    title: string;
-    message: string;
-    type: 'assignment' | 'grade' | 'announcement' | 'system' | 'warning';
+/**
+ * Valid view types for the Student Dashboard
+ * These correspond to the main navigation tabs and content areas
+ */
+export type DashboardView = 
+  | 'home'      // Dashboard overview with widgets
+  | 'tools'     // Academic tools (grammar checker, plagiarism, etc.)
+  | 'course'    // Individual course view (requires selectedCourse)
+  | 'paths'     // Learning paths and course recommendations
+  | 'goals'     // Goal tracking and progress
+  | 'users'     // User management
+  | 'catalog'   // Course catalog browser
+  | 'groups';   // Group collaboration and chat
+
+/**
+ * Type guard to check if a string is a valid DashboardView
+ */
+export function isDashboardView(value: string): value is DashboardView {
+  return [
+    'home',
+    'tools',
+    'course',
+    'paths',
+    'goals',
+    'users',
+    'catalog',
+    'groups'
+  ].includes(value);
 }
 
-export interface NotificationItemProps {
-    notification: ToastNotification;
-    onClose: (id: number) => void;
+/**
+ * Course interface for sidebar navigation and course view
+ * Matches the structure used in getSidebarCoursesWithProgress()
+ */
+export interface DashboardCourse {
+  id: string;
+  title: string;
+  progress: number;
+  color: string;
+  // Add other course properties as needed during extraction
 }
-
-export interface GroupedNotificationProps {
-    notifications: ToastNotification[];
-    onClearAll: () => void;
-    onViewAll: () => void;
-}
-
-// Course types
-export interface SidebarCourse {
-    id: string;
-    title: string;
-    subtitle: string;
-    image: string;
-    progress: number;
-}
-
-export interface SelectedCourse {
-    id: string;
-    title: string;
-    subtitle: string;
-    image: string;
-    progress: number;
-}
-
-// Weather types
-export interface WeatherData {
-    temperature: number;
-    condition: string;
-    humidity: number;
-    windSpeed: number;
-    location: string;
-    icon: 'sunny' | 'cloudy' | 'rainy' | 'stormy' | 'night' | 'partly-cloudy';
-}
-
-// Calendar types
-export interface CalendarDay {
-    day: number;
-    isCurrentMonth: boolean;
-    isToday: boolean;
-    date: Date;
-}
-
-export interface CalendarData {
-    days: CalendarDay[];
-    monthName: string;
-}
-
-// Todo types
-export interface TodoItem {
-    id: string;
-    text: string;
-    completed: boolean;
-    createdAt: string;
-}
-
-// Study insights types
-export interface StudyInsights {
-    dailyData: { date: string; minutes: number; dayName: string }[];
-    totalWeekMinutes: number;
-    avgDailyMinutes: number;
-    bestDay: { name: string; minutes: number } | null;
-    trend: 'up' | 'down' | 'stable';
-    trendPercent: number;
-}
-
-// Grade predictor types
-export interface GradePrediction {
-    predictedGrade: number;
-    letterGrade: string;
-    confidence: number;
-    breakdown: { name: string; progress: number; contribution: number }[];
-    lastUpdated?: string;
-}
-
-// Achievement types
-export interface Achievement {
-    id: string;
-    name: string;
-    icon: string;
-    rarity: string;
-}
-
-export interface AchievementStats {
-    total: number;
-    unlocked: number;
-    percentage: number;
-    recent: Achievement[];
-}
-
-// Widget visibility types
-export interface WidgetVisibility {
-    'mastery-widget': boolean;
-    'calendar-widget': boolean;
-    'todo-widget': boolean;
-    'announcements-widget': boolean;
-    'activity-widget': boolean;
-    'courses-widget': boolean;
-    'quote-widget': boolean;
-    'weather-widget': boolean;
-    'grade-predictor-widget': boolean;
-    'achievements-widget': boolean;
-    [key: string]: boolean;
-}
-
-// View types
-export type DashboardView = 'home' | 'tools' | 'course' | 'paths' | 'goals' | 'users' | 'catalog' | 'groups';
-export type PreviousView = 'home' | 'tools' | 'paths' | 'goals' | 'users' | 'catalog';
