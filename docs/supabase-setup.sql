@@ -1686,31 +1686,29 @@ RETURNS TABLE (
     lowest_score NUMERIC,
     passing_count BIGINT,
     passing_rate NUMERIC
-) AS $$
-DECLARE
-    v_max_score INTEGER;
-    v_passing_score INTEGER;
+) AS $fn_exam_stats$
 BEGIN
-    -- Get exam max and passing scores
-    SELECT e.max_score, e.passing_score INTO v_max_score, v_passing_score
-    FROM exams e WHERE e.id = p_exam_id;
-    
     RETURN QUERY
+    WITH exam_info AS (
+        SELECT e.max_score, e.passing_score
+        FROM exams e WHERE e.id = p_exam_id
+    )
     SELECT 
         COUNT(*) as total_students,
         COUNT(es.score) as graded_count,
         ROUND(AVG(es.score), 1) as avg_score,
         MAX(es.score) as highest_score,
         MIN(es.score) as lowest_score,
-        COUNT(CASE WHEN es.score >= (v_max_score * 0.6) THEN 1 END) as passing_count,
+        COUNT(CASE WHEN es.score >= (ei.max_score * 0.6) THEN 1 END) as passing_count,
         ROUND(
-            (COUNT(CASE WHEN es.score >= (v_max_score * 0.6) THEN 1 END)::NUMERIC / 
+            (COUNT(CASE WHEN es.score >= (ei.max_score * 0.6) THEN 1 END)::NUMERIC / 
             NULLIF(COUNT(es.score), 0)) * 100, 1
         ) as passing_rate
     FROM exam_scores es
+    CROSS JOIN exam_info ei
     WHERE es.exam_id = p_exam_id;
 END;
-$$ LANGUAGE plpgsql;
+$fn_exam_stats$ LANGUAGE plpgsql;
 
 -- Function to bulk upsert scores (for batch operations)
 CREATE OR REPLACE FUNCTION upsert_exam_scores(
@@ -2034,7 +2032,7 @@ CREATE OR REPLACE FUNCTION calculate_exam_grades(
     p_exam_id TEXT,
     p_system_id TEXT DEFAULT 'sti'
 )
-RETURNS INTEGER AS $$
+RETURNS INTEGER AS $fn_calc_grades$
 DECLARE
     v_max_score INTEGER;
     v_count INTEGER := 0;
@@ -2070,7 +2068,7 @@ BEGIN
     
     RETURN v_count;
 END;
-$$ LANGUAGE plpgsql;
+$fn_calc_grades$ LANGUAGE plpgsql;
 
 -- =====================================================
 -- View for exam scores with computed grades
@@ -2399,8 +2397,8 @@ CREATE POLICY "Allow all operations on audit_log" ON audit_log
 -- =====================================================
 -- SUCCESS! Admin Reports, System Config & Audit Log ready.
 -- =====================================================
- 
- -- ==============================================================================
+
+-- ==============================================================================
 -- PHASE 3: ENTERPRISE DATABASE ARCHITECTURE (ADMIN DASHBOARD OPTIMIZATION)
 -- ==============================================================================
 

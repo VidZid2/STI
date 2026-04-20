@@ -28,7 +28,7 @@
 -- Safe to re-run — skips users that already exist in auth.users.
 -- =====================================================
 
-DO $$
+DO $auth_sync$
 DECLARE
     user_record RECORD;
     auth_uid UUID;
@@ -79,7 +79,7 @@ BEGIN
             RAISE NOTICE 'Already exists: % (auth id: %)', user_record.email, auth_uid;
         END IF;
     END LOOP;
-END $$;
+END $auth_sync$;
 
 
 -- =====================================================
