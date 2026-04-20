@@ -24,6 +24,9 @@ import {
     type OfficeHours,
     type UserSortOption,
 } from '../../../../services/usersService';
+import UserAvatar from './components/UserAvatar';
+import RoleIcon from './components/RoleIcon';
+import ActionTooltip from './components/ActionTooltip';
 
 // Custom hook for detecting reduced motion preference
 const useReducedMotion = (): boolean => {
@@ -105,106 +108,8 @@ const getLastSeenText = (lastActive: string | undefined, isOnline: boolean): str
 const USERS_PER_PAGE = 12;
 
 // User Avatar Component with Online Status
-const UserAvatar: React.FC<{ 
-    user: UserAccount; 
-    size?: number; 
-    showOnlineStatus?: boolean;
-    reducedMotion?: boolean;
-}> = ({ 
-    user, 
-    size = 44,
-    showOnlineStatus = true,
-    reducedMotion = false,
-}) => {
-    const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
-    const roleInfo = getRoleInfo(user.role);
-    
-    return (
-        <div style={{ position: 'relative', flexShrink: 0 }} role="img" aria-label={`${user.full_name}'s avatar`}>
-            <motion.div
-                whileHover={reducedMotion ? {} : { scale: 1.05 }}
-                style={{
-                    width: size,
-                    height: size,
-                    borderRadius: '12px',
-                    background: `linear-gradient(135deg, ${roleInfo.color}20 0%, ${roleInfo.color}10 100%)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: size * 0.35,
-                    fontWeight: 600,
-                    color: roleInfo.color,
-                    cursor: 'pointer',
-                }}
-            >
-                {user.profile_image ? (
-                    <img 
-                        src={user.profile_image} 
-                        alt={user.full_name}
-                        style={{ width: '100%', height: '100%', borderRadius: '12px', objectFit: 'cover' }}
-                    />
-                ) : initials}
-            </motion.div>
-            {/* Online Status Indicator */}
-            {showOnlineStatus && (
-                <motion.div
-                    initial={reducedMotion ? { scale: 1 } : { scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 500, damping: 25 }}
-                    style={{
-                        position: 'absolute',
-                        bottom: -2,
-                        right: -2,
-                        width: size * 0.28,
-                        height: size * 0.28,
-                        borderRadius: '50%',
-                        background: user.is_online ? '#10b981' : '#94a3b8',
-                        border: '2px solid white',
-                        boxShadow: user.is_online ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
-                    }}
-                    role="status"
-                    aria-label={user.is_online ? 'Online' : 'Offline'}
-                    title={user.is_online ? 'Online' : 'Offline'}
-                />
-            )}
-        </div>
-    );
-};
-
-
-// Role Icon Component
-const RoleIcon: React.FC<{ role: UserRole; size?: number }> = ({ role, size = 14 }) => {
-    const roleInfo = getRoleInfo(role);
-    
-    const icons: Record<UserRole, React.ReactNode> = {
-        student: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                <path d="M6 12v5c3 3 9 3 12 0v-5" />
-            </svg>
-        ),
-        teacher: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-        ),
-        admin: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-        ),
-        dean: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-        ),
-    };
-    
-    return <div style={{ color: roleInfo.color, display: 'flex', alignItems: 'center' }}>{icons[role]}</div>;
-};
+// UserAvatar — extracted to ./components/UserAvatar.tsx
+// RoleIcon — extracted to ./components/RoleIcon.tsx
 
 // Filter Tabs Component (matching PathsContent style)
 type FilterTab = UserFilter;
@@ -334,66 +239,7 @@ const FilterTabs: React.FC<{
 };
 
 
-// Custom Tooltip Component for Quick Actions
-const ActionTooltip: React.FC<{
-    label: string;
-    children: React.ReactNode;
-}> = ({ label, children }) => {
-    const [isVisible, setIsVisible] = useState(false);
-    
-    return (
-        <div 
-            style={{ position: 'relative', display: 'inline-flex' }}
-            onMouseEnter={() => setIsVisible(true)}
-            onMouseLeave={() => setIsVisible(false)}
-        >
-            {children}
-            <AnimatePresence>
-                {isVisible && (
-                    <div style={{
-                        position: 'absolute',
-                        bottom: '100%',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        marginBottom: '6px',
-                        zIndex: 100,
-                        pointerEvents: 'none',
-                    }}>
-                        <motion.div
-                            initial={{ opacity: 0, y: 4, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                            transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                            style={{
-                                padding: '5px 10px',
-                                background: '#ffffff',
-                                color: '#3b82f6',
-                                fontSize: '11px',
-                                fontWeight: 500,
-                                borderRadius: '6px',
-                                whiteSpace: 'nowrap',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            }}
-                        >
-                            {label}
-                            {/* Tooltip Arrow */}
-                            <div style={{
-                                position: 'absolute',
-                                bottom: '-4px',
-                                left: '50%',
-                                transform: 'translateX(-50%) rotate(45deg)',
-                                width: '8px',
-                                height: '8px',
-                                background: '#ffffff',
-                                boxShadow: '2px 2px 4px rgba(0,0,0,0.05)',
-                            }} />
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
-        </div>
-    );
-};
+// ActionTooltip — extracted to ./components/ActionTooltip.tsx
 
 // Quick Action Button Component
 const QuickActionButton: React.FC<{

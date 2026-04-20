@@ -26,123 +26,14 @@ import {
 } from '../../../../services/goalsService';
 import { COURSES_DATA } from '../../../../services/pathsService';
 import { useNotifications } from '../../../../contexts/NotificationContext';
+import GoalIcon from './components/GoalIcon';
+import ActionTooltip from './components/ActionTooltip';
+import MilestoneIcon from './components/MilestoneIcon';
+import type { MilestoneIconType } from './components/MilestoneIcon';
 
-// Goal Icon Component
-const GoalIcon: React.FC<{ type: GoalType; color: string; size?: number }> = ({ type, color, size = 24 }) => {
-    const icons: Record<GoalType, React.ReactNode> = {
-        study_time: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-            </svg>
-        ),
-        course_completion: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            </svg>
-        ),
-        streak: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
-            </svg>
-        ),
-        grade: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-        ),
-    };
-    return <div style={{ color }}>{icons[type]}</div>;
-};
+// Goal Icon Component — extracted to ./components/GoalIcon.tsx
 
-// Action Button Tooltip Component
-const ActionTooltip: React.FC<{
-    children: React.ReactNode;
-    label: string;
-    color: string;
-}> = ({ children, label, color }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-        <div
-            style={{ 
-                position: 'relative', 
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            {children}
-            <AnimatePresence>
-                {isHovered && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 4, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 2, scale: 0.95 }}
-                        transition={{ duration: 0.15, ease: 'easeOut' }}
-                        style={{
-                            position: 'absolute',
-                            top: '100%',
-                            left: 0,
-                            right: 0,
-                            marginTop: '2px',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            pointerEvents: 'none',
-                            zIndex: 50,
-                        }}
-                    >
-                        <div style={{
-                            position: 'relative',
-                            padding: '4px 10px',
-                            borderRadius: '6px',
-                            background: '#ffffff',
-                            color: color,
-                            border: `1px solid ${color}`,
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            whiteSpace: 'nowrap',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                        }}>
-                            {label}
-                            {/* Arrow */}
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    top: '-6px',
-                                    left: '50%',
-                                    transform: 'translateX(-50%)',
-                                    width: 0,
-                                    height: 0,
-                                    borderLeft: '6px solid transparent',
-                                    borderRight: '6px solid transparent',
-                                    borderBottom: `6px solid ${color}`,
-                                }}
-                            />
-                            {/* Inner arrow for white fill */}
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    top: '-4px',
-                                    left: '50%',
-                                    transform: 'translateX(-50%)',
-                                    width: 0,
-                                    height: 0,
-                                    borderLeft: '5px solid transparent',
-                                    borderRight: '5px solid transparent',
-                                    borderBottom: '5px solid #ffffff',
-                                }}
-                            />
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
-    );
-};
+// Action Button Tooltip Component — extracted to ./components/ActionTooltip.tsx
 
 // Filter tabs type
 type FilterTab = 'all' | 'active' | 'completed';
@@ -2663,12 +2554,13 @@ const ProgressHistoryChart: React.FC<{
     );
 };
 
-// Goal Milestone Badge definitions
+// Milestone Badge Icon Component — extracted to ./components/MilestoneIcon.tsx
+// GoalMilestone type used locally for GOAL_MILESTONES data
 interface GoalMilestone {
     id: string;
     name: string;
     description: string;
-    icon: 'target' | 'trophy' | 'star' | 'flame' | 'rocket' | 'crown' | 'medal' | 'gem';
+    icon: MilestoneIconType;
     color: string;
     requirement: number;
     type: 'created' | 'completed' | 'streak' | 'perfect';
@@ -2683,70 +2575,6 @@ const GOAL_MILESTONES: GoalMilestone[] = [
     { id: 'champion', name: 'Champion', description: 'Complete 10 goals', icon: 'crown', color: '#eab308', requirement: 10, type: 'completed' },
     { id: 'legend', name: 'Legend', description: 'Complete 25 goals', icon: 'gem', color: '#06b6d4', requirement: 25, type: 'completed' },
 ];
-
-// Milestone Badge Icon Component
-const MilestoneIcon: React.FC<{ icon: GoalMilestone['icon']; size?: number }> = ({ icon, size = 16 }) => {
-    const icons: Record<GoalMilestone['icon'], React.ReactNode> = {
-        target: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <circle cx="12" cy="12" r="6" />
-                <circle cx="12" cy="12" r="2" />
-            </svg>
-        ),
-        trophy: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                <path d="M4 22h16" />
-                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-            </svg>
-        ),
-        star: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-        ),
-        flame: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
-            </svg>
-        ),
-        rocket: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
-                <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
-                <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
-            </svg>
-        ),
-        crown: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
-            </svg>
-        ),
-        medal: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" />
-                <path d="M11 12 5.12 2.2" />
-                <path d="m13 12 5.88-9.8" />
-                <path d="M8 7h8" />
-                <circle cx="12" cy="17" r="5" />
-                <path d="M12 18v-2h-.5" />
-            </svg>
-        ),
-        gem: (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 3h12l4 6-10 13L2 9Z" />
-                <path d="M11 3 8 9l4 13 4-13-3-6" />
-                <path d="M2 9h20" />
-            </svg>
-        ),
-    };
-    return <>{icons[icon]}</>;
-};
 
 // Celebration Animation Component - Minimalistic Blue Theme
 const CelebrationAnimation: React.FC<{
