@@ -170,13 +170,14 @@ ORDER BY c.short_title;
 -- PART 5: RLS — users table
 --
 -- Replaces the open "Allow all operations on users" policy
--- with scoped policies:
---   - Authenticated users can read their own profile
---   - Authenticated users can read by email (needed during login
---     when the app fetches the profile after auth.signIn)
---   - Admins and deans can read all profiles
---   - Users can update only their own profile
+-- with scoped policies.
+--
+-- IMPORTANT: Click "Run without RLS" when prompted.
+-- The ALTER TABLE statements below handle RLS explicitly.
 -- =====================================================
+
+-- Ensure RLS is enabled (idempotent)
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
 -- Drop all existing policies on users (clean slate)
 DROP POLICY IF EXISTS "Allow all operations on users"      ON public.users;
@@ -188,16 +189,16 @@ DROP POLICY IF EXISTS "users_update_own_profile"           ON public.users;
 DROP POLICY IF EXISTS "users_update_own"                   ON public.users;
 DROP POLICY IF EXISTS "users_read_all_for_service"         ON public.users;
 
--- Authenticated users can read their own profile (matched by auth.uid())
+-- Authenticated users can read their own profile
 CREATE POLICY "users_read_own_profile"
 ON public.users FOR SELECT TO authenticated
-USING (auth.uid() = id);
+USING ((SELECT auth.uid()) = id);
 
 -- Authenticated users can also read by email
 -- (needed by authService.ts fallback: .eq('email', authData.user.email))
 CREATE POLICY "users_read_by_email"
 ON public.users FOR SELECT TO authenticated
-USING (email = (auth.jwt() ->> 'email'));
+USING (email = (SELECT auth.jwt() ->> 'email'));
 
 -- Admins and deans can read all profiles
 CREATE POLICY "admins_read_all_profiles"
@@ -205,7 +206,7 @@ ON public.users FOR SELECT TO authenticated
 USING (
     EXISTS (
         SELECT 1 FROM public.users
-        WHERE id = auth.uid()
+        WHERE id = (SELECT auth.uid())
           AND role IN ('admin', 'dean')
     )
 );
@@ -216,7 +217,7 @@ ON public.users FOR SELECT TO authenticated
 USING (
     EXISTS (
         SELECT 1 FROM public.users
-        WHERE id = auth.uid()
+        WHERE id = (SELECT auth.uid())
           AND role = 'teacher'
     )
 );
@@ -224,25 +225,20 @@ USING (
 -- Users can update only their own profile
 CREATE POLICY "users_update_own"
 ON public.users FOR UPDATE TO authenticated
-USING (auth.uid() = id)
-WITH CHECK (auth.uid() = id);
+USING ((SELECT auth.uid()) = id)
+WITH CHECK ((SELECT auth.uid()) = id);
 
 
 -- =====================================================
 -- PART 6: RLS — course_tasks + student_submissions
 --
--- course_tasks:
---   - Any authenticated user can read tasks (students need to see their tasks)
---   - Only teachers assigned to a course (via course_enrollments) can write tasks
---   - Admins/deans can write anything
---
--- student_submissions:
---   - Students can read only their own submissions
---   - Teachers can read submissions for tasks in their assigned courses
---   - Teachers can update (grade) submissions in their courses
---   - Students can insert their own submissions
---   - Admins/deans can do everything
+-- IMPORTANT: Click "Run without RLS" when prompted.
+-- ALTER TABLE statements below handle RLS explicitly.
 -- =====================================================
+
+-- Ensure RLS is enabled on both tables
+ALTER TABLE course_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE student_submissions ENABLE ROW LEVEL SECURITY;
 
 -- ─── course_tasks ────────────────────────────────────────────────────────────
 
@@ -263,13 +259,13 @@ ON course_tasks FOR INSERT TO authenticated
 WITH CHECK (
     EXISTS (
         SELECT 1 FROM course_enrollments ce
-        WHERE ce.user_id = auth.uid()
+        WHERE ce.user_id = (SELECT auth.uid())
           AND ce.course_id = course_tasks.course_id
           AND ce.role = 'teacher'
     )
     OR EXISTS (
         SELECT 1 FROM users
-        WHERE id = auth.uid()
+        WHERE id = (SELECT auth.uid())
           AND role IN ('admin', 'dean')
     )
 );
@@ -280,13 +276,13 @@ ON course_tasks FOR UPDATE TO authenticated
 USING (
     EXISTS (
         SELECT 1 FROM course_enrollments ce
-        WHERE ce.user_id = auth.uid()
+        WHERE ce.user_id = (SELECT auth.uid())
           AND ce.course_id = course_tasks.course_id
           AND ce.role = 'teacher'
     )
     OR EXISTS (
         SELECT 1 FROM users
-        WHERE id = auth.uid()
+        WHERE id = (SELECT auth.uid())
           AND role IN ('admin', 'dean')
     )
 );
@@ -305,7 +301,7 @@ CREATE POLICY "students_own_submissions"
 ON student_submissions FOR SELECT TO authenticated
 USING (
     student_id = (
-        SELECT student_id FROM users WHERE id = auth.uid()
+        SELECT student_id FROM users WHERE id = (SELECT auth.uid())
     )
 );
 
@@ -316,14 +312,14 @@ ON student_submissions FOR SELECT TO authenticated
 USING (
     EXISTS (
         SELECT 1 FROM users
-        WHERE id = auth.uid()
+        WHERE id = (SELECT auth.uid())
           AND role IN ('admin', 'dean')
     )
     OR task_id IN (
         SELECT ct.id
         FROM course_tasks ct
         JOIN course_enrollments ce ON ce.course_id = ct.course_id
-        WHERE ce.user_id = auth.uid()
+        WHERE ce.user_id = (SELECT auth.uid())
           AND ce.role = 'teacher'
     )
 );
@@ -336,12 +332,12 @@ USING (
         SELECT ct.id
         FROM course_tasks ct
         JOIN course_enrollments ce ON ce.course_id = ct.course_id
-        WHERE ce.user_id = auth.uid()
+        WHERE ce.user_id = (SELECT auth.uid())
           AND ce.role = 'teacher'
     )
     OR EXISTS (
         SELECT 1 FROM users
-        WHERE id = auth.uid()
+        WHERE id = (SELECT auth.uid())
           AND role IN ('admin', 'dean')
     )
 );
@@ -351,7 +347,7 @@ CREATE POLICY "students_submit"
 ON student_submissions FOR INSERT TO authenticated
 WITH CHECK (
     student_id = (
-        SELECT student_id FROM users WHERE id = auth.uid()
+        SELECT student_id FROM users WHERE id = (SELECT auth.uid())
     )
 );
 
