@@ -1,4 +1,4 @@
-// Deadlines Service - Manages upcoming deadlines with localStorage + Supabase sync
+﻿// Deadlines Service - Manages upcoming deadlines with localStorage + Supabase sync
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getStudentId } from './databaseService';
@@ -40,7 +40,6 @@ export const getDeadlines = (): Deadline[] => {
     // Check if we need to reset to fresh start (no demo data)
     const hasReset = localStorage.getItem(DEADLINES_RESET_KEY);
     if (!hasReset) {
-        console.log('[Deadlines] Resetting to fresh start (no demo data)');
         localStorage.setItem(DEADLINES_RESET_KEY, 'true');
         const defaults = getDefaultDeadlines();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(defaults));
@@ -67,7 +66,7 @@ export const getDeadlines = (): Deadline[] => {
 export const saveDeadlines = (deadlines: Deadline[]): void => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(deadlines));
     // Async save to database (non-blocking)
-    saveDeadlinesToDb(deadlines).catch(console.error);
+    saveDeadlinesToDb(deadlines).catch(() => {});
 };
 
 // Save deadlines to Supabase database
@@ -89,14 +88,10 @@ const saveDeadlinesToDb = async (deadlines: Deadline[]): Promise<boolean> => {
             });
 
         if (error) {
-            console.error('[Deadlines] Error saving to database:', error);
             return false;
         }
-
-        console.log('[Deadlines] Successfully saved to database');
         return true;
     } catch (err) {
-        console.error('[Deadlines] Failed to save:', err);
         return false;
     }
 };
@@ -119,17 +114,14 @@ export const loadDeadlinesFromDb = async (): Promise<Deadline[] | null> => {
             if (error.code === 'PGRST116') {
                 return null; // No record found
             }
-            console.error('[Deadlines] Error loading from database:', error);
             return null;
         }
 
         if (data?.deadlines_data) {
-            console.log('[Deadlines] Loaded from database');
             return data.deadlines_data as Deadline[];
         }
         return null;
     } catch (err) {
-        console.error('[Deadlines] Failed to load:', err);
         return null;
     }
 };

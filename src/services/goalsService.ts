@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Goals Service - Manages learning goals and milestones
  * Connects to Supabase for persistent storage
  * Integrates with study time, courses, and streak data
@@ -12,6 +12,7 @@ import {
     // getCompletedCoursesCount, // Available for future use
 } from './studyTimeService';
 import { getGradePredictionSync } from './gradePredictorService';
+import { getStudentId } from './databaseService';
 
 // Goal types
 export type GoalType = 'study_time' | 'course_completion' | 'streak' | 'grade';
@@ -46,16 +47,6 @@ export interface GoalWithProgress extends Goal {
     days_remaining?: number;
     is_overdue: boolean;
 }
-
-// Get current student ID from session
-const getStudentId = (): string => {
-    const userData = sessionStorage.getItem('user_data');
-    if (userData) {
-        const user = JSON.parse(userData);
-        return user.student_id || user.id || 'demo-student';
-    }
-    return 'demo-student';
-};
 
 // Goal type configurations
 export const goalTypeConfig: Record<GoalType, { label: string; icon: string; color: string; defaultUnit: string }> = {
@@ -112,7 +103,6 @@ export const fetchGoals = async (): Promise<GoalWithProgress[]> => {
             .order('created_at', { ascending: false });
 
         if (error) {
-            console.error('Error fetching goals:', error);
             return getDefaultGoals();
         }
 
@@ -122,7 +112,6 @@ export const fetchGoals = async (): Promise<GoalWithProgress[]> => {
 
         return data.map(transformGoal);
     } catch (err) {
-        console.error('Error in fetchGoals:', err);
         return getDefaultGoals();
     }
 };
@@ -156,13 +145,11 @@ export const createGoal = async (goal: Omit<Goal, 'id' | 'student_id' | 'created
             .single();
 
         if (error) {
-            console.error('Error creating goal:', error);
             return transformGoal(newGoal); // Return local goal in demo mode
         }
 
         return transformGoal(data);
     } catch (err) {
-        console.error('Error in createGoal:', err);
         return transformGoal(newGoal);
     }
 };
@@ -214,13 +201,11 @@ export const updateGoalProgress = async (goalId: string, currentValue: number): 
             .single();
 
         if (error) {
-            console.error('Error updating goal:', error);
             return null;
         }
 
         return transformGoal(data);
     } catch (err) {
-        console.error('Error in updateGoalProgress:', err);
         return null;
     }
 };
@@ -262,13 +247,11 @@ export const updateGoalStatus = async (goalId: string, status: GoalStatus): Prom
             .single();
 
         if (error) {
-            console.error('Error updating goal status:', error);
             return null;
         }
 
         return transformGoal(data);
     } catch (err) {
-        console.error('Error in updateGoalStatus:', err);
         return null;
     }
 };
@@ -290,13 +273,11 @@ export const deleteGoal = async (goalId: string): Promise<boolean> => {
             .eq('id', goalId);
 
         if (error) {
-            console.error('Error deleting goal:', error);
             return false;
         }
 
         return true;
     } catch (err) {
-        console.error('Error in deleteGoal:', err);
         return false;
     }
 };
@@ -328,7 +309,6 @@ const getLocalGoals = (): Goal[] => {
             return JSON.parse(stored);
         }
     } catch (err) {
-        console.error('Error reading local goals:', err);
     }
     return [];
 };
@@ -338,7 +318,6 @@ const saveLocalGoals = (goals: Goal[]): void => {
     try {
         localStorage.setItem(GOALS_STORAGE_KEY, JSON.stringify(goals));
     } catch (err) {
-        console.error('Error saving local goals:', err);
     }
 };
 
@@ -466,7 +445,6 @@ export const syncGoalProgress = async (goalId: string): Promise<GoalWithProgress
         
         return transformGoal(goal);
     } catch (err) {
-        console.error('Error syncing goal progress:', err);
         return null;
     }
 };
@@ -575,7 +553,6 @@ const getLocalProgressHistory = (): ProgressHistoryEntry[] => {
             return JSON.parse(stored);
         }
     } catch (err) {
-        console.error('Error reading local progress history:', err);
     }
     return [];
 };
@@ -585,7 +562,6 @@ const saveLocalProgressHistory = (history: ProgressHistoryEntry[]): void => {
     try {
         localStorage.setItem(PROGRESS_HISTORY_STORAGE_KEY, JSON.stringify(history));
     } catch (err) {
-        console.error('Error saving local progress history:', err);
     }
 };
 
@@ -624,13 +600,11 @@ export const recordProgressSnapshot = async (
             .single();
 
         if (error) {
-            console.error('Error recording progress snapshot:', error);
             return entry; // Return local entry as fallback
         }
 
         return data;
     } catch (err) {
-        console.error('Error in recordProgressSnapshot:', err);
         return entry;
     }
 };
@@ -661,13 +635,11 @@ export const getProgressHistory = async (
             .limit(limit);
 
         if (error) {
-            console.error('Error fetching progress history:', error);
             return [];
         }
 
         return data || [];
     } catch (err) {
-        console.error('Error in getProgressHistory:', err);
         return [];
     }
 };
@@ -755,7 +727,6 @@ export const getAggregatedProgressHistory = async (
         
         return dailyData;
     } catch (err) {
-        console.error('Error in getAggregatedProgressHistory:', err);
         return [];
     }
 };

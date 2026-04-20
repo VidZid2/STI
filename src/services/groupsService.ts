@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Groups Service - Study Groups Management with Supabase integration
  * Matches the design patterns of usersService, goalsService, pathsService
  */
@@ -127,7 +127,6 @@ export async function fetchGroups(): Promise<GroupWithMembers[]> {
                 return groupsWithMembers;
             }
         } catch (err) {
-            console.warn('Supabase fetch failed, using demo data:', err);
         }
     }
 
@@ -241,7 +240,6 @@ export async function joinGroup(groupId: string): Promise<boolean> {
 
             return !error;
         } catch (err) {
-            console.warn('Failed to join group:', err);
         }
     }
 
@@ -263,7 +261,6 @@ export async function leaveGroup(groupId: string): Promise<boolean> {
 
             return !error;
         } catch (err) {
-            console.warn('Failed to leave group:', err);
         }
     }
 
@@ -304,7 +301,6 @@ export async function createGroup(group: Omit<StudyGroup, 'id' | 'created_at' | 
                 return data;
             }
         } catch (err) {
-            console.warn('Failed to create group:', err);
         }
     }
 
@@ -370,7 +366,6 @@ export async function createInviteLink(groupId: string, expiresInDays?: number, 
                 return data;
             }
         } catch (err) {
-            console.warn('Failed to create invite:', err);
         }
     }
 
@@ -394,7 +389,6 @@ export async function getGroupInvites(groupId: string): Promise<GroupInvite[]> {
                 return data;
             }
         } catch (err) {
-            console.warn('Failed to fetch invites:', err);
         }
     }
     return [];
@@ -464,7 +458,6 @@ export async function joinGroupByInvite(inviteCode: string): Promise<{ success: 
 
             return { success: true, groupId: invite.group_id };
         } catch (err) {
-            console.warn('Failed to join by invite:', err);
             return { success: false, error: 'An error occurred' };
         }
     }
@@ -485,7 +478,6 @@ export async function deactivateInvite(inviteId: string): Promise<boolean> {
 
             return !error;
         } catch (err) {
-            console.warn('Failed to deactivate invite:', err);
         }
     }
     return false;
@@ -504,7 +496,6 @@ export async function togglePinGroup(groupId: string, isPinned: boolean): Promis
 
             return !error;
         } catch (err) {
-            console.warn('Failed to toggle pin:', err);
         }
     }
     return true;
@@ -556,7 +547,6 @@ export async function updateOnlineStatus(isOnline: boolean): Promise<void> {
                 })
                 .eq('user_id', CURRENT_USER_ID);
         } catch (err) {
-            console.warn('Failed to update online status:', err);
         }
     }
 }

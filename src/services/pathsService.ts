@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Learning Paths Service
  * Handles all database operations for learning paths
  */
@@ -261,13 +261,11 @@ export async function getStudentsBySection(section: string): Promise<Student[]> 
             .order('last_name', { ascending: true });
 
         if (error) {
-            console.error('[PathsService] Error fetching students:', error);
             return DEMO_STUDENTS.filter(s => s.section === section);
         }
 
         return data || DEMO_STUDENTS.filter(s => s.section === section);
     } catch (err) {
-        console.error('[PathsService] Exception:', err);
         return DEMO_STUDENTS.filter(s => s.section === section);
     }
 }
@@ -303,7 +301,6 @@ export async function getAllCourses(): Promise<CourseInfo[]> {
             .order('title', { ascending: true });
 
         if (error) {
-            console.error('[PathsService] Error fetching courses:', error);
             return Object.values(COURSES_DATA);
         }
 
@@ -319,7 +316,6 @@ export async function getAllCourses(): Promise<CourseInfo[]> {
             image: course.image || '',
         }));
     } catch (err) {
-        console.error('[PathsService] Exception:', err);
         return Object.values(COURSES_DATA);
     }
 }
@@ -375,7 +371,6 @@ function getDemoPathsFromStorage(): LearningPath[] {
             return [...DEMO_PATHS, ...demoPaths];
         }
     } catch (e) {
-        console.error('[PathsService] Error loading demo paths from storage:', e);
     }
     return DEMO_PATHS;
 }
@@ -394,12 +389,10 @@ export async function getAllPaths(): Promise<LearningPath[]> {
     try {
         // Check if demo mode is active - use localStorage demo paths
         if (isDemoModeActive()) {
-            console.log('[PathsService] Demo mode active - using demo paths');
             return getDemoPathsFromStorage();
         }
         
         if (!isSupabaseConfigured() || !supabase) {
-            console.log('[PathsService] Using demo paths data');
             return DEMO_PATHS;
         }
 
@@ -410,13 +403,11 @@ export async function getAllPaths(): Promise<LearningPath[]> {
             .order('created_at', { ascending: false });
 
         if (error) {
-            console.error('[PathsService] Error fetching paths:', error);
             return DEMO_PATHS;
         }
 
         return data || DEMO_PATHS;
     } catch (err) {
-        console.error('[PathsService] Exception:', err);
         return DEMO_PATHS;
     }
 }
@@ -443,13 +434,11 @@ export async function getPathById(pathId: string): Promise<LearningPath | null> 
             .single();
 
         if (error) {
-            console.error('[PathsService] Error fetching path:', error);
             return DEMO_PATHS.find(p => p.id === pathId) || null;
         }
 
         return data;
     } catch (err) {
-        console.error('[PathsService] Exception:', err);
         return DEMO_PATHS.find(p => p.id === pathId) || null;
     }
 }
@@ -469,13 +458,11 @@ export async function getStudentPathProgress(studentId: string): Promise<PathPro
             .eq('student_id', studentId);
 
         if (error) {
-            console.error('[PathsService] Error fetching progress:', error);
             return Object.values(DEMO_PROGRESS);
         }
 
         return data || Object.values(DEMO_PROGRESS);
     } catch (err) {
-        console.error('[PathsService] Exception:', err);
         return Object.values(DEMO_PROGRESS);
     }
 }
@@ -536,13 +523,11 @@ export async function enrollInPath(pathId: string, studentId: string): Promise<P
             .single();
 
         if (error) {
-            console.error('[PathsService] Error enrolling:', error);
             return null;
         }
 
         return data;
     } catch (err) {
-        console.error('[PathsService] Exception:', err);
         return null;
     }
 }
@@ -574,13 +559,11 @@ export async function updatePathProgress(
             .single();
 
         if (error) {
-            console.error('[PathsService] Error updating progress:', error);
             return null;
         }
 
         return data;
     } catch (err) {
-        console.error('[PathsService] Exception:', err);
         return null;
     }
 }
@@ -644,7 +627,6 @@ export function getUnlockedCourses(): string[] {
             return JSON.parse(saved);
         }
     } catch (e) {
-        console.error('[PathsService] Error loading unlocked courses:', e);
     }
     // Default: first course (cp1) is always unlocked
     return ['cp1'];
@@ -721,8 +703,6 @@ export function unlockNextCourse(
     // Unlock the next course
     const newUnlocked = [...unlocked, nextCourseId];
     saveUnlockedCourses(newUnlocked);
-    
-    console.log(`[PathsService] Unlocked course: ${nextCourseId}`);
     return nextCourseId;
 }
 
@@ -894,7 +874,6 @@ export async function getPathRecommendations(
             .sort((a, b) => b.score - a.score)
             .slice(0, 3);
     } catch (err) {
-        console.error('[PathsService] Error getting recommendations:', err);
         return [];
     }
 }

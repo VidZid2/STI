@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Users Service - Manages user accounts with Supabase integration
  */
 
@@ -298,7 +298,6 @@ export const fetchUsers = async (filter: UserFilter = 'all'): Promise<UserAccoun
         const { data, error } = await query;
 
         if (error) {
-            console.error('[Users] Fetch error:', error);
             return filter === 'all'
                 ? DEMO_USERS
                 : DEMO_USERS.filter(u => u.role === filter);
@@ -330,7 +329,6 @@ export const fetchUsers = async (filter: UserFilter = 'all'): Promise<UserAccoun
             : DEMO_USERS.filter(u => u.role === filter);
         return enhanceWithCurrentUserProfile(fallbackUsers);
     } catch (err) {
-        console.error('[Users] Fetch error:', err);
         const fallbackUsers = filter === 'all'
             ? DEMO_USERS
             : DEMO_USERS.filter(u => u.role === filter);
@@ -395,7 +393,6 @@ export const getClassmates = async (section: string = 'BSIT101A'): Promise<UserA
             .order('full_name', { ascending: true });
 
         if (error) {
-            console.error('[Users] Get classmates error:', error);
             const allClassmates = DEMO_USERS.filter(u => u.role === 'student' && u.section === section);
             return enhanceWithCurrentUserProfile(allClassmates);
         }
@@ -408,7 +405,6 @@ export const getClassmates = async (section: string = 'BSIT101A'): Promise<UserA
         const allClassmates = DEMO_USERS.filter(u => u.role === 'student' && u.section === section);
         return enhanceWithCurrentUserProfile(allClassmates.sort((a, b) => a.full_name.localeCompare(b.full_name)));
     } catch (err) {
-        console.error('[Users] Get classmates error:', err);
         const allClassmates = DEMO_USERS.filter(u => u.role === 'student' && u.section === section);
         return enhanceWithCurrentUserProfile(allClassmates);
     }
@@ -430,13 +426,11 @@ export const getUserById = async (userId: string): Promise<UserAccount | null> =
             .single();
 
         if (error) {
-            console.error('[Users] Get by ID error:', error);
             return null;
         }
 
         return data;
     } catch (err) {
-        console.error('[Users] Get by ID error:', err);
         return null;
     }
 };
@@ -446,7 +440,6 @@ export const getUserById = async (userId: string): Promise<UserAccount | null> =
  */
 export const toggleUserStatus = async (userId: string, isActive: boolean): Promise<boolean> => {
     if (!isSupabaseConfigured() || !supabase) {
-        console.log('[Users] Demo mode - status toggle simulated');
         return true;
     }
 
@@ -457,13 +450,11 @@ export const toggleUserStatus = async (userId: string, isActive: boolean): Promi
             .eq('id', userId);
 
         if (error) {
-            console.error('[Users] Toggle status error:', error);
             return false;
         }
 
         return true;
     } catch (err) {
-        console.error('[Users] Toggle status error:', err);
         return false;
     }
 };
@@ -575,13 +566,11 @@ export const getTeacherCourses = async (teacherName: string): Promise<TeacherCou
             .eq('instructor', teacherName);
 
         if (error) {
-            console.error('[Users] Get teacher courses error:', error);
             return DEMO_COURSES[teacherName] || [];
         }
 
         return data || DEMO_COURSES[teacherName] || [];
     } catch (err) {
-        console.error('[Users] Get teacher courses error:', err);
         return DEMO_COURSES[teacherName] || [];
     }
 };
@@ -626,7 +615,6 @@ export const getUserFavorites = async (studentId: string): Promise<string[]> => 
         localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(data.favorites));
         return data.favorites;
     } catch (err) {
-        console.error('[Users] Get favorites error:', err);
         return favorites;
     }
 };
@@ -664,7 +652,6 @@ export const toggleUserFavorite = async (
                     { onConflict: 'student_id' }
                 );
         } catch (err) {
-            console.error('[Users] Save favorites error:', err);
         }
     }
 

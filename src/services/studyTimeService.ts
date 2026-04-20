@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Study Time Tracking Service
  * Tracks real-time study hours, course progress, and learning statistics
  * 
@@ -140,7 +140,6 @@ export const getStudyTimeData = (): StudyTimeData => {
             };
         }
     } catch (e) {
-        console.error('Failed to load study time data:', e);
     }
     const defaultData = getDefaultStudyTimeData();
     localStorage.setItem(STORAGE_KEYS.STUDY_TIME, JSON.stringify(defaultData));
@@ -153,7 +152,6 @@ export const getStreakData = (): StreakData => {
     const migrated = localStorage.getItem(STORAGE_KEYS.STREAK_MIGRATED_V2);
     if (!migrated) {
         // First time with accurate tracking - reset to fresh start
-        console.log('[Streak] Migrating to accurate date tracking...');
         localStorage.setItem(STORAGE_KEYS.STREAK_MIGRATED_V2, 'true');
         const freshData = getDefaultStreakData();
         localStorage.setItem(STORAGE_KEYS.STREAK_DATA, JSON.stringify(freshData));
@@ -171,7 +169,6 @@ export const getStreakData = (): StreakData => {
             return validatedData;
         }
     } catch (e) {
-        console.error('Failed to load streak data:', e);
     }
     const defaultData = getDefaultStreakData();
     localStorage.setItem(STORAGE_KEYS.STREAK_DATA, JSON.stringify(defaultData));
@@ -202,7 +199,6 @@ export const getCourseProgressData = (): CourseProgressData => {
             return merged;
         }
     } catch (e) {
-        console.error('Failed to load course progress data:', e);
     }
     localStorage.setItem(STORAGE_KEYS.COURSE_PROGRESS, JSON.stringify(DEFAULT_COURSE_PROGRESS));
     return DEFAULT_COURSE_PROGRESS;
@@ -212,14 +208,14 @@ export const getCourseProgressData = (): CourseProgressData => {
 export const saveStudyTimeData = (data: StudyTimeData): void => {
     localStorage.setItem(STORAGE_KEYS.STUDY_TIME, JSON.stringify(data));
     // Async save to database (non-blocking)
-    saveStudyTimeToDb(data).catch(console.error);
+    saveStudyTimeToDb(data).catch(() => {});
 };
 
 // Save streak data (local + database)
 export const saveStreakData = (data: StreakData): void => {
     localStorage.setItem(STORAGE_KEYS.STREAK_DATA, JSON.stringify(data));
     // Async save to database (non-blocking)
-    saveStreakToDb(data).catch(console.error);
+    saveStreakToDb(data).catch(() => {});
 };
 
 // Reset streak data to start fresh (for testing or manual reset)
@@ -295,7 +291,7 @@ const validateStreakHistory = (data: StreakData): StreakData => {
 export const saveCourseProgressData = (data: CourseProgressData): void => {
     localStorage.setItem(STORAGE_KEYS.COURSE_PROGRESS, JSON.stringify(data));
     // Async save to database (non-blocking)
-    saveCourseProgressToDb(data).catch(console.error);
+    saveCourseProgressToDb(data).catch(() => {});
 };
 
 // Start a study session
@@ -394,7 +390,6 @@ export const updateStreak = (): void => {
     // Award XP based on streak tier (daily login bonus)
     const tier = getStreakTier(data.currentStreak);
     addXP(tier.xpBonus);
-    console.log(`[Streak] Day ${data.currentStreak} streak! Awarded ${tier.xpBonus} XP`);
 };
 
 // Get streak tier info based on current streak
@@ -544,16 +539,13 @@ export const initializeTracking = async (): Promise<void> => {
                     });
                     localStorage.setItem(STORAGE_KEYS.COURSE_PROGRESS, JSON.stringify(mergedProgress));
                 }
-                console.log('[StudyTime] Loaded data from database');
             }
 
             // Also load XP data from database
             await initializeXP();
         } catch (err) {
-            console.error('[StudyTime] Failed to load from database:', err);
         }
     } else if (isDemoMode) {
-        console.log('[StudyTime] Demo mode active - skipping database sync');
     }
 
     // Ensure data exists (creates defaults if needed)
@@ -631,9 +623,7 @@ const saveXPToDatabase = async (data: XPData): Promise<void> => {
             }, {
                 onConflict: 'student_id',
             });
-        console.log('[XP] Saved to database');
     } catch (err) {
-        console.error('[XP] Failed to save to database:', err);
     }
 };
 
@@ -652,11 +642,8 @@ const loadXPFromDatabase = async (): Promise<XPData | null> => {
             .single();
 
         if (error || !data?.xp_data) return null;
-
-        console.log('[XP] Loaded from database');
         return data.xp_data as XPData;
     } catch (err) {
-        console.error('[XP] Failed to load from database:', err);
         return null;
     }
 };
@@ -676,7 +663,6 @@ export const getXPData = (): XPData => {
     // Check if we need to start fresh
     const migrated = localStorage.getItem(XP_MIGRATED_KEY);
     if (!migrated) {
-        console.log('[XP] Starting fresh at level 1');
         localStorage.setItem(XP_MIGRATED_KEY, 'true');
         const freshData = getDefaultXPData();
         localStorage.setItem(XP_STORAGE_KEY, JSON.stringify(freshData));
@@ -691,7 +677,6 @@ export const getXPData = (): XPData => {
             return JSON.parse(saved);
         }
     } catch (e) {
-        console.error('Failed to load XP data:', e);
     }
 
     const defaultData = getDefaultXPData();
@@ -782,9 +767,6 @@ export const awardMissingStreakXP = (): void => {
 
         if (totalXPToAward > 0) {
             addXP(totalXPToAward);
-            console.log(
-                `[XP Migration] Awarded ${totalXPToAward} XP for ${streakData.currentStreak}-day streak`
-            );
         }
     }
 
@@ -800,12 +782,10 @@ export const isDemoModeActive = (): boolean => {
 // Clear demo mode and restore normal operation
 export const clearDemoMode = (): void => {
     localStorage.removeItem(STORAGE_KEYS.DEMO_MODE);
-    console.log('[Demo] Demo mode cleared');
 };
 
 // Reset all data to defaults (clears localStorage and database)
 export const resetAllData = async (): Promise<void> => {
-    console.log('[StudyTime] Resetting all data...');
 
     // Clear all localStorage keys (study time service keys)
     Object.values(STORAGE_KEYS).forEach(key => {
@@ -853,13 +833,9 @@ export const resetAllData = async (): Promise<void> => {
         try {
             const { resetDatabaseToDefaults } = await import('./databaseService');
             await resetDatabaseToDefaults();
-            console.log('[StudyTime] Database reset to fresh defaults');
         } catch (err) {
-            console.error('[StudyTime] Failed to reset database:', err);
         }
     }
-
-    console.log('[StudyTime] All data reset successfully (localStorage + Database)');
 };
 
 // Demo data for showcase purposes (temporary, clears on refresh)
@@ -877,7 +853,6 @@ const DEMO_COURSE_PROGRESS: CourseProgressData = {
 
 // Load demo data (temporary - does NOT sync to database, clears on refresh)
 export const loadDemoData = (): void => {
-    console.log('[Demo] Loading demo data...');
 
     const now = new Date();
     const last7Days = Array.from({ length: 7 }, (_, i) => {
@@ -1355,8 +1330,6 @@ export const loadDemoData = (): void => {
 
     // Set demo mode flag to prevent database sync from overwriting demo data
     localStorage.setItem(STORAGE_KEYS.DEMO_MODE, 'true');
-
-    console.log('[Demo] Demo data loaded successfully! Refresh to clear.');
 };
 
 // Export for use in components

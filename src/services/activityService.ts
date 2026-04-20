@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Activity Service for Recent Activity Tracking
  * 
  * Tracks and retrieves recent user activity (course access, materials viewed, etc.)
@@ -41,7 +41,6 @@ export const getRecentActivities = async (limit: number = 5): Promise<ActivityIt
                 return activities.slice(0, limit);
             }
         } catch (err) {
-            console.log('[Activity] Supabase fetch failed, using localStorage');
         }
     }
 
@@ -53,7 +52,6 @@ export const getRecentActivities = async (limit: number = 5): Promise<ActivityIt
             return activities.slice(0, limit);
         }
     } catch {
-        console.log('[Activity] Failed to load from localStorage');
     }
 
     return [];
@@ -100,7 +98,6 @@ export const logActivity = async (activity: Omit<ActivityItem, 'id' | 'timestamp
                     onConflict: 'student_id',
                 });
         } catch (err) {
-            console.log('[Activity] Failed to sync to Supabase:', err);
         }
     }
 };
@@ -191,7 +188,6 @@ export const clearActivities = async (): Promise<void> => {
                 .update({ recent_activity: [] })
                 .eq('student_id', studentId);
         } catch (err) {
-            console.log('[Activity] Failed to clear from Supabase:', err);
         }
     }
 };

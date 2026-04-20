@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Database Service for Study Statistics
  * 
  * Syncs study time, streak, and course progress data to Supabase.
@@ -25,19 +25,23 @@
  */
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { getCurrentUser } from './authService';
 import type { StudyTimeData, StreakData, CourseProgressData } from './studyTimeService';
 
 const TABLE_NAME = 'student_stats';
 
-// Get or create student ID (persisted in sessionStorage)
+// Get current student ID — prefers authenticated user, falls back to sessionStorage, then 'demo-student'
 export const getStudentId = (): string => {
-    let studentId = sessionStorage.getItem('student_id');
-    if (!studentId) {
-        // Generate a unique student ID
-        studentId = `student_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-        sessionStorage.setItem('student_id', studentId);
-    }
-    return studentId;
+    // 1. Try authenticated user first (most reliable)
+    const user = getCurrentUser();
+    if (user?.student_id) return user.student_id;
+
+    // 2. Fall back to sessionStorage (set during login)
+    const stored = sessionStorage.getItem('student_id');
+    if (stored && !stored.startsWith('student_')) return stored; // skip old random IDs
+
+    // 3. Safe demo fallback — never generate random IDs
+    return 'demo-student';
 };
 
 // Set a custom student ID (e.g., from login)
@@ -56,7 +60,6 @@ interface StudentStats {
  */
 export const fetchStudentStats = async (): Promise<StudentStats | null> => {
     if (!isSupabaseConfigured() || !supabase) {
-        console.log('[DB] Supabase not configured, using localStorage');
         return null;
     }
 
@@ -71,17 +74,12 @@ export const fetchStudentStats = async (): Promise<StudentStats | null> => {
         if (error) {
             if (error.code === 'PGRST116') {
                 // No record found - this is okay for new students
-                console.log('[DB] No existing record for student, will create on first save');
                 return null;
             }
-            console.error('[DB] Error fetching stats:', error);
             return null;
         }
-
-        console.log('[DB] Successfully fetched stats from database');
         return data as StudentStats;
     } catch (err) {
-        console.error('[DB] Failed to fetch stats:', err);
         return null;
     }
 };
@@ -108,14 +106,10 @@ export const saveStudentStats = async (stats: Partial<StudentStats>): Promise<bo
             });
 
         if (error) {
-            console.error('[DB] Error saving stats:', error);
             return false;
         }
-
-        console.log('[DB] Successfully saved stats to database');
         return true;
     } catch (err) {
-        console.error('[DB] Failed to save stats:', err);
         return false;
     }
 };
@@ -161,11 +155,8 @@ export const syncToDatabase = async (
  */
 export const initializeDatabase = async (): Promise<StudentStats | null> => {
     if (!isSupabaseConfigured()) {
-        console.log('[DB] Supabase not configured - running in offline mode');
         return null;
     }
-
-    console.log('[DB] Initializing database connection...');
     return fetchStudentStats();
 };
 
@@ -175,7 +166,6 @@ export const initializeDatabase = async (): Promise<StudentStats | null> => {
  */
 export const resetDatabaseToDefaults = async (): Promise<boolean> => {
     if (!isSupabaseConfigured() || !supabase) {
-        console.log('[DB] Supabase not configured, skipping database reset');
         return false;
     }
 
@@ -240,14 +230,10 @@ export const resetDatabaseToDefaults = async (): Promise<boolean> => {
             });
 
         if (error) {
-            console.error('[DB] Error resetting database:', error);
             return false;
         }
-
-        console.log('[DB] Successfully reset database to fresh defaults');
         return true;
     } catch (err) {
-        console.error('[DB] Failed to reset database:', err);
         return false;
     }
 };

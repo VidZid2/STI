@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Chat Service - Group Chat functionality with Supabase
  */
 
@@ -56,22 +56,18 @@ export const uploadAttachments = async (
 ): Promise<FileAttachment[]> => {
     if (!attachments || attachments.length === 0) return [];
 
-    console.log('[ChatService] Uploading', attachments.length, 'attachments to storage...');
-
     const uploadedAttachments = await Promise.all(
         attachments.map(async (att) => {
             // Check if URL is base64 (needs upload)
             if (att.url && att.url.startsWith('data:')) {
                 const result = await uploadFile(groupId, att.name, att.url, att.type);
                 if (result.success && result.url) {
-                    console.log('[ChatService] Uploaded:', att.name, '→', result.url);
                     return {
                         ...att,
                         url: result.url,
                         thumbnail_url: result.url, // Use same URL for thumbnail
                     };
                 } else {
-                    console.warn('[ChatService] Upload failed for:', att.name, result.error);
                     // Keep original base64 as fallback (will work for current session)
                     return att;
                 }
@@ -111,7 +107,6 @@ export const fetchGroupMessages = async (
         if (error) throw error;
         return (data || []).reverse();
     } catch (error) {
-        console.error('Error fetching messages:', error);
         return getMockMessages(groupId);
     }
 };
@@ -144,7 +139,6 @@ export const sendMessage = async (
 
     if (!isSupabaseConfigured()) {
         // Return mock message for demo
-        console.log('[ChatService] Demo mode - returning mock message');
         return createDemoMessage();
     }
 
@@ -162,12 +156,6 @@ export const sendMessage = async (
             thumbnail_url: att.thumbnail_url,
         })) || [];
 
-        console.log('[ChatService] Sending message to Supabase...', {
-            groupId,
-            messageType,
-            attachmentsCount: processedAttachments.length,
-        });
-
         const { data, error } = await supabase!
             .from('group_messages')
             .insert({
@@ -184,12 +172,9 @@ export const sendMessage = async (
             .single();
 
         if (error) {
-            console.error('[ChatService] Supabase error:', error.message, error.details, error.hint);
             // Fall back to demo mode if table doesn't exist
             return createDemoMessage();
         }
-        
-        console.log('[ChatService] Message saved successfully:', data.id);
         
         // Return the saved message but with original attachments for display
         return {
@@ -197,7 +182,6 @@ export const sendMessage = async (
             attachments: attachments, // Use original attachments with full data for display
         };
     } catch (error) {
-        console.error('[ChatService] Error sending message:', error);
         // Fall back to demo mode on any error
         return createDemoMessage();
     }
@@ -219,7 +203,6 @@ export const editMessage = async (
         if (error) throw error;
         return true;
     } catch (error) {
-        console.error('Error editing message:', error);
         return false;
     }
 };
@@ -237,7 +220,6 @@ export const deleteMessage = async (messageId: string): Promise<boolean> => {
         if (error) throw error;
         return true;
     } catch (error) {
-        console.error('Error deleting message:', error);
         return false;
     }
 };
@@ -274,7 +256,6 @@ export const addReaction = async (
         if (error) throw error;
         return true;
     } catch (error) {
-        console.error('Error adding reaction:', error);
         return false;
     }
 };
@@ -322,7 +303,6 @@ export const updateTypingStatus = async (
             .eq('group_id', groupId)
             .eq('user_id', userId);
     } catch (error) {
-        console.error('Error updating typing status:', error);
     }
 };
 
@@ -364,7 +344,6 @@ export interface GroupReport {
 export const reportGroup = async (report: Omit<GroupReport, 'id' | 'status' | 'created_at'>): Promise<{ success: boolean; error?: string }> => {
     if (!isSupabaseConfigured()) {
         // Simulate success for demo mode
-        console.log('[ChatService] Demo mode - Report submitted:', report);
         return { success: true };
     }
 
@@ -384,14 +363,10 @@ export const reportGroup = async (report: Omit<GroupReport, 'id' | 'status' | 'c
             });
 
         if (error) {
-            console.error('[ChatService] Error submitting report:', error);
             return { success: false, error: error.message };
         }
-
-        console.log('[ChatService] Report submitted successfully');
         return { success: true };
     } catch (error) {
-        console.error('[ChatService] Error submitting report:', error);
         return { success: false, error: 'Failed to submit report' };
     }
 };
@@ -426,7 +401,6 @@ export const markMessageAsRead = async (
         if (error) throw error;
         return true;
     } catch (error) {
-        console.error('Error marking message as read:', error);
         return false;
     }
 };
@@ -453,7 +427,6 @@ export const getMessageReadReceipts = async (messageIds: string[]): Promise<Reco
 
         return receipts;
     } catch (error) {
-        console.error('Error fetching read receipts:', error);
         return {};
     }
 };
