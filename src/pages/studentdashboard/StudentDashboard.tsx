@@ -10,22 +10,16 @@ import '../../styles/home-content.css';
 // Component imports
 import { WelcomeModal, SettingsModal } from '../../components/modals';
 import { Confetti } from '../../components/shared';
-import ToolbarExpandable from '../../components/ui/toolbar/ToolbarExpandable';
-import UserProfileDropdown from '../../components/ui/dropdowns/UserProfileDropdown';
-import NotificationBell from '../../components/shared/NotificationBell';
 import MaintenanceBanner from '../../components/shared/MaintenanceBanner';
 import ToolsContent from './content/ToolsContent';
 import HomeContent from './content/HomeContent';
-import { ContainerTextFlip } from '../../components/ui/primitives/container-text-flip';
 import PathsContent from './content/PathsContent';
 import GroupsContent from './content/GroupsContent';
 import GoalsContent from './content/GoalsContent';
 import UsersContent from './content/UsersContent';
 import CatalogContent from './content/CatalogContent';
-import ToolsNavTooltip from '../../components/ui/misc/ToolsNavTooltip';
 import WidgetsToggleButton from '../../components/ui/misc/WidgetsToggleButton';
 import CourseViewPage from './content/CourseViewPage';
-import StreakDropdown from '../../components/ui/dropdowns/StreakDropdown';
 import QuickSettingsDropdown from '../../components/ui/dropdowns/QuickSettingsDropdown';
 import HelpDropdown from '../../components/ui/dropdowns/HelpDropdown';
 import { Dock, DockIcon, DockAutoHide } from '../../components/ui/primitives/dock';
@@ -40,8 +34,7 @@ import { formatDaysUntil, getDeadlineTypeColor } from '../../services/deadlinesS
 import { formatRelativeTime } from '../../services/activityService';
 
 // Extracted modules from local folder
-import { NotificationItem, GroupedNotification, StreakWidget, DashboardIntro, DashboardTutorial } from './components';
-import { CoursesNavItem, HelpNavItem, PathsNavItem } from './nav-items';
+import { NotificationItem, GroupedNotification, StreakWidget, DashboardIntro, DashboardTutorial, DashboardHeader, DashboardSidebar } from './components';
 import { getSidebarCoursesWithProgress, getTodaysQuote } from './utils';
 // COURSE_NAMES available from './constants' if needed
 
@@ -227,390 +220,25 @@ const DashboardPage: React.FC = () => {
             {/* Maintenance countdown banner */}
             <MaintenanceBanner />
             {/* Header */}
-            <header className="header">
-                <div className="header-content">
-                    <div className="header-left">
-                        <motion.button
-                            className="sidebar-toggle"
-                            onClick={toggleSidebar}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <motion.path
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    animate={sidebarActive
-                                        ? { d: "M 5 5 L 19 19" }
-                                        : { d: "M 4 6 L 20 6" }
-                                    }
-                                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                                />
-                                <motion.path
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    animate={sidebarActive
-                                        ? { opacity: 0 }
-                                        : { opacity: 1 }
-                                    }
-                                    d="M 4 12 L 20 12"
-                                    transition={{ duration: 0.2, ease: "easeInOut" }}
-                                />
-                                <motion.path
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    animate={sidebarActive
-                                        ? { d: "M 5 19 L 19 5" }
-                                        : { d: "M 4 18 L 20 18" }
-                                    }
-                                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                                />
-                            </svg>
-                        </motion.button>
-                        <motion.div 
-                            className="logo"
-                            onClick={() => {
-                                setActiveView('home');
-                                setSidebarActive(false);
-                            }}
-                            style={{ cursor: 'pointer' }}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            {/* STI Logo Image */}
-                            <div
-                                className="logo-icon-wrapper"
-                                style={{
-                                    width: 36,
-                                    height: 36,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    borderRadius: 8,
-                                    overflow: 'hidden',
-                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-                                }}
-                            >
-                                <img
-                                    src="/file.svg"
-                                    alt="STI Logo"
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'cover'
-                                    }}
-                                />
-                            </div>
+            {/* Header — extracted to ./components/DashboardHeader.tsx */}
+            <DashboardHeader
+                sidebarActive={sidebarActive}
+                toggleSidebar={toggleSidebar}
+                setActiveView={setActiveView}
+                setSidebarActive={setSidebarActive}
+                isDemoMode={isDemoMode}
+            />
 
-                            {/* Text Logo with ContainerTextFlip */}
-                            <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
-                                <ContainerTextFlip
-                                    words={['eLMS', 'Learn', 'Grow', 'Excel']}
-                                    interval={3000}
-                                    animationDuration={500}
-                                    className="!text-sm !py-1 !px-2 !rounded-md !font-bold"
-                                    textClassName="!text-sm"
-                                />
-                                <span
-                                    style={{
-                                        fontSize: '0.6rem',
-                                        fontWeight: 500,
-                                        color: '#94a3b8',
-                                        letterSpacing: '0.05em',
-                                        textTransform: 'uppercase',
-                                        marginTop: 4
-                                    }}
-                                >
-                                    Learning Portal
-                                </span>
-                            </div>
-                        </motion.div>
-
-                        {/* Divider */}
-                        <div style={{ width: 1, height: 24, backgroundColor: '#e4e4e7', marginLeft: 12, marginRight: 4 }} />
-
-                        {/* Streak Dropdown - next to eLMS logo */}
-                        <StreakDropdown />
-                    </div>
-
-                    <div className="header-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', maxWidth: '600px' }}>
-                    </div>
-
-                    <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        {/* Demo Mode Indicator & Buttons */}
-                        {isDemoMode ? (
-                            <>
-                                {/* Demo Mode Active Badge */}
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        padding: '4px 10px',
-                                        borderRadius: '6px',
-                                        background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-                                        border: '1px solid #f59e0b',
-                                        fontSize: '11px',
-                                        fontWeight: 600,
-                                        color: '#b45309',
-                                    }}
-                                >
-                                    <motion.div
-                                        animate={{ scale: [1, 1.2, 1] }}
-                                        transition={{ duration: 1.5, repeat: Infinity }}
-                                        style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#f59e0b' }}
-                                    />
-                                    DEMO MODE
-                                </motion.div>
-                                {/* Exit Demo Button */}
-                                <motion.button
-                                    onClick={() => {
-                                        import('../../services/studyTimeService').then(({ resetAllData }) => {
-                                            resetAllData();
-                                            window.location.reload();
-                                        });
-                                    }}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        padding: '6px 12px',
-                                        borderRadius: '8px',
-                                        border: '1px solid #fca5a5',
-                                        background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
-                                        color: '#dc2626',
-                                        fontSize: '12px',
-                                        fontWeight: 600,
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s ease',
-                                    }}
-                                    title="Exit demo mode and reset all data"
-                                >
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M18 6L6 18M6 6l12 12" />
-                                    </svg>
-                                    Exit Demo
-                                </motion.button>
-                            </>
-                        ) : (
-                            /* Demo Mode Button - Only show when not in demo mode */
-                            <motion.button
-                                onClick={() => {
-                                    import('../../services/studyTimeService').then(({ loadDemoData }) => {
-                                        loadDemoData();
-                                        window.location.reload();
-                                    });
-                                }}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    padding: '6px 12px',
-                                    borderRadius: '8px',
-                                    border: '1px solid #e5e7eb',
-                                    background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
-                                    color: '#0369a1',
-                                    fontSize: '12px',
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s ease',
-                                }}
-                                title="Load demo data (temporary - clears on refresh)"
-                            >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polygon points="5 3 19 12 5 21 5 3" />
-                                </svg>
-                                Demo
-                            </motion.button>
-                        )}
-                        <ToolbarExpandable />
-                        <NotificationBell />
-                        <UserProfileDropdown />
-                    </div>
-                </div>
-            </header>
-
-            {/* Sidebar Overlay */}
-            <AnimatePresence mode="wait">
-                {sidebarActive && (
-                    <motion.div
-                        className="sidebar-overlay active"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{
-                            duration: 0.35,
-                            ease: [0.4, 0, 0.2, 1]
-                        }}
-                        onClick={() => setSidebarActive(false)}
-                    />
-                )}
-            </AnimatePresence>
-
-            {/* Sidebar */}
-            <AnimatePresence mode="wait">
-                {sidebarActive && (
-                    <motion.aside
-                        className="sidebar active"
-                        initial={{ x: '-100%', opacity: 0.5 }}
-                        animate={{
-                            x: 0,
-                            opacity: 1,
-                            transition: {
-                                type: 'spring',
-                                stiffness: 300,
-                                damping: 30,
-                                mass: 0.8,
-                            }
-                        }}
-                        exit={{
-                            x: '-100%',
-                            opacity: 0,
-                            transition: {
-                                type: 'spring',
-                                stiffness: 400,
-                                damping: 35,
-                                mass: 0.6,
-                            }
-                        }}
-                    >
-                        <nav className="sidebar-nav">
-                            <a href="#" className={`nav-item ${activeView === 'home' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveView('home'); setSidebarActive(false); }}>
-                                <div className="nav-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                                    </svg>
-                                </div>
-                                <div className="nav-content">
-                                    <span className="nav-text">Home</span>
-                                    <span className="nav-description">Dashboard overview</span>
-                                </div>
-                            </a>
-                            <CoursesNavItem
-                                onSidebarClose={() => setSidebarActive(false)}
-                                onCourseSelect={(course) => {
-                                    setSelectedCourse(course);
-                                    setActiveView('course');
-                                    // Log course access activity
-                                    import('../../services/activityService').then(({ logCourseAccess }) => {
-                                        logCourseAccess(course.id, course.title.split(' - ')[0]);
-                                    });
-                                }}
-                                currentCourseId={activeView === 'course' ? selectedCourse?.id : null}
-                            />
-                            <PathsNavItem
-                                onSidebarClose={() => setSidebarActive(false)}
-                                onViewPaths={() => setActiveView('paths')}
-                                isActive={activeView === 'paths'}
-                            />
-                            <a href="#" className={`nav-item ${activeView === 'goals' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveView('goals'); setSidebarActive(false); }}>
-                                <div className="nav-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <circle cx="12" cy="12" r="6"></circle>
-                                        <circle cx="12" cy="12" r="2"></circle>
-                                    </svg>
-                                </div>
-                                <div className="nav-content">
-                                    <span className="nav-text">Goals</span>
-                                    <span className="nav-description">Track progress</span>
-                                </div>
-                            </a>
-                            <a href="#" className={`nav-item ${activeView === 'groups' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveView('groups'); setSidebarActive(false); }}>
-                                <div className="nav-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="9" cy="7" r="4"></circle>
-                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                    </svg>
-                                </div>
-                                <div className="nav-content">
-                                    <span className="nav-text">Groups</span>
-                                    <span className="nav-description">Collaborate together</span>
-                                </div>
-                            </a>
-                            <a href="#" className={`nav-item ${activeView === 'catalog' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveView('catalog'); setSidebarActive(false); }}>
-                                <div className="nav-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <rect width="7" height="7" x="3" y="3" rx="1"></rect>
-                                        <rect width="7" height="7" x="14" y="3" rx="1"></rect>
-                                        <rect width="7" height="7" x="14" y="14" rx="1"></rect>
-                                        <rect width="7" height="7" x="3" y="14" rx="1"></rect>
-                                    </svg>
-                                </div>
-                                <div className="nav-content">
-                                    <span className="nav-text">Catalog</span>
-                                    <span className="nav-description">Browse all courses</span>
-                                </div>
-                            </a>
-                            <a href="#" className={`nav-item ${activeView === 'users' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveView('users'); setSidebarActive(false); }}>
-                                <div className="nav-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="9" cy="7" r="4"></circle>
-                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                    </svg>
-                                </div>
-                                <div className="nav-content">
-                                    <span className="nav-text">Users</span>
-                                    <span className="nav-description">Manage accounts</span>
-                                </div>
-                            </a>
-                            <ToolsNavTooltip>
-                                <a href="#" className={`nav-item ${activeView === 'tools' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveView('tools'); setSidebarActive(false); }}>
-                                    <div className="nav-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-                                        </svg>
-                                    </div>
-                                    <div className="nav-content">
-                                        <span className="nav-text">Tools</span>
-                                        <span className="nav-description">Productivity utilities</span>
-                                    </div>
-                                </a>
-                            </ToolsNavTooltip>
-                        </nav>
-
-                        <div className="sidebar-bottom">
-                            <a href="#" className="nav-item" id="settingsButton" onClick={openSettingsModal}>
-                                <div className="nav-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path
-                                            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
-                                        </path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </div>
-                                <div className="nav-content">
-                                    <span className="nav-text">Settings</span>
-                                    <span className="nav-description">Preferences</span>
-                                </div>
-                            </a>
-                            <HelpNavItem onSidebarClose={() => setSidebarActive(false)} />
-                        </div>
-                    </motion.aside>
-                )}
-            </AnimatePresence>
-
+            {/* Sidebar — extracted to ./components/DashboardSidebar.tsx */}
+            <DashboardSidebar
+                sidebarActive={sidebarActive}
+                setSidebarActive={setSidebarActive}
+                activeView={activeView}
+                setActiveView={setActiveView}
+                selectedCourse={selectedCourse}
+                setSelectedCourse={setSelectedCourse}
+                openSettingsModal={openSettingsModal}
+            />
             {/* Main Content */}
             <main className="main-content">
                 <AnimatePresence mode="wait">
