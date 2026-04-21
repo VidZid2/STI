@@ -381,85 +381,45 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                         }}
                     >
                         {/* Progress bar */}
-                        <div style={{ height: '3px', backgroundColor: '#e2e8f0' }}>
+                        <div className="h-[3px] bg-slate-200">
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${((currentStep + 1) / TUTORIAL_STEPS.length) * 100}%` }}
                                 transition={{ duration: 0.3 }}
-                                style={{ height: '100%', backgroundColor: '#3b82f6' }}
+                                className="h-full bg-blue-500"
                             />
                         </div>
 
-                        <div style={{ padding: '20px' }}>
+                        <div className="p-5">
                             {/* Step indicator */}
-                            <div style={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                justifyContent: 'space-between',
-                                marginBottom: '12px' 
-                            }}>
-                                <span style={{ 
-                                    fontSize: '11px', 
-                                    fontWeight: 600, 
-                                    color: '#3b82f6',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.05em'
-                                }}>
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-[11px] font-semibold text-blue-500 uppercase tracking-[0.05em]">
                                     Step {currentStep + 1} of {TUTORIAL_STEPS.length}
                                 </span>
                                 <button
                                     onClick={handleSkip}
-                                    style={{
-                                        background: 'none',
-                                        border: 'none',
-                                        fontSize: '12px',
-                                        color: '#94a3b8',
-                                        cursor: 'pointer',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f5f9'}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                    className="text-xs text-slate-400 cursor-pointer px-2 py-1 rounded hover:bg-slate-100 bg-transparent border-none transition-colors"
                                 >
                                     Skip tour
                                 </button>
                             </div>
 
                             {/* Content */}
-                            <h3 style={{ 
-                                fontSize: '18px', 
-                                fontWeight: 700, 
-                                color: '#0f172a',
-                                margin: '0 0 8px 0'
-                            }}>
+                            <h3 className="text-lg font-bold text-slate-900 mb-2 mt-0">
                                 {step?.title}
                             </h3>
-                            <p style={{ 
-                                fontSize: '14px', 
-                                color: '#64748b',
-                                lineHeight: 1.6,
-                                margin: '0 0 20px 0'
-                            }}>
+                            <p className="text-sm text-slate-500 leading-relaxed mb-5 mt-0">
                                 {step?.description}
                             </p>
 
                             {/* Navigation */}
-                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                            <div className="flex gap-2 justify-end">
                                 {!isFirstStep && (
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
                                         onClick={handlePrev}
-                                        style={{
-                                            padding: '10px 16px',
-                                            borderRadius: '8px',
-                                            border: '1px solid #e2e8f0',
-                                            backgroundColor: '#fff',
-                                            color: '#64748b',
-                                            fontSize: '13px',
-                                            fontWeight: 600,
-                                            cursor: 'pointer',
-                                        }}
+                                        className="px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-500 text-[13px] font-semibold cursor-pointer"
                                     >
                                         Back
                                     </motion.button>
@@ -468,19 +428,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={handleNext}
-                                    style={{
-                                        padding: '10px 20px',
-                                        borderRadius: '8px',
-                                        border: 'none',
-                                        backgroundColor: '#3b82f6',
-                                        color: '#fff',
-                                        fontSize: '13px',
-                                        fontWeight: 600,
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                    }}
+                                    className="px-5 py-2.5 rounded-lg border-none bg-blue-500 text-white text-[13px] font-semibold cursor-pointer flex items-center gap-1.5"
                                 >
                                     {isLastStep ? 'Finish' : 'Next'}
                                     {!isLastStep && (
@@ -493,13 +441,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                         </div>
 
                         {/* Step dots */}
-                        <div style={{ 
-                            padding: '12px 20px',
-                            borderTop: '1px solid #f1f5f9',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            gap: '6px'
-                        }}>
+                        <div className="px-5 py-3 border-t border-slate-100 flex justify-center gap-1.5">
                             {TUTORIAL_STEPS.map((_, index) => (
                                 <motion.div
                                     key={index}
