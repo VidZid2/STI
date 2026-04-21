@@ -1,14 +1,12 @@
-﻿import React, { useState, useEffect } from 'react';
+/**
+ * UserDetailModal
+ * Detailed user profile modal.
+ * Extracted from UsersContent.tsx during Phase 8.4
+ */
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { createPortal } from 'react-dom';
-import {
-    getTeacherCourses,
-    getTeacherOfficeHours,
-    getRoleInfo,
-    type UserAccount,
-    type TeacherCourse,
-    type OfficeHours,
-} from '../../../../../services/usersService';
+import { getRoleInfo, type UserAccount } from '../../../../../services/usersService';
+import UserAvatar from '../components/UserAvatar';
 
 const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose, isDarkMode }) => {
     const [courses, setCourses] = useState<TeacherCourse[]>([]);
@@ -518,4 +516,6 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
     );
 };
 
+
+export { UserDetailModal };
 export default UserDetailModal;
