@@ -14,15 +14,17 @@ import MaintenanceBanner from '../../components/shared/MaintenanceBanner';
 import ToolsContent from './content/ToolsContent';
 import HomeContent from './content/HomeContent';
 import PathsContent from './content/PathsContent';
-import GroupsContent from './content/GroupsContent';
-import GoalsContent from './content/GoalsContent';
-import UsersContent from './content/UsersContent';
-import CatalogContent from './content/CatalogContent';
 import WidgetsToggleButton from '../../components/ui/misc/WidgetsToggleButton';
-import CourseViewPage from './content/CourseViewPage';
 import QuickSettingsDropdown from '../../components/ui/dropdowns/QuickSettingsDropdown';
 import HelpDropdown from '../../components/ui/dropdowns/HelpDropdown';
 import { Dock, DockIcon, DockAutoHide } from '../../components/ui/primitives/dock';
+
+// Heavy content tabs — lazy loaded to reduce initial bundle size
+const GroupsContent = React.lazy(() => import('./content/GroupsContent'));
+const GoalsContent = React.lazy(() => import('./content/GoalsContent'));
+const UsersContent = React.lazy(() => import('./content/UsersContent'));
+const CatalogContent = React.lazy(() => import('./content/CatalogContent'));
+const CourseViewPage = React.lazy(() => import('./content/CourseViewPage'));
 
 // Context imports
 import { useNotifications } from '../../contexts/NotificationContext';
@@ -238,6 +240,14 @@ const DashboardPage: React.FC = () => {
             />
             {/* Main Content */}
             <main className="main-content">
+                <React.Suspense fallback={
+                    <div className="flex items-center justify-center h-full min-h-[400px]">
+                        <div className="flex flex-col items-center gap-3">
+                            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                            <span className="text-sm text-slate-400 font-medium">Loading...</span>
+                        </div>
+                    </div>
+                }>
                 <AnimatePresence mode="wait">
                     {activeView === 'home' && (
                         <motion.div
@@ -340,6 +350,7 @@ const DashboardPage: React.FC = () => {
                         </motion.div>
                     )}
                 </AnimatePresence>
+                </React.Suspense>
             </main>
 
 
