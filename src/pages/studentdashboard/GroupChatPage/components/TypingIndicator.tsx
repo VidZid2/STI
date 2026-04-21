@@ -31,6 +31,8 @@ export const TypingIndicator = React.memo<TypingIndicatorProps>(({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6, transition: { duration: 0.1 } }}
             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+            aria-live="polite"
+            aria-atomic="true"
             style={{
                 display: 'flex',
                 alignItems: 'center',

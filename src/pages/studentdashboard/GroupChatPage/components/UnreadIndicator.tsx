@@ -21,6 +21,9 @@ export const UnreadIndicator = React.memo<UnreadIndicatorProps>(({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
+            role="status"
+            aria-live="polite"
+            aria-label={`${unreadCount} new ${unreadCount === 1 ? 'message' : 'messages'}`}
             style={{
                 display: 'flex',
                 alignItems: 'center',

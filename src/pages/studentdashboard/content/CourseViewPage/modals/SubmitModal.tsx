@@ -74,6 +74,9 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 30 }}
                         transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="submit-modal-title"
                         onClick={(e) => e.stopPropagation()}
                         style={{
                             width: '100%', maxWidth: '520px',
@@ -159,7 +162,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                             </svg>
                                         </div>
                                         <div>
-                                            <h2 style={{
+                                            <h2 id="submit-modal-title" style={{
                                                 fontSize: '17px', fontWeight: 700, margin: 0, lineHeight: 1.3,
                                                 color: isDark ? '#f1f5f9' : '#0f172a',
                                             }}>Submit Assignment</h2>

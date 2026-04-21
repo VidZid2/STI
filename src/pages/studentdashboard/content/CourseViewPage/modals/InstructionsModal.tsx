@@ -38,19 +38,23 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 10 }}
                         transition={{ type: "spring", duration: 0.4 }}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="instructions-modal-title"
                         className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Modal Header */}
                         <div className="px-8 py-6 flex items-start justify-between bg-white relative border-b border-zinc-200/80">
                             <div className="pr-8">
-                                <h3 className="text-2xl font-bold text-zinc-900 tracking-tight mb-1.5">
+                                <h3 id="instructions-modal-title" className="text-2xl font-bold text-zinc-900 tracking-tight mb-1.5">
                                     {task.title}
                                 </h3>
                                 <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Task Instructions & Details</p>
                             </div>
                             <button
                                 onClick={onClose}
+                                aria-label="Close instructions"
                                 className="absolute right-6 top-6 p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-full transition-all"
                             >
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

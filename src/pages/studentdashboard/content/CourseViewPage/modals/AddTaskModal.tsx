@@ -104,19 +104,23 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.96 }}
                         transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="add-task-modal-title"
                         onClick={(e) => e.stopPropagation()}
                         className={`rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-full ${isTeacherMode ? 'bg-zinc-900' : 'bg-white'}`}
                     >
                         {/* Header */}
                         <div className={`flex items-center justify-between px-5 py-4 border-b ${isTeacherMode ? 'border-zinc-700' : 'border-zinc-100'}`}>
                             <div>
-                                <h3 className={`text-base font-semibold ${isTeacherMode ? 'text-white' : 'text-zinc-800'}`}>Create Task</h3>
+                                <h3 id="add-task-modal-title" className={`text-base font-semibold ${isTeacherMode ? 'text-white' : 'text-zinc-800'}`}>Create Task</h3>
                                 <p className={`text-xs mt-0.5 ${isTeacherMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Add a new task for your students</p>
                             </div>
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleClose}
+                                aria-label="Close create task"
                                 className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isTeacherMode ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400' : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-600'}`}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
