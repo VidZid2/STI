@@ -144,3 +144,65 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, description
         )}
     </motion.div>
 );
+
+interface TeacherActionButtonProps {
+    variant: 'primary' | 'secondary' | 'icon';
+    icon: React.ReactNode;
+    label?: string;
+    onClick?: () => void;
+}
+
+export const TeacherActionButton: React.FC<TeacherActionButtonProps> = ({ variant, icon, label, onClick }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
+    if (variant === 'primary') {
+        return (
+            <button
+                onClick={onClick}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer"
+                style={{
+                    background: 'rgba(59, 130, 246, 0.08)', color: '#3b82f6',
+                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                    transform: isHovered ? 'scale(1.02)' : 'scale(1)',
+                    boxShadow: isHovered ? '0 6px 20px rgba(59, 130, 246, 0.2)' : 'none',
+                }}
+            >
+                {icon}{label}
+            </button>
+        );
+    }
+    if (variant === 'secondary') {
+        return (
+            <button
+                onClick={onClick}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer"
+                style={{
+                    background: isHovered ? 'rgba(0,0,0,0.03)' : 'transparent', color: '#71717a',
+                    border: '1px solid rgba(0,0,0,0.1)',
+                    transform: isHovered ? 'scale(1.02)' : 'scale(1)',
+                }}
+            >
+                {icon}{label}
+            </button>
+        );
+    }
+    return (
+        <button
+            onClick={onClick}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="flex items-center justify-center py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer"
+            style={{
+                background: isHovered ? 'rgba(0,0,0,0.05)' : 'rgba(0,0,0,0.02)', color: '#71717a',
+                border: '1px solid rgba(0,0,0,0.08)',
+                transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+            }}
+        >
+            {icon}
+        </button>
+    );
+};
