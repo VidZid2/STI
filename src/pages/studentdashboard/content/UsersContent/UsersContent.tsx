@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Users Content - User Account Management Page
  * Minimalistic professional design matching PathsContent/GoalsContent
  * Accessibility: prefers-reduced-motion support, keyboard navigation
@@ -19,7 +19,6 @@ import {
     type UserAccount,
     type UserStats,
     type UserFilter,
-    type UserRole,
     type TeacherCourse,
     type OfficeHours,
     type UserSortOption,

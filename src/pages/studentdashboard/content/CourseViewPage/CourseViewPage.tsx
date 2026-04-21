@@ -1,4 +1,4 @@
-﻿import * as React from 'react';
+import * as React from 'react';
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
@@ -1436,7 +1436,7 @@ const ActionsDropdown: React.FC<{ activeTab: TabType }> = ({ activeTab }) => {
         setIsOpen(false);
     }, [activeTab]);
 
-    const handleAction = (actionId: string) => {
+    const handleAction = (_actionId: string) => {
         setIsOpen(false);
     };
 
@@ -2038,7 +2038,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 }).map((t: CourseTask) => {
                     // Feature Request (eLMS Unique Backend-safe auto-locking):
                     // If a task is past 15 days and never submitted, it gets explicitly locked forever instead of deleted.
-                    if (t.status === 'overdue' && t._diffDays <= -15) {
+                    if (t.status === 'overdue' && (t._diffDays ?? 0) <= -15) {
                         return { ...t, status: 'locked' };
                     }
                     return t;
@@ -3209,8 +3209,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         return courseTasks.filter((t: CourseTask) => {
                             const isOverdueDemo = t.due?.toLowerCase().includes('overdue');
                             let isRealtimeOverdue = false;
-                            if (t.id && t.due_date) {
-                                const dueDate = new Date(t.due_date);
+                            if (t.id && t.dueDate) {
+                                const dueDate = new Date(t.dueDate);
                                 if (new Date() > dueDate && t.status !== 'submitted') {
                                     isRealtimeOverdue = true;
                                 }
@@ -5724,7 +5724,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             {/* Floating Action Button */}
             <FloatingActionButton
                 activeTab={activeTab}
-                onAction={(action) => {
+                onAction={(_action) => {
                     // Handle actions here - can be extended with actual functionality
                 }}
             />
