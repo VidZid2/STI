@@ -1,28 +1,16 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+/**
+ * CreateGroupModal
+ * Multi-step group creation wizard.
+ * Extracted from GroupsContent.tsx during Phase 8.2
+ */
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import { supabase, isSupabaseConfigured } from '../../../../../lib/supabase';
-import { createGroup, type GroupCategory } from '../../../../../services/groupsService';
+import { createGroup, groupCategoryConfig, type GroupCategory } from '../../../../../services/groupsService';
 import GroupIcon from '../components/GroupIcon';
 
-interface CreateGroupModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    isDarkMode: boolean;
-    onCreateGroup: (group: {
-        name: string;
-        description: string;
-        category: GroupCategory;
-        icon: string;
-        color: string;
-        avatar?: string;
-        courseName?: string;
-        maxMembers: number;
-        isPrivate: boolean;
-    }) => void;
-}
-
-const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, isDarkMode, onCreateGroup }) => {
+const CreateGroupModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
     isDarkMode: boolean;
@@ -741,7 +729,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, is
                                         transition={{ delay: 0.3 }}
                                         style={{ margin: '0 0 8px 0', fontSize: '20px', fontWeight: 600, color: '#0f172a' }}
                                     >
-                                        Group Created! ðŸŽ‰
+                                        Group Created! ??
                                     </motion.h3>
                                     <motion.p
                                         initial={{ opacity: 0 }}
@@ -817,7 +805,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, is
                                             Create Study Group
                                         </h2>
                                         <p style={{ margin: 0, fontSize: '12px', color: colors.textMuted }}>
-                                            Step {step} of {totalSteps} â€¢ {step === 1 ? 'Basic Info' : step === 2 ? 'Customize' : 'Invite Friends'}
+                                            Step {step} of {totalSteps} � {step === 1 ? 'Basic Info' : step === 2 ? 'Customize' : 'Invite Friends'}
                                         </p>
                                     </div>
                                 </div>
@@ -1686,7 +1674,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, is
                                                     </div>
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
                                                         <span style={{ fontSize: '10px', color: colors.textMuted }}>
-                                                            {maxMembers <= 10 ? 'ðŸ‘¥ Small & focused' : maxMembers <= 25 ? 'ðŸ‘¨â€ðŸ‘©â€ðŸ‘§â€ðŸ‘¦ Medium group' : 'ðŸ« Large community'}
+                                                            {maxMembers <= 10 ? '?? Small & focused' : maxMembers <= 25 ? '??????????? Medium group' : '?? Large community'}
                                                         </span>
                                                         <span style={{ fontSize: '10px', color: colors.textMuted }}>
                                                             Recommended: 5-15 for study groups
@@ -2898,5 +2886,3 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, is
         document.body
     );
 };
-
-export default CreateGroupModal;
