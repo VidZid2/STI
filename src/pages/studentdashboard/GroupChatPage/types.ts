@@ -69,3 +69,13 @@ export type ChatColors = {
     textMuted: string;
     accent: string;
 };
+
+// Profile shape used in GroupChat (superset of auth User)
+export interface ChatProfile {
+    id?: string;
+    studentId?: string;
+    full_name?: string;
+    avatar_url?: string;
+    avatar?: string;
+    [key: string]: unknown;
+}

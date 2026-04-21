@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Focus Mode Page - Dedicated Study Session Interface
  * Minimalistic professional design matching PathsContent/GoalsContent style
  */
@@ -72,12 +72,12 @@ if (typeof document !== 'undefined' && !document.getElementById('focus-volume-st
 
 // Break Suggestions Data
 const BREAK_SUGGESTIONS = [
-    { icon: '👁️', title: 'Eye Rest', description: 'Look at something 20ft away for 20 seconds', duration: '20s' },
-    { icon: '🧘', title: 'Stretch', description: 'Stand up and stretch your arms and back', duration: '1m' },
-    { icon: '💧', title: 'Hydrate', description: 'Drink a glass of water', duration: '30s' },
-    { icon: '🚶', title: 'Walk', description: 'Take a short walk around the room', duration: '2m' },
-    { icon: '🌬️', title: 'Breathe', description: 'Take 5 deep breaths slowly', duration: '1m' },
-    { icon: '🙆', title: 'Neck Roll', description: 'Gently roll your neck in circles', duration: '30s' },
+    { icon: '???', title: 'Eye Rest', description: 'Look at something 20ft away for 20 seconds', duration: '20s' },
+    { icon: '??', title: 'Stretch', description: 'Stand up and stretch your arms and back', duration: '1m' },
+    { icon: '??', title: 'Hydrate', description: 'Drink a glass of water', duration: '30s' },
+    { icon: '??', title: 'Walk', description: 'Take a short walk around the room', duration: '2m' },
+    { icon: '???', title: 'Breathe', description: 'Take 5 deep breaths slowly', duration: '1m' },
+    { icon: '??', title: 'Neck Roll', description: 'Gently roll your neck in circles', duration: '30s' },
 ];
 
 // Timer Duration Options
@@ -106,6 +106,17 @@ interface Resource {
 // }
 
 type FilterTab = 'all' | 'links' | 'files' | 'images' | 'code' | 'notes';
+
+// Color palette passed down to sub-components
+interface FocusModeColors {
+    bg: string;
+    cardBg: string;
+    border: string;
+    textPrimary: string;
+    textSecondary: string;
+    textMuted: string;
+    accent: string;
+}
 // ToolTab reserved for future sidebar tools
 // type ToolTab = 'timer' | 'flashcards' | 'notes' | 'whiteboard';
 
@@ -573,7 +584,7 @@ const TIMER_SETTINGS_KEY = 'focus-timer-settings';
 
 const PomodoroTimer: React.FC<{
     isDarkMode: boolean;
-    colors: any;
+    colors: FocusModeColors;
     onSessionComplete: (duration: number) => void;
     onStateChange?: (state: { isRunning: boolean; mode: 'focus' | 'break'; timeLeft: number }) => void;
     controlsRef?: React.MutableRefObject<{ toggleTimer: () => void; resetTimer: () => void } | null>;
@@ -1116,7 +1127,7 @@ const PomodoroTimer: React.FC<{
 // Session Stats Component - Shows today's focus progress
 const SessionStats: React.FC<{
     isDarkMode: boolean;
-    colors: any;
+    colors: FocusModeColors;
     totalFocusTime: number;
     sessionsCompleted: number;
     currentStreak: number;
@@ -1318,7 +1329,7 @@ const STUDY_QUOTES = [
 // Motivational Quote Component
 const MotivationalQuote: React.FC<{
     isDarkMode: boolean;
-    colors: any;
+    colors: FocusModeColors;
     isBreakMode: boolean;
 }> = ({ isBreakMode }) => {
     const [quote, setQuote] = useState(STUDY_QUOTES[0]);
@@ -1419,7 +1430,7 @@ const MotivationalQuote: React.FC<{
                         color: '#fbbf24',
                         fontWeight: 600,
                     }}>
-                        — {quote.author}
+                        � {quote.author}
                     </p>
                 </motion.div>
             </AnimatePresence>
@@ -1472,7 +1483,7 @@ const AMBIENT_SOUNDS = [
     },
     {
         id: 'cafe',
-        name: 'Café',
+        name: 'Caf�',
         color: '#f59e0b',
         url: '/sounds/cafe.mp3',
     },
@@ -1548,7 +1559,7 @@ const SoundIcon: React.FC<{ id: string; color: string; size?: number }> = ({ id,
 // Ambient Sounds Component
 const AmbientSounds: React.FC<{
     isDarkMode: boolean;
-    colors: any;
+    colors: FocusModeColors;
     activeSound?: string | null;
     onSoundChange?: (soundId: string | null) => void;
 }> = ({ isDarkMode, colors, activeSound: externalActiveSound, onSoundChange }) => {
@@ -1771,7 +1782,7 @@ const AmbientSounds: React.FC<{
 // Session Goal Component
 const SessionGoal: React.FC<{
     isDarkMode: boolean;
-    colors: any;
+    colors: FocusModeColors;
     sessionGoal: number;
     setSessionGoal: (goal: number) => void;
     currentProgress: number;
@@ -1952,7 +1963,7 @@ const SessionGoal: React.FC<{
 // Session History Component - Shows weekly focus trends
 const SessionHistory: React.FC<{
     isDarkMode: boolean;
-    colors: any;
+    colors: FocusModeColors;
 }> = ({ isDarkMode, colors }) => {
     const [studyData, setStudyData] = useState<StudyTimeData | null>(null);
 
@@ -2119,7 +2130,7 @@ const SessionHistory: React.FC<{
 // Break Suggestions Component
 const BreakSuggestions: React.FC<{
     isDarkMode: boolean;
-    colors: any;
+    colors: FocusModeColors;
     isBreakMode: boolean;
 }> = ({ isDarkMode, colors, isBreakMode }) => {
     const [currentSuggestion, setCurrentSuggestion] = useState(0);
@@ -2273,7 +2284,7 @@ const BreakSuggestions: React.FC<{
 // Keyboard Shortcuts Display Component
 const KeyboardShortcuts: React.FC<{
     isDarkMode: boolean;
-    colors: any;
+    colors: FocusModeColors;
 }> = ({ isDarkMode, colors }) => {
     const shortcuts = [
         { key: 'Space', action: 'Start/Pause' },
@@ -2572,7 +2583,7 @@ const RESOURCE_TYPE_CONFIG: Record<Resource['type'], {
 const ResourceCard: React.FC<{
     resource: Resource;
     isDarkMode: boolean;
-    colors: any;
+    colors: FocusModeColors;
     index: number;
 }> = ({ resource, isDarkMode, colors, index }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -3144,7 +3155,7 @@ const FocusModePage: React.FC = () => {
                         }
 
                         // Check for flashcard content
-                        if (msg.content.includes('**Flashcard**') || msg.content.includes('📚')) {
+                        if (msg.content.includes('**Flashcard**') || msg.content.includes('??')) {
                             const lines = msg.content.split('\n');
                             const title = lines.find(l => l.includes('**'))?.replace(/\*\*/g, '').trim() || 'Flashcard';
                             extractedResources.push({
@@ -3304,7 +3315,7 @@ const FocusModePage: React.FC = () => {
         }
 
         // Check for flashcard content
-        if (msg.content.includes('**Flashcard**') || msg.content.includes('📚')) {
+        if (msg.content.includes('**Flashcard**') || msg.content.includes('??')) {
             const lines = msg.content.split('\n');
             const title = lines.find(l => l.includes('**'))?.replace(/\*\*/g, '').trim() || 'Flashcard';
             extractedResources.push({

@@ -19,7 +19,7 @@ interface SubmitModalTask {
     points?: number;
     maxAttempts?: number;
     submissionCount?: number;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 interface SubmitModalProps {

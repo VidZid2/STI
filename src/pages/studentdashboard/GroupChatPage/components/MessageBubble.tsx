@@ -10,7 +10,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { ChatMessage, MessageType } from '../../../../services/chatService';
-import type { MemberStats, MessageReaction, ChatColors } from '../types';
+import type { MemberStats, MessageReaction, ChatColors, ChatProfile } from '../types';
 import { STUDY_REACTIONS } from '../constants';
 import { formatTime } from '../utils';
 import { FilePreviewCard } from './FilePreviewCard';
@@ -34,7 +34,7 @@ interface MessageBubbleProps {
     memberRole?: string;
     memberStats?: MemberStats; // Not used yet but kept for future
     isOnline: boolean;
-    profile: any;
+    profile: ChatProfile | null;
 
     // UI State
     isHovered: boolean;

@@ -15,7 +15,7 @@ import {
 import { getProfile } from '../../../../services/profileService';
 import { fetchGroups, type GroupWithMembers } from '../../../../services/groupsService';
 import { XP_REWARDS } from '../constants';
-import type { ReplyInfo } from '../types';
+import type { ReplyInfo, ChatProfile } from '../types';
 
 export interface UseGroupChatOptions {
     groupId: string | undefined;
@@ -29,7 +29,7 @@ export interface UseGroupChatReturn {
     setNewMessage: React.Dispatch<React.SetStateAction<string>>;
     isLoading: boolean;
     isSending: boolean;
-    profile: any;
+    profile: ChatProfile | null;
     groupInfo: GroupWithMembers | null;
     messageClassifications: Record<string, MessageType>;
     replyingTo: ReplyInfo | null;
@@ -45,7 +45,7 @@ export function useGroupChat({ groupId, onXPAwarded }: UseGroupChatOptions): Use
     const [newMessage, setNewMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [isSending, setIsSending] = useState(false);
-    const [profile, setProfile] = useState<any>(null);
+    const [profile, setProfile] = useState<ChatProfile | null>(null);
     const [groupInfo, setGroupInfo] = useState<GroupWithMembers | null>(null);
     const [messageClassifications, setMessageClassifications] = useState<Record<string, MessageType>>({});
     const [replyingTo, setReplyingTo] = useState<ReplyInfo | null>(null);

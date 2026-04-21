@@ -3,15 +3,18 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
     createGoal,
     goalTypeConfig,
+    type Goal,
     type GoalType,
     type GoalPriority,
 } from '../../../../../services/goalsService';
 import { COURSES_DATA } from '../../../../../services/pathsService';
 
+type NewGoalData = Omit<Goal, 'id' | 'student_id' | 'created_at' | 'updated_at'>;
+
 const CreateGoalModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
-    onCreate: (goal: any) => void;
+    onCreate: (goal: NewGoalData) => void;
     isDarkMode: boolean;
 }> = ({ isOpen, onClose, onCreate, isDarkMode }) => {
     const [title, setTitle] = useState('');

@@ -22,6 +22,18 @@ export interface GifResult {
     height: number;
 }
 
+// Minimal shape of a Tenor API result item
+interface TenorItem {
+    id: string;
+    title?: string;
+    media_formats?: {
+        gif?: { url: string; dims?: number[] };
+        mediumgif?: { url: string };
+        tinygif?: { url: string };
+        nanogif?: { url: string };
+    };
+}
+
 interface GifPickerProps {
     isOpen: boolean;
     onClose: () => void;
@@ -93,7 +105,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
             const data = await response.json();
 
             if (data.results) {
-                const formattedGifs: GifResult[] = data.results.map((item: any) => ({
+                const formattedGifs: GifResult[] = data.results.map((item: TenorItem) => ({
                     id: item.id,
                     title: item.title || 'GIF',
                     url: item.media_formats?.gif?.url || item.media_formats?.mediumgif?.url,

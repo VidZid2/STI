@@ -24,6 +24,29 @@ type TabType = 'modules' | 'assignments' | 'news' | 'students' | 'teachers';
 type ContentType = 'handout-a' | 'handout-b' | 'slideshow' | 'video';
 type TaskCategory = 'all' | 'assignment' | 'performance' | 'quiz' | 'practical' | 'journal' | 'overdue';
 
+// Typed task shape used throughout CourseViewPage
+interface CourseTask {
+    id: string | number;
+    title: string;
+    due: string;
+    status: string;
+    score: string | number | null;
+    category: TaskCategory;
+    points?: number;
+    dueDate?: string;
+    description?: string;
+    instructions?: string;
+    allowLateSubmission?: boolean;
+    latePenalty?: number;
+    maxAttempts?: number;
+    rubricEnabled?: boolean;
+    prerequisiteAssignmentId?: string | null;
+    rubricCriteria?: { id?: string; name: string; points: number; description?: string }[];
+    submissionCount?: number;
+    attachments?: { name: string; url: string; type?: string }[];
+    _diffDays?: number;
+}
+
 // Task category configuration for the Tasks tab filter
 const TASK_CATEGORIES: { id: TaskCategory; label: string; icon: React.ReactNode; color: string }[] = [
     {
@@ -1902,7 +1925,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [isLoadingStudents, setIsLoadingStudents] = useState(true);
 
     // Supabase tasks data - fetch real assignments from database
-    const [supabaseTasks, setSupabaseTasks] = useState<{ id: string | number; title: string; due: string; status: string; score: string | number | null; category: TaskCategory, points?: number, dueDate?: string, description?: string, instructions?: string, allowLateSubmission?: boolean, latePenalty?: number, maxAttempts?: number, rubricEnabled?: boolean, prerequisiteAssignmentId?: string | null, rubricCriteria?: any[], submissionCount?: number, attachments?: any[] }[]>([]);
+    const [supabaseTasks, setSupabaseTasks] = useState<CourseTask[]>([]);
     const [_isLoadingTasks, setIsLoadingTasks] = useState(true);
 
     // Fetch tasks from Supabase course_tasks table
@@ -2012,7 +2035,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         submissionCount: submission?.count || 0,
                         _diffDays: diffDays, // Internal use
                     };
-                }).map((t: any) => {
+                }).map((t: CourseTask) => {
                     // Feature Request (eLMS Unique Backend-safe auto-locking):
                     // If a task is past 15 days and never submitted, it gets explicitly locked forever instead of deleted.
                     if (t.status === 'overdue' && t._diffDays <= -15) {
@@ -3177,13 +3200,13 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 // Get counts for each task category
                 const getTaskCategoryCount = (cat: TaskCategory) => {
                     if (cat === 'all') {
-                        return courseTasks.filter((t: any) => {
-                            if ((t.status === 'overdue' && t._diffDays < -7) || t.status === 'locked') return false;
+                        return courseTasks.filter((t: CourseTask) => {
+                            if ((t.status === 'overdue' && (t._diffDays ?? 0) < -7) || t.status === 'locked') return false;
                             return true;
                         }).length;
                     }
                     if (cat === 'overdue') {
-                        return courseTasks.filter((t: any) => {
+                        return courseTasks.filter((t: CourseTask) => {
                             const isOverdueDemo = t.due?.toLowerCase().includes('overdue');
                             let isRealtimeOverdue = false;
                             if (t.id && t.due_date) {

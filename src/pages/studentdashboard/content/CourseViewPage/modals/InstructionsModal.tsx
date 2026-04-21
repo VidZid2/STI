@@ -17,7 +17,7 @@ interface InstructionsModalProps {
         rubricEnabled?: boolean;
         rubricCriteria?: { id?: string; name: string; points: number; description?: string }[];
         submissionCount?: number;
-        [key: string]: any;
+        [key: string]: unknown;
     } | null;
     onClose: () => void;
 }

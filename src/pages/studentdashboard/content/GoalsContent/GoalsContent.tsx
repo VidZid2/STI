@@ -19,6 +19,7 @@ import {
     getCurrentAbsoluteValue,
     getAggregatedProgressHistory,
     // getSuggestedGoals, // Available for future use
+    type Goal,
     type GoalWithProgress,
     type GoalType,
     type GoalPriority,
@@ -1007,10 +1008,12 @@ const PriorityIcons: Record<GoalPriority, React.ReactNode> = {
 };
 
 // Create Goal Modal
+type NewGoalData = Omit<Goal, 'id' | 'student_id' | 'created_at' | 'updated_at'>;
+
 const CreateGoalModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
-    onCreate: (goal: any) => void;
+    onCreate: (goal: NewGoalData) => void;
     isDarkMode: boolean;
 }> = ({ isOpen, onClose, onCreate, isDarkMode }) => {
     const [title, setTitle] = useState('');
@@ -3352,7 +3355,7 @@ const GoalsContent: React.FC = () => {
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    const handleCreate = async (goalData: any) => {
+    const handleCreate = async (goalData: NewGoalData) => {
         const newGoal = await createGoal(goalData);
         if (newGoal) {
             setGoals(prev => [newGoal, ...prev]);
