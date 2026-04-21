@@ -3,11 +3,32 @@
  * Extracted from GroupChatPage.tsx for modularity
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 
 export const LoadingSkeleton: React.FC = () => {
-    const isDarkMode = localStorage.getItem('darkModeEnabled') === 'true';
+    const [isDarkMode, setIsDarkMode] = useState(
+        () => localStorage.getItem('darkModeEnabled') === 'true'
+    );
+
+    useEffect(() => {
+        const syncTheme = () => {
+            setIsDarkMode(
+                localStorage.getItem('darkModeEnabled') === 'true' ||
+                document.body.classList.contains('dark-mode')
+            );
+        };
+        window.addEventListener('storage', syncTheme);
+        window.addEventListener('themeChange', syncTheme);
+        // Also watch body class mutations for in-tab theme changes
+        const observer = new MutationObserver(syncTheme);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        return () => {
+            window.removeEventListener('storage', syncTheme);
+            window.removeEventListener('themeChange', syncTheme);
+            observer.disconnect();
+        };
+    }, []);
     const colors = {
         bg: isDarkMode ? '#0f172a' : '#f8fafc',
         cardBg: isDarkMode ? '#1e293b' : '#ffffff',

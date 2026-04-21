@@ -9,7 +9,7 @@ import '../../styles/home-content.css';
 
 // Component imports
 import { WelcomeModal, SettingsModal } from '../../components/modals';
-import { Confetti } from '../../components/shared';
+import { Confetti, ErrorBoundary } from '../../components/shared';
 import MaintenanceBanner from '../../components/shared/MaintenanceBanner';
 import ToolsContent from './content/ToolsContent';
 import HomeContent from './content/HomeContent';
@@ -257,7 +257,9 @@ const DashboardPage: React.FC = () => {
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
                         >
-                            <HomeContent onShowWelcomeModal={showWelcomeModal} />
+                            <ErrorBoundary name="Home">
+                                <HomeContent onShowWelcomeModal={showWelcomeModal} />
+                            </ErrorBoundary>
                         </motion.div>
                     )}
                     {activeView === 'tools' && (
@@ -268,7 +270,9 @@ const DashboardPage: React.FC = () => {
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <ToolsContent />
+                            <ErrorBoundary name="Tools">
+                                <ToolsContent />
+                            </ErrorBoundary>
                         </motion.div>
                     )}
                     {activeView === 'course' && selectedCourse && (
@@ -280,14 +284,15 @@ const DashboardPage: React.FC = () => {
                             transition={{ duration: 0.3 }}
                             className="h-full"
                         >
-                            <CourseViewPage
-                                course={selectedCourse}
-                                onBack={() => {
-                                    // Return to the previous view (paths, tools, or home)
-                                    setActiveView(previousView);
-                                    setSelectedCourse(null);
-                                }}
-                            />
+                            <ErrorBoundary name="CourseView">
+                                <CourseViewPage
+                                    course={selectedCourse}
+                                    onBack={() => {
+                                        setActiveView(previousView);
+                                        setSelectedCourse(null);
+                                    }}
+                                />
+                            </ErrorBoundary>
                         </motion.div>
                     )}
                     {activeView === 'paths' && (
@@ -298,11 +303,13 @@ const DashboardPage: React.FC = () => {
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <PathsContent
-                                onPathSelect={(pathId) => {
-                                    // Future: Navigate to path detail view
-                                }}
-                            />
+                            <ErrorBoundary name="Paths">
+                                <PathsContent
+                                    onPathSelect={(_pathId) => {
+                                        // Future: Navigate to path detail view
+                                    }}
+                                />
+                            </ErrorBoundary>
                         </motion.div>
                     )}
                     {activeView === 'goals' && (
@@ -313,7 +320,9 @@ const DashboardPage: React.FC = () => {
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <GoalsContent />
+                            <ErrorBoundary name="Goals">
+                                <GoalsContent />
+                            </ErrorBoundary>
                         </motion.div>
                     )}
                     {activeView === 'users' && (
@@ -324,7 +333,9 @@ const DashboardPage: React.FC = () => {
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <UsersContent />
+                            <ErrorBoundary name="Users">
+                                <UsersContent />
+                            </ErrorBoundary>
                         </motion.div>
                     )}
                     {activeView === 'catalog' && (
@@ -335,7 +346,9 @@ const DashboardPage: React.FC = () => {
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <CatalogContent />
+                            <ErrorBoundary name="Catalog">
+                                <CatalogContent />
+                            </ErrorBoundary>
                         </motion.div>
                     )}
                     {activeView === 'groups' && (
@@ -346,7 +359,9 @@ const DashboardPage: React.FC = () => {
                             exit={{ opacity: 0, y: -20 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <GroupsContent />
+                            <ErrorBoundary name="Groups">
+                                <GroupsContent />
+                            </ErrorBoundary>
                         </motion.div>
                     )}
                 </AnimatePresence>
