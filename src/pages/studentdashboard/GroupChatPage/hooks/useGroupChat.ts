@@ -1,4 +1,4 @@
-/**
+﻿/**
  * useGroupChat Hook
  * Core chat state management - messages, profile, group info
  */
@@ -72,7 +72,6 @@ export function useGroupChat({ groupId, onXPAwarded }: UseGroupChatOptions): Use
                     }
                 }
             } catch (error) {
-                console.error('Error loading chat:', error);
             } finally {
                 setIsLoading(false);
             }

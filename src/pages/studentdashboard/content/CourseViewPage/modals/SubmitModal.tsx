@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SubmitModal
  * Extracted from CourseViewPage.tsx during Phase 1.1
  * Handles assignment submission with text + file attachments.
@@ -322,7 +322,6 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                                     setSubmitSuccess(true);
                                                 }
                                             } catch (err) {
-                                                console.error('Failed to submit:', err);
                                             } finally {
                                                 setIsSubmitting(false);
                                             }

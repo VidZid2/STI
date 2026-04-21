@@ -102,13 +102,11 @@ const DashboardPage: React.FC = () => {
     // Listen for navigate-to-course events from PathsContent
     useEffect(() => {
         const handleNavigateToCourse = (event: CustomEvent<{ courseId: string; fromView?: string }>) => {
-            console.log('[Dashboard] Received navigate-to-course event:', event.detail);
             const { courseId, fromView } = event.detail;
             const coursesWithProgress = getSidebarCoursesWithProgress();
             const course = coursesWithProgress.find(c => c.id === courseId);
 
             if (course) {
-                console.log('[Dashboard] Found course, navigating to:', course.title);
                 // Save the previous view so back button returns to correct page
                 if (fromView === 'paths' || activeView === 'paths') {
                     setPreviousView('paths');
@@ -120,7 +118,6 @@ const DashboardPage: React.FC = () => {
                 setSelectedCourse(course);
                 setActiveView('course');
             } else {
-                console.log('[Dashboard] Course not found for id:', courseId);
             }
         };
 
@@ -293,7 +290,6 @@ const DashboardPage: React.FC = () => {
                         >
                             <PathsContent
                                 onPathSelect={(pathId) => {
-                                    console.log('Selected path:', pathId);
                                     // Future: Navigate to path detail view
                                 }}
                             />
@@ -2179,7 +2175,6 @@ const DashboardPage: React.FC = () => {
                                 onClearAll={clearAllToasts}
                                 onViewAll={() => {
                                     // Could open a notification panel or navigate
-                                    console.log('View all notifications');
                                 }}
                             />
                         ) : (

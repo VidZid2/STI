@@ -1,4 +1,4 @@
-/**
+﻿/**
  * useDashboardData Hook
  * Handles loading and refreshing dashboard data (deadlines, activities, stats)
  */
@@ -34,15 +34,11 @@ export const useDashboardData = (refreshTrigger: number): UseDashboardDataReturn
 
     // Initialize study time tracking on mount
     useEffect(() => {
-        console.log('[Dashboard] Initializing study time tracking...');
         initializeTracking().then(() => {
-            console.log('[Dashboard] Study time tracking initialized');
         }).catch((err) => {
-            console.error('[Dashboard] Failed to initialize tracking:', err);
         });
 
         return () => {
-            console.log('[Dashboard] Ending study session...');
         };
     }, []);
 

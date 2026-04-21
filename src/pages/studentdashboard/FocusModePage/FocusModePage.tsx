@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Focus Mode Page - Dedicated Study Session Interface
  * Minimalistic professional design matching PathsContent/GoalsContent style
  */
@@ -590,7 +590,6 @@ const PomodoroTimer: React.FC<{
                 };
             }
         } catch (e) {
-            console.error('Failed to load timer settings:', e);
         }
         return { focusDuration: 25, breakDuration: 5 };
     };
@@ -619,15 +618,14 @@ const PomodoroTimer: React.FC<{
         try {
             if (timerCompleteAudioRef.current) {
                 timerCompleteAudioRef.current.currentTime = 0;
-                timerCompleteAudioRef.current.play().catch(err => console.log('Audio play failed:', err));
+                timerCompleteAudioRef.current.play().catch(err =>
             } else {
                 const audio = new Audio('/sounds/timer-complete.mp3');
                 audio.volume = 0.7;
                 timerCompleteAudioRef.current = audio;
-                audio.play().catch(err => console.log('Audio play failed:', err));
+                audio.play().catch(err =>
             }
         } catch (err) {
-            console.log('Audio not available:', err);
         }
     }, []);
 
@@ -1590,7 +1588,7 @@ const AmbientSounds: React.FC<{
                 const audio = new Audio(sound.url);
                 audio.loop = true;
                 audio.volume = volume / 100;
-                audio.play().catch(err => console.log('Audio play failed:', err));
+                audio.play().catch(err =>
                 audioRef.current = audio;
                 setActiveSound(soundId);
             }
@@ -3224,7 +3222,6 @@ const FocusModePage: React.FC = () => {
                     ]);
                 }
             } catch (error) {
-                console.error('Error loading resources:', error);
                 // Keep resources empty on error
                 setResources([]);
             } finally {

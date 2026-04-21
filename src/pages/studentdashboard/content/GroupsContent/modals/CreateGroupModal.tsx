@@ -133,13 +133,11 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, is
                 .limit(1);
             
             if (error) {
-                console.error('Error checking email:', error);
                 return false;
             }
             
             return data && data.length > 0;
         } catch (err) {
-            console.error('Failed to check email:', err);
             return false;
         }
     };
@@ -204,7 +202,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, is
                     })));
                 }
             } catch (err) {
-                console.error('Failed to fetch classmates:', err);
             }
             setIsSearchingClassmates(false);
             setIsLoadingClassmates(false);
@@ -256,7 +253,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, is
                     })));
                 }
             } catch (err) {
-                console.error('Failed to search classmates:', err);
             }
             setIsSearchingClassmates(false);
         }, 300);

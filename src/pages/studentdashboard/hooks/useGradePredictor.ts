@@ -1,4 +1,4 @@
-/**
+﻿/**
  * useGradePredictor Hook
  * Handles grade prediction loading and calculation
  */
@@ -29,7 +29,6 @@ export const useGradePredictor = (refreshTrigger: number): UseGradePredictorRetu
             const prediction = await getGradePrediction();
             setGradePredictor(prediction);
         } catch (err) {
-            console.error('[GradePredictor] Failed to load prediction:', err);
             // Fallback to local calculation
             calculateLocalPrediction();
         }

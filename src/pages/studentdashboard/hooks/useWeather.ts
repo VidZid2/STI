@@ -1,4 +1,4 @@
-/**
+﻿/**
  * useWeather Hook
  * Handles weather data fetching and state management
  */
@@ -40,7 +40,6 @@ export const useWeather = (): UseWeatherReturn => {
                     locationName = 'Your Location';
                 } catch {
                     // Use default location if geolocation fails
-                    console.log('[Weather] Using default location (Meycauayan)');
                 }
             }
 
@@ -66,7 +65,6 @@ export const useWeather = (): UseWeatherReturn => {
                 icon,
             });
         } catch (err) {
-            console.error('[Weather] Error:', err);
             setWeatherError('Unable to load weather');
         } finally {
             setWeatherLoading(false);

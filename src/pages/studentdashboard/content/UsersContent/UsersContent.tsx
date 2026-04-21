@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Users Content - User Account Management Page
  * Minimalistic professional design matching PathsContent/GoalsContent
  * Accessibility: prefers-reduced-motion support, keyboard navigation
@@ -1331,7 +1331,6 @@ const TeacherSpotlight: React.FC<{
                 // Filter to only teachers with courses
                 setTeachers(teachersWithCourses.filter(t => t.courses.length > 0));
             } catch (err) {
-                console.error('[TeacherSpotlight] Load error:', err);
             } finally {
                 setIsLoading(false);
             }
@@ -2341,7 +2340,6 @@ const UsersContent: React.FC = () => {
                 setStats(statsData);
                 setClassmates(classmatesData);
             } catch (err) {
-                console.error('[Users] Load error:', err);
             } finally {
                 setIsLoading(false);
             }

@@ -1,4 +1,4 @@
-import * as React from 'react';
+﻿import * as React from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
@@ -1907,10 +1907,8 @@ const ToolsContent: React.FC = () => {
                 // Use iLovePDF (online) as primary, local as fallback
                 if (isILovePDFConfigured()) {
                     try {
-                        console.log('Using iLovePDF for Image to PDF conversion', getApiStatus());
                         blob = await convertImagesToPdfILovePDF(imageFiles);
                     } catch (error) {
-                        console.warn('iLovePDF failed, falling back to local conversion:', error);
                         blob = await convertImageToPDF(imageFiles);
                     }
                 } else {
@@ -1929,10 +1927,8 @@ const ToolsContent: React.FC = () => {
                 // Use iLovePDF (online) as primary, local as fallback
                 if (isILovePDFConfigured()) {
                     try {
-                        console.log('Using iLovePDF for Merge PDFs', getApiStatus());
                         blob = await mergePdfsILovePDF(pdfFiles);
                     } catch (error) {
-                        console.warn('iLovePDF failed, falling back to local merge:', error);
                         blob = await mergePDFs(pdfFiles);
                     }
                 } else {
@@ -1984,14 +1980,11 @@ const ToolsContent: React.FC = () => {
                 // Use Adobe PDF Services first (best quality)
                 if (isAdobeConfigured()) {
                     try {
-                        console.log('Using Adobe PDF Services for PDF to Word', getAdobeApiStatus());
                         blob = await convertPdfToDocxAdobe(pdfFile);
                     } catch (error) {
-                        console.warn('Adobe PDF Services failed, using local conversion:', error);
                         blob = await convertPdfToDocx(pdfFile);
                     }
                 } else {
-                    console.log('Using local conversion for PDF to Word');
                     blob = await convertPdfToDocx(pdfFile);
                 }
                 fileName = pdfFile.name.replace(/\.pdf$/i, '') + '.docx';
@@ -2009,14 +2002,11 @@ const ToolsContent: React.FC = () => {
                 // Try iLovePDF first (with multi-key rotation)
                 if (isILovePDFConfigured()) {
                     try {
-                        console.log('Using iLovePDF for Word to PDF', getApiStatus());
                         blob = await convertDocxToPdfILovePDF(docFile);
                     } catch (error) {
-                        console.warn('iLovePDF failed, using local conversion:', error);
                         const result = await convertDocxToPDF(docFile);
                         blob = result.blob;
                         if (result.warnings.length > 0) {
-                            console.warn('Conversion warnings:', result.warnings);
                         }
                     }
                 } else {
@@ -2024,7 +2014,6 @@ const ToolsContent: React.FC = () => {
                     const result = await convertDocxToPDF(docFile);
                     blob = result.blob;
                     if (result.warnings.length > 0) {
-                        console.warn('Conversion warnings:', result.warnings);
                     }
                 }
                 fileName = docFile.name.replace(/\.(docx?|doc)$/i, '') + '.pdf';
@@ -2075,7 +2064,6 @@ const ToolsContent: React.FC = () => {
                 setTimeout(() => setConversionSuccess(null), 3000);
             }
         } catch (error) {
-            console.error('Conversion failed:', error);
             alert('An error occurred during conversion.');
         } finally {
             setConvertingFile(null);

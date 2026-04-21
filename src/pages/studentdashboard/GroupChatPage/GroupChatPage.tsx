@@ -279,7 +279,6 @@ const GroupChatPage: React.FC = () => {
     } = useMentions({
         users: mentionUsers,
         onMention: (user) => {
-            console.log('Mentioned user:', user.name);
         },
     });
 
@@ -385,7 +384,6 @@ const GroupChatPage: React.FC = () => {
                     }
                 }
             } catch (error) {
-                console.error('Error loading chat:', error);
             } finally {
                 setIsLoading(false);
             }
@@ -426,7 +424,6 @@ const GroupChatPage: React.FC = () => {
                 });
             }
         } catch (error) {
-            console.error('Error loading more messages:', error);
         } finally {
             setIsLoadingMore(false);
         }
@@ -658,11 +655,10 @@ const GroupChatPage: React.FC = () => {
                             profile.id || profile.studentId,
                             profile.full_name || 'Anonymous',
                             uploadedAttachments
-                        ).catch(err => console.warn('Failed to save resources:', err));
+                        ).catch(err =>
                     }
                 }
             } catch (err) {
-                console.error('Failed to send message:', err);
             }
         })();
     }, [newMessage, groupId, profile, isSending, replyingTo, pendingAttachments, awardXP]);

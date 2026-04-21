@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './student-login.css';
 import { loginUser, saveAccount, getSavedAccounts, removeSavedAccount } from '../../../services/authService';
@@ -15,7 +15,6 @@ const StudentLogin: React.FC = () => {
     );
 
     // Debug log
-    console.log('[Login] Saved accounts:', initialAccounts, 'Step:', initialAccounts.length > 0 ? 'pick-account' : 'email');
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

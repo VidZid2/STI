@@ -1,4 +1,4 @@
-/**
+﻿/**
  * useAchievements Hook
  * Handles achievement loading and state
  */
@@ -39,7 +39,6 @@ export const useAchievements = (refreshTrigger: number): UseAchievementsReturn =
                 recent,
             });
         } catch (err) {
-            console.error('[Achievements] Failed to load:', err);
         }
     };
 

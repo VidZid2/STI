@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import type { GroupWithMembers } from '../../../../../services/groupsService';
@@ -90,7 +90,6 @@ const InviteModal: React.FC<{
                 setInviteLink(`${baseUrl}/join/${invite.invite_code}`);
             }
         } catch (err) {
-            console.error('Failed to generate invite:', err);
         }
         setIsGenerating(false);
     };
@@ -102,7 +101,6 @@ const InviteModal: React.FC<{
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch (err) {
-            console.error('Failed to copy:', err);
         }
     };
 

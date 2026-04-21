@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AddTaskModal
  * Extracted from CourseViewPage.tsx during Phase 1.1
  * Teacher-mode modal for creating new course tasks.
@@ -408,11 +408,9 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
                                         };
                                         const createdTask = await createTask(taskInput);
                                         if (createdTask) {
-                                            console.log('[AddTaskModal] Task created:', createdTask.id);
                                             onTaskCreated?.();
                                         }
                                     } catch (err) {
-                                        console.error('[AddTaskModal] Error:', err);
                                     } finally {
                                         setIsCreatingTask(false);
                                         handleClose();

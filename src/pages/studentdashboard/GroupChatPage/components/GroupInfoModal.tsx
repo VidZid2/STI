@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GroupInfoModal Component
  * Large detailed view modal for group information
  */
@@ -1254,7 +1254,6 @@ const GroupInfoModal: React.FC<{
                                                                             setIsSubmittingReport(false);
                                                                             setReportSubmitted(true);
                                                                         } else {
-                                                                            console.error('Failed to submit report:', result.error);
                                                                             setIsSubmittingReport(false);
                                                                             // Could show error toast here
                                                                         }

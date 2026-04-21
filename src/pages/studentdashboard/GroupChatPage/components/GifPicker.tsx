@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GIF Picker Component
  * Integrates with Tenor API for GIF search and selection
  * Clean, minimalistic design without tabs
@@ -104,7 +104,6 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                 setGifs(formattedGifs);
             }
         } catch (error) {
-            console.error('Error fetching GIFs:', error);
             setGifs([]);
         } finally {
             setIsLoading(false);

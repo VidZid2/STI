@@ -1,4 +1,4 @@
-import * as React from 'react';
+﻿import * as React from 'react';
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
@@ -281,7 +281,6 @@ const getCourseData = (courseId: string): CourseDataType => {
                 }
             }
         } catch (e) {
-            console.error('Failed to load demo modules:', e);
         }
     }
 
@@ -310,7 +309,6 @@ const getStudentsData = () => {
                 return JSON.parse(demoStudents);
             }
         } catch (e) {
-            console.error('Failed to load demo students:', e);
         }
     }
     return DEFAULT_STUDENTS;
@@ -327,7 +325,6 @@ const getTeachersData = (courseId: string) => {
                 return teachers.filter((t: { courses: string[] }) => t.courses.includes(courseId));
             }
         } catch (e) {
-            console.error('Failed to load demo teachers:', e);
         }
     }
     return [];
@@ -344,7 +341,6 @@ const getAIGradingData = (courseId: string) => {
                 return grades[courseId] || null;
             }
         } catch (e) {
-            console.error('Failed to load demo AI grades:', e);
         }
     }
     return null;
@@ -909,7 +905,6 @@ const ContentIconWithTooltip: React.FC<{
                 onMouseLeave={() => setIsHovered(false)}
                 onClick={(e) => {
                     e.stopPropagation();
-                    console.log(`Opening ${config.label}: ${content.title}`);
                 }}
                 disabled={isLocked}
                 className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors cursor-pointer ${colorClasses[config.color].base} ${!isLocked ? colorClasses[config.color].hover : ''}`}
@@ -1419,7 +1414,6 @@ const ActionsDropdown: React.FC<{ activeTab: TabType }> = ({ activeTab }) => {
     }, [activeTab]);
 
     const handleAction = (actionId: string) => {
-        console.log(`${activeTab} action: ${actionId}`);
         setIsOpen(false);
     };
 
@@ -1933,7 +1927,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 .order('due_date', { ascending: true });
 
             if (error) {
-                console.error('Failed to fetch tasks from Supabase:', error);
                 setIsLoadingTasks(false);
                 return;
             }
@@ -2033,7 +2026,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 setSupabaseTasks([]);
             }
         } catch (err) {
-            console.error('Error fetching tasks:', err);
         } finally {
             setIsLoadingTasks(false);
         }
@@ -2096,7 +2088,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             const courseIds = ['cp1', 'euth1', 'itc', 'nstp1', 'pe1', 'ppc', 'purcom', 'tcw', 'uts'];
             courseIds.forEach(id => localStorage.removeItem(`ai-grading-${id}`));
             localStorage.setItem(migrationKey, 'true');
-            console.log('[Migration] Cleared old ai-grading data for fresh start');
         }
     }, []);
 
@@ -2129,7 +2120,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                     return JSON.parse(saved);
                 }
             } catch (e) {
-                console.error('Failed to load saved submissions:', e);
             }
         }
         // Fresh start - no submissions (empty array)
@@ -2615,7 +2605,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 const students = await getClassmates('BSIT101A');
                 setSupabaseStudents(students);
             } catch (error) {
-                console.error('[CourseViewPage] Failed to load students:', error);
             } finally {
                 setIsLoadingStudents(false);
             }
@@ -3313,7 +3302,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             }}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                console.log("Card clicked", task.id);
                                             }}
                                         >
                                             {/* Completed Badge */}
@@ -5714,7 +5702,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             <FloatingActionButton
                 activeTab={activeTab}
                 onAction={(action) => {
-                    console.log(`FAB action: ${action} for course: ${course.title}`);
                     // Handle actions here - can be extended with actual functionality
                 }}
             />

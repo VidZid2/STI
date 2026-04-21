@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+﻿import React, { useState, useRef } from 'react';
 
 interface DashboardIntroProps {
     onComplete: () => void;
@@ -28,7 +28,6 @@ const DashboardIntro: React.FC<DashboardIntroProps> = ({ onComplete }) => {
         const partySound = new Audio('/sounds/Party.mp3');
         partySound.volume = 0.7;
         partySound.play().catch(error => {
-            console.log('Party sound play failed:', error);
         });
 
         // Trigger confetti through callback

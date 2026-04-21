@@ -915,13 +915,11 @@ const CreateGroupModal: React.FC<{
                 .limit(1);
             
             if (error) {
-                console.error('Error checking email:', error);
                 return false;
             }
             
             return data && data.length > 0;
         } catch (err) {
-            console.error('Failed to check email:', err);
             return false;
         }
     };
@@ -986,7 +984,6 @@ const CreateGroupModal: React.FC<{
                     })));
                 }
             } catch (err) {
-                console.error('Failed to fetch classmates:', err);
             }
             setIsSearchingClassmates(false);
             setIsLoadingClassmates(false);
@@ -1038,7 +1035,6 @@ const CreateGroupModal: React.FC<{
                     })));
                 }
             } catch (err) {
-                console.error('Failed to search classmates:', err);
             }
             setIsSearchingClassmates(false);
         }, 300);
@@ -3769,7 +3765,6 @@ const GroupsContent: React.FC = () => {
                     setGroups(updatedGroups);
                 });
             } catch (error) {
-                console.error('Failed to load groups:', error);
             } finally {
                 setIsLoading(false);
             }

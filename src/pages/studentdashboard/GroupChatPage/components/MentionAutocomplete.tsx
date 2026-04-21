@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Mention Autocomplete Component
  * Smart AI-powered suggestions for @mentions in chat
  * Matches GroupsContent/UsersContent design patterns
@@ -192,7 +192,6 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                     setSmartUsers(merged);
                     setDetectedSubjects(result.detectedSubjects);
                 } catch (error) {
-                    console.error('[MentionAutocomplete] Smart suggestion error:', error);
                     setSmartUsers(nameFiltered.slice(0, 6));
                 } finally {
                     setIsAiLoading(false);

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Paths Content - Learning Paths Main Page
  * Displays all available learning paths with filtering and enrollment
  */
@@ -1729,7 +1729,6 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                     paths.forEach(path => {
                         const newlyUnlocked = checkAndUnlockCourses(path, stats.course_progress);
                         if (newlyUnlocked.length > 0) {
-                            console.log('[PathsContent] Newly unlocked courses:', newlyUnlocked);
                         }
                     });
                     
@@ -1739,7 +1738,6 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                     setRecommendations(recs);
                 }
             } catch (err) {
-                console.error('[PathsContent] Error loading course progress:', err);
             }
         };
         loadCourseProgress();
@@ -1752,14 +1750,12 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
 
     // Handle continue learning - navigate to course
     const handleContinueLearning = useCallback((courseId: string) => {
-        console.log('[PathsContent] Continue Learning clicked, courseId:', courseId);
         // Close modal and trigger navigation
         setSelectedPath(null);
         // Dispatch custom event for course navigation with source view
         const event = new CustomEvent('navigate-to-course', { 
             detail: { courseId, fromView: 'paths' } 
         });
-        console.log('[PathsContent] Dispatching navigate-to-course event from paths');
         window.dispatchEvent(event);
     }, []);
 

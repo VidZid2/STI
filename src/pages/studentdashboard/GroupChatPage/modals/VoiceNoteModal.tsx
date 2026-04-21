@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Voice Note Modal Component
  * Allows users to record and share voice notes in the chat
  */
@@ -113,7 +113,6 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
             animationFrameRef.current = requestAnimationFrame(startAnalysis);
             
         } catch (error: unknown) {
-            console.error('Error accessing microphone:', error);
             const err = error as { name?: string };
             if (err.name === 'NotAllowedError') {
                 setPermissionError('Microphone access denied. Please allow microphone access to record.');
