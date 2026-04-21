@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MessageBubble Component
  * Renders individual chat messages with all features:
  * - Avatar with level badge and online status
@@ -69,7 +69,7 @@ interface MessageBubbleProps {
     onToggleHelpful: (messageId: string) => void;
 }
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({
+export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
     message,
     messages,
     isOwn,
@@ -819,4 +819,23 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             </div>
         </motion.div>
     );
-};
+}, (prev, next) => {
+    // Custom equality: only re-render when message content or UI state changes
+    return (
+        prev.message.id === next.message.id &&
+        prev.message.content === next.message.content &&
+        prev.message.is_edited === next.message.is_edited &&
+        prev.isHovered === next.isHovered &&
+        prev.isHighlighted === next.isHighlighted &&
+        prev.isEditing === next.isEditing &&
+        prev.editingContent === next.editingContent &&
+        prev.showReactionsFor === next.showReactionsFor &&
+        prev.isPinned === next.isPinned &&
+        prev.isBookmarked === next.isBookmarked &&
+        prev.reactions.length === next.reactions.length &&
+        prev.isDarkMode === next.isDarkMode &&
+        prev.isOnline === next.isOnline &&
+        prev.helpfulData?.count === next.helpfulData?.count &&
+        prev.helpfulData?.voted === next.helpfulData?.voted
+    );
+});

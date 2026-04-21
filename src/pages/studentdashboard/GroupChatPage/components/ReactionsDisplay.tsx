@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ReactionsDisplay Component
  * Displays emoji reactions below a message with counts
  */
@@ -16,7 +16,7 @@ interface ReactionsDisplayProps {
     onReactionClick: (messageId: string, emoji: string) => void;
 }
 
-export const ReactionsDisplay: React.FC<ReactionsDisplayProps> = ({
+export const ReactionsDisplay = React.memo<ReactionsDisplayProps>(({
     reactions,
     messageId,
     isOwn,
@@ -74,4 +74,4 @@ export const ReactionsDisplay: React.FC<ReactionsDisplayProps> = ({
             </motion.div>
         </AnimatePresence>
     );
-};
+});

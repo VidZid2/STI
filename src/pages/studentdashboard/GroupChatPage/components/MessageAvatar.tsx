@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MessageAvatar Component
  * Displays user avatar with level badge and online status indicator
  */
@@ -16,7 +16,7 @@ interface MessageAvatarProps {
     isDarkMode: boolean;
 }
 
-export const MessageAvatar: React.FC<MessageAvatarProps> = ({
+export const MessageAvatar = React.memo<MessageAvatarProps>(({
     userAvatar,
     userName,
     userLevel,
@@ -98,4 +98,4 @@ export const MessageAvatar: React.FC<MessageAvatarProps> = ({
             }} />
         </div>
     );
-};
+});

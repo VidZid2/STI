@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UnreadIndicator Component
  * Displays a separator showing the number of unread messages
  */
@@ -11,7 +11,7 @@ interface UnreadIndicatorProps {
     isDarkMode: boolean;
 }
 
-export const UnreadIndicator: React.FC<UnreadIndicatorProps> = ({
+export const UnreadIndicator = React.memo<UnreadIndicatorProps>(({
     unreadCount,
     isDarkMode,
 }) => {
@@ -69,4 +69,4 @@ export const UnreadIndicator: React.FC<UnreadIndicatorProps> = ({
             }} />
         </motion.div>
     );
-};
+});

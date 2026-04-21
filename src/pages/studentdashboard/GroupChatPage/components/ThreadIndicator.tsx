@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ThreadIndicator Component
  * Shows "X replies" button below messages that have thread replies
  */
@@ -15,7 +15,7 @@ interface ThreadIndicatorProps {
     onClick: () => void;
 }
 
-export const ThreadIndicator: React.FC<ThreadIndicatorProps> = ({
+export const ThreadIndicator = React.memo<ThreadIndicatorProps>(({
     replyCount,
     uniqueAuthors,
     isDarkMode,
@@ -120,4 +120,4 @@ export const ThreadIndicator: React.FC<ThreadIndicatorProps> = ({
             </div>
         </motion.button>
     );
-};
+});

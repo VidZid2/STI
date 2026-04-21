@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DateSeparator Component
  * Displays a minimalistic date separator line between messages from different days
  */
@@ -13,7 +13,7 @@ interface DateSeparatorProps {
     textMutedColor: string;
 }
 
-export const DateSeparator: React.FC<DateSeparatorProps> = ({
+export const DateSeparator = React.memo<DateSeparatorProps>(({
     date,
     isDarkMode,
     textMutedColor,
@@ -61,4 +61,4 @@ export const DateSeparator: React.FC<DateSeparatorProps> = ({
             }} />
         </motion.div>
     );
-};
+});

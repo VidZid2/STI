@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TypingIndicator Component
  * Displays animated typing indicator showing who is currently typing
  */
@@ -18,7 +18,7 @@ interface TypingIndicatorProps {
     textMutedColor: string;
 }
 
-export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
+export const TypingIndicator = React.memo<TypingIndicatorProps>(({
     typingUsers,
     isDarkMode,
     textMutedColor,
@@ -92,4 +92,4 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
             </div>
         </motion.div>
     );
-};
+});

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MessageContent Component
  * Renders message text with code blocks and @mention highlighting
  */
@@ -13,7 +13,7 @@ interface MessageContentProps {
     currentUserName?: string;
 }
 
-export const MessageContent: React.FC<MessageContentProps> = ({
+export const MessageContent = React.memo<MessageContentProps>(({
     content,
     isOwn,
     isDarkMode,
@@ -94,4 +94,4 @@ export const MessageContent: React.FC<MessageContentProps> = ({
             })}
         </>
     );
-};
+});

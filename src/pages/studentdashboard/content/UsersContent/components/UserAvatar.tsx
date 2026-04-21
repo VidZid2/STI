@@ -3,12 +3,14 @@ import { motion } from 'motion/react';
 import { getRoleInfo } from '../../../../../services/usersService';
 import type { UserAccount } from '../../../../../services/usersService';
 
-const UserAvatar: React.FC<{
+interface UserAvatarProps {
     user: UserAccount;
     size?: number;
     showOnlineStatus?: boolean;
     reducedMotion?: boolean;
-}> = ({
+}
+
+const UserAvatar = React.memo<UserAvatarProps>(({
     user,
     size = 44,
     showOnlineStatus = true,
@@ -66,6 +68,8 @@ const UserAvatar: React.FC<{
             )}
         </div>
     );
-};
+});
+
+UserAvatar.displayName = 'UserAvatar';
 
 export default UserAvatar;

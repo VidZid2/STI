@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ScrollToBottomButton Component
  * Floating button to scroll to the latest messages, shows new message count
  */
@@ -14,7 +14,7 @@ interface ScrollToBottomButtonProps {
     colors: ChatColors;
 }
 
-export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = ({
+export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
     newMessageCount,
     onScrollToBottom,
     isDarkMode,
@@ -121,4 +121,4 @@ export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = ({
             </motion.button>
         </motion.div>
     );
-};
+});

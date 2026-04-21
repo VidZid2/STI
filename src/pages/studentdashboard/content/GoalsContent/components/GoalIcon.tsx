@@ -1,7 +1,13 @@
 import React from 'react';
 import type { GoalType } from '../../../../../services/goalsService';
 
-const GoalIcon: React.FC<{ type: GoalType; color: string; size?: number }> = ({ type, color, size = 24 }) => {
+interface GoalIconProps {
+    type: GoalType;
+    color: string;
+    size?: number;
+}
+
+const GoalIcon = React.memo<GoalIconProps>(({ type, color, size = 24 }) => {
     const icons: Record<GoalType, React.ReactNode> = {
         study_time: (
             <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -34,6 +40,8 @@ const GoalIcon: React.FC<{ type: GoalType; color: string; size?: number }> = ({ 
         ),
     };
     return <div style={{ color }}>{icons[type] ?? icons.custom}</div>;
-};
+});
+
+GoalIcon.displayName = 'GoalIcon';
 
 export default GoalIcon;
