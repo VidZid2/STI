@@ -7,6 +7,17 @@ import { supabase } from '../../../../lib/supabase';
 import { getCurrentUser } from '../../../../services/authService';
 import { useSystemConfig } from '../../../../contexts/SystemConfigContext';
 import { InstructionsModal, SubmitModal, AddTaskModal } from './modals';
+import { QuickStatsBar } from './components/QuickStatsBar';
+import {
+    COURSE_DATA,
+    getDemoCourseData,
+    getDemoStudentsData,
+    getDemoTeachersData,
+    getDemoAIGradingData,
+    type ContentType,
+    type TaskCategory,
+    type CourseDataType,
+} from './data/demoCourses';
 
 interface CourseViewPageProps {
     course: {
@@ -21,8 +32,7 @@ interface CourseViewPageProps {
 }
 
 type TabType = 'modules' | 'assignments' | 'news' | 'students' | 'teachers';
-type ContentType = 'handout-a' | 'handout-b' | 'slideshow' | 'video';
-type TaskCategory = 'all' | 'assignment' | 'performance' | 'quiz' | 'practical' | 'journal' | 'overdue';
+// ContentType, TaskCategory, CourseDataType — imported from ./data/demoCourses
 
 // Typed task shape used throughout CourseViewPage
 interface CourseTask {
@@ -138,446 +148,17 @@ const CONTENT_TYPE_CONFIG: Record<ContentType, { label: string; icon: React.Reac
     },
 };
 
-// Course-specific data configuration
-const COURSE_DATA: Record<string, {
-    modules: { id: number; title: string; status: string; term?: 'prelims' | 'midterm' | 'prefinals' | 'finals'; semester?: 'first' | 'second'; contents: { type: ContentType; title: string; completed: boolean }[] }[];
-    tasks: { id: number; title: string; due: string; status: string; score: string | null; category: TaskCategory }[];
-    instructor: { name: string; title: string; email: string };
-}> = {
-    'cp1': {
-        modules: [
-            {
-                id: 1, title: 'Module 1: Introduction to Programming', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                    { type: 'handout-a' as ContentType, title: 'Course Overview', completed: false },
-                    { type: 'handout-b' as ContentType, title: 'Getting Started Guide', completed: false },
-                    { type: 'slideshow' as ContentType, title: 'Introduction Slides', completed: false },
-                    { type: 'video' as ContentType, title: 'Welcome Video', completed: false },
-                ]
-            },
-        ],
-        tasks: [],
-        instructor: { name: 'David Clarence Del Mundo', title: 'Instructor', email: 'd.delmundo@university.edu' }
-    },
-    'euth1': {
-        modules: [
-            {
-                id: 1, title: 'Chapter 1: Introduction to Euthenics', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                    { type: 'handout-a' as ContentType, title: 'What is Euthenics?', completed: false },
-                    { type: 'slideshow' as ContentType, title: 'Course Introduction', completed: false },
-                    { type: 'video' as ContentType, title: 'Welcome to Euthenics', completed: false },
-                ]
-            },
-        ],
-        tasks: [],
-        instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
-    },
-    'itc': {
-        modules: [
-            {
-                id: 1, title: 'Module 1: Computer Fundamentals', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                    { type: 'handout-a' as ContentType, title: 'History of Computing', completed: false },
-                    { type: 'slideshow' as ContentType, title: 'Computer Components', completed: false },
-                    { type: 'video' as ContentType, title: 'Inside a Computer', completed: false },
-                ]
-            },
-        ],
-        tasks: [],
-        instructor: { name: 'Psalmmiracle Mariano', title: 'Instructor', email: 'p.mariano@university.edu' }
-    },
-    'nstp1': {
-        modules: [
-            {
-                id: 1, title: 'Unit 1: NSTP Overview', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                    { type: 'handout-a' as ContentType, title: 'NSTP Law & Guidelines', completed: false },
-                    { type: 'slideshow' as ContentType, title: 'Program Introduction', completed: false },
-                ]
-            },
-        ],
-        tasks: [],
-        instructor: { name: 'Dan Risty Montojo', title: 'Instructor', email: 'd.montojo@university.edu' }
-    },
-    'pe1': {
-        modules: [
-            {
-                id: 1, title: 'Week 1: Fitness Assessment', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                    { type: 'handout-a' as ContentType, title: 'Fitness Test Guide', completed: false },
-                    { type: 'video' as ContentType, title: 'Proper Form Demo', completed: false },
-                ]
-            },
-        ],
-        tasks: [],
-        instructor: { name: 'Mark Joseph Danoy', title: 'Instructor', email: 'm.danoy@university.edu' }
-    },
-    'ppc': {
-        modules: [
-            {
-                id: 1, title: 'Topic 1: Understanding Culture', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                    { type: 'handout-a' as ContentType, title: 'What is Culture?', completed: false },
-                    { type: 'slideshow' as ContentType, title: 'Cultural Elements', completed: false },
-                ]
-            },
-        ],
-        tasks: [],
-        instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
-    },
-    'purcom': {
-        modules: [
-            {
-                id: 1, title: 'Lesson 1: Communication Process', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                    { type: 'handout-a' as ContentType, title: 'Elements of Communication', completed: false },
-                    { type: 'slideshow' as ContentType, title: 'Communication Models', completed: false },
-                ]
-            },
-        ],
-        tasks: [],
-        instructor: { name: 'John Denielle San Martin', title: 'Instructor', email: 'j.sanmartin@university.edu' }
-    },
-    'tcw': {
-        modules: [
-            {
-                id: 1, title: 'Chapter 1: Globalization', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                    { type: 'handout-a' as ContentType, title: 'What is Globalization?', completed: false },
-                    { type: 'slideshow' as ContentType, title: 'Global Interconnectedness', completed: false },
-                ]
-            },
-        ],
-        tasks: [],
-        instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
-    },
-    'uts': {
-        modules: [
-            {
-                id: 1, title: 'Module 1: The Self from Various Perspectives', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
-                    { type: 'handout-a' as ContentType, title: 'Philosophical Self', completed: false },
-                    { type: 'slideshow' as ContentType, title: 'Who Am I?', completed: false },
-                ]
-            },
-        ],
-        tasks: [],
-        instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
-    },
-};
-
-// Default fallback data
-const DEFAULT_MODULES = COURSE_DATA['cp1'].modules;
-const DEFAULT_TASKS = COURSE_DATA['cp1'].tasks;
-
-// Type for course data
-type CourseDataType = {
-    modules: { id: number; title: string; status: string; term?: 'prelims' | 'midterm' | 'prefinals' | 'finals'; semester?: 'first' | 'second'; contents: { type: ContentType; title: string; completed: boolean }[] }[];
-    tasks: { id: number; title: string; due: string; status: string; score: string | null; category: TaskCategory }[];
-    instructor: { name: string; title: string; email: string };
-};
-
-// Helper function to get course-specific data (with demo mode support)
-const getCourseData = (courseId: string): CourseDataType => {
-    // Check if demo mode is active and demo modules exist
-    const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
-    if (isDemoMode) {
-        try {
-            const demoModulesData = localStorage.getItem('demo-course-modules');
-            if (demoModulesData) {
-                const demoModules = JSON.parse(demoModulesData) as Record<string, { modules: { id: number; title: string; status: string; contents: { type: string; title: string; completed: boolean }[] }[]; tasks?: { id: number; title: string; due: string; status: string; score: string | null; category: string }[] }>;
-                if (demoModules[courseId]) {
-                    const baseData = COURSE_DATA[courseId] || {
-                        modules: DEFAULT_MODULES,
-                        tasks: DEFAULT_TASKS,
-                        instructor: { name: 'Instructor', title: 'Instructor', email: 'instructor@university.edu' }
-                    };
-                    // Cast the demo data to proper types
-                    const typedModules = demoModules[courseId].modules.map(m => ({
-                        ...m,
-                        contents: m.contents.map(c => ({
-                            ...c,
-                            type: c.type as ContentType
-                        }))
-                    }));
-                    const typedTasks = demoModules[courseId].tasks?.map(t => ({
-                        ...t,
-                        category: t.category as TaskCategory
-                    })) || baseData.tasks;
-                    return {
-                        ...baseData,
-                        modules: typedModules,
-                        tasks: typedTasks,
-                    };
-                }
-            }
-        } catch (e) {
-        }
-    }
-
-    return COURSE_DATA[courseId] || {
-        modules: DEFAULT_MODULES,
-        tasks: DEFAULT_TASKS,
-        instructor: { name: 'Instructor', title: 'Instructor', email: 'instructor@university.edu' }
-    };
-};
+// Course data and demo helpers — moved to ./data/demoCourses.ts
+// getDemoCourseData → getDemoCourseData
+// getDemoStudentsData → getDemoStudentsData
+// getDemoTeachersData → getDemoTeachersData
+// getDemoAIGradingData → getDemoAIGradingData
 
 // Fresh start - no news announcements yet
 const SAMPLE_NEWS: { id: number; title: string; date: string; preview: string; unread: boolean }[] = [];
 
-// Default students data - only the current user (you)
-const DEFAULT_STUDENTS = [
-    { id: 1, name: 'Josiah P. De Asis', status: 'online', role: 'Student', email: 'deasis.462124@meycauayan.sti.edu.ph', grade: 0, attendance: 0, submissions: 0, aiGraded: false },
-];
-
-// Helper to get students data (with demo mode support)
-const getStudentsData = () => {
-    const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
-    if (isDemoMode) {
-        try {
-            const demoStudents = localStorage.getItem('demo-students');
-            if (demoStudents) {
-                return JSON.parse(demoStudents);
-            }
-        } catch (e) {
-        }
-    }
-    return DEFAULT_STUDENTS;
-};
-
-// Helper to get teachers data (with demo mode support)
-const getTeachersData = (courseId: string) => {
-    const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
-    if (isDemoMode) {
-        try {
-            const demoTeachers = localStorage.getItem('demo-teachers');
-            if (demoTeachers) {
-                const teachers = JSON.parse(demoTeachers);
-                return teachers.filter((t: { courses: string[] }) => t.courses.includes(courseId));
-            }
-        } catch (e) {
-        }
-    }
-    return [];
-};
-
-// Helper to get AI grading data (with demo mode support)
-const getAIGradingData = (courseId: string) => {
-    const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
-    if (isDemoMode) {
-        try {
-            const demoAIGrades = localStorage.getItem('demo-ai-grades');
-            if (demoAIGrades) {
-                const grades = JSON.parse(demoAIGrades);
-                return grades[courseId] || null;
-            }
-        } catch (e) {
-        }
-    }
-    return null;
-};
-
 // Stat Card Component - Extracted to follow Rules of Hooks
-const StatCard: React.FC<{
-    stat: {
-        label: string;
-        value: string;
-        subValue: string | null;
-        description: string;
-        color: string;
-        bgColor: string;
-        borderColor: string;
-        iconColor: string;
-        icon: React.ReactNode;
-    };
-    index: number;
-}> = ({ stat, index }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{
-                opacity: 1,
-                y: isHovered ? -4 : 0,
-                scale: isHovered ? 1.02 : 1,
-            }}
-            transition={{
-                opacity: { delay: 0.25 + index * 0.08, duration: 0.4 },
-                y: isHovered ? { duration: 0.1 } : { delay: 0.25 + index * 0.08, duration: 0.4 },
-                scale: { duration: 0.1 },
-            }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            style={{
-                background: stat.bgColor,
-                borderColor: stat.borderColor,
-                boxShadow: isHovered ? '0 8px 25px rgba(0,0,0,0.1)' : 'none',
-            }}
-            className="flex flex-col items-center p-5 rounded-2xl cursor-default border"
-        >
-            {/* Icon */}
-            <div
-                className="mb-3 p-3 rounded-xl transition-transform duration-100"
-                style={{
-                    background: `${stat.iconColor}15`,
-                    color: stat.iconColor,
-                    transform: isHovered ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)',
-                }}
-            >
-                {stat.icon}
-            </div>
-
-            {/* Value */}
-            <div className="flex items-baseline gap-1.5 mb-1">
-                <motion.span
-                    className="text-3xl font-bold"
-                    style={{ color: stat.color }}
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.3 + index * 0.08, type: 'spring', stiffness: 300 }}
-                >
-                    {stat.value}
-                </motion.span>
-                {stat.subValue && (
-                    <span className="text-sm font-medium text-zinc-600">{stat.subValue}</span>
-                )}
-            </div>
-
-            {/* Label */}
-            <span className="text-xs font-semibold text-zinc-800 mb-0.5">{stat.label}</span>
-
-            {/* Description */}
-            <span className="text-[10px] text-zinc-500 text-center">{stat.description}</span>
-        </motion.div>
-    );
-};
-
-// Quick Stats Component - Large cards at bottom with progress bar
-const QuickStatsBar: React.FC<{ courseId: string; progress: number }> = ({ courseId: _courseId, progress }) => {
-    void _courseId;
-
-    // Fresh start - 0% grade (C) and 0% attendance
-    const stats = {
-        grade: 0,
-        attendance: 0,
-        nextDeadline: { title: 'No assignments yet', days: 0 },
-        unreadNews: 0,
-    };
-
-    // Get grade letter based on percentage (0% = C grade)
-    const getGradeLetter = (grade: number) => {
-        if (grade >= 90) return 'A';
-        if (grade >= 85) return 'B+';
-        if (grade >= 80) return 'B';
-        if (grade >= 75) return 'C+';
-        if (grade >= 70) return 'C';
-        return 'C'; // 0% or below 70% = C
-    };
-
-    const gradeLetter = getGradeLetter(stats.grade);
-
-    // Stat cards configuration - Large cards design
-    const statCards = [
-        {
-            label: 'Current Grade',
-            value: gradeLetter,
-            subValue: `${stats.grade}%`,
-            description: 'Your current standing',
-            color: stats.grade === 0 ? '#1e293b' : '#3b82f6',
-            bgColor: stats.grade === 0 ? 'rgba(148, 163, 184, 0.06)' : 'rgba(59, 130, 246, 0.06)',
-            borderColor: stats.grade === 0 ? 'rgba(148, 163, 184, 0.15)' : 'rgba(59, 130, 246, 0.15)',
-            iconColor: stats.grade === 0 ? '#64748b' : '#3b82f6',
-            icon: (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-            ),
-        },
-        {
-            label: 'Attendance',
-            value: `${stats.attendance}%`,
-            subValue: null,
-            description: 'Classes attended',
-            color: stats.attendance === 0 ? '#1e293b' : '#8b5cf6',
-            bgColor: stats.attendance === 0 ? 'rgba(148, 163, 184, 0.06)' : 'rgba(139, 92, 246, 0.06)',
-            borderColor: stats.attendance === 0 ? 'rgba(148, 163, 184, 0.15)' : 'rgba(139, 92, 246, 0.15)',
-            iconColor: stats.attendance === 0 ? '#64748b' : '#8b5cf6',
-            icon: (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-            ),
-        },
-        {
-            label: 'Next Deadline',
-            value: stats.nextDeadline.days === 0 ? '-' : `${stats.nextDeadline.days}`,
-            subValue: stats.nextDeadline.days === 0 ? null : 'days left',
-            description: stats.nextDeadline.days === 0 ? 'No upcoming deadlines' : stats.nextDeadline.title,
-            color: stats.nextDeadline.days === 0 ? '#1e293b' : stats.nextDeadline.days <= 2 ? '#ef4444' : '#f59e0b',
-            bgColor: stats.nextDeadline.days === 0 ? 'rgba(148, 163, 184, 0.06)' : stats.nextDeadline.days <= 2 ? 'rgba(239, 68, 68, 0.06)' : 'rgba(245, 158, 11, 0.06)',
-            borderColor: stats.nextDeadline.days === 0 ? 'rgba(148, 163, 184, 0.15)' : stats.nextDeadline.days <= 2 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-            iconColor: stats.nextDeadline.days === 0 ? '#64748b' : stats.nextDeadline.days <= 2 ? '#ef4444' : '#f59e0b',
-            icon: (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                </svg>
-            ),
-        },
-        {
-            label: 'Course Progress',
-            value: `${progress}%`,
-            subValue: null,
-            description: 'Modules completed',
-            color: progress === 100 ? '#10b981' : '#3b82f6',
-            bgColor: progress === 100 ? 'rgba(16, 185, 129, 0.06)' : 'rgba(59, 130, 246, 0.06)',
-            borderColor: progress === 100 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(59, 130, 246, 0.15)',
-            iconColor: progress === 100 ? '#10b981' : '#3b82f6',
-            icon: (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                    <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-            ),
-        },
-    ];
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="px-6 py-4"
-        >
-            {/* Container matching header card style */}
-            <div className="p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm">
-                {/* Progress Bar at top */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.4 }}
-                    className="mb-4"
-                >
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-zinc-600">Overall Course Progress</span>
-                        <span className="text-xs font-bold text-blue-600">{progress}% Complete</span>
-                    </div>
-                    <div className="h-2 bg-zinc-100 rounded-full overflow-hidden">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${progress}%` }}
-                            transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                            className={`h-full rounded-full ${progress === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-blue-500 to-blue-400'}`}
-                        />
-                    </div>
-                </motion.div>
-
-                {/* Large Stats Cards Grid */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                    {statCards.map((stat, i) => (
-                        <StatCard key={stat.label} stat={stat} index={i} />
-                    ))}
-                </div>
-            </div>
-        </motion.div>
-    );
-};
+// QuickStatsBar — moved to ./components/QuickStatsBar.tsx
 
 
 // Search Bar Component - Enhanced with minimalistic design
@@ -2558,7 +2139,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const instructor = getInstructor();
 
     // Get course-specific data
-    const courseData = useMemo(() => getCourseData(course.id), [course.id]);
+    const courseData = useMemo(() => getDemoCourseData(course.id), [course.id]);
     const courseModules = courseData.modules;
     // Merge demo tasks with real Supabase tasks
     const courseTasks = useMemo(() => {
@@ -2649,7 +2230,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 lastActive: s.last_active,
             }));
         }
-        return getStudentsData();
+        return getDemoStudentsData();
     }, [supabaseStudents]);
 
     const filteredStudents = useMemo(() =>
@@ -2664,11 +2245,11 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
     // Get teachers data for this course (with demo mode support)
     // @ts-ignore - Reserved for future use
-    const _teachersData = useMemo(() => getTeachersData(course.id), [course.id]);
+    const _teachersData = useMemo(() => getDemoTeachersData(course.id), [course.id]);
 
     // Get AI grading data for this course (with demo mode support)
     // @ts-ignore - Reserved for future use
-    const _aiGradingData = useMemo(() => getAIGradingData(course.id), [course.id]);
+    const _aiGradingData = useMemo(() => getDemoAIGradingData(course.id), [course.id]);
 
     // Handle wheel scroll to horizontal scroll for modules - snap to cards
     useEffect(() => {
