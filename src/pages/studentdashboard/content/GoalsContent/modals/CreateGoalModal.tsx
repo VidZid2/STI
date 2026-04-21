@@ -1,4 +1,9 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+/**
+ * CreateGoalModal
+ * Multi-step goal creation wizard.
+ * Extracted from GoalsContent.tsx during Phase 8.3
+ */
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
     createGoal,
@@ -8,6 +13,7 @@ import {
     type GoalPriority,
 } from '../../../../../services/goalsService';
 import { COURSES_DATA } from '../../../../../services/pathsService';
+import GoalIcon from '../components/GoalIcon';
 
 type NewGoalData = Omit<Goal, 'id' | 'student_id' | 'created_at' | 'updated_at'>;
 
@@ -529,7 +535,7 @@ const CreateGoalModal: React.FC<{
                                                 fontWeight: 500,
                                             }}
                                         >
-                                            ΓêÆ
+                                            −
                                         </motion.button>
                                         <div style={{ 
                                             flex: 1, 
@@ -704,7 +710,7 @@ const CreateGoalModal: React.FC<{
                                                     opacity: endDate ? 1 : 0.4,
                                                 }}
                                             >
-                                                ΓêÆ
+                                                −
                                             </motion.button>
                                             <div 
                                                 style={{ 
@@ -1134,4 +1140,6 @@ const CreateGoalModal: React.FC<{
     );
 };
 
+
+export { CreateGoalModal };
 export default CreateGoalModal;

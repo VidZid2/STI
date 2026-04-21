@@ -1,7 +1,12 @@
-﻿import React from 'react';
+/**
+ * AchievementsModal
+ * Displays earned achievements and badges.
+ * Extracted from GoalsContent.tsx during Phase 8.3
+ */
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { createPortal } from 'react-dom';
 
+// Achievements Modal Component - Minimalistic Design
 const AchievementsModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
@@ -299,4 +304,7 @@ const AchievementsModal: React.FC<{
     );
 };
 
+
+
+export { AchievementsModal };
 export default AchievementsModal;

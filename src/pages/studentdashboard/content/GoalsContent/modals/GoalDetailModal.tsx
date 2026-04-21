@@ -1,19 +1,26 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+/**
+ * GoalDetailModal
+ * Detailed view/edit modal for a single goal.
+ * Extracted from GoalsContent.tsx during Phase 8.3
+ */
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { createPortal } from 'react-dom';
 import {
-    updateGoalStatus,
-    updateGoalProgress,
+    updateGoal,
     deleteGoal,
-    goalTypeConfig,
     getRealTimeProgress,
     getCurrentAbsoluteValue,
     getAggregatedProgressHistory,
+    goalTypeConfig,
+    type Goal,
     type GoalWithProgress,
     type GoalType,
     type GoalPriority,
     type GoalStatus,
 } from '../../../../../services/goalsService';
+import { COURSES_DATA } from '../../../../../services/pathsService';
+import GoalIcon from '../components/GoalIcon';
+import MilestoneIcon from '../components/MilestoneIcon';
 
 const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
     goal,
@@ -370,7 +377,7 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                     </motion.div>
                                     <div style={{ flex: 1 }}>
                                         <div style={{ fontSize: '13px', fontWeight: 600, color: colors.textPrimary }}>
-                                            {goal.status === 'completed' ? 'Goal Achieved! ≡ƒÄë' : goal.status === 'paused' ? 'Goal Paused' : 'In Progress'}
+                                            {goal.status === 'completed' ? 'Goal Achieved! 🎉' : goal.status === 'paused' ? 'Goal Paused' : 'In Progress'}
                                         </div>
                                         <div style={{ fontSize: '11px', color: colors.textMuted }}>
                                             {goal.status === 'completed' 
@@ -653,4 +660,55 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
     );
 };
 
+
+// Goal Type Icons for Modal
+const GoalTypeIcons: Record<GoalType, React.ReactNode> = {
+    study_time: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+        </svg>
+    ),
+    course_completion: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            <path d="M8 7h8" /><path d="M8 11h6" />
+        </svg>
+    ),
+    streak: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+        </svg>
+    ),
+    grade: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+    ),
+};
+
+// Priority Icons
+const PriorityIcons: Record<GoalPriority, React.ReactNode> = {
+    low: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 19V5" /><path d="m5 12 7-7 7 7" />
+        </svg>
+    ),
+    medium: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M8 12h8" /><path d="M12 8v8" />
+        </svg>
+    ),
+    high: (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="m3 8 4-4 4 4" /><path d="M7 4v16" />
+            <path d="m13 16 4 4 4-4" /><path d="M17 20V4" />
+        </svg>
+    ),
+};
+
+// Create Goal Modal
+
+export { GoalDetailModal };
 export default GoalDetailModal;
