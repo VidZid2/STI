@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import { getClassmates, type UserAccount } from '../../../../services/usersService';
@@ -15,6 +15,7 @@ import type { ModuleData } from './components/ModuleCard';
 import { ActionsDropdown } from './components/ActionsDropdown';
 import { PaginationButton, PageNumberButton } from './components/PaginationControls';
 import { PreviewIconWithTooltip } from './components/PreviewIconWithTooltip';
+import { useCourseTasks } from './hooks/useCourseTasks';
 import {
     COURSE_DATA,
     getDemoCourseData,
@@ -250,172 +251,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [supabaseStudents, setSupabaseStudents] = useState<UserAccount[]>([]);
     const [isLoadingStudents, setIsLoadingStudents] = useState(true);
 
-    // Supabase tasks data - fetch real assignments from database
-    const [supabaseTasks, setSupabaseTasks] = useState<CourseTask[]>([]);
-    const [_isLoadingTasks, setIsLoadingTasks] = useState(true);
-
-    // Fetch tasks from Supabase course_tasks table
-    const fetchSupabaseTasks = useCallback(async () => {
-        if (!supabase) {
-            setIsLoadingTasks(false);
-            return;
-        }
-        try {
-            setIsLoadingTasks(true);
-
-            // Get current student's section for filtering
-            const currentUser = getCurrentUser();
-            const studentSection = currentUser?.section || 'BSIT101A';
-
-            const { data: tasks, error } = await supabase
-                .from('course_tasks')
-                .select('id, title, type, due_date, points, status, section, description, instructions, allow_late_submission, late_penalty, max_attempts, rubric_enabled, rubric_criteria, prerequisite_assignment_id, attachments')
-                .eq('course_id', course.id)
-                .eq('section', studentSection)
-                .eq('status', 'published')
-                .order('due_date', { ascending: true });
-
-            if (error) {
-                setIsLoadingTasks(false);
-                return;
-            }
-
-            // Fetch student submissions for these tasks (including count for max attempts)
-            let submissionsMap: Record<string, { score: number | null, status: string, count: number }> = {};
-            if (tasks && tasks.length > 0 && currentUser?.id) {
-                const taskIds = tasks.map(t => t.id);
-                // Use student_id field (the actual student ID) to match how submissions are stored
-                const studentIdForQuery = currentUser.student_id || currentUser.id;
-                const { data: subs } = await supabase
-                    .from('student_submissions')
-                    .select('task_id, score, status')
-                    .eq('student_id', studentIdForQuery)
-                    .in('task_id', taskIds);
-
-                if (subs) {
-                    subs.forEach(sub => {
-                        const existing = submissionsMap[sub.task_id];
-                        if (existing) {
-                            // Count multiple submissions for max attempts tracking
-                            existing.count += 1;
-                            // Keep the latest submission's score/status
-                            if (sub.score !== null) {
-                                existing.score = sub.score;
-                                existing.status = sub.status;
-                            }
-                        } else {
-                            submissionsMap[sub.task_id] = { score: sub.score, status: sub.status, count: 1 };
-                        }
-                    });
-                }
-            }
-
-            if (tasks && tasks.length > 0) {
-                const mappedTasks = tasks.map((task) => {
-                    // Get student submission
-                    const submission = submissionsMap[task.id];
-                    // Format due date for display
-                    const dueDate = new Date(task.due_date);
-                    const now = new Date();
-                    const diffDays = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-                    let dueLabel = '';
-                    if (diffDays < 0) {
-                        dueLabel = `Overdue by ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''}`;
-                    } else if (diffDays === 0) {
-                        dueLabel = 'Due Today';
-                    } else if (diffDays === 1) {
-                        dueLabel = 'Due Tomorrow';
-                    } else if (diffDays <= 7) {
-                        dueLabel = `Due in ${diffDays} days`;
-                    } else {
-                        dueLabel = `Due ${dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-                    }
-
-                    // Map DB type to TaskCategory
-                    const categoryMap: Record<string, TaskCategory> = {
-                        'assignment': 'assignment',
-                        'quiz': 'quiz',
-                        'performance': 'performance',
-                        'practical': 'practical',
-                        'journal': 'journal',
-                    };
-
-                    return {
-                        id: task.id, // Use real UUID
-                        title: task.title,
-                        due: dueLabel,
-                        status: submission?.status || (diffDays < 0 ? 'overdue' : 'pending'),
-                        score: submission?.score ?? null,
-                        category: categoryMap[task.type] || ('assignment' as TaskCategory),
-                        points: task.points || 100,
-                        dueDate: task.due_date,
-                        description: task.description,
-                        instructions: task.instructions,
-                        allowLateSubmission: (task as any).allow_late_submission || false,
-                        latePenalty: (task as any).late_penalty || 0,
-                        maxAttempts: (task as any).max_attempts || 1,
-                        rubricEnabled: (task as any).rubric_enabled || false,
-                        rubricCriteria: (task as any).rubric_criteria || [],
-                        prerequisiteAssignmentId: (task as any).prerequisite_assignment_id || null,
-                        attachments: (task as any).attachments || [],
-                        submissionCount: submission?.count || 0,
-                        _diffDays: diffDays, // Internal use
-                    };
-                }).map((t: CourseTask) => {
-                    // Feature Request (eLMS Unique Backend-safe auto-locking):
-                    // If a task is past 15 days and never submitted, it gets explicitly locked forever instead of deleted.
-                    if (t.status === 'overdue' && (t._diffDays ?? 0) <= -15) {
-                        return { ...t, status: 'locked' };
-                    }
-                    return t;
-                });
-
-                setSupabaseTasks(mappedTasks);
-            } else {
-                setSupabaseTasks([]);
-            }
-        } catch (err) {
-        } finally {
-            setIsLoadingTasks(false);
-        }
-    }, [course.id]);
-
-    useEffect(() => {
-        fetchSupabaseTasks();
-    }, [fetchSupabaseTasks]);
-
-    // Listen for realtime grading updates
-    useEffect(() => {
-        if (!supabase) return;
-        const currentUser = getCurrentUser();
-        if (!currentUser) return;
-
-        const studentIdForSubscription = currentUser.student_id || currentUser.id;
-        const channel = supabase
-            .channel('student_grade_updates')
-            .on(
-                'postgres_changes',
-                { event: 'UPDATE', schema: 'public', table: 'student_submissions', filter: `student_id=eq.${studentIdForSubscription}` },
-                (payload) => {
-                    const updatedSub = payload.new;
-                    setSupabaseTasks(prev => prev.map(t => {
-                        if (t.id === updatedSub.task_id) {
-                            return {
-                                ...t,
-                                score: updatedSub.score,
-                                status: updatedSub.status
-                            };
-                        }
-                        return t;
-                    }));
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase?.removeChannel(channel);
-        };
-    }, []);
+    // Supabase tasks — managed by useCourseTasks hook
+    const { tasks: supabaseTasks, refetch: fetchSupabaseTasks } = useCourseTasks(course.id);
 
     // Teacher Mode State - persist across page refreshes
     const [isTeacherMode, _setIsTeacherMode] = useState(() => {
