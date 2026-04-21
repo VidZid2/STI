@@ -655,7 +655,7 @@ const GroupChatPage: React.FC = () => {
                             profile.id || profile.studentId,
                             profile.full_name || 'Anonymous',
                             uploadedAttachments
-                        ).catch(err =>
+                        ).catch(() => {});
                     }
                 }
             } catch (err) {

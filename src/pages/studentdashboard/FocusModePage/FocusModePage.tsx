@@ -618,14 +618,14 @@ const PomodoroTimer: React.FC<{
         try {
             if (timerCompleteAudioRef.current) {
                 timerCompleteAudioRef.current.currentTime = 0;
-                timerCompleteAudioRef.current.play().catch(err =>
+                timerCompleteAudioRef.current.play().catch(() => {});
             } else {
                 const audio = new Audio('/sounds/timer-complete.mp3');
                 audio.volume = 0.7;
                 timerCompleteAudioRef.current = audio;
-                audio.play().catch(err =>
+                audio.play().catch(() => {});
             }
-        } catch (err) {
+        } catch {
         }
     }, []);
 
@@ -1588,7 +1588,7 @@ const AmbientSounds: React.FC<{
                 const audio = new Audio(sound.url);
                 audio.loop = true;
                 audio.volume = volume / 100;
-                audio.play().catch(err =>
+                audio.play().catch(() => {});
                 audioRef.current = audio;
                 setActiveSound(soundId);
             }
