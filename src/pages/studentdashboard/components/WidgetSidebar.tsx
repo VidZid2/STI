@@ -48,6 +48,12 @@ export interface WidgetSidebarProps {
     quickViewSettings: { compactMode: boolean; showWeather: boolean; showDeadlines: boolean; showActivity: boolean };
     // Achievements
     achievements: { id: string; title: string; description: string; icon: string; unlockedAt?: Date }[];
+    // Dashboard data
+    refreshTrigger: number;
+    totalCourses: number;
+    upcomingDeadlines: { id: string; title: string; course: string; dueDate: Date; type: string }[];
+    overallProgress: number;
+    openSettingsModal: () => void;
     // Formatters
     formatDaysUntil: (date: Date) => string;
     getDeadlineTypeColor: (type: string) => string;
@@ -90,6 +96,11 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
     formatRelativeTime,
     getCourseProgressData,
     formatMinutesToHours,
+    refreshTrigger,
+    totalCourses,
+    upcomingDeadlines,
+    overallProgress,
+    openSettingsModal,
 }) => {
     return (
             <AnimatePresence mode="wait">
@@ -365,6 +376,11 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                 formatRelativeTime={formatRelativeTime}
                                 getCourseProgressData={getCourseProgressData}
                                 formatMinutesToHours={formatMinutesToHours}
+                                refreshTrigger={refreshTrigger}
+                                totalCourses={totalCourses}
+                                upcomingDeadlines={upcomingDeadlines}
+                                overallProgress={overallProgress}
+                                openSettingsModal={openSettingsModal}
                             />
 
                             {/* Quick Actions Footer */}

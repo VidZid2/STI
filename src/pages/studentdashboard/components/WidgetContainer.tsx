@@ -45,6 +45,11 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     formatRelativeTime,
     getCourseProgressData,
     formatMinutesToHours,
+    refreshTrigger,
+    totalCourses,
+    upcomingDeadlines,
+    overallProgress,
+    openSettingsModal,
 }) => {
     return (
         <>

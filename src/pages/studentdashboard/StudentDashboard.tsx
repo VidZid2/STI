@@ -400,13 +400,13 @@ const DashboardPage: React.FC = () => {
                 clearAllTodos={clearAllTodos}
                 completedCount={completedCount}
                 weather={weather}
-                isWeatherLoading={isWeatherLoading}
-                deadlines={deadlines}
-                recentActivity={recentActivity}
+                isWeatherLoading={weatherLoading}
+                deadlines={upcomingDeadlines}
+                recentActivity={recentActivities}
                 gradePredictor={gradePredictor}
                 studyInsights={studyInsights}
-                notifications={notifications}
-                groupedNotifications={groupedNotifications}
+                notifications={toastNotifications}
+                groupedNotifications={[]}
                 quickViewSettings={quickViewSettings}
                 achievements={achievements}
                 formatDaysUntil={formatDaysUntil}
@@ -414,6 +414,11 @@ const DashboardPage: React.FC = () => {
                 formatRelativeTime={formatRelativeTime}
                 getCourseProgressData={getCourseProgressData}
                 formatMinutesToHours={formatMinutesToHours}
+                refreshTrigger={refreshTrigger}
+                totalCourses={totalCourses}
+                upcomingDeadlines={upcomingDeadlines}
+                overallProgress={overallProgress}
+                openSettingsModal={openSettingsModal}
             />
 
             {/* AI Chatbot - Removed */}
