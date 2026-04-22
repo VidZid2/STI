@@ -47,6 +47,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     formatMinutesToHours,
 }) => {
     return (
+        <>
                             {/* Widget Container - Minimalistic Professional Design */}
                             <div className={`px-3 ${quickViewSettings.compactMode ? 'space-y-2' : 'space-y-3'}`}>
 
@@ -1573,6 +1574,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                     )}
                                 </AnimatePresence>
                             </div>
+        </>
     );
 };
 
