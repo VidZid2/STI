@@ -80,8 +80,6 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
         return courseTasks.filter(t => t.category === cat).length;
     };
 
-    return (
-            case 'assignments':
                 if (isLoading) {
                     return (
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
@@ -821,9 +819,6 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                         )}
                     </motion.div>
                 );
-
-
-    );
 };
 
 export default CourseAssignmentsTab;

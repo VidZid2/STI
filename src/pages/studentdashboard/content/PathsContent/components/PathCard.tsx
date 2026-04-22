@@ -605,6 +605,11 @@ export const PathCard: React.FC<PathCardProps> = ({ path, index, isDarkMode, col
                                                                         }} />
                                                                     )}
                                                                 </React.Fragment>
+                                                            ))}
+                                                        </div>
+                                                    </motion.div>
+                                                </motion.div>
+                                            </motion.div>
     );
 };
 
