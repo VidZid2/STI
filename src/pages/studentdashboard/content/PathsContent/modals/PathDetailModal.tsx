@@ -8,8 +8,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import {
     enrollInPath,
-    unenrollFromPath,
-    bookmarkPath,
     type PathWithProgress,
 } from '../../../../../services/pathsService';
 import { PathIcon } from '../components/PathIcon';
