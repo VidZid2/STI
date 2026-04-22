@@ -12,7 +12,7 @@ import {
     bookmarkPath,
     type PathWithProgress,
 } from '../../../../../services/pathsService';
-import PathIcon from '../components/PathIcon';
+import { PathIcon } from '../components/PathIcon';
 import { ProgressRingWithTooltip, ModalTooltip } from '../components/PathProgressRing';
 
 // Path Detail Modal Component

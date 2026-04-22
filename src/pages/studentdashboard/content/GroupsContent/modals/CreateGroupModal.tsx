@@ -805,7 +805,7 @@ const CreateGroupModal: React.FC<{
                                             Create Study Group
                                         </h2>
                                         <p style={{ margin: 0, fontSize: '12px', color: colors.textMuted }}>
-                                            Step {step} of {totalSteps} • {step === 1 ? 'Basic Info' : step === 2 ? 'Customize' : 'Invite Friends'}
+                                            Step {step} of {totalSteps} ï¿½ {step === 1 ? 'Basic Info' : step === 2 ? 'Customize' : 'Invite Friends'}
                                         </p>
                                     </div>
                                 </div>
@@ -2886,3 +2886,6 @@ const CreateGroupModal: React.FC<{
         document.body
     );
 };
+
+export { CreateGroupModal };
+export default CreateGroupModal;

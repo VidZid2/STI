@@ -23,11 +23,11 @@ import {
     type PathRecommendation,
 } from '../../../../services/pathsService';
 import { fetchStudentStats } from '../../../../services/databaseService';
-import PathIcon from './components/PathIcon';
+import { PathIcon } from './components/PathIcon';
 import { ProgressRingWithTooltip, ModalTooltip } from './components/PathProgressRing';
 import { FilterTabs } from './components/PathFilterTabs';
-import PathDetailModal from './modals/PathDetailModal';
-import PathCertificateModal from './modals/PathCertificateModal';
+import { PathDetailModal } from './modals/PathDetailModal';
+import { PathCertificateModal } from './modals/PathCertificateModal';
 
 interface PathsContentProps {
     onPathSelect?: (pathId: string) => void;
