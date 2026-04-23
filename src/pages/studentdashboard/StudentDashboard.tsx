@@ -419,6 +419,15 @@ const DashboardPage: React.FC = () => {
                 upcomingDeadlines={upcomingDeadlines}
                 overallProgress={overallProgress}
                 openSettingsModal={openSettingsModal}
+                todaysQuote={todaysQuote}
+                weatherLoading={weatherLoading}
+                weatherError={weatherError}
+                recentActivities={recentActivities}
+                calendarData={calendarData}
+                calendarView={calendarView}
+                setCalendarView={setCalendarView}
+                calendarMonth={calendarMonth}
+                setCalendarMonth={setCalendarMonth}
             />
 
             {/* AI Chatbot - Removed */}

@@ -54,6 +54,16 @@ export interface WidgetSidebarProps {
     upcomingDeadlines: { id: string; title: string; course: string; dueDate: Date; type: string }[];
     overallProgress: number;
     openSettingsModal: () => void;
+    // Additional dashboard state
+    todaysQuote: { text: string; author: string } | null;
+    weatherLoading: boolean;
+    weatherError: string | null;
+    recentActivities: { id: string; type: string; title: string; course: string; timestamp: Date; score?: number }[];
+    calendarData: Record<string, { hasDeadline: boolean; deadlines: { id: string; title: string; course: string; dueDate: Date; type: string }[] }>;
+    calendarView: 'mini' | 'full';
+    setCalendarView: (v: 'mini' | 'full') => void;
+    calendarMonth: Date;
+    setCalendarMonth: (d: Date) => void;
     // Formatters
     formatDaysUntil: (date: Date) => string;
     getDeadlineTypeColor: (type: string) => string;
@@ -101,6 +111,15 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
     upcomingDeadlines,
     overallProgress,
     openSettingsModal,
+    todaysQuote,
+    weatherLoading,
+    weatherError,
+    recentActivities,
+    calendarData,
+    calendarView,
+    setCalendarView,
+    calendarMonth,
+    setCalendarMonth,
 }) => {
     return (
             <AnimatePresence mode="wait">
@@ -381,6 +400,15 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                 upcomingDeadlines={upcomingDeadlines}
                                 overallProgress={overallProgress}
                                 openSettingsModal={openSettingsModal}
+                                todaysQuote={todaysQuote}
+                                weatherLoading={weatherLoading}
+                                weatherError={weatherError}
+                                recentActivities={recentActivities}
+                                calendarData={calendarData}
+                                calendarView={calendarView}
+                                setCalendarView={setCalendarView}
+                                calendarMonth={calendarMonth}
+                                setCalendarMonth={setCalendarMonth}
                             />
 
                             {/* Quick Actions Footer */}

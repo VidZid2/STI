@@ -50,6 +50,15 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     upcomingDeadlines,
     overallProgress,
     openSettingsModal,
+    todaysQuote,
+    weatherLoading,
+    weatherError,
+    recentActivities,
+    calendarData,
+    calendarView,
+    setCalendarView,
+    calendarMonth,
+    setCalendarMonth,
 }) => {
     return (
         <>
