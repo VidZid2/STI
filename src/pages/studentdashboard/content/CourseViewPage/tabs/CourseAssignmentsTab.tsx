@@ -74,12 +74,6 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
         return tasks;
     }, [courseTasks, taskFilter, searchQuery]);
 
-    const getTaskCategoryCount = (cat: TaskCategory) => {
-        if (cat === 'all') return courseTasks.filter(t => t.status !== 'locked').length;
-        if (cat === 'overdue') return courseTasks.filter(t => t.status === 'overdue' || t.due?.toLowerCase().includes('overdue')).length;
-        return courseTasks.filter(t => t.category === cat).length;
-    };
-
                 if (isLoading) {
                     return (
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
