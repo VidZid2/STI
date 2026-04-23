@@ -267,6 +267,36 @@ Sweep through every `createPortal(...)` modal in:
 
 ---
 
+## 🛠️ Phase 11: StudentDashboard Widget Extraction ✅ DONE
+
+**Goal:** Extract the 800+ lines of widget sidebar JSX into standalone components.
+
+**Estimated gain: +0.2 points**
+
+### Results:
+- `StudentDashboard.tsx`: 2,187 → 541 lines (-75%)
+- `WidgetSidebar.tsx`: extracted sidebar shell (~389 lines)
+- `WidgetContainer.tsx`: extracted all 10 widgets (~1,539 lines)
+
+---
+
+## 🛠️ Phase 8: Deep Component Decomposition ✅ DONE
+
+| File | Before | After | Reduction |
+|---|---|---|---|
+| `GroupsContent.tsx` | 4,496 | 950 | **-79%** |
+| `GoalsContent.tsx` | 4,320 | 1,447 | **-67%** |
+| `FocusModePage.tsx` | 3,595 | 974 | **-73%** |
+| `UsersContent.tsx` | 3,769 | 1,750 | **-54%** |
+| `PathsContent.tsx` | 3,582 | 2,010 | **-44%** |
+| `CatalogContent.tsx` | 2,803 | 1,346 | **-52%** |
+| `ToolsContent.tsx` | 2,721 | 1,041 | **-62%** |
+| `StudentDashboard.tsx` | 2,187 | 541 | **-75%** |
+| `HomeContent.tsx` | 2,029 | 1,386 | **-32%** |
+| `CourseViewPage.tsx` | 5,710 | 2,304 | **-60%** |
+
+---
+
 ## ✅ Expected Final State
 
 | Metric | Before (7.2) | After (8.8) |
