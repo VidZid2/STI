@@ -3,7 +3,7 @@
  * Visualizes goal progress over time.
  * Extracted from GoalsContent.tsx during Phase 8.3
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { getAggregatedProgressHistory } from '../../../../../services/goalsService';
 

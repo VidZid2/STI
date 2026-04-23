@@ -3,7 +3,7 @@
  * Displays earned achievements and badges.
  * Extracted from GoalsContent.tsx during Phase 8.3
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 // Achievements Modal Component - Minimalistic Design

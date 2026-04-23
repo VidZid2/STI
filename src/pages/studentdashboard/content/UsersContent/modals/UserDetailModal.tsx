@@ -3,7 +3,7 @@
  * Detailed user profile modal.
  * Extracted from UsersContent.tsx during Phase 8.4
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { getRoleInfo, type UserAccount } from '../../../../../services/usersService';
 import UserAvatar from '../components/UserAvatar';

@@ -3,7 +3,7 @@
  * Resource management components for FocusModePage.
  * Extracted from FocusModePage.tsx during Phase 8.5
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { FocusModeColors } from '../FocusModePage';
 import type { Resource, FilterTab } from '../FocusModePage';

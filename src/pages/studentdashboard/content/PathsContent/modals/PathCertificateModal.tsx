@@ -3,7 +3,7 @@
  * Certificate display modal for completed paths.
  * Extracted from PathsContent.tsx during Phase 8.6
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import type { PathWithProgress } from '../../../../../services/pathsService';

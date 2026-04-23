@@ -2,7 +2,7 @@
  * UserCard + UserListItem + QuickActionButton + HeartIcon
  * Extracted from UsersContent.tsx during Phase 8.4
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import { getRoleInfo, type UserAccount } from '../../../../../services/usersService';

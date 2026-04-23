@@ -3,7 +3,7 @@
  * Course display components for CatalogContent.
  * Extracted from CatalogContent.tsx during Phase 8.7
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { CatalogCourse } from '../../../../../services/catalogService';
 import { CategoryIcon } from './CatalogShared';

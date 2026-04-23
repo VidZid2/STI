@@ -3,7 +3,7 @@
  * Confetti/celebration overlay when a goal is completed.
  * Extracted from GoalsContent.tsx during Phase 8.3
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 // Celebration Animation Component - Minimalistic Blue Theme

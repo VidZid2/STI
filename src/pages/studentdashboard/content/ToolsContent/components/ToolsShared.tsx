@@ -3,7 +3,7 @@
  * Shared UI components for ToolsContent.
  * Extracted from ToolsContent.tsx during Phase 8.7
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
 
 // Premium Category Tabs Component with Sliding Indicator

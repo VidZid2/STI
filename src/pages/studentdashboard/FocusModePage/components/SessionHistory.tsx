@@ -3,7 +3,7 @@
  * Weekly focus trends chart.
  * Extracted from FocusModePage.tsx during Phase 8.5
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import type { FocusModeColors } from '../FocusModePage';
 import type { StudyTimeData } from '../../../../../services/studyTimeService';
