@@ -1,4 +1,4 @@
-﻿/**
+/**
  * MessageBubble Component
  * Renders individual chat messages with all features:
  * - Avatar with level badge and online status
@@ -266,7 +266,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                 opacity: 1,
                 y: 0,
                 boxShadow: isHighlighted
-                    ? `0 0 0 2px ${colors.accent}, 0 4px 20px ${colors.accent}30`
+                    ? `0 0 0 2px var(--accent-color), 0 4px 20px var(--accent-color)30`
                     : 'none',
             }}
             exit={{ opacity: 0 }}
@@ -301,15 +301,15 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                             width: 36,
                             height: 36,
                             borderRadius: '50%',
-                            background: `linear-gradient(135deg, ${colors.accent}30 0%, ${colors.accent}10 100%)`,
+                            background: `linear-gradient(135deg, var(--accent-color)30 0%, var(--accent-color)10 100%)`,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '13px',
                             fontWeight: 600,
-                            color: colors.accent,
+                            color: 'var(--accent-color)',
                             overflow: 'hidden',
-                            border: `2px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                            border: `2px solid ${'var(--dashboard-surface)'}`,
                         }}
                     >
                         {message.user_avatar ? (
@@ -334,7 +334,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                         fontWeight: 700,
                         padding: '2px 6px',
                         borderRadius: '8px',
-                        border: `2px solid ${colors.cardBg}`,
+                        border: `2px solid var(--dashboard-surface)`,
                         lineHeight: 1.2,
                         whiteSpace: 'nowrap',
                         boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
@@ -350,7 +350,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                         height: 10,
                         borderRadius: '50%',
                         background: isOnline ? '#22c55e' : '#9ca3af',
-                        border: `2px solid ${colors.cardBg}`,
+                        border: `2px solid var(--dashboard-surface)`,
                         boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
                     }} />
                 </div>
@@ -366,17 +366,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                         padding: '10px 14px',
                         borderRadius: getBorderRadius(),
                         background: isOwn
-                            ? `linear-gradient(135deg, ${colors.accent} 0%, #2563eb 100%)`
-                            : colors.cardBg,
-                        color: isOwn ? '#fff' : colors.textPrimary,
+                            ? `linear-gradient(135deg, var(--accent-color) 0%, #2563eb 100%)`
+                            : 'var(--dashboard-surface)',
+                        color: isOwn ? '#fff' : 'var(--text-primary)',
                         boxShadow: isOwn
-                            ? `0 2px 8px ${colors.accent}30`
-                            : `0 1px 3px ${colors.border}`,
+                            ? `0 2px 8px var(--accent-color)30`
+                            : `0 1px 3px var(--border-color)`,
                         cursor: 'default',
                         position: 'relative',
                         border: isPinned
                             ? '2px solid #ef4444'
-                            : (isBookmarked ? `2px solid ${colors.accent}` : 'none'),
+                            : (isBookmarked ? `2px solid var(--accent-color)` : 'none'),
                     }}
                 >
                     {/* Bookmark Indicator */}
@@ -386,7 +386,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                                 position: 'absolute',
                                 top: -1,
                                 right: 8,
-                                color: colors.accent,
+                                color: 'var(--accent-color)',
                             }}
                             title="Bookmarked"
                         >
@@ -411,7 +411,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                                 gap: '3px',
                                 fontSize: '11px',
                                 fontWeight: 600,
-                                color: colors.accent,
+                                color: 'var(--accent-color)',
                             }}>
                                 {message.user_name}
                             </span>
@@ -426,7 +426,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                                         color: '#f97316',
                                         padding: '2px 5px',
                                         borderRadius: '4px',
-                                        background: isDarkMode ? 'rgba(249, 115, 22, 0.15)' : 'rgba(249, 115, 22, 0.1)',
+                                        background: 'rgba(249, 115, 22, 0.15)',
                                         fontWeight: 500,
                                     }}
                                     title={`${userStreak} day study streak!`}
@@ -445,8 +445,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                                     padding: '2px 5px',
                                     borderRadius: '4px',
                                     background: memberRole === 'owner'
-                                        ? (isDarkMode ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.1)')
-                                        : (isDarkMode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(139, 92, 246, 0.1)'),
+                                        ? 'rgba(245, 158, 11, 0.15)'
+                                        : 'rgba(139, 92, 246, 0.15)',
                                     fontWeight: 500,
                                 }}>
                                     ⭐ {memberRole === 'owner' ? 'Owner' : 'Admin'}
@@ -495,9 +495,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                                     minHeight: '60px',
                                     padding: '8px 10px',
                                     borderRadius: '8px',
-                                    border: `1px solid ${isOwn ? 'rgba(255,255,255,0.3)' : colors.border}`,
-                                    background: isOwn ? 'rgba(255,255,255,0.1)' : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)'),
-                                    color: isOwn ? '#fff' : colors.textPrimary,
+                                    border: `1px solid ${isOwn ? 'rgba(255,255,255,0.3)' : 'var(--border-color)'}`,
+                                    background: isOwn ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)',
+                                    color: isOwn ? '#fff' : 'var(--text-primary)',
                                     fontSize: '14px',
                                     lineHeight: 1.5,
                                     resize: 'none',
@@ -523,8 +523,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                                         padding: '4px 10px',
                                         borderRadius: '6px',
                                         border: 'none',
-                                        background: isOwn ? 'rgba(255,255,255,0.15)' : (isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'),
-                                        color: isOwn ? 'rgba(255,255,255,0.9)' : colors.textSecondary,
+                                        background: isOwn ? 'rgba(255,255,255,0.15)' : ('var(--bg-hover)'),
+                                        color: isOwn ? 'rgba(255,255,255,0.9)' : 'var(--text-secondary)',
                                         fontSize: '12px',
                                         fontWeight: 500,
                                         cursor: 'pointer',
@@ -540,7 +540,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                                         padding: '4px 10px',
                                         borderRadius: '6px',
                                         border: 'none',
-                                        background: isOwn ? 'rgba(255,255,255,0.25)' : colors.accent,
+                                        background: isOwn ? 'rgba(255,255,255,0.25)' : 'var(--accent-color)',
                                         color: '#fff',
                                         fontSize: '12px',
                                         fontWeight: 500,
@@ -675,16 +675,16 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                                         gap: '3px',
                                         padding: '2px 6px',
                                         borderRadius: '10px',
-                                        border: `1px solid ${colors.border}`,
-                                        background: reaction.users.includes(profile?.id)
-                                            ? `${colors.accent}15`
-                                            : colors.cardBg,
+                                        border: `1px solid var(--border-color)`,
+                                        background: reaction.users.includes(profile?.id || '')
+                                            ? `var(--accent-color)15`
+                                            : 'var(--dashboard-surface)',
                                         cursor: 'pointer',
                                         fontSize: '12px',
                                     }}
                                 >
                                     <span>{reaction.emoji}</span>
-                                    <span style={{ fontSize: '10px', color: colors.textSecondary }}>
+                                    <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>
                                         {reaction.users.length}
                                     </span>
                                 </motion.button>
@@ -697,7 +697,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                 {replyCount > 0 && (
                     <motion.button
                         initial={false}
-                        whileHover={{ scale: 1.02, background: isDarkMode ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.05)', borderColor: '#3b82f6' }}
+                        whileHover={{ scale: 1.02, background: 'rgba(59, 130, 246, 0.08)', borderColor: '#3b82f6' }}
                         whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.15, ease: 'easeOut' }}
                         onClick={() => onThreadOpen(message)}
@@ -708,8 +708,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                             marginTop: '6px',
                             padding: '6px 12px',
                             borderRadius: '10px',
-                            border: `1.5px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
-                            background: isDarkMode ? 'rgba(59, 130, 246, 0.05)' : 'rgba(59, 130, 246, 0.03)',
+                            border: `1.5px solid ${'var(--dashboard-surface)'}`,
+                            background: 'rgba(59, 130, 246, 0.05)',
                             cursor: 'pointer',
                             width: 'fit-content',
                             transition: 'all 0.2s ease',
@@ -733,8 +733,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                                         width: 20,
                                         height: 20,
                                         borderRadius: '6px',
-                                        background: isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)',
-                                        border: `1.5px solid ${colors.cardBg}`,
+                                        background: 'rgba(59, 130, 246, 0.2)',
+                                        border: `1.5px solid var(--dashboard-surface)`,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -782,11 +782,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                                 [isOwn ? 'right' : 'left']: 0,
                                 display: 'flex',
                                 gap: '4px',
-                                background: colors.cardBg,
+                                background: 'var(--dashboard-surface)',
                                 borderRadius: '12px',
                                 padding: '6px 8px',
                                 boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                                border: `1px solid ${colors.border}`,
+                                border: `1px solid var(--border-color)`,
                                 zIndex: 10,
                             }}
                         >

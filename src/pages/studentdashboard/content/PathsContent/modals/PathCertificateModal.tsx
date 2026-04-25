@@ -3,37 +3,44 @@
  * Certificate display modal for completed paths.
  * Extracted from PathsContent.tsx during Phase 8.6
  */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
-import type { PathWithProgress } from '../../../../../services/pathsService';
+import { useModalAccessibility } from '../../../hooks/useModalAccessibility';
+import {
+    getPathTotalModules,
+    formatEstimatedTime,
+    getPathEstimatedHours,
+    type PathWithProgress,
+} from '../../../../../services/pathsService';
+
+export interface PathCertificateModalProps {
+    path: PathWithProgress | null;
+    isOpen: boolean;
+    onClose: () => void;
+    completedAt?: string;
+}
+import { PathIcon } from '../components/PathIcon';
 
 const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
     path,
     isOpen,
     onClose,
-    isDarkMode,
     completedAt,
 }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'path-certificate-title');
     const colors = {
-        bg: isDarkMode ? '#0f172a' : '#ffffff',
-        cardBg: isDarkMode ? '#1e293b' : '#f8fafc',
-        border: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-        textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
-        textSecondary: isDarkMode ? '#94a3b8' : '#475569',
-        textMuted: isDarkMode ? '#94a3b8' : '#334155',
+        bg: 'var(--bg-primary)',
+        cardBg: 'var(--bg-secondary)',
+        border: 'var(--border-light)',
+        textPrimary: 'var(--text-primary)',
+        textSecondary: 'var(--text-secondary)',
+        textMuted: 'var(--text-muted)',
         gold: '#f59e0b',
         goldLight: '#fef3c7',
     };
 
-    // Handle escape key
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && isOpen) onClose();
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
+    // Escape key + focus trap handled by useModalAccessibility hook
 
     if (!path) return null;
 
@@ -71,6 +78,8 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
 
                     {/* Modal Container */}
                     <div
+                        ref={modalRef}
+                        {...modalProps}
                         style={{
                             position: 'fixed',
                             inset: 0,
@@ -90,14 +99,12 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                             style={{
                                 width: '100%',
                                 maxWidth: '420px',
-                                background: colors.bg,
+                                background: 'var(--bg-primary)',
                                 borderRadius: '24px',
-                                boxShadow: isDarkMode
-                                    ? '0 32px 64px rgba(0, 0, 0, 0.5)'
-                                    : '0 32px 64px rgba(0, 0, 0, 0.2)',
+                                boxShadow: 'var(--shadow-lg)',
                                 overflow: 'hidden',
                                 pointerEvents: 'auto',
-                                border: `1px solid ${colors.border}`,
+                                border: `1px solid var(--border-color)`,
                             }}
                         >
                             {/* Certificate Header with Confetti Effect */}
@@ -105,7 +112,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                 position: 'relative',
                                 padding: '32px 24px 24px',
                                 background: `linear-gradient(135deg, ${path.color}15 0%, ${colors.gold}10 100%)`,
-                                borderBottom: `1px solid ${colors.border}`,
+                                borderBottom: `1px solid var(--border-color)`,
                                 textAlign: 'center',
                                 overflow: 'hidden',
                             }}>
@@ -175,7 +182,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         margin: 0,
                                         fontSize: '22px',
                                         fontWeight: 700,
-                                        color: colors.textPrimary,
+                                        color: 'var(--text-primary)',
                                         marginBottom: '8px',
                                     }}
                                 >
@@ -188,7 +195,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                     style={{
                                         margin: 0,
                                         fontSize: '14px',
-                                        color: colors.textSecondary,
+                                        color: 'var(--text-secondary)',
                                     }}
                                 >
                                     You've completed the learning path
@@ -220,7 +227,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         <span style={{
                                             fontSize: '16px',
                                             fontWeight: 600,
-                                            color: colors.textPrimary,
+                                            color: 'var(--text-primary)',
                                         }}>
                                             {path.title}
                                         </span>
@@ -243,7 +250,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                     <div style={{
                                         padding: '12px',
                                         borderRadius: '10px',
-                                        background: colors.cardBg,
+                                        background: 'var(--dashboard-surface)',
                                         textAlign: 'center',
                                     }}>
                                         <div style={{
@@ -256,7 +263,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         </div>
                                         <div style={{
                                             fontSize: '10px',
-                                            color: colors.textMuted,
+                                            color: 'var(--text-muted)',
                                             textTransform: 'uppercase',
                                             letterSpacing: '0.5px',
                                         }}>
@@ -268,7 +275,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                     <div style={{
                                         padding: '12px',
                                         borderRadius: '10px',
-                                        background: colors.cardBg,
+                                        background: 'var(--dashboard-surface)',
                                         textAlign: 'center',
                                     }}>
                                         <div style={{
@@ -281,7 +288,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         </div>
                                         <div style={{
                                             fontSize: '10px',
-                                            color: colors.textMuted,
+                                            color: 'var(--text-muted)',
                                             textTransform: 'uppercase',
                                             letterSpacing: '0.5px',
                                         }}>
@@ -293,7 +300,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                     <div style={{
                                         padding: '12px',
                                         borderRadius: '10px',
-                                        background: colors.cardBg,
+                                        background: 'var(--dashboard-surface)',
                                         textAlign: 'center',
                                     }}>
                                         <div style={{
@@ -306,7 +313,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         </div>
                                         <div style={{
                                             fontSize: '10px',
-                                            color: colors.textMuted,
+                                            color: 'var(--text-muted)',
                                             textTransform: 'uppercase',
                                             letterSpacing: '0.5px',
                                         }}>
@@ -327,11 +334,11 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         gap: '8px',
                                         padding: '10px 16px',
                                         borderRadius: '8px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                        background: 'var(--bg-hover)',
                                         marginBottom: '20px',
                                     }}
                                 >
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                                         <line x1="16" y1="2" x2="16" y2="6" />
                                         <line x1="8" y1="2" x2="8" y2="6" />
@@ -339,7 +346,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                     </svg>
                                     <span style={{
                                         fontSize: '12px',
-                                        color: colors.textSecondary,
+                                        color: 'var(--text-secondary)',
                                     }}>
                                         Completed on {formattedDate}
                                     </span>
@@ -404,14 +411,14 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                             {/* Footer */}
                             <div style={{
                                 padding: '16px 24px',
-                                borderTop: `1px solid ${colors.border}`,
+                                borderTop: `1px solid var(--border-color)`,
                                 display: 'flex',
                                 gap: '12px',
                             }}>
                                 <motion.button
                                     whileHover={{ 
                                         scale: 1.02,
-                                        backgroundColor: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                                        backgroundColor: 'var(--bg-hover)',
                                     }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={onClose}
@@ -419,9 +426,9 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         flex: 1,
                                         padding: '12px 20px',
                                         borderRadius: '10px',
-                                        border: `1px solid ${colors.border}`,
+                                        border: `1px solid var(--border-color)`,
                                         background: 'transparent',
-                                        color: colors.textSecondary,
+                                        color: 'var(--text-secondary)',
                                         fontSize: '14px',
                                         fontWeight: 500,
                                         cursor: 'pointer',

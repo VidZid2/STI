@@ -1,9 +1,9 @@
-﻿import * as React from 'react';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { createPortal } from 'react-dom';
+
 import { convertImageToPDF, mergePDFs } from '../../../../lib/pdfUtils';
-import { FileUpload } from '../../../../components/ui/primitives/file-upload';
+
 import { convertDocxToPDF } from '../../../../lib/converters/docxToPdf';
 import { convertPdfToDocx } from '../../../../lib/converters/pdfToDocx';
 import { compressPDF, formatFileSize } from '../../../../lib/converters/compressPdf';
@@ -15,14 +15,12 @@ import {
     convertImagesToPdfILovePDF,
     mergePdfsILovePDF,
     isILovePDFConfigured,
-    getApiStatus,
 } from '../../../../lib/converters/ilovepdfService';
 // Adobe PDF Services API - For PDF to Word (best quality!)
 // 5 accounts × 500 files = 2,500/month
 import {
     convertPdfToDocxAdobe,
     isAdobeConfigured,
-    getAdobeApiStatus,
 } from '../../../../lib/converters/adobePdfService';
 // LanguageTool Grammar Checker - Free, no API key required!
 import LanguageToolGrammarChecker from '../../../../components/tools/LanguageToolGrammarChecker';

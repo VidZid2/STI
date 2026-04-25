@@ -65,7 +65,7 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
 
     const getButtonColor = (isActive: boolean, activeColor?: string) => {
         if (isActive && activeColor) return activeColor;
-        return isOwn ? 'rgba(255,255,255,0.8)' : (isDarkMode ? '#e5e7eb' : '#374151');
+        return isOwn ? 'rgba(255,255,255,0.8)' : ('var(--bg-hover)');
     };
 
     return (
@@ -88,7 +88,7 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
             {/* Left side: Timestamp */}
             <span style={{
                 fontSize: '10px',
-                color: isOwn ? 'rgba(255,255,255,0.6)' : colors.textMuted,
+                color: isOwn ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)',
             }}>
                 {timestamp}{isEdited && ' • edited'}
             </span>
@@ -146,15 +146,15 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
                         whileHover={{
                             scale: 1.1,
                             background: isBookmarked
-                                ? (isOwn ? 'rgba(255,255,255,0.2)' : `${colors.accent}20`)
+                                ? (isOwn ? 'rgba(255,255,255,0.2)' : `var(--accent-color)20`)
                                 : (isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)'),
                         }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => onToggleBookmark(message.id)}
                         style={{
                             ...buttonBaseStyle,
-                            background: isBookmarked ? (isOwn ? 'rgba(255,255,255,0.1)' : `${colors.accent}10`) : 'transparent',
-                            color: isBookmarked ? (isOwn ? '#fff' : colors.accent) : getButtonColor(false),
+                            background: isBookmarked ? (isOwn ? 'rgba(255,255,255,0.1)' : `var(--accent-color)10`) : 'transparent',
+                            color: isBookmarked ? (isOwn ? '#fff' : 'var(--accent-color)') : getButtonColor(false),
                         }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill={isBookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -250,7 +250,7 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
                                 border: 'none',
                                 background: helpfulData?.voted ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
                                 cursor: 'pointer',
-                                color: helpfulData?.voted ? '#22c55e' : (isDarkMode ? '#e5e7eb' : '#374151'),
+                                color: helpfulData?.voted ? '#22c55e' : ('var(--bg-hover)'),
                                 fontSize: '11px',
                                 fontWeight: 600,
                                 transition: 'all 0.2s ease',

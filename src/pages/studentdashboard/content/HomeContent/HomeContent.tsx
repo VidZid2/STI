@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
-import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { CourseCard, ReorderableCourseGrid } from '../../../../components/shared';
 import { NumberTicker } from '../../../../components/ui/primitives/number-ticker';
@@ -89,11 +88,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
     const [achievement, setAchievement] = useState({ title: '', description: '', icon: '🏆' });
     const [isHomeLoading, setIsHomeLoading] = useState(true);
     
-    // Dark mode detection
-    const [isDarkMode, setIsDarkMode] = useState(() => 
-        typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
-    );
-    
+
     // Real-time tracking state
     const [studyTimeData, setStudyTimeData] = useState<StudyTimeData>(() => getStudyTimeData());
     const [streakData, setStreakData] = useState<StreakData>(() => getStreakData());
@@ -167,14 +162,6 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Dark mode detection
-    useEffect(() => {
-        const checkDarkMode = () => setIsDarkMode(document.body.classList.contains('dark-mode'));
-        checkDarkMode();
-        const observer = new MutationObserver(checkDarkMode);
-        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-        return () => observer.disconnect();
-    }, []);
 
     // Initial loading state
     useEffect(() => {
@@ -1000,7 +987,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                         setExpandedStatCard(isExpanded ? null : stat.label);
                                     }}
                                     style={{ 
-                                        backgroundColor: isExpanded ? stat.color : (isDarkMode ? `${stat.color}20` : stat.lightBg), 
+                                        backgroundColor: isExpanded ? stat.color : 'var(--bg-tertiary)', 
                                         color: isExpanded ? 'white' : stat.color 
                                     }}
                                 >
@@ -1042,15 +1029,15 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                                 >
                                                     <span className="popup-item-icon" style={{ 
                                                         backgroundColor: item.status === 'completed' || item.status === 'record' 
-                                                            ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5') 
+                                                            ? 'rgba(16, 185, 129, 0.15)' 
                                                             : item.status === 'in-progress' || item.status === 'active' 
-                                                                ? (isDarkMode ? `${stat.color}20` : stat.lightBg) 
-                                                                : (isDarkMode ? '#334155' : '#f3f4f6'),
+                                                                ? 'var(--bg-tertiary)' 
+                                                                : 'var(--bg-hover)',
                                                         color: item.status === 'completed' || item.status === 'record' 
-                                                            ? (isDarkMode ? '#34d399' : '#10b981') 
+                                                            ? 'var(--success)' 
                                                             : item.status === 'in-progress' || item.status === 'active' 
                                                                 ? stat.color 
-                                                                : (isDarkMode ? '#94a3b8' : '#6b7280')
+                                                                : 'var(--text-muted)'
                                                     }}>
                                                         {item.status === 'completed' || item.status === 'record' ? (
                                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

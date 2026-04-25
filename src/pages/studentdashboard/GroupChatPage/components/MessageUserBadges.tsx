@@ -57,7 +57,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                 gap: '3px',
                 fontSize: '11px',
                 fontWeight: 600,
-                color: colors.accent,
+                color: 'var(--accent-color)',
             }}>
                 {userName}
             </span>
@@ -73,7 +73,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                         color: '#f97316',
                         padding: '2px 5px',
                         borderRadius: '4px',
-                        background: isDarkMode ? 'rgba(249, 115, 22, 0.15)' : 'rgba(249, 115, 22, 0.1)',
+                        background: 'rgba(249, 115, 22, 0.15)',
                         fontWeight: 500,
                     }}
                     title={`${userStreak} day study streak!`}
@@ -95,7 +95,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                 color: '#8b5cf6',
                 padding: '2px 5px',
                 borderRadius: '4px',
-                background: isDarkMode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(139, 92, 246, 0.1)',
+                background: 'rgba(139, 92, 246, 0.15)',
                 fontWeight: 500,
             }}>
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -114,7 +114,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                 color: '#059669',
                 padding: '2px 5px',
                 borderRadius: '4px',
-                background: isDarkMode ? 'rgba(5, 150, 105, 0.15)' : 'rgba(5, 150, 105, 0.1)',
+                background: 'rgba(5, 150, 105, 0.15)',
                 fontWeight: 500,
             }}>
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -135,8 +135,8 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                     padding: '2px 5px',
                     borderRadius: '4px',
                     background: memberRole === 'owner'
-                        ? (isDarkMode ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.1)')
-                        : (isDarkMode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(139, 92, 246, 0.1)'),
+                        ? 'rgba(245, 158, 11, 0.15)'
+                        : 'rgba(139, 92, 246, 0.15)',
                     fontWeight: 500,
                 }}>
                     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -157,7 +157,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                         color: '#ec4899',
                         padding: '2px 5px',
                         borderRadius: '4px',
-                        background: isDarkMode ? 'rgba(236, 72, 153, 0.15)' : 'rgba(236, 72, 153, 0.1)',
+                        background: 'rgba(236, 72, 153, 0.15)',
                         fontWeight: 500,
                     }}
                     title={`Helped ${memberStats?.helpfulCount} times`}
@@ -184,7 +184,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                                 height: 16,
                                 fontSize: '10px',
                                 borderRadius: '4px',
-                                background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                                background: 'rgba(255,255,255,0.08)',
                                 cursor: 'default',
                             }}
                         >

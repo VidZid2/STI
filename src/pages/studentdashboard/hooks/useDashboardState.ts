@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from '../../../services/authService';
-import type { DashboardView, PreviousView, SelectedCourse } from '../types';
+import type { DashboardView, SidebarCourse } from '../types';
 
 interface UseDashboardStateReturn {
     // Sidebar state
@@ -37,12 +37,12 @@ interface UseDashboardStateReturn {
     // View state
     activeView: DashboardView;
     setActiveView: (view: DashboardView) => void;
-    previousView: PreviousView;
-    setPreviousView: (view: PreviousView) => void;
+    previousView: DashboardView;
+    setPreviousView: (view: DashboardView) => void;
 
     // Course state
-    selectedCourse: SelectedCourse | null;
-    setSelectedCourse: (course: SelectedCourse | null) => void;
+    selectedCourse: SidebarCourse | null;
+    setSelectedCourse: (course: SidebarCourse | null) => void;
 
     // Confetti state
     showConfetti: boolean;
@@ -96,10 +96,10 @@ export const useDashboardState = (): UseDashboardStateReturn => {
         const saved = sessionStorage.getItem('dashboard_active_view');
         return (saved as DashboardView) || 'home';
     });
-    const [previousView, setPreviousView] = useState<PreviousView>('home');
+    const [previousView, setPreviousView] = useState<DashboardView>('home');
 
     // Course state - persist across page refreshes
-    const [selectedCourse, setSelectedCourse] = useState<SelectedCourse | null>(() => {
+    const [selectedCourse, setSelectedCourse] = useState<SidebarCourse | null>(() => {
         try {
             const saved = sessionStorage.getItem('dashboard_selected_course');
             return saved ? JSON.parse(saved) : null;

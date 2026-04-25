@@ -3,30 +3,19 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import { getClassmates, type UserAccount } from '../../../../services/usersService';
-import { supabase } from '../../../../lib/supabase';
-import { getCurrentUser } from '../../../../services/authService';
 import { useSystemConfig } from '../../../../contexts/SystemConfigContext';
 import { InstructionsModal, SubmitModal, AddTaskModal } from './modals';
 import { QuickStatsBar } from './components/QuickStatsBar';
 import { StudentCard } from './components/StudentCard';
 import { SearchBar, EmptyState, TeacherActionButton } from './components/SharedComponents';
 import { ModuleCard } from './components/ModuleCard';
-import type { ModuleData } from './components/ModuleCard';
 import { ActionsDropdown } from './components/ActionsDropdown';
 import { PaginationButton, PageNumberButton } from './components/PaginationControls';
-import { PreviewIconWithTooltip } from './components/PreviewIconWithTooltip';
 import { useCourseTasks } from './hooks/useCourseTasks';
 import { TeacherModeContent } from './components/TeacherModeContent';
 import { CourseAssignmentsTab } from './tabs/CourseAssignmentsTab';
 import {
-    COURSE_DATA,
-    getDemoCourseData,
-    getDemoStudentsData,
-    getDemoTeachersData,
-    getDemoAIGradingData,
-    type ContentType,
     type TaskCategory,
-    type CourseDataType,
 } from './data/demoCourses';
 
 interface CourseViewPageProps {
@@ -45,7 +34,8 @@ type TabType = 'modules' | 'assignments' | 'news' | 'students' | 'teachers';
 // ContentType, TaskCategory, CourseDataType — imported from ./data/demoCourses
 
 // Typed task shape used throughout CourseViewPage
-interface CourseTask {
+// @ts-ignore - Reserved for future typed task handling
+interface _CourseTask {
     id: string | number;
     title: string;
     due: string;
@@ -68,7 +58,8 @@ interface CourseTask {
 }
 
 // Task category configuration for the Tasks tab filter
-const TASK_CATEGORIES: { id: TaskCategory; label: string; icon: React.ReactNode; color: string }[] = [
+// @ts-ignore - Reserved for future Tasks tab filter
+const _TASK_CATEGORIES: { id: TaskCategory; label: string; icon: React.ReactNode; color: string }[] = [
     {
         id: 'all', label: 'All', icon: (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -126,7 +117,7 @@ const TASK_CATEGORIES: { id: TaskCategory; label: string; icon: React.ReactNode;
 
 // Content type icons — moved to ./components/ModuleCard.tsx
 
-// Course data and demo helpers — moved to ./data/demoCourses.ts
+// Demo helpers removed
 
 // Fresh start - no news announcements yet
 const SAMPLE_NEWS: { id: number; title: string; date: string; preview: string; unread: boolean }[] = [];
@@ -298,29 +289,13 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     }, [termFilter, semesterFilter, searchQuery]);
 
     const [submissions, setSubmissions] = useState(() => {
-        // Check if demo mode is active - only then load from localStorage
-        const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
-        if (isDemoMode) {
-            const storageKey = `ai-grading-${course.id}`;
-            try {
-                const saved = localStorage.getItem(storageKey);
-                if (saved) {
-                    return JSON.parse(saved);
-                }
-            } catch (e) {
-            }
-        }
-        // Fresh start - no submissions (empty array)
+        // Fallback or empty state
         return SAMPLE_SUBMISSIONS;
     });
 
-    // Save submissions to localStorage when they change (only in demo mode)
+    // No-op or handle real submission saves here
     useEffect(() => {
-        const isDemoMode = localStorage.getItem('demo-mode-active') === 'true';
-        if (isDemoMode) {
-            const storageKey = `ai-grading-${course.id}`;
-            localStorage.setItem(storageKey, JSON.stringify(submissions));
-        }
+        // Will be replaced by actual Supabase service
     }, [submissions, course.id]);
 
     // State for viewing task details in a modal
@@ -338,7 +313,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [showSectionDropdown, setShowSectionDropdown] = useState(false);
     const [showTeacherTutorial, setShowTeacherTutorial] = useState(false);
     const [tutorialStep, setTutorialStep] = useState(0);
-    const [contactTooltip, setContactTooltip] = useState<{ visible: boolean; x: number; y: number }>({ visible: false, x: 0, y: 0 });
+    const [contactTooltip, _setContactTooltip] = useState<{ visible: boolean; x: number; y: number }>({ visible: false, x: 0, y: 0 });
 
     // Persist teacher mode state to sessionStorage
     useEffect(() => {
@@ -723,14 +698,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const instructor = getInstructor();
 
     // Get course-specific data
-    const courseData = useMemo(() => getDemoCourseData(course.id), [course.id]);
-    const courseModules = courseData.modules;
+    const courseModules: any[] = [];
+    
     // Merge demo tasks with real Supabase tasks
     const courseTasks = useMemo(() => {
-        const demoTasks = courseData.tasks || [];
-        // Combine: demo tasks first, then Supabase tasks
-        return [...demoTasks, ...supabaseTasks];
-    }, [courseData.tasks, supabaseTasks]);
+        return [...supabaseTasks];
+    }, [supabaseTasks]);
 
     // Filtered data based on search and filters
     const filteredModules = useMemo(() =>
@@ -814,7 +787,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 lastActive: s.last_active,
             }));
         }
-        return getDemoStudentsData();
+        return [];
     }, [supabaseStudents]);
 
     const filteredStudents = useMemo(() =>
@@ -827,13 +800,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         [searchQuery, studentFilter, studentsData]
     );
 
-    // Get teachers data for this course (with demo mode support)
-    // @ts-ignore - Reserved for future use
-    const _teachersData = useMemo(() => getDemoTeachersData(course.id), [course.id]);
+    // Teachers and AI Grading data moved to Supabase and will be fetched dynamically
 
-    // Get AI grading data for this course (with demo mode support)
-    // @ts-ignore - Reserved for future use
-    const _aiGradingData = useMemo(() => getDemoAIGradingData(course.id), [course.id]);
 
     // Handle wheel scroll to horizontal scroll for modules - snap to cards
     useEffect(() => {

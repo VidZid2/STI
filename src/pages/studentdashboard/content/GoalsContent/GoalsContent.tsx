@@ -5,7 +5,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { createPortal } from 'react-dom';
 import {
     fetchGoals,
     createGoal,
@@ -16,21 +15,12 @@ import {
     goalTypeConfig,
     syncAllGoalsProgress,
     getRealTimeProgress,
-    getCurrentAbsoluteValue,
-    getAggregatedProgressHistory,
-    // getSuggestedGoals, // Available for future use
     type Goal,
     type GoalWithProgress,
-    type GoalType,
-    type GoalPriority,
-    type GoalStatus,
 } from '../../../../services/goalsService';
-import { COURSES_DATA } from '../../../../services/pathsService';
 import { useNotifications } from '../../../../contexts/NotificationContext';
 import GoalIcon from './components/GoalIcon';
 import ActionTooltip from './components/ActionTooltip';
-import MilestoneIcon from './components/MilestoneIcon';
-import type { MilestoneIconType } from './components/MilestoneIcon';
 import { FilterTabs } from './components/FilterTabs';
 import { ProgressHistoryChart } from './components/ProgressHistoryChart';
 import { CelebrationAnimation } from './components/CelebrationAnimation';
@@ -45,35 +35,15 @@ import AchievementsModal from './modals/AchievementsModal';
 // Filter tabs type
 type FilterTab = 'all' | 'active' | 'completed';
 
-// Priority info helper
-const getPriorityInfo = (priority: GoalPriority) => {
-    const info = {
-        low: { label: 'Low', color: '#94a3b8' },
-        medium: { label: 'Medium', color: '#f59e0b' },
-        high: { label: 'High', color: '#ef4444' },
-    };
-    return info[priority];
-};
-
-// Format time remaining
-const formatTimeRemaining = (days?: number): string => {
-    if (days === undefined) return 'No deadline';
-    if (days < 0) return 'Overdue';
-    if (days === 0) return 'Due today';
-    if (days === 1) return '1 day left';
-    if (days < 7) return `${days} days left`;
-    if (days < 30) return `${Math.floor(days / 7)} weeks left`;
-    return `${Math.floor(days / 30)} months left`;
-};
+import { getPriorityInfo, formatTimeRemaining } from './shared';
 
 // Progress Ring Component (matching PathsContent style)
 // @ts-ignore - Reserved for future use
 const _ProgressRingWithTooltip: React.FC<{
     progress: number;
     color: string;
-    isDarkMode: boolean;
     index: number;
-}> = ({ progress, color, isDarkMode, index }) => {
+}> = ({ progress, color, index }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     const getDescription = () => {
@@ -142,7 +112,7 @@ const _ProgressRingWithTooltip: React.FC<{
                     cy="26"
                     r="22"
                     fill="none"
-                    stroke={isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'}
+                    stroke={'var(--bg-hover)'}
                     strokeWidth="4"
                 />
                 <motion.circle
@@ -202,37 +172,15 @@ const GoalsContent: React.FC = () => {
     const { addNotification } = useNotifications();
 
     // Detect dark mode from body class (synced with dashboard)
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        if (typeof document !== 'undefined') {
-            return document.body.classList.contains('dark-mode');
-        }
-        return false;
-    });
-
-    // Listen for dark mode changes
-    useEffect(() => {
-        const checkDarkMode = () => {
-            setIsDarkMode(document.body.classList.contains('dark-mode'));
-        };
-        
-        // Initial check
-        checkDarkMode();
-        
-        // Observe body class changes
-        const observer = new MutationObserver(checkDarkMode);
-        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-        
-        return () => observer.disconnect();
-    }, []);
 
     const colors = {
-        bg: isDarkMode ? '#0f172a' : '#f8fafc',
-        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
-        border: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-        textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
-        textSecondary: isDarkMode ? '#94a3b8' : '#475569',
-        textMuted: isDarkMode ? '#64748b' : '#64748b',
-        accent: '#3b82f6',
+        bg: 'var(--bg-primary)',
+        cardBg: 'var(--bg-secondary)',
+        border: 'var(--border-light)',
+        textPrimary: 'var(--text-primary)',
+        textSecondary: 'var(--text-secondary)',
+        textMuted: 'var(--text-muted)',
+        accent: 'var(--brand-blue)',
     };
 
     const loadGoals = useCallback(async () => {
@@ -408,7 +356,7 @@ const GoalsContent: React.FC = () => {
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    const handleCreate = async (goalData: NewGoalData) => {
+    const handleCreate = async (goalData: Omit<Goal, 'id' | 'student_id' | 'created_at' | 'updated_at'>) => {
         const newGoal = await createGoal(goalData);
         if (newGoal) {
             setGoals(prev => [newGoal, ...prev]);
@@ -473,7 +421,7 @@ const GoalsContent: React.FC = () => {
             style={{
                 padding: '24px 32px',
                 minHeight: '100%',
-                background: colors.bg,
+                background: 'var(--bg-primary)',
             }}
         >
             {/* Header Section - Matching PathsContent */}
@@ -488,8 +436,8 @@ const GoalsContent: React.FC = () => {
                     marginBottom: '24px',
                     padding: '20px 24px',
                     borderRadius: '16px',
-                    background: colors.cardBg,
-                    border: `1px solid ${colors.border}`,
+                    background: 'var(--dashboard-surface)',
+                    border: `1px solid var(--border-color)`,
                 }}
             >
 
@@ -523,7 +471,7 @@ const GoalsContent: React.FC = () => {
                     </motion.div>
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: colors.textPrimary }}>
+                            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                 Learning Goals
                             </h1>
                             <motion.span
@@ -543,7 +491,7 @@ const GoalsContent: React.FC = () => {
                                 {stats.total} Goal{stats.total !== 1 ? 's' : ''}
                             </motion.span>
                         </div>
-                        <p style={{ margin: 0, fontSize: '13px', color: colors.textSecondary }}>
+                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>
                             Track your progress and achieve your learning milestones
                         </p>
                     </div>
@@ -592,7 +540,7 @@ const GoalsContent: React.FC = () => {
                         >
                             <div style={{ color: stat.color, marginBottom: '4px' }}>{stat.icon}</div>
                             <span style={{ fontSize: '18px', fontWeight: 700, color: stat.color, lineHeight: 1 }}>{stat.value}</span>
-                            <span style={{ fontSize: '10px', fontWeight: 500, color: colors.textMuted, textTransform: 'uppercase' }}>{stat.desc}</span>
+                            <span style={{ fontSize: '10px', fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{stat.desc}</span>
                         </motion.div>
                     ))}
                 </motion.div>
@@ -614,7 +562,7 @@ const GoalsContent: React.FC = () => {
             >
                 {/* Search Input with Suggestions */}
                 <motion.div style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
                         <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                     </svg>
                     <input
@@ -633,10 +581,10 @@ const GoalsContent: React.FC = () => {
                             width: '100%',
                             padding: '10px 70px 10px 42px',
                             borderRadius: '10px',
-                            border: `1px solid ${colors.border}`,
-                            background: colors.cardBg,
+                            border: `1px solid var(--border-color)`,
+                            background: 'var(--dashboard-surface)',
                             fontSize: '13px',
-                            color: colors.textPrimary,
+                            color: 'var(--text-primary)',
                             outline: 'none',
                             boxSizing: 'border-box',
                         }}
@@ -644,7 +592,7 @@ const GoalsContent: React.FC = () => {
                     {/* Keyboard hint */}
                     {!searchQuery && (
                         <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'none' }}>
-                            <span style={{ fontSize: '10px', color: colors.textMuted, padding: '2px 6px', borderRadius: '4px', background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', fontFamily: 'monospace' }}>/</span>
+                            <span style={{ fontSize: '10px', color: 'var(--text-muted)', padding: '2px 6px', borderRadius: '4px', background: 'var(--bg-hover)', fontFamily: 'monospace' }}>/</span>
                         </div>
                     )}
                     {/* Clear button */}
@@ -655,9 +603,9 @@ const GoalsContent: React.FC = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.8 }}
                                 onClick={() => { setSearchQuery(''); setShowSuggestions(false); }}
-                                style={{ background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)', border: 'none', borderRadius: '4px', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                                style={{ background: 'var(--bg-hover)', border: 'none', borderRadius: '4px', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                             >
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
                             </motion.button>
                         </div>
                     )}
@@ -667,8 +615,8 @@ const GoalsContent: React.FC = () => {
                             <div style={{ position: 'absolute', right: '12px', top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
                                 <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }} transition={{ duration: 0.15 }}>
                                     <motion.svg width="16" height="16" viewBox="0 0 24 24" fill="none" animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}>
-                                        <circle cx="12" cy="12" r="10" stroke={colors.border} strokeWidth="2.5" />
-                                        <path d="M12 2a10 10 0 0 1 10 10" stroke={colors.accent} strokeWidth="2.5" strokeLinecap="round" />
+                                        <circle cx="12" cy="12" r="10" stroke={'var(--border-color)'} strokeWidth="2.5" />
+                                        <path d="M12 2a10 10 0 0 1 10 10" stroke={'var(--accent-color)'} strokeWidth="2.5" strokeLinecap="round" />
                                     </motion.svg>
                                 </motion.div>
                             </div>
@@ -690,17 +638,17 @@ const GoalsContent: React.FC = () => {
                                     left: 0,
                                     right: 0,
                                     marginTop: '6px',
-                                    background: colors.cardBg,
-                                    border: `1px solid ${colors.border}`,
+                                    background: 'var(--dashboard-surface)',
+                                    border: `1px solid var(--border-color)`,
                                     borderRadius: '10px',
-                                    boxShadow: isDarkMode ? '0 8px 24px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.12)',
+                                    boxShadow: 'var(--shadow-md)',
                                     zIndex: 100,
                                     overflow: 'hidden',
                                 }}
                             >
-                                <div style={{ padding: '6px 10px', borderBottom: `1px solid ${colors.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <span style={{ fontSize: '10px', fontWeight: 600, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Suggestions</span>
-                                    <span style={{ fontSize: '9px', color: colors.textMuted }}>↑↓ navigate • Enter select</span>
+                                <div style={{ padding: '6px 10px', borderBottom: `1px solid var(--border-color)`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Suggestions</span>
+                                    <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>↑↓ navigate • Enter select</span>
                                 </div>
                                 {searchSuggestions.map((goal, index) => (
                                     <motion.div
@@ -712,20 +660,20 @@ const GoalsContent: React.FC = () => {
                                         style={{
                                             padding: '8px 12px',
                                             cursor: 'pointer',
-                                            background: selectedSuggestionIndex === index ? (isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)') : 'transparent',
-                                            borderLeft: selectedSuggestionIndex === index ? `2px solid ${colors.accent}` : '2px solid transparent',
+                                            background: selectedSuggestionIndex === index ? ('rgba(59, 130, 246, 0.08)') : 'transparent',
+                                            borderLeft: selectedSuggestionIndex === index ? `2px solid var(--accent-color)` : '2px solid transparent',
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: '10px',
                                         }}
                                         onMouseEnter={() => setSelectedSuggestionIndex(index)}
                                     >
-                                        <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                                        <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>
-                                            <div style={{ fontSize: '12px', fontWeight: 500, color: colors.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</div>
-                                            <div style={{ fontSize: '10px', color: colors.textMuted }}>{goal.progress_percentage}% complete • {goal.status}</div>
+                                            <div style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</div>
+                                            <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{goal.progress_percentage}% complete • {goal.status}</div>
                                         </div>
                                     </motion.div>
                                 ))}
@@ -734,7 +682,7 @@ const GoalsContent: React.FC = () => {
                     </AnimatePresence>
                 </motion.div>
 
-                <FilterTabs activeFilter={activeFilter} setActiveFilter={setActiveFilter} isDarkMode={isDarkMode} colors={colors} />
+                <FilterTabs activeFilter={activeFilter} setActiveFilter={setActiveFilter} colors={colors} />
 
                 {/* Action Buttons */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -758,9 +706,9 @@ const GoalsContent: React.FC = () => {
                             alignItems: 'center',
                             gap: '6px',
                             padding: '8px 14px',
-                            background: isDarkMode ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.08)',
+                            background: 'rgba(245, 158, 11, 0.08)',
                             color: '#f59e0b',
-                            border: `1px solid ${isDarkMode ? 'rgba(245, 158, 11, 0.3)' : 'rgba(245, 158, 11, 0.2)'}`,
+                            border: `1px solid ${'rgba(245, 158, 11, 0.2)'}`,
                             borderRadius: '10px',
                             fontSize: '12px',
                             fontWeight: 600,
@@ -798,9 +746,9 @@ const GoalsContent: React.FC = () => {
                             alignItems: 'center',
                             gap: '6px',
                             padding: '8px 14px',
-                            background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
+                            background: 'rgba(59, 130, 246, 0.08)',
                             color: '#3b82f6',
-                            border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                            border: `1px solid ${'rgba(59, 130, 246, 0.2)'}`,
                             borderRadius: '10px',
                             fontSize: '12px',
                             fontWeight: 600,
@@ -816,7 +764,7 @@ const GoalsContent: React.FC = () => {
             </motion.div>
 
             {/* Progress History Chart */}
-            <ProgressHistoryChart isDarkMode={isDarkMode} colors={colors} goals={goals} />
+            <ProgressHistoryChart colors={colors} goals={goals} />
 
             {/* Goals Grid */}
             <AnimatePresence mode="popLayout">
@@ -869,8 +817,8 @@ const GoalsContent: React.FC = () => {
                                     style={{
                                         padding: '20px',
                                         borderRadius: '16px',
-                                        background: colors.cardBg,
-                                        border: `1px solid ${colors.border}`,
+                                        background: 'var(--dashboard-surface)',
+                                        border: `1px solid var(--border-color)`,
                                     }}
                                 >
                                     <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
@@ -898,9 +846,9 @@ const GoalsContent: React.FC = () => {
                         style={{
                             padding: '48px 24px',
                             textAlign: 'center',
-                            background: colors.cardBg,
+                            background: 'var(--dashboard-surface)',
                             borderRadius: '16px',
-                            border: `1px solid ${colors.border}`,
+                            border: `1px solid var(--border-color)`,
                         }}
                     >
                         <div style={{
@@ -917,10 +865,10 @@ const GoalsContent: React.FC = () => {
                                 <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
                             </svg>
                         </div>
-                        <p style={{ margin: 0, fontSize: '14px', fontWeight: 500, color: colors.textPrimary }}>
+                        <p style={{ margin: 0, fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)' }}>
                             {searchQuery ? 'No goals found' : 'No goals yet'}
                         </p>
-                        <p style={{ margin: '8px 0 16px', fontSize: '13px', color: colors.textMuted }}>
+                        <p style={{ margin: '8px 0 16px', fontSize: '13px', color: 'var(--text-muted)' }}>
                             {searchQuery ? 'Try a different search term' : 'Create your first goal to start tracking'}
                         </p>
                         {!searchQuery && (
@@ -964,14 +912,20 @@ const GoalsContent: React.FC = () => {
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ delay: index * 0.05, type: 'spring', stiffness: 400, damping: 25 }}
                                     whileHover={{ y: -6 }}
+                                    className="dashboard-interactive-card"
+                                    tabIndex={0}
+                                    role="button"
+                                    aria-label={`${goal.title} — ${goal.status}, ${goal.progress_percentage}% complete`}
                                     onClick={() => setSelectedGoal(goal)}
+                                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedGoal(goal); } }}
                                     style={{
                                         padding: '20px',
                                         borderRadius: '16px',
-                                        background: colors.cardBg,
-                                        border: `1px solid ${goal.status === 'completed' ? 'rgba(16, 185, 129, 0.3)' : colors.border}`,
+                                        background: 'var(--dashboard-surface)',
+                                        border: `1px solid ${goal.status === 'completed' ? 'rgba(16, 185, 129, 0.3)' : 'var(--border-color)'}`,
                                         cursor: 'pointer',
                                         boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                                        outline: 'none',
                                     }}
                                 >
                                     {/* Header */}
@@ -996,7 +950,7 @@ const GoalsContent: React.FC = () => {
                                                 margin: 0,
                                                 fontSize: '15px',
                                                 fontWeight: 600,
-                                                color: colors.textPrimary,
+                                                color: 'var(--text-primary)',
                                                 textDecoration: goal.status === 'completed' ? 'line-through' : 'none',
                                                 opacity: goal.status === 'completed' ? 0.7 : 1,
                                                 paddingRight: goal.status !== 'completed' ? '70px' : '36px',
@@ -1015,7 +969,7 @@ const GoalsContent: React.FC = () => {
                                                     {priorityInfo.label}
                                                 </span>
                                                 {goal.days_remaining !== undefined && goal.status !== 'completed' && (
-                                                    <span style={{ fontSize: '11px', color: goal.is_overdue ? '#ef4444' : colors.textMuted, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <span style={{ fontSize: '11px', color: goal.is_overdue ? '#ef4444' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                             <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                                                         </svg>
@@ -1102,7 +1056,7 @@ const GoalsContent: React.FC = () => {
                                         <p style={{
                                             margin: '0 0 14px',
                                             fontSize: '13px',
-                                            color: colors.textSecondary,
+                                            color: 'var(--text-secondary)',
                                             lineHeight: 1.5,
                                             display: '-webkit-box',
                                             WebkitLineClamp: 2,
@@ -1124,7 +1078,7 @@ const GoalsContent: React.FC = () => {
                                             marginBottom: '14px',
                                             padding: '12px',
                                             borderRadius: '10px',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                            background: 'var(--bg-hover)',
                                         }}
                                     >
                                         <div style={{ flex: 1, textAlign: 'center' }}>
@@ -1133,27 +1087,27 @@ const GoalsContent: React.FC = () => {
                                                     ? `${Math.floor(goal.current_value)}h ${Math.round((goal.current_value % 1) * 60)}m`
                                                     : goal.current_value}
                                             </div>
-                                            <div style={{ fontSize: '9px', color: colors.textMuted, marginTop: '4px', textTransform: 'uppercase' }}>
+                                            <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase' }}>
                                                 Current
                                             </div>
                                         </div>
-                                        <div style={{ width: '1px', background: colors.border, margin: '4px 0' }} />
+                                        <div style={{ width: '1px', background: 'var(--border-color)', margin: '4px 0' }} />
                                         <div style={{ flex: 1, textAlign: 'center' }}>
                                             <div style={{ fontSize: '18px', fontWeight: 700, color: config.color, lineHeight: 1 }}>
                                                 {goal.type === 'study_time' && goal.unit === 'hours' 
                                                     ? `${goal.target_value}h`
                                                     : goal.target_value}
                                             </div>
-                                            <div style={{ fontSize: '9px', color: colors.textMuted, marginTop: '4px', textTransform: 'uppercase' }}>
+                                            <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase' }}>
                                                 Target
                                             </div>
                                         </div>
-                                        <div style={{ width: '1px', background: colors.border, margin: '4px 0' }} />
+                                        <div style={{ width: '1px', background: 'var(--border-color)', margin: '4px 0' }} />
                                         <div style={{ flex: 1, textAlign: 'center' }}>
                                             <div style={{ fontSize: '18px', fontWeight: 700, color: goal.progress_percentage === 100 ? '#10b981' : config.color, lineHeight: 1 }}>
                                                 {goal.progress_percentage}%
                                             </div>
-                                            <div style={{ fontSize: '9px', color: colors.textMuted, marginTop: '4px', textTransform: 'uppercase' }}>
+                                            <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase' }}>
                                                 Progress
                                             </div>
                                         </div>
@@ -1164,7 +1118,7 @@ const GoalsContent: React.FC = () => {
                                     <div style={{ marginBottom: '14px' }}>
                                         <div style={{
                                             height: '6px',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
+                                            background: 'var(--bg-hover)',
                                             borderRadius: '3px',
                                             overflow: 'hidden',
                                         }}>
@@ -1259,7 +1213,7 @@ const GoalsContent: React.FC = () => {
                                                 gap: '6px',
                                                 padding: '5px 10px',
                                                 borderRadius: '8px',
-                                                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                                background: 'var(--bg-hover)',
                                             }}
                                         >
                                             {goal.type === 'study_time' && goal.unit === 'hours' ? (
@@ -1274,7 +1228,7 @@ const GoalsContent: React.FC = () => {
                                                     </span>
                                                     <span style={{ 
                                                         fontSize: '11px', 
-                                                        color: colors.textSecondary,
+                                                        color: 'var(--text-secondary)',
                                                         fontWeight: 400,
                                                     }}>
                                                         of
@@ -1282,7 +1236,7 @@ const GoalsContent: React.FC = () => {
                                                     <span style={{ 
                                                         fontSize: '12px', 
                                                         fontWeight: 600, 
-                                                        color: colors.textPrimary,
+                                                        color: 'var(--text-primary)',
                                                     }}>
                                                         {goal.target_value}h
                                                     </span>
@@ -1299,7 +1253,7 @@ const GoalsContent: React.FC = () => {
                                                     </span>
                                                     <span style={{ 
                                                         fontSize: '11px', 
-                                                        color: colors.textSecondary,
+                                                        color: 'var(--text-secondary)',
                                                         fontWeight: 400,
                                                     }}>
                                                         of
@@ -1307,13 +1261,13 @@ const GoalsContent: React.FC = () => {
                                                     <span style={{ 
                                                         fontSize: '12px', 
                                                         fontWeight: 600, 
-                                                        color: colors.textPrimary,
+                                                        color: 'var(--text-primary)',
                                                     }}>
                                                         {goal.target_value}
                                                     </span>
                                                     <span style={{ 
                                                         fontSize: '10px', 
-                                                        color: colors.textSecondary,
+                                                        color: 'var(--text-secondary)',
                                                         fontWeight: 500,
                                                     }}>
                                                         {goal.unit}
@@ -1334,19 +1288,16 @@ const GoalsContent: React.FC = () => {
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 onCreate={handleCreate}
-                isDarkMode={isDarkMode}
             />
             <GoalDetailModal
                 goal={selectedGoal}
                 isOpen={!!selectedGoal}
                 onClose={() => setSelectedGoal(null)}
-                isDarkMode={isDarkMode}
                 onComplete={handleComplete}
             />
             <AchievementsModal
                 isOpen={isAchievementsModalOpen}
                 onClose={() => setIsAchievementsModalOpen(false)}
-                isDarkMode={isDarkMode}
                 goals={goals}
             />
 
@@ -1391,13 +1342,13 @@ const GoalsContent: React.FC = () => {
                                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
                                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                                 style={{
-                                    background: colors.cardBg,
+                                    background: 'var(--dashboard-surface)',
                                     borderRadius: '16px',
                                     padding: '24px',
                                     width: '100%',
                                     maxWidth: '360px',
                                     boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-                                    border: `1px solid ${colors.border}`,
+                                    border: `1px solid var(--border-color)`,
                                     pointerEvents: 'auto',
                                 }}
                             >
@@ -1433,7 +1384,7 @@ const GoalsContent: React.FC = () => {
                                     margin: '0 0 8px',
                                     fontSize: '16px',
                                     fontWeight: 600,
-                                    color: colors.textPrimary,
+                                    color: 'var(--text-primary)',
                                     textAlign: 'center',
                                 }}>
                                     Delete Goal?
@@ -1443,7 +1394,7 @@ const GoalsContent: React.FC = () => {
                                 <p style={{
                                     margin: '0 0 20px',
                                     fontSize: '13px',
-                                    color: colors.textSecondary,
+                                    color: 'var(--text-secondary)',
                                     textAlign: 'center',
                                     lineHeight: 1.5,
                                 }}>
@@ -1460,9 +1411,9 @@ const GoalsContent: React.FC = () => {
                                             flex: 1,
                                             padding: '10px 16px',
                                             borderRadius: '10px',
-                                            border: `1px solid ${colors.border}`,
-                                            background: colors.cardBg,
-                                            color: colors.textPrimary,
+                                            border: `1px solid var(--border-color)`,
+                                            background: 'var(--dashboard-surface)',
+                                            color: 'var(--text-primary)',
                                             fontSize: '13px',
                                             fontWeight: 500,
                                             cursor: 'pointer',

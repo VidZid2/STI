@@ -202,7 +202,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
 
     const bgColor = isOwn 
         ? 'rgba(0, 0, 0, 0.2)' 
-        : (isDarkMode ? '#0f172a' : '#1e293b');
+        : ('var(--bg-hover)');
     
     const textColor = '#e2e8f0';
 
@@ -212,7 +212,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
             overflow: 'hidden',
             marginTop: '6px',
             maxWidth: '100%',
-            border: isOwn ? '1px solid rgba(255,255,255,0.1)' : `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+            border: isOwn ? '1px solid rgba(255,255,255,0.1)' : `1px solid ${'rgba(255,255,255,0.1)'}`,
         }}>
             {/* Header */}
             <div style={{
@@ -220,7 +220,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 padding: '8px 12px',
-                background: isOwn ? 'rgba(0, 0, 0, 0.15)' : (isDarkMode ? '#1e293b' : '#334155'),
+                background: isOwn ? 'rgba(0, 0, 0, 0.15)' : ('var(--bg-hover)'),
                 borderBottom: `1px solid ${isOwn ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}`,
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

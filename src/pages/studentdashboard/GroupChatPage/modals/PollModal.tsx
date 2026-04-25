@@ -7,6 +7,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 import type { ModalColors } from './types';
 
 interface PollModalProps {
@@ -17,6 +18,7 @@ interface PollModalProps {
 }
 
 export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, colors }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'poll-modal-title');
     const [question, setQuestion] = useState('');
     const [options, setOptions] = useState(['', '']);
     const [focusedField, setFocusedField] = useState<string | null>(null);
@@ -24,11 +26,11 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
 
     // Blue accent colors (matching other pages)
     const blueAccent = '#3b82f6';
-    const isDarkMode = colors.cardBg === '#1e293b' || colors.cardBg.includes('30, 41, 59');
-    const blueBg = isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)';
-    const blueBorder = isDarkMode ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.15)';
-    const subtleBg = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)';
-    const borderColor = isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const isDarkMode = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
+    const blueBg = 'rgba(59, 130, 246, 0.1)';
+    const blueBorder = 'rgba(59, 130, 246, 0.25)';
+    const subtleBg = 'var(--dashboard-surface)';
+    const borderColor = 'rgba(255,255,255,0.06)';
 
     // Focus first input on open
     useEffect(() => {
@@ -82,7 +84,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                     style={{
                         position: 'fixed',
                         inset: 0,
-                        background: isDarkMode ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.4)',
+                        background: 'rgba(0,0,0,0.6)',
                         backdropFilter: 'blur(8px)',
                         zIndex: 1001,
                         display: 'flex',
@@ -96,9 +98,11 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 10 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        ref={modalRef}
+                        {...modalProps}
                         onClick={(e) => e.stopPropagation()}
                         style={{
-                            background: colors.cardBg,
+                            background: 'var(--dashboard-surface)',
                             borderRadius: '20px',
                             width: '100%',
                             maxWidth: '440px',
@@ -149,7 +153,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                         margin: 0,
                                         fontSize: '17px',
                                         fontWeight: 600,
-                                        color: colors.textPrimary,
+                                        color: 'var(--text-primary)',
                                         letterSpacing: '-0.01em',
                                     }}
                                 >
@@ -162,7 +166,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                     style={{
                                         margin: '4px 0 0',
                                         fontSize: '12px',
-                                        color: colors.textSecondary,
+                                        color: 'var(--text-secondary)',
                                     }}
                                 >
                                     Get your group's opinion on a topic
@@ -171,7 +175,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
 
                             {/* Close Button */}
                             <motion.button
-                                whileHover={{ scale: 1.1, background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)' }}
+                                whileHover={{ scale: 1.1, background: 'rgba(255,255,255,0.1)' }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={onClose}
                                 style={{
@@ -184,7 +188,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    color: colors.textSecondary,
+                                    color: 'var(--text-secondary)',
                                     transition: 'background 0.15s ease',
                                 }}
                             >
@@ -210,7 +214,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                     gap: '6px',
                                     fontSize: '11px',
                                     fontWeight: 600,
-                                    color: focusedField === 'question' ? blueAccent : colors.textSecondary,
+                                    color: focusedField === 'question' ? blueAccent : 'var(--text-secondary)',
                                     marginBottom: '8px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
@@ -220,7 +224,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                         width: 4,
                                         height: 4,
                                         borderRadius: '50%',
-                                        background: focusedField === 'question' ? blueAccent : colors.textMuted,
+                                        background: focusedField === 'question' ? blueAccent : 'var(--text-muted)',
                                         transition: 'background 0.2s ease',
                                     }} />
                                     Question
@@ -240,7 +244,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                         background: focusedField === 'question' ? blueBg : subtleBg,
                                         fontSize: '14px',
                                         outline: 'none',
-                                        color: colors.textPrimary,
+                                        color: 'var(--text-primary)',
                                         fontFamily: 'inherit',
                                         transition: 'border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease',
                                         boxShadow: focusedField === 'question' ? `0 0 0 3px ${blueBg}` : 'none',
@@ -260,7 +264,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                     gap: '6px',
                                     fontSize: '11px',
                                     fontWeight: 600,
-                                    color: colors.textSecondary,
+                                    color: 'var(--text-secondary)',
                                     marginBottom: '10px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
@@ -269,14 +273,14 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                         width: 4,
                                         height: 4,
                                         borderRadius: '50%',
-                                        background: colors.textMuted,
+                                        background: 'var(--text-muted)',
                                     }} />
                                     Options
                                     <span style={{
                                         marginLeft: 'auto',
                                         fontSize: '10px',
                                         fontWeight: 500,
-                                        color: colors.textMuted,
+                                        color: 'var(--text-muted)',
                                         textTransform: 'none',
                                         letterSpacing: 'normal',
                                     }}>
@@ -305,7 +309,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                                 justifyContent: 'center',
                                                 fontSize: '11px',
                                                 fontWeight: 600,
-                                                color: opt.trim() ? blueAccent : colors.textMuted,
+                                                color: opt.trim() ? blueAccent : 'var(--text-muted)',
                                                 flexShrink: 0,
                                                 transition: 'all 0.2s ease',
                                             }}>
@@ -326,7 +330,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                                     background: focusedField === `option-${i}` ? blueBg : subtleBg,
                                                     fontSize: '13px',
                                                     outline: 'none',
-                                                    color: colors.textPrimary,
+                                                    color: 'var(--text-primary)',
                                                     fontFamily: 'inherit',
                                                     transition: 'border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease',
                                                     boxShadow: focusedField === `option-${i}` ? `0 0 0 3px ${blueBg}` : 'none',
@@ -343,7 +347,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                                         height: 32,
                                                         borderRadius: '10px',
                                                         border: 'none',
-                                                        background: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.08)',
+                                                        background: 'rgba(239,68,68,0.1)',
                                                         cursor: 'pointer',
                                                         display: 'flex',
                                                         alignItems: 'center',
@@ -411,7 +415,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                             {/* Validation hint */}
                             <div style={{
                                 fontSize: '11px',
-                                color: isValid ? '#10b981' : colors.textMuted,
+                                color: isValid ? '#10b981' : 'var(--text-muted)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '6px',
@@ -438,7 +442,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
 
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <motion.button
-                                    whileHover={{ scale: 1.02, background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}
+                                    whileHover={{ scale: 1.02, background: 'var(--bg-hover)' }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={onClose}
                                     style={{
@@ -449,7 +453,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                         cursor: 'pointer',
                                         fontSize: '13px',
                                         fontWeight: 500,
-                                        color: colors.textSecondary,
+                                        color: 'var(--text-secondary)',
                                         transition: 'background 0.15s ease',
                                     }}
                                 >
@@ -466,11 +470,11 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                         border: 'none',
                                         background: isValid
                                             ? `linear-gradient(135deg, ${blueAccent} 0%, #2563eb 100%)`
-                                            : isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                            : 'rgba(255,255,255,0.06)',
                                         cursor: isValid ? 'pointer' : 'not-allowed',
                                         fontSize: '13px',
                                         fontWeight: 600,
-                                        color: isValid ? '#fff' : colors.textMuted,
+                                        color: isValid ? '#fff' : 'var(--text-muted)',
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '8px',

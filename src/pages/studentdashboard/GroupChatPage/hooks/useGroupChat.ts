@@ -1,4 +1,4 @@
-﻿/**
+/**
  * useGroupChat Hook
  * Core chat state management - messages, profile, group info
  */
@@ -59,7 +59,7 @@ export function useGroupChat({ groupId, onXPAwarded }: UseGroupChatOptions): Use
             setIsLoading(true);
             try {
                 const userProfile = await getProfile();
-                setProfile(userProfile);
+                setProfile(userProfile as unknown as ChatProfile);
 
                 if (groupId) {
                     const msgs = await fetchGroupMessages(groupId);
@@ -118,7 +118,7 @@ export function useGroupChat({ groupId, onXPAwarded }: UseGroupChatOptions): Use
 
     // Handle send message
     const handleSend = useCallback(async () => {
-        if (!newMessage.trim() || !groupId || !profile || isSending) return;
+        if (!newMessage.trim() || !groupId || !profile?.id || isSending) return;
 
         setIsSending(true);
         let content = newMessage.trim();
@@ -149,7 +149,7 @@ export function useGroupChat({ groupId, onXPAwarded }: UseGroupChatOptions): Use
 
         const sentMessage = await sendMessage(
             groupId,
-            profile.id,
+            profile.id as string,
             profile.full_name || 'Anonymous',
             profile.avatar_url,
             content

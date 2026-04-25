@@ -19,7 +19,7 @@ export const useWidgetVisibility = (): UseWidgetVisibilityReturn => {
     const [widgetVisibility, setWidgetVisibility] = useState<WidgetVisibility>(DEFAULT_WIDGET_VISIBILITY);
 
     const toggleWidget = (id: string) => {
-        setWidgetVisibility((prev) => ({
+        setWidgetVisibility((prev: WidgetVisibility) => ({
             ...prev,
             [id]: !prev[id]
         }));

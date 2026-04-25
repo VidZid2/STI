@@ -1,23 +1,23 @@
-/**
+﻿/**
  * PathFilterTabs
  * Filter tabs for PathsContent (All / In Progress / Completed / Bookmarked).
  * Extracted from PathsContent.tsx during Phase 8.6
  */
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import type { FilterTab } from './PathIcon';
 
 // Filter Tabs Component with proper sliding indicator
 interface FilterTabsProps {
     activeFilter: FilterTab;
     setActiveFilter: (filter: FilterTab) => void;
-    isDarkMode: boolean;
     colors: {
         accent: string;
         textSecondary: string;
     };
 }
 
-const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, isDarkMode, colors }) => {
+const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, colors }) => {
     const containerRef = React.useRef<HTMLDivElement>(null);
     const [indicatorStyle, setIndicatorStyle] = useState({ left: 5, width: 60 });
     
@@ -109,7 +109,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, 
                 gap: '4px',
                 padding: '4px',
                 borderRadius: '12px',
-                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                background: 'var(--bg-hover)',
                 position: 'relative',
             }}
         >
@@ -120,10 +120,8 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, 
                     top: '4px',
                     bottom: '4px',
                     borderRadius: '8px',
-                    background: isDarkMode 
-                        ? 'rgba(59, 130, 246, 0.15)' 
-                        : 'rgba(59, 130, 246, 0.1)',
-                    border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    border: `1px solid ${'rgba(59, 130, 246, 0.1)'}`,
                     zIndex: 0,
                 }}
                 initial={false}
@@ -149,7 +147,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, 
                         borderRadius: '8px',
                         border: 'none',
                         background: 'transparent',
-                        color: activeFilter === tab.id ? colors.accent : colors.textSecondary,
+                        color: activeFilter === tab.id ? 'var(--accent-color)' : 'var(--text-secondary)',
                         fontSize: '12px',
                         fontWeight: 500,
                         cursor: 'pointer',

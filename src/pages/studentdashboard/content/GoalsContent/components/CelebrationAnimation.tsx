@@ -4,6 +4,7 @@
  * Extracted from GoalsContent.tsx during Phase 8.3
  */
 import React, { useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 
 // Celebration Animation Component - Minimalistic Blue Theme

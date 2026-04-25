@@ -3,8 +3,11 @@
  * Individual tool card with file processing.
  * Extracted from ToolsContent.tsx during Phase 8.7
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { createPortal } from 'react-dom';
+import { FileUpload } from '../../../../../components/ui/primitives/file-upload';
+import type { Tool } from '../types';
 
 // Minimalistic Success Confetti Component
 interface ConfettiPiece {

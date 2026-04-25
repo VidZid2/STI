@@ -3,7 +3,7 @@
  * Shared UI components for HomeContent.
  * Extracted from HomeContent.tsx during Phase 8.8
  */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 

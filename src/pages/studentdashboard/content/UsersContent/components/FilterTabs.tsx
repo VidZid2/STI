@@ -1,19 +1,20 @@
-/**
+﻿/**
  * FilterTabs
  * Filter tabs for UsersContent (All / Student / Teacher / Admin).
  * Extracted from UsersContent.tsx during Phase 8.4
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import type { UserFilter } from '../../../../../services/usersService';
+
+type FilterTab = 'all' | 'student' | 'teacher' | 'admin' | 'dean';
+interface UserStats { totalUsers: number; students: number; teachers: number; admins: number; }
 
 const FilterTabs: React.FC<{
     activeFilter: FilterTab;
     setActiveFilter: (filter: FilterTab) => void;
-    isDarkMode: boolean;
     stats: UserStats;
     colors: { accent: string; textSecondary: string; textMuted: string };
-}> = ({ activeFilter, setActiveFilter, isDarkMode, stats, colors }) => {
+}> = ({ activeFilter, setActiveFilter, stats, colors }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [indicatorStyle, setIndicatorStyle] = useState({ left: 5, width: 60 });
     
@@ -71,7 +72,7 @@ const FilterTabs: React.FC<{
                 gap: '4px',
                 padding: '4px',
                 borderRadius: '12px',
-                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                background: 'var(--bg-hover)',
                 position: 'relative',
             }}
         >
@@ -81,8 +82,8 @@ const FilterTabs: React.FC<{
                     top: '4px',
                     bottom: '4px',
                     borderRadius: '8px',
-                    background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
-                    border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    border: `1px solid ${'rgba(59, 130, 246, 0.3)'}`,
                     zIndex: 0,
                 }}
                 initial={false}
@@ -105,7 +106,7 @@ const FilterTabs: React.FC<{
                         borderRadius: '8px',
                         border: 'none',
                         background: 'transparent',
-                        color: activeFilter === tab.id ? colors.accent : colors.textSecondary,
+                        color: activeFilter === tab.id ? 'var(--accent-color)' : 'var(--text-secondary)',
                         fontSize: '12px',
                         fontWeight: 500,
                         cursor: 'pointer',
@@ -121,7 +122,7 @@ const FilterTabs: React.FC<{
                         borderRadius: '10px',
                         background: activeFilter === tab.id 
                             ? 'rgba(59, 130, 246, 0.2)' 
-                            : isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                            : 'var(--border-light)',
                     }}>
                         {tab.count}
                     </span>

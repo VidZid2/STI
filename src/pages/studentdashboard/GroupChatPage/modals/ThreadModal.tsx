@@ -6,6 +6,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 import type { ModalColors } from './types';
 import type { ThreadReply } from '../types';
 import type { ChatMessage } from '../../../../services/chatService';
@@ -24,6 +25,7 @@ interface ThreadModalProps {
 export const ThreadModal: React.FC<ThreadModalProps> = ({ 
     isOpen, onClose, parentMessage, allMessages, colors, currentUserId, onSendReply 
 }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'thread-modal-title');
     const [replyContent, setReplyContent] = useState('');
     const [hoveredReply, setHoveredReply] = useState<string | null>(null);
     const [isSending, setIsSending] = useState(false);
@@ -32,7 +34,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
     
     if (!isOpen || !parentMessage) return null;
     
-    const isDarkMode = colors.cardBg !== '#ffffff';
+    const isDarkMode = 'var(--dashboard-surface)' !== '#ffffff';
     
     const replies: ThreadReply[] = useMemo(() => {
         if (!parentMessage) return [];
@@ -67,7 +69,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
             transition={{ duration: 0.15 }}
             onClick={onClose}
             style={{
-                position: 'fixed', inset: 0, background: isDarkMode ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.3)',
+                position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
                 backdropFilter: 'blur(8px)', zIndex: 1001,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
             }}
@@ -77,11 +79,13 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
                 transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                ref={modalRef}
+                {...modalProps}
                 onClick={(e) => e.stopPropagation()}
                 style={{
-                    background: colors.cardBg, borderRadius: '14px',
+                    background: 'var(--dashboard-surface)', borderRadius: '14px',
                     width: '100%', maxWidth: '480px', maxHeight: '85vh',
-                    boxShadow: isDarkMode ? '0 25px 50px rgba(0,0,0,0.5)' : '0 20px 40px rgba(0,0,0,0.1)',
+                    boxShadow: 'var(--shadow-xl)',
                     border: '1.5px solid #3b82f6', overflow: 'hidden',
                     display: 'flex', flexDirection: 'column',
                 }}
@@ -90,13 +94,13 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                 <div style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '14px 18px',
-                    borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                    borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}`,
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <motion.div whileHover={{ scale: 1.05 }} style={{
                             width: 34, height: 34, borderRadius: '10px',
                             border: '1.5px solid #3b82f6',
-                            background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
+                            background: 'var(--bg-primary)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                         }}>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -105,8 +109,8 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                             </svg>
                         </motion.div>
                         <div>
-                            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: colors.textPrimary }}>Thread</h3>
-                            <p style={{ margin: 0, fontSize: '11px', color: colors.textMuted }}>
+                            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>Thread</h3>
+                            <p style={{ margin: 0, fontSize: '11px', color: 'var(--text-muted)' }}>
                                 {replies.length} {replies.length === 1 ? 'reply' : 'replies'}
                             </p>
                         </div>
@@ -118,7 +122,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                         style={{
                             width: 30, height: 30, borderRadius: '8px',
                             border: '1.5px solid #3b82f6',
-                            background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
+                            background: 'var(--bg-primary)',
                             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                             color: '#3b82f6',
                         }}
@@ -132,14 +136,14 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                 {/* Parent Message */}
                 <div style={{
                     padding: '14px 18px',
-                    borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-                    background: isDarkMode ? 'rgba(59, 130, 246, 0.05)' : 'rgba(59, 130, 246, 0.03)',
+                    borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}`,
+                    background: 'rgba(59, 130, 246, 0.05)',
                 }}>
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <motion.div whileHover={{ scale: 1.05 }} style={{
                             width: 36, height: 36, borderRadius: '10px',
-                            background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
-                            border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.15)'}`,
+                            background: 'var(--dashboard-surface)',
+                            border: `1px solid ${'rgba(59, 130, 246, 0.25)'}`,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '14px', fontWeight: 600, color: '#3b82f6', flexShrink: 0,
                         }}>
@@ -147,10 +151,10 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                         </motion.div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                <span style={{ fontSize: '13px', fontWeight: 600, color: colors.textPrimary }}>{parentMessage.user_name}</span>
-                                <span style={{ fontSize: '11px', color: colors.textMuted }}>{formatTimeRelative(parentMessage.created_at)}</span>
+                                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>{parentMessage.user_name}</span>
+                                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{formatTimeRelative(parentMessage.created_at)}</span>
                             </div>
-                            <p style={{ margin: 0, fontSize: '13px', color: colors.textSecondary, lineHeight: 1.5, wordBreak: 'break-word' }}>
+                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5, wordBreak: 'break-word' }}>
                                 {parentMessage.content}
                             </p>
                         </div>
@@ -174,27 +178,27 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                                     onHoverEnd={() => setHoveredReply(null)}
                                     style={{
                                         display: 'flex', gap: '10px', padding: '10px 12px', marginBottom: '6px', borderRadius: '10px',
-                                        background: isHovered ? (isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)') : 'transparent',
-                                        border: isOwn ? `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'}` : '1px solid transparent',
+                                        background: isHovered ? ('var(--dashboard-surface)') : 'transparent',
+                                        border: isOwn ? `1px solid ${'var(--dashboard-surface)'}` : '1px solid transparent',
                                     }}
                                 >
                                     <motion.div whileHover={{ scale: 1.05 }} style={{
                                         width: 32, height: 32, borderRadius: '9px',
-                                        background: isOwn ? (isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)') : (isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'),
-                                        border: `1px solid ${isOwn ? (isDarkMode ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.15)') : 'transparent'}`,
+                                        background: isOwn ? ('var(--dashboard-surface)') : ('var(--bg-hover)'),
+                                        border: `1px solid ${isOwn ? 'rgba(59, 130, 246, 0.25)' : 'transparent'}`,
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '12px', fontWeight: 600, color: isOwn ? '#3b82f6' : colors.textSecondary, flexShrink: 0,
+                                        fontSize: '12px', fontWeight: 600, color: isOwn ? '#3b82f6' : 'var(--text-secondary)', flexShrink: 0,
                                     }}>
                                         {reply.user_name.charAt(0).toUpperCase()}
                                     </motion.div>
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                                            <span style={{ fontSize: '12px', fontWeight: 500, color: isOwn ? '#3b82f6' : colors.textPrimary }}>
+                                            <span style={{ fontSize: '12px', fontWeight: 500, color: isOwn ? '#3b82f6' : 'var(--text-primary)' }}>
                                                 {isOwn ? 'You' : reply.user_name}
                                             </span>
-                                            <span style={{ fontSize: '10px', color: colors.textMuted }}>{formatTimeRelative(reply.created_at)}</span>
+                                            <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{formatTimeRelative(reply.created_at)}</span>
                                         </div>
-                                        <p style={{ margin: 0, fontSize: '12.5px', color: colors.textSecondary, lineHeight: 1.45, wordBreak: 'break-word' }}>
+                                        <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: 1.45, wordBreak: 'break-word' }}>
                                             {reply.content}
                                         </p>
                                     </div>
@@ -203,10 +207,10 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                         })}
                     </AnimatePresence>
                     {replies.length === 0 && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', padding: '32px 20px', color: colors.textMuted }}>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', padding: '32px 20px', color: 'var(--text-muted)' }}>
                             <div style={{
                                 width: 44, height: 44, borderRadius: '12px', border: '1.5px solid #3b82f6',
-                                background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
+                                background: 'var(--bg-primary)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px',
                             }}>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5">
@@ -223,8 +227,8 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                 {/* Reply Input */}
                 <div style={{
                     padding: '14px 18px',
-                    borderTop: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-                    background: isDarkMode ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)',
+                    borderTop: `1px solid ${'rgba(255,255,255,0.06)'}`,
+                    background: 'rgba(0,0,0,0.2)',
                 }}>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
                         <textarea
@@ -237,8 +241,8 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                             style={{
                                 flex: 1, padding: '10px 14px', borderRadius: '10px',
                                 border: '1.5px solid #3b82f6',
-                                background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
-                                color: colors.textPrimary, fontSize: '13px', resize: 'none', outline: 'none',
+                                background: 'var(--bg-primary)',
+                                color: 'var(--text-primary)', fontSize: '13px', resize: 'none', outline: 'none',
                                 fontFamily: 'inherit', lineHeight: 1.4, minHeight: '40px', maxHeight: '100px',
                             }}
                         />
@@ -249,7 +253,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                             disabled={!replyContent.trim() || isSending}
                             style={{
                                 width: 40, height: 40, borderRadius: '10px', border: 'none',
-                                background: replyContent.trim() ? '#3b82f6' : (isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.1)'),
+                                background: replyContent.trim() ? '#3b82f6' : 'rgba(59, 130, 246, 0.2)',
                                 color: replyContent.trim() ? '#ffffff' : '#3b82f6',
                                 cursor: replyContent.trim() ? 'pointer' : 'not-allowed',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
@@ -269,7 +273,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                             )}
                         </motion.button>
                     </div>
-                    <p style={{ margin: '8px 0 0', fontSize: '10px', color: colors.textMuted, textAlign: 'center' }}>
+                    <p style={{ margin: '8px 0 0', fontSize: '10px', color: 'var(--text-muted)', textAlign: 'center' }}>
                         Press Enter to send • Shift+Enter for new line
                     </p>
                 </div>

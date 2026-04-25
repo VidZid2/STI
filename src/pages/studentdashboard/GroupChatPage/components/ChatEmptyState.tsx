@@ -41,13 +41,13 @@ export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({ colors }) => {
                     width: 80,
                     height: 80,
                     borderRadius: '24px',
-                    background: `linear-gradient(135deg, ${colors.accent}15 0%, ${colors.accent}08 100%)`,
-                    border: `1.5px solid ${colors.accent}20`,
+                    background: `linear-gradient(135deg, var(--accent-color)15 0%, var(--accent-color)08 100%)`,
+                    border: `1.5px solid var(--accent-color)20`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginBottom: '20px',
-                    boxShadow: `0 8px 32px ${colors.accent}10`,
+                    boxShadow: `0 8px 32px var(--accent-color)10`,
                 }}
             >
                 {/* Minimalistic Send/Chat Icon */}
@@ -59,7 +59,7 @@ export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({ colors }) => {
                     height="36"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke={colors.accent}
+                    stroke={'var(--accent-color)'}
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -78,7 +78,7 @@ export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({ colors }) => {
                     margin: 0,
                     fontSize: '18px',
                     fontWeight: 600,
-                    color: colors.textPrimary,
+                    color: 'var(--text-primary)',
                     marginBottom: '8px',
                 }}
             >
@@ -93,7 +93,7 @@ export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({ colors }) => {
                 style={{
                     margin: 0,
                     fontSize: '14px',
-                    color: colors.textMuted,
+                    color: 'var(--text-muted)',
                     maxWidth: '280px',
                     lineHeight: 1.5,
                 }}
@@ -129,7 +129,7 @@ export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({ colors }) => {
                             width: 6,
                             height: 6,
                             borderRadius: '50%',
-                            background: colors.accent,
+                            background: 'var(--accent-color)',
                         }}
                     />
                 ))}

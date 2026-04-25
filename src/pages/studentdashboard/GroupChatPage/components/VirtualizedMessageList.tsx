@@ -135,7 +135,7 @@ export const VirtualizedMessageList = forwardRef<VirtuosoHandle, VirtualizedMess
                         <DateSeparator
                             date={message.created_at}
                             isDarkMode={isDarkMode}
-                            textMutedColor={colors.textMuted}
+                            textMutedColor={'var(--text-muted)'}
                         />
                     )}
                     <AnimatePresence initial={false}>

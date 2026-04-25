@@ -40,8 +40,8 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                     alignItems: 'center',
                     gap: '6px',
                     padding: '5px 10px',
-                    background: isDarkMode ? 'rgba(100, 116, 139, 0.1)' : 'rgba(100, 116, 139, 0.08)',
-                    border: `1px solid ${isDarkMode ? 'rgba(100, 116, 139, 0.2)' : 'rgba(100, 116, 139, 0.15)'}`,
+                    background: 'rgba(100, 116, 139, 0.1)',
+                    border: `1px solid ${'rgba(100, 116, 139, 0.2)'}`,
                     borderRadius: '16px',
                 }}
             >
@@ -86,8 +86,8 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                     alignItems: 'center',
                     gap: '8px',
                     padding: '6px 12px',
-                    background: isDarkMode ? 'rgba(34, 197, 94, 0.1)' : 'rgba(34, 197, 94, 0.08)',
-                    border: `1px solid ${isDarkMode ? 'rgba(34, 197, 94, 0.2)' : 'rgba(34, 197, 94, 0.15)'}`,
+                    background: 'rgba(34, 197, 94, 0.1)',
+                    border: `1px solid ${'rgba(34, 197, 94, 0.2)'}`,
                     borderRadius: '20px',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
@@ -136,7 +136,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                 fontSize: '9px',
                                 fontWeight: 700,
                                 color: '#fff',
-                                border: `2px solid ${isDarkMode ? '#1e293b' : '#fff'}`,
+                                border: `2px solid ${'var(--bg-hover)'}`,
                                 marginLeft: idx > 0 ? '-8px' : 0,
                                 overflow: 'hidden',
                                 position: 'relative',
@@ -166,7 +166,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                 height: 6,
                                 borderRadius: '50%',
                                 background: '#22c55e',
-                                border: `1.5px solid ${isDarkMode ? '#1e293b' : '#fff'}`,
+                                border: `1.5px solid ${'var(--bg-hover)'}`,
                             }} />
                         </motion.div>
                     ))}
@@ -176,14 +176,14 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                 width: 22,
                                 height: 22,
                                 borderRadius: '50%',
-                                background: isDarkMode ? '#475569' : '#94a3b8',
+                                background: 'var(--bg-hover)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontSize: '8px',
                                 fontWeight: 700,
                                 color: '#fff',
-                                border: `2px solid ${isDarkMode ? '#1e293b' : '#fff'}`,
+                                border: `2px solid ${'var(--bg-hover)'}`,
                                 marginLeft: '-8px',
                             }}
                         >
@@ -233,9 +233,9 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                             right: 0,
                             minWidth: '200px',
                             maxWidth: '280px',
-                            background: isDarkMode ? '#1e293b' : '#ffffff',
+                            background: 'var(--bg-primary)',
                             borderRadius: '12px',
-                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                            border: `1px solid ${'rgba(255,255,255,0.08)'}`,
                             boxShadow: isDarkMode
                                 ? '0 8px 32px rgba(0,0,0,0.4)'
                                 : '0 8px 32px rgba(0,0,0,0.12)',
@@ -246,7 +246,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                         {/* Header */}
                         <div style={{
                             padding: '12px 14px',
-                            borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                            borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}`,
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
@@ -256,7 +256,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                 height="14"
                                 viewBox="0 0 24 24"
                                 fill="none"
-                                stroke={colors.textMuted}
+                                stroke={'var(--text-muted)'}
                                 strokeWidth="2"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
@@ -269,7 +269,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                             <span style={{
                                 fontSize: '12px',
                                 fontWeight: 600,
-                                color: colors.textPrimary,
+                                color: 'var(--text-primary)',
                             }}>
                                 Currently Viewing
                             </span>
@@ -278,7 +278,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                 fontSize: '10px',
                                 fontWeight: 600,
                                 color: '#22c55e',
-                                background: isDarkMode ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.1)',
+                                background: 'rgba(34, 197, 94, 0.15)',
                                 padding: '2px 6px',
                                 borderRadius: '6px',
                             }}>
@@ -307,9 +307,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                         transition: 'background 0.15s ease',
                                     }}
                                     onMouseEnter={(e) => {
-                                        e.currentTarget.style.background = isDarkMode
-                                            ? 'rgba(255,255,255,0.04)'
-                                            : 'rgba(0,0,0,0.03)';
+                                        e.currentTarget.style.background = 'rgba(0,0,0,0.03)';
                                     }}
                                     onMouseLeave={(e) => {
                                         e.currentTarget.style.background = 'transparent';
@@ -353,7 +351,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                             height: 8,
                                             borderRadius: '50%',
                                             background: '#22c55e',
-                                            border: `2px solid ${isDarkMode ? '#1e293b' : '#fff'}`,
+                                            border: `2px solid ${'var(--bg-hover)'}`,
                                         }} />
                                     </div>
 
@@ -362,7 +360,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                         <div style={{
                                             fontSize: '12px',
                                             fontWeight: 500,
-                                            color: colors.textPrimary,
+                                            color: 'var(--text-primary)',
                                             whiteSpace: 'nowrap',
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis',

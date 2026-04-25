@@ -4,16 +4,11 @@
  * Extracted from CourseViewPage.tsx during Phase 8.1 continuation.
  */
 import * as React from 'react';
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { getCurrentUser } from '../../../../../services/authService';
 import { supabase } from '../../../../../lib/supabase';
-import { useSystemConfig } from '../../../../../contexts/SystemConfigContext';
-import { SearchBar, EmptyState } from '../components/SharedComponents';
-import { ActionsDropdown } from '../components/ActionsDropdown';
-import { PaginationButton, PageNumberButton } from '../components/PaginationControls';
+import { EmptyState } from '../components/SharedComponents';
 import { PreviewIconWithTooltip } from '../components/PreviewIconWithTooltip';
-import { InstructionsModal, SubmitModal, AddTaskModal } from '../modals';
 import type { CourseTask, TaskCategory } from '../data/demoCourses';
 
 const TASK_CATEGORIES: { id: TaskCategory; label: string; icon: React.ReactNode; color: string }[] = [
@@ -49,17 +44,16 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
     setTaskFilter,
     searchQuery,
     setSearchQuery,
-    isSearching,
+    isSearching: _isSearching,
     systemConfig,
-    showAddTaskModal,
-    setShowAddTaskModal,
-    refetchTasks,
+    showAddTaskModal: _showAddTaskModal,
+    setShowAddTaskModal: _setShowAddTaskModal,
+    refetchTasks: _refetchTasks,
 }) => {
-    const [submitModalTask, setSubmitModalTask] = React.useState<CourseTask | null>(null);
-    const [instructionsTask, setInstructionsTask] = React.useState<CourseTask | null>(null);
-    const [tasksPage, setTasksPage] = React.useState(1);
-    const [contactTooltip, setContactTooltip] = React.useState<{ visible: boolean; x: number; y: number }>({ visible: false, x: 0, y: 0 });
-    const TASKS_PER_PAGE = 8;
+    const [_submitModalTask, setSubmitModalTask] = React.useState<CourseTask | null>(null);
+    const [_instructionsTask, setInstructionsTask] = React.useState<CourseTask | null>(null);
+    const [_tasksPage, _setTasksPage] = React.useState(1);
+    const [_contactTooltip, setContactTooltip] = React.useState<{ visible: boolean; x: number; y: number }>({ visible: false, x: 0, y: 0 });
     const tasksScrollRef = React.useRef<HTMLDivElement>(null);
 
     // Filter tasks
@@ -769,7 +763,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                                     whileTap={{ scale: 0.98 }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        setInstructionsModalTask(task);
+                                                        setInstructionsTask(task);
                                                     }}
                                                     style={{
                                                         width: '100%',

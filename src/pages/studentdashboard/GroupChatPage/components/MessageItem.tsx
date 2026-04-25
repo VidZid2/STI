@@ -168,7 +168,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                 <DateSeparator
                     date={message.created_at}
                     isDarkMode={isDarkMode}
-                    textMutedColor={colors.textMuted}
+                    textMutedColor={'var(--text-muted)'}
                 />
             )}
             
@@ -188,7 +188,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                     opacity: 1,
                     y: 0,
                     boxShadow: isHighlighted
-                        ? `0 0 0 2px ${colors.accent}, 0 4px 20px ${colors.accent}30`
+                        ? `0 0 0 2px var(--accent-color), 0 4px 20px var(--accent-color)30`
                         : 'none',
                 }}
                 exit={{ opacity: 0, transition: { duration: 0.1 } }}
@@ -233,17 +233,17 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                             padding: '10px 14px',
                             borderRadius,
                             background: isOwn
-                                ? `linear-gradient(135deg, ${colors.accent} 0%, #2563eb 100%)`
-                                : colors.cardBg,
-                            color: isOwn ? '#fff' : colors.textPrimary,
+                                ? `linear-gradient(135deg, var(--accent-color) 0%, #2563eb 100%)`
+                                : 'var(--dashboard-surface)',
+                            color: isOwn ? '#fff' : 'var(--text-primary)',
                             boxShadow: isOwn
-                                ? `0 2px 8px ${colors.accent}30`
-                                : `0 1px 3px ${colors.border}`,
+                                ? `0 2px 8px var(--accent-color)30`
+                                : `0 1px 3px var(--border-color)`,
                             cursor: 'default',
                             position: 'relative',
                             border: isPinned
                                 ? '2px solid #ef4444'
-                                : (isBookmarked ? `2px solid ${colors.accent}` : 'none'),
+                                : (isBookmarked ? `2px solid var(--accent-color)` : 'none'),
                         }}
                     >
                         {/* Bookmark Indicator */}
@@ -253,7 +253,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                                     position: 'absolute',
                                     top: -1,
                                     right: 8,
-                                    color: colors.accent,
+                                    color: 'var(--accent-color)',
                                 }}
                                 title="Bookmarked"
                             >

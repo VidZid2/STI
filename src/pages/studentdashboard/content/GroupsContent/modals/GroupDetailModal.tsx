@@ -4,9 +4,10 @@
  * Shows group details, member list, and join/leave/chat actions.
  * Rendered via createPortal to escape stacking context.
  */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
+import { useModalAccessibility } from '../../../hooks/useModalAccessibility';
 import {
     groupCategoryConfig,
     getRoleInfo,
@@ -19,37 +20,24 @@ interface GroupDetailModalProps {
     group: GroupWithMembers | null;
     isOpen: boolean;
     onClose: () => void;
-    isDarkMode: boolean;
     onJoin: (groupId: string) => void;
     onLeave: (groupId: string) => void;
     onOpenChat: (groupId: string) => void;
 }
 
 const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
-    group, isOpen, onClose, isDarkMode, onJoin, onLeave, onOpenChat
+    group, isOpen, onClose, onJoin, onLeave, onOpenChat
 }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'group-detail-title');
+
     const colors = {
-        bg: isDarkMode ? '#0f172a' : '#ffffff',
-        cardBg: isDarkMode ? '#1e293b' : '#f8fafc',
-        border: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-        textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
-        textSecondary: isDarkMode ? '#94a3b8' : '#475569',
-        textMuted: isDarkMode ? '#64748b' : '#94a3b8',
+        bg: 'var(--bg-primary)',
+        cardBg: 'var(--bg-secondary)',
+        border: 'var(--border-light)',
+        textPrimary: 'var(--text-primary)',
+        textSecondary: 'var(--text-secondary)',
+        textMuted: 'var(--text-muted)',
     };
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && isOpen) onClose();
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
-
-    useEffect(() => {
-        if (isOpen) document.body.style.overflow = 'hidden';
-        else document.body.style.overflow = '';
-        return () => { document.body.style.overflow = ''; };
-    }, [isOpen]);
 
     if (!group) return null;
 
@@ -67,10 +55,13 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                             backdropFilter: 'blur(4px)', zIndex: 9998,
                         }}
                     />
-                    <div style={{
-                        position: 'fixed', inset: 0, display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', zIndex: 9999, pointerEvents: 'none', padding: '20px',
-                    }}>
+                    <div
+                        ref={modalRef}
+                        {...modalProps}
+                        style={{
+                            position: 'fixed', inset: 0, display: 'flex', alignItems: 'center',
+                            justifyContent: 'center', zIndex: 9999, pointerEvents: 'none', padding: '20px',
+                        }}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -78,18 +69,16 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                             style={{
                                 width: '100%', maxWidth: '520px', maxHeight: '85vh',
-                                background: colors.bg, borderRadius: '20px',
-                                boxShadow: isDarkMode ? '0 24px 48px rgba(0, 0, 0, 0.4)' : '0 24px 48px rgba(0, 0, 0, 0.15)',
+                                background: 'var(--bg-primary)', borderRadius: '20px',
+                                boxShadow: 'var(--shadow-lg)',
                                 overflow: 'hidden', display: 'flex', flexDirection: 'column', pointerEvents: 'auto',
                             }}
                         >
                             {/* Header */}
                             <div style={{
                                 padding: '20px 24px',
-                                borderBottom: `1px solid ${colors.border}`,
-                                background: isDarkMode
-                                    ? `linear-gradient(135deg, ${group.color}15 0%, ${group.color}05 50%, transparent 100%)`
-                                    : `linear-gradient(135deg, ${group.color}12 0%, ${group.color}06 50%, transparent 100%)`,
+                                borderBottom: `1px solid var(--border-color)`,
+                                background: `linear-gradient(135deg, ${group.color}12 0%, ${group.color}06 50%, transparent 100%)`,
                                 borderTop: `3px solid ${group.color}`,
                                 borderRadius: '20px 20px 0 0',
                             }}>
@@ -115,7 +104,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                     </motion.div>
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                                            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: colors.textPrimary }}>
+                                            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                                 {group.name}
                                             </h2>
                                             {group.is_pinned && (
@@ -137,7 +126,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                                 </svg>
                                             )}
                                         </div>
-                                        <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: colors.textSecondary }}>
+                                        <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
                                             {group.description}
                                         </p>
                                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -152,7 +141,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                                 <span style={{
                                                     display: 'inline-flex', alignItems: 'center', gap: '5px',
                                                     padding: '3px 10px', borderRadius: '6px',
-                                                    background: isDarkMode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(139, 92, 246, 0.1)',
+                                                    background: 'rgba(139, 92, 246, 0.1)',
                                                     fontSize: '11px', fontWeight: 500, color: '#8b5cf6',
                                                 }}>
                                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -168,9 +157,9 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                         whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} onClick={onClose}
                                         style={{
                                             width: '36px', height: '36px', borderRadius: '10px', border: 'none',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                                            background: 'var(--bg-hover)',
                                             cursor: 'pointer', display: 'flex', alignItems: 'center',
-                                            justifyContent: 'center', color: colors.textSecondary,
+                                            justifyContent: 'center', color: 'var(--text-secondary)',
                                         }}
                                     >
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -184,29 +173,29 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
                                     style={{
                                         display: 'flex', gap: '12px', padding: '12px 16px', borderRadius: '12px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                        background: 'var(--bg-hover)',
                                     }}
                                 >
                                     <div style={{ flex: 1, textAlign: 'center' }}>
                                         <div style={{ fontSize: '18px', fontWeight: 700, color: '#3b82f6' }}>{group.member_count}</div>
-                                        <div style={{ fontSize: '10px', color: colors.textMuted }}>Members</div>
+                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Members</div>
                                     </div>
-                                    <div style={{ width: '1px', background: colors.border }} />
+                                    <div style={{ width: '1px', background: 'var(--border-color)' }} />
                                     <div style={{ flex: 1, textAlign: 'center' }}>
                                         <div style={{ fontSize: '18px', fontWeight: 700, color: '#10b981' }}>{group.online_count}</div>
-                                        <div style={{ fontSize: '10px', color: colors.textMuted }}>Online</div>
+                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Online</div>
                                     </div>
-                                    <div style={{ width: '1px', background: colors.border }} />
+                                    <div style={{ width: '1px', background: 'var(--border-color)' }} />
                                     <div style={{ flex: 1, textAlign: 'center' }}>
-                                        <div style={{ fontSize: '18px', fontWeight: 700, color: colors.textPrimary }}>{group.max_members}</div>
-                                        <div style={{ fontSize: '10px', color: colors.textMuted }}>Max</div>
+                                        <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>{group.max_members}</div>
+                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Max</div>
                                     </div>
                                 </motion.div>
                             </div>
 
                             {/* Members List */}
                             <div style={{ flex: 1, overflow: 'auto', padding: '16px 24px' }}>
-                                <h3 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 600, color: colors.textSecondary }}>
+                                <h3 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)' }}>
                                     Members ({group.member_count})
                                 </h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -219,7 +208,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                             style={{
                                                 display: 'flex', alignItems: 'center', gap: '12px',
                                                 padding: '10px 12px', borderRadius: '10px',
-                                                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                                background: 'var(--bg-hover)',
                                             }}
                                         >
                                             <div style={{ position: 'relative' }}>
@@ -235,16 +224,16 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                                     <div style={{
                                                         position: 'absolute', bottom: -2, right: -2, width: 10, height: 10,
                                                         borderRadius: '50%', background: '#22c55e',
-                                                        border: `2px solid ${isDarkMode ? colors.bg : 'white'}`,
+                                                        border: `2px solid ${'var(--bg-primary)'}`,
                                                         boxShadow: '0 0 6px rgba(34, 197, 94, 0.5)',
                                                     }} />
                                                 )}
                                             </div>
                                             <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ fontSize: '13px', fontWeight: 500, color: colors.textPrimary }}>
+                                                <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)' }}>
                                                     {member.user_name}
                                                 </div>
-                                                <div style={{ fontSize: '11px', color: colors.textMuted }}>
+                                                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                                                     {member.is_online ? 'Online' : formatLastActive(member.last_active)}
                                                 </div>
                                             </div>
@@ -262,7 +251,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
 
                             {/* Footer Actions */}
                             <div style={{
-                                padding: '16px 24px', borderTop: `1px solid ${colors.border}`,
+                                padding: '16px 24px', borderTop: `1px solid var(--border-color)`,
                                 display: 'flex', gap: '12px',
                             }}>
                                 {group.is_member ? (
@@ -284,8 +273,8 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                             onClick={() => { onOpenChat(group.id); onClose(); }}
                                             style={{
                                                 flex: 2, padding: '12px', borderRadius: '10px',
-                                                background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
-                                                border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                                                background: 'rgba(59, 130, 246, 0.1)',
+                                                border: `1px solid ${'rgba(59, 130, 246, 0.1)'}`,
                                                 color: '#3b82f6', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
                                                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                                             }}
@@ -303,8 +292,8 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                         onClick={() => { onJoin(group.id); onClose(); }}
                                         style={{
                                             flex: 1, padding: '12px', borderRadius: '10px',
-                                            background: isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.08)',
-                                            border: `1px solid ${isDarkMode ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.2)'}`,
+                                            background: 'rgba(16, 185, 129, 0.1)',
+                                            border: `1px solid ${'rgba(16, 185, 129, 0.1)'}`,
                                             color: '#10b981', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                                         }}

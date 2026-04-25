@@ -57,16 +57,16 @@ export const ReactionsDisplay = React.memo<ReactionsDisplayProps>(({
                             gap: '3px',
                             padding: '2px 6px',
                             borderRadius: '10px',
-                            border: `1px solid ${colors.border}`,
+                            border: `1px solid var(--border-color)`,
                             background: currentUserId && reaction.users.includes(currentUserId)
-                                ? `${colors.accent}15`
-                                : colors.cardBg,
+                                ? `var(--accent-color)15`
+                                : 'var(--dashboard-surface)',
                             cursor: 'pointer',
                             fontSize: '12px',
                         }}
                     >
                         <span>{reaction.emoji}</span>
-                        <span style={{ fontSize: '10px', color: colors.textSecondary }}>
+                        <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>
                             {reaction.users.length}
                         </span>
                     </motion.button>

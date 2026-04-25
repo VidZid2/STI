@@ -7,7 +7,7 @@
  */
 import * as React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { StreakWidget } from './index';
+
 import type { WidgetSidebarProps } from './WidgetSidebar';
 
 // Re-use the same props as WidgetSidebar (minus the sidebar open/close state)
@@ -16,9 +16,9 @@ type WidgetContainerProps = Omit<WidgetSidebarProps, 'widgetsSidebarActive' | 't
 export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     widgetVisibility,
     toggleWidget,
-    restoreAllWidgets,
-    hasHiddenWidgets,
-    isDemoMode,
+    restoreAllWidgets: _restoreAllWidgets,
+    hasHiddenWidgets: _hasHiddenWidgets,
+    isDemoMode: _isDemoMode,
     todos,
     newTodoText,
     setNewTodoText,
@@ -31,25 +31,25 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     clearAllTodos,
     completedCount,
     weather,
-    isWeatherLoading,
-    deadlines,
-    recentActivity,
+    isWeatherLoading: _isWeatherLoading,
+    deadlines: _deadlines,
+    recentActivity: _recentActivity,
     gradePredictor,
     studyInsights,
-    notifications,
-    groupedNotifications,
+    notifications: _notifications,
+    groupedNotifications: _groupedNotifications,
     quickViewSettings,
     achievements,
-    formatDaysUntil,
+    formatDaysUntil: _formatDaysUntil,
     getDeadlineTypeColor,
     formatRelativeTime,
     getCourseProgressData,
     formatMinutesToHours,
-    refreshTrigger,
-    totalCourses,
+    refreshTrigger: _refreshTrigger,
+    totalCourses: _totalCourses,
     upcomingDeadlines,
-    overallProgress,
-    openSettingsModal,
+    overallProgress: _overallProgress,
+    openSettingsModal: _openSettingsModal,
     todaysQuote,
     weatherLoading,
     weatherError,
@@ -59,6 +59,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     setCalendarView,
     calendarMonth,
     setCalendarMonth,
+    hasDeadlines,
 }) => {
     return (
         <>
@@ -109,7 +110,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     transition={{ delay: 0.15 }}
                                                     className={`text-yellow-300 leading-relaxed font-medium italic ${quickViewSettings.compactMode ? 'text-[11px]' : 'text-xs'}`}
                                                 >
-                                                    "{todaysQuote.text}"
+                                                    "{todaysQuote?.text}"
                                                 </motion.p>
 
                                                 {/* Author */}
@@ -119,7 +120,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     transition={{ delay: 0.25 }}
                                                     className={`text-yellow-400 mt-2 font-semibold ${quickViewSettings.compactMode ? 'text-[9px]' : 'text-[10px]'}`}
                                                 >
-                                                    â€” {todaysQuote.author}
+                                                    â€” {todaysQuote?.author}
                                                 </motion.p>
 
                                                 {/* Daily indicator */}
@@ -512,16 +513,11 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                                         transition={{ delay: index * 0.05 }}
                                                                         whileHover={{ x: 4, backgroundColor: 'rgba(99, 102, 241, 0.05)' }}
                                                                         onClick={() => {
-                                                                            // Navigate to course
-                                                                            const courseData = {
-                                                                                id: course.id,
-                                                                                title: `${course.name} - SY2526-1T`,
-                                                                                subtitle: `BSIT101A`,
-                                                                                image: '',
-                                                                                progress: course.progress
-                                                                            };
-                                                                            setSelectedCourse(courseData);
-                                                                            setActiveView('course');
+                                                                            // Navigate to course using event-driven architecture
+                                                                            const event = new CustomEvent('navigate-to-course', {
+                                                                                detail: { courseId: course.id }
+                                                                            });
+                                                                            window.dispatchEvent(event);
                                                                         }}
                                                                         className={`rounded-lg cursor-pointer transition-colors ${quickViewSettings.compactMode ? 'p-2' : 'p-2.5'}`}
                                                                     >
@@ -605,8 +601,8 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                             <div className={`${quickViewSettings.compactMode ? 'px-3 pb-3' : 'px-4 pb-4'}`}>
                                                 {/* Chart Area */}
                                                 <div className={`flex items-end justify-between gap-1 ${quickViewSettings.compactMode ? 'h-12 mb-2' : 'h-16 mb-3'}`}>
-                                                    {studyInsights.dailyData.map((day, index) => {
-                                                        const maxMinutes = Math.max(...studyInsights.dailyData.map(d => d.minutes), 1);
+                                                    {studyInsights.dailyData.map((day: any, index: number) => {
+                                                        const maxMinutes = Math.max(...studyInsights.dailyData.map((d: any) => d.minutes), 1);
                                                         const heightPercent = (day.minutes / maxMinutes) * 100;
                                                         const isToday = index === studyInsights.dailyData.length - 1;
 
@@ -630,7 +626,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
 
                                                 {/* Day Labels */}
                                                 <div className="flex justify-between gap-1 mb-3">
-                                                    {studyInsights.dailyData.map((day, index) => {
+                                                    {studyInsights.dailyData.map((day: any, index: number) => {
                                                         const isToday = index === studyInsights.dailyData.length - 1;
                                                         return (
                                                             <span
@@ -1413,7 +1409,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                             Top contributors
                                                         </p>
                                                         <div className="space-y-1.5">
-                                                            {gradePredictor.breakdown.map((course, index) => (
+                                                            {gradePredictor.breakdown.map((course: any, index: number) => (
                                                                 <motion.div
                                                                     key={course.name}
                                                                     initial={{ opacity: 0, x: -10 }}

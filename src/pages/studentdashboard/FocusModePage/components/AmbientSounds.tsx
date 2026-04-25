@@ -2,10 +2,21 @@
  * AmbientSounds + SoundIcon
  * Ambient sound player controls.
  * Extracted from FocusModePage.tsx during Phase 8.5
+ * Refactored in Phase 9.5 (Styling Consistency)
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { FocusModeColors } from '../FocusModePage';
+
+// Ambient Sounds Data
+const AMBIENT_SOUNDS = [
+    { id: 'lofi', label: 'Lo-Fi', icon: 'lofi', url: 'https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3', color: '#8b5cf6' },
+    { id: 'rain', label: 'Rain', icon: 'rain', url: 'https://cdn.pixabay.com/audio/2021/08/09/audio_8dd9f1a21e.mp3', color: '#3b82f6' },
+    { id: 'cafe', label: 'Cafe', icon: 'cafe', url: 'https://cdn.pixabay.com/audio/2021/08/09/audio_f5b5c92c90.mp3', color: '#f59e0b' },
+    { id: 'nature', label: 'Nature', icon: 'nature', url: 'https://cdn.pixabay.com/audio/2021/09/06/audio_2491a5db4e.mp3', color: '#10b981' },
+    { id: 'fire', label: 'Fire', icon: 'fire', url: 'https://cdn.pixabay.com/audio/2022/03/10/audio_b2f2bf29a6.mp3', color: '#ef4444' },
+    { id: 'waves', label: 'Waves', icon: 'waves', url: 'https://cdn.pixabay.com/audio/2021/08/09/audio_f04a6042db.mp3', color: '#0ea5e9' },
+];
 
 // Sound Icon Component
 const SoundIcon: React.FC<{ id: string; color: string; size?: number }> = ({ id, color, size = 18 }) => {
@@ -63,7 +74,7 @@ const AmbientSounds: React.FC<{
     colors: FocusModeColors;
     activeSound?: string | null;
     onSoundChange?: (soundId: string | null) => void;
-}> = ({ isDarkMode, colors, activeSound: externalActiveSound, onSoundChange }) => {
+}> = ({ isDarkMode: _isDarkMode, colors: _colors, activeSound: externalActiveSound, onSoundChange }) => {
     const [internalActiveSound, setInternalActiveSound] = useState<string | null>(null);
     const [volume, setVolume] = useState(70);
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -100,10 +111,11 @@ const AmbientSounds: React.FC<{
                 const audio = new Audio(sound.url);
                 audio.loop = true;
                 audio.volume = volume / 100;
-                audio.play().catch(() => {});
+                audio.play().catch(e => console.error("Audio playback failed:", e));
                 audioRef.current = audio;
-                setActiveSound(soundId);
             }
+
+            setActiveSound(soundId);
         }
     };
 
@@ -122,12 +134,8 @@ const AmbientSounds: React.FC<{
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 25 }}
-            style={{
-                padding: '16px',
-                borderRadius: '14px',
-                background: isDarkMode ? '#1e293b' : '#ffffff',
-                border: `1px solid ${colors.border}`,
-            }}
+            className="dashboard-card"
+            style={{ padding: '16px' }}
         >
             {/* Header */}
             <div style={{
@@ -140,12 +148,11 @@ const AmbientSounds: React.FC<{
                     width: 32,
                     height: 32,
                     borderRadius: '10px',
-                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.06) 100%)',
-                    border: '1px solid rgba(59, 130, 246, 0.15)',
+                    background: 'rgba(59, 130, 246, 0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#3b82f6',
+                    color: 'var(--brand-blue)',
                 }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
@@ -157,13 +164,13 @@ const AmbientSounds: React.FC<{
                     <div style={{
                         fontSize: '13px',
                         fontWeight: 600,
-                        color: colors.textPrimary,
+                        color: 'var(--text-primary)',
                     }}>
                         Ambient Sounds
                     </div>
                     <div style={{
                         fontSize: '11px',
-                        color: colors.textMuted,
+                        color: 'var(--text-muted)',
                     }}>
                         {activeSound ? 'Playing...' : 'Select to play'}
                     </div>
@@ -177,17 +184,19 @@ const AmbientSounds: React.FC<{
                             width: 8,
                             height: 8,
                             borderRadius: '50%',
-                            background: '#10b981',
+                            background: 'var(--success)',
+                            boxShadow: '0 0 8px var(--success)',
                         }}
                     />
                 )}
             </div>
 
-            {/* Sound Grid - 3x2 layout */}
+            {/* Sound Grid */}
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
                 gap: '8px',
+                marginBottom: activeSound ? '16px' : '0',
             }}>
                 {AMBIENT_SOUNDS.map((sound) => {
                     const isActive = activeSound === sound.id;
@@ -202,51 +211,53 @@ const AmbientSounds: React.FC<{
                                 borderRadius: '10px',
                                 border: isActive
                                     ? `2px solid ${sound.color}40`
-                                    : `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                                    : `1px solid var(--border-light)`,
                                 background: isActive
                                     ? `${sound.color}10`
-                                    : (isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'),
+                                    : 'var(--bg-hover)',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
-                                gap: '6px',
+                                gap: '8px',
                                 transition: 'all 0.2s ease',
-                                boxShadow: isActive ? `0 4px 12px ${sound.color}20` : 'none',
                             }}
                         >
-                            <SoundIcon id={sound.id} color={isActive ? sound.color : colors.textMuted} size={20} />
-                            <span style={{
-                                fontSize: '11px',
-                                fontWeight: 600,
-                                color: isActive ? sound.color : colors.textSecondary,
+                            <div style={{
+                                color: isActive ? sound.color : 'var(--text-muted)',
+                                transition: 'color 0.2s ease',
                             }}>
-                                {sound.name}
+                                <SoundIcon id={sound.icon} color="currentColor" />
+                            </div>
+                            <span style={{
+                                fontSize: '10px',
+                                fontWeight: isActive ? 600 : 500,
+                                color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                            }}>
+                                {sound.label}
                             </span>
                         </motion.button>
                     );
                 })}
             </div>
 
-            {/* Volume Slider */}
+            {/* Volume Control (Only show when playing) */}
             <AnimatePresence>
                 {activeSound && (
                     <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                        style={{ marginTop: '14px', overflow: 'hidden' }}
+                        style={{ overflow: 'hidden' }}
                     >
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '10px',
-                            padding: '10px 12px',
-                            borderRadius: '8px',
-                            background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                            gap: '12px',
+                            paddingTop: '12px',
+                            borderTop: '1px solid var(--border-light)',
                         }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2">
                                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                             </svg>
                             <input
@@ -254,24 +265,21 @@ const AmbientSounds: React.FC<{
                                 min="0"
                                 max="100"
                                 value={volume}
-                                onChange={(e) => setVolume(Number(e.target.value))}
-                                className="focus-volume-slider"
+                                onChange={(e) => setVolume(parseInt(e.target.value))}
                                 style={{
                                     flex: 1,
-                                    height: '6px',
-                                    borderRadius: '3px',
-                                    background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${volume}%, ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'} ${volume}%, ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'} 100%)`,
+                                    height: '4px',
+                                    borderRadius: '2px',
+                                    appearance: 'none',
+                                    background: 'var(--bg-hover)',
+                                    cursor: 'pointer',
                                 }}
                             />
-                            <span style={{
-                                fontSize: '11px',
-                                fontWeight: 600,
-                                color: colors.textMuted,
-                                minWidth: '28px',
-                                textAlign: 'right',
-                            }}>
-                                {volume}%
-                            </span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                            </svg>
                         </div>
                     </motion.div>
                 )}
@@ -279,6 +287,5 @@ const AmbientSounds: React.FC<{
         </motion.div>
     );
 };
-
 
 export { AmbientSounds };

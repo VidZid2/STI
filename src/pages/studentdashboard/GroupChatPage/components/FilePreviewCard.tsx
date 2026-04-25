@@ -118,7 +118,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                         cursor: imageError ? 'default' : 'pointer',
                         width: '120px',
                         height: '120px',
-                        background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                        background: 'var(--dashboard-surface)',
                         position: 'relative',
                         flexShrink: 0,
                     }}
@@ -131,7 +131,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: colors.textMuted,
+                            color: 'var(--text-muted)',
                         }}>
                             <motion.div
                                 animate={{ rotate: 360 }}
@@ -152,7 +152,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: colors.textMuted,
+                            color: 'var(--text-muted)',
                             gap: '4px',
                         }}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -262,8 +262,8 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                     borderRadius: '10px',
                     background: isOwn 
                         ? 'rgba(255,255,255,0.1)' 
-                        : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'),
-                    border: `1px solid ${isOwn ? 'rgba(255,255,255,0.15)' : colors.border}`,
+                        : ('var(--dashboard-surface)'),
+                    border: `1px solid ${isOwn ? 'rgba(255,255,255,0.15)' : 'var(--border-color)'}`,
                     maxWidth: '280px',
                 }}
             >
@@ -285,7 +285,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                         margin: 0,
                         fontSize: '13px',
                         fontWeight: 500,
-                        color: isOwn ? '#fff' : colors.textPrimary,
+                        color: isOwn ? '#fff' : 'var(--text-primary)',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -295,7 +295,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                     <p style={{
                         margin: '2px 0 0',
                         fontSize: '11px',
-                        color: isOwn ? 'rgba(255,255,255,0.7)' : colors.textMuted,
+                        color: isOwn ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)',
                     }}>
                         {formatFileSize(attachment.size)} • Image
                     </p>
@@ -319,8 +319,8 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                 borderRadius: '10px',
                 background: isOwn 
                     ? 'rgba(255,255,255,0.1)' 
-                    : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'),
-                border: `1px solid ${isOwn ? 'rgba(255,255,255,0.15)' : colors.border}`,
+                    : ('var(--dashboard-surface)'),
+                border: `1px solid ${isOwn ? 'rgba(255,255,255,0.15)' : 'var(--border-color)'}`,
                 textDecoration: 'none',
                 maxWidth: '280px',
             }}
@@ -343,7 +343,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                     margin: 0,
                     fontSize: '13px',
                     fontWeight: 500,
-                    color: isOwn ? '#fff' : colors.textPrimary,
+                    color: isOwn ? '#fff' : 'var(--text-primary)',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
@@ -353,12 +353,12 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                 <p style={{
                     margin: '2px 0 0',
                     fontSize: '11px',
-                    color: isOwn ? 'rgba(255,255,255,0.7)' : colors.textMuted,
+                    color: isOwn ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)',
                 }}>
                     {formatFileSize(attachment.size)}
                 </p>
             </div>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={isOwn ? 'rgba(255,255,255,0.6)' : colors.textMuted} strokeWidth="2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={isOwn ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)'} strokeWidth="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
                 <line x1="12" y1="15" x2="12" y2="3" />

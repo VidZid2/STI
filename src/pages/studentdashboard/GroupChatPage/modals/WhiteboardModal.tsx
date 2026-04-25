@@ -7,6 +7,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 import type { ModalColors } from './types';
 
 interface WhiteboardModalProps {
@@ -20,6 +21,7 @@ interface WhiteboardModalProps {
 type Tool = 'pen' | 'eraser';
 
 export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClose, onSend, colors }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'whiteboard-modal-title');
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [brushColor, setBrushColor] = useState('#3b82f6');
@@ -29,11 +31,11 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
 
     // Blue accent colors
     const blueAccent = '#3b82f6';
-    const isDarkMode = colors.cardBg === '#1e293b' || colors.cardBg.includes('30, 41, 59');
-    const blueBg = isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)';
-    const blueBorder = isDarkMode ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.15)';
-    const subtleBg = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)';
-    const borderColor = isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const isDarkMode = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
+    const blueBg = 'rgba(59, 130, 246, 0.1)';
+    const blueBorder = 'rgba(59, 130, 246, 0.25)';
+    const subtleBg = 'var(--dashboard-surface)';
+    const borderColor = 'rgba(255,255,255,0.06)';
 
     const brushColors = [
         { color: '#3b82f6', name: 'Blue' },
@@ -120,7 +122,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                     onClick={onClose}
                     style={{
                         position: 'fixed', inset: 0,
-                        background: isDarkMode ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.4)',
+                        background: 'rgba(0,0,0,0.6)',
                         backdropFilter: 'blur(8px)', zIndex: 1001,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
                     }}
@@ -130,9 +132,11 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 10 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        ref={modalRef}
+                        {...modalProps}
                         onClick={(e) => e.stopPropagation()}
                         style={{
-                            background: colors.cardBg, borderRadius: '20px',
+                            background: 'var(--dashboard-surface)', borderRadius: '20px',
                             width: '100%', maxWidth: '540px',
                             boxShadow: isDarkMode
                                 ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
@@ -164,22 +168,22 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                             </motion.div>
                             <div style={{ flex: 1 }}>
                                 <motion.h3 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}
-                                    style={{ margin: 0, fontSize: '17px', fontWeight: 600, color: colors.textPrimary, letterSpacing: '-0.01em' }}>
+                                    style={{ margin: 0, fontSize: '17px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
                                     Whiteboard
                                 </motion.h3>
                                 <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-                                    style={{ margin: '4px 0 0', fontSize: '12px', color: colors.textSecondary }}>
+                                    style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--text-secondary)' }}>
                                     Draw and share with your group
                                 </motion.p>
                             </div>
                             <motion.button
-                                whileHover={{ scale: 1.1, background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)' }}
+                                whileHover={{ scale: 1.1, background: 'rgba(255,255,255,0.1)' }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={onClose}
                                 style={{
                                     width: 32, height: 32, borderRadius: '10px', border: 'none',
                                     background: subtleBg, cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.textSecondary,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)',
                                 }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -202,7 +206,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                     overflow: 'hidden',
                                     marginBottom: '16px',
                                     background: '#fff',
-                                    boxShadow: isDarkMode ? 'inset 0 2px 4px rgba(0,0,0,0.1)' : 'inset 0 2px 4px rgba(0,0,0,0.03)',
+                                    boxShadow: 'var(--shadow-inner)',
                                 }}
                             >
                                 <canvas
@@ -239,7 +243,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                     {/* Tool Selector */}
                                     <div style={{
                                         display: 'flex', gap: '4px', padding: '4px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+                                        background: 'rgba(255,255,255,0.04)',
                                         borderRadius: '10px', flexShrink: 0,
                                     }}>
                                         <motion.button
@@ -250,7 +254,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                                 width: 32, height: 32, borderRadius: '8px', border: 'none',
                                                 background: tool === 'pen' ? blueAccent : 'transparent',
                                                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                color: tool === 'pen' ? '#fff' : colors.textSecondary,
+                                                color: tool === 'pen' ? '#fff' : 'var(--text-secondary)',
                                                 transition: 'all 0.15s ease',
                                             }}
                                             title="Pen"
@@ -268,7 +272,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                                 width: 32, height: 32, borderRadius: '8px', border: 'none',
                                                 background: tool === 'eraser' ? blueAccent : 'transparent',
                                                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                color: tool === 'eraser' ? '#fff' : colors.textSecondary,
+                                                color: tool === 'eraser' ? '#fff' : 'var(--text-secondary)',
                                                 transition: 'all 0.15s ease',
                                             }}
                                             title="Eraser"
@@ -296,7 +300,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                                     width: 24, height: 24, borderRadius: '50%',
                                                     background: c.color,
                                                     border: brushColor === c.color && tool === 'pen'
-                                                        ? `2px solid ${isDarkMode ? '#fff' : '#1e293b'}`
+                                                        ? `2px solid ${'var(--bg-hover)'}`
                                                         : '2px solid transparent',
                                                     cursor: 'pointer', flexShrink: 0,
                                                     boxShadow: brushColor === c.color && tool === 'pen'
@@ -311,13 +315,13 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                     {/* Clear Button - moved to row 1 */}
                                     <div style={{ flex: 1 }} />
                                     <motion.button
-                                        whileHover={{ scale: 1.02, background: isDarkMode ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.1)' }}
+                                        whileHover={{ scale: 1.02, background: 'rgba(239,68,68,0.15)' }}
                                         whileTap={{ scale: 0.98 }}
                                         onClick={clearCanvas}
                                         style={{
                                             padding: '6px 12px', borderRadius: '8px',
-                                            border: `1px solid ${isDarkMode ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.2)'}`,
-                                            background: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.05)',
+                                            border: `1px solid ${'rgba(239,68,68,0.3)'}`,
+                                            background: 'rgba(239,68,68,0.1)',
                                             cursor: 'pointer', fontSize: '11px', fontWeight: 500,
                                             color: '#ef4444', display: 'flex', alignItems: 'center', gap: '5px',
                                             transition: 'all 0.15s ease', flexShrink: 0,
@@ -338,21 +342,21 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                     paddingTop: '8px', borderTop: `1px solid ${borderColor}`,
                                 }}>
                                     {/* Brush Size Label */}
-                                    <span style={{ fontSize: '11px', color: colors.textSecondary, fontWeight: 500, flexShrink: 0 }}>
+                                    <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 500, flexShrink: 0 }}>
                                         Size
                                     </span>
 
                                     {/* Brush Size Preview */}
                                     <div style={{
                                         width: 26, height: 26, borderRadius: '8px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+                                        background: 'rgba(255,255,255,0.04)',
                                         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                                     }}>
                                         <div style={{
                                             width: Math.min(brushSize * 2 + 4, 18),
                                             height: Math.min(brushSize * 2 + 4, 18),
                                             borderRadius: '50%',
-                                            background: tool === 'pen' ? brushColor : colors.textMuted,
+                                            background: tool === 'pen' ? brushColor : 'var(--text-muted)',
                                             transition: 'all 0.15s ease',
                                         }} />
                                     </div>
@@ -391,13 +395,13 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                             display: 'flex', gap: '10px', justifyContent: 'flex-end', background: subtleBg,
                         }}>
                             <motion.button
-                                whileHover={{ scale: 1.02, background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}
+                                whileHover={{ scale: 1.02, background: 'var(--bg-hover)' }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={onClose}
                                 style={{
                                     padding: '10px 18px', borderRadius: '10px',
                                     border: `1px solid ${borderColor}`, background: 'transparent',
-                                    cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: colors.textSecondary,
+                                    cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)',
                                 }}
                             >
                                 Cancel
@@ -411,10 +415,10 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                     padding: '10px 20px', borderRadius: '10px', border: 'none',
                                     background: hasDrawn
                                         ? `linear-gradient(135deg, ${blueAccent} 0%, #2563eb 100%)`
-                                        : isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                        : 'rgba(255,255,255,0.06)',
                                     cursor: hasDrawn ? 'pointer' : 'not-allowed',
                                     fontSize: '13px', fontWeight: 600,
-                                    color: hasDrawn ? '#fff' : colors.textMuted,
+                                    color: hasDrawn ? '#fff' : 'var(--text-muted)',
                                     display: 'flex', alignItems: 'center', gap: '8px',
                                     boxShadow: hasDrawn ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none',
                                 }}

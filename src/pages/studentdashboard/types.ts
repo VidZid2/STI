@@ -44,6 +44,65 @@ export interface DashboardCourse {
   id: string;
   title: string;
   progress: number;
-  color: string;
-  // Add other course properties as needed during extraction
+  color?: string;
+  subtitle: string;
+  image: string;
+}
+
+export type SidebarCourse = DashboardCourse;
+
+export interface CalendarData {
+  days: {
+    day: number;
+    isCurrentMonth: boolean;
+    isToday: boolean;
+    date: Date;
+  }[];
+  monthName: string;
+}
+
+export interface WeatherData {
+  condition: string;
+  icon: 'sunny' | 'partly-cloudy' | 'cloudy' | 'rainy' | 'stormy' | 'night';
+  temperature: number;
+  location: string;
+  humidity: number;
+  windSpeed: number;
+}
+
+export type WidgetVisibility = Record<string, boolean>;
+
+export interface AchievementStats {
+  total: number;
+  unlocked: number;
+  percentage: number;
+  recent: {
+    id: string;
+    name: string;
+    icon: string;
+    rarity: string;
+  }[];
+}
+
+export interface GradePrediction {
+    predictedGrade: number;
+    letterGrade: string;
+    confidence: number;
+    breakdown: { name: string; progress: number; contribution: number }[];
+}
+
+export interface StudyInsights {
+    dailyData: { date: string; minutes: number; dayName: string }[];
+    totalWeekMinutes: number;
+    avgDailyMinutes: number;
+    bestDay: { name: string; minutes: number } | null;
+    trend: 'up' | 'down' | 'stable';
+    trendPercent: number;
+}
+
+export interface TodoItem {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: string;
 }

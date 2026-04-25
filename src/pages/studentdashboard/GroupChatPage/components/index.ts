@@ -13,7 +13,7 @@ export { TooltipPortal } from './TooltipPortal';
 export { Tooltip } from './Tooltip';
 export { ToolIcon } from './ToolIcon';
 export { StudyToolsMenu } from './StudyToolsMenu';
-export { GroupInfoModal } from './GroupInfoModal';
+
 export { MentionAutocomplete } from './MentionAutocomplete';
 export type { MentionUser } from './MentionAutocomplete';
 export { ChatHeader } from './ChatHeader';

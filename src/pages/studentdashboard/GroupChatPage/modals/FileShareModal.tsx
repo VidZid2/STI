@@ -7,6 +7,7 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
+import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 import type { ModalColors, FileShareData } from './types';
 
 interface FileShareModalProps {
@@ -305,6 +306,7 @@ const AdditionalFilesSummary = memo(({
 
 // Main Component
 export const FileShareModal: React.FC<FileShareModalProps> = ({ isOpen, onClose, onSend, colors }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'fileshare-modal-title');
     const [files, setFiles] = useState<FileData[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
@@ -312,16 +314,16 @@ export const FileShareModal: React.FC<FileShareModalProps> = ({ isOpen, onClose,
 
     // Memoized modal styles
     const modalStyle = useMemo<React.CSSProperties>(() => ({
-        background: colors.cardBg,
+        background: 'var(--dashboard-surface)',
         borderRadius: '20px',
         padding: '28px',
         width: '100%',
         maxWidth: '480px',
         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-        border: `1px solid ${colors.border}`,
+        border: `1px solid var(--border-color)`,
         position: 'relative',
         willChange: 'transform, opacity',
-    }), [colors.cardBg, colors.border]);
+    }), ['var(--dashboard-surface)', 'var(--border-color)']);
 
     // Memoized handlers
     const handleFileSelect = useCallback((newFiles: File[]) => {
@@ -452,6 +454,8 @@ export const FileShareModal: React.FC<FileShareModalProps> = ({ isOpen, onClose,
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
                 transition={smoothSpring}
+                ref={modalRef}
+                {...modalProps}
                 onClick={(e) => e.stopPropagation()}
                 style={modalStyle}
             >
@@ -473,7 +477,7 @@ export const FileShareModal: React.FC<FileShareModalProps> = ({ isOpen, onClose,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: colors.textSecondary,
+                        color: 'var(--text-secondary)',
                         zIndex: 10,
                     }}
                 >
@@ -495,10 +499,10 @@ export const FileShareModal: React.FC<FileShareModalProps> = ({ isOpen, onClose,
                             <FolderIcon />
                         </div>
                         <div>
-                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: colors.textPrimary, letterSpacing: '-0.3px' }}>
+                            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
                                 Share File
                             </h3>
-                            <p style={{ margin: '2px 0 0', fontSize: '13px', color: colors.textSecondary }}>
+                            <p style={{ margin: '2px 0 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
                                 Upload and share with your group (max {MAX_FILES} files)
                             </p>
                         </div>

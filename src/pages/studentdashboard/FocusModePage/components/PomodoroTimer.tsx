@@ -7,6 +7,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { FocusModeColors } from '../FocusModePage';
 
+// Timer Duration Options
+const FOCUS_DURATIONS = [15, 25, 30, 45, 60, 90];
+const BREAK_DURATIONS = [5, 10, 15, 20];
+
 // Pomodoro Timer Component - Compact Professional Design
 const TIMER_SETTINGS_KEY = 'focus-timer-settings';
 
@@ -153,8 +157,8 @@ const PomodoroTimer: React.FC<{
             style={{
                 padding: '14px',
                 borderRadius: '14px',
-                background: isDarkMode ? '#1e293b' : '#ffffff',
-                border: `1px solid ${colors.border}`,
+                background: 'var(--bg-primary)',
+                border: `1px solid var(--border-color)`,
             }}
         >
             {/* Compact Header */}
@@ -187,13 +191,13 @@ const PomodoroTimer: React.FC<{
                         <div style={{
                             fontSize: '12px',
                             fontWeight: 600,
-                            color: colors.textPrimary,
+                            color: 'var(--text-primary)',
                         }}>
                             {mode === 'focus' ? 'Focus' : 'Break'}
                         </div>
                         <div style={{
                             fontSize: '10px',
-                            color: colors.textMuted,
+                            color: 'var(--text-muted)',
                         }}>
                             {sessions} session{sessions !== 1 ? 's' : ''}
                         </div>
@@ -214,12 +218,12 @@ const PomodoroTimer: React.FC<{
                             border: 'none',
                             background: showSettings
                                 ? 'rgba(59, 130, 246, 0.12)'
-                                : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'),
+                                : ('var(--dashboard-surface)'),
                             cursor: isRunning ? 'not-allowed' : 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: showSettings ? '#3b82f6' : colors.textMuted,
+                            color: showSettings ? '#3b82f6' : 'var(--text-muted)',
                             opacity: isRunning ? 0.5 : 1,
                             transition: 'all 0.15s ease',
                         }}
@@ -236,7 +240,7 @@ const PomodoroTimer: React.FC<{
                         gap: '2px',
                         padding: '2px',
                         borderRadius: '6px',
-                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                        background: 'var(--dashboard-surface)',
                     }}>
                         <button
                             onClick={() => { if (!isRunning) { setMode('focus'); setTimeLeft(focusDuration * 60); } }}
@@ -245,7 +249,7 @@ const PomodoroTimer: React.FC<{
                                 borderRadius: '5px',
                                 border: 'none',
                                 background: mode === 'focus' ? 'rgba(59, 130, 246, 0.12)' : 'transparent',
-                                color: mode === 'focus' ? '#3b82f6' : colors.textMuted,
+                                color: mode === 'focus' ? '#3b82f6' : 'var(--text-muted)',
                                 fontSize: '10px',
                                 fontWeight: 500,
                                 cursor: isRunning ? 'not-allowed' : 'pointer',
@@ -261,7 +265,7 @@ const PomodoroTimer: React.FC<{
                                 borderRadius: '5px',
                                 border: 'none',
                                 background: mode === 'break' ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
-                                color: mode === 'break' ? '#10b981' : colors.textMuted,
+                                color: mode === 'break' ? '#10b981' : 'var(--text-muted)',
                                 fontSize: '10px',
                                 fontWeight: 500,
                                 cursor: isRunning ? 'not-allowed' : 'pointer',
@@ -287,8 +291,8 @@ const PomodoroTimer: React.FC<{
                         <div style={{
                             padding: '12px',
                             borderRadius: '10px',
-                            background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(59, 130, 246, 0.03)',
-                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(59, 130, 246, 0.1)'}`,
+                            background: 'rgba(255,255,255,0.03)',
+                            border: `1px solid ${'rgba(255,255,255,0.06)'}`,
                         }}>
                             {/* Focus Duration */}
                             <div style={{ marginBottom: '10px' }}>
@@ -314,11 +318,11 @@ const PomodoroTimer: React.FC<{
                                                 borderRadius: '6px',
                                                 border: focusDuration === dur
                                                     ? '1px solid rgba(59, 130, 246, 0.4)'
-                                                    : `1px solid ${colors.border}`,
+                                                    : `1px solid var(--border-color)`,
                                                 background: focusDuration === dur
                                                     ? 'rgba(59, 130, 246, 0.12)'
                                                     : 'transparent',
-                                                color: focusDuration === dur ? '#3b82f6' : colors.textSecondary,
+                                                color: focusDuration === dur ? '#3b82f6' : 'var(--text-secondary)',
                                                 fontSize: '11px',
                                                 fontWeight: 600,
                                                 cursor: 'pointer',
@@ -355,11 +359,11 @@ const PomodoroTimer: React.FC<{
                                                 borderRadius: '6px',
                                                 border: breakDuration === dur
                                                     ? '1px solid rgba(16, 185, 129, 0.4)'
-                                                    : `1px solid ${colors.border}`,
+                                                    : `1px solid var(--border-color)`,
                                                 background: breakDuration === dur
                                                     ? 'rgba(16, 185, 129, 0.12)'
                                                     : 'transparent',
-                                                color: breakDuration === dur ? '#10b981' : colors.textSecondary,
+                                                color: breakDuration === dur ? '#10b981' : 'var(--text-secondary)',
                                                 fontSize: '11px',
                                                 fontWeight: 600,
                                                 cursor: 'pointer',
@@ -396,7 +400,7 @@ const PomodoroTimer: React.FC<{
                             cy={size / 2}
                             r={radius}
                             fill="none"
-                            stroke={isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'}
+                            stroke={'var(--bg-hover)'}
                             strokeWidth={strokeWidth}
                         />
                         <motion.circle
@@ -516,9 +520,9 @@ const PomodoroTimer: React.FC<{
                     style={{
                         padding: '8px 10px',
                         borderRadius: '8px',
-                        border: `1px solid ${colors.border}`,
+                        border: `1px solid var(--border-color)`,
                         background: 'transparent',
-                        color: colors.textSecondary,
+                        color: 'var(--text-secondary)',
                         fontSize: '11px',
                         fontWeight: 500,
                         cursor: isResetting ? 'not-allowed' : 'pointer',

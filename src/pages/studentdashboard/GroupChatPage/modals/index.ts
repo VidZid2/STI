@@ -13,4 +13,5 @@ export { VoiceNoteModal } from './VoiceNoteModal';
 export { FileShareModal } from './FileShareModal';
 export { CourseMaterialModal } from './CourseMaterialModal';
 export { LeaderboardModal } from './LeaderboardModal';
+export { GroupInfoModal } from './GroupInfoModal';
 export { ThreadModal } from './ThreadModal';

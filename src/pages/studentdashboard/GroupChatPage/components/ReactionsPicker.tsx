@@ -38,11 +38,11 @@ export const ReactionsPicker: React.FC<ReactionsPickerProps> = ({
                         [isOwn ? 'right' : 'left']: 0,
                         display: 'flex',
                         gap: '4px',
-                        background: colors.cardBg,
+                        background: 'var(--dashboard-surface)',
                         borderRadius: '12px',
                         padding: '6px 8px',
                         boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                        border: `1px solid ${colors.border}`,
+                        border: `1px solid var(--border-color)`,
                         zIndex: 10,
                     }}
                 >

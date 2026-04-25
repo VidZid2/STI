@@ -78,8 +78,8 @@ export const MessageInputArea: React.FC<MessageInputAreaProps> = ({
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             style={{
-                background: colors.cardBg,
-                borderTop: replyingTo || hasMentionedUsers ? 'none' : `1px solid ${colors.border}`,
+                background: 'var(--dashboard-surface)',
+                borderTop: replyingTo || hasMentionedUsers ? 'none' : `1px solid var(--border-color)`,
                 padding: '16px 20px',
                 display: 'flex',
                 alignItems: 'flex-end',
@@ -89,13 +89,13 @@ export const MessageInputArea: React.FC<MessageInputAreaProps> = ({
             <div
                 style={{
                     flex: 1,
-                    background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                    background: 'var(--dashboard-surface)',
                     borderRadius: '16px',
                     padding: '8px 12px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                    border: `1px solid ${'var(--bg-hover)'}`,
                 }}
             >
                 <InputToolbarLeft onStudyToolsClick={onStudyToolsClick} onAttachClick={onAttachClick} />
@@ -105,7 +105,7 @@ export const MessageInputArea: React.FC<MessageInputAreaProps> = ({
                     style={{
                         width: '1px',
                         height: '20px',
-                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                        background: 'var(--bg-hover)',
                         flexShrink: 0,
                     }}
                 />
@@ -127,7 +127,7 @@ export const MessageInputArea: React.FC<MessageInputAreaProps> = ({
                             width: '100%',
                             border: 'none',
                             background: 'transparent',
-                            color: colors.textPrimary,
+                            color: 'var(--text-primary)',
                             fontSize: '14px',
                             resize: 'none',
                             outline: 'none',

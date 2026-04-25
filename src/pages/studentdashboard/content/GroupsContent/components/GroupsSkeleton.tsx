@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GroupsSkeleton
  * Loading skeleton for GroupsContent.
  * Extracted from GroupsContent.tsx during Phase 8.2
@@ -7,14 +7,12 @@ import React from 'react';
 import { motion } from 'motion/react';
 
 // Skeleton Loading Component
-const GroupsSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+const GroupsSkeleton: React.FC<{ }> = ({ }) => {
     const colors = {
-        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
-        border: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-        skeleton: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-        shimmer: isDarkMode 
-            ? 'linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 100%)'
-            : 'linear-gradient(90deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.02) 100%)',
+        cardBg: 'var(--text-muted)',
+        border: 'var(--bg-hover)',
+        skeleton: 'var(--bg-hover)',
+        shimmer: 'var(--shimmer-bg)',
     };
 
     const SkeletonBox: React.FC<{ width?: string; height?: string; borderRadius?: string; style?: React.CSSProperties }> = ({ 
@@ -27,7 +25,7 @@ const GroupsSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             style={{
                 width, height, borderRadius,
                 background: colors.skeleton,
-                backgroundImage: colors.shimmer,
+                backgroundImage: 'var(--shimmer-bg)',
                 backgroundSize: '200% 100%',
                 ...style,
             }}
@@ -40,7 +38,7 @@ const GroupsSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             <div style={{ marginBottom: '28px' }}>
                 <div style={{
                     display: 'flex', alignItems: 'center', gap: '16px', padding: '18px 22px',
-                    borderRadius: '14px', background: colors.cardBg, border: `1px solid ${colors.border}`,
+                    borderRadius: '14px', background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`,
                 }}>
                     <SkeletonBox width="46px" height="46px" borderRadius="12px" />
                     <div style={{ flex: 1 }}>
@@ -59,8 +57,8 @@ const GroupsSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.05 }}
                         style={{
-                            background: colors.cardBg, borderRadius: '16px',
-                            border: `1px solid ${colors.border}`, padding: '16px',
+                            background: 'var(--dashboard-surface)', borderRadius: '16px',
+                            border: `1px solid var(--border-color)`, padding: '16px',
                         }}
                     >
                         <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>

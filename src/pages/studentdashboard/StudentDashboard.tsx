@@ -1,4 +1,4 @@
-﻿import * as React from 'react';
+import * as React from 'react';
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import '../../styles/dashboard.css';
@@ -11,12 +11,11 @@ import '../../styles/home-content.css';
 import { WelcomeModal, SettingsModal } from '../../components/modals';
 import { Confetti, ErrorBoundary } from '../../components/shared';
 import MaintenanceBanner from '../../components/shared/MaintenanceBanner';
-import ToolsContent from './content/ToolsContent';
-import HomeContent from './content/HomeContent';
-import PathsContent from './content/PathsContent';
+const ToolsContent = React.lazy(() => import('./content/ToolsContent'));
+const HomeContent = React.lazy(() => import('./content/HomeContent'));
+const PathsContent = React.lazy(() => import('./content/PathsContent'));
 import WidgetsToggleButton from '../../components/ui/misc/WidgetsToggleButton';
-import QuickSettingsDropdown from '../../components/ui/dropdowns/QuickSettingsDropdown';
-import HelpDropdown from '../../components/ui/dropdowns/HelpDropdown';
+
 import { Dock, DockIcon, DockAutoHide } from '../../components/ui/primitives/dock';
 
 // Heavy content tabs — lazy loaded to reduce initial bundle size
@@ -36,8 +35,9 @@ import { formatDaysUntil, getDeadlineTypeColor } from '../../services/deadlinesS
 import { formatRelativeTime } from '../../services/activityService';
 
 // Extracted modules from local folder
-import { NotificationItem, GroupedNotification, StreakWidget, DashboardIntro, DashboardTutorial, DashboardHeader, DashboardSidebar } from './components';
+import { NotificationItem, GroupedNotification, DashboardIntro, DashboardTutorial, DashboardHeader, DashboardSidebar } from './components';
 import { WidgetSidebar } from './components/WidgetSidebar';
+import { DashboardSuspenseFallback } from './components/DashboardSuspenseFallback';
 import { getSidebarCoursesWithProgress, getTodaysQuote } from './utils';
 // COURSE_NAMES available from './constants' if needed
 
@@ -144,8 +144,8 @@ const DashboardPage: React.FC = () => {
     // addNotification can be called to add new notifications dynamically
     void addNotification; // Suppress unused warning - available for dynamic use
 
-    const closeToast = (id: number) => {
-        dismissToast(id);
+    const closeToast = (id: string | number) => {
+        dismissToast(id as any);
     };
 
     // Widget visibility hook
@@ -241,14 +241,7 @@ const DashboardPage: React.FC = () => {
             />
             {/* Main Content */}
             <main className="main-content">
-                <React.Suspense fallback={
-                    <div className="flex items-center justify-center h-full min-h-[400px]">
-                        <div className="flex flex-col items-center gap-3">
-                            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                            <span className="text-sm text-slate-400 font-medium">Loading...</span>
-                        </div>
-                    </div>
-                }>
+                <React.Suspense fallback={<DashboardSuspenseFallback />}>
                 <AnimatePresence mode="wait">
                     {activeView === 'home' && (
                         <motion.div
@@ -428,6 +421,7 @@ const DashboardPage: React.FC = () => {
                 setCalendarView={setCalendarView}
                 calendarMonth={calendarMonth}
                 setCalendarMonth={setCalendarMonth}
+                hasDeadlines={hasDeadlines}
             />
 
             {/* AI Chatbot - Removed */}

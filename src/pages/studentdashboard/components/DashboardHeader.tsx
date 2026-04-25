@@ -10,11 +10,11 @@ import UserProfileDropdown from '../../../components/ui/dropdowns/UserProfileDro
 import NotificationBell from '../../../components/shared/NotificationBell';
 import { ContainerTextFlip } from '../../../components/ui/primitives/container-text-flip';
 import StreakDropdown from '../../../components/ui/dropdowns/StreakDropdown';
-
+import type { DashboardView } from '../types';
 interface DashboardHeaderProps {
     sidebarActive: boolean;
     toggleSidebar: () => void;
-    setActiveView: (view: string) => void;
+    setActiveView: (view: DashboardView) => void;
     setSidebarActive: (active: boolean) => void;
     isDemoMode: boolean;
 }

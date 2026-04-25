@@ -7,6 +7,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 import type { ModalColors } from './types';
 
 interface CourseMaterialModalProps {
@@ -61,6 +62,7 @@ const materialTypes = [
 ];
 
 export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen, onClose, onSend, colors }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'course-material-modal-title');
     const [title, setTitle] = useState('');
     const [url, setUrl] = useState('');
     const [type, setType] = useState('lecture');
@@ -69,11 +71,11 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
 
     // Blue accent colors
     const blueAccent = '#3b82f6';
-    const isDarkMode = colors.cardBg === '#1e293b' || colors.cardBg.includes('30, 41, 59');
-    const blueBg = isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)';
-    const blueBorder = isDarkMode ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.15)';
-    const subtleBg = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)';
-    const borderColor = isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const isDarkMode = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
+    const blueBg = 'rgba(59, 130, 246, 0.1)';
+    const blueBorder = 'rgba(59, 130, 246, 0.25)';
+    const subtleBg = 'var(--dashboard-surface)';
+    const borderColor = 'rgba(255,255,255,0.06)';
 
     // Focus first input on open
     useEffect(() => {
@@ -117,7 +119,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                     onClick={onClose}
                     style={{
                         position: 'fixed', inset: 0,
-                        background: isDarkMode ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.4)',
+                        background: 'rgba(0,0,0,0.6)',
                         backdropFilter: 'blur(8px)', zIndex: 1001,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
                     }}
@@ -127,9 +129,11 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 10 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        ref={modalRef}
+                        {...modalProps}
                         onClick={(e) => e.stopPropagation()}
                         style={{
-                            background: colors.cardBg, borderRadius: '20px',
+                            background: 'var(--dashboard-surface)', borderRadius: '20px',
                             width: '100%', maxWidth: '460px',
                             boxShadow: isDarkMode
                                 ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
@@ -159,22 +163,22 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                             </motion.div>
                             <div style={{ flex: 1 }}>
                                 <motion.h3 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}
-                                    style={{ margin: 0, fontSize: '17px', fontWeight: 600, color: colors.textPrimary, letterSpacing: '-0.01em' }}>
+                                    style={{ margin: 0, fontSize: '17px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
                                     Link Course Material
                                 </motion.h3>
                                 <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
-                                    style={{ margin: '4px 0 0', fontSize: '12px', color: colors.textSecondary }}>
+                                    style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--text-secondary)' }}>
                                     Share resources with your study group
                                 </motion.p>
                             </div>
                             <motion.button
-                                whileHover={{ scale: 1.1, background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)' }}
+                                whileHover={{ scale: 1.1, background: 'rgba(255,255,255,0.1)' }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={onClose}
                                 style={{
                                     width: 32, height: 32, borderRadius: '10px', border: 'none',
                                     background: subtleBg, cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.textSecondary,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)',
                                 }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -194,10 +198,10 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                             >
                                 <label style={{
                                     display: 'flex', alignItems: 'center', gap: '6px',
-                                    fontSize: '11px', fontWeight: 600, color: colors.textSecondary,
+                                    fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)',
                                     marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px',
                                 }}>
-                                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: colors.textMuted }} />
+                                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--text-muted)' }} />
                                     Material Type
                                 </label>
                                 <div style={{
@@ -218,7 +222,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                                 background: type === m.id ? blueBg : subtleBg,
                                                 cursor: 'pointer', display: 'flex', flexDirection: 'column',
                                                 alignItems: 'center', gap: '6px',
-                                                color: type === m.id ? blueAccent : colors.textSecondary,
+                                                color: type === m.id ? blueAccent : 'var(--text-secondary)',
                                                 transition: 'all 0.15s ease',
                                             }}
                                         >
@@ -239,13 +243,13 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                 <label style={{
                                     display: 'flex', alignItems: 'center', gap: '6px',
                                     fontSize: '11px', fontWeight: 600,
-                                    color: focusedField === 'title' ? blueAccent : colors.textSecondary,
+                                    color: focusedField === 'title' ? blueAccent : 'var(--text-secondary)',
                                     marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px',
                                     transition: 'color 0.2s ease',
                                 }}>
                                     <div style={{
                                         width: 4, height: 4, borderRadius: '50%',
-                                        background: focusedField === 'title' ? blueAccent : colors.textMuted,
+                                        background: focusedField === 'title' ? blueAccent : 'var(--text-muted)',
                                         transition: 'background 0.2s ease',
                                     }} />
                                     Title
@@ -261,7 +265,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                         width: '100%', padding: '12px 14px', borderRadius: '12px',
                                         border: `1px solid ${focusedField === 'title' ? blueBorder : borderColor}`,
                                         background: focusedField === 'title' ? blueBg : subtleBg,
-                                        fontSize: '14px', outline: 'none', color: colors.textPrimary,
+                                        fontSize: '14px', outline: 'none', color: 'var(--text-primary)',
                                         fontFamily: 'inherit',
                                         transition: 'all 0.2s ease',
                                         boxShadow: focusedField === 'title' ? `0 0 0 3px ${blueBg}` : 'none',
@@ -279,13 +283,13 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                 <label style={{
                                     display: 'flex', alignItems: 'center', gap: '6px',
                                     fontSize: '11px', fontWeight: 600,
-                                    color: focusedField === 'url' ? blueAccent : colors.textSecondary,
+                                    color: focusedField === 'url' ? blueAccent : 'var(--text-secondary)',
                                     marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px',
                                     transition: 'color 0.2s ease',
                                 }}>
                                     <div style={{
                                         width: 4, height: 4, borderRadius: '50%',
-                                        background: focusedField === 'url' ? blueAccent : colors.textMuted,
+                                        background: focusedField === 'url' ? blueAccent : 'var(--text-muted)',
                                         transition: 'background 0.2s ease',
                                     }} />
                                     URL
@@ -306,7 +310,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                             width: '100%', padding: '12px 14px', paddingLeft: '40px', borderRadius: '12px',
                                             border: `1px solid ${url && !isValidUrl(url) ? 'rgba(239,68,68,0.3)' : focusedField === 'url' ? blueBorder : borderColor}`,
                                             background: focusedField === 'url' ? blueBg : subtleBg,
-                                            fontSize: '14px', outline: 'none', color: colors.textPrimary,
+                                            fontSize: '14px', outline: 'none', color: 'var(--text-primary)',
                                             fontFamily: 'inherit',
                                             transition: 'all 0.2s ease',
                                             boxShadow: focusedField === 'url' ? `0 0 0 3px ${blueBg}` : 'none',
@@ -314,7 +318,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                     />
                                     <div style={{
                                         position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
-                                        color: url && isValidUrl(url) ? blueAccent : colors.textMuted,
+                                        color: url && isValidUrl(url) ? blueAccent : 'var(--text-muted)',
                                         transition: 'color 0.2s ease',
                                     }}>
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -337,7 +341,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                     }}
                                 >
                                     <div style={{
-                                        fontSize: '10px', fontWeight: 600, color: colors.textMuted,
+                                        fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)',
                                         marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px',
                                     }}>
                                         Preview
@@ -353,7 +357,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>
                                             <div style={{
-                                                fontSize: '13px', fontWeight: 600, color: colors.textPrimary,
+                                                fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)',
                                                 marginBottom: '4px',
                                                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                                             }}>
@@ -393,7 +397,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                             {/* Validation hint */}
                             <div style={{
                                 fontSize: '11px',
-                                color: isValid ? '#10b981' : colors.textMuted,
+                                color: isValid ? '#10b981' : 'var(--text-muted)',
                                 display: 'flex', alignItems: 'center', gap: '6px',
                             }}>
                                 {isValid ? (
@@ -418,13 +422,13 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
 
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <motion.button
-                                    whileHover={{ scale: 1.02, background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}
+                                    whileHover={{ scale: 1.02, background: 'var(--bg-hover)' }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={onClose}
                                     style={{
                                         padding: '10px 18px', borderRadius: '10px',
                                         border: `1px solid ${borderColor}`, background: 'transparent',
-                                        cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: colors.textSecondary,
+                                        cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)',
                                     }}
                                 >
                                     Cancel
@@ -438,10 +442,10 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                         padding: '10px 20px', borderRadius: '10px', border: 'none',
                                         background: isValid
                                             ? `linear-gradient(135deg, ${blueAccent} 0%, #2563eb 100%)`
-                                            : isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+                                            : 'rgba(255,255,255,0.06)',
                                         cursor: isValid ? 'pointer' : 'not-allowed',
                                         fontSize: '13px', fontWeight: 600,
-                                        color: isValid ? '#fff' : colors.textMuted,
+                                        color: isValid ? '#fff' : 'var(--text-muted)',
                                         display: 'flex', alignItems: 'center', gap: '8px',
                                         boxShadow: isValid ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none',
                                     }}

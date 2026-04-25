@@ -3,59 +3,38 @@
  * Detailed view/edit modal for a single goal.
  * Extracted from GoalsContent.tsx during Phase 8.3
  */
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-    updateGoalStatus,
-    updateGoalProgress,
-    deleteGoal,
-    getRealTimeProgress,
-    getCurrentAbsoluteValue,
-    getAggregatedProgressHistory,
-    goalTypeConfig,
-    type Goal,
-    type GoalWithProgress,
-    type GoalType,
-    type GoalPriority,
-    type GoalStatus,
-} from '../../../../../services/goalsService';
-import { COURSES_DATA } from '../../../../../services/pathsService';
+import { useModalAccessibility } from '../../../hooks/useModalAccessibility';
+import { goalTypeConfig, type GoalWithProgress } from '../../../../../services/goalsService';
 import GoalIcon from '../components/GoalIcon';
-import MilestoneIcon from '../components/MilestoneIcon';
+import { getPriorityInfo, formatTimeRemaining } from '../shared';
+
+export interface GoalDetailModalProps {
+    goal: GoalWithProgress | null;
+    isOpen: boolean;
+    onClose: () => void;
+    onComplete: (goalId: string) => void;
+}
 
 const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
     goal,
     isOpen,
     onClose,
-    isDarkMode,
     onComplete,
 }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'goal-detail-title');
+
     const colors = {
-        bg: isDarkMode ? '#0f172a' : '#ffffff',
-        cardBg: isDarkMode ? '#1e293b' : '#f8fafc',
-        border: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-        textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
-        textSecondary: isDarkMode ? '#94a3b8' : '#475569',
-        textMuted: isDarkMode ? '#94a3b8' : '#334155',
-        accent: '#3b82f6',
+        bg: 'var(--bg-primary)',
+        cardBg: 'var(--bg-secondary)',
+        border: 'var(--border-light)',
+        textPrimary: 'var(--text-primary)',
+        textSecondary: 'var(--text-secondary)',
+        textMuted: 'var(--text-muted)',
+        accent: 'var(--brand-blue)',
     };
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && isOpen) onClose();
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
-
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = '';
-        }
-        return () => { document.body.style.overflow = ''; };
-    }, [isOpen]);
 
     if (!goal) return null;
 
@@ -81,16 +60,19 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                         }}
                     />
 
-                    <div style={{
-                        position: 'fixed',
-                        inset: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 9999,
-                        pointerEvents: 'none',
-                        padding: '20px',
-                    }}>
+                    <div
+                        ref={modalRef}
+                        {...modalProps}
+                        style={{
+                            position: 'fixed',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 9999,
+                            pointerEvents: 'none',
+                            padding: '20px',
+                        }}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -100,11 +82,9 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                 width: '100%',
                                 maxWidth: '480px',
                                 maxHeight: '85vh',
-                                background: colors.bg,
+                                background: 'var(--bg-primary)',
                                 borderRadius: '20px',
-                                boxShadow: isDarkMode
-                                    ? '0 24px 48px rgba(0, 0, 0, 0.4)'
-                                    : '0 24px 48px rgba(0, 0, 0, 0.15)',
+                                boxShadow: 'var(--shadow-lg)',
                                 overflow: 'hidden',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -112,7 +92,7 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                             }}
                         >
                             {/* Header */}
-                            <div style={{ padding: '20px 24px', borderBottom: `1px solid ${colors.border}` }}>
+                            <div style={{ padding: '20px 24px', borderBottom: `1px solid var(--border-color)` }}>
                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
                                     <motion.div
                                         initial={{ scale: 0, rotate: -180 }}
@@ -140,7 +120,7 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                             margin: 0,
                                             fontSize: '18px',
                                             fontWeight: 600,
-                                            color: colors.textPrimary,
+                                            color: 'var(--text-primary)',
                                             marginBottom: '6px',
                                         }}>
                                             {goal.title}
@@ -149,7 +129,7 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                             <p style={{
                                                 margin: 0,
                                                 fontSize: '13px',
-                                                color: colors.textSecondary,
+                                                color: 'var(--text-secondary)',
                                                 marginBottom: '8px',
                                             }}>
                                                 {goal.description}
@@ -196,7 +176,7 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                     </div>
 
                                     <motion.button
-                                        whileHover={{ scale: 1.1, background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' }}
+                                        whileHover={{ scale: 1.1, background: 'var(--bg-hover)' }}
                                         whileTap={{ scale: 0.95 }}
                                         onClick={onClose}
                                         style={{
@@ -204,12 +184,12 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                             height: '36px',
                                             borderRadius: '10px',
                                             border: 'none',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                                            background: 'var(--bg-hover)',
                                             cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            color: colors.textSecondary,
+                                            color: 'var(--text-secondary)',
                                         }}
                                     >
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -229,11 +209,11 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                         gap: '12px',
                                         padding: '12px 16px',
                                         borderRadius: '12px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                        background: 'var(--bg-hover)',
                                     }}
                                 >
                                     <div style={{ flex: 1, textAlign: 'center' }}>
-                                        <div style={{ fontSize: '11px', color: colors.textMuted, marginBottom: '4px' }}>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px' }}>
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '4px', verticalAlign: 'middle' }}>
                                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -245,13 +225,13 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                                 ? `${Math.floor(goal.current_value)}h ${Math.round((goal.current_value % 1) * 60)}m / ${goal.target_value}h`
                                                 : `${goal.current_value}/${goal.target_value}`}
                                         </div>
-                                        <div style={{ fontSize: '10px', color: colors.textMuted }}>
+                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
                                             {goal.type === 'study_time' && goal.unit === 'hours' ? '' : goal.unit}
                                         </div>
                                     </div>
-                                    <div style={{ width: '1px', background: colors.border }} />
+                                    <div style={{ width: '1px', background: 'var(--border-color)' }} />
                                     <div style={{ flex: 1, textAlign: 'center' }}>
-                                        <div style={{ fontSize: '11px', color: colors.textMuted, marginBottom: '4px' }}>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px' }}>
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '4px', verticalAlign: 'middle' }}>
                                                 <circle cx="12" cy="12" r="10" />
                                                 <polyline points="12 6 12 12 16 14" />
@@ -261,14 +241,14 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                         <div style={{ 
                                             fontSize: '14px', 
                                             fontWeight: 600, 
-                                            color: goal.is_overdue ? '#ef4444' : colors.textPrimary 
+                                            color: goal.is_overdue ? '#ef4444' : 'var(--text-primary)' 
                                         }}>
                                             {formatTimeRemaining(goal.days_remaining)}
                                         </div>
                                     </div>
-                                    <div style={{ width: '1px', background: colors.border }} />
+                                    <div style={{ width: '1px', background: 'var(--border-color)' }} />
                                     <div style={{ flex: 1, textAlign: 'center' }}>
-                                        <div style={{ fontSize: '11px', color: colors.textMuted, marginBottom: '4px' }}>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px' }}>
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '4px', verticalAlign: 'middle' }}>
                                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                                                 <polyline points="22 4 12 14.01 9 11.01" />
@@ -291,13 +271,13 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={config.color} strokeWidth="2">
                                                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                                             </svg>
-                                            <span style={{ fontSize: '13px', fontWeight: 500, color: colors.textPrimary }}>Overall Progress</span>
+                                            <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)' }}>Overall Progress</span>
                                         </div>
                                         <span style={{ fontSize: '14px', fontWeight: 700, color: config.color }}>{goal.progress_percentage}%</span>
                                     </div>
                                     <div style={{
                                         height: '10px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
+                                        background: 'var(--bg-hover)',
                                         borderRadius: '5px',
                                         overflow: 'hidden',
                                     }}>
@@ -377,10 +357,10 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                         )}
                                     </motion.div>
                                     <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: '13px', fontWeight: 600, color: colors.textPrimary }}>
+                                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                             {goal.status === 'completed' ? 'Goal Achieved! 🎉' : goal.status === 'paused' ? 'Goal Paused' : 'In Progress'}
                                         </div>
-                                        <div style={{ fontSize: '11px', color: colors.textMuted }}>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                                             {goal.status === 'completed' 
                                                 ? `Completed on ${new Date(goal.completed_at!).toLocaleDateString()}`
                                                 : goal.status === 'paused'
@@ -420,7 +400,7 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                                 <path d="M6 20v-4" />
                                             </svg>
                                         </div>
-                                        <span style={{ fontSize: '13px', fontWeight: 600, color: colors.textPrimary }}>Milestones</span>
+                                        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>Milestones</span>
                                     </div>
                                     
                                     {/* Progress Track */}
@@ -432,7 +412,7 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                             left: '12px',
                                             right: '12px',
                                             height: '3px',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
+                                            background: 'var(--bg-hover)',
                                             borderRadius: '2px',
                                             transform: 'translateY(-50%)',
                                             zIndex: 0,
@@ -490,10 +470,10 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                                                 borderRadius: '50%',
                                                                 background: isAchieved 
                                                                     ? `linear-gradient(135deg, ${config.color}, ${config.color}dd)`
-                                                                    : isDarkMode ? 'rgba(255,255,255,0.08)' : '#ffffff',
+                                                                    : 'var(--bg-secondary)',
                                                                 border: isAchieved 
                                                                     ? 'none' 
-                                                                    : `2px solid ${isCurrent ? config.color : colors.border}`,
+                                                                    : `2px solid ${isCurrent ? config.color : 'var(--border-color)'}`,
                                                                 display: 'flex',
                                                                 alignItems: 'center',
                                                                 justifyContent: 'center',
@@ -522,7 +502,7 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                                                 <span style={{ 
                                                                     fontSize: '10px', 
                                                                     fontWeight: 600, 
-                                                                    color: isCurrent ? config.color : colors.textMuted 
+                                                                    color: isCurrent ? config.color : 'var(--text-muted)' 
                                                                 }}>
                                                                     {milestone}
                                                                 </span>
@@ -531,7 +511,7 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                                         <span style={{ 
                                                             fontSize: '11px', 
                                                             fontWeight: isAchieved ? 600 : 500, 
-                                                            color: isAchieved ? config.color : colors.textMuted,
+                                                            color: isAchieved ? config.color : 'var(--text-muted)',
                                                         }}>
                                                             {milestone}%
                                                         </span>
@@ -556,8 +536,8 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                     <div style={{
                                         padding: '12px',
                                         borderRadius: '10px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        border: `1px solid ${colors.border}`,
+                                        background: 'var(--bg-hover)',
+                                        border: `1px solid var(--border-color)`,
                                     }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
@@ -566,26 +546,26 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                                 <line x1="8" y1="2" x2="8" y2="6" />
                                                 <line x1="3" y1="10" x2="21" y2="10" />
                                             </svg>
-                                            <span style={{ fontSize: '10px', color: colors.textMuted }}>Started</span>
+                                            <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Started</span>
                                         </div>
-                                        <div style={{ fontSize: '12px', fontWeight: 600, color: colors.textPrimary }}>
+                                        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                             {new Date(goal.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                         </div>
                                     </div>
                                     <div style={{
                                         padding: '12px',
                                         borderRadius: '10px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        border: `1px solid ${colors.border}`,
+                                        background: 'var(--bg-hover)',
+                                        border: `1px solid var(--border-color)`,
                                     }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
                                                 <circle cx="12" cy="12" r="10" />
                                                 <polyline points="12 6 12 12 16 14" />
                                             </svg>
-                                            <span style={{ fontSize: '10px', color: colors.textMuted }}>Daily Avg</span>
+                                            <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Daily Avg</span>
                                         </div>
-                                        <div style={{ fontSize: '12px', fontWeight: 600, color: colors.textPrimary }}>
+                                        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                             {goal.type === 'study_time' && goal.unit === 'hours' 
                                                 ? (() => {
                                                     const avgHours = goal.current_value / Math.max(1, Math.ceil((Date.now() - new Date(goal.start_date).getTime()) / (1000 * 60 * 60 * 24)));
@@ -607,7 +587,7 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                     transition={{ delay: 0.5 }}
                                     style={{
                                         padding: '16px 24px',
-                                        borderTop: `1px solid ${colors.border}`,
+                                        borderTop: `1px solid var(--border-color)`,
                                     }}
                                 >
                                     {/* Mark Complete Button */}
@@ -661,53 +641,6 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
     );
 };
 
-
-// Goal Type Icons for Modal
-const GoalTypeIcons: Record<GoalType, React.ReactNode> = {
-    study_time: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-        </svg>
-    ),
-    course_completion: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            <path d="M8 7h8" /><path d="M8 11h6" />
-        </svg>
-    ),
-    streak: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
-        </svg>
-    ),
-    grade: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-        </svg>
-    ),
-};
-
-// Priority Icons
-const PriorityIcons: Record<GoalPriority, React.ReactNode> = {
-    low: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M12 19V5" /><path d="m5 12 7-7 7 7" />
-        </svg>
-    ),
-    medium: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M8 12h8" /><path d="M12 8v8" />
-        </svg>
-    ),
-    high: (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="m3 8 4-4 4 4" /><path d="M7 4v16" />
-            <path d="m13 16 4 4 4-4" /><path d="M17 20V4" />
-        </svg>
-    ),
-};
 
 // Create Goal Modal
 

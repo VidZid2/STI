@@ -5,13 +5,10 @@
  */
 import * as React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useSystemConfig } from '../../../../../contexts/SystemConfigContext';
-import { TeacherActionButton, SearchBar } from './SharedComponents';
-import { PreviewIconWithTooltip } from './PreviewIconWithTooltip';
-import { AddTaskModal } from '../modals';
+
 import type { CourseTask, TaskCategory } from '../data/demoCourses';
 import type { UserAccount } from '../../../../../services/usersService';
-import { getDemoAIGradingData } from '../data/demoCourses';
+// Demo imports removed
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type TeacherTabType = 'manage-tasks' | 'grade-students' | 'analytics';
@@ -64,14 +61,14 @@ export interface TeacherModeContentProps {
 }
 
 export const TeacherModeContent: React.FC<TeacherModeContentProps> = ({
-    course,
+    course: _course,
     teacherTab,
-    setTeacherTab,
+    setTeacherTab: _setTeacherTab,
     isTeacherLoading,
     yearLevelFilter,
-    setYearLevelFilter,
+    setYearLevelFilter: _setYearLevelFilter,
     sectionFilter,
-    setSectionFilter,
+    setSectionFilter: _setSectionFilter,
     submissions,
     setSubmissions,
     isAiGrading,
@@ -82,13 +79,30 @@ export const TeacherModeContent: React.FC<TeacherModeContentProps> = ({
     setShowAiWarning,
     selectedTaskType,
     setSelectedTaskType,
-    showAddTaskModal,
+    showAddTaskModal: _showAddTaskModal,
     setShowAddTaskModal,
     supabaseStudents,
     supabaseTasks,
-    refetchTasks,
+    refetchTasks: _refetchTasks,
 }) => {
-    const { systemConfig } = useSystemConfig();
+    // const { systemConfig } = useSystemConfig();
+    const tasksScrollRef = React.useRef<HTMLDivElement>(null);
+    const submissionsScrollRef = React.useRef<HTMLDivElement>(null);
+
+    // Derive courseTasks from supabaseTasks prop
+    const courseTasks = supabaseTasks;
+
+    // Derive studentsData from supabaseStudents
+
+    // Task category filter options
+    const TASK_CATEGORIES: { id: TaskCategory; label: string; icon: React.ReactNode }[] = [
+        { id: 'all', label: 'All', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg> },
+        { id: 'assignment', label: 'Assignments', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg> },
+        { id: 'performance', label: 'Performance', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" /></svg> },
+        { id: 'quiz', label: 'Quizzes', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /></svg> },
+        { id: 'practical', label: 'Practical', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg> },
+        { id: 'journal', label: 'Journals', icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg> },
+    ];
 
     return (
                         <motion.div
@@ -740,7 +754,7 @@ export const TeacherModeContent: React.FC<TeacherModeContentProps> = ({
 
                             {teacherTab === 'analytics' && (() => {
                                 // Calculate real statistics from submissions
-                                const totalStudents = studentsData.length;
+                                const totalStudents = supabaseStudents.length;
                                 const totalSubmissions = submissions.length;
                                 const pendingCount = submissions.filter((s: Submission) => s.status === 'pending').length;
                                 const gradedSubmissions = submissions.filter((s: Submission) => s.aiScore !== null);
@@ -750,7 +764,7 @@ export const TeacherModeContent: React.FC<TeacherModeContentProps> = ({
                                 const completionRate = totalSubmissions > 0
                                     ? Math.round(((totalSubmissions - pendingCount) / totalSubmissions) * 100)
                                     : 0;
-                                const onlineStudents = studentsData.filter((s: { status: string }) => s.status === 'online').length;
+                                const onlineStudents = supabaseStudents.filter((s: UserAccount) => s.is_online === true).length;
 
                                 if (isTeacherLoading) {
                                     return (

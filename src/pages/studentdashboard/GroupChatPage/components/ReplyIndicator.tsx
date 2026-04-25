@@ -33,8 +33,8 @@ export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     style={{
-                        background: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
-                        borderTop: `1px solid ${colors.border}`,
+                        background: 'rgba(255,255,255,0.02)',
+                        borderTop: `1px solid var(--border-color)`,
                         padding: '8px 16px',
                         display: 'flex',
                         alignItems: 'center',
@@ -47,7 +47,7 @@ export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
                         width: 28,
                         height: 28,
                         borderRadius: '8px',
-                        background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)',
+                        background: 'rgba(59, 130, 246, 0.1)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -70,14 +70,14 @@ export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
                             <span style={{
                                 fontSize: '11px',
                                 fontWeight: 500,
-                                color: colors.textMuted,
+                                color: 'var(--text-muted)',
                             }}>
                                 Replying to
                             </span>
                             <span style={{
                                 fontSize: '11px',
                                 fontWeight: 600,
-                                color: isDarkMode ? '#e5e7eb' : '#374151',
+                                color: 'var(--bg-hover)',
                             }}>
                                 {replyingTo.userName}
                             </span>
@@ -85,7 +85,7 @@ export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
                         <p style={{
                             margin: 0,
                             fontSize: '12px',
-                            color: colors.textSecondary,
+                            color: 'var(--text-secondary)',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -98,7 +98,7 @@ export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
                     {/* Close button */}
                     <Tooltip text="Cancel reply" placement="above">
                         <motion.button
-                            whileHover={{ scale: 1.1, background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' }}
+                            whileHover={{ scale: 1.1, background: 'var(--bg-hover)' }}
                             whileTap={{ scale: 0.9 }}
                             onClick={onCancel}
                             style={{
@@ -106,12 +106,12 @@ export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
                                 height: 28,
                                 borderRadius: '8px',
                                 border: 'none',
-                                background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                                background: 'var(--bg-hover)',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: isDarkMode ? '#9ca3af' : '#6b7280',
+                                color: 'var(--bg-hover)',
                                 transition: 'all 0.2s ease',
                                 flexShrink: 0,
                             }}

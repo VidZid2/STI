@@ -1,11 +1,11 @@
-/**
+﻿/**
  * UserCard + UserListItem + QuickActionButton + HeartIcon
  * Extracted from UsersContent.tsx during Phase 8.4
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { createPortal } from 'react-dom';
-import { getRoleInfo, type UserAccount } from '../../../../../services/usersService';
+import { getRoleInfo, getTeacherCourses, type UserAccount } from '../../../../../services/usersService';
+import { getLastSeenText } from '../utils';
 import UserAvatar from './UserAvatar';
 import RoleIcon from './RoleIcon';
 import ActionTooltip from './ActionTooltip';
@@ -17,9 +17,8 @@ const QuickActionButton: React.FC<{
     onClick: (e: React.MouseEvent) => void;
     isActive?: boolean;
     activeColor?: string;
-    isDarkMode: boolean;
     delay?: number;
-}> = ({ icon, label, onClick, isActive, activeColor = '#3b82f6', isDarkMode, delay = 0 }) => {
+}> = ({ icon, label, onClick, isActive, activeColor = '#3b82f6', delay = 0 }) => {
     return (
         <ActionTooltip label={label}>
             <motion.button
@@ -37,8 +36,8 @@ const QuickActionButton: React.FC<{
                     border: 'none',
                     background: isActive 
                         ? `${activeColor}15` 
-                        : isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                    color: isActive ? activeColor : isDarkMode ? '#94a3b8' : '#64748b',
+                        : 'var(--bg-hover)',
+                    color: isActive ? activeColor : 'var(--text-secondary)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -81,7 +80,6 @@ const HeartIcon: React.FC<{ filled?: boolean }> = ({ filled }) => (
 const UserCard: React.FC<{
     user: UserAccount;
     index: number;
-    isDarkMode: boolean;
     colors: {
         cardBg: string;
         border: string;
@@ -94,7 +92,7 @@ const UserCard: React.FC<{
     onToggleFavorite?: (userId: string) => void;
     reducedMotion?: boolean;
     isMobile?: boolean;
-}> = ({ user, index, isDarkMode, colors, onClick, favorites = [], onToggleFavorite, reducedMotion = false, isMobile = false }) => {
+}> = ({ user, index, colors, onClick, favorites = [], onToggleFavorite, reducedMotion = false, isMobile = false }) => {
     const roleInfo = getRoleInfo(user.role);
     const [isHovered, setIsHovered] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
@@ -158,9 +156,7 @@ const UserCard: React.FC<{
             whileHover={reducedMotion ? {} : { 
                 y: -3, 
                 scale: 1.01,
-                boxShadow: isDarkMode 
-                    ? '0 12px 32px rgba(0,0,0,0.3)' 
-                    : '0 12px 32px rgba(0,0,0,0.08)',
+                boxShadow: 'var(--shadow-lg)',
                 transition: { duration: 0.2 }
             }}
             whileTap={reducedMotion ? {} : { scale: 0.98 }}
@@ -171,9 +167,9 @@ const UserCard: React.FC<{
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             style={{
-                background: colors.cardBg,
+                background: 'var(--dashboard-surface)',
                 borderRadius: '16px',
-                border: `1px solid ${isFocused ? '#3b82f6' : colors.border}`,
+                border: `1px solid ${isFocused ? '#3b82f6' : 'var(--border-color)'}`,
                 padding: '16px',
                 cursor: 'pointer',
                 transition: reducedMotion ? 'none' : 'all 0.2s ease',
@@ -201,7 +197,7 @@ const UserCard: React.FC<{
                                 margin: 0,
                                 fontSize: '14px',
                                 fontWeight: 600,
-                                color: colors.textPrimary,
+                                color: 'var(--text-primary)',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
@@ -250,8 +246,8 @@ const UserCard: React.FC<{
                                             height: '28px',
                                             borderRadius: '6px',
                                             border: 'none',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                                            color: isDarkMode ? '#94a3b8' : '#64748b',
+                                            background: 'var(--bg-hover)',
+                                            color: 'var(--text-secondary)',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
@@ -273,8 +269,8 @@ const UserCard: React.FC<{
                                             height: '28px',
                                             borderRadius: '6px',
                                             border: 'none',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                                            color: isDarkMode ? '#94a3b8' : '#64748b',
+                                            background: 'var(--bg-hover)',
+                                            color: 'var(--text-secondary)',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
@@ -297,8 +293,8 @@ const UserCard: React.FC<{
                                             height: '28px',
                                             borderRadius: '6px',
                                             border: 'none',
-                                            background: isFavorite ? 'rgba(239, 68, 68, 0.1)' : isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                                            color: isFavorite ? '#ef4444' : isDarkMode ? '#94a3b8' : '#64748b',
+                                            background: isFavorite ? 'rgba(239, 68, 68, 0.1)' : 'var(--bg-hover)',
+                                            color: isFavorite ? '#ef4444' : 'var(--text-secondary)',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
@@ -324,7 +320,7 @@ const UserCard: React.FC<{
                         <p style={{
                             margin: 0,
                             fontSize: '12px',
-                            color: colors.textSecondary,
+                            color: 'var(--text-secondary)',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -335,7 +331,7 @@ const UserCard: React.FC<{
                         <p style={{
                             margin: 0,
                             fontSize: '10px',
-                            color: user.is_online ? '#10b981' : colors.textMuted,
+                            color: user.is_online ? '#10b981' : 'var(--text-muted)',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '4px',
@@ -371,10 +367,10 @@ const UserCard: React.FC<{
                         {user.section && (
                             <span style={{
                                 fontSize: '11px',
-                                color: colors.textMuted,
+                                color: 'var(--text-muted)',
                                 padding: '3px 7px',
                                 borderRadius: '5px',
-                                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                background: 'var(--bg-hover)',
                             }}>
                                 {user.section}
                             </span>
@@ -390,7 +386,7 @@ const UserCard: React.FC<{
                                 color: '#10b981',
                                 padding: '3px 7px',
                                 borderRadius: '5px',
-                                background: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.08)',
+                                background: 'rgba(16, 185, 129, 0.1)',
                                 fontWeight: 500,
                             }}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -410,7 +406,7 @@ const UserCard: React.FC<{
                                 color: '#3b82f6',
                                 padding: '3px 7px',
                                 borderRadius: '5px',
-                                background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)',
+                                background: 'rgba(59, 130, 246, 0.1)',
                                 fontWeight: 500,
                             }}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -434,7 +430,7 @@ const UserCard: React.FC<{
                         gap: '8px',
                         marginTop: '12px',
                         paddingTop: '12px',
-                        borderTop: `1px solid ${colors.border}`,
+                        borderTop: `1px solid var(--border-color)`,
                     }}
                 >
                     <motion.button
@@ -446,7 +442,7 @@ const UserCard: React.FC<{
                             height: '40px',
                             borderRadius: '10px',
                             border: 'none',
-                            background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)',
+                            background: 'rgba(59, 130, 246, 0.1)',
                             color: '#3b82f6',
                             display: 'flex',
                             alignItems: 'center',
@@ -469,7 +465,7 @@ const UserCard: React.FC<{
                             height: '40px',
                             borderRadius: '10px',
                             border: 'none',
-                            background: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.08)',
+                            background: 'rgba(16, 185, 129, 0.1)',
                             color: '#10b981',
                             display: 'flex',
                             alignItems: 'center',
@@ -495,8 +491,8 @@ const UserCard: React.FC<{
                             border: 'none',
                             background: isFavorite 
                                 ? 'rgba(239, 68, 68, 0.1)' 
-                                : isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                            color: isFavorite ? '#ef4444' : colors.textMuted,
+                                : 'var(--bg-hover)',
+                            color: isFavorite ? '#ef4444' : 'var(--text-muted)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -518,7 +514,6 @@ const UserCard: React.FC<{
 const UserListItem: React.FC<{
     user: UserAccount;
     index: number;
-    isDarkMode: boolean;
     colors: {
         cardBg: string;
         border: string;
@@ -531,7 +526,7 @@ const UserListItem: React.FC<{
     onToggleFavorite?: (userId: string) => void;
     reducedMotion?: boolean;
     isMobile?: boolean;
-}> = ({ user, index, isDarkMode, colors, onClick, favorites = [], onToggleFavorite, reducedMotion = false, isMobile = false }) => {
+}> = ({ user, index, colors, onClick, favorites = [], onToggleFavorite, reducedMotion = false, isMobile = false }) => {
     const roleInfo = getRoleInfo(user.role);
     const [isHovered, setIsHovered] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
@@ -571,7 +566,7 @@ const UserListItem: React.FC<{
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: 20 }}
             transition={reducedMotion ? { duration: 0.01 } : { delay: index * 0.02, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             whileHover={reducedMotion ? {} : { 
-                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                background: 'var(--bg-hover)',
                 transition: { duration: 0.15 }
             }}
             whileTap={reducedMotion ? {} : { scale: 0.995 }}
@@ -587,8 +582,8 @@ const UserListItem: React.FC<{
                 gap: '16px',
                 padding: '14px 18px',
                 borderRadius: '12px',
-                border: `1px solid ${isFocused ? '#3b82f6' : colors.border}`,
-                background: colors.cardBg,
+                border: `1px solid ${isFocused ? '#3b82f6' : 'var(--border-color)'}`,
+                background: 'var(--dashboard-surface)',
                 cursor: 'pointer',
                 transition: reducedMotion ? 'none' : 'all 0.2s ease',
                 position: 'relative',
@@ -606,7 +601,7 @@ const UserListItem: React.FC<{
                             margin: 0,
                             fontSize: '14px',
                             fontWeight: 600,
-                            color: colors.textPrimary,
+                            color: 'var(--text-primary)',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -634,7 +629,7 @@ const UserListItem: React.FC<{
                     <p style={{
                         margin: 0,
                         fontSize: '12px',
-                        color: colors.textSecondary,
+                        color: 'var(--text-secondary)',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -665,7 +660,7 @@ const UserListItem: React.FC<{
                 <div style={{ flex: 1, textAlign: 'center' }}>
                     <span style={{
                         fontSize: '12px',
-                        color: colors.textMuted,
+                        color: 'var(--text-muted)',
                     }}>
                         {user.section || user.campus}
                     </span>
@@ -689,7 +684,7 @@ const UserListItem: React.FC<{
                         }} />
                         <span style={{
                             fontSize: '11px',
-                            color: user.is_online ? '#10b981' : colors.textMuted,
+                            color: user.is_online ? '#10b981' : 'var(--text-muted)',
                             fontWeight: 500,
                         }}>
                             {user.is_online ? 'Online' : 'Offline'}
@@ -698,7 +693,7 @@ const UserListItem: React.FC<{
                     {!user.is_online && user.last_active && (
                         <span style={{
                             fontSize: '9px',
-                            color: colors.textMuted,
+                            color: 'var(--text-muted)',
                             whiteSpace: 'nowrap',
                         }}>
                             {getLastSeenText(user.last_active, false).replace('Last seen ', '')}
@@ -727,14 +722,14 @@ const UserListItem: React.FC<{
                             icon={<EmailIcon />}
                             label="Send Email"
                             onClick={handleEmailClick}
-                            isDarkMode={isDarkMode}
+                            
                             delay={reducedMotion ? 0 : 0}
                         />
                         <QuickActionButton
                             icon={<ScheduleIcon />}
                             label="View Schedule"
                             onClick={handleScheduleClick}
-                            isDarkMode={isDarkMode}
+                            
                             delay={reducedMotion ? 0 : 0.03}
                         />
                         <QuickActionButton
@@ -743,7 +738,7 @@ const UserListItem: React.FC<{
                             onClick={handleFavoriteClick}
                             isActive={isFavorite}
                             activeColor="#ef4444"
-                            isDarkMode={isDarkMode}
+                            
                             delay={reducedMotion ? 0 : 0.06}
                         />
                     </motion.div>
@@ -757,7 +752,7 @@ const UserListItem: React.FC<{
                         height="16"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke={colors.textMuted}
+                        stroke={'var(--text-muted)'}
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"

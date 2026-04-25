@@ -176,7 +176,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                                     zIndex: 1,
                                     color:
                                         activeTab === tab.id
-                                            ? colors.accent
+                                            ? 'var(--accent-color)'
                                             : 'rgba(0, 0, 0, 0.4)',
                                     transition: 'color 0.2s ease',
                                 }}

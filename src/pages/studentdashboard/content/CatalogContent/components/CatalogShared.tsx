@@ -1,10 +1,10 @@
-/**
+﻿/**
  * CatalogShared - AnimatedNumber, CategoryIcon, CatalogSkeleton
  * Extracted from CatalogContent.tsx during Phase 8.7
  */
 import React, { useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { useMotionValue, useSpring, useTransform } from 'motion/react';
+import { useMotionValue, useSpring, useInView } from 'motion/react';
 
 // Animated Number Component (inline to avoid import issues)
 const AnimatedNumber: React.FC<{ value: number; delay?: number; className?: string }> = ({ value, delay = 0, className }) => {
@@ -83,14 +83,12 @@ const shimmerAnimation = {
 
 
 // Skeleton Loading Component
-const CatalogSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+const CatalogSkeleton: React.FC<{ }> = ({ }) => {
     const colors = {
-        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
-        border: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-        skeleton: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-        shimmer: isDarkMode 
-            ? 'linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 100%)'
-            : 'linear-gradient(90deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.02) 100%)',
+        cardBg: 'var(--bg-secondary)',
+        border: 'var(--border-light)',
+        skeleton: 'var(--border-light)',
+        shimmer: 'var(--shimmer-bg)',
     };
 
     const SkeletonBox: React.FC<{ width?: string; height?: string; borderRadius?: string; style?: React.CSSProperties }> = ({ 
@@ -106,7 +104,7 @@ const CatalogSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                 height,
                 borderRadius,
                 background: colors.skeleton,
-                backgroundImage: colors.shimmer,
+                backgroundImage: 'var(--shimmer-bg)',
                 backgroundSize: '200% 100%',
                 ...style,
             }}
@@ -128,8 +126,8 @@ const CatalogSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                     gap: '16px',
                     padding: '18px 22px',
                     borderRadius: '14px',
-                    background: colors.cardBg,
-                    border: `1px solid ${colors.border}`,
+                    background: 'var(--dashboard-surface)',
+                    border: `1px solid var(--border-color)`,
                 }}>
                     {/* Icon Skeleton */}
                     <SkeletonBox width="46px" height="46px" borderRadius="12px" />
@@ -152,7 +150,7 @@ const CatalogSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                                 alignItems: 'center',
                                 padding: '10px 16px',
                                 borderRadius: '10px',
-                                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                background: 'var(--bg-hover)',
                                 minWidth: '72px',
                             }}>
                                 <SkeletonBox width="16px" height="16px" borderRadius="4px" style={{ marginBottom: '6px' }} />
@@ -172,7 +170,7 @@ const CatalogSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                 style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}
             >
                 <SkeletonBox width="300px" height="44px" borderRadius="12px" style={{ flex: 1, minWidth: '220px' }} />
-                <div style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '12px', background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}>
+                <div style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '12px', background: 'var(--bg-hover)' }}>
                     {[1, 2, 3, 4, 5].map((i) => (
                         <SkeletonBox key={i} width="60px" height="32px" borderRadius="8px" />
                     ))}
@@ -194,9 +192,9 @@ const CatalogSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: 0.1 + i * 0.05 }}
                         style={{
-                            background: colors.cardBg,
+                            background: 'var(--dashboard-surface)',
                             borderRadius: '16px',
-                            border: `1px solid ${colors.border}`,
+                            border: `1px solid var(--border-color)`,
                             overflow: 'hidden',
                         }}
                     >
@@ -220,7 +218,7 @@ const CatalogSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                                 alignItems: 'center', 
                                 justifyContent: 'space-between',
                                 paddingTop: '12px',
-                                borderTop: `1px solid ${colors.border}`,
+                                borderTop: `1px solid var(--border-color)`,
                             }}>
                                 <SkeletonBox width="80px" height="12px" borderRadius="3px" />
                                 <SkeletonBox width="40px" height="12px" borderRadius="3px" />

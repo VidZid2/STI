@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'motion/react';
+import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 import type { ModalColors } from './types';
 import type { MemberStats } from '../types';
 
@@ -18,18 +19,19 @@ interface LeaderboardModalProps {
 }
 
 export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose, members, currentUserId, colors }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'leaderboard-modal-title');
     const [hoveredMember, setHoveredMember] = useState<string | null>(null);
     
     if (!isOpen) return null;
 
-    const isDarkMode = colors.cardBg !== '#ffffff';
+    const isDarkMode = 'var(--dashboard-surface)' !== '#ffffff';
     const sortedMembers = [...members].sort((a, b) => b.xp - a.xp);
     
     const getRankStyle = (index: number) => {
-        if (index === 0) return { bg: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', border: isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)', icon: '🥇' };
-        if (index === 1) return { bg: isDarkMode ? 'rgba(100, 116, 139, 0.15)' : 'rgba(100, 116, 139, 0.1)', color: '#64748b', border: isDarkMode ? 'rgba(100, 116, 139, 0.3)' : 'rgba(100, 116, 139, 0.2)', icon: '🥈' };
-        if (index === 2) return { bg: isDarkMode ? 'rgba(180, 83, 9, 0.12)' : 'rgba(180, 83, 9, 0.08)', color: '#b45309', border: isDarkMode ? 'rgba(180, 83, 9, 0.25)' : 'rgba(180, 83, 9, 0.15)', icon: '🥉' };
-        return { bg: 'transparent', color: colors.textMuted, border: colors.border, icon: '' };
+        if (index === 0) return { bg: 'var(--dashboard-surface)', color: '#3b82f6', border: 'var(--dashboard-surface)', icon: '🥇' };
+        if (index === 1) return { bg: 'rgba(100, 116, 139, 0.15)', color: '#64748b', border: 'rgba(100, 116, 139, 0.3)', icon: '🥈' };
+        if (index === 2) return { bg: 'rgba(180, 83, 9, 0.12)', color: '#b45309', border: 'rgba(180, 83, 9, 0.25)', icon: '🥉' };
+        return { bg: 'transparent', color: 'var(--text-muted)', border: 'var(--border-color)', icon: '' };
     };
 
     return createPortal(
@@ -40,7 +42,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
             transition={{ duration: 0.15 }}
             onClick={onClose}
             style={{
-                position: 'fixed', inset: 0, background: isDarkMode ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.3)',
+                position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
                 backdropFilter: 'blur(8px)', zIndex: 1001,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
             }}
@@ -50,14 +52,16 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
                 transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                ref={modalRef}
+                {...modalProps}
                 onClick={(e) => e.stopPropagation()}
                 style={{
-                    background: colors.cardBg, 
+                    background: 'var(--dashboard-surface)', 
                     borderRadius: '14px',
                     width: '100%', 
                     maxWidth: '380px', 
                     maxHeight: '75vh',
-                    boxShadow: isDarkMode ? '0 25px 50px rgba(0,0,0,0.5)' : '0 20px 40px rgba(0,0,0,0.1)',
+                    boxShadow: 'var(--shadow-xl)',
                     border: `1.5px solid #3b82f6`,
                     overflow: 'hidden',
                 }}
@@ -66,7 +70,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                 <div style={{ 
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '14px 18px',
-                    borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                    borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}`,
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <motion.div 
@@ -74,7 +78,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                             style={{
                                 width: 34, height: 34, borderRadius: '10px',
                                 border: '1.5px solid #3b82f6',
-                                background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
+                                background: 'var(--bg-primary)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                             }}
                         >
@@ -86,22 +90,22 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                             </svg>
                         </motion.div>
                         <div>
-                            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: colors.textPrimary, letterSpacing: '-0.01em' }}>
+                            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
                                 Leaderboard
                             </h3>
-                            <p style={{ margin: 0, fontSize: '11px', color: colors.textMuted }}>
+                            <p style={{ margin: 0, fontSize: '11px', color: 'var(--text-muted)' }}>
                                 {sortedMembers.length} member{sortedMembers.length !== 1 ? 's' : ''} ranked
                             </p>
                         </div>
                     </div>
                     <motion.button
-                        whileHover={{ scale: 1.05, background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)' }}
+                        whileHover={{ scale: 1.05, background: 'var(--bg-hover)' }}
                         whileTap={{ scale: 0.95 }}
                         onClick={onClose}
                         style={{
                             width: 30, height: 30, borderRadius: '8px',
                             border: '1.5px solid #3b82f6',
-                            background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
+                            background: 'var(--bg-primary)',
                             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                             color: '#3b82f6',
                         }}
@@ -133,10 +137,10 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                     display: 'flex', alignItems: 'center', gap: '10px',
                                     padding: '10px 12px', borderRadius: '10px', marginBottom: '4px',
                                     background: isCurrentUser 
-                                        ? (isDarkMode ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.04)')
-                                        : isHovered ? (isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)') : 'transparent',
+                                        ? 'rgba(59, 130, 246, 0.08)'
+                                        : isHovered ? ('var(--dashboard-surface)') : 'transparent',
                                     border: isCurrentUser 
-                                        ? `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)'}`
+                                        ? `1px solid ${'rgba(59, 130, 246, 0.2)'}`
                                         : '1px solid transparent',
                                     cursor: 'pointer',
                                 }}
@@ -145,7 +149,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                     whileHover={{ scale: 1.1 }}
                                     style={{ 
                                         width: 26, height: 26, borderRadius: '8px',
-                                        background: index < 3 ? rankStyle.bg : (isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)'),
+                                        background: index < 3 ? rankStyle.bg : 'rgba(255,255,255,0.04)',
                                         border: `1px solid ${index < 3 ? rankStyle.border : 'transparent'}`,
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         fontSize: index < 3 ? '12px' : '10px', fontWeight: 600, color: rankStyle.color, flexShrink: 0,
@@ -158,8 +162,8 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                     whileHover={{ scale: 1.05 }}
                                     style={{
                                         width: 34, height: 34, borderRadius: '9px',
-                                        background: isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)',
-                                        border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.12)'}`,
+                                        background: 'rgba(59, 130, 246, 0.1)',
+                                        border: `1px solid ${'rgba(59, 130, 246, 0.2)'}`,
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         fontSize: '13px', fontWeight: 600, color: '#3b82f6', flexShrink: 0,
                                     }}
@@ -170,7 +174,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         <span style={{ 
-                                            fontSize: '12.5px', fontWeight: 500, color: colors.textPrimary,
+                                            fontSize: '12.5px', fontWeight: 500, color: 'var(--text-primary)',
                                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                                         }}>
                                             {member.odName}
@@ -178,14 +182,14 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                         {isCurrentUser && (
                                             <span style={{
                                                 fontSize: '8px', fontWeight: 600, color: '#3b82f6',
-                                                background: isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)',
+                                                background: 'rgba(59, 130, 246, 0.1)',
                                                 padding: '2px 5px', borderRadius: '4px', textTransform: 'uppercase',
                                             }}>
                                                 You
                                             </span>
                                         )}
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', color: colors.textMuted, marginTop: '1px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', color: 'var(--text-muted)', marginTop: '1px' }}>
                                         <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                             <svg width="9" height="9" viewBox="0 0 24 24" fill="#3b82f6" stroke="none">
                                                 <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
@@ -210,18 +214,18 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                     >
                                         {member.xp.toLocaleString()}
                                     </motion.div>
-                                    <div style={{ fontSize: '9px', color: colors.textMuted, fontWeight: 500 }}>XP</div>
+                                    <div style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: 500 }}>XP</div>
                                 </div>
                             </motion.div>
                         );
                     })}
                     
                     {sortedMembers.length === 0 && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', padding: '32px 20px', color: colors.textMuted }}>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', padding: '32px 20px', color: 'var(--text-muted)' }}>
                             <div style={{
                                 width: 48, height: 48, borderRadius: '12px',
                                 border: '1.5px solid #3b82f6',
-                                background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
+                                background: 'var(--bg-primary)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 margin: '0 auto 12px',
                             }}>

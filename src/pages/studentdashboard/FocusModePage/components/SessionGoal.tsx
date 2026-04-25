@@ -3,7 +3,7 @@
  * Session goal setter component.
  * Extracted from FocusModePage.tsx during Phase 8.5
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { FocusModeColors } from '../FocusModePage';
 
@@ -27,8 +27,8 @@ const SessionGoal: React.FC<{
             style={{
                 padding: '16px',
                 borderRadius: '14px',
-                background: isDarkMode ? '#1e293b' : '#ffffff',
-                border: `1px solid ${colors.border}`,
+                background: 'var(--bg-primary)',
+                border: `1px solid var(--border-color)`,
             }}
         >
             <div style={{
@@ -62,7 +62,7 @@ const SessionGoal: React.FC<{
                     <span style={{
                         fontSize: '12px',
                         fontWeight: 600,
-                        color: colors.textPrimary,
+                        color: 'var(--text-primary)',
                     }}>
                         Session Goal
                     </span>
@@ -75,11 +75,11 @@ const SessionGoal: React.FC<{
                         padding: '4px 8px',
                         borderRadius: '6px',
                         border: 'none',
-                        background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                        background: 'var(--dashboard-surface)',
                         cursor: 'pointer',
                         fontSize: '10px',
                         fontWeight: 500,
-                        color: colors.textMuted,
+                        color: 'var(--text-muted)',
                     }}
                 >
                     {isEditing ? 'Done' : 'Edit'}
@@ -102,7 +102,7 @@ const SessionGoal: React.FC<{
                 </span>
                 <span style={{
                     fontSize: '12px',
-                    color: colors.textMuted,
+                    color: 'var(--text-muted)',
                 }}>
                     min target
                 </span>
@@ -112,7 +112,7 @@ const SessionGoal: React.FC<{
             <div style={{
                 height: '6px',
                 borderRadius: '3px',
-                background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                background: 'var(--bg-hover)',
                 overflow: 'hidden',
                 marginBottom: '8px',
             }}>
@@ -132,7 +132,7 @@ const SessionGoal: React.FC<{
 
             <div style={{
                 fontSize: '11px',
-                color: colors.textMuted,
+                color: 'var(--text-muted)',
             }}>
                 {currentProgress} of {sessionGoal} min completed
             </div>
@@ -166,14 +166,14 @@ const SessionGoal: React.FC<{
                                         borderRadius: '6px',
                                         border: sessionGoal === goal
                                             ? '1px solid rgba(245, 158, 11, 0.3)'
-                                            : `1px solid ${colors.border}`,
+                                            : `1px solid var(--border-color)`,
                                         background: sessionGoal === goal
                                             ? 'rgba(245, 158, 11, 0.1)'
                                             : 'transparent',
                                         cursor: 'pointer',
                                         fontSize: '11px',
                                         fontWeight: 500,
-                                        color: sessionGoal === goal ? '#f59e0b' : colors.textSecondary,
+                                        color: sessionGoal === goal ? '#f59e0b' : 'var(--text-secondary)',
                                         transition: 'all 0.15s ease',
                                     }}
                                 >

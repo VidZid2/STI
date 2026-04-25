@@ -50,8 +50,8 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2, ease: 'easeOut' }}
                     style={{
-                        background: colors.cardBg,
-                        borderBottom: `1px solid ${colors.border}`,
+                        background: 'var(--dashboard-surface)',
+                        borderBottom: `1px solid var(--border-color)`,
                         overflow: 'hidden',
                         flexShrink: 0,
                         zIndex: 99,
@@ -65,10 +65,10 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                             gap: '10px',
                             padding: '10px 14px',
                             borderRadius: '12px',
-                            background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                            border: `1px solid ${colors.border}`,
+                            background: 'var(--dashboard-surface)',
+                            border: `1px solid var(--border-color)`,
                         }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2">
                                 <circle cx="11" cy="11" r="8" />
                                 <path d="M21 21l-4.35-4.35" />
                             </svg>
@@ -82,7 +82,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                     flex: 1,
                                     border: 'none',
                                     background: 'transparent',
-                                    color: colors.textPrimary,
+                                    color: 'var(--text-primary)',
                                     fontSize: '14px',
                                     outline: 'none',
                                 }}
@@ -104,12 +104,12 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                         height: 20,
                                         borderRadius: '50%',
                                         border: 'none',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                                        background: 'var(--bg-hover)',
                                         cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: colors.textMuted,
+                                        color: 'var(--text-muted)',
                                     }}
                                 >
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -126,7 +126,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                 <div style={{
                                     fontSize: '11px',
                                     fontWeight: 500,
-                                    color: colors.textMuted,
+                                    color: 'var(--text-muted)',
                                     marginBottom: '8px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
@@ -144,7 +144,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                         <div style={{
                                             padding: '16px',
                                             textAlign: 'center',
-                                            color: colors.textMuted,
+                                            color: 'var(--text-muted)',
                                             fontSize: '13px',
                                         }}>
                                             No messages found
@@ -153,7 +153,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                         searchResults.map((result) => (
                                             <motion.button
                                                 key={result.id}
-                                                whileHover={{ scale: 1.01, background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
+                                                whileHover={{ scale: 1.01, background: 'var(--bg-hover)' }}
                                                 whileTap={{ scale: 0.99 }}
                                                 onClick={() => onJumpToMessage(result.id)}
                                                 style={{
@@ -163,7 +163,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                                     padding: '10px 12px',
                                                     borderRadius: '10px',
                                                     border: 'none',
-                                                    background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                                    background: 'var(--dashboard-surface)',
                                                     cursor: 'pointer',
                                                     textAlign: 'left',
                                                     width: '100%',
@@ -174,13 +174,13 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                                     width: 32,
                                                     height: 32,
                                                     borderRadius: '8px',
-                                                    background: `linear-gradient(135deg, ${colors.accent}20 0%, ${colors.accent}10 100%)`,
+                                                    background: `linear-gradient(135deg, var(--accent-color)20 0%, var(--accent-color)10 100%)`,
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     fontSize: '12px',
                                                     fontWeight: 600,
-                                                    color: colors.accent,
+                                                    color: 'var(--accent-color)',
                                                     flexShrink: 0,
                                                 }}>
                                                     {result.user_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -196,13 +196,13 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                                         <span style={{
                                                             fontSize: '12px',
                                                             fontWeight: 600,
-                                                            color: colors.textPrimary,
+                                                            color: 'var(--text-primary)',
                                                         }}>
                                                             {result.user_name}
                                                         </span>
                                                         <span style={{
                                                             fontSize: '10px',
-                                                            color: colors.textMuted,
+                                                            color: 'var(--text-muted)',
                                                         }}>
                                                             {formatTime(result.created_at)}
                                                         </span>
@@ -210,7 +210,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                                     <p style={{
                                                         margin: 0,
                                                         fontSize: '12px',
-                                                        color: colors.textSecondary,
+                                                        color: 'var(--text-secondary)',
                                                         overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
                                                         whiteSpace: 'nowrap',
@@ -233,8 +233,8 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                                                     {index > 20 && '...'}
                                                                     {before}
                                                                     <span style={{
-                                                                        background: `${colors.accent}30`,
-                                                                        color: colors.accent,
+                                                                        background: `var(--accent-color)30`,
+                                                                        color: 'var(--accent-color)',
                                                                         fontWeight: 600,
                                                                         padding: '0 2px',
                                                                         borderRadius: '2px',
@@ -254,7 +254,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                                     height="14"
                                                     viewBox="0 0 24 24"
                                                     fill="none"
-                                                    stroke={colors.textMuted}
+                                                    stroke={'var(--text-muted)'}
                                                     strokeWidth="2"
                                                     style={{ flexShrink: 0, marginTop: '4px' }}
                                                 >

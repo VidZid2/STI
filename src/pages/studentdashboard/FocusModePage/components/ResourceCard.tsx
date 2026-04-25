@@ -4,17 +4,18 @@
  * Extracted from FocusModePage.tsx during Phase 8.5
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import type { FocusModeColors } from '../FocusModePage';
 import type { Resource, FilterTab } from '../FocusModePage';
+import { RESOURCE_TYPE_CONFIG } from './DistractionBlocker';
 
 // Skeleton Loading Component
 const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
     const colors = {
-        bg: isDarkMode ? '#0f172a' : '#f8fafc',
-        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
-        border: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-        skeleton: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        bg: 'var(--bg-primary)',
+        cardBg: 'var(--bg-primary)',
+        border: 'rgba(255,255,255,0.06)',
+        skeleton: 'rgba(255,255,255,0.06)',
         shimmer: isDarkMode
             ? 'linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 100%)'
             : 'linear-gradient(90deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.02) 100%)',
@@ -30,7 +31,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             style={{
                 width, height, borderRadius,
                 background: colors.skeleton,
-                backgroundImage: colors.shimmer,
+                backgroundImage: 'var(--shimmer-bg)',
                 backgroundSize: '200% 100%',
                 ...style,
             }}
@@ -40,7 +41,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
     return (
         <div style={{
             height: '100vh',
-            background: colors.bg,
+            background: 'var(--bg-primary)',
             padding: '16px 24px',
             display: 'flex',
             flexDirection: 'column',
@@ -52,8 +53,8 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '12px 18px',
                     borderRadius: '14px',
-                    background: colors.cardBg,
-                    border: `1px solid ${colors.border}`,
+                    background: 'var(--dashboard-surface)',
+                    border: `1px solid var(--border-color)`,
                     flexShrink: 0,
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -84,8 +85,8 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                         <div style={{
                             padding: '14px',
                             borderRadius: '14px',
-                            background: colors.cardBg,
-                            border: `1px solid ${colors.border}`,
+                            background: 'var(--dashboard-surface)',
+                            border: `1px solid var(--border-color)`,
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -110,8 +111,8 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                         <div style={{
                             padding: '14px',
                             borderRadius: '14px',
-                            background: colors.cardBg,
-                            border: `1px solid ${colors.border}`,
+                            background: 'var(--dashboard-surface)',
+                            border: `1px solid var(--border-color)`,
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                                 <SkeletonBox width="28px" height="28px" borderRadius="8px" />
@@ -129,8 +130,8 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                         <div style={{
                             padding: '14px',
                             borderRadius: '14px',
-                            background: colors.cardBg,
-                            border: `1px solid ${colors.border}`,
+                            background: 'var(--dashboard-surface)',
+                            border: `1px solid var(--border-color)`,
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -154,8 +155,8 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                     <div style={{
                         padding: '16px',
                         borderRadius: '14px',
-                        background: colors.cardBg,
-                        border: `1px solid ${colors.border}`,
+                        background: 'var(--dashboard-surface)',
+                        border: `1px solid var(--border-color)`,
                         display: 'flex',
                         flexDirection: 'column',
                         overflow: 'hidden',
@@ -177,8 +178,8 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                         <div style={{
                             padding: '16px',
                             borderRadius: '14px',
-                            background: colors.cardBg,
-                            border: `1px solid ${colors.border}`,
+                            background: 'var(--dashboard-surface)',
+                            border: `1px solid var(--border-color)`,
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
                                 <SkeletonBox width="32px" height="32px" borderRadius="10px" />
@@ -198,7 +199,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                         <div style={{
                             padding: '20px',
                             borderRadius: '16px',
-                            background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+                            background: 'var(--dashboard-surface)',
                             border: `1px solid rgba(59, 130, 246, 0.2)`,
                         }}>
                             <SkeletonBox width="24px" height="24px" borderRadius="4px" style={{ marginBottom: '16px' }} />
@@ -211,8 +212,8 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                         <div style={{
                             padding: '14px 16px',
                             borderRadius: '14px',
-                            background: colors.cardBg,
-                            border: `1px solid ${colors.border}`,
+                            background: 'var(--dashboard-surface)',
+                            border: `1px solid var(--border-color)`,
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                                 <SkeletonBox width="28px" height="28px" borderRadius="8px" />
@@ -392,7 +393,7 @@ const FilterTabs: React.FC<{
                 gap: '4px',
                 padding: '4px',
                 borderRadius: '12px',
-                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                background: 'var(--dashboard-surface)',
                 position: 'relative',
             }}
         >
@@ -403,8 +404,8 @@ const FilterTabs: React.FC<{
                     top: '4px',
                     bottom: '4px',
                     borderRadius: '8px',
-                    background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
-                    border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                    background: 'var(--dashboard-surface)',
+                    border: `1px solid ${'var(--dashboard-surface)'}`,
                     zIndex: 0,
                 }}
                 initial={false}
@@ -432,7 +433,7 @@ const FilterTabs: React.FC<{
                         borderRadius: '8px',
                         border: 'none',
                         background: 'transparent',
-                        color: activeFilter === tab.id ? colors.accent : colors.textSecondary,
+                        color: activeFilter === tab.id ? 'var(--accent-color)' : 'var(--text-secondary)',
                         fontSize: '12px',
                         fontWeight: 500,
                         cursor: 'pointer',
@@ -455,9 +456,9 @@ const FilterTabs: React.FC<{
                                 padding: '1px 5px',
                                 borderRadius: '6px',
                                 background: activeFilter === tab.id
-                                    ? colors.accent
-                                    : (isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'),
-                                color: activeFilter === tab.id ? '#fff' : colors.textSecondary,
+                                    ? 'var(--accent-color)'
+                                    : ('var(--bg-hover)'),
+                                color: activeFilter === tab.id ? '#fff' : 'var(--text-secondary)',
                             }}
                         >
                             {resourceCounts[tab.id]}
@@ -524,8 +525,8 @@ const ResourceCard: React.FC<{
             style={{
                 position: 'relative',
                 borderRadius: '14px',
-                background: isDarkMode ? '#1e293b' : '#ffffff',
-                border: `1px solid ${isHovered ? `${config.color}${isDarkMode ? '50' : '40'}` : colors.border}`,
+                background: 'var(--bg-primary)',
+                border: `1px solid ${isHovered ? `${config.color}${'50'}` : 'var(--border-color)'}`,
                 cursor: 'pointer',
                 overflow: 'hidden',
                 boxShadow: isHovered
@@ -578,7 +579,7 @@ const ResourceCard: React.FC<{
                         <div style={{
                             fontSize: '14px',
                             fontWeight: 600,
-                            color: colors.textPrimary,
+                            color: 'var(--text-primary)',
                             marginBottom: '4px',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
@@ -599,7 +600,7 @@ const ResourceCard: React.FC<{
                                 fontWeight: 600,
                                 padding: '2px 8px',
                                 borderRadius: '6px',
-                                background: isDarkMode ? `${config.color}20` : `${config.color}12`,
+                                background: `${config.color}20`,
                                 color: config.color,
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.3px',
@@ -609,7 +610,7 @@ const ResourceCard: React.FC<{
                             {/* Date */}
                             <span style={{
                                 fontSize: '11px',
-                                color: colors.textMuted,
+                                color: 'var(--text-muted)',
                             }}>
                                 {formatDate(resource.createdAt)}
                             </span>
@@ -694,8 +695,8 @@ const ResourceCard: React.FC<{
                         style={{
                             borderRadius: '10px',
                             overflow: 'hidden',
-                            background: isDarkMode ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.02)',
-                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'}`,
+                            background: 'rgba(0,0,0,0.2)',
+                            border: `1px solid ${'var(--bg-hover)'}`,
                         }}
                     >
                         <img
@@ -717,11 +718,11 @@ const ResourceCard: React.FC<{
                     <div style={{
                         padding: '10px 12px',
                         borderRadius: '8px',
-                        background: isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)',
-                        border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'}`,
+                        background: 'rgba(0,0,0,0.3)',
+                        border: `1px solid ${'var(--bg-hover)'}`,
                         fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
                         fontSize: '11px',
-                        color: isDarkMode ? '#a5f3fc' : '#0f766e',
+                        color: 'var(--bg-hover)',
                         lineHeight: 1.5,
                         whiteSpace: 'pre-wrap',
                         wordBreak: 'break-all',
@@ -733,7 +734,7 @@ const ResourceCard: React.FC<{
                 ) : (
                     <div style={{
                         fontSize: '12px',
-                        color: colors.textSecondary,
+                        color: 'var(--text-secondary)',
                         lineHeight: 1.5,
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
@@ -754,7 +755,7 @@ const ResourceCard: React.FC<{
                         justifyContent: 'space-between',
                         marginTop: '12px',
                         paddingTop: '12px',
-                        borderTop: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'}`,
+                        borderTop: `1px solid ${'rgba(255,255,255,0.04)'}`,
                     }}>
                         <div style={{
                             display: 'flex',
@@ -778,7 +779,7 @@ const ResourceCard: React.FC<{
                             <span style={{
                                 fontSize: '11px',
                                 fontWeight: 500,
-                                color: colors.textMuted,
+                                color: 'var(--text-muted)',
                             }}>
                                 {resource.sharedBy}
                             </span>
@@ -791,8 +792,8 @@ const ResourceCard: React.FC<{
                                 fontWeight: 500,
                                 padding: '2px 6px',
                                 borderRadius: '4px',
-                                background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
-                                color: colors.textMuted,
+                                background: 'var(--bg-hover)',
+                                color: 'var(--text-muted)',
                             }}>
                                 {resource.language}
                             </span>
@@ -802,7 +803,7 @@ const ResourceCard: React.FC<{
                         {resource.type === 'link' && resource.url && (
                             <span style={{
                                 fontSize: '10px',
-                                color: colors.textMuted,
+                                color: 'var(--text-muted)',
                                 maxWidth: '120px',
                                 whiteSpace: 'nowrap',
                                 overflow: 'hidden',

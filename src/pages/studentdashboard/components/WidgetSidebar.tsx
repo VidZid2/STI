@@ -6,20 +6,27 @@
  */
 import * as React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { NotificationItem, GroupedNotification, StreakWidget } from './index';
+import { StreakWidget } from './index';
 import { WidgetContainer } from './WidgetContainer';
+import QuickSettingsDropdown from '../../../components/ui/dropdowns/QuickSettingsDropdown';
+import HelpDropdown from '../../../components/ui/dropdowns/HelpDropdown';
+
+import type { CalendarData, WeatherData, WidgetVisibility, AchievementStats, TodoItem } from '../types';
+import type { Deadline } from '../../../services/deadlinesService';
+import type { ActivityItem } from '../../../services/activityService';
+import type { CourseProgressData } from '../../../services/studyTimeService';
 
 // ── Prop types ────────────────────────────────────────────────────────────────
 export interface WidgetSidebarProps {
     widgetsSidebarActive: boolean;
     toggleWidgetsSidebar: () => void;
-    widgetVisibility: Record<string, boolean>;
+    widgetVisibility: WidgetVisibility;
     toggleWidget: (id: string) => void;
     restoreAllWidgets: () => void;
     hasHiddenWidgets: boolean;
     isDemoMode: boolean;
     // Todos
-    todos: { id: string; text: string; completed: boolean; createdAt: Date }[];
+    todos: TodoItem[];
     newTodoText: string;
     setNewTodoText: (v: string) => void;
     isAddingTodo: boolean;
@@ -31,44 +38,45 @@ export interface WidgetSidebarProps {
     clearAllTodos: () => void;
     completedCount: number;
     // Weather
-    weather: { temp: number; condition: string; icon: string; location: string; humidity: number; wind: number } | null;
+    weather: WeatherData | null;
     isWeatherLoading: boolean;
     // Deadlines
-    deadlines: { id: string; title: string; course: string; dueDate: Date; type: string }[];
+    deadlines: Deadline[];
     // Activity
-    recentActivity: { id: string; type: string; title: string; course: string; timestamp: Date; score?: number }[];
+    recentActivity: ActivityItem[];
     // Grade predictor
-    gradePredictor: { currentGrade: number; predictedGrade: number; trend: 'up' | 'down' | 'stable' } | null;
+    gradePredictor: any;
     // Study insights
-    studyInsights: { totalHours: number; avgSession: number; streak: number; bestDay: string } | null;
+    studyInsights: any;
     // Notifications
-    notifications: { id: string; type: string; title: string; message: string; timestamp: Date; read: boolean }[];
-    groupedNotifications: { date: string; items: { id: string; type: string; title: string; message: string; timestamp: Date; read: boolean }[] }[];
+    notifications: any[];
+    groupedNotifications: any[];
     // Quick view settings
-    quickViewSettings: { compactMode: boolean; showWeather: boolean; showDeadlines: boolean; showActivity: boolean };
+    quickViewSettings: { compactMode: boolean; showStreak: boolean; showUpcoming: boolean; autoRefresh: boolean };
     // Achievements
-    achievements: { id: string; title: string; description: string; icon: string; unlockedAt?: Date }[];
+    achievements: AchievementStats;
     // Dashboard data
     refreshTrigger: number;
     totalCourses: number;
-    upcomingDeadlines: { id: string; title: string; course: string; dueDate: Date; type: string }[];
+    upcomingDeadlines: Deadline[];
     overallProgress: number;
     openSettingsModal: () => void;
     // Additional dashboard state
     todaysQuote: { text: string; author: string } | null;
     weatherLoading: boolean;
     weatherError: string | null;
-    recentActivities: { id: string; type: string; title: string; course: string; timestamp: Date; score?: number }[];
-    calendarData: Record<string, { hasDeadline: boolean; deadlines: { id: string; title: string; course: string; dueDate: Date; type: string }[] }>;
+    recentActivities: ActivityItem[];
+    calendarData: CalendarData;
     calendarView: 'mini' | 'full';
     setCalendarView: (v: 'mini' | 'full') => void;
     calendarMonth: Date;
     setCalendarMonth: (d: Date) => void;
+    hasDeadlines: (date: Date) => boolean;
     // Formatters
-    formatDaysUntil: (date: Date) => string;
-    getDeadlineTypeColor: (type: string) => string;
-    formatRelativeTime: (date: Date) => string;
-    getCourseProgressData: (courseId: string) => { progress: number; completedModules: number; totalModules: number };
+    formatDaysUntil: (date: string) => { text: string; color: string };
+    getDeadlineTypeColor: (type: Deadline['type']) => string;
+    formatRelativeTime: (date: string) => string;
+    getCourseProgressData: () => CourseProgressData;
     formatMinutesToHours: (minutes: number) => string;
 }
 
@@ -120,6 +128,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
     setCalendarView,
     calendarMonth,
     setCalendarMonth,
+    hasDeadlines,
 }) => {
     return (
             <AnimatePresence mode="wait">
@@ -409,6 +418,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                 setCalendarView={setCalendarView}
                                 calendarMonth={calendarMonth}
                                 setCalendarMonth={setCalendarMonth}
+                                hasDeadlines={hasDeadlines}
                             />
 
                             {/* Quick Actions Footer */}

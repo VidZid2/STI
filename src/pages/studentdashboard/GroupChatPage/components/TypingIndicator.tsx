@@ -45,9 +45,9 @@ export const TypingIndicator = React.memo<TypingIndicatorProps>(({
                 alignItems: 'center',
                 gap: '10px',
                 padding: '6px 14px',
-                background: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+                background: 'rgba(255,255,255,0.04)',
                 borderRadius: '20px',
-                border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'}`,
+                border: `1px solid ${'rgba(255,255,255,0.06)'}`,
             }}>
                 {/* Animated dots - using CSS animation for better performance */}
                 <div style={{

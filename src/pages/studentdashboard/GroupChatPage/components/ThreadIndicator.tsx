@@ -29,7 +29,7 @@ export const ThreadIndicator = React.memo<ThreadIndicatorProps>(({
             initial={false}
             whileHover={{
                 scale: 1.02,
-                background: isDarkMode ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.05)',
+                background: 'rgba(59, 130, 246, 0.08)',
                 borderColor: '#3b82f6',
             }}
             whileTap={{ scale: 0.98 }}
@@ -42,8 +42,8 @@ export const ThreadIndicator = React.memo<ThreadIndicatorProps>(({
                 marginTop: '6px',
                 padding: '6px 12px',
                 borderRadius: '10px',
-                border: `1.5px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
-                background: isDarkMode ? 'rgba(59, 130, 246, 0.05)' : 'rgba(59, 130, 246, 0.03)',
+                border: `1.5px solid ${'var(--dashboard-surface)'}`,
+                background: 'rgba(59, 130, 246, 0.05)',
                 cursor: 'pointer',
                 width: 'fit-content',
                 transition: 'all 0.2s ease',
@@ -77,8 +77,8 @@ export const ThreadIndicator = React.memo<ThreadIndicatorProps>(({
                             width: 20,
                             height: 20,
                             borderRadius: '6px',
-                            background: isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)',
-                            border: `1.5px solid ${colors.cardBg}`,
+                            background: 'rgba(59, 130, 246, 0.2)',
+                            border: `1.5px solid var(--dashboard-surface)`,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',

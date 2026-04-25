@@ -2,17 +2,16 @@
  * TeacherSpotlight + TeacherSpotlightSkeleton
  * Extracted from UsersContent.tsx during Phase 8.4
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { getRoleInfo } from '../../../../../services/usersService';
-import UserAvatar from './UserAvatar';
+import { fetchUsers, getTeacherCourses, type UserAccount, type TeacherCourse } from '../../../../../services/usersService';
+import { SkeletonPulse } from './UsersSkeleton';
 
 // Teacher Spotlight Skeleton
 
 const TeacherSpotlightSkeleton: React.FC<{
-    isDarkMode: boolean;
     colors: { cardBg: string; border: string };
-}> = ({ isDarkMode, colors }) => {
+}> = ({ colors }) => {
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -22,16 +21,16 @@ const TeacherSpotlightSkeleton: React.FC<{
                 marginBottom: '24px',
                 padding: '18px',
                 borderRadius: '14px',
-                background: colors.cardBg,
-                border: `1px solid ${colors.border}`,
+                background: 'var(--dashboard-surface)',
+                border: `1px solid var(--border-color)`,
             }}
         >
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                <SkeletonPulse width="38px" height="38px" borderRadius="10px" isDarkMode={isDarkMode} />
+                <SkeletonPulse width="38px" height="38px" borderRadius="10px"  />
                 <div style={{ flex: 1 }}>
-                    <SkeletonPulse width="130px" height="15px" borderRadius="4px" isDarkMode={isDarkMode} style={{ marginBottom: '6px' }} />
-                    <SkeletonPulse width="180px" height="12px" borderRadius="4px" isDarkMode={isDarkMode} />
+                    <SkeletonPulse width="130px" height="15px" borderRadius="4px"  style={{ marginBottom: '6px' }} />
+                    <SkeletonPulse width="180px" height="12px" borderRadius="4px"  />
                 </div>
             </div>
             
@@ -42,17 +41,17 @@ const TeacherSpotlightSkeleton: React.FC<{
                     width: '200px',
                     padding: '16px',
                     borderRadius: '12px',
-                    border: `1px solid ${colors.border}`,
+                    border: `1px solid var(--border-color)`,
                     textAlign: 'center',
                 }}>
-                    <SkeletonPulse width="64px" height="64px" borderRadius="16px" isDarkMode={isDarkMode} style={{ margin: '0 auto 12px' }} />
-                    <SkeletonPulse width="80%" height="14px" borderRadius="4px" isDarkMode={isDarkMode} style={{ margin: '0 auto 8px' }} />
-                    <SkeletonPulse width="50px" height="20px" borderRadius="6px" isDarkMode={isDarkMode} style={{ margin: '0 auto' }} />
+                    <SkeletonPulse width="64px" height="64px" borderRadius="16px"  style={{ margin: '0 auto 12px' }} />
+                    <SkeletonPulse width="80%" height="14px" borderRadius="4px"  style={{ margin: '0 auto 8px' }} />
+                    <SkeletonPulse width="50px" height="20px" borderRadius="6px"  style={{ margin: '0 auto' }} />
                 </div>
                 
                 {/* Courses */}
                 <div style={{ flex: 1 }}>
-                    <SkeletonPulse width="140px" height="11px" borderRadius="4px" isDarkMode={isDarkMode} style={{ marginBottom: '10px' }} />
+                    <SkeletonPulse width="140px" height="11px" borderRadius="4px"  style={{ marginBottom: '10px' }} />
                     {[...Array(2)].map((_, i) => (
                         <div
                             key={i}
@@ -62,16 +61,16 @@ const TeacherSpotlightSkeleton: React.FC<{
                                 gap: '12px',
                                 padding: '10px 14px',
                                 borderRadius: '10px',
-                                border: `1px solid ${colors.border}`,
+                                border: `1px solid var(--border-color)`,
                                 marginBottom: '8px',
                             }}
                         >
-                            <SkeletonPulse width="36px" height="36px" borderRadius="8px" isDarkMode={isDarkMode} />
+                            <SkeletonPulse width="36px" height="36px" borderRadius="8px"  />
                             <div style={{ flex: 1 }}>
-                                <SkeletonPulse width="70%" height="13px" borderRadius="4px" isDarkMode={isDarkMode} style={{ marginBottom: '4px' }} />
-                                <SkeletonPulse width="50%" height="11px" borderRadius="4px" isDarkMode={isDarkMode} />
+                                <SkeletonPulse width="70%" height="13px" borderRadius="4px"  style={{ marginBottom: '4px' }} />
+                                <SkeletonPulse width="50%" height="11px" borderRadius="4px"  />
                             </div>
-                            <SkeletonPulse width="45px" height="18px" borderRadius="5px" isDarkMode={isDarkMode} />
+                            <SkeletonPulse width="45px" height="18px" borderRadius="5px"  />
                         </div>
                     ))}
                 </div>
@@ -87,7 +86,6 @@ interface TeacherWithCourses {
 }
 
 const TeacherSpotlight: React.FC<{
-    isDarkMode: boolean;
     colors: {
         cardBg: string;
         border: string;
@@ -96,7 +94,7 @@ const TeacherSpotlight: React.FC<{
         textMuted: string;
     };
     onTeacherClick: (teacher: UserAccount) => void;
-}> = ({ isDarkMode, colors, onTeacherClick }) => {
+}> = ({ colors, onTeacherClick }) => {
     const [teachers, setTeachers] = useState<TeacherWithCourses[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -110,7 +108,7 @@ const TeacherSpotlight: React.FC<{
             try {
                 const allUsers = await fetchUsers('teacher');
                 const teachersWithCourses: TeacherWithCourses[] = await Promise.all(
-                    allUsers.map(async (teacher) => {
+                    allUsers.map(async (teacher: UserAccount) => {
                         const courses = await getTeacherCourses(teacher.full_name);
                         return { teacher, courses };
                     })
@@ -146,7 +144,7 @@ const TeacherSpotlight: React.FC<{
     }, [teachers.length]);
 
     if (isLoading) {
-        return <TeacherSpotlightSkeleton isDarkMode={isDarkMode} colors={colors} />;
+        return <TeacherSpotlightSkeleton  colors={colors} />;
     }
 
     if (teachers.length === 0) return null;
@@ -173,8 +171,8 @@ const TeacherSpotlight: React.FC<{
                 marginBottom: '24px',
                 padding: '18px',
                 borderRadius: '14px',
-                background: colors.cardBg,
-                border: `1px solid ${colors.border}`,
+                background: 'var(--dashboard-surface)',
+                border: `1px solid var(--border-color)`,
                 overflow: 'hidden',
             }}
         >
@@ -189,7 +187,7 @@ const TeacherSpotlight: React.FC<{
                             width: '38px',
                             height: '38px',
                             borderRadius: '10px',
-                            background: isDarkMode ? 'rgba(245, 158, 11, 0.12)' : 'rgba(245, 158, 11, 0.08)',
+                            background: 'rgba(245, 158, 11, 0.1)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -200,10 +198,10 @@ const TeacherSpotlight: React.FC<{
                         </svg>
                     </motion.div>
                     <div>
-                        <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: colors.textPrimary }}>
+                        <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>
                             Teacher Spotlight
                         </h3>
-                        <p style={{ margin: 0, fontSize: '12px', color: colors.textSecondary }}>
+                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
                             Your Teachers This Semester · {teachers.length} Faculty
                         </p>
                     </div>
@@ -219,9 +217,9 @@ const TeacherSpotlight: React.FC<{
                             width: '30px',
                             height: '30px',
                             borderRadius: '8px',
-                            border: `1px solid ${colors.border}`,
+                            border: `1px solid var(--border-color)`,
                             background: 'transparent',
-                            color: colors.textSecondary,
+                            color: 'var(--text-secondary)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -240,9 +238,9 @@ const TeacherSpotlight: React.FC<{
                             width: '30px',
                             height: '30px',
                             borderRadius: '8px',
-                            border: `1px solid ${colors.border}`,
+                            border: `1px solid var(--border-color)`,
                             background: 'transparent',
-                            color: colors.textSecondary,
+                            color: 'var(--text-secondary)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -281,8 +279,8 @@ const TeacherSpotlight: React.FC<{
                                 width: '200px',
                                 padding: '16px',
                                 borderRadius: '12px',
-                                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                border: `1px solid ${colors.border}`,
+                                background: 'var(--bg-hover)',
+                                border: `1px solid var(--border-color)`,
                                 cursor: 'pointer',
                                 textAlign: 'center',
                             }}
@@ -335,7 +333,7 @@ const TeacherSpotlight: React.FC<{
                                 margin: '0 0 4px',
                                 fontSize: '14px',
                                 fontWeight: 600,
-                                color: colors.textPrimary,
+                                color: 'var(--text-primary)',
                             }}>
                                 {currentTeacher.teacher.full_name}
                             </h4>
@@ -368,7 +366,7 @@ const TeacherSpotlight: React.FC<{
                                 margin: '0 0 10px',
                                 fontSize: '11px',
                                 fontWeight: 600,
-                                color: colors.textMuted,
+                                color: 'var(--text-muted)',
                                 textTransform: 'uppercase',
                                 letterSpacing: '0.5px',
                             }}>
@@ -387,8 +385,8 @@ const TeacherSpotlight: React.FC<{
                                             gap: '12px',
                                             padding: '10px 14px',
                                             borderRadius: '10px',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                            border: `1px solid ${colors.border}`,
+                                            background: 'var(--bg-hover)',
+                                            border: `1px solid var(--border-color)`,
                                         }}
                                     >
                                         {/* Course Icon */}
@@ -414,7 +412,7 @@ const TeacherSpotlight: React.FC<{
                                                 margin: 0,
                                                 fontSize: '13px',
                                                 fontWeight: 500,
-                                                color: colors.textPrimary,
+                                                color: 'var(--text-primary)',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
                                                 whiteSpace: 'nowrap',
@@ -424,7 +422,7 @@ const TeacherSpotlight: React.FC<{
                                             <p style={{
                                                 margin: 0,
                                                 fontSize: '11px',
-                                                color: colors.textMuted,
+                                                color: 'var(--text-muted)',
                                             }}>
                                                 {course.subtitle} · {course.short_title}
                                             </p>
@@ -473,7 +471,7 @@ const TeacherSpotlight: React.FC<{
                             height: '8px',
                             borderRadius: '4px',
                             border: 'none',
-                            background: idx === currentIndex ? '#f59e0b' : isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)',
+                            background: idx === currentIndex ? '#f59e0b' : 'var(--border-medium)',
                             cursor: 'pointer',
                             transition: 'all 0.2s ease',
                         }}
@@ -483,14 +481,6 @@ const TeacherSpotlight: React.FC<{
         </motion.div>
     );
 };
-
-// User Detail Modal Component
-interface UserDetailModalProps {
-    user: UserAccount | null;
-    isOpen: boolean;
-    onClose: () => void;
-    isDarkMode: boolean;
-}
 
 
 export { TeacherSpotlight, TeacherSpotlightSkeleton };

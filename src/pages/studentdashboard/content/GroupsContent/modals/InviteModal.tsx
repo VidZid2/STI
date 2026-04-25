@@ -1,6 +1,7 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
+import { useModalAccessibility } from '../../../hooks/useModalAccessibility';
 import type { GroupWithMembers } from '../../../../../services/groupsService';
 
 // Invite Modal Component
@@ -8,8 +9,8 @@ const InviteModal: React.FC<{
     group: GroupWithMembers | null;
     isOpen: boolean;
     onClose: () => void;
-    isDarkMode: boolean;
-}> = ({ group, isOpen, onClose, isDarkMode }) => {
+    }> = ({ group, isOpen, onClose }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'invite-modal-title');
     const [inviteLink, setInviteLink] = useState<string>('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [copied, setCopied] = useState(false);
@@ -53,12 +54,12 @@ const InviteModal: React.FC<{
     ];
 
     const colors = {
-        bg: isDarkMode ? '#0f172a' : '#ffffff',
-        cardBg: isDarkMode ? '#1e293b' : '#f8fafc',
-        border: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-        textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
-        textSecondary: isDarkMode ? '#94a3b8' : '#475569',
-        textMuted: isDarkMode ? '#64748b' : '#94a3b8',
+        bg: 'var(--bg-primary)',
+        cardBg: 'var(--bg-primary)',
+        border: 'var(--border-light)',
+        textPrimary: 'var(--text-primary)',
+        textSecondary: 'var(--text-secondary)',
+        textMuted: 'var(--text-muted)',
         accent: '#10b981',
     };
 
@@ -69,13 +70,7 @@ const InviteModal: React.FC<{
         }
     }, [isOpen]);
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && isOpen) onClose();
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
+    // Escape key + focus trap handled by useModalAccessibility hook
 
     const handleGenerateLink = async () => {
         if (!group) return;
@@ -118,10 +113,13 @@ const InviteModal: React.FC<{
                             backdropFilter: 'blur(4px)', zIndex: 10000,
                         }}
                     />
-                    <div style={{
-                        position: 'fixed', inset: 0, display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', zIndex: 10001, pointerEvents: 'none', padding: '20px',
-                    }}>
+                    <div
+                        ref={modalRef}
+                        {...modalProps}
+                        style={{
+                            position: 'fixed', inset: 0, display: 'flex', alignItems: 'center',
+                            justifyContent: 'center', zIndex: 10001, pointerEvents: 'none', padding: '20px',
+                        }}>
                         <motion.div
                             layout
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -135,23 +133,23 @@ const InviteModal: React.FC<{
                             }}
                             style={{
                                 width: '100%', maxWidth: '420px',
-                                background: colors.bg, borderRadius: '20px',
-                                boxShadow: isDarkMode ? '0 24px 48px rgba(0, 0, 0, 0.4)' : '0 24px 48px rgba(0, 0, 0, 0.15)',
+                                background: 'var(--bg-primary)', borderRadius: '20px',
+                                boxShadow: 'var(--shadow-lg)',
                                 overflow: 'hidden', pointerEvents: 'auto',
                             }}
                         >
                             {/* Header */}
                             <div style={{ 
-                                padding: '20px 24px', borderBottom: `1px solid ${colors.border}`,
+                                padding: '20px 24px', borderBottom: `1px solid var(--border-color)`,
                                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                             }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <div style={{
                                         width: '40px', height: '40px', borderRadius: '10px',
-                                        background: `${colors.accent}15`,
+                                        background: `var(--accent-color)15`,
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     }}>
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2">
                                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                                             <circle cx="9" cy="7" r="4" />
                                             <line x1="19" y1="8" x2="19" y2="14" />
@@ -159,10 +157,10 @@ const InviteModal: React.FC<{
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: colors.textPrimary }}>
+                                        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                             Invite to {group.name}
                                         </h3>
-                                        <p style={{ margin: 0, fontSize: '12px', color: colors.textSecondary }}>
+                                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
                                             Share a link to invite members
                                         </p>
                                     </div>
@@ -172,8 +170,8 @@ const InviteModal: React.FC<{
                                     onClick={onClose}
                                     style={{
                                         width: '32px', height: '32px', borderRadius: '8px', border: 'none',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-                                        color: colors.textSecondary, cursor: 'pointer',
+                                        background: 'var(--bg-hover)',
+                                        color: 'var(--text-secondary)', cursor: 'pointer',
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     }}
                                 >
@@ -189,7 +187,7 @@ const InviteModal: React.FC<{
                                 <motion.div layout style={{ marginBottom: '20px' }}>
                                     <div style={{ 
                                         display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px',
-                                        color: colors.accent, fontSize: '12px', fontWeight: 600, textTransform: 'uppercase',
+                                        color: 'var(--accent-color)', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase',
                                     }}>
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
@@ -212,9 +210,9 @@ const InviteModal: React.FC<{
                                                 disabled={isGenerating}
                                                 style={{
                                                     width: '100%', padding: '14px', borderRadius: '12px',
-                                                    border: `2px dashed ${colors.accent}40`,
-                                                    background: `${colors.accent}08`,
-                                                    color: colors.accent, fontSize: '14px', fontWeight: 600,
+                                                    border: `2px dashed var(--accent-color)40`,
+                                                    background: `var(--accent-color)08`,
+                                                    color: 'var(--accent-color)', fontSize: '14px', fontWeight: 600,
                                                     cursor: isGenerating ? 'wait' : 'pointer',
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                                                     opacity: isGenerating ? 0.7 : 1,
@@ -257,8 +255,8 @@ const InviteModal: React.FC<{
                                             >
                                                 <div style={{
                                                     flex: 1, padding: '12px 14px', borderRadius: '10px',
-                                                    background: colors.cardBg, border: `1px solid ${colors.border}`,
-                                                    fontSize: '13px', color: colors.textPrimary,
+                                                    background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`,
+                                                    fontSize: '13px', color: 'var(--text-primary)',
                                                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                                                 }}>
                                                     {inviteLink}
@@ -269,10 +267,10 @@ const InviteModal: React.FC<{
                                                     style={{
                                                         padding: '12px 16px', borderRadius: '10px',
                                                         background: copied 
-                                                            ? (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.08)')
-                                                            : (isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.08)'),
-                                                        border: `1px solid ${isDarkMode ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.2)'}`,
-                                                        color: colors.accent, fontSize: '13px', fontWeight: 600,
+                                                            ? ('rgba(16, 185, 129, 0.1)')
+                                                            : ('rgba(16, 185, 129, 0.1)'),
+                                                        border: `1px solid ${'rgba(16, 185, 129, 0.1)'}`,
+                                                        color: 'var(--accent-color)', fontSize: '13px', fontWeight: 600,
                                                         cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
                                                         transition: 'all 0.2s ease',
                                                     }}
@@ -299,7 +297,7 @@ const InviteModal: React.FC<{
                                     </AnimatePresence>
 
                                     <p style={{ 
-                                        margin: '10px 0 0', fontSize: '12px', color: colors.textMuted,
+                                        margin: '10px 0 0', fontSize: '12px', color: 'var(--text-muted)',
                                     }}>
                                         Share this link with classmates to let them join your group
                                     </p>
@@ -317,7 +315,7 @@ const InviteModal: React.FC<{
                                             style={{ 
                                                 display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px',
                                                 padding: '16px', borderRadius: '12px',
-                                                background: colors.cardBg, border: `1px solid ${colors.border}`,
+                                                background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`,
                                                 overflow: 'hidden',
                                             }}
                                         >
@@ -325,7 +323,7 @@ const InviteModal: React.FC<{
                                         <div style={{ position: 'relative' }}>
                                             <label style={{ 
                                                 display: 'block', fontSize: '11px', fontWeight: 600, 
-                                                color: colors.textSecondary, marginBottom: '6px', textTransform: 'uppercase',
+                                                color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase',
                                             }}>
                                                 Expires After
                                             </label>
@@ -336,9 +334,9 @@ const InviteModal: React.FC<{
                                                 whileTap={{ scale: 0.98 }}
                                                 style={{
                                                     width: '100%', padding: '10px 12px', borderRadius: '8px',
-                                                    border: `1px solid ${showExpiresDropdown ? colors.accent : colors.border}`,
-                                                    background: showExpiresDropdown ? `${colors.accent}08` : colors.bg,
-                                                    color: colors.textPrimary, fontSize: '13px', cursor: 'pointer',
+                                                    border: `1px solid ${showExpiresDropdown ? 'var(--accent-color)' : 'var(--border-color)'}`,
+                                                    background: showExpiresDropdown ? `var(--accent-color)08` : 'var(--bg-primary)',
+                                                    color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer',
                                                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                                     transition: 'border-color 0.2s ease, background 0.2s ease',
                                                 }}
@@ -346,7 +344,7 @@ const InviteModal: React.FC<{
                                                 {expiresOptions.find(o => o.value === expiresIn)?.label}
                                                 <svg 
                                                     width="14" height="14" viewBox="0 0 24 24" fill="none" 
-                                                    stroke={showExpiresDropdown ? colors.accent : colors.textSecondary} 
+                                                    stroke={showExpiresDropdown ? 'var(--accent-color)' : 'var(--text-secondary)'} 
                                                     strokeWidth="2"
                                                     style={{ transform: showExpiresDropdown ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
                                                 >
@@ -373,8 +371,8 @@ const InviteModal: React.FC<{
                                                                     left: expiresDropdownPos.left,
                                                                     width: expiresDropdownPos.width,
                                                                     padding: '6px', borderRadius: '10px',
-                                                                    background: colors.bg, border: `1px solid ${colors.border}`,
-                                                                    boxShadow: isDarkMode ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(0,0,0,0.1)',
+                                                                    background: 'var(--bg-primary)', border: `1px solid var(--border-color)`,
+                                                                    boxShadow: 'var(--shadow-lg)',
                                                                     zIndex: 10011,
                                                                 }}
                                                             >
@@ -382,19 +380,19 @@ const InviteModal: React.FC<{
                                                                     <motion.button
                                                                         key={option.value}
                                                                         onClick={() => { setExpiresIn(option.value); setShowExpiresDropdown(false); }}
-                                                                        whileHover={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
+                                                                        whileHover={{ backgroundColor: 'var(--bg-hover)' }}
                                                                         style={{
                                                                             width: '100%', padding: '10px 12px', borderRadius: '8px',
                                                                             border: 'none', cursor: 'pointer', textAlign: 'left',
-                                                                            background: expiresIn === option.value ? `${colors.accent}10` : 'transparent',
-                                                                            color: expiresIn === option.value ? colors.accent : colors.textSecondary,
+                                                                            background: expiresIn === option.value ? `var(--accent-color)10` : 'transparent',
+                                                                            color: expiresIn === option.value ? 'var(--accent-color)' : 'var(--text-secondary)',
                                                                             fontSize: '12px', fontWeight: 500,
                                                                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                                                         }}
                                                                     >
                                                                         {option.label}
                                                                         {expiresIn === option.value && (
-                                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2">
+                                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2">
                                                                                 <polyline points="20 6 9 17 4 12" />
                                                                             </svg>
                                                                         )}
@@ -412,7 +410,7 @@ const InviteModal: React.FC<{
                                         <div style={{ position: 'relative' }}>
                                             <label style={{ 
                                                 display: 'block', fontSize: '11px', fontWeight: 600, 
-                                                color: colors.textSecondary, marginBottom: '6px', textTransform: 'uppercase',
+                                                color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase',
                                             }}>
                                                 Max Uses
                                             </label>
@@ -423,9 +421,9 @@ const InviteModal: React.FC<{
                                                 whileTap={{ scale: 0.98 }}
                                                 style={{
                                                     width: '100%', padding: '10px 12px', borderRadius: '8px',
-                                                    border: `1px solid ${showMaxUsesDropdown ? colors.accent : colors.border}`,
-                                                    background: showMaxUsesDropdown ? `${colors.accent}08` : colors.bg,
-                                                    color: colors.textPrimary, fontSize: '13px', cursor: 'pointer',
+                                                    border: `1px solid ${showMaxUsesDropdown ? 'var(--accent-color)' : 'var(--border-color)'}`,
+                                                    background: showMaxUsesDropdown ? `var(--accent-color)08` : 'var(--bg-primary)',
+                                                    color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer',
                                                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                                     transition: 'border-color 0.2s ease, background 0.2s ease',
                                                 }}
@@ -433,7 +431,7 @@ const InviteModal: React.FC<{
                                                 {maxUsesOptions.find(o => o.value === maxUses)?.label}
                                                 <svg 
                                                     width="14" height="14" viewBox="0 0 24 24" fill="none" 
-                                                    stroke={showMaxUsesDropdown ? colors.accent : colors.textSecondary} 
+                                                    stroke={showMaxUsesDropdown ? 'var(--accent-color)' : 'var(--text-secondary)'} 
                                                     strokeWidth="2"
                                                     style={{ transform: showMaxUsesDropdown ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
                                                 >
@@ -460,8 +458,8 @@ const InviteModal: React.FC<{
                                                                     left: maxUsesDropdownPos.left,
                                                                     width: maxUsesDropdownPos.width,
                                                                     padding: '6px', borderRadius: '10px',
-                                                                    background: colors.bg, border: `1px solid ${colors.border}`,
-                                                                    boxShadow: isDarkMode ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(0,0,0,0.1)',
+                                                                    background: 'var(--bg-primary)', border: `1px solid var(--border-color)`,
+                                                                    boxShadow: 'var(--shadow-lg)',
                                                                     zIndex: 10011,
                                                                 }}
                                                             >
@@ -469,19 +467,19 @@ const InviteModal: React.FC<{
                                                                     <motion.button
                                                                         key={option.value}
                                                                         onClick={() => { setMaxUses(option.value); setShowMaxUsesDropdown(false); }}
-                                                                        whileHover={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
+                                                                        whileHover={{ backgroundColor: 'var(--bg-hover)' }}
                                                                         style={{
                                                                             width: '100%', padding: '10px 12px', borderRadius: '8px',
                                                                             border: 'none', cursor: 'pointer', textAlign: 'left',
-                                                                            background: maxUses === option.value ? `${colors.accent}10` : 'transparent',
-                                                                            color: maxUses === option.value ? colors.accent : colors.textSecondary,
+                                                                            background: maxUses === option.value ? `var(--accent-color)10` : 'transparent',
+                                                                            color: maxUses === option.value ? 'var(--accent-color)' : 'var(--text-secondary)',
                                                                             fontSize: '12px', fontWeight: 500,
                                                                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                                                         }}
                                                                     >
                                                                         {option.label}
                                                                         {maxUses === option.value && (
-                                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2">
+                                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2">
                                                                                 <polyline points="20 6 9 17 4 12" />
                                                                             </svg>
                                                                         )}
@@ -511,9 +509,9 @@ const InviteModal: React.FC<{
                                             onClick={() => setInviteLink('')}
                                             style={{
                                                 width: '100%', padding: '12px', borderRadius: '10px',
-                                                border: `1px solid ${colors.border}`,
+                                                border: `1px solid var(--border-color)`,
                                                 background: 'transparent',
-                                                color: colors.textSecondary, fontSize: '13px', fontWeight: 500,
+                                                color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 500,
                                                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                                             }}
                                         >

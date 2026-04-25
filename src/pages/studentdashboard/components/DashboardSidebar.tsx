@@ -7,13 +7,13 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import ToolsNavTooltip from '../../../components/ui/misc/ToolsNavTooltip';
 import { CoursesNavItem, HelpNavItem, PathsNavItem } from '../nav-items';
-import type { SidebarCourse } from '../types';
+import type { SidebarCourse, DashboardView } from '../types';
 
 interface DashboardSidebarProps {
     sidebarActive: boolean;
     setSidebarActive: (active: boolean) => void;
-    activeView: string;
-    setActiveView: (view: string) => void;
+    activeView: DashboardView;
+    setActiveView: (view: DashboardView) => void;
     selectedCourse: SidebarCourse | null;
     setSelectedCourse: (course: SidebarCourse | null) => void;
     openSettingsModal: () => void;

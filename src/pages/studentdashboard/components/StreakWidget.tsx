@@ -97,8 +97,8 @@ export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false }) =
             transition={{ duration: 0.3, ease: 'easeOut', delay: 0.03 }}
             className={`mx-3 mt-3 rounded-xl ${compact ? 'p-2' : 'p-3'}`}
             style={{
-                background: colors.bgGradient,
-                border: `1px solid ${colors.borderColor}`,
+                background: 'var(--bg-primary)'Gradient,
+                border: `1px solid ${'var(--border-color)'Color}`,
             }}
         >
             <div className={`flex items-center ${compact ? 'gap-2' : 'gap-3'}`}>

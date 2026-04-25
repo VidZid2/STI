@@ -25,8 +25,8 @@ export const MentionNotificationPreview: React.FC<MentionNotificationPreviewProp
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                     style={{
-                        background: isDarkMode ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.05)',
-                        borderTop: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)'}`,
+                        background: 'rgba(59, 130, 246, 0.08)',
+                        borderTop: `1px solid ${'rgba(59, 130, 246, 0.2)'}`,
                         padding: '8px 20px',
                         display: 'flex',
                         alignItems: 'center',
@@ -52,7 +52,7 @@ export const MentionNotificationPreview: React.FC<MentionNotificationPreviewProp
                     {/* Notification Text */}
                     <span style={{
                         fontSize: '12px',
-                        color: isDarkMode ? '#93c5fd' : '#3b82f6',
+                        color: 'var(--bg-hover)',
                         fontWeight: 500,
                     }}>
                         This will notify {mentionedUsers.length === 1
@@ -82,7 +82,7 @@ export const MentionNotificationPreview: React.FC<MentionNotificationPreviewProp
                                     fontSize: '9px',
                                     fontWeight: 700,
                                     color: '#fff',
-                                    border: `2px solid ${isDarkMode ? '#1e293b' : '#fff'}`,
+                                    border: `2px solid ${'var(--bg-hover)'}`,
                                     marginLeft: idx > 0 ? '-8px' : 0,
                                     overflow: 'hidden',
                                 }}
@@ -100,14 +100,14 @@ export const MentionNotificationPreview: React.FC<MentionNotificationPreviewProp
                                     width: 22,
                                     height: 22,
                                     borderRadius: '50%',
-                                    background: isDarkMode ? '#475569' : '#94a3b8',
+                                    background: 'var(--bg-hover)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     fontSize: '8px',
                                     fontWeight: 700,
                                     color: '#fff',
-                                    border: `2px solid ${isDarkMode ? '#1e293b' : '#fff'}`,
+                                    border: `2px solid ${'var(--bg-hover)'}`,
                                     marginLeft: '-8px',
                                 }}
                             >

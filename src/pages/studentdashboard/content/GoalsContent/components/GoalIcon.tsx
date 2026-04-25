@@ -8,7 +8,7 @@ interface GoalIconProps {
 }
 
 const GoalIcon = React.memo<GoalIconProps>(({ type, color, size = 24 }) => {
-    const icons: Record<GoalType, React.ReactNode> = {
+    const icons: Record<GoalType | 'custom', React.ReactNode> = {
         study_time: (
             <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />

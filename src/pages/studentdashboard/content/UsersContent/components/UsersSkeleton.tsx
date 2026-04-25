@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UsersSkeleton components (SkeletonPulse, UserCardSkeleton)
  * Extracted from UsersContent.tsx during Phase 8.4
  */
@@ -10,9 +10,8 @@ const SkeletonPulse: React.FC<{
     width?: string;
     height?: string;
     borderRadius?: string;
-    isDarkMode: boolean;
     style?: React.CSSProperties;
-}> = ({ width = '100%', height = '16px', borderRadius = '6px', isDarkMode, style }) => {
+}> = ({ width = '100%', height = '16px', borderRadius = '6px', style }) => {
     return (
         <motion.div
             animate={{
@@ -27,9 +26,7 @@ const SkeletonPulse: React.FC<{
                 width,
                 height,
                 borderRadius,
-                background: isDarkMode
-                    ? 'linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 100%)'
-                    : 'linear-gradient(90deg, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.03) 100%)',
+                background: 'var(--shimmer-bg)',
                 backgroundSize: '200% 100%',
                 ...style,
             }}
@@ -41,18 +38,17 @@ const SkeletonPulse: React.FC<{
 // User Card Skeleton Component
 const UserCardSkeleton: React.FC<{
     index: number;
-    isDarkMode: boolean;
     colors: { cardBg: string; border: string };
-}> = ({ index, isDarkMode, colors }) => {
+}> = ({ index, colors }) => {
     return (
         <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05, duration: 0.3 }}
             style={{
-                background: colors.cardBg,
+                background: 'var(--dashboard-surface)',
                 borderRadius: '16px',
-                border: `1px solid ${colors.border}`,
+                border: `1px solid var(--border-color)`,
                 padding: '16px',
             }}
         >
@@ -62,7 +58,7 @@ const UserCardSkeleton: React.FC<{
                     width="44px" 
                     height="44px" 
                     borderRadius="12px" 
-                    isDarkMode={isDarkMode}
+                    
                     style={{ flexShrink: 0 }}
                 />
                 
@@ -73,7 +69,7 @@ const UserCardSkeleton: React.FC<{
                             width="55%" 
                             height="14px" 
                             borderRadius="4px" 
-                            isDarkMode={isDarkMode} 
+                             
                         />
                     </div>
                     
@@ -82,7 +78,7 @@ const UserCardSkeleton: React.FC<{
                         width="75%" 
                         height="12px" 
                         borderRadius="4px" 
-                        isDarkMode={isDarkMode}
+                        
                         style={{ marginBottom: '12px' }}
                     />
                     
@@ -92,13 +88,13 @@ const UserCardSkeleton: React.FC<{
                             width="60px" 
                             height="22px" 
                             borderRadius="6px" 
-                            isDarkMode={isDarkMode} 
+                             
                         />
                         <SkeletonPulse 
                             width="70px" 
                             height="22px" 
                             borderRadius="6px" 
-                            isDarkMode={isDarkMode} 
+                             
                         />
                     </div>
                 </div>
@@ -110,9 +106,8 @@ const UserCardSkeleton: React.FC<{
 // Classmates Section Skeleton
 // @ts-ignore - Reserved for future use
 const _ClassmatesSkeleton: React.FC<{
-    isDarkMode: boolean;
     colors: { cardBg: string; border: string };
-}> = ({ isDarkMode, colors }) => {
+}> = ({ colors }) => {
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -122,16 +117,16 @@ const _ClassmatesSkeleton: React.FC<{
                 marginBottom: '24px',
                 padding: '18px',
                 borderRadius: '14px',
-                background: colors.cardBg,
-                border: `1px solid ${colors.border}`,
+                background: 'var(--dashboard-surface)',
+                border: `1px solid var(--border-color)`,
             }}
         >
             {/* Header Skeleton */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                <SkeletonPulse width="38px" height="38px" borderRadius="10px" isDarkMode={isDarkMode} />
+                <SkeletonPulse width="38px" height="38px" borderRadius="10px"  />
                 <div style={{ flex: 1 }}>
-                    <SkeletonPulse width="120px" height="15px" borderRadius="4px" isDarkMode={isDarkMode} style={{ marginBottom: '6px' }} />
-                    <SkeletonPulse width="160px" height="12px" borderRadius="4px" isDarkMode={isDarkMode} />
+                    <SkeletonPulse width="120px" height="15px" borderRadius="4px"  style={{ marginBottom: '6px' }} />
+                    <SkeletonPulse width="160px" height="12px" borderRadius="4px"  />
                 </div>
             </div>
             
@@ -150,13 +145,13 @@ const _ClassmatesSkeleton: React.FC<{
                             gap: '10px',
                             padding: '10px 12px',
                             borderRadius: '10px',
-                            border: `1px solid ${colors.border}`,
+                            border: `1px solid var(--border-color)`,
                         }}
                     >
-                        <SkeletonPulse width="36px" height="36px" borderRadius="10px" isDarkMode={isDarkMode} />
+                        <SkeletonPulse width="36px" height="36px" borderRadius="10px"  />
                         <div style={{ flex: 1 }}>
-                            <SkeletonPulse width="80%" height="12px" borderRadius="4px" isDarkMode={isDarkMode} style={{ marginBottom: '4px' }} />
-                            <SkeletonPulse width="50%" height="10px" borderRadius="4px" isDarkMode={isDarkMode} />
+                            <SkeletonPulse width="80%" height="12px" borderRadius="4px"  style={{ marginBottom: '4px' }} />
+                            <SkeletonPulse width="50%" height="10px" borderRadius="4px"  />
                         </div>
                     </div>
                 ))}

@@ -46,9 +46,9 @@ export const UnreadIndicator = React.memo<UnreadIndicatorProps>(({
                 alignItems: 'center',
                 gap: '6px',
                 padding: '4px 12px',
-                background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+                background: 'var(--dashboard-surface)',
                 borderRadius: '12px',
-                border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                border: `1px solid ${'var(--dashboard-surface)'}`,
             }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="6 9 12 15 18 9" />

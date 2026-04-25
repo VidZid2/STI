@@ -3,9 +3,19 @@
  * Break activity suggestions shown during break mode.
  * Extracted from FocusModePage.tsx during Phase 8.5
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { FocusModeColors } from '../FocusModePage';
+
+// Break Suggestions Data
+const BREAK_SUGGESTIONS = [
+    { icon: '👀', title: 'Eye Rest', description: 'Look at something 20ft away for 20 seconds', duration: '20s' },
+    { icon: '🧘', title: 'Stretch', description: 'Stand up and stretch your arms and back', duration: '1m' },
+    { icon: '💧', title: 'Hydrate', description: 'Drink a glass of water', duration: '30s' },
+    { icon: '🚶', title: 'Walk', description: 'Take a short walk around the room', duration: '2m' },
+    { icon: '🌬️', title: 'Breathe', description: 'Take 5 deep breaths slowly', duration: '1m' },
+    { icon: '🔄', title: 'Neck Roll', description: 'Gently roll your neck in circles', duration: '30s' },
+];
 
 // Break Suggestions Component
 const BreakSuggestions: React.FC<{
@@ -101,7 +111,7 @@ const BreakSuggestions: React.FC<{
                         width: 44,
                         height: 44,
                         borderRadius: '12px',
-                        background: isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)',
+                        background: 'rgba(16, 185, 129, 0.15)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -114,14 +124,14 @@ const BreakSuggestions: React.FC<{
                         <div style={{
                             fontSize: '13px',
                             fontWeight: 600,
-                            color: colors.textPrimary,
+                            color: 'var(--text-primary)',
                             marginBottom: '2px',
                         }}>
                             {suggestion.title}
                         </div>
                         <div style={{
                             fontSize: '11px',
-                            color: colors.textSecondary,
+                            color: 'var(--text-secondary)',
                             lineHeight: 1.4,
                         }}>
                             {suggestion.description}
@@ -150,7 +160,7 @@ const BreakSuggestions: React.FC<{
                             border: 'none',
                             background: index === currentSuggestion
                                 ? '#10b981'
-                                : (isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'),
+                                : ('var(--bg-hover)'),
                             cursor: 'pointer',
                             transition: 'all 0.2s ease',
                         }}

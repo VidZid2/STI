@@ -2,9 +2,10 @@
  * SessionStats
  * Shows today's focus progress stats.
  * Extracted from FocusModePage.tsx during Phase 8.5
+ * Refactored in Phase 9.5 (Styling Consistency)
  */
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React from 'react';
+import { motion } from 'motion/react';
 import type { FocusModeColors } from '../FocusModePage';
 
 // Session Stats Component - Shows today's focus progress
@@ -14,7 +15,7 @@ const SessionStats: React.FC<{
     totalFocusTime: number;
     sessionsCompleted: number;
     currentStreak: number;
-}> = ({ isDarkMode, colors, totalFocusTime, sessionsCompleted, currentStreak }) => {
+}> = ({ isDarkMode: _isDarkMode, colors: _colors, totalFocusTime, sessionsCompleted, currentStreak }) => {
     // Calculate stats - format compactly for large numbers
     const hours = Math.floor(totalFocusTime / 3600);
     const minutes = Math.floor((totalFocusTime % 3600) / 60);
@@ -65,12 +66,8 @@ const SessionStats: React.FC<{
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
-            style={{
-                padding: '14px',
-                borderRadius: '14px',
-                background: isDarkMode ? '#1e293b' : '#ffffff',
-                border: `1px solid ${colors.border}`,
-            }}
+            className="dashboard-card"
+            style={{ padding: '14px' }}
         >
             {/* Header */}
             <div style={{
@@ -84,12 +81,11 @@ const SessionStats: React.FC<{
                         width: 28,
                         height: 28,
                         borderRadius: '8px',
-                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.06) 100%)',
-                        border: '1px solid rgba(59, 130, 246, 0.15)',
+                        background: 'rgba(59, 130, 246, 0.1)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#3b82f6',
+                        color: 'var(--brand-blue)',
                     }}
                 >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -101,7 +97,7 @@ const SessionStats: React.FC<{
                 <div style={{
                     fontSize: '12px',
                     fontWeight: 600,
-                    color: colors.textPrimary,
+                    color: 'var(--text-primary)',
                 }}>
                     Today's Progress
                 </div>
@@ -115,15 +111,15 @@ const SessionStats: React.FC<{
                     alignItems: 'center',
                     marginBottom: '4px',
                 }}>
-                    <span style={{ fontSize: '10px', color: colors.textMuted }}>Daily Goal</span>
-                    <span style={{ fontSize: '10px', fontWeight: 600, color: '#3b82f6' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Daily Goal</span>
+                    <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--brand-blue)' }}>
                         {currentMinutes}/{dailyGoalMinutes}m
                     </span>
                 </div>
                 <div style={{
                     height: '5px',
                     borderRadius: '3px',
-                    background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                    background: 'var(--bg-hover)',
                     overflow: 'hidden',
                 }}>
                     <motion.div
@@ -134,8 +130,8 @@ const SessionStats: React.FC<{
                             height: '100%',
                             borderRadius: '3px',
                             background: progressPercent >= 100
-                                ? 'linear-gradient(90deg, #10b981 0%, #34d399 100%)'
-                                : 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)',
+                                ? 'linear-gradient(90deg, var(--success) 0%, #34d399 100%)'
+                                : 'linear-gradient(90deg, var(--brand-blue) 0%, var(--brand-blue-hover) 100%)',
                         }}
                     />
                 </div>
@@ -153,14 +149,14 @@ const SessionStats: React.FC<{
                             flex: 1,
                             padding: '8px 4px',
                             borderRadius: '8px',
-                            background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(59, 130, 246, 0.04)',
-                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(59, 130, 246, 0.08)'}`,
+                            background: 'var(--bg-tertiary)',
+                            border: `1px solid var(--border-light)`,
                             textAlign: 'center',
                             minWidth: 0,
                         }}
                     >
                         <div style={{
-                            color: '#3b82f6',
+                            color: 'var(--brand-blue)',
                             marginBottom: '4px',
                             display: 'flex',
                             justifyContent: 'center',
@@ -170,7 +166,7 @@ const SessionStats: React.FC<{
                         <div style={{
                             fontSize: '13px',
                             fontWeight: 700,
-                            color: colors.textPrimary,
+                            color: 'var(--text-primary)',
                             marginBottom: '1px',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
@@ -180,7 +176,7 @@ const SessionStats: React.FC<{
                         </div>
                         <div style={{
                             fontSize: '9px',
-                            color: colors.textMuted,
+                            color: 'var(--text-muted)',
                             textTransform: 'uppercase',
                             letterSpacing: '0.2px',
                         }}>
@@ -192,22 +188,5 @@ const SessionStats: React.FC<{
         </motion.div>
     );
 };
-
-// Motivational Quotes Data
-const STUDY_QUOTES = [
-    { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
-    { text: "Success is the sum of small efforts repeated day in and day out.", author: "Robert Collier" },
-    { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
-    { text: "Education is the passport to the future.", author: "Malcolm X" },
-    { text: "The more that you read, the more things you will know.", author: "Dr. Seuss" },
-    { text: "Learning never exhausts the mind.", author: "Leonardo da Vinci" },
-    { text: "The beautiful thing about learning is that no one can take it away from you.", author: "B.B. King" },
-    { text: "Study hard what interests you the most in the most undisciplined way.", author: "Richard Feynman" },
-    { text: "The expert in anything was once a beginner.", author: "Helen Hayes" },
-    { text: "Don't let what you cannot do interfere with what you can do.", author: "John Wooden" },
-    { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
-    { text: "The mind is not a vessel to be filled, but a fire to be kindled.", author: "Plutarch" },
-];
-
 
 export { SessionStats };

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UsersEmptyState
  * Empty state display for UsersContent.
  * Extracted from UsersContent.tsx during Phase 8.4
@@ -7,7 +7,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 
 // Empty State Component
-const EmptyState: React.FC<{ isDarkMode: boolean; searchQuery: string; colors: { textPrimary: string; textSecondary: string } }> = ({ isDarkMode, searchQuery, colors }) => {
+const EmptyState: React.FC<{ searchQuery: string; colors: { textPrimary: string; textSecondary: string } }> = ({ searchQuery, colors }) => {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -30,14 +30,14 @@ const EmptyState: React.FC<{ isDarkMode: boolean; searchQuery: string; colors: {
                     width: '72px',
                     height: '72px',
                     borderRadius: '18px',
-                    background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                    background: 'var(--bg-hover)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginBottom: '20px',
                 }}
             >
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#64748b' : '#94a3b8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                     <circle cx="9" cy="7" r="4" />
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -48,7 +48,7 @@ const EmptyState: React.FC<{ isDarkMode: boolean; searchQuery: string; colors: {
                 margin: 0,
                 fontSize: '16px',
                 fontWeight: 600,
-                color: colors.textPrimary,
+                color: 'var(--text-primary)',
                 marginBottom: '8px',
             }}>
                 {searchQuery ? 'No users found' : 'No users yet'}
@@ -56,7 +56,7 @@ const EmptyState: React.FC<{ isDarkMode: boolean; searchQuery: string; colors: {
             <p style={{
                 margin: 0,
                 fontSize: '13px',
-                color: colors.textSecondary,
+                color: 'var(--text-secondary)',
                 maxWidth: '300px',
             }}>
                 {searchQuery 

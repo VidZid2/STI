@@ -52,8 +52,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             style={{
-                background: colors.cardBg,
-                borderBottom: `1px solid ${colors.border}`,
+                background: 'var(--dashboard-surface)',
+                borderBottom: `1px solid var(--border-color)`,
                 padding: '12px 20px',
                 display: 'flex',
                 alignItems: 'center',
@@ -64,15 +64,15 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         >
             <Tooltip text="Back to Groups">
                 <motion.button
-                    whileHover={{ scale: 1.05, background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)' }}
+                    whileHover={{ scale: 1.05, background: 'var(--bg-hover)' }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate('/dashboard')}
                     style={{
                         width: 36,
                         height: 36,
                         borderRadius: '10px',
-                        border: `1.5px solid ${isDarkMode ? '#3b82f6' : '#3b82f6'}`,
-                        background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
+                        border: `1.5px solid ${'var(--bg-hover)'}`,
+                        background: 'var(--bg-primary)',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
@@ -93,7 +93,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 borderRadius: '12px',
                 background: groupInfo?.avatar
                     ? 'transparent'
-                    : `linear-gradient(135deg, ${groupInfo?.color || colors.accent}20 0%, ${groupInfo?.color || colors.accent}10 100%)`,
+                    : `linear-gradient(135deg, ${groupInfo?.color || 'var(--accent-color)'}20 0%, ${groupInfo?.color || 'var(--accent-color)'}10 100%)`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -107,7 +107,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                 ) : (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={groupInfo?.color || colors.accent} strokeWidth="2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={groupInfo?.color || 'var(--accent-color)'} strokeWidth="2">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                         <circle cx="9" cy="7" r="4" />
                         <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
@@ -127,7 +127,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         margin: 0,
                         fontSize: '16px',
                         fontWeight: 600,
-                        color: colors.textPrimary,
+                        color: 'var(--text-primary)',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -143,7 +143,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                     alignItems: 'center',
                     gap: '4px',
                     fontSize: '13px',
-                    color: colors.textMuted,
+                    color: 'var(--text-muted)',
                     lineHeight: 1,
                 }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
@@ -153,7 +153,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                     <span>{groupInfo?.member_count || 0} members</span>
                     <span style={{ 
                         margin: '0 2px',
-                        color: colors.textMuted,
+                        color: 'var(--text-muted)',
                     }}>•</span>
                     <span style={{ color: '#22c55e', fontWeight: 500 }}>
                         {groupInfo?.online_count || 0} online
@@ -175,7 +175,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         gap: '8px',
                         padding: '6px 10px',
                         borderRadius: '10px',
-                        background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
+                        background: 'var(--bg-primary)',
                         border: `1.5px solid #3b82f6`,
                         cursor: 'pointer',
                     }}
@@ -204,7 +204,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                boxShadow: isDarkMode ? 'none' : '0 2px 4px rgba(251, 191, 36, 0.15)',
+                                boxShadow: 'var(--shadow-md)',
                             }}
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -236,7 +236,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         </motion.span>
                     </motion.div>
 
-                    <div style={{ width: 1, height: 16, background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)', borderRadius: '1px' }} />
+                    <div style={{ width: 1, height: 16, background: 'var(--bg-hover)', borderRadius: '1px' }} />
 
                     {/* Level Badge - Compact */}
                     <motion.span
@@ -245,7 +245,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                             fontSize: '11px',
                             fontWeight: 700,
                             color: '#3b82f6',
-                            background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+                            background: 'var(--dashboard-surface)',
                             padding: '2px 6px',
                             borderRadius: '5px',
                         }}
@@ -258,7 +258,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         width: 40,
                         height: 4,
                         borderRadius: '2px',
-                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(59, 130, 246, 0.15)',
+                        background: 'rgba(255,255,255,0.1)',
                         overflow: 'hidden',
                     }}>
                         <motion.div
@@ -279,7 +279,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 {/* Leaderboard Button - Minimalistic */}
                 <Tooltip text="Leaderboard">
                     <motion.button
-                        whileHover={{ scale: 1.05, background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)' }}
+                        whileHover={{ scale: 1.05, background: 'var(--bg-hover)' }}
                         whileTap={{ scale: 0.95 }}
                         onClick={onLeaderboardOpen}
                         style={{
@@ -287,7 +287,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                             height: 36,
                             borderRadius: '10px',
                             border: `1.5px solid #3b82f6`,
-                            background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
+                            background: 'var(--bg-primary)',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
@@ -306,7 +306,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 </Tooltip>
                 <Tooltip text="Group Info">
                     <motion.button
-                        whileHover={{ scale: 1.05, background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)' }}
+                        whileHover={{ scale: 1.05, background: 'var(--bg-hover)' }}
                         whileTap={{ scale: 0.95 }}
                         onClick={onGroupInfoOpen}
                         style={{
@@ -314,7 +314,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                             height: 36,
                             borderRadius: '10px',
                             border: `1.5px solid #3b82f6`,
-                            background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
+                            background: 'var(--bg-primary)',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
@@ -330,7 +330,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 </Tooltip>
                 <Tooltip text="Search Messages">
                     <motion.button
-                        whileHover={{ scale: 1.05, background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)' }}
+                        whileHover={{ scale: 1.05, background: 'var(--bg-hover)' }}
                         whileTap={{ scale: 0.95 }}
                         onClick={onSearchToggle}
                         style={{
@@ -339,8 +339,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                             borderRadius: '10px',
                             border: `1.5px solid #3b82f6`,
                             background: showSearchPanel
-                                ? (isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)')
-                                : (isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff'),
+                                ? ('var(--dashboard-surface)')
+                                : ('var(--bg-primary)'),
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
@@ -357,7 +357,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 </Tooltip>
                 <Tooltip text="Focus Mode">
                     <motion.button
-                        whileHover={{ scale: 1.05, background: isDarkMode ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.05)' }}
+                        whileHover={{ scale: 1.05, background: 'rgba(139, 92, 246, 0.1)' }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => navigate(`/focus/${groupId}`)}
                         style={{
@@ -365,7 +365,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                             height: 36,
                             borderRadius: '10px',
                             border: `1.5px solid #8b5cf6`,
-                            background: isDarkMode ? 'rgba(30, 41, 59, 1)' : '#ffffff',
+                            background: 'var(--bg-primary)',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',

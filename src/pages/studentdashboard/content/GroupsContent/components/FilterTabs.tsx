@@ -1,20 +1,19 @@
-/**
+﻿/**
  * FilterTabs
  * Filter tabs for GroupsContent (All / My Groups / Public).
  * Extracted from GroupsContent.tsx during Phase 8.2
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import type { GroupFilter, GroupStats } from '../../../../services/groupsService';
+import type { GroupFilter, GroupStats } from '../../../../../services/groupsService';
 
 // Filter Tabs Component
 const FilterTabs: React.FC<{
     activeFilter: GroupFilter;
     setActiveFilter: (filter: GroupFilter) => void;
-    isDarkMode: boolean;
     stats: GroupStats;
     colors: { accent: string; textSecondary: string };
-}> = ({ activeFilter, setActiveFilter, isDarkMode, stats, colors }) => {
+}> = ({ activeFilter, setActiveFilter, stats, colors }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [indicatorStyle, setIndicatorStyle] = useState({ left: 5, width: 60 });
     
@@ -76,15 +75,15 @@ const FilterTabs: React.FC<{
             }}
             style={{
                 display: 'flex', gap: '4px', padding: '4px', borderRadius: '12px',
-                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', position: 'relative',
+                background: 'var(--bg-hover)', position: 'relative',
             }}
         >
             <motion.div
                 layout
                 style={{
                     position: 'absolute', top: '4px', bottom: '4px', borderRadius: '8px',
-                    background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
-                    border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`, zIndex: 0,
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    border: `1px solid ${'rgba(59, 130, 246, 0.1)'}`, zIndex: 0,
                 }}
                 initial={false}
                 animate={{ left: indicatorStyle.left, width: indicatorStyle.width }}
@@ -101,7 +100,7 @@ const FilterTabs: React.FC<{
                     transition={{ layout: { type: 'spring', stiffness: 400, damping: 30 } }}
                     style={{
                         display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 12px', borderRadius: '8px',
-                        border: 'none', background: 'transparent', color: activeFilter === tab.id ? colors.accent : colors.textSecondary,
+                        border: 'none', background: 'transparent', color: activeFilter === tab.id ? 'var(--accent-color)' : 'var(--text-secondary)',
                         fontSize: '12px', fontWeight: 500, cursor: 'pointer', position: 'relative', zIndex: 1, transition: 'color 0.2s ease',
                     }}
                 >
@@ -109,7 +108,7 @@ const FilterTabs: React.FC<{
                     {tab.label}
                     <span style={{
                         fontSize: '10px', padding: '2px 6px', borderRadius: '10px',
-                        background: activeFilter === tab.id ? 'rgba(59, 130, 246, 0.2)' : isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                        background: activeFilter === tab.id ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-hover)',
                     }}>
                         {tab.count}
                     </span>

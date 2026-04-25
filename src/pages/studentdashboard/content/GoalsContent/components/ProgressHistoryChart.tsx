@@ -1,15 +1,15 @@
-/**
+﻿/**
  * ProgressHistoryChart
  * Visualizes goal progress over time.
  * Extracted from GoalsContent.tsx during Phase 8.3
  */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { getAggregatedProgressHistory } from '../../../../../services/goalsService';
+import { AnimatePresence } from 'motion/react';
+import { getAggregatedProgressHistory, getRealTimeProgress, type GoalWithProgress } from '../../../../../services/goalsService';
 
 // Progress History Chart Component
 const ProgressHistoryChart: React.FC<{
-    isDarkMode: boolean;
     colors: {
         bg: string;
         cardBg: string;
@@ -20,7 +20,7 @@ const ProgressHistoryChart: React.FC<{
         accent: string;
     };
     goals: GoalWithProgress[];
-}> = ({ isDarkMode, colors, goals }) => {
+}> = ({ colors, goals }) => {
     const [historyData, setHistoryData] = useState<{ date: string; completed: number; active: number; totalProgress: number }[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -111,8 +111,8 @@ const ProgressHistoryChart: React.FC<{
                 marginBottom: '20px',
                 padding: '16px 20px',
                 borderRadius: '14px',
-                background: colors.cardBg,
-                border: `1px solid ${colors.border}`,
+                background: 'var(--dashboard-surface)',
+                border: `1px solid var(--border-color)`,
             }}
         >
             {/* Header */}
@@ -147,10 +147,10 @@ const ProgressHistoryChart: React.FC<{
                         </svg>
                     </motion.div>
                     <div>
-                        <div style={{ fontSize: '13px', fontWeight: 600, color: colors.textPrimary }}>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
                             Progress History
                         </div>
-                        <div style={{ fontSize: '11px', color: colors.textMuted }}>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                             Last 7 days overview
                         </div>
                     </div>
@@ -158,7 +158,7 @@ const ProgressHistoryChart: React.FC<{
                 <motion.div
                     animate={{ rotate: isExpanded ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
-                    style={{ color: colors.textMuted }}
+                    style={{ color: 'var(--text-muted)' }}
                 >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <polyline points="6 9 12 15 18 9" />
@@ -186,8 +186,8 @@ const ProgressHistoryChart: React.FC<{
                                     animate={{ rotate: 360 }}
                                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                                 >
-                                    <circle cx="12" cy="12" r="10" stroke={colors.border} strokeWidth="2.5" />
-                                    <path d="M12 2a10 10 0 0 1 10 10" stroke={colors.accent} strokeWidth="2.5" strokeLinecap="round" />
+                                    <circle cx="12" cy="12" r="10" stroke={'var(--border-color)'} strokeWidth="2.5" />
+                                    <path d="M12 2a10 10 0 0 1 10 10" stroke={'var(--accent-color)'} strokeWidth="2.5" strokeLinecap="round" />
                                 </motion.svg>
                             </div>
                         ) : chartData.length === 0 ? (
@@ -197,7 +197,7 @@ const ProgressHistoryChart: React.FC<{
                                 alignItems: 'center', 
                                 justifyContent: 'center', 
                                 height: '120px',
-                                color: colors.textMuted,
+                                color: 'var(--text-muted)',
                                 fontSize: '12px',
                             }}>
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ marginBottom: '8px', opacity: 0.5 }}>
@@ -226,7 +226,7 @@ const ProgressHistoryChart: React.FC<{
                                         {[100, 50, 0].map((val) => (
                                             <span key={val} style={{ 
                                                 fontSize: '9px', 
-                                                color: colors.textMuted,
+                                                color: 'var(--text-muted)',
                                                 textAlign: 'right',
                                                 lineHeight: 1,
                                             }}>
@@ -239,7 +239,7 @@ const ProgressHistoryChart: React.FC<{
                                     <div style={{ 
                                         position: 'relative', 
                                         height: '100%',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
+                                        background: 'var(--bg-hover)',
                                         borderRadius: '8px',
                                         overflow: 'hidden',
                                     }}>
@@ -254,7 +254,7 @@ const ProgressHistoryChart: React.FC<{
                                         }}>
                                             {[0, 1, 2].map((i) => (
                                                 <div key={i} style={{ 
-                                                    borderBottom: `1px dashed ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'}`,
+                                                    borderBottom: `1px dashed ${'var(--border-light)'}`,
                                                 }} />
                                             ))}
                                         </div>
@@ -364,7 +364,7 @@ const ProgressHistoryChart: React.FC<{
                                             transition={{ duration: 0.3, delay: 0.4 + i * 0.03 }}
                                             style={{ 
                                                 fontSize: '10px', 
-                                                color: colors.textMuted,
+                                                color: 'var(--text-muted)',
                                                 fontWeight: 500,
                                             }}
                                         >
@@ -380,7 +380,7 @@ const ProgressHistoryChart: React.FC<{
                                     gap: '10px',
                                     padding: '10px',
                                     borderRadius: '10px',
-                                    background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                    background: 'var(--bg-hover)',
                                 }}>
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
@@ -391,7 +391,7 @@ const ProgressHistoryChart: React.FC<{
                                         <div style={{ fontSize: '16px', fontWeight: 700, color: '#3b82f6' }}>
                                             {currentStats.totalProgress}%
                                         </div>
-                                        <div style={{ fontSize: '10px', color: colors.textMuted, fontWeight: 500 }}>
+                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 500 }}>
                                             Current Progress
                                         </div>
                                     </motion.div>
@@ -404,7 +404,7 @@ const ProgressHistoryChart: React.FC<{
                                         <div style={{ fontSize: '16px', fontWeight: 700, color: '#10b981' }}>
                                             {currentStats.completed}
                                         </div>
-                                        <div style={{ fontSize: '10px', color: colors.textMuted, fontWeight: 500 }}>
+                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 500 }}>
                                             Goals Completed
                                         </div>
                                     </motion.div>
@@ -417,7 +417,7 @@ const ProgressHistoryChart: React.FC<{
                                         <div style={{ fontSize: '16px', fontWeight: 700, color: '#f59e0b' }}>
                                             {currentStats.active}
                                         </div>
-                                        <div style={{ fontSize: '10px', color: colors.textMuted, fontWeight: 500 }}>
+                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 500 }}>
                                             Active Goals
                                         </div>
                                     </motion.div>
@@ -432,26 +432,4 @@ const ProgressHistoryChart: React.FC<{
 };
 
 // Milestone Badge Icon Component — extracted to ./components/MilestoneIcon.tsx
-// GoalMilestone type used locally for GOAL_MILESTONES data
-interface GoalMilestone {
-    id: string;
-    name: string;
-    description: string;
-    icon: MilestoneIconType;
-    color: string;
-    requirement: number;
-    type: 'created' | 'completed' | 'streak' | 'perfect';
-}
-
-const GOAL_MILESTONES: GoalMilestone[] = [
-    { id: 'first-goal', name: 'First Goal', description: 'Create your first goal', icon: 'target', color: '#3b82f6', requirement: 1, type: 'created' },
-    { id: 'goal-setter', name: 'Goal Setter', description: 'Create 5 goals', icon: 'star', color: '#8b5cf6', requirement: 5, type: 'created' },
-    { id: 'ambitious', name: 'Ambitious', description: 'Create 10 goals', icon: 'rocket', color: '#ec4899', requirement: 10, type: 'created' },
-    { id: 'first-win', name: 'First Win', description: 'Complete your first goal', icon: 'trophy', color: '#10b981', requirement: 1, type: 'completed' },
-    { id: 'achiever', name: 'Achiever', description: 'Complete 5 goals', icon: 'medal', color: '#f59e0b', requirement: 5, type: 'completed' },
-    { id: 'champion', name: 'Champion', description: 'Complete 10 goals', icon: 'crown', color: '#eab308', requirement: 10, type: 'completed' },
-    { id: 'legend', name: 'Legend', description: 'Complete 25 goals', icon: 'gem', color: '#06b6d4', requirement: 25, type: 'completed' },
-];
-
-
 export { ProgressHistoryChart };

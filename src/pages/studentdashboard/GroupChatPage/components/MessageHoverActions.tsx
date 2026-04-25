@@ -138,7 +138,7 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
             {/* Left side: Timestamp */}
             <span style={{
                 fontSize: '10px',
-                color: isOwn ? 'rgba(255,255,255,0.6)' : colors.textMuted,
+                color: isOwn ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)',
             }}>
                 {formattedTime}{message.is_edited && ' • edited'}
             </span>
@@ -156,7 +156,7 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                         onClick={onToggleReactions}
                         style={{
                             ...baseButtonStyle,
-                            color: isOwn ? 'rgba(255,255,255,0.8)' : (isDarkMode ? '#e5e7eb' : '#374151'),
+                            color: isOwn ? 'rgba(255,255,255,0.8)' : ('var(--bg-hover)'),
                         }}
                     >
                         <ReactionIcon />
@@ -187,15 +187,15 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                         whileHover={{
                             scale: 1.1,
                             background: isBookmarked
-                                ? (isOwn ? 'rgba(255,255,255,0.2)' : `${colors.accent}20`)
+                                ? (isOwn ? 'rgba(255,255,255,0.2)' : `var(--accent-color)20`)
                                 : (isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)'),
                         }}
                         whileTap={{ scale: 0.9 }}
                         onClick={onToggleBookmark}
                         style={{
                             ...baseButtonStyle,
-                            background: isBookmarked ? (isOwn ? 'rgba(255,255,255,0.1)' : `${colors.accent}10`) : 'transparent',
-                            color: isBookmarked ? (isOwn ? '#fff' : colors.accent) : (isOwn ? 'rgba(255,255,255,0.8)' : (isDarkMode ? '#e5e7eb' : '#374151')),
+                            background: isBookmarked ? (isOwn ? 'rgba(255,255,255,0.1)' : `var(--accent-color)10`) : 'transparent',
+                            color: isBookmarked ? (isOwn ? '#fff' : 'var(--accent-color)') : (isOwn ? 'rgba(255,255,255,0.8)' : ('var(--bg-hover)')),
                         }}
                     >
                         <BookmarkIcon filled={isBookmarked} />
@@ -216,7 +216,7 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                         style={{
                             ...baseButtonStyle,
                             background: isPinned ? (isOwn ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)') : 'transparent',
-                            color: isPinned ? '#ef4444' : (isOwn ? 'rgba(255,255,255,0.8)' : (isDarkMode ? '#e5e7eb' : '#374151')),
+                            color: isPinned ? '#ef4444' : (isOwn ? 'rgba(255,255,255,0.8)' : ('var(--bg-hover)')),
                         }}
                     >
                         <PinIcon filled={isPinned} />
@@ -278,7 +278,7 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                                 border: 'none',
                                 background: helpfulVote?.voted ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
                                 cursor: 'pointer',
-                                color: helpfulVote?.voted ? '#22c55e' : (isDarkMode ? '#e5e7eb' : '#374151'),
+                                color: helpfulVote?.voted ? '#22c55e' : ('var(--bg-hover)'),
                                 fontSize: '11px',
                                 fontWeight: 600,
                                 transition: 'all 0.2s ease',

@@ -3,10 +3,11 @@
  * Detailed course information modal.
  * Extracted from CatalogContent.tsx during Phase 8.7
  */
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
-import type { CatalogCourse } from '../../../../../services/catalogService';
+import { useModalAccessibility } from '../../../hooks/useModalAccessibility';
+import { categoryInfo, type CatalogCourse } from '../../../../../services/catalogService';
 import { CategoryIcon } from '../components/CatalogShared';
 
 // Course Detail Modal - Minimalistic Blue Design (matching Users/Goals modals)
@@ -14,33 +15,24 @@ const CourseDetailModal: React.FC<{
     course: CatalogCourse | null;
     isOpen: boolean;
     onClose: () => void;
-    isDarkMode: boolean;
     onEnroll: (courseId: string) => void;
-}> = ({ course, isOpen, onClose, isDarkMode, onEnroll }) => {
+}> = ({ course, isOpen, onClose, onEnroll }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'course-modal-title');
     const blueAccent = '#3b82f6';
-    const blueBg = isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)';
-    const blueBorder = isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)';
+    const blueBg = 'rgba(59, 130, 246, 0.1)';
+    const blueBorder = 'rgba(59, 130, 246, 0.1)';
     
     const colors = {
-        bg: isDarkMode ? '#0f172a' : '#ffffff',
-        cardBg: isDarkMode ? '#1e293b' : '#f8fafc',
-        border: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-        textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
-        textSecondary: isDarkMode ? '#94a3b8' : '#475569',
-        textMuted: isDarkMode ? '#64748b' : '#94a3b8',
+        bg: 'var(--bg-primary)',
+        cardbg: 'var(--bg-primary)',
+        border: 'var(--border-light)',
+        textPrimary: 'var(--text-primary)',
+        textSecondary: 'var(--text-secondary)',
+        textMuted: 'var(--text-muted)',
         accent: blueAccent,
     };
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape' && isOpen) onClose(); };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
-
-    useEffect(() => {
-        document.body.style.overflow = isOpen ? 'hidden' : '';
-        return () => { document.body.style.overflow = ''; };
-    }, [isOpen]);
+    // Escape key, focus trap, body scroll lock handled by useModalAccessibility hook
 
     if (!course) return null;
 
@@ -60,10 +52,8 @@ const CourseDetailModal: React.FC<{
                     
                     {/* Modal Container */}
                     <div 
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="course-modal-title"
-                        aria-describedby="course-modal-description"
+                        ref={modalRef}
+                        {...modalProps}
                         style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, pointerEvents: 'none', padding: '20px' }}
                     >
                         <motion.div 
@@ -75,9 +65,9 @@ const CourseDetailModal: React.FC<{
                                 width: '100%', 
                                 maxWidth: '480px', 
                                 maxHeight: '85vh', 
-                                background: colors.bg, 
+                                background: 'var(--bg-primary)', 
                                 borderRadius: '20px', 
-                                boxShadow: isDarkMode ? '0 24px 48px rgba(0, 0, 0, 0.4)' : '0 24px 48px rgba(0, 0, 0, 0.15)', 
+                                boxShadow: 'var(--shadow-lg)', 
                                 overflow: 'hidden', 
                                 display: 'flex', 
                                 flexDirection: 'column', 
@@ -185,11 +175,11 @@ const CourseDetailModal: React.FC<{
                             </div>
 
                             {/* Header */}
-                            <div style={{ padding: '16px 24px', borderBottom: `1px solid ${colors.border}` }}>
-                                <h2 id="course-modal-title" style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: colors.textPrimary, marginBottom: '4px' }}>
+                            <div style={{ padding: '16px 24px', borderBottom: `1px solid var(--border-color)` }}>
+                                <h2 id="course-modal-title" style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>
                                     {course.title}
                                 </h2>
-                                <p id="course-modal-description" style={{ margin: 0, fontSize: '12px', color: colors.textMuted }}>
+                                <p id="course-modal-description" style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)' }}>
                                     {course.subtitle}
                                 </p>
                             </div>
@@ -222,8 +212,8 @@ const CourseDetailModal: React.FC<{
                                             }}
                                         >
                                             <div style={{ marginBottom: '4px', display: 'flex', justifyContent: 'center' }}>{stat.icon}</div>
-                                            <div style={{ fontSize: '16px', fontWeight: 700, color: colors.textPrimary }}>{stat.value}</div>
-                                            <div style={{ fontSize: '10px', color: colors.textMuted }}>{stat.label}</div>
+                                            <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>{stat.value}</div>
+                                            <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{stat.label}</div>
                                         </motion.div>
                                     ))}
                                 </div>
@@ -239,7 +229,7 @@ const CourseDetailModal: React.FC<{
                                         gap: '12px', 
                                         padding: '12px 14px',
                                         borderRadius: '12px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                        background: 'var(--bg-hover)',
                                         marginBottom: '20px',
                                     }}
                                 >
@@ -258,7 +248,7 @@ const CourseDetailModal: React.FC<{
                                         {course.instructor.charAt(0).toUpperCase()}
                                     </div>
                                     <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: '13px', fontWeight: 500, color: colors.textPrimary }}>{course.instructor}</div>
+                                        <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)' }}>{course.instructor}</div>
                                         <div style={{ fontSize: '11px', color: blueAccent }}>Instructor</div>
                                     </div>
                                 </motion.div>
@@ -268,7 +258,7 @@ const CourseDetailModal: React.FC<{
                                     <h4 style={{ margin: 0, fontSize: '11px', fontWeight: 600, color: blueAccent, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                         About this course
                                     </h4>
-                                    <p style={{ margin: 0, fontSize: '13px', color: colors.textSecondary, lineHeight: 1.6 }}>
+                                    <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                                         {course.description}
                                     </p>
                                 </div>
@@ -303,7 +293,7 @@ const CourseDetailModal: React.FC<{
                                                         <polyline points="20 6 9 17 4 12" />
                                                     </svg>
                                                 </div>
-                                                <span style={{ fontSize: '12px', color: colors.textSecondary, lineHeight: 1.5 }}>{outcome}</span>
+                                                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{outcome}</span>
                                             </motion.div>
                                         ))}
                                     </div>
@@ -341,7 +331,7 @@ const CourseDetailModal: React.FC<{
                             </div>
 
                             {/* Footer - Blue button */}
-                            <div style={{ padding: '16px 24px', borderTop: `1px solid ${colors.border}` }}>
+                            <div style={{ padding: '16px 24px', borderTop: `1px solid var(--border-color)` }}>
                                 <motion.button 
                                     whileHover={{ scale: 1.02 }} 
                                     whileTap={{ scale: 0.98 }}

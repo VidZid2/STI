@@ -30,10 +30,10 @@ export const LoadingSkeleton: React.FC = () => {
         };
     }, []);
     const colors = {
-        bg: isDarkMode ? '#0f172a' : '#f8fafc',
-        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
-        border: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
-        shimmer: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+        bg: 'var(--bg-primary)',
+        cardBg: 'var(--bg-primary)',
+        border: 'rgba(255,255,255,0.08)',
+        shimmer: 'var(--bg-hover)',
     };
 
     const MESSAGE_SKELETONS = [
@@ -49,15 +49,15 @@ export const LoadingSkeleton: React.FC = () => {
     return (
         <div style={{
             height: '100vh',
-            background: colors.bg,
+            background: 'var(--bg-primary)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
         }}>
             {/* Header Skeleton */}
             <div style={{
-                background: colors.cardBg,
-                borderBottom: `1px solid ${colors.border}`,
+                background: 'var(--dashboard-surface)',
+                borderBottom: `1px solid var(--border-color)`,
                 padding: '12px 20px',
                 display: 'flex',
                 alignItems: 'center',
@@ -66,23 +66,23 @@ export const LoadingSkeleton: React.FC = () => {
                 <motion.div
                     animate={{ opacity: [0.5, 0.8, 0.5] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                    style={{ width: 36, height: 36, borderRadius: '10px', background: colors.shimmer }}
+                    style={{ width: 36, height: 36, borderRadius: '10px', background: 'var(--shimmer-bg)' }}
                 />
                 <motion.div
                     animate={{ opacity: [0.5, 0.8, 0.5] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.1 }}
-                    style={{ width: 40, height: 40, borderRadius: '12px', background: colors.shimmer }}
+                    style={{ width: 40, height: 40, borderRadius: '12px', background: 'var(--shimmer-bg)' }}
                 />
                 <div style={{ flex: 1 }}>
                     <motion.div
                         animate={{ opacity: [0.5, 0.8, 0.5] }}
                         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
-                        style={{ width: 140, height: 16, borderRadius: '6px', background: colors.shimmer, marginBottom: '6px' }}
+                        style={{ width: 140, height: 16, borderRadius: '6px', background: 'var(--shimmer-bg)', marginBottom: '6px' }}
                     />
                     <motion.div
                         animate={{ opacity: [0.5, 0.8, 0.5] }}
                         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
-                        style={{ width: 100, height: 12, borderRadius: '4px', background: colors.shimmer }}
+                        style={{ width: 100, height: 12, borderRadius: '4px', background: 'var(--shimmer-bg)' }}
                     />
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -91,7 +91,7 @@ export const LoadingSkeleton: React.FC = () => {
                             key={i}
                             animate={{ opacity: [0.5, 0.8, 0.5] }}
                             transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.1 * i }}
-                            style={{ width: 36, height: 36, borderRadius: '10px', background: colors.shimmer }}
+                            style={{ width: 36, height: 36, borderRadius: '10px', background: 'var(--shimmer-bg)' }}
                         />
                     ))}
                 </div>
@@ -104,7 +104,7 @@ export const LoadingSkeleton: React.FC = () => {
                     <motion.div
                         animate={{ opacity: [0.5, 0.8, 0.5] }}
                         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                        style={{ width: 80, height: 24, borderRadius: '12px', background: colors.shimmer }}
+                        style={{ width: 80, height: 24, borderRadius: '12px', background: 'var(--shimmer-bg)' }}
                     />
                 </div>
 
@@ -132,7 +132,7 @@ export const LoadingSkeleton: React.FC = () => {
                                     width: 36,
                                     height: 36,
                                     borderRadius: '10px',
-                                    background: colors.shimmer,
+                                    background: 'var(--shimmer-bg)',
                                     flexShrink: 0,
                                 }}
                             />
@@ -144,8 +144,8 @@ export const LoadingSkeleton: React.FC = () => {
                                     padding: '12px 16px',
                                     borderRadius: msg.isOwn ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
                                     background: msg.isOwn
-                                        ? (isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)')
-                                        : colors.shimmer,
+                                        ? 'rgba(59, 130, 246, 0.2)'
+                                        : 'var(--shimmer-bg)',
                                     minWidth: 120,
                                 }}
                             >
@@ -154,7 +154,7 @@ export const LoadingSkeleton: React.FC = () => {
                                     width: 80,
                                     height: 12,
                                     borderRadius: '4px',
-                                    background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
+                                    background: 'rgba(255,255,255,0.1)',
                                     marginBottom: '8px',
                                 }} />
                                 {/* Content Lines */}
@@ -162,14 +162,14 @@ export const LoadingSkeleton: React.FC = () => {
                                     width: msg.width,
                                     height: 14,
                                     borderRadius: '4px',
-                                    background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                                    background: 'rgba(255,255,255,0.08)',
                                     marginBottom: '4px',
                                 }} />
                                 <div style={{
                                     width: '70%',
                                     height: 14,
                                     borderRadius: '4px',
-                                    background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                                    background: 'var(--bg-hover)',
                                 }} />
                             </motion.div>
                         </div>
@@ -179,8 +179,8 @@ export const LoadingSkeleton: React.FC = () => {
 
             {/* Input Area Skeleton */}
             <div style={{
-                background: colors.cardBg,
-                borderTop: `1px solid ${colors.border}`,
+                background: 'var(--dashboard-surface)',
+                borderTop: `1px solid var(--border-color)`,
                 padding: '16px 20px',
                 display: 'flex',
                 alignItems: 'center',
@@ -188,7 +188,7 @@ export const LoadingSkeleton: React.FC = () => {
             }}>
                 <div style={{
                     flex: 1,
-                    background: colors.shimmer,
+                    background: 'var(--shimmer-bg)',
                     borderRadius: '16px',
                     padding: '12px',
                     display: 'flex',
@@ -200,20 +200,20 @@ export const LoadingSkeleton: React.FC = () => {
                             key={i}
                             animate={{ opacity: [0.5, 0.8, 0.5] }}
                             transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.1 }}
-                            style={{ width: 32, height: 32, borderRadius: '8px', background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}
+                            style={{ width: 32, height: 32, borderRadius: '8px', background: 'var(--bg-hover)' }}
                         />
                     ))}
                     <motion.div
                         animate={{ opacity: [0.5, 0.8, 0.5] }}
                         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
-                        style={{ flex: 1, height: 20, borderRadius: '6px', background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
+                        style={{ flex: 1, height: 20, borderRadius: '6px', background: 'var(--bg-hover)' }}
                     />
                     {[1, 2, 3].map((i) => (
                         <motion.div
                             key={i}
                             animate={{ opacity: [0.5, 0.8, 0.5] }}
                             transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 + i * 0.1 }}
-                            style={{ width: 32, height: 32, borderRadius: '8px', background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}
+                            style={{ width: 32, height: 32, borderRadius: '8px', background: 'var(--bg-hover)' }}
                         />
                     ))}
                 </div>

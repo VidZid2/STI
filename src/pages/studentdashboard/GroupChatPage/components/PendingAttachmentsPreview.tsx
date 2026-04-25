@@ -63,8 +63,8 @@ export const PendingAttachmentsPreview: React.FC<PendingAttachmentsPreviewProps>
                 >
                     <div
                         style={{
-                            background: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.98)',
-                            borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+                            background: 'rgba(30, 41, 59, 0.95)',
+                            borderBottom: `1px solid ${'var(--bg-hover)'}`,
                             padding: '16px 20px',
                         }}
                     >
@@ -96,7 +96,7 @@ export const PendingAttachmentsPreview: React.FC<PendingAttachmentsPreviewProps>
                             <span style={{
                                 fontSize: '14px',
                                 fontWeight: 600,
-                                color: colors.textPrimary,
+                                color: 'var(--text-primary)',
                             }}>
                                 {attachments.length} {attachments.length === 1 ? 'file' : 'files'} ready to send
                             </span>
@@ -109,7 +109,7 @@ export const PendingAttachmentsPreview: React.FC<PendingAttachmentsPreviewProps>
                                 padding: '6px 12px',
                                 borderRadius: '8px',
                                 border: 'none',
-                                background: isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.08)',
+                                background: 'rgba(239, 68, 68, 0.1)',
                                 color: '#ef4444',
                                 fontSize: '12px',
                                 fontWeight: 600,
@@ -148,13 +148,13 @@ export const PendingAttachmentsPreview: React.FC<PendingAttachmentsPreviewProps>
                                         position: 'relative',
                                         borderRadius: '12px',
                                         overflow: 'hidden',
-                                        border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+                                        border: `1px solid ${'var(--bg-hover)'}`,
                                         ...(isImage && attachment.preview ? {
                                             width: '100px',
                                             height: '100px',
                                             background: 'transparent',
                                         } : {
-                                            background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                            background: 'rgba(255,255,255,0.05)',
                                             padding: '12px',
                                             display: 'flex',
                                             alignItems: 'center',
@@ -232,7 +232,7 @@ export const PendingAttachmentsPreview: React.FC<PendingAttachmentsPreviewProps>
                                                     margin: 0,
                                                     fontSize: '13px',
                                                     fontWeight: 500,
-                                                    color: colors.textPrimary,
+                                                    color: 'var(--text-primary)',
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
                                                     whiteSpace: 'nowrap',
@@ -242,7 +242,7 @@ export const PendingAttachmentsPreview: React.FC<PendingAttachmentsPreviewProps>
                                                 <p style={{
                                                     margin: '2px 0 0',
                                                     fontSize: '11px',
-                                                    color: colors.textMuted,
+                                                    color: 'var(--text-muted)',
                                                 }}>
                                                     {formatFileSize(attachment.size)}
                                                 </p>
@@ -286,7 +286,7 @@ export const PendingAttachmentsPreview: React.FC<PendingAttachmentsPreviewProps>
                     <p style={{
                         margin: '12px 0 0',
                         fontSize: '11px',
-                        color: colors.textMuted,
+                        color: 'var(--text-muted)',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '4px',

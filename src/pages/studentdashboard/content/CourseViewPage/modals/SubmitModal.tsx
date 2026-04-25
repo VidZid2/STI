@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SubmitModal
  * Extracted from CourseViewPage.tsx during Phase 1.1
  * Handles assignment submission with text + file attachments.
@@ -314,7 +314,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                             setIsSubmitting(true);
                                             try {
                                                 const result = await createSubmission({
-                                                    taskId: task.id,
+                                                    taskId: String(task.id),
                                                     studentId: currentUser.student_id || currentUser.id,
                                                     studentName: currentUser.full_name,
                                                     section: currentUser.section || 'BSIT101A',

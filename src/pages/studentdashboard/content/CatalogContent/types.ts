@@ -32,7 +32,6 @@ export interface CategoryIconProps {
 
 export interface CourseCardProps {
     course: CatalogCourse;
-    isDarkMode: boolean;
     onEnroll: (courseId: string) => void;
     onBookmark: (courseId: string) => void;
     onView: (course: CatalogCourse) => void;
@@ -43,7 +42,6 @@ export interface CourseDetailModalProps {
     course: CatalogCourse | null;
     isOpen: boolean;
     onClose: () => void;
-    isDarkMode: boolean;
     onEnroll: (courseId: string) => void;
     onBookmark: (courseId: string) => void;
     isBookmarked: boolean;

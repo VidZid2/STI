@@ -6,8 +6,15 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
+import { useModalAccessibility } from '../../../hooks/useModalAccessibility';
+
+export interface AnalysisResult {
+    type: 'count' | 'grammar' | 'compress';
+    data: any;
+}
 
 const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void }> = ({ result, onClose }) => {
+    const { modalRef, modalProps } = useModalAccessibility(!!result, onClose, 'result-modal-title');
     if (!result) return null;
 
     const getTitle = () => {
@@ -23,6 +30,8 @@ const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void
         createPortal(
             <AnimatePresence>
                 <motion.div
+                    ref={modalRef}
+                    {...modalProps}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -94,7 +103,7 @@ const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void
                                     <div style={{ gridColumn: 'span 2', background: '#f0fdf4', padding: '16px', borderRadius: '12px' }}>
                                         <div style={{ fontSize: '14px', fontWeight: 600, color: '#166534', marginBottom: '8px' }}>Top Keywords</div>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                            {result.data.textStats.topWords.map((item, idx) => (
+                                            {result.data.textStats.topWords.map((item: any, idx: number) => (
                                                 <span key={idx} style={{
                                                     background: '#dcfce7',
                                                     padding: '4px 10px',
@@ -155,7 +164,7 @@ const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void
                             <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                                 {result.data.issues && result.data.issues.length > 0 ? (
                                     <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                                        {result.data.issues.map((issue, idx) => (
+                                        {result.data.issues.map((issue: any, idx: number) => (
                                             <li key={idx} style={{ padding: '12px', background: '#fef2f2', borderRadius: '8px', marginBottom: '8px', borderLeft: '4px solid #ef4444', color: '#991b1b' }}>
                                                 {issue}
                                             </li>

@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
 import { fetchGroupMessages, subscribeToMessages, type ChatMessage } from '../../../services/chatService';
 import { fetchGroups, type GroupWithMembers } from '../../../services/groupsService';
-import { getStudyTimeData, getStreakData, addStudyTime, type StudyTimeData } from '../../../services/studyTimeService';
+import { getStudyTimeData, getStreakData, addStudyTime } from '../../../services/studyTimeService';
 
 // Custom Volume Slider Styles (injected once)
 const volumeSliderStyles = `
@@ -70,19 +70,6 @@ if (typeof document !== 'undefined' && !document.getElementById('focus-volume-st
     document.head.appendChild(styleEl);
 }
 
-// Break Suggestions Data
-const BREAK_SUGGESTIONS = [
-    { icon: '???', title: 'Eye Rest', description: 'Look at something 20ft away for 20 seconds', duration: '20s' },
-    { icon: '??', title: 'Stretch', description: 'Stand up and stretch your arms and back', duration: '1m' },
-    { icon: '??', title: 'Hydrate', description: 'Drink a glass of water', duration: '30s' },
-    { icon: '??', title: 'Walk', description: 'Take a short walk around the room', duration: '2m' },
-    { icon: '???', title: 'Breathe', description: 'Take 5 deep breaths slowly', duration: '1m' },
-    { icon: '??', title: 'Neck Roll', description: 'Gently roll your neck in circles', duration: '30s' },
-];
-
-// Timer Duration Options
-const FOCUS_DURATIONS = [15, 25, 30, 45, 60, 90];
-const BREAK_DURATIONS = [5, 10, 15, 20];
 
 // Types
 interface Resource {
@@ -125,7 +112,7 @@ export type { Resource };
 // type ToolTab = 'timer' | 'flashcards' | 'notes' | 'whiteboard';
 
 // Components — extracted to ./components/
-import { FocusSkeleton, ResourceIcon, FilterTabs, ResourceCard } from './components/ResourceCard';
+import { FocusSkeleton, FilterTabs, ResourceCard } from './components/ResourceCard';
 import { PomodoroTimer } from './components/PomodoroTimer';
 import { SessionStats } from './components/SessionStats';
 import { MotivationalQuote } from './components/MotivationalQuote';
@@ -246,12 +233,12 @@ const FocusModePage: React.FC = () => {
     }, []);
 
     const colors = {
-        bg: isDarkMode ? '#0f172a' : '#f8fafc',
-        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
-        border: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-        textPrimary: isDarkMode ? '#f1f5f9' : '#1e293b',
-        textSecondary: isDarkMode ? '#94a3b8' : '#64748b',
-        textMuted: isDarkMode ? '#64748b' : '#94a3b8',
+        bg: 'var(--bg-primary)',
+        cardBg: 'var(--bg-primary)',
+        border: 'var(--bg-hover)',
+        textPrimary: 'var(--bg-hover)',
+        textSecondary: 'var(--bg-hover)',
+        textMuted: 'var(--bg-hover)',
         accent: '#3b82f6',
     };
 
@@ -607,13 +594,13 @@ const FocusModePage: React.FC = () => {
     }, []);
 
     if (isLoading) {
-        return <FocusSkeleton isDarkMode={isDarkMode} />;
+        return <FocusSkeleton />;
     }
 
     return (
         <div style={{
             height: '100vh',
-            background: colors.bg,
+            background: 'var(--bg-primary)',
             padding: '16px 24px',
             display: 'flex',
             flexDirection: 'column',
@@ -622,7 +609,6 @@ const FocusModePage: React.FC = () => {
             {/* Distraction Blocker Overlay */}
             <DistractionBlocker
                 isActive={showDistractionBlocker}
-                isDarkMode={isDarkMode}
                 timeLeft={`${Math.floor(timerTimeLeft / 60).toString().padStart(2, '0')}:${(timerTimeLeft % 60).toString().padStart(2, '0')}`}
                 mode={timerMode}
                 onExit={() => navigate(-1)}
@@ -639,8 +625,8 @@ const FocusModePage: React.FC = () => {
                         justifyContent: 'space-between',
                         padding: '12px 18px',
                         borderRadius: '14px',
-                        background: colors.cardBg,
-                        border: `1px solid ${colors.border}`,
+                        background: 'var(--dashboard-surface)',
+                        border: `1px solid var(--border-color)`,
                         flexShrink: 0,
                     }}
                 >
@@ -653,13 +639,13 @@ const FocusModePage: React.FC = () => {
                                 width: 36,
                                 height: 36,
                                 borderRadius: '10px',
-                                border: `1px solid ${colors.border}`,
+                                border: `1px solid var(--border-color)`,
                                 background: 'transparent',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: colors.textSecondary,
+                                color: 'var(--text-secondary)',
                             }}
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -686,7 +672,7 @@ const FocusModePage: React.FC = () => {
                                 margin: 0,
                                 fontSize: '18px',
                                 fontWeight: 700,
-                                color: colors.textPrimary,
+                                color: 'var(--text-primary)',
                                 letterSpacing: '-0.3px',
                             }}>
                                 Focus Mode
@@ -694,7 +680,7 @@ const FocusModePage: React.FC = () => {
                             <p style={{
                                 margin: 0,
                                 fontSize: '12px',
-                                color: colors.textMuted,
+                                color: 'var(--text-muted)',
                             }}>
                                 {groupInfo?.name || 'Distraction-free study'}
                             </p>
@@ -708,7 +694,7 @@ const FocusModePage: React.FC = () => {
                             gap: '6px',
                             padding: '6px 12px',
                             borderRadius: '8px',
-                            background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)',
+                            background: 'rgba(59, 130, 246, 0.1)',
                         }}>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
                                 <circle cx="12" cy="12" r="10" />
@@ -725,9 +711,9 @@ const FocusModePage: React.FC = () => {
                             style={{
                                 padding: '8px 14px',
                                 borderRadius: '8px',
-                                border: `1px solid ${colors.border}`,
+                                border: `1px solid var(--border-color)`,
                                 background: 'transparent',
-                                color: colors.textSecondary,
+                                color: 'var(--text-secondary)',
                                 fontSize: '12px',
                                 fontWeight: 500,
                                 cursor: 'pointer',
@@ -756,8 +742,6 @@ const FocusModePage: React.FC = () => {
                     {/* Left Column - Timer & Stats */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', overflow: 'auto' }}>
                         <PomodoroTimer
-                            isDarkMode={isDarkMode}
-                            colors={colors}
                             onSessionComplete={handleSessionComplete}
                             onStateChange={(state) => {
                                 setIsTimerRunning(state.isRunning);
@@ -767,19 +751,13 @@ const FocusModePage: React.FC = () => {
                             controlsRef={timerControlsRef}
                         />
                         <SessionStats
-                            isDarkMode={isDarkMode}
-                            colors={colors}
                             totalFocusTime={totalFocusTime}
                             sessionsCompleted={sessionsCompleted}
                             currentStreak={currentStreak}
                         />
                         <SessionHistory
-                            isDarkMode={isDarkMode}
-                            colors={colors}
                         />
                         <SessionGoal
-                            isDarkMode={isDarkMode}
-                            colors={colors}
                             sessionGoal={sessionGoal}
                             setSessionGoal={setSessionGoal}
                             currentProgress={Math.floor(totalFocusTime / 60)}
@@ -799,8 +777,8 @@ const FocusModePage: React.FC = () => {
                             style={{
                                 padding: '16px',
                                 borderRadius: '14px',
-                                background: colors.cardBg,
-                                border: `1px solid ${colors.border}`,
+                                background: 'var(--dashboard-surface)',
+                                border: `1px solid var(--border-color)`,
                                 display: 'flex',
                                 flexDirection: 'column',
                                 overflow: 'hidden',
@@ -821,7 +799,7 @@ const FocusModePage: React.FC = () => {
                                 <div style={{
                                     fontSize: '14px',
                                     fontWeight: 600,
-                                    color: colors.textPrimary,
+                                    color: 'var(--text-primary)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '8px',
@@ -835,8 +813,6 @@ const FocusModePage: React.FC = () => {
                                 <FilterTabs
                                     activeFilter={activeFilter}
                                     setActiveFilter={setActiveFilter}
-                                    isDarkMode={isDarkMode}
-                                    colors={colors}
                                     resourceCounts={resourceCounts}
                                 />
                             </motion.div>
@@ -872,8 +848,6 @@ const FocusModePage: React.FC = () => {
                                             >
                                                 <ResourceCard
                                                     resource={resource}
-                                                    isDarkMode={isDarkMode}
-                                                    colors={colors}
                                                     index={index}
                                                 />
                                             </motion.div>
@@ -909,7 +883,6 @@ const FocusModePage: React.FC = () => {
                                                     trigger="in"
                                                     delay="200"
                                                     state="in-book"
-                                                    colors="primary:#3b82f6,secondary:#60a5fa"
                                                     style={{ width: '40px', height: '40px' }}
                                                 />
                                             </div>
@@ -917,7 +890,7 @@ const FocusModePage: React.FC = () => {
                                                 margin: 0,
                                                 fontSize: '14px',
                                                 fontWeight: 600,
-                                                color: colors.textSecondary,
+                                                color: 'var(--text-secondary)',
                                             }}>
                                                 {activeFilter === 'all'
                                                     ? (groupId ? 'No resources yet' : 'No group selected')
@@ -926,7 +899,7 @@ const FocusModePage: React.FC = () => {
                                             <p style={{
                                                 margin: '6px 0 0',
                                                 fontSize: '12px',
-                                                color: colors.textMuted,
+                                                color: 'var(--text-muted)',
                                                 textAlign: 'center',
                                                 maxWidth: '240px',
                                             }}>
@@ -944,8 +917,6 @@ const FocusModePage: React.FC = () => {
                     {/* Right Column - Features */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', overflow: 'auto' }}>
                         <AmbientSounds
-                            isDarkMode={isDarkMode}
-                            colors={colors}
                             activeSound={activeSound}
                             onSoundChange={setActiveSound}
                         />
@@ -953,22 +924,16 @@ const FocusModePage: React.FC = () => {
                             {timerMode === 'break' ? (
                                 <BreakSuggestions
                                     key="break-suggestions"
-                                    isDarkMode={isDarkMode}
-                                    colors={colors}
                                     isBreakMode={true}
                                 />
                             ) : (
                                 <MotivationalQuote
                                     key="motivational-quote"
-                                    isDarkMode={isDarkMode}
-                                    colors={colors}
                                     isBreakMode={false}
                                 />
                             )}
                         </AnimatePresence>
                         <KeyboardShortcuts
-                            isDarkMode={isDarkMode}
-                            colors={colors}
                         />
                     </div>
                 </div>

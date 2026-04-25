@@ -12,3 +12,4 @@ export { useAchievements } from './useAchievements';
 export { useStudyInsights } from './useStudyInsights';
 export { useDashboardState } from './useDashboardState';
 export { useDashboardData } from './useDashboardData';
+export { useModalAccessibility } from './useModalAccessibility';

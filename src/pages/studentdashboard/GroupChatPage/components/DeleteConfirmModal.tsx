@@ -45,12 +45,12 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                         onClick={(e) => e.stopPropagation()}
                         style={{
-                            background: colors.cardBg,
+                            background: 'var(--dashboard-surface)',
                             borderRadius: '16px',
                             padding: '20px',
                             width: '100%',
                             maxWidth: '320px',
-                            border: `1px solid ${colors.border}`,
+                            border: `1px solid var(--border-color)`,
                             boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
                         }}
                     >
@@ -90,7 +90,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                                 margin: '0 0 8px',
                                 fontSize: '16px',
                                 fontWeight: 600,
-                                color: colors.textPrimary,
+                                color: 'var(--text-primary)',
                                 textAlign: 'center',
                             }}
                         >
@@ -102,7 +102,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                             style={{
                                 margin: '0 0 20px',
                                 fontSize: '13px',
-                                color: colors.textSecondary,
+                                color: 'var(--text-secondary)',
                                 textAlign: 'center',
                                 lineHeight: 1.5,
                             }}
@@ -120,9 +120,9 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                                     flex: 1,
                                     padding: '10px 16px',
                                     borderRadius: '10px',
-                                    border: `1px solid ${colors.border}`,
+                                    border: `1px solid var(--border-color)`,
                                     background: 'transparent',
-                                    color: colors.textPrimary,
+                                    color: 'var(--text-primary)',
                                     fontSize: '13px',
                                     fontWeight: 500,
                                     cursor: 'pointer',

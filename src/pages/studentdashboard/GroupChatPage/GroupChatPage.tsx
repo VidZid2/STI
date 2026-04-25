@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Group Chat Page - Refactored with extracted components
  */
 
@@ -47,6 +47,7 @@ import {
     CourseMaterialModal,
     LeaderboardModal,
     ThreadModal,
+    GroupInfoModal,
 } from './modals';
 
 // Import UI components from extracted modules
@@ -55,7 +56,7 @@ import {
     type GifResult,
     XPNotification,
     StudyToolsMenu,
-    GroupInfoModal,
+
     type MentionUser,
     ChatHeader,
     SearchPanel,
@@ -278,7 +279,7 @@ const GroupChatPage: React.FC = () => {
         closeMentions,
     } = useMentions({
         users: mentionUsers,
-        onMention: (user) => {
+        onMention: (_user) => {
         },
     });
 
@@ -304,12 +305,12 @@ const GroupChatPage: React.FC = () => {
     const isDarkMode = false;
 
     const colors = useMemo(() => ({
-        bg: isDarkMode ? '#0f172a' : '#f8fafc',
-        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
-        border: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
-        textPrimary: isDarkMode ? '#f1f5f9' : '#1e293b',
-        textSecondary: isDarkMode ? '#94a3b8' : '#64748b',
-        textMuted: isDarkMode ? '#64748b' : '#94a3b8',
+        bg: 'var(--bg-primary)',
+        cardBg: 'var(--bg-primary)',
+        border: 'rgba(255,255,255,0.08)',
+        textPrimary: 'var(--bg-hover)',
+        textSecondary: 'var(--bg-hover)',
+        textMuted: 'var(--bg-hover)',
         accent: '#3b82f6',
     }), [isDarkMode]);
 
@@ -811,7 +812,7 @@ const GroupChatPage: React.FC = () => {
         return (
             <div style={{
                 minHeight: '100vh',
-                background: colors.bg,
+                background: 'var(--bg-primary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -820,8 +821,8 @@ const GroupChatPage: React.FC = () => {
                     style={{
                         width: 40,
                         height: 40,
-                        border: `3px solid ${colors.border}`,
-                        borderTopColor: colors.accent,
+                        border: `3px solid var(--border-color)`,
+                        borderTopColor: 'var(--accent-color)',
                         borderRadius: '50%',
                         animation: 'spin 0.8s linear infinite',
                     }}
@@ -834,7 +835,7 @@ const GroupChatPage: React.FC = () => {
     return (
         <div style={{
             height: '100vh',
-            background: colors.bg,
+            background: 'var(--bg-primary)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
@@ -846,8 +847,6 @@ const GroupChatPage: React.FC = () => {
                 groupId={groupId}
                 userXP={userXP}
                 userStreak={userStreak}
-                isDarkMode={isDarkMode}
-                colors={colors}
                 showSearchPanel={activePanel === 'search'}
                 onSearchToggle={() => {
                     setActivePanel(activePanel === 'search' ? 'none' : 'search');
@@ -859,8 +858,6 @@ const GroupChatPage: React.FC = () => {
                     <PresenceIndicator
                         viewers={viewers}
                         currentUserId={profile?.id || profile?.studentId || ''}
-                        isDarkMode={isDarkMode}
-                        colors={colors}
                     />
                 }
             />
@@ -871,8 +868,6 @@ const GroupChatPage: React.FC = () => {
                 searchQuery={searchQuery}
                 searchResults={searchResults}
                 searchInputRef={searchInputRef}
-                isDarkMode={isDarkMode}
-                colors={colors}
                 onSearch={handleSearch}
                 onClose={() => {
                     setActivePanel('none');
@@ -894,8 +889,6 @@ const GroupChatPage: React.FC = () => {
                 memberStats={memberStats}
                 groupMembers={groupInfo?.members}
                 isExpanded={activePanel === 'pinned'}
-                isDarkMode={isDarkMode}
-                colors={colors}
                 onToggleExpand={() => setActivePanel(activePanel === 'pinned' ? 'none' : 'pinned')}
                 onUnpin={(messageId) => {
                     setPinnedMessages((prev) => {
@@ -943,13 +936,13 @@ const GroupChatPage: React.FC = () => {
                         }}
                     >
                         {isLoadingMore ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: colors.textMuted }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)' }}>
                                 <div
                                     style={{
                                         width: 16,
                                         height: 16,
-                                        border: `2px solid ${colors.border}`,
-                                        borderTopColor: colors.accent,
+                                        border: `2px solid var(--border-color)`,
+                                        borderTopColor: 'var(--accent-color)',
                                         borderRadius: '50%',
                                         animation: 'spin 0.8s linear infinite',
                                     }}
@@ -962,15 +955,15 @@ const GroupChatPage: React.FC = () => {
                                 style={{
                                     padding: '8px 16px',
                                     fontSize: '12px',
-                                    color: colors.accent,
+                                    color: 'var(--accent-color)',
                                     background: 'transparent',
-                                    border: `1px solid ${colors.border}`,
+                                    border: `1px solid var(--border-color)`,
                                     borderRadius: '16px',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.currentTarget.style.background = isDarkMode ? 'rgba(59,130,246,0.1)' : 'rgba(59,130,246,0.05)';
+                                    e.currentTarget.style.background = 'rgba(59,130,246,0.1)';
                                 }}
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.background = 'transparent';
@@ -989,7 +982,7 @@ const GroupChatPage: React.FC = () => {
                             textAlign: 'center',
                             padding: '12px',
                             marginBottom: '8px',
-                            color: colors.textMuted,
+                            color: 'var(--text-muted)',
                             fontSize: '12px',
                         }}
                     >
@@ -999,7 +992,7 @@ const GroupChatPage: React.FC = () => {
 
                 {/* Empty State */}
                 <AnimatePresence>
-                    {messages.length === 0 && !isLoading && <ChatEmptyState colors={colors} />}
+                    {messages.length === 0 && !isLoading && <ChatEmptyState />}
                 </AnimatePresence>
 
                 {/* Messages - removed AnimatePresence for better performance */}
@@ -1040,8 +1033,6 @@ const GroupChatPage: React.FC = () => {
                             uniqueAuthors={uniqueAuthors}
                             showUnreadIndicator={scrollState.lastReadIndex !== null && index === scrollState.lastReadIndex && scrollState.unreadCount > 0}
                             unreadCount={scrollState.unreadCount}
-                            colors={colors}
-                            isDarkMode={isDarkMode}
                             onHover={setHoveredMessageId}
                             onLeave={handleMessageLeave}
                             onReaction={handleReaction}
@@ -1064,8 +1055,7 @@ const GroupChatPage: React.FC = () => {
                     {typingUsers.length > 0 && (
                         <TypingIndicator
                             typingUsers={typingUsers}
-                            isDarkMode={isDarkMode}
-                            textMutedColor={colors.textMuted}
+                            textMutedColor={'var(--text-muted)'}
                         />
                     )}
                 </AnimatePresence>
@@ -1077,8 +1067,6 @@ const GroupChatPage: React.FC = () => {
                     <ScrollToBottomButton
                         newMessageCount={scrollState.newMessageCount}
                         onScrollToBottom={scrollToBottom}
-                        isDarkMode={isDarkMode}
-                        colors={colors}
                     />
                 )}
             </AnimatePresence>
@@ -1088,19 +1076,16 @@ const GroupChatPage: React.FC = () => {
             <div style={{
                 flexShrink: 0,
                 zIndex: 100,
-                background: colors.cardBg,
-                borderTop: `1px solid ${colors.border}`,
+                background: 'var(--dashboard-surface)',
+                borderTop: `1px solid var(--border-color)`,
             }}>
                 <ReplyIndicator
                     replyingTo={replyingTo}
                     onCancel={() => setReplyingTo(null)}
-                    isDarkMode={isDarkMode}
-                    colors={colors}
                 />
 
                 <MentionNotificationPreview
                     mentionedUsers={mentionedUsersInMessage}
-                    isDarkMode={isDarkMode}
                 />
 
                 <PendingAttachmentsPreview
@@ -1111,8 +1096,6 @@ const GroupChatPage: React.FC = () => {
                         if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
                         return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
                     }}
-                    isDarkMode={isDarkMode}
-                    colors={colors}
                 />
 
                 <MessageInputArea
@@ -1126,8 +1109,6 @@ const GroupChatPage: React.FC = () => {
                     showEmojiPicker={activePanel === 'emoji'}
                     showGifPicker={activePanel === 'gif'}
                     isSending={isSending}
-                    isDarkMode={isDarkMode}
-                    colors={colors}
                     inputRef={inputRef}
                     gifButtonRef={gifButtonRef}
                     onMessageChange={setNewMessage}
@@ -1164,14 +1145,11 @@ const GroupChatPage: React.FC = () => {
                     }
                 }}
                 anchorRef={gifButtonRef}
-                isDarkMode={isDarkMode}
             />
 
             {/* Enhanced Emoji Picker */}
             <EnhancedEmojiPicker
                 isOpen={activePanel === 'emoji'}
-                isDarkMode={isDarkMode}
-                colors={colors}
                 emojiSearch={emojiPickerState.search}
                 emojiPickerCategory={emojiPickerState.category}
                 onEmojiSearchChange={(search) => setEmojiPickerState(prev => ({ ...prev, search }))}
@@ -1202,7 +1180,6 @@ const GroupChatPage: React.FC = () => {
                             else if (tool === 'file') setActiveModal('fileShare');
                             else if (tool === 'material') setActiveModal('courseMaterial');
                         }}
-                        colors={colors}
                     />
                 )}
             </AnimatePresence>
@@ -1218,7 +1195,6 @@ const GroupChatPage: React.FC = () => {
                             setNewMessage(flashcardMsg);
                             inputRef.current?.focus();
                         }}
-                        colors={colors}
                     />
                 )}
             </AnimatePresence>
@@ -1233,7 +1209,6 @@ const GroupChatPage: React.FC = () => {
                             setNewMessage(pollMsg);
                             inputRef.current?.focus();
                         }}
-                        colors={colors}
                     />
                 )}
             </AnimatePresence>
@@ -1248,7 +1223,6 @@ const GroupChatPage: React.FC = () => {
                             setNewMessage(scheduleMsg);
                             inputRef.current?.focus();
                         }}
-                        colors={colors}
                     />
                 )}
             </AnimatePresence>
@@ -1265,7 +1239,6 @@ const GroupChatPage: React.FC = () => {
                             setNewMessage(pinMsg);
                             inputRef.current?.focus();
                         }}
-                        colors={colors}
                     />
                 )}
             </AnimatePresence>
@@ -1280,7 +1253,6 @@ const GroupChatPage: React.FC = () => {
                             setNewMessage(whiteboardMsg);
                             inputRef.current?.focus();
                         }}
-                        colors={colors}
                     />
                 )}
             </AnimatePresence>
@@ -1296,7 +1268,6 @@ const GroupChatPage: React.FC = () => {
                             setNewMessage(voiceMsg);
                             inputRef.current?.focus();
                         }}
-                        colors={colors}
                     />
                 )}
             </AnimatePresence>
@@ -1328,7 +1299,6 @@ const GroupChatPage: React.FC = () => {
                             setActiveModal('none');
                             inputRef.current?.focus();
                         }}
-                        colors={colors}
                     />
                 )}
             </AnimatePresence>
@@ -1347,7 +1317,6 @@ const GroupChatPage: React.FC = () => {
                             setNewMessage(materialMsg);
                             inputRef.current?.focus();
                         }}
-                        colors={colors}
                     />
                 )}
             </AnimatePresence>
@@ -1359,7 +1328,6 @@ const GroupChatPage: React.FC = () => {
                         onClose={() => setActiveModal('none')}
                         members={memberStats}
                         currentUserId="current"
-                        colors={colors}
                     />
                 )}
             </AnimatePresence>
@@ -1371,7 +1339,6 @@ const GroupChatPage: React.FC = () => {
                         onClose={() => setActiveModal('none')}
                         groupInfo={groupInfo}
                         messageCount={messages.length}
-                        colors={colors}
                         profile={profile}
                         showReadReceipts={showReadReceipts}
                         onReadReceiptsChange={setShowReadReceipts}
@@ -1386,7 +1353,6 @@ const GroupChatPage: React.FC = () => {
                         onClose={() => setThreadViewMessage(null)}
                         parentMessage={threadViewMessage}
                         allMessages={messages}
-                        colors={colors}
                         currentUserId={profile?.studentId || profile?.id || ''}
                         onSendReply={(content) => {
                             if (threadViewMessage && groupId && profile) {
@@ -1420,7 +1386,6 @@ const GroupChatPage: React.FC = () => {
             {/* Delete Confirmation Modal */}
             <DeleteConfirmModal
                 isOpen={!!deleteConfirmId}
-                colors={colors}
                 onCancel={() => setDeleteConfirmId(null)}
                 onConfirm={() => handleDeleteMessage(deleteConfirmId!)}
             />

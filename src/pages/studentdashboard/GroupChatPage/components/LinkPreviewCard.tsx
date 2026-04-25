@@ -190,8 +190,8 @@ export const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url, isOwn, is
                 overflow: 'hidden',
                 background: isOwn 
                     ? 'rgba(255,255,255,0.08)' 
-                    : (isDarkMode ? 'rgba(255,255,255,0.04)' : '#ffffff'),
-                border: `1px solid ${isOwn ? 'rgba(255,255,255,0.12)' : (isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)')}`,
+                    : ('var(--dashboard-surface)'),
+                border: `1px solid ${isOwn ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.08)'}`,
                 marginTop: '8px',
                 transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
             }}
@@ -199,11 +199,11 @@ export const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url, isOwn, is
                 e.currentTarget.style.boxShadow = isDarkMode 
                     ? '0 4px 12px rgba(0,0,0,0.3)' 
                     : '0 4px 12px rgba(0,0,0,0.1)';
-                e.currentTarget.style.borderColor = colors.accent + '40';
+                e.currentTarget.style.borderColor = 'var(--accent-color)' + '40';
             }}
             onMouseLeave={(e) => {
                 e.currentTarget.style.boxShadow = 'none';
-                e.currentTarget.style.borderColor = isOwn ? 'rgba(255,255,255,0.12)' : (isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)');
+                e.currentTarget.style.borderColor = isOwn ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.08)';
             }}
         >
             {/* Image/Thumbnail */}
@@ -211,7 +211,7 @@ export const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url, isOwn, is
                 <div style={{
                     width: '100%',
                     height: '140px',
-                    background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+                    background: 'rgba(255,255,255,0.03)',
                     position: 'relative',
                     overflow: 'hidden',
                 }}>
@@ -226,7 +226,7 @@ export const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url, isOwn, is
                             <motion.div
                                 animate={{ rotate: 360 }}
                                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                style={{ color: colors.textMuted }}
+                                style={{ color: 'var(--text-muted)' }}
                             >
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
@@ -280,21 +280,21 @@ export const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url, isOwn, is
                             width: '20px',
                             height: '20px',
                             borderRadius: '4px',
-                            background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                            background: 'var(--bg-hover)',
                         }} />
                         <div style={{ flex: 1 }}>
                             <div style={{
                                 height: '12px',
                                 width: '70%',
                                 borderRadius: '4px',
-                                background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                                background: 'var(--bg-hover)',
                                 marginBottom: '6px',
                             }} />
                             <div style={{
                                 height: '10px',
                                 width: '50%',
                                 borderRadius: '4px',
-                                background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                                background: 'rgba(255,255,255,0.06)',
                             }} />
                         </div>
                     </div>
@@ -323,7 +323,7 @@ export const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url, isOwn, is
                             )}
                             <span style={{
                                 fontSize: '11px',
-                                color: isOwn ? 'rgba(255,255,255,0.6)' : colors.textMuted,
+                                color: isOwn ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)',
                                 textTransform: 'lowercase',
                             }}>
                                 {domain}
@@ -336,7 +336,7 @@ export const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url, isOwn, is
                                 margin: '0 0 4px',
                                 fontSize: '13px',
                                 fontWeight: 600,
-                                color: isOwn ? '#fff' : colors.textPrimary,
+                                color: isOwn ? '#fff' : 'var(--text-primary)',
                                 lineHeight: 1.3,
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
@@ -353,7 +353,7 @@ export const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url, isOwn, is
                             <p style={{
                                 margin: 0,
                                 fontSize: '12px',
-                                color: isOwn ? 'rgba(255,255,255,0.7)' : colors.textSecondary,
+                                color: isOwn ? 'rgba(255,255,255,0.7)' : 'var(--text-secondary)',
                                 lineHeight: 1.4,
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',

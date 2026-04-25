@@ -2,10 +2,27 @@
  * MotivationalQuote
  * Rotating motivational quotes for focus/break mode.
  * Extracted from FocusModePage.tsx during Phase 8.5
+ * Refactored in Phase 9.5 (Styling Consistency)
  */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { FocusModeColors } from '../FocusModePage';
+
+// Motivational Quotes Data
+const STUDY_QUOTES = [
+    { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+    { text: "Success is the sum of small efforts repeated day in and day out.", author: "Robert Collier" },
+    { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+    { text: "Education is the passport to the future.", author: "Malcolm X" },
+    { text: "The more that you read, the more things you will know.", author: "Dr. Seuss" },
+    { text: "Learning never exhausts the mind.", author: "Leonardo da Vinci" },
+    { text: "The beautiful thing about learning is that no one can take it away from you.", author: "B.B. King" },
+    { text: "Study hard what interests you the most in the most undisciplined way.", author: "Richard Feynman" },
+    { text: "The expert in anything was once a beginner.", author: "Helen Hayes" },
+    { text: "Don't let what you cannot do interfere with what you can do.", author: "John Wooden" },
+    { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+    { text: "The mind is not a vessel to be filled, but a fire to be kindled.", author: "Plutarch" },
+];
 
 // Motivational Quote Component
 const MotivationalQuote: React.FC<{
@@ -27,7 +44,7 @@ const MotivationalQuote: React.FC<{
 
     useEffect(() => {
         getRandomQuote();
-    }, [isBreakMode]);
+    }, [isBreakMode, getRandomQuote]);
 
     return (
         <motion.div
@@ -37,7 +54,7 @@ const MotivationalQuote: React.FC<{
             style={{
                 padding: '20px',
                 borderRadius: '16px',
-                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                background: 'linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-hover) 100%)',
                 position: 'relative',
                 overflow: 'hidden',
             }}
@@ -47,7 +64,7 @@ const MotivationalQuote: React.FC<{
                 position: 'absolute',
                 top: 16,
                 left: 16,
-                color: '#fbbf24',
+                color: 'var(--brand-gold)',
                 fontSize: '32px',
                 fontWeight: 900,
                 lineHeight: 1,
@@ -108,10 +125,10 @@ const MotivationalQuote: React.FC<{
                     <p style={{
                         margin: 0,
                         fontSize: '12px',
-                        color: '#fbbf24',
+                        color: 'var(--brand-gold)',
                         fontWeight: 600,
                     }}>
-                        � {quote.author}
+                        — {quote.author}
                     </p>
                 </motion.div>
             </AnimatePresence>
@@ -125,7 +142,7 @@ const MotivationalQuote: React.FC<{
                 alignItems: 'center',
                 gap: '6px',
             }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-gold)" strokeWidth="2">
                     <circle cx="12" cy="12" r="4" />
                     <path d="M12 2v2" />
                     <path d="M12 20v2" />
@@ -147,46 +164,5 @@ const MotivationalQuote: React.FC<{
         </motion.div>
     );
 };
-
-// Ambient Sounds Data - Add your MP3 files to public/sounds/ folder
-const AMBIENT_SOUNDS = [
-    {
-        id: 'lofi',
-        name: 'Lo-Fi',
-        color: '#8b5cf6',
-        url: '/sounds/lofi.mp3',
-    },
-    {
-        id: 'rain',
-        name: 'Rain',
-        color: '#3b82f6',
-        url: '/sounds/rain.mp3',
-    },
-    {
-        id: 'cafe',
-        name: 'Caf�',
-        color: '#f59e0b',
-        url: '/sounds/cafe.mp3',
-    },
-    {
-        id: 'nature',
-        name: 'Nature',
-        color: '#10b981',
-        url: '/sounds/nature.mp3',
-    },
-    {
-        id: 'fire',
-        name: 'Fire',
-        color: '#ef4444',
-        url: '/sounds/fire.mp3',
-    },
-    {
-        id: 'waves',
-        name: 'Waves',
-        color: '#06b6d4',
-        url: '/sounds/waves.mp3',
-    },
-];
-
 
 export { MotivationalQuote };

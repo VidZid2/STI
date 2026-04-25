@@ -42,15 +42,15 @@ export const MessageAvatar = React.memo<MessageAvatarProps>(({
                     width: 36,
                     height: 36,
                     borderRadius: '50%',
-                    background: `linear-gradient(135deg, ${colors.accent}30 0%, ${colors.accent}10 100%)`,
+                    background: `linear-gradient(135deg, var(--accent-color)30 0%, var(--accent-color)10 100%)`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '13px',
                     fontWeight: 600,
-                    color: colors.accent,
+                    color: 'var(--accent-color)',
                     overflow: 'hidden',
-                    border: `2px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                    border: `2px solid ${'var(--dashboard-surface)'}`,
                 }}
             >
                 {userAvatar ? (
@@ -77,7 +77,7 @@ export const MessageAvatar = React.memo<MessageAvatarProps>(({
                 fontWeight: 700,
                 padding: '2px 6px',
                 borderRadius: '8px',
-                border: `2px solid ${colors.cardBg}`,
+                border: `2px solid var(--dashboard-surface)`,
                 lineHeight: 1.2,
                 whiteSpace: 'nowrap',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
@@ -93,7 +93,7 @@ export const MessageAvatar = React.memo<MessageAvatarProps>(({
                 height: 10,
                 borderRadius: '50%',
                 background: isOnline ? '#22c55e' : '#9ca3af',
-                border: `2px solid ${colors.cardBg}`,
+                border: `2px solid var(--dashboard-surface)`,
                 boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
             }} />
         </div>

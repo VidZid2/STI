@@ -3,8 +3,8 @@
  * Keyboard shortcuts reference panel.
  * Extracted from FocusModePage.tsx during Phase 8.5
  */
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React from 'react';
+import { motion } from 'motion/react';
 import type { FocusModeColors } from '../FocusModePage';
 
 // Keyboard Shortcuts Display Component
@@ -27,8 +27,8 @@ const KeyboardShortcuts: React.FC<{
             style={{
                 padding: '14px 16px',
                 borderRadius: '14px',
-                background: isDarkMode ? '#1e293b' : '#ffffff',
-                border: `1px solid ${colors.border}`,
+                background: 'var(--bg-primary)',
+                border: `1px solid var(--border-color)`,
             }}
         >
             <div style={{
@@ -63,7 +63,7 @@ const KeyboardShortcuts: React.FC<{
                 <span style={{
                     fontSize: '12px',
                     fontWeight: 600,
-                    color: colors.textPrimary,
+                    color: 'var(--text-primary)',
                 }}>
                     Shortcuts
                 </span>
@@ -86,17 +86,17 @@ const KeyboardShortcuts: React.FC<{
                         <span style={{
                             padding: '3px 8px',
                             borderRadius: '5px',
-                            background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                            background: 'var(--bg-hover)',
                             fontSize: '10px',
                             fontWeight: 600,
-                            color: colors.textSecondary,
+                            color: 'var(--text-secondary)',
                             fontFamily: 'ui-monospace, monospace',
                         }}>
                             {shortcut.key}
                         </span>
                         <span style={{
                             fontSize: '10px',
-                            color: colors.textMuted,
+                            color: 'var(--text-muted)',
                         }}>
                             {shortcut.action}
                         </span>

@@ -3,7 +3,7 @@
  * Animated progress ring with hover tooltip.
  * Extracted from PathsContent.tsx during Phase 8.6
  */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 
@@ -11,9 +11,8 @@ import { createPortal } from 'react-dom';
 const ProgressRingWithTooltip: React.FC<{
     progress: number;
     pathColor: string;
-    isDarkMode: boolean;
     index: number;
-}> = ({ progress, pathColor, isDarkMode, index }) => {
+}> = ({ progress, pathColor, index }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     // Get short description based on progress
@@ -90,7 +89,7 @@ const ProgressRingWithTooltip: React.FC<{
                     cy="26"
                     r="22"
                     fill="none"
-                    stroke={isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'}
+                    stroke={'var(--bg-hover)'}
                     strokeWidth="4"
                 />
                 {/* Progress circle */}

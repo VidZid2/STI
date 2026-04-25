@@ -1,23 +1,23 @@
-/**
+﻿/**
  * CourseCard + CourseListItem
  * Course display components for CatalogContent.
  * Extracted from CatalogContent.tsx during Phase 8.7
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import type { CatalogCourse } from '../../../../../services/catalogService';
+import { categoryInfo, type CatalogCourse } from '../../../../../services/catalogService';
 import { CategoryIcon } from './CatalogShared';
 
 // Course Card Component - Minimalistic Blue Design inspired by Home CourseCard
 const CourseCard: React.FC<{
     course: CatalogCourse;
     index: number;
-    isDarkMode: boolean;
     colors: { cardBg: string; border: string; textPrimary: string; textSecondary: string; textMuted: string };
     onClick: (course: CatalogCourse) => void;
     isBookmarked: boolean;
     onToggleBookmark: (courseId: string) => void;
-}> = ({ course, index, isDarkMode, colors, onClick, isBookmarked, onToggleBookmark }) => {
+}> = ({ course, index, colors, onClick, isBookmarked, onToggleBookmark }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [instructorHovered, setInstructorHovered] = useState(false);
@@ -29,8 +29,8 @@ const CourseCard: React.FC<{
     
     // Blue color scheme
     const blueAccent = '#3b82f6';
-    const blueBg = isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)';
-    const blueBorder = isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)';
+    const blueBg = 'rgba(59, 130, 246, 0.1)';
+    const blueBorder = 'rgba(59, 130, 246, 0.1)';
 
     // Show preview after a delay on hover
     useEffect(() => {
@@ -75,14 +75,14 @@ const CourseCard: React.FC<{
             tabIndex={0}
             style={{
                 position: 'relative',
-                background: colors.cardBg,
+                background: 'var(--dashboard-surface)',
                 borderRadius: '16px',
-                border: `1px solid ${isHovered ? blueBorder : colors.border}`,
+                border: `1px solid ${isHovered ? blueBorder : 'var(--border-color)'}`,
                 overflow: 'visible',
                 cursor: 'pointer',
                 boxShadow: isHovered 
-                    ? (isDarkMode ? '0 8px 30px rgba(59, 130, 246, 0.15)' : '0 8px 30px rgba(59, 130, 246, 0.1)')
-                    : (isDarkMode ? '0 2px 8px rgba(0,0,0,0.2)' : '0 2px 8px rgba(0,0,0,0.04)'),
+                    ? ('0 8px 30px rgba(59, 130, 246, 0.1)')
+                    : ('0 2px 8px rgba(0,0,0,0.06)'),
                 transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
                 outline: 'none',
             }}
@@ -113,7 +113,7 @@ const CourseCard: React.FC<{
                         <div style={{
                             position: 'absolute',
                             inset: 0,
-                            background: isDarkMode ? '#1e293b' : '#f1f5f9',
+                            background: 'var(--text-muted)',
                         }} />
                     )}
                 </div>
@@ -152,9 +152,9 @@ const CourseCard: React.FC<{
                         marginBottom: '8px',
                         padding: '8px 12px',
                         borderRadius: '10px',
-                        background: isDarkMode ? '#1e293b' : 'white',
-                        border: `1px solid ${colors.border}`,
-                        boxShadow: isDarkMode ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 16px rgba(0,0,0,0.1)',
+                        background: 'var(--bg-secondary)',
+                        border: `1px solid var(--border-color)`,
+                        boxShadow: 'var(--shadow-lg)',
                         opacity: instructorHovered ? 1 : 0,
                         transform: instructorHovered ? 'translateY(0)' : 'translateY(4px)',
                         transition: 'opacity 0.15s ease, transform 0.15s ease',
@@ -163,7 +163,7 @@ const CourseCard: React.FC<{
                         zIndex: 10,
                     }}>
                         <div style={{ fontSize: '9px', fontWeight: 500, color: blueAccent, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Instructor</div>
-                        <div style={{ fontSize: '12px', fontWeight: 500, color: colors.textPrimary }}>{course.instructor}</div>
+                        <div style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-primary)' }}>{course.instructor}</div>
                     </div>
                 </div>
                 
@@ -269,7 +269,7 @@ const CourseCard: React.FC<{
                             margin: 0, 
                             fontSize: '14px', 
                             fontWeight: 600, 
-                            color: colors.textPrimary, 
+                            color: 'var(--text-primary)', 
                             overflow: 'hidden', 
                             textOverflow: 'ellipsis', 
                             whiteSpace: 'nowrap',
@@ -298,7 +298,7 @@ const CourseCard: React.FC<{
                             </motion.div>
                         )}
                     </div>
-                    <p style={{ margin: 0, fontSize: '11px', color: colors.textMuted }}>{course.subtitle}</p>
+                    <p style={{ margin: 0, fontSize: '11px', color: 'var(--text-muted)' }}>{course.subtitle}</p>
                 </div>
 
                 {/* Stats Section - Blue themed */}
@@ -316,15 +316,15 @@ const CourseCard: React.FC<{
                             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                         </svg>
-                        <span style={{ fontSize: '12px', fontWeight: 600, color: colors.textPrimary }}>{course.modules}</span>
-                        <span style={{ fontSize: '10px', color: colors.textMuted }}>modules</span>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{course.modules}</span>
+                        <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>modules</span>
                     </div>
-                    <div style={{ width: '1px', height: '16px', background: colors.border }} />
+                    <div style={{ width: '1px', height: '16px', background: 'var(--border-color)' }} />
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
                         </svg>
-                        <span style={{ fontSize: '12px', fontWeight: 600, color: colors.textPrimary }}>{course.enrolledCount}</span>
+                        <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>{course.enrolledCount}</span>
                     </div>
                 </div>
 
@@ -401,11 +401,9 @@ const CourseCard: React.FC<{
                                 width: '280px',
                                 padding: '14px',
                                 borderRadius: '14px',
-                                background: isDarkMode ? '#1e293b' : 'white',
+                                background: 'var(--bg-secondary)',
                                 border: `1px solid ${blueBorder}`,
-                                boxShadow: isDarkMode 
-                                    ? '0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(59, 130, 246, 0.1)' 
-                                    : '0 12px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(59, 130, 246, 0.08)',
+                                boxShadow: 'var(--shadow-lg)',
                                 zIndex: 9999,
                                 pointerEvents: 'none',
                             }}
@@ -418,7 +416,7 @@ const CourseCard: React.FC<{
                                 gap: '6px', 
                                 marginBottom: '10px',
                                 paddingBottom: '10px',
-                                borderBottom: `1px solid ${colors.border}`,
+                                borderBottom: `1px solid var(--border-color)`,
                             }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2" aria-hidden="true">
                                     <circle cx="12" cy="12" r="10" />
@@ -433,7 +431,7 @@ const CourseCard: React.FC<{
                             <p style={{ 
                                 margin: 0, 
                                 fontSize: '12px', 
-                                color: colors.textSecondary, 
+                                color: 'var(--text-secondary)', 
                                 lineHeight: 1.5,
                                 marginBottom: '12px',
                                 display: '-webkit-box',
@@ -456,7 +454,7 @@ const CourseCard: React.FC<{
                                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2.5" style={{ marginTop: '3px', flexShrink: 0 }}>
                                                     <polyline points="20 6 9 17 4 12" />
                                                 </svg>
-                                                <span style={{ fontSize: '11px', color: colors.textMuted, lineHeight: 1.4 }}>{outcome}</span>
+                                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', lineHeight: 1.4 }}>{outcome}</span>
                                             </div>
                                         ))}
                                         {course.learningOutcomes.length > 2 && (
@@ -493,16 +491,16 @@ const CourseCard: React.FC<{
                             <div style={{ 
                                 marginTop: '10px', 
                                 paddingTop: '10px', 
-                                borderTop: `1px solid ${colors.border}`,
+                                borderTop: `1px solid var(--border-color)`,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: '6px',
                             }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2">
                                     <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
                                 </svg>
-                                <span style={{ fontSize: '10px', color: colors.textMuted }}>Click to view full details</span>
+                                <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Click to view full details</span>
                             </div>
                         </motion.div>
                     )}
@@ -519,20 +517,19 @@ const CourseCard: React.FC<{
 const CourseListItem: React.FC<{
     course: CatalogCourse;
     index: number;
-    isDarkMode: boolean;
     colors: { cardBg: string; border: string; textPrimary: string; textSecondary: string; textMuted: string };
     onClick: (course: CatalogCourse) => void;
     isBookmarked: boolean;
     onToggleBookmark: (courseId: string) => void;
-}> = ({ course, index, isDarkMode, colors, onClick, isBookmarked, onToggleBookmark }) => {
+}> = ({ course, index, colors, onClick, isBookmarked, onToggleBookmark }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const [previewPosition, setPreviewPosition] = useState({ top: 0, left: 0 });
     const listItemRef = useRef<HTMLDivElement>(null);
     const previewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const blueAccent = '#3b82f6';
-    const blueBg = isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)';
-    const blueBorder = isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)';
+    const blueBg = 'rgba(59, 130, 246, 0.1)';
+    const blueBorder = 'rgba(59, 130, 246, 0.1)';
 
     // Show preview after a delay on hover
     useEffect(() => {
@@ -578,12 +575,12 @@ const CourseListItem: React.FC<{
                 gap: '16px',
                 padding: '14px 18px',
                 borderRadius: '14px',
-                background: colors.cardBg,
-                border: `1px solid ${isHovered ? blueBorder : colors.border}`,
+                background: 'var(--dashboard-surface)',
+                border: `1px solid ${isHovered ? blueBorder : 'var(--border-color)'}`,
                 cursor: 'pointer',
                 transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
                 boxShadow: isHovered 
-                    ? (isDarkMode ? '0 4px 16px rgba(59, 130, 246, 0.1)' : '0 4px 16px rgba(59, 130, 246, 0.08)')
+                    ? ('0 4px 16px rgba(59, 130, 246, 0.08)')
                     : 'none',
             }}
         >
@@ -635,7 +632,7 @@ const CourseListItem: React.FC<{
                         margin: 0, 
                         fontSize: '14px', 
                         fontWeight: 600, 
-                        color: colors.textPrimary,
+                        color: 'var(--text-primary)',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -660,11 +657,11 @@ const CourseListItem: React.FC<{
                         </span>
                     )}
                 </div>
-                <p style={{ margin: 0, fontSize: '12px', color: colors.textMuted, marginBottom: '6px' }}>{course.subtitle}</p>
+                <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)', marginBottom: '6px' }}>{course.subtitle}</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ fontSize: '11px', color: blueAccent, fontWeight: 500 }}>{categoryInfo[course.category].label}</span>
-                    <span style={{ fontSize: '11px', color: colors.textMuted }}>•</span>
-                    <span style={{ fontSize: '11px', color: colors.textMuted }}>{course.instructor}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>•</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{course.instructor}</span>
                 </div>
             </div>
 
@@ -675,15 +672,15 @@ const CourseListItem: React.FC<{
                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                     </svg>
-                    <span style={{ fontSize: '12px', fontWeight: 500, color: colors.textPrimary }}>{course.modules}</span>
-                    <span style={{ fontSize: '10px', color: colors.textMuted }}>modules</span>
+                    <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-primary)' }}>{course.modules}</span>
+                    <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>modules</span>
                 </div>
-                <div style={{ width: '1px', height: '20px', background: colors.border }} />
+                <div style={{ width: '1px', height: '20px', background: 'var(--border-color)' }} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
                     </svg>
-                    <span style={{ fontSize: '12px', fontWeight: 500, color: colors.textPrimary }}>{course.enrolledCount}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-primary)' }}>{course.enrolledCount}</span>
                 </div>
             </div>
 
@@ -748,11 +745,9 @@ const CourseListItem: React.FC<{
                                 width: '320px',
                                 padding: '14px',
                                 borderRadius: '14px',
-                                background: isDarkMode ? '#1e293b' : 'white',
+                                background: 'var(--bg-secondary)',
                                 border: `1px solid ${blueBorder}`,
-                                boxShadow: isDarkMode 
-                                    ? '0 12px 32px rgba(0,0,0,0.4)' 
-                                    : '0 12px 32px rgba(0,0,0,0.12)',
+                                boxShadow: 'var(--shadow-lg)',
                                 zIndex: 9999,
                                 pointerEvents: 'none',
                             }}
@@ -764,7 +759,7 @@ const CourseListItem: React.FC<{
                                 gap: '6px', 
                                 marginBottom: '10px',
                                 paddingBottom: '10px',
-                                borderBottom: `1px solid ${colors.border}`,
+                                borderBottom: `1px solid var(--border-color)`,
                             }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2">
                                     <circle cx="12" cy="12" r="10" />
@@ -779,7 +774,7 @@ const CourseListItem: React.FC<{
                             <p style={{ 
                                 margin: 0, 
                                 fontSize: '12px', 
-                                color: colors.textSecondary, 
+                                color: 'var(--text-secondary)', 
                                 lineHeight: 1.5,
                                 marginBottom: '12px',
                             }}>

@@ -37,8 +37,8 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
     
     // Blue accent color (matching other pages)
     const blueAccent = '#3b82f6';
-    const blueBg = isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)';
-    const blueBorder = isDarkMode ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.15)';
+    const blueBg = 'rgba(59, 130, 246, 0.1)';
+    const blueBorder = 'rgba(59, 130, 246, 0.25)';
 
     // Update indicator position when category changes
     useEffect(() => {
@@ -113,7 +113,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                         position: 'fixed',
                         bottom: 90,
                         right: 20,
-                        background: isDarkMode ? '#1e293b' : '#ffffff',
+                        background: 'var(--bg-primary)',
                         borderRadius: '16px',
                         boxShadow: isDarkMode 
                             ? '0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
@@ -124,7 +124,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                     }}
                 >
                     {/* Header with Search */}
-                    <div style={{ padding: '14px 16px', borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
+                    <div style={{ padding: '14px 16px', borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}` }}>
                         <div
                             style={{
                                 display: 'flex',
@@ -132,8 +132,8 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                 gap: '10px',
                                 padding: '10px 14px',
                                 borderRadius: '12px',
-                                background: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)',
-                                border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                                background: 'rgba(255,255,255,0.04)',
+                                border: `1px solid ${'rgba(255,255,255,0.06)'}`,
                                 transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
                             }}
                             onFocus={(e) => {
@@ -141,7 +141,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                 e.currentTarget.style.boxShadow = `0 0 0 3px ${blueBg}`;
                             }}
                             onBlur={(e) => {
-                                e.currentTarget.style.borderColor = isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
                                 e.currentTarget.style.boxShadow = 'none';
                             }}
                         >
@@ -167,7 +167,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                     flex: 1,
                                     border: 'none',
                                     background: 'transparent',
-                                    color: isDarkMode ? '#f1f5f9' : '#1e293b',
+                                    color: 'var(--bg-hover)',
                                     fontSize: '13px',
                                     fontWeight: 500,
                                     outline: 'none',
@@ -186,12 +186,12 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                         height: 22,
                                         borderRadius: '6px',
                                         border: 'none',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                                        background: 'var(--bg-hover)',
                                         cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: isDarkMode ? '#94a3b8' : '#64748b',
+                                        color: 'var(--bg-hover)',
                                         transition: 'background 0.15s ease',
                                     }}
                                 >
@@ -211,11 +211,11 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                             display: 'flex',
                             gap: '4px',
                             padding: '10px 14px',
-                            borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                            borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}`,
                             overflowX: 'auto',
                             overflowY: 'hidden',
                             position: 'relative',
-                            background: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
+                            background: 'var(--bg-primary)',
                             scrollbarWidth: 'none', // Firefox
                             msOverflowStyle: 'none', // IE/Edge
                         }}
@@ -338,7 +338,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                                 gridColumn: '1 / -1',
                                                 padding: '32px 20px',
                                                 textAlign: 'center',
-                                                color: isDarkMode ? '#64748b' : '#94a3b8',
+                                                color: 'var(--bg-hover)',
                                                 fontSize: '13px',
                                                 fontWeight: 500,
                                             }}
@@ -389,8 +389,8 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                     <div
                         style={{
                             padding: '10px 16px',
-                            borderTop: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-                            background: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
+                            borderTop: `1px solid ${'rgba(255,255,255,0.06)'}`,
+                            background: 'var(--bg-primary)',
                             display: 'flex',
                             gap: '6px',
                             justifyContent: 'center',
@@ -413,8 +413,8 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                     width: 38,
                                     height: 38,
                                     borderRadius: '10px',
-                                    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-                                    background: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.8)',
+                                    border: `1px solid ${'rgba(255,255,255,0.06)'}`,
+                                    background: 'rgba(255,255,255,0.04)',
                                     cursor: 'pointer',
                                     fontSize: '18px',
                                     display: 'flex',

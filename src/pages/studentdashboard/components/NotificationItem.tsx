@@ -6,7 +6,10 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { NotificationIcon } from './NotificationIcon';
-import type { NotificationItemProps } from '../types';
+export interface NotificationItemProps {
+    notification: any;
+    onClose: (id: string) => void;
+}
 
 export const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onClose }) => {
     const [isHovered, setIsHovered] = React.useState(false);
@@ -54,8 +57,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({ notification
             transition={{ duration: 0.2, ease: 'easeOut' }}
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
-            className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden cursor-pointer border border-zinc-200/60 dark:border-slate-600/60"
-            style={{ transition: 'box-shadow 0.15s ease' }}
+            className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden cursor-pointer border border-zinc-200/60 dark:border-slate-600/60 transition-shadow duration-150 ease-out"
         >
             {/* Accent bar on left */}
             <div

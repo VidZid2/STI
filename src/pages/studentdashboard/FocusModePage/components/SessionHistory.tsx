@@ -2,17 +2,18 @@
  * SessionHistory
  * Weekly focus trends chart.
  * Extracted from FocusModePage.tsx during Phase 8.5
+ * Refactored in Phase 9.5 (Styling Consistency)
  */
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import type { FocusModeColors } from '../FocusModePage';
-import type { StudyTimeData } from '../../../../../services/studyTimeService';
+import { getStudyTimeData, type StudyTimeData } from '../../../../services/studyTimeService';
 
 // Session History Component - Shows weekly focus trends
 const SessionHistory: React.FC<{
     isDarkMode: boolean;
     colors: FocusModeColors;
-}> = ({ isDarkMode, colors }) => {
+}> = ({ isDarkMode: _isDarkMode, colors: _colors }) => {
     const [studyData, setStudyData] = useState<StudyTimeData | null>(null);
 
     useEffect(() => {
@@ -53,12 +54,8 @@ const SessionHistory: React.FC<{
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, type: 'spring', stiffness: 300, damping: 25 }}
-            style={{
-                padding: '14px',
-                borderRadius: '14px',
-                background: isDarkMode ? '#1e293b' : '#ffffff',
-                border: `1px solid ${colors.border}`,
-            }}
+            className="dashboard-card"
+            style={{ padding: '14px' }}
         >
             {/* Header */}
             <div style={{
@@ -72,12 +69,11 @@ const SessionHistory: React.FC<{
                         width: 28,
                         height: 28,
                         borderRadius: '8px',
-                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.06) 100%)',
-                        border: '1px solid rgba(59, 130, 246, 0.15)',
+                        background: 'rgba(59, 130, 246, 0.1)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#3b82f6',
+                        color: 'var(--brand-blue)',
                     }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M3 3v18h18" />
@@ -85,10 +81,10 @@ const SessionHistory: React.FC<{
                         </svg>
                     </div>
                     <div>
-                        <div style={{ fontSize: '12px', fontWeight: 600, color: colors.textPrimary }}>
+                        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>
                             Weekly Trend
                         </div>
-                        <div style={{ fontSize: '10px', color: colors.textMuted }}>
+                        <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
                             Avg: {avgMinutes}m/day
                         </div>
                     </div>
@@ -99,7 +95,7 @@ const SessionHistory: React.FC<{
                     background: 'rgba(59, 130, 246, 0.1)',
                     fontSize: '11px',
                     fontWeight: 600,
-                    color: '#3b82f6',
+                    color: 'var(--brand-blue)',
                 }}>
                     {Math.floor(totalWeekMinutes / 60)}h {totalWeekMinutes % 60}m
                 </div>
@@ -129,18 +125,18 @@ const SessionHistory: React.FC<{
                                 minHeight: '4px',
                                 borderRadius: '4px 4px 2px 2px',
                                 background: isToday
-                                    ? 'linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)'
+                                    ? 'linear-gradient(180deg, var(--brand-blue) 0%, var(--brand-blue-hover) 100%)'
                                     : (day.minutes > 0
-                                        ? (isDarkMode ? 'rgba(59, 130, 246, 0.4)' : 'rgba(59, 130, 246, 0.3)')
-                                        : (isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)')),
+                                        ? 'var(--border-medium)'
+                                        : 'var(--bg-hover)'),
                                 position: 'relative',
                                 cursor: 'pointer',
                                 transition: 'background 0.2s ease',
                             }}
                             whileHover={{
                                 background: isToday
-                                    ? 'linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%)'
-                                    : 'rgba(59, 130, 246, 0.5)',
+                                    ? 'linear-gradient(180deg, var(--lighter-blue) 0%, var(--brand-blue) 100%)'
+                                    : 'var(--brand-blue-hover)',
                             }}
                             title={`${day.day}: ${day.minutes}m`}
                         />
@@ -163,7 +159,7 @@ const SessionHistory: React.FC<{
                             textAlign: 'center',
                             fontSize: '9px',
                             fontWeight: index === weekData.length - 1 ? 600 : 500,
-                            color: index === weekData.length - 1 ? '#3b82f6' : colors.textMuted,
+                            color: index === weekData.length - 1 ? 'var(--brand-blue)' : 'var(--text-muted)',
                             textTransform: 'uppercase',
                         }}
                     >
@@ -174,6 +170,5 @@ const SessionHistory: React.FC<{
         </motion.div>
     );
 };
-
 
 export { SessionHistory };

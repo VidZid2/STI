@@ -12,6 +12,28 @@ import { isSupabaseConfigured } from '../../../../../lib/supabase';
 export type ContentType = 'handout-a' | 'handout-b' | 'slideshow' | 'video';
 export type TaskCategory = 'all' | 'assignment' | 'performance' | 'quiz' | 'practical' | 'journal' | 'overdue';
 
+export interface CourseTask {
+    id: string | number;
+    title: string;
+    due: string;
+    status: string;
+    score: string | number | null;
+    category: TaskCategory;
+    points?: number;
+    dueDate?: string;
+    description?: string;
+    instructions?: string;
+    allowLateSubmission?: boolean;
+    latePenalty?: number;
+    maxAttempts?: number;
+    rubricEnabled?: boolean;
+    prerequisiteAssignmentId?: string | null;
+    rubricCriteria?: { id?: string; name: string; points: number; description?: string }[];
+    submissionCount?: number;
+    attachments?: { name: string; url: string; type?: string }[];
+    _diffDays?: number;
+}
+
 export type CourseDataType = {
     modules: {
         id: number;

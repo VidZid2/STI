@@ -3,25 +3,51 @@
  * Displays earned achievements and badges.
  * Extracted from GoalsContent.tsx during Phase 8.3
  */
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { useModalAccessibility } from '../../../hooks/useModalAccessibility';
+import MilestoneIcon from '../components/MilestoneIcon';
+import type { MilestoneIconType } from '../components/MilestoneIcon';
+import type { GoalWithProgress } from '../../../../../services/goalsService';
+
+// GoalMilestone type for achievements data
+interface GoalMilestone {
+    id: string;
+    name: string;
+    description: string;
+    icon: MilestoneIconType;
+    color: string;
+    requirement: number;
+    type: 'created' | 'completed' | 'streak' | 'perfect';
+}
+
+const GOAL_MILESTONES: GoalMilestone[] = [
+    { id: 'first-goal', name: 'First Goal', description: 'Create your first goal', icon: 'target', color: '#3b82f6', requirement: 1, type: 'created' },
+    { id: 'goal-setter', name: 'Goal Setter', description: 'Create 5 goals', icon: 'star', color: '#8b5cf6', requirement: 5, type: 'created' },
+    { id: 'ambitious', name: 'Ambitious', description: 'Create 10 goals', icon: 'rocket', color: '#ec4899', requirement: 10, type: 'created' },
+    { id: 'first-win', name: 'First Win', description: 'Complete your first goal', icon: 'trophy', color: '#10b981', requirement: 1, type: 'completed' },
+    { id: 'achiever', name: 'Achiever', description: 'Complete 5 goals', icon: 'medal', color: '#f59e0b', requirement: 5, type: 'completed' },
+    { id: 'champion', name: 'Champion', description: 'Complete 10 goals', icon: 'crown', color: '#eab308', requirement: 10, type: 'completed' },
+    { id: 'legend', name: 'Legend', description: 'Complete 25 goals', icon: 'gem', color: '#06b6d4', requirement: 25, type: 'completed' },
+];
 
 // Achievements Modal Component - Minimalistic Design
 const AchievementsModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
-    isDarkMode: boolean;
     goals: GoalWithProgress[];
-}> = ({ isOpen, onClose, isDarkMode, goals }) => {
+}> = ({ isOpen, onClose, goals }) => {
+    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'achievements-title');
     const [selectedBadge, setSelectedBadge] = useState<string | null>(null);
     
     const colors = {
-        bg: isDarkMode ? '#0a0a0a' : '#ffffff',
-        cardBg: isDarkMode ? '#141414' : '#ffffff',
-        border: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-        textPrimary: isDarkMode ? '#ffffff' : '#1a1a1a',
-        textSecondary: isDarkMode ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.5)',
-        textMuted: isDarkMode ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)',
+        bg: 'var(--bg-primary)',
+        cardBg: 'var(--bg-secondary)',
+        border: 'var(--border-light)',
+        textPrimary: 'var(--text-primary)',
+        textSecondary: 'var(--text-secondary)',
+        textMuted: 'var(--text-muted)',
     };
 
     const milestoneStatus = useMemo(() => {
@@ -63,7 +89,7 @@ const AchievementsModal: React.FC<{
                     style={{
                         position: 'fixed',
                         inset: 0,
-                        background: isDarkMode ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.4)',
+                        background: 'rgba(0,0,0,0.5)',
                         backdropFilter: 'blur(8px)',
                         display: 'flex',
                         alignItems: 'center',
@@ -73,6 +99,8 @@ const AchievementsModal: React.FC<{
                     }}
                 >
                     <motion.div
+                        ref={modalRef}
+                        {...modalProps}
                         initial={{ opacity: 0, scale: 0.96 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.96 }}
@@ -81,12 +109,10 @@ const AchievementsModal: React.FC<{
                         style={{
                             width: '100%',
                             maxWidth: '440px',
-                            background: colors.cardBg,
+                            background: 'var(--dashboard-surface)',
                             borderRadius: '20px',
-                            border: `1px solid ${colors.border}`,
-                            boxShadow: isDarkMode 
-                                ? '0 24px 48px rgba(0,0,0,0.4)' 
-                                : '0 24px 48px rgba(0,0,0,0.12)',
+                            border: `1px solid var(--border-color)`,
+                            boxShadow: 'var(--shadow-lg)',
                             overflow: 'hidden',
                         }}
                     >
@@ -102,7 +128,7 @@ const AchievementsModal: React.FC<{
                                     margin: 0, 
                                     fontSize: '18px', 
                                     fontWeight: 600, 
-                                    color: colors.textPrimary,
+                                    color: 'var(--text-primary)',
                                     letterSpacing: '-0.3px',
                                 }}>
                                     Achievements
@@ -110,13 +136,13 @@ const AchievementsModal: React.FC<{
                                 <p style={{ 
                                     margin: '4px 0 0', 
                                     fontSize: '13px', 
-                                    color: colors.textMuted,
+                                    color: 'var(--text-muted)',
                                 }}>
                                     {unlockedCount} of {milestoneStatus.length} unlocked
                                 </p>
                             </div>
                             <motion.button
-                                whileHover={{ scale: 1.05, backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)' }}
+                                whileHover={{ scale: 1.05, backgroundColor: 'var(--bg-hover)' }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={onClose}
                                 style={{
@@ -124,8 +150,8 @@ const AchievementsModal: React.FC<{
                                     height: '36px',
                                     borderRadius: '10px',
                                     border: 'none',
-                                    background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                                    color: colors.textMuted,
+                                    background: 'var(--bg-hover)',
+                                    color: 'var(--text-muted)',
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -153,13 +179,13 @@ const AchievementsModal: React.FC<{
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.25, delay: index * 0.03 }}
-                                        whileHover={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' }}
+                                        whileHover={{ backgroundColor: 'var(--bg-hover)' }}
                                         onClick={() => setSelectedBadge(selectedBadge === milestone.id ? null : milestone.id)}
                                         style={{
                                             padding: '14px 16px',
                                             borderRadius: '14px',
                                             background: milestone.unlocked 
-                                                ? isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.015)'
+                                                ? 'var(--bg-hover)'
                                                 : 'transparent',
                                             cursor: 'pointer',
                                             transition: 'background 0.15s ease',
@@ -179,11 +205,11 @@ const AchievementsModal: React.FC<{
                                                     borderRadius: '12px',
                                                     background: milestone.unlocked 
                                                         ? `linear-gradient(135deg, ${milestone.color}18, ${milestone.color}08)`
-                                                        : isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)',
+                                                        : 'var(--bg-hover)',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    color: milestone.unlocked ? milestone.color : colors.textMuted,
+                                                    color: milestone.unlocked ? milestone.color : 'var(--text-muted)',
                                                     flexShrink: 0,
                                                     position: 'relative',
                                                     overflow: 'hidden',
@@ -214,7 +240,7 @@ const AchievementsModal: React.FC<{
                                                     <span style={{ 
                                                         fontSize: '14px', 
                                                         fontWeight: 600, 
-                                                        color: milestone.unlocked ? colors.textPrimary : colors.textMuted,
+                                                        color: milestone.unlocked ? 'var(--text-primary)' : 'var(--text-muted)',
                                                     }}>
                                                         {milestone.name}
                                                     </span>
@@ -232,7 +258,7 @@ const AchievementsModal: React.FC<{
                                                 </div>
                                                 <div style={{ 
                                                     fontSize: '12px', 
-                                                    color: colors.textMuted,
+                                                    color: 'var(--text-muted)',
                                                 }}>
                                                     {milestone.description}
                                                 </div>
@@ -246,7 +272,7 @@ const AchievementsModal: React.FC<{
                                                 <div style={{ 
                                                     fontSize: '14px', 
                                                     fontWeight: 600, 
-                                                    color: milestone.unlocked ? milestone.color : colors.textMuted,
+                                                    color: milestone.unlocked ? milestone.color : 'var(--text-muted)',
                                                 }}>
                                                     {milestone.current}/{milestone.requirement}
                                                 </div>
@@ -266,7 +292,7 @@ const AchievementsModal: React.FC<{
                                                     <div style={{ paddingTop: '12px', paddingLeft: '58px' }}>
                                                         <div style={{
                                                             height: '6px',
-                                                            background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                                                            background: 'var(--bg-hover)',
                                                             borderRadius: '3px',
                                                             overflow: 'hidden',
                                                         }}>
@@ -283,7 +309,7 @@ const AchievementsModal: React.FC<{
                                                         </div>
                                                         <div style={{ 
                                                             fontSize: '11px', 
-                                                            color: colors.textMuted,
+                                                            color: 'var(--text-muted)',
                                                             marginTop: '6px',
                                                         }}>
                                                             {Math.round(milestone.progress)}% complete

@@ -6,14 +6,19 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SmallTypeIcon } from './SmallTypeIcon';
-import type { GroupedNotificationProps } from '../types';
+
+export interface GroupedNotificationProps {
+    notifications: any[];
+    onClearAll: () => void;
+    onViewAll: () => void;
+}
 
 export const GroupedNotification: React.FC<GroupedNotificationProps> = ({ notifications, onClearAll, onViewAll }) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
 
     const getTypeSummary = () => {
         const types: Record<string, number> = {};
-        notifications.forEach(n => {
+        notifications.forEach((n: any) => {
             types[n.type] = (types[n.type] || 0) + 1;
         });
         return Object.entries(types).map(([type, count]) =>
@@ -108,7 +113,7 @@ export const GroupedNotification: React.FC<GroupedNotificationProps> = ({ notifi
                         className="overflow-hidden"
                     >
                         <div className="border-t border-zinc-100 max-h-40 overflow-y-auto">
-                            {notifications.map((notif, index) => (
+                            {notifications.map((notif: any, index: number) => (
                                 <motion.div
                                     key={notif.id}
                                     initial={{ opacity: 0, x: -10 }}

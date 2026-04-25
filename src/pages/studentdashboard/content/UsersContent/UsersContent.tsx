@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Users Content - User Account Management Page
  * Minimalistic professional design matching PathsContent/GoalsContent
  * Accessibility: prefers-reduced-motion support, keyboard navigation
@@ -6,30 +6,22 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
-import { createPortal } from 'react-dom';
 import {
     fetchUsers,
     getUserStats,
     searchUsers,
     getRoleInfo,
-    getTeacherCourses,
-    getTeacherOfficeHours,
     sortUsers,
     getClassmates,
     type UserAccount,
     type UserStats,
     type UserFilter,
-    type TeacherCourse,
-    type OfficeHours,
     type UserSortOption,
 } from '../../../../services/usersService';
-import UserAvatar from './components/UserAvatar';
-import RoleIcon from './components/RoleIcon';
-import ActionTooltip from './components/ActionTooltip';
 import { FilterTabs } from './components/FilterTabs';
 import { UserCard, UserListItem } from './components/UserCard';
-import { UserCardSkeleton, SkeletonPulse } from './components/UsersSkeleton';
-import { TeacherSpotlight, TeacherSpotlightSkeleton } from './components/TeacherSpotlight';
+import { UserCardSkeleton } from './components/UsersSkeleton';
+import { TeacherSpotlight } from './components/TeacherSpotlight';
 import { EmptyState } from './components/UsersEmptyState';
 import UserDetailModal from './modals/UserDetailModal';
 
@@ -87,27 +79,6 @@ const getTimeAgo = (timestamp: number): string => {
     return `${Math.floor(seconds / 604800)}w ago`;
 };
 
-// Helper function to format "Last seen" timestamp for user presence
-const getLastSeenText = (lastActive: string | undefined, isOnline: boolean): string => {
-    if (isOnline) return 'Online now';
-    if (!lastActive) return 'Offline';
-    
-    const lastActiveDate = new Date(lastActive);
-    const now = new Date();
-    const diffMs = now.getTime() - lastActiveDate.getTime();
-    const diffSeconds = Math.floor(diffMs / 1000);
-    const diffMinutes = Math.floor(diffSeconds / 60);
-    const diffHours = Math.floor(diffMinutes / 60);
-    const diffDays = Math.floor(diffHours / 24);
-    
-    if (diffSeconds < 60) return 'Last seen just now';
-    if (diffMinutes < 60) return `Last seen ${diffMinutes}m ago`;
-    if (diffHours < 24) return `Last seen ${diffHours}h ago`;
-    if (diffDays === 1) return 'Last seen yesterday';
-    if (diffDays < 7) return `Last seen ${diffDays}d ago`;
-    if (diffDays < 30) return `Last seen ${Math.floor(diffDays / 7)}w ago`;
-    return `Last seen ${Math.floor(diffDays / 30)}mo ago`;
-};
 
 // Pagination constants
 const USERS_PER_PAGE = 12;
@@ -224,19 +195,6 @@ const UsersContent: React.FC = () => {
     const handleModalClose = useCallback(() => {
         setIsModalOpen(false);
         setTimeout(() => setSelectedUser(null), 200); // Clear after animation
-    }, []);
-    
-    // Dark mode detection
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        return document.documentElement.classList.contains('dark') ||
-               document.body.classList.contains('dark-mode');
-    });
-
-    useEffect(() => {
-        const checkDarkMode = () => setIsDarkMode(document.body.classList.contains('dark-mode'));
-        const observer = new MutationObserver(checkDarkMode);
-        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-        return () => observer.disconnect();
     }, []);
 
     // Load users, stats, and classmates
@@ -419,13 +377,13 @@ const UsersContent: React.FC = () => {
 
     // Colors based on theme (matching PathsContent)
     const colors = {
-        bg: isDarkMode ? '#0f172a' : '#f8fafc',
-        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
-        border: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-        textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
-        textSecondary: isDarkMode ? '#94a3b8' : '#64748b',
-        textMuted: isDarkMode ? '#94a3b8' : '#475569',
-        accent: '#3b82f6',
+        bg: 'var(--bg-primary)',
+        cardBg: 'var(--bg-secondary)',
+        border: 'var(--border-light)',
+        textPrimary: 'var(--text-primary)',
+        textSecondary: 'var(--text-secondary)',
+        textMuted: 'var(--text-muted)',
+        accent: 'var(--brand-blue)',
     };
 
 
@@ -454,11 +412,9 @@ const UsersContent: React.FC = () => {
                         gap: '16px',
                         padding: '18px 22px',
                         borderRadius: '14px',
-                        background: colors.cardBg,
-                        border: `1px solid ${colors.border}`,
-                        boxShadow: isDarkMode 
-                            ? '0 2px 12px rgba(0,0,0,0.15)' 
-                            : '0 2px 12px rgba(0,0,0,0.04)',
+                        background: 'var(--dashboard-surface)',
+                        border: `1px solid var(--border-color)`,
+                        boxShadow: 'var(--shadow-lg)',
                         flexWrap: 'wrap',
                     }}
                 >
@@ -472,9 +428,7 @@ const UsersContent: React.FC = () => {
                             width: '46px',
                             height: '46px',
                             borderRadius: '12px',
-                            background: isDarkMode 
-                                ? 'rgba(59, 130, 246, 0.12)'
-                                : 'rgba(59, 130, 246, 0.08)',
+                            background: 'rgba(59, 130, 246, 0.08)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -501,7 +455,7 @@ const UsersContent: React.FC = () => {
                                 margin: 0, 
                                 fontSize: '20px', 
                                 fontWeight: 600, 
-                                color: colors.textPrimary,
+                                color: 'var(--text-primary)',
                                 letterSpacing: '-0.3px',
                             }}>
                                 Users
@@ -514,7 +468,7 @@ const UsersContent: React.FC = () => {
                                     fontSize: '10px',
                                     fontWeight: 600,
                                     color: '#3b82f6',
-                                    background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+                                    background: 'rgba(59, 130, 246, 0.1)',
                                     padding: '3px 8px',
                                     borderRadius: '6px',
                                     textTransform: 'uppercase',
@@ -527,7 +481,7 @@ const UsersContent: React.FC = () => {
                         <p style={{ 
                             margin: 0, 
                             fontSize: '13px', 
-                            color: colors.textSecondary,
+                            color: 'var(--text-secondary)',
                             fontWeight: 400,
                         }}>
                             Manage user accounts and permissions
@@ -552,7 +506,7 @@ const UsersContent: React.FC = () => {
                                 value: stats.totalUsers,
                                 description: 'Users',
                                 color: '#3b82f6',
-                                bgColor: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.06)',
+                                bgColor: 'rgba(59, 130, 246, 0.06)',
                                 icon: (
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -567,7 +521,7 @@ const UsersContent: React.FC = () => {
                                 value: stats.onlineUsers,
                                 description: 'Online',
                                 color: '#10b981',
-                                bgColor: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.06)',
+                                bgColor: 'rgba(16, 185, 129, 0.06)',
                                 icon: (
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -580,7 +534,7 @@ const UsersContent: React.FC = () => {
                                 value: stats.students,
                                 description: 'Enrolled',
                                 color: '#8b5cf6',
-                                bgColor: isDarkMode ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.06)',
+                                bgColor: 'rgba(139, 92, 246, 0.06)',
                                 icon: (
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
@@ -593,7 +547,7 @@ const UsersContent: React.FC = () => {
                                 value: stats.teachers,
                                 description: 'Faculty',
                                 color: '#f59e0b',
-                                bgColor: isDarkMode ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.06)',
+                                bgColor: 'rgba(245, 158, 11, 0.06)',
                                 icon: (
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -647,7 +601,7 @@ const UsersContent: React.FC = () => {
                                 <span style={{ 
                                     fontSize: '10px', 
                                     fontWeight: 500, 
-                                    color: colors.textMuted,
+                                    color: 'var(--text-muted)',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.3px',
                                 }}>
@@ -668,8 +622,8 @@ const UsersContent: React.FC = () => {
                     marginBottom: '24px',
                     padding: '18px',
                     borderRadius: '14px',
-                    background: colors.cardBg,
-                    border: `1px solid ${colors.border}`,
+                    background: 'var(--dashboard-surface)',
+                    border: `1px solid var(--border-color)`,
                 }}
             >
                 {/* Section Header */}
@@ -683,7 +637,7 @@ const UsersContent: React.FC = () => {
                                 width: '38px',
                                 height: '38px',
                                 borderRadius: '10px',
-                                background: isDarkMode ? 'rgba(139, 92, 246, 0.12)' : 'rgba(139, 92, 246, 0.08)',
+                                background: 'rgba(139, 92, 246, 0.08)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -697,10 +651,10 @@ const UsersContent: React.FC = () => {
                             </svg>
                         </motion.div>
                         <div>
-                            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: colors.textPrimary }}>
+                            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                 My Classmates
                             </h3>
-                            <p style={{ margin: 0, fontSize: '12px', color: colors.textSecondary }}>
+                            <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
                                 BSIT101A · {classmates.length} students
                             </p>
                         </div>
@@ -723,9 +677,9 @@ const UsersContent: React.FC = () => {
                             style={{
                                 padding: '6px 12px',
                                 borderRadius: '8px',
-                                border: `1px solid ${colors.border}`,
+                                border: `1px solid var(--border-color)`,
                                 background: 'transparent',
-                                color: colors.textSecondary,
+                                color: 'var(--text-secondary)',
                                 fontSize: '12px',
                                 fontWeight: 500,
                                 cursor: 'pointer',
@@ -773,7 +727,7 @@ const UsersContent: React.FC = () => {
                                 transition={{ delay: index * 0.02, duration: 0.2 }}
                                 whileHover={{ 
                                     scale: 1.02,
-                                    background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                    background: 'var(--bg-hover)',
                                 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => handleUserClick(classmate)}
@@ -783,7 +737,7 @@ const UsersContent: React.FC = () => {
                                     gap: '10px',
                                     padding: '10px 12px',
                                     borderRadius: '10px',
-                                    border: `1px solid ${colors.border}`,
+                                    border: `1px solid var(--border-color)`,
                                     cursor: 'pointer',
                                     transition: 'all 0.15s ease',
                                 }}
@@ -822,7 +776,7 @@ const UsersContent: React.FC = () => {
                                         margin: 0,
                                         fontSize: '12px',
                                         fontWeight: 500,
-                                        color: colors.textPrimary,
+                                        color: 'var(--text-primary)',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
@@ -832,7 +786,7 @@ const UsersContent: React.FC = () => {
                                     <p style={{
                                         margin: 0,
                                         fontSize: '10px',
-                                        color: classmate.is_online ? '#10b981' : colors.textMuted,
+                                        color: classmate.is_online ? '#10b981' : 'var(--text-muted)',
                                     }}>
                                         {classmate.is_online ? 'Online' : 'Offline'}
                                     </p>
@@ -849,7 +803,7 @@ const UsersContent: React.FC = () => {
                             left: 0,
                             right: 0,
                             height: '40px',
-                            background: `linear-gradient(transparent, ${colors.cardBg})`,
+                            background: `linear-gradient(transparent, var(--dashboard-surface))`,
                             pointerEvents: 'none',
                         }} />
                     )}
@@ -858,7 +812,6 @@ const UsersContent: React.FC = () => {
 
             {/* Teacher Spotlight Section */}
             <TeacherSpotlight 
-                isDarkMode={isDarkMode} 
                 colors={colors} 
                 onTeacherClick={handleUserClick}
             />
@@ -886,8 +839,8 @@ const UsersContent: React.FC = () => {
                             marginBottom: '24px',
                             padding: '16px 18px',
                             borderRadius: '14px',
-                            background: colors.cardBg,
-                            border: `1px solid ${colors.border}`,
+                            background: 'var(--dashboard-surface)',
+                            border: `1px solid var(--border-color)`,
                             overflow: 'hidden',
                         }}
                     >
@@ -902,7 +855,7 @@ const UsersContent: React.FC = () => {
                                     width: '34px',
                                     height: '34px',
                                     borderRadius: '9px',
-                                    background: isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)',
+                                    background: 'rgba(59, 130, 246, 0.08)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -914,10 +867,10 @@ const UsersContent: React.FC = () => {
                                 </svg>
                             </motion.div>
                             <div>
-                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: colors.textPrimary }}>
+                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                     Recently Viewed
                                 </h3>
-                                <p style={{ margin: 0, fontSize: '11px', color: colors.textSecondary }}>
+                                <p style={{ margin: 0, fontSize: '11px', color: 'var(--text-secondary)' }}>
                                     {recentlyViewed.length} profile{recentlyViewed.length !== 1 ? 's' : ''} viewed
                                 </p>
                             </div>
@@ -930,7 +883,7 @@ const UsersContent: React.FC = () => {
                                 padding: '5px 10px',
                                 borderRadius: '6px',
                                 border: 'none',
-                                background: isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.08)',
+                                background: 'rgba(239, 68, 68, 0.08)',
                                 color: '#ef4444',
                                 fontSize: '11px',
                                 fontWeight: 500,
@@ -980,8 +933,8 @@ const UsersContent: React.FC = () => {
                                             width: '140px',
                                             padding: '12px',
                                             borderRadius: '10px',
-                                            border: `1px solid ${colors.border}`,
-                                            background: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
+                                            border: `1px solid var(--border-color)`,
+                                            background: 'var(--bg-hover)',
                                             cursor: 'pointer',
                                             textAlign: 'center',
                                         }}
@@ -1028,7 +981,7 @@ const UsersContent: React.FC = () => {
                                         margin: '0 0 2px',
                                         fontSize: '12px',
                                         fontWeight: 500,
-                                        color: colors.textPrimary,
+                                        color: 'var(--text-primary)',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
@@ -1040,7 +993,7 @@ const UsersContent: React.FC = () => {
                                     <p style={{
                                         margin: 0,
                                         fontSize: '10px',
-                                        color: colors.textMuted,
+                                        color: 'var(--text-muted)',
                                     }}>
                                         {timeAgo}
                                     </p>
@@ -1089,7 +1042,7 @@ const UsersContent: React.FC = () => {
                         height="16"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke={isDarkMode ? '#64748b' : '#94a3b8'}
+                        stroke={'var(--text-muted)'}
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -1124,9 +1077,9 @@ const UsersContent: React.FC = () => {
                             width: '100%',
                             padding: '11px 42px 11px 42px',
                             borderRadius: '12px',
-                            border: `1px solid ${colors.border}`,
-                            background: colors.cardBg,
-                            color: colors.textPrimary,
+                            border: `1px solid var(--border-color)`,
+                            background: 'var(--dashboard-surface)',
+                            color: 'var(--text-primary)',
                             fontSize: '13px',
                             outline: 'none',
                             transition: reducedMotion ? 'none' : 'all 0.2s ease',
@@ -1151,12 +1104,10 @@ const UsersContent: React.FC = () => {
                                     left: 0,
                                     right: 0,
                                     marginTop: '6px',
-                                    background: colors.cardBg,
-                                    border: `1px solid ${colors.border}`,
+                                    background: 'var(--dashboard-surface)',
+                                    border: `1px solid var(--border-color)`,
                                     borderRadius: '12px',
-                                    boxShadow: isDarkMode 
-                                        ? '0 8px 24px rgba(0,0,0,0.4)' 
-                                        : '0 8px 24px rgba(0,0,0,0.1)',
+                                    boxShadow: 'var(--shadow-lg)',
                                     zIndex: 50,
                                     overflow: 'hidden',
                                 }}
@@ -1164,7 +1115,7 @@ const UsersContent: React.FC = () => {
                                 {/* Suggestions Header */}
                                 <div style={{
                                     padding: '8px 12px',
-                                    borderBottom: `1px solid ${colors.border}`,
+                                    borderBottom: `1px solid var(--border-color)`,
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
@@ -1172,7 +1123,7 @@ const UsersContent: React.FC = () => {
                                     <span style={{
                                         fontSize: '10px',
                                         fontWeight: 600,
-                                        color: colors.textMuted,
+                                        color: 'var(--text-muted)',
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.5px',
                                     }}>
@@ -1180,7 +1131,7 @@ const UsersContent: React.FC = () => {
                                     </span>
                                     <span style={{
                                         fontSize: '10px',
-                                        color: colors.textMuted,
+                                        color: 'var(--text-muted)',
                                     }}>
                                         ↑↓ Navigate · Enter Select
                                     </span>
@@ -1209,7 +1160,7 @@ const UsersContent: React.FC = () => {
                                                 padding: '10px 12px',
                                                 cursor: 'pointer',
                                                 background: isSelected 
-                                                    ? isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)'
+                                                    ? 'rgba(59, 130, 246, 0.05)'
                                                     : 'transparent',
                                                 borderLeft: isSelected ? '3px solid #3b82f6' : '3px solid transparent',
                                                 transition: reducedMotion ? 'none' : 'all 0.1s ease',
@@ -1258,7 +1209,7 @@ const UsersContent: React.FC = () => {
                                                     <span style={{
                                                         fontSize: '13px',
                                                         fontWeight: 500,
-                                                        color: colors.textPrimary,
+                                                        color: 'var(--text-primary)',
                                                         overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
                                                         whiteSpace: 'nowrap',
@@ -1279,7 +1230,7 @@ const UsersContent: React.FC = () => {
                                                 </div>
                                                 <span style={{
                                                     fontSize: '11px',
-                                                    color: colors.textMuted,
+                                                    color: 'var(--text-muted)',
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
                                                     whiteSpace: 'nowrap',
@@ -1295,7 +1246,7 @@ const UsersContent: React.FC = () => {
                                                 height="14" 
                                                 viewBox="0 0 24 24" 
                                                 fill="none" 
-                                                stroke={isSelected ? '#3b82f6' : colors.textMuted}
+                                                stroke={isSelected ? '#3b82f6' : 'var(--text-muted)'}
                                                 strokeWidth="2" 
                                                 strokeLinecap="round" 
                                                 strokeLinejoin="round"
@@ -1310,7 +1261,7 @@ const UsersContent: React.FC = () => {
                                 {/* View All Results */}
                                 <div style={{
                                     padding: '8px 12px',
-                                    borderTop: `1px solid ${colors.border}`,
+                                    borderTop: `1px solid var(--border-color)`,
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -1383,9 +1334,9 @@ const UsersContent: React.FC = () => {
                             gap: '8px',
                             padding: '10px 14px',
                             borderRadius: '10px',
-                            border: `1px solid ${colors.border}`,
-                            background: colors.cardBg,
-                            color: colors.textSecondary,
+                            border: `1px solid var(--border-color)`,
+                            background: 'var(--dashboard-surface)',
+                            color: 'var(--text-secondary)',
                             fontSize: '12px',
                             fontWeight: 500,
                             cursor: 'pointer',
@@ -1429,12 +1380,10 @@ const UsersContent: React.FC = () => {
                                     top: 'calc(100% + 6px)',
                                     right: 0,
                                     minWidth: '160px',
-                                    background: colors.cardBg,
+                                    background: 'var(--dashboard-surface)',
                                     borderRadius: '12px',
-                                    border: `1px solid ${colors.border}`,
-                                    boxShadow: isDarkMode
-                                        ? '0 8px 24px rgba(0, 0, 0, 0.4)'
-                                        : '0 8px 24px rgba(0, 0, 0, 0.1)',
+                                    border: `1px solid var(--border-color)`,
+                                    boxShadow: 'var(--shadow-lg)',
                                     padding: '6px',
                                     zIndex: 100,
                                 }}
@@ -1464,7 +1413,7 @@ const UsersContent: React.FC = () => {
                                 ].map((option) => (
                                     <motion.button
                                         key={option.id}
-                                        whileHover={{ background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
+                                        whileHover={{ background: 'var(--bg-hover)' }}
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => {
                                             setSortOption(option.id);
@@ -1479,9 +1428,9 @@ const UsersContent: React.FC = () => {
                                             borderRadius: '8px',
                                             border: 'none',
                                             background: sortOption === option.id
-                                                ? isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
+                                                ? 'rgba(59, 130, 246, 0.1)'
                                                 : 'transparent',
-                                            color: sortOption === option.id ? '#3b82f6' : colors.textSecondary,
+                                            color: sortOption === option.id ? '#3b82f6' : 'var(--text-secondary)',
                                             fontSize: '12px',
                                             fontWeight: 500,
                                             cursor: 'pointer',
@@ -1524,7 +1473,7 @@ const UsersContent: React.FC = () => {
                         gap: '2px',
                         padding: '3px',
                         borderRadius: '10px',
-                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                        background: 'var(--bg-hover)',
                     }}
                 >
                     <motion.button
@@ -1539,9 +1488,9 @@ const UsersContent: React.FC = () => {
                             borderRadius: '8px',
                             border: 'none',
                             background: viewMode === 'grid'
-                                ? isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
+                                ? 'rgba(59, 130, 246, 0.1)'
                                 : 'transparent',
-                            color: viewMode === 'grid' ? '#3b82f6' : colors.textMuted,
+                            color: viewMode === 'grid' ? '#3b82f6' : 'var(--text-muted)',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
@@ -1569,9 +1518,9 @@ const UsersContent: React.FC = () => {
                             borderRadius: '8px',
                             border: 'none',
                             background: viewMode === 'list'
-                                ? isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
+                                ? 'rgba(59, 130, 246, 0.1)'
                                 : 'transparent',
-                            color: viewMode === 'list' ? '#3b82f6' : colors.textMuted,
+                            color: viewMode === 'list' ? '#3b82f6' : 'var(--text-muted)',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
@@ -1595,7 +1544,6 @@ const UsersContent: React.FC = () => {
                 <FilterTabs
                     activeFilter={activeFilter}
                     setActiveFilter={setActiveFilter}
-                    isDarkMode={isDarkMode}
                     stats={stats}
                     colors={colors}
                 />
@@ -1618,11 +1566,11 @@ const UsersContent: React.FC = () => {
                         }}
                     >
                         {[...Array(8)].map((_, i) => (
-                            <UserCardSkeleton key={i} index={i} isDarkMode={isDarkMode} colors={colors} />
+                            <UserCardSkeleton key={i} index={i} colors={colors} />
                         ))}
                     </motion.div>
                 ) : users.length === 0 ? (
-                    <EmptyState isDarkMode={isDarkMode} searchQuery={searchQuery} colors={colors} />
+                    <EmptyState searchQuery={searchQuery} colors={colors} />
                 ) : viewMode === 'grid' ? (
                     <motion.div
                         key="users-grid"
@@ -1643,7 +1591,6 @@ const UsersContent: React.FC = () => {
                                     key={user.id}
                                     user={user}
                                     index={index}
-                                    isDarkMode={isDarkMode}
                                     colors={colors}
                                     onClick={handleUserClick}
                                     favorites={favorites}
@@ -1678,7 +1625,7 @@ const UsersContent: React.FC = () => {
                                     padding: '10px 18px 10px 76px',
                                     fontSize: '11px',
                                     fontWeight: 600,
-                                    color: colors.textMuted,
+                                    color: 'var(--text-muted)',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
                                 }}
@@ -1696,7 +1643,6 @@ const UsersContent: React.FC = () => {
                                     key={user.id}
                                     user={user}
                                     index={index}
-                                    isDarkMode={isDarkMode}
                                     colors={colors}
                                     onClick={handleUserClick}
                                     favorites={favorites}
@@ -1730,7 +1676,7 @@ const UsersContent: React.FC = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                color: colors.textMuted,
+                                color: 'var(--text-muted)',
                                 fontSize: '13px',
                             }}
                         >
@@ -1741,7 +1687,7 @@ const UsersContent: React.FC = () => {
                                     width: '16px',
                                     height: '16px',
                                     border: '2px solid',
-                                    borderColor: `${colors.accent} transparent transparent transparent`,
+                                    borderColor: `var(--accent-color) transparent transparent transparent`,
                                     borderRadius: '50%',
                                 }}
                             />
@@ -1755,9 +1701,9 @@ const UsersContent: React.FC = () => {
                             style={{
                                 padding: '10px 24px',
                                 borderRadius: '10px',
-                                border: `1px solid ${colors.border}`,
-                                background: colors.cardBg,
-                                color: colors.textSecondary,
+                                border: `1px solid var(--border-color)`,
+                                background: 'var(--dashboard-surface)',
+                                color: 'var(--text-secondary)',
                                 fontSize: '13px',
                                 fontWeight: 500,
                                 cursor: 'pointer',
@@ -1781,7 +1727,7 @@ const UsersContent: React.FC = () => {
                     textAlign: 'center',
                     padding: '16px',
                     fontSize: '12px',
-                    color: colors.textMuted,
+                    color: 'var(--text-muted)',
                 }}>
                     Showing {displayedUsers.length} of {users.length} users
                 </div>
@@ -1793,7 +1739,6 @@ const UsersContent: React.FC = () => {
                 user={selectedUser}
                 isOpen={isModalOpen}
                 onClose={handleModalClose}
-                isDarkMode={isDarkMode}
             />
         </div>
     );

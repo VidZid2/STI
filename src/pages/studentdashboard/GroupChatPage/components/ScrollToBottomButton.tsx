@@ -46,11 +46,11 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                     alignItems: 'center',
                     gap: '8px',
                     padding: newMessageCount > 0 ? '8px 16px' : '8px 12px',
-                    background: isDarkMode ? 'rgba(30, 41, 59, 0.98)' : 'rgba(255, 255, 255, 0.98)',
+                    background: 'rgba(30, 41, 59, 0.98)',
                     backdropFilter: 'blur(12px)',
                     WebkitBackdropFilter: 'blur(12px)',
                     borderRadius: '12px',
-                    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                    border: `1px solid ${'var(--bg-hover)'}`,
                     boxShadow: isDarkMode
                         ? '0 4px 16px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2)'
                         : '0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04)',
@@ -65,8 +65,8 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                     height: 24,
                     borderRadius: '8px',
                     background: newMessageCount > 0
-                        ? (isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)')
-                        : (isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'),
+                        ? ('var(--dashboard-surface)')
+                        : ('var(--bg-hover)'),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -76,7 +76,7 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                         height="14"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke={newMessageCount > 0 ? colors.accent : colors.textSecondary}
+                        stroke={newMessageCount > 0 ? 'var(--accent-color)' : 'var(--text-secondary)'}
                         strokeWidth="2.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -90,7 +90,7 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                     <span style={{
                         fontSize: '12px',
                         fontWeight: 600,
-                        color: newMessageCount > 0 ? colors.accent : colors.textPrimary,
+                        color: newMessageCount > 0 ? 'var(--accent-color)' : 'var(--text-primary)',
                         lineHeight: 1.2,
                     }}>
                         {newMessageCount > 0 ? `${newMessageCount} new message${newMessageCount > 1 ? 's' : ''}` : 'Jump to latest'}
@@ -99,7 +99,7 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                         <span style={{
                             fontSize: '10px',
                             fontWeight: 500,
-                            color: colors.textMuted,
+                            color: 'var(--text-muted)',
                             lineHeight: 1.2,
                         }}>
                             Click to scroll down
@@ -113,8 +113,8 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                         width: 6,
                         height: 6,
                         borderRadius: '50%',
-                        background: colors.accent,
-                        boxShadow: `0 0 8px ${colors.accent}60`,
+                        background: 'var(--accent-color)',
+                        boxShadow: `0 0 8px var(--accent-color)60`,
                         animation: 'pulse 2s ease-in-out infinite',
                     }} />
                 )}

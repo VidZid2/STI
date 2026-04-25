@@ -3,9 +3,9 @@
  * Full-screen distraction blocker overlay.
  * Extracted from FocusModePage.tsx during Phase 8.5
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import type { FocusModeColors } from '../FocusModePage';
+import type { Resource } from '../FocusModePage';
 
 // Distraction Blocker Overlay Component
 const DistractionBlocker: React.FC<{
@@ -45,7 +45,7 @@ const DistractionBlocker: React.FC<{
                         zIndex: 1000,
                         padding: '14px 24px',
                         borderRadius: '16px',
-                        background: isDarkMode ? '#1e293b' : '#ffffff',
+                        background: 'var(--bg-primary)',
                         backdropFilter: 'blur(20px)',
                         boxShadow: isHovered
                             ? `0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px ${accentColor}30`
@@ -54,7 +54,7 @@ const DistractionBlocker: React.FC<{
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '16px',
-                        border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'}`,
+                        border: `1px solid ${'rgba(255,255,255,0.1)'}`,
                         transition: 'box-shadow 0.3s ease',
                     }}
                 >
@@ -95,7 +95,7 @@ const DistractionBlocker: React.FC<{
                     <div style={{
                         width: 1,
                         height: 20,
-                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                        background: 'var(--bg-hover)',
                     }} />
 
                     {/* Timer display */}
@@ -122,12 +122,12 @@ const DistractionBlocker: React.FC<{
                     <div style={{
                         width: 1,
                         height: 20,
-                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                        background: 'var(--bg-hover)',
                     }} />
 
                     {/* Exit button */}
                     <motion.button
-                        whileHover={{ scale: 1.05, background: isDarkMode ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)' }}
+                        whileHover={{ scale: 1.05, background: 'rgba(239, 68, 68, 0.12)' }}
                         whileTap={{ scale: 0.95 }}
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -136,9 +136,9 @@ const DistractionBlocker: React.FC<{
                         style={{
                             padding: '8px 14px',
                             borderRadius: '10px',
-                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+                            border: `1px solid ${'var(--bg-hover)'}`,
                             background: 'transparent',
-                            color: isDarkMode ? '#f87171' : '#ef4444',
+                            color: 'var(--bg-hover)',
                             fontSize: '12px',
                             fontWeight: 600,
                             cursor: 'pointer',
@@ -206,4 +206,4 @@ const RESOURCE_TYPE_CONFIG: Record<Resource['type'], {
 };
 
 
-export { DistractionBlocker };
+export { DistractionBlocker, RESOURCE_TYPE_CONFIG };

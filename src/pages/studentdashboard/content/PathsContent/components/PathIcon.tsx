@@ -65,3 +65,4 @@ type FilterTab = 'all' | 'enrolled' | 'available';
 
 
 export { PathIcon };
+export type { FilterTab };
