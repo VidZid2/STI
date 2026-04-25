@@ -65,8 +65,7 @@ export const useDashboardData = (refreshTrigger: number): UseDashboardDataReturn
         recentActivities,
         overallProgress,
         totalCourses,
-        refreshData,
-    };
+        refreshData };
 };
 
 export default useDashboardData;

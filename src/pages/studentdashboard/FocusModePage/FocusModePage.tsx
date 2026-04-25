@@ -154,7 +154,7 @@ const FocusModePage: React.FC = () => {
     } | null>(null);
 
     // Dark mode detection - reads from localStorage and listens for changes
-    const [isDarkMode, setIsDarkMode] = useState(() => {
+    const [ setIsDarkMode] = useState(() => {
         const saved = localStorage.getItem('darkModeEnabled');
         return saved === 'true' || document.body.classList.contains('dark-mode');
     });
@@ -232,15 +232,14 @@ const FocusModePage: React.FC = () => {
         setCurrentStreak(streakData.currentStreak);
     }, []);
 
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-primary)',
         border: 'var(--bg-hover)',
         textPrimary: 'var(--bg-hover)',
         textSecondary: 'var(--bg-hover)',
         textMuted: 'var(--bg-hover)',
-        accent: '#3b82f6',
-    };
+        accent: '#3b82f6' };
 
     // Helper function to extract URLs from text
     const extractUrls = (text: string): string[] => {
@@ -296,8 +295,7 @@ const FocusModePage: React.FC = () => {
                                 content: url,
                                 url,
                                 createdAt: new Date(msg.created_at),
-                                sharedBy: msg.user_name,
-                            });
+                                sharedBy: msg.user_name });
                         });
 
                         // Extract code blocks
@@ -310,8 +308,7 @@ const FocusModePage: React.FC = () => {
                                 content: codeInfo.code.substring(0, 100) + (codeInfo.code.length > 100 ? '...' : ''),
                                 language: codeInfo.language,
                                 createdAt: new Date(msg.created_at),
-                                sharedBy: msg.user_name,
-                            });
+                                sharedBy: msg.user_name });
                         }
 
                         // Extract files and images from attachments
@@ -330,8 +327,7 @@ const FocusModePage: React.FC = () => {
                                         url: att.url,
                                         previewUrl: att.thumbnail_url || att.url,
                                         createdAt: new Date(msg.created_at),
-                                        sharedBy: msg.user_name,
-                                    });
+                                        sharedBy: msg.user_name });
                                 } else {
                                     extractedResources.push({
                                         id: `file-${resourceId++}`,
@@ -340,8 +336,7 @@ const FocusModePage: React.FC = () => {
                                         content: att.type || 'File',
                                         url: att.url,
                                         createdAt: new Date(msg.created_at),
-                                        sharedBy: msg.user_name,
-                                    });
+                                        sharedBy: msg.user_name });
                                 }
                             });
                         }
@@ -356,8 +351,7 @@ const FocusModePage: React.FC = () => {
                                 title,
                                 content: msg.content.substring(0, 100) + '...',
                                 createdAt: new Date(msg.created_at),
-                                sharedBy: msg.user_name,
-                            });
+                                sharedBy: msg.user_name });
                         }
 
                         // Check for note/summary content (longer messages without code/links)
@@ -368,8 +362,7 @@ const FocusModePage: React.FC = () => {
                                 title: 'Study Note',
                                 content: msg.content.substring(0, 100) + '...',
                                 createdAt: new Date(msg.created_at),
-                                sharedBy: msg.user_name,
-                            });
+                                sharedBy: msg.user_name });
                         }
                     });
 
@@ -385,8 +378,7 @@ const FocusModePage: React.FC = () => {
                             content: 'Official React documentation for learning hooks and components',
                             url: 'https://react.dev',
                             createdAt: new Date(),
-                            sharedBy: 'Teacher',
-                        },
+                            sharedBy: 'Teacher' },
                         {
                             id: 'demo-link-2',
                             type: 'link',
@@ -394,8 +386,7 @@ const FocusModePage: React.FC = () => {
                             content: 'Comprehensive JavaScript reference and tutorials',
                             url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
                             createdAt: new Date(),
-                            sharedBy: 'Teacher',
-                        },
+                            sharedBy: 'Teacher' },
                         {
                             id: 'demo-code-1',
                             type: 'code',
@@ -403,8 +394,7 @@ const FocusModePage: React.FC = () => {
                             content: 'const numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2);',
                             language: 'javascript',
                             createdAt: new Date(Date.now() - 86400000),
-                            sharedBy: 'Student A',
-                        },
+                            sharedBy: 'Student A' },
                         {
                             id: 'demo-file-1',
                             type: 'file',
@@ -412,16 +402,14 @@ const FocusModePage: React.FC = () => {
                             content: 'PDF Document - 2.4 MB',
                             url: '#',
                             createdAt: new Date(Date.now() - 172800000),
-                            sharedBy: 'Student B',
-                        },
+                            sharedBy: 'Student B' },
                         {
                             id: 'demo-note-1',
                             type: 'note',
                             title: 'Study Summary - Week 3',
                             content: 'Key concepts covered this week: State management, useEffect hook, and component lifecycle...',
                             createdAt: new Date(Date.now() - 259200000),
-                            sharedBy: 'Student C',
-                        },
+                            sharedBy: 'Student C' },
                     ]);
                 }
             } catch (error) {
@@ -456,8 +444,7 @@ const FocusModePage: React.FC = () => {
                 content: url,
                 url,
                 createdAt: new Date(msg.created_at),
-                sharedBy: msg.user_name,
-            });
+                sharedBy: msg.user_name });
         });
 
         // Extract code blocks
@@ -470,8 +457,7 @@ const FocusModePage: React.FC = () => {
                 content: codeInfo.code.substring(0, 100) + (codeInfo.code.length > 100 ? '...' : ''),
                 language: codeInfo.language,
                 createdAt: new Date(msg.created_at),
-                sharedBy: msg.user_name,
-            });
+                sharedBy: msg.user_name });
         }
 
         // Extract files and images from attachments
@@ -490,8 +476,7 @@ const FocusModePage: React.FC = () => {
                         url: att.url,
                         previewUrl: att.thumbnail_url || att.url,
                         createdAt: new Date(msg.created_at),
-                        sharedBy: msg.user_name,
-                    });
+                        sharedBy: msg.user_name });
                 } else {
                     extractedResources.push({
                         id: `file-${msg.id}-${idx}-${timestamp}`,
@@ -500,8 +485,7 @@ const FocusModePage: React.FC = () => {
                         content: att.type || 'File',
                         url: att.url,
                         createdAt: new Date(msg.created_at),
-                        sharedBy: msg.user_name,
-                    });
+                        sharedBy: msg.user_name });
                 }
             });
         }
@@ -516,8 +500,7 @@ const FocusModePage: React.FC = () => {
                 title,
                 content: msg.content.substring(0, 100) + '...',
                 createdAt: new Date(msg.created_at),
-                sharedBy: msg.user_name,
-            });
+                sharedBy: msg.user_name });
         }
 
         // Check for note/summary content
@@ -528,8 +511,7 @@ const FocusModePage: React.FC = () => {
                 title: 'Study Note',
                 content: msg.content.substring(0, 100) + '...',
                 createdAt: new Date(msg.created_at),
-                sharedBy: msg.user_name,
-            });
+                sharedBy: msg.user_name });
         }
 
         return extractedResources;
@@ -563,8 +545,7 @@ const FocusModePage: React.FC = () => {
             files: 'file',
             images: 'image',
             code: 'code',
-            notes: 'note',
-        };
+            notes: 'note' };
         return resources.filter(r => r.type === typeMap[activeFilter]);
     }, [resources, activeFilter]);
 
@@ -574,8 +555,7 @@ const FocusModePage: React.FC = () => {
         files: resources.filter(r => r.type === 'file').length,
         images: resources.filter(r => r.type === 'image').length,
         code: resources.filter(r => r.type === 'code').length,
-        notes: resources.filter(r => r.type === 'note' || r.type === 'flashcard').length,
-    }), [resources]);
+        notes: resources.filter(r => r.type === 'note' || r.type === 'flashcard').length }), [resources]);
 
     const handleSessionComplete = useCallback((duration: number) => {
         // Update local state
@@ -604,8 +584,7 @@ const FocusModePage: React.FC = () => {
             padding: '16px 24px',
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'hidden',
-        }}>
+            overflow: 'hidden' }}>
             {/* Distraction Blocker Overlay */}
             <DistractionBlocker
                 isActive={showDistractionBlocker}
@@ -627,8 +606,7 @@ const FocusModePage: React.FC = () => {
                         borderRadius: '14px',
                         background: 'var(--dashboard-surface)',
                         border: `1px solid var(--border-color)`,
-                        flexShrink: 0,
-                    }}
+                        flexShrink: 0 }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <motion.button
@@ -645,8 +623,7 @@ const FocusModePage: React.FC = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: 'var(--text-secondary)',
-                            }}
+                                color: 'var(--text-secondary)' }}
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M19 12H5" /><polyline points="12 19 5 12 12 5" />
@@ -660,8 +637,7 @@ const FocusModePage: React.FC = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
-                        }}>
+                            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)' }}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
                                 <circle cx="12" cy="12" r="10" />
                                 <circle cx="12" cy="12" r="4" />
@@ -673,15 +649,13 @@ const FocusModePage: React.FC = () => {
                                 fontSize: '18px',
                                 fontWeight: 700,
                                 color: 'var(--text-primary)',
-                                letterSpacing: '-0.3px',
-                            }}>
+                                letterSpacing: '-0.3px' }}>
                                 Focus Mode
                             </h1>
                             <p style={{
                                 margin: 0,
                                 fontSize: '12px',
-                                color: 'var(--text-muted)',
-                            }}>
+                                color: 'var(--text-muted)' }}>
                                 {groupInfo?.name || 'Distraction-free study'}
                             </p>
                         </div>
@@ -694,8 +668,7 @@ const FocusModePage: React.FC = () => {
                             gap: '6px',
                             padding: '6px 12px',
                             borderRadius: '8px',
-                            background: 'rgba(59, 130, 246, 0.1)',
-                        }}>
+                            background: 'rgba(59, 130, 246, 0.1)' }}>
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
                                 <circle cx="12" cy="12" r="10" />
                                 <polyline points="12 6 12 12 16 14" />
@@ -719,8 +692,7 @@ const FocusModePage: React.FC = () => {
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '5px',
-                            }}
+                                gap: '5px' }}
                         >
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -737,8 +709,7 @@ const FocusModePage: React.FC = () => {
                     gridTemplateColumns: '280px 1fr 300px',
                     gap: '16px',
                     flex: 1,
-                    minHeight: 0,
-                }}>
+                    minHeight: 0 }}>
                     {/* Left Column - Timer & Stats */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', overflow: 'auto' }}>
                         <PomodoroTimer
@@ -772,8 +743,7 @@ const FocusModePage: React.FC = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{
                                 layout: { type: 'spring', stiffness: 300, damping: 30 },
-                                opacity: { duration: 0.3 },
-                            }}
+                                opacity: { duration: 0.3 } }}
                             style={{
                                 padding: '16px',
                                 borderRadius: '14px',
@@ -782,8 +752,7 @@ const FocusModePage: React.FC = () => {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 overflow: 'hidden',
-                                height: '100%',
-                            }}
+                                height: '100%' }}
                         >
                             {/* Header */}
                             <motion.div
@@ -793,8 +762,7 @@ const FocusModePage: React.FC = () => {
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
                                     marginBottom: '12px',
-                                    flexShrink: 0,
-                                }}
+                                    flexShrink: 0 }}
                             >
                                 <div style={{
                                     fontSize: '14px',
@@ -802,8 +770,7 @@ const FocusModePage: React.FC = () => {
                                     color: 'var(--text-primary)',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '8px',
-                                }}>
+                                    gap: '8px' }}>
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
                                         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
                                         <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
@@ -827,8 +794,7 @@ const FocusModePage: React.FC = () => {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     gap: '8px',
-                                    paddingRight: '4px',
-                                }}
+                                    paddingRight: '4px' }}
                             >
                                 <AnimatePresence mode="popLayout" initial={false}>
                                     {filteredResources.length > 0 ? (
@@ -843,8 +809,7 @@ const FocusModePage: React.FC = () => {
                                                     type: 'spring',
                                                     stiffness: 400,
                                                     damping: 30,
-                                                    delay: index * 0.02,
-                                                }}
+                                                    delay: index * 0.02 }}
                                             >
                                                 <ResourceCard
                                                     resource={resource}
@@ -864,8 +829,7 @@ const FocusModePage: React.FC = () => {
                                                 flexDirection: 'column',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                padding: '40px 20px',
-                                            }}
+                                                padding: '40px 20px' }}
                                         >
                                             <div style={{
                                                 width: 70,
@@ -876,8 +840,7 @@ const FocusModePage: React.FC = () => {
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                marginBottom: '14px',
-                                            }}>
+                                                marginBottom: '14px' }}>
                                                 <lord-icon
                                                     src="https://cdn.lordicon.com/hjrbjhnq.json"
                                                     trigger="in"
@@ -890,8 +853,7 @@ const FocusModePage: React.FC = () => {
                                                 margin: 0,
                                                 fontSize: '14px',
                                                 fontWeight: 600,
-                                                color: 'var(--text-secondary)',
-                                            }}>
+                                                color: 'var(--text-secondary)' }}>
                                                 {activeFilter === 'all'
                                                     ? (groupId ? 'No resources yet' : 'No group selected')
                                                     : `No ${activeFilter} found`}
@@ -901,8 +863,7 @@ const FocusModePage: React.FC = () => {
                                                 fontSize: '12px',
                                                 color: 'var(--text-muted)',
                                                 textAlign: 'center',
-                                                maxWidth: '240px',
-                                            }}>
+                                                maxWidth: '240px' }}>
                                                 {activeFilter === 'all'
                                                     ? 'Share resources in your group chat'
                                                     : `Try sharing some ${activeFilter}`}

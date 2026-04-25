@@ -8,13 +8,11 @@ import { motion } from 'motion/react';
 
 interface UnreadIndicatorProps {
     unreadCount: number;
-    isDarkMode: boolean;
+    
 }
 
 export const UnreadIndicator = React.memo<UnreadIndicatorProps>(({
-    unreadCount,
-    isDarkMode,
-}) => {
+    unreadCount }) => {
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -29,17 +27,14 @@ export const UnreadIndicator = React.memo<UnreadIndicatorProps>(({
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '12px',
-                padding: '12px 0',
-            }}
+                padding: '12px 0' }}
         >
             {/* Left line */}
             <div style={{
                 flex: 1,
                 height: '1px',
-                background: isDarkMode
-                    ? 'linear-gradient(to left, rgba(59, 130, 246, 0.4), transparent)'
-                    : 'linear-gradient(to left, rgba(59, 130, 246, 0.3), transparent)',
-            }} />
+                background: ? 'linear-gradient(to left, rgba(59, 130, 246, 0.4), transparent)'
+                    : 'linear-gradient(to left, rgba(59, 130, 246, 0.3), transparent)' }} />
             {/* Unread badge */}
             <div style={{
                 display: 'inline-flex',
@@ -48,8 +43,7 @@ export const UnreadIndicator = React.memo<UnreadIndicatorProps>(({
                 padding: '4px 12px',
                 background: 'var(--dashboard-surface)',
                 borderRadius: '12px',
-                border: `1px solid ${'var(--dashboard-surface)'}`,
-            }}>
+                border: `1px solid ${'var(--dashboard-surface)'}` }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="6 9 12 15 18 9" />
                 </svg>
@@ -57,8 +51,7 @@ export const UnreadIndicator = React.memo<UnreadIndicatorProps>(({
                     fontSize: '11px',
                     fontWeight: 600,
                     color: '#3b82f6',
-                    letterSpacing: '0.2px',
-                }}>
+                    letterSpacing: '0.2px' }}>
                     {unreadCount} new {unreadCount === 1 ? 'message' : 'messages'}
                 </span>
             </div>
@@ -66,10 +59,8 @@ export const UnreadIndicator = React.memo<UnreadIndicatorProps>(({
             <div style={{
                 flex: 1,
                 height: '1px',
-                background: isDarkMode
-                    ? 'linear-gradient(to right, rgba(59, 130, 246, 0.4), transparent)'
-                    : 'linear-gradient(to right, rgba(59, 130, 246, 0.3), transparent)',
-            }} />
+                background: ? 'linear-gradient(to right, rgba(59, 130, 246, 0.4), transparent)'
+                    : 'linear-gradient(to right, rgba(59, 130, 246, 0.3), transparent)' }} />
         </motion.div>
     );
 });

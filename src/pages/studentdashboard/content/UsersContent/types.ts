@@ -10,8 +10,7 @@ import type {
     UserRole,
     TeacherCourse,
     OfficeHours,
-    UserSortOption,
-} from '../../../../services/usersService';
+    UserSortOption } from '../../../../services/usersService';
 
 // Re-export for convenience
 export type {
@@ -21,8 +20,7 @@ export type {
     UserRole,
     TeacherCourse,
     OfficeHours,
-    UserSortOption,
-};
+    UserSortOption };
 
 // Component props
 export interface UsersContentProps {

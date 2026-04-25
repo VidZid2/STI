@@ -17,8 +17,7 @@ export const QuickStatsCard: React.FC<QuickStatsCardProps> = ({
     totalCourses,
     upcomingDeadlinesCount,
     overallProgress,
-    compactMode = false,
-}) => {
+    compactMode = false }) => {
     return (
         <motion.div
             initial={{ opacity: 0, y: -10 }}

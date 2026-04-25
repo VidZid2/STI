@@ -64,8 +64,7 @@ const CreateGroupModal: React.FC<{
         study: ['Study Squad', 'Learning Circle', 'Study Buddies', 'Brain Trust', 'Knowledge Hub'],
         project: ['Project Pioneers', 'Team Alpha', 'Code Crew', 'Build Squad', 'Dev Team'],
         review: ['Exam Prep Pro', 'Review Rangers', 'Quiz Masters', 'Test Tacklers', 'Ace Squad'],
-        discussion: ['Think Tank', 'Debate Club', 'Idea Exchange', 'Discussion Den', 'Mind Meld'],
-    };
+        discussion: ['Think Tank', 'Debate Club', 'Idea Exchange', 'Discussion Den', 'Mind Meld'] };
 
     // Email added indicator
     const [showEmailAdded, setShowEmailAdded] = useState(false);
@@ -188,8 +187,7 @@ const CreateGroupModal: React.FC<{
                         avatar: student.full_name?.charAt(0)?.toUpperCase() || '?',
                         section: student.section || 'N/A',
                         program: student.program || 'N/A',
-                        yearLevel: student.year_level || 'N/A',
-                    })));
+                        yearLevel: student.year_level || 'N/A' })));
                 }
             } catch (err) {
             }
@@ -239,8 +237,7 @@ const CreateGroupModal: React.FC<{
                         avatar: student.full_name?.charAt(0)?.toUpperCase() || '?',
                         section: student.section || 'N/A',
                         program: student.program || 'N/A',
-                        yearLevel: student.year_level || 'N/A',
-                    })));
+                        yearLevel: student.year_level || 'N/A' })));
                 }
             } catch (err) {
             }
@@ -254,15 +251,14 @@ const CreateGroupModal: React.FC<{
         };
     }, [classmateSearchQuery, isOpen]);
 
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-primary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
         textMuted: 'var(--text-muted)',
-        accent: '#3b82f6',
-    };
+        accent: '#3b82f6' };
 
     const iconOptions = [
         { id: 'users', label: 'Team', tooltip: 'Perfect for general study groups' },
@@ -488,8 +484,7 @@ const CreateGroupModal: React.FC<{
                 studentData = {
                     name: data.full_name || '',
                     section: data.section || 'N/A',
-                    program: data.program || 'N/A',
-                };
+                    program: data.program || 'N/A' };
             }
         }
         
@@ -509,8 +504,7 @@ const CreateGroupModal: React.FC<{
             email: normalizedEmail,
             name: studentData.name,
             section: studentData.section,
-            program: studentData.program,
-        }]);
+            program: studentData.program }]);
         setShowEmailAdded(true);
         setTimeout(() => setShowEmailAdded(false), 1500);
         setCurrentInviteEmail('');
@@ -586,15 +580,14 @@ const CreateGroupModal: React.FC<{
 
     // Generate confetti particles
     const generateConfetti = () => {
-        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', selectedColor];
+        const = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', selectedColor];
         const particles = Array.from({ length: 50 }, (_, i) => ({
             id: i,
             x: Math.random() * 100,
             y: Math.random() * 100,
-            color: colors[Math.floor(Math.random() * colors.length)],
+            color: [Math.floor(Math.random() * .length)],
             rotation: Math.random() * 360,
-            scale: 0.5 + Math.random() * 0.5,
-        }));
+            scale: 0.5 + Math.random() * 0.5 }));
         setConfettiParticles(particles);
     };
 
@@ -619,8 +612,7 @@ const CreateGroupModal: React.FC<{
             avatar: groupAvatar || undefined,
             courseName: selectedCourse?.shortTitle || undefined,
             maxMembers,
-            isPrivate,
-        });
+            isPrivate });
         // Note: inviteEmails would be sent to backend here
         setIsCreating(false);
         setShowSuccess(false);
@@ -644,8 +636,7 @@ const CreateGroupModal: React.FC<{
                         onClick={onClose}
                         style={{
                             position: 'fixed', inset: 0, background: 'rgba(0, 0, 0, 0.5)',
-                            backdropFilter: 'blur(4px)', zIndex: 9998,
-                        }}
+                            backdropFilter: 'blur(4px)', zIndex: 9998 }}
                     />
 
                     {/* Success Animation with Confetti */}
@@ -658,8 +649,7 @@ const CreateGroupModal: React.FC<{
                                 style={{
                                     position: 'fixed', inset: 0, zIndex: 10001,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    pointerEvents: 'none',
-                                }}
+                                    pointerEvents: 'none' }}
                             >
                                 {/* Confetti Particles */}
                                 {confettiParticles.map((particle) => (
@@ -674,19 +664,16 @@ const CreateGroupModal: React.FC<{
                                             y: `${particle.y + 100}%`,
                                             scale: particle.scale,
                                             rotate: particle.rotation + 360,
-                                            opacity: 0,
-                                        }}
+                                            opacity: 0 }}
                                         transition={{ 
                                             duration: 2, 
                                             ease: [0.22, 1, 0.36, 1],
-                                            delay: Math.random() * 0.3,
-                                        }}
+                                            delay: Math.random() * 0.3 }}
                                         style={{
                                             position: 'absolute',
                                             width: '10px', height: '10px',
                                             background: particle.color,
-                                            borderRadius: Math.random() > 0.5 ? '50%' : '2px',
-                                        }}
+                                            borderRadius: Math.random() > 0.5 ? '50%' : '2px' }}
                                     />
                                 ))}
                                 
@@ -701,8 +688,7 @@ const CreateGroupModal: React.FC<{
                                         borderRadius: '20px',
                                         padding: '32px 48px',
                                         textAlign: 'center',
-                                        boxShadow: '0 24px 48px rgba(0,0,0,0.2)',
-                                    }}
+                                        boxShadow: '0 24px 48px rgba(0,0,0,0.2)' }}
                                 >
                                     <motion.div
                                         initial={{ scale: 0 }}
@@ -712,8 +698,7 @@ const CreateGroupModal: React.FC<{
                                             width: '64px', height: '64px', borderRadius: '50%',
                                             background: `linear-gradient(135deg, ${selectedColor}20 0%, ${selectedColor}10 100%)`,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            margin: '0 auto 16px',
-                                        }}
+                                            margin: '0 auto 16px' }}
                                     >
                                         <motion.svg 
                                             width="32" height="32" viewBox="0 0 24 24" fill="none" 
@@ -752,8 +737,7 @@ const CreateGroupModal: React.FC<{
                         {...modalProps}
                         style={{
                             position: 'fixed', inset: 0, display: 'flex', alignItems: 'center',
-                            justifyContent: 'center', zIndex: 9999, pointerEvents: 'none', padding: '20px',
-                        }}>
+                            justifyContent: 'center', zIndex: 9999, pointerEvents: 'none', padding: '20px' }}>
                         <motion.div
                             layout
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -769,16 +753,14 @@ const CreateGroupModal: React.FC<{
                                 width: '100%', maxWidth: '520px', maxHeight: '90vh',
                                 background: 'var(--bg-primary)', borderRadius: '20px',
                                 boxShadow: 'var(--shadow-lg)',
-                                overflow: 'hidden', display: 'flex', flexDirection: 'column', pointerEvents: 'auto',
-                            }}
+                                overflow: 'hidden', display: 'flex', flexDirection: 'column', pointerEvents: 'auto' }}
                         >
                             {/* Progress Bar - At the very top */}
                             <div style={{
                                 height: '4px',
                                 background: 'var(--bg-hover)',
                                 borderRadius: '20px 20px 0 0',
-                                overflow: 'hidden',
-                            }}>
+                                overflow: 'hidden' }}>
                                 <motion.div
                                     initial={{ width: '33%' }}
                                     animate={{ width: `${(step / totalSteps) * 100}%` }}
@@ -790,8 +772,7 @@ const CreateGroupModal: React.FC<{
                             {/* Header */}
                             <div style={{
                                 padding: '20px 24px', borderBottom: `1px solid var(--border-color)`,
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            }}>
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <motion.div
                                         initial={{ scale: 0, rotate: -180 }}
@@ -800,8 +781,7 @@ const CreateGroupModal: React.FC<{
                                         style={{
                                             width: '42px', height: '42px', borderRadius: '12px',
                                             background: `linear-gradient(135deg, ${selectedColor}20 0%, ${selectedColor}10 100%)`,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        }}
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                     >
                                         <GroupIcon icon={selectedIcon} color={selectedColor} size={22} />
                                     </motion.div>
@@ -823,8 +803,7 @@ const CreateGroupModal: React.FC<{
                                                 background: 'var(--bg-hover)',
                                                 border: `1px solid ${'var(--bg-hover)'}`,
                                                 fontSize: '10px', fontWeight: 500, color: 'var(--text-muted)',
-                                                fontFamily: 'system-ui, -apple-system, sans-serif',
-                                            }}>
+                                                fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                                                 Esc
                                             </kbd>
                                             <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
@@ -837,8 +816,7 @@ const CreateGroupModal: React.FC<{
                                                 background: 'var(--bg-hover)',
                                                 border: `1px solid ${'var(--bg-hover)'}`,
                                                 fontSize: '10px', fontWeight: 500, color: 'var(--text-muted)',
-                                                fontFamily: 'system-ui, -apple-system, sans-serif',
-                                            }}>
+                                                fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                                                 Enter
                                             </kbd>
                                             <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
@@ -855,8 +833,7 @@ const CreateGroupModal: React.FC<{
                                         style={{
                                             width: '32px', height: '32px', borderRadius: '8px', border: 'none',
                                             background: 'transparent', cursor: 'pointer', display: 'flex',
-                                            alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)',
-                                        }}
+                                            alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}
                                     >
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M18 6L6 18M6 6l12 12" />
@@ -891,14 +868,12 @@ const CreateGroupModal: React.FC<{
                                                     <label style={{
                                                         fontSize: '12px', fontWeight: 600,
                                                         color: 'var(--text-secondary)',
-                                                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    }}>
+                                                        textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                                         Quick Start Templates
                                                     </label>
                                                     <span style={{
                                                         fontSize: '9px', padding: '2px 6px', borderRadius: '4px',
-                                                        background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontWeight: 500,
-                                                    }}>
+                                                        background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontWeight: 500 }}>
                                                         One-click setup
                                                     </span>
                                                 </div>
@@ -914,15 +889,13 @@ const CreateGroupModal: React.FC<{
                                                                 border: `1px solid ${name === template.name ? template.color : 'var(--border-color)'}`,
                                                                 background: name === template.name ? `${template.color}10` : 'var(--dashboard-surface)',
                                                                 cursor: 'pointer', textAlign: 'left',
-                                                                transition: 'all 0.2s ease',
-                                                            }}
+                                                                transition: 'all 0.2s ease' }}
                                                         >
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                                                                 <div style={{
                                                                     width: '24px', height: '24px', borderRadius: '6px',
                                                                     background: `${template.color}20`,
-                                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                }}>
+                                                                    display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                                     <GroupIcon icon={template.icon} color={template.color} size={14} />
                                                                 </div>
                                                                 <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>
@@ -954,8 +927,7 @@ const CreateGroupModal: React.FC<{
                                                 <label style={{
                                                     display: 'block', fontSize: '12px', fontWeight: 600,
                                                     color: 'var(--text-secondary)', marginBottom: '8px',
-                                                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                }}>
+                                                    textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                                     Group Name *
                                                 </label>
                                                 <div style={{ position: 'relative' }}>
@@ -973,8 +945,7 @@ const CreateGroupModal: React.FC<{
                                                             background: name.length >= 50 ? ('rgba(239, 68, 68, 0.1)') : 'var(--dashboard-surface)', 
                                                             color: 'var(--text-primary)',
                                                             fontSize: '14px', outline: 'none',
-                                                            transition: 'all 0.2s ease',
-                                                        }}
+                                                            transition: 'all 0.2s ease' }}
                                                     />
                                                     {/* Name Suggestions Dropdown */}
                                                     <AnimatePresence>
@@ -988,13 +959,11 @@ const CreateGroupModal: React.FC<{
                                                                     marginTop: '4px', background: 'var(--dashboard-surface)',
                                                                     border: `1px solid var(--border-color)`, borderRadius: '10px',
                                                                     boxShadow: '0 6px 20px rgba(0,0,0,0.1)', zIndex: 10,
-                                                                    overflow: 'hidden',
-                                                                }}
+                                                                    overflow: 'hidden' }}
                                                             >
                                                                 <div style={{
                                                                     padding: '6px 10px', borderBottom: `1px solid var(--border-color)`,
-                                                                    display: 'flex', alignItems: 'center', gap: '6px',
-                                                                }}>
+                                                                    display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="2">
                                                                         <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
                                                                     </svg>
@@ -1010,8 +979,7 @@ const CreateGroupModal: React.FC<{
                                                                         style={{
                                                                             width: '100%', padding: '8px 12px', border: 'none',
                                                                             background: 'transparent', cursor: 'pointer', textAlign: 'left',
-                                                                            display: 'flex', alignItems: 'center', gap: '8px',
-                                                                        }}
+                                                                            display: 'flex', alignItems: 'center', gap: '8px' }}
                                                                     >
                                                                         <span style={{ fontSize: '12px', color: 'var(--text-primary)' }}>{suggestion}</span>
                                                                     </motion.button>
@@ -1022,12 +990,10 @@ const CreateGroupModal: React.FC<{
                                                 </div>
                                                 <div style={{
                                                     display: 'flex', justifyContent: 'space-between',
-                                                    marginTop: '6px', fontSize: '11px',
-                                                }}>
+                                                    marginTop: '6px', fontSize: '11px' }}>
                                                     <span style={{ 
                                                         color: name.length < 3 ? '#f59e0b' : name.length >= 50 ? '#ef4444' : '#10b981',
-                                                        display: 'flex', alignItems: 'center', gap: '4px',
-                                                    }}>
+                                                        display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                         {name.length < 3 ? (
                                                             <>
                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1053,8 +1019,7 @@ const CreateGroupModal: React.FC<{
                                                     </span>
                                                     <span style={{ 
                                                         color: name.length >= 50 ? '#ef4444' : name.length >= 45 ? '#f59e0b' : 'var(--text-muted)',
-                                                        fontWeight: name.length >= 45 ? 600 : 400,
-                                                    }}>
+                                                        fontWeight: name.length >= 45 ? 600 : 400 }}>
                                                         {name.length}/50
                                                     </span>
                                                 </div>
@@ -1065,8 +1030,7 @@ const CreateGroupModal: React.FC<{
                                                 <label style={{
                                                     display: 'block', fontSize: '12px', fontWeight: 600,
                                                     color: 'var(--text-secondary)', marginBottom: '8px',
-                                                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                }}>
+                                                    textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                                     Description
                                                 </label>
                                                 <textarea
@@ -1081,17 +1045,14 @@ const CreateGroupModal: React.FC<{
                                                         background: description.length >= 200 ? ('rgba(239, 68, 68, 0.1)') : 'var(--dashboard-surface)',
                                                         color: 'var(--text-primary)', fontSize: '14px', outline: 'none',
                                                         resize: 'none', fontFamily: 'inherit',
-                                                        transition: 'all 0.2s ease',
-                                                    }}
+                                                        transition: 'all 0.2s ease' }}
                                                 />
                                                 <div style={{ 
                                                     display: 'flex', justifyContent: 'space-between',
-                                                    marginTop: '6px', fontSize: '11px',
-                                                }}>
+                                                    marginTop: '6px', fontSize: '11px' }}>
                                                     <span style={{ 
                                                         color: description.length >= 200 ? '#ef4444' : 'var(--text-muted)',
-                                                        display: 'flex', alignItems: 'center', gap: '4px',
-                                                    }}>
+                                                        display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                         {description.length >= 200 && (
                                                             <>
                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1103,8 +1064,7 @@ const CreateGroupModal: React.FC<{
                                                     </span>
                                                     <span style={{ 
                                                         color: description.length >= 200 ? '#ef4444' : description.length >= 180 ? '#f59e0b' : 'var(--text-muted)',
-                                                        fontWeight: description.length >= 180 ? 600 : 400,
-                                                    }}>
+                                                        fontWeight: description.length >= 180 ? 600 : 400 }}>
                                                         {description.length}/200
                                                     </span>
                                                 </div>
@@ -1116,8 +1076,7 @@ const CreateGroupModal: React.FC<{
                                                     <label style={{
                                                         fontSize: '12px', fontWeight: 600,
                                                         color: 'var(--text-secondary)',
-                                                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    }}>
+                                                        textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                                         Category
                                                     </label>
                                                     <div 
@@ -1126,8 +1085,7 @@ const CreateGroupModal: React.FC<{
                                                             width: '16px', height: '16px', borderRadius: '50%',
                                                             background: 'var(--bg-hover)',
                                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                            cursor: 'help',
-                                                        }}
+                                                            cursor: 'help' }}
                                                     >
                                                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2">
                                                             <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
@@ -1148,8 +1106,7 @@ const CreateGroupModal: React.FC<{
                                                                 outline: category === cat.id ? `2px solid ${selectedColor}` : '1px solid #e2e8f0',
                                                                 outlineOffset: '-1px',
                                                                 transition: 'all 0.2s ease',
-                                                                boxShadow: category === cat.id ? '0 4px 16px rgba(0,0,0,0.08)' : 'none',
-                                                            }}
+                                                                boxShadow: category === cat.id ? '0 4px 16px rgba(0,0,0,0.08)' : 'none' }}
                                                         >
                                                             {/* Icon and Title Row */}
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
@@ -1158,14 +1115,12 @@ const CreateGroupModal: React.FC<{
                                                                     background: category === cat.id ? `${selectedColor}15` : '#f1f5f9',
                                                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                                     color: category === cat.id ? selectedColor : '#64748b',
-                                                                    transition: 'all 0.2s ease',
-                                                                }}>
+                                                                    transition: 'all 0.2s ease' }}>
                                                                     {cat.icon}
                                                                 </div>
                                                                 <span style={{
                                                                     fontSize: '14px', fontWeight: 600,
-                                                                    color: category === cat.id ? selectedColor : '#0f172a',
-                                                                }}>
+                                                                    color: category === cat.id ? selectedColor : '#0f172a' }}>
                                                                     {cat.label}
                                                                 </span>
                                                             </div>
@@ -1173,8 +1128,7 @@ const CreateGroupModal: React.FC<{
                                                             {/* Description */}
                                                             <p style={{ 
                                                                 margin: '0 0 12px 0', fontSize: '12px', 
-                                                                color: '#334155', lineHeight: 1.5,
-                                                            }}>
+                                                                color: '#334155', lineHeight: 1.5 }}>
                                                                 {cat.longDescription}
                                                             </p>
                                                             
@@ -1186,8 +1140,7 @@ const CreateGroupModal: React.FC<{
                                                                         background: category === cat.id ? `${selectedColor}12` : '#f1f5f9',
                                                                         color: category === cat.id ? selectedColor : '#475569',
                                                                         fontWeight: 500,
-                                                                        border: `1px solid ${category === cat.id ? `${selectedColor}25` : '#e2e8f0'}`,
-                                                                    }}>
+                                                                        border: `1px solid ${category === cat.id ? `${selectedColor}25` : '#e2e8f0'}` }}>
                                                                         {benefit}
                                                                     </span>
                                                                 ))}
@@ -1216,14 +1169,12 @@ const CreateGroupModal: React.FC<{
                                                     <label style={{
                                                         fontSize: '12px', fontWeight: 600,
                                                         color: '#0f172a',
-                                                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    }}>
+                                                        textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                                         Live Preview
                                                     </label>
                                                     <span style={{
                                                         fontSize: '9px', padding: '2px 6px', borderRadius: '4px',
-                                                        background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontWeight: 500,
-                                                    }}>
+                                                        background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontWeight: 500 }}>
                                                         Updates in real-time
                                                     </span>
                                                 </div>
@@ -1232,8 +1183,7 @@ const CreateGroupModal: React.FC<{
                                                     style={{
                                                         background: '#ffffff', borderRadius: '16px',
                                                         border: '1px solid #e2e8f0', padding: '16px',
-                                                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                                                    }}
+                                                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
                                                 >
                                                     {/* Preview Header */}
                                                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
@@ -1246,8 +1196,7 @@ const CreateGroupModal: React.FC<{
                                                                 width: 44, height: 44, borderRadius: '12px',
                                                                 background: groupAvatar ? 'transparent' : `linear-gradient(135deg, ${selectedColor}20 0%, ${selectedColor}10 100%)`,
                                                                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                                                overflow: 'hidden',
-                                                            }}
+                                                                overflow: 'hidden' }}
                                                         >
                                                             {groupAvatar ? (
                                                                 <img src={groupAvatar} alt="Group" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -1263,8 +1212,7 @@ const CreateGroupModal: React.FC<{
                                                                     animate={{ opacity: 1 }}
                                                                     style={{
                                                                         margin: 0, fontSize: '14px', fontWeight: 600, color: '#0f172a',
-                                                                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                                                    }}
+                                                                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                                                                 >
                                                                     {name || 'Your Group Name'}
                                                                 </motion.h3>
@@ -1278,15 +1226,13 @@ const CreateGroupModal: React.FC<{
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                                 <span style={{
                                                                     fontSize: '10px', padding: '2px 6px', borderRadius: '4px',
-                                                                    background: `${selectedColor}15`, color: selectedColor, fontWeight: 500,
-                                                                }}>
+                                                                    background: `${selectedColor}15`, color: selectedColor, fontWeight: 500 }}>
                                                                     {categoryOptions.find(c => c.id === category)?.label || 'Study Group'}
                                                                 </span>
                                                                 {selectedCourse && (
                                                                     <span style={{
                                                                         fontSize: '10px', padding: '2px 6px', borderRadius: '4px',
-                                                                        background: '#f1f5f9', color: '#64748b', fontWeight: 500,
-                                                                    }}>
+                                                                        background: '#f1f5f9', color: '#64748b', fontWeight: 500 }}>
                                                                         {selectedCourse.shortTitle}
                                                                     </span>
                                                                 )}
@@ -1297,8 +1243,7 @@ const CreateGroupModal: React.FC<{
                                                     <p style={{
                                                         margin: '0 0 12px 0', fontSize: '12px', color: '#64748b',
                                                         lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2,
-                                                        WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                                                    }}>
+                                                        WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                                         {description || 'Your group description will appear here...'}
                                                     </p>
                                                     {/* Preview Footer */}
@@ -1311,8 +1256,7 @@ const CreateGroupModal: React.FC<{
                                                                         background: `linear-gradient(135deg, ${selectedColor} 0%, ${selectedColor}dd 100%)`,
                                                                         border: '2px solid white', marginLeft: i > 0 ? -8 : 0,
                                                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                        fontSize: '10px', fontWeight: 600, color: 'white',
-                                                                    }}>
+                                                                        fontSize: '10px', fontWeight: 600, color: 'white' }}>
                                                                         {['Y', 'O', 'U'][i]}
                                                                     </div>
                                                                 ))}
@@ -1324,8 +1268,7 @@ const CreateGroupModal: React.FC<{
                                                         <span style={{
                                                             padding: '4px 10px', borderRadius: '6px',
                                                             background: 'rgba(16, 185, 129, 0.1)', color: '#10b981',
-                                                            fontSize: '10px', fontWeight: 600,
-                                                        }}>
+                                                            fontSize: '10px', fontWeight: 600 }}>
                                                             Owner
                                                         </span>
                                                     </div>
@@ -1337,8 +1280,7 @@ const CreateGroupModal: React.FC<{
                                                 <label style={{
                                                     fontSize: '12px', fontWeight: 600, color: '#0f172a',
                                                     textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    display: 'block', marginBottom: '10px',
-                                                }}>
+                                                    display: 'block', marginBottom: '10px' }}>
                                                     Link to Course (Optional)
                                                 </label>
                                                 <div style={{ position: 'relative' }}>
@@ -1351,8 +1293,7 @@ const CreateGroupModal: React.FC<{
                                                             border: `1px solid ${selectedCourse ? selectedColor : '#e2e8f0'}`,
                                                             background: selectedCourse ? `${selectedColor}08` : '#f8fafc',
                                                             cursor: 'pointer', display: 'flex', alignItems: 'center',
-                                                            justifyContent: 'space-between', gap: '10px',
-                                                        }}
+                                                            justifyContent: 'space-between', gap: '10px' }}
                                                     >
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={selectedCourse ? selectedColor : '#94a3b8'} strokeWidth="2">
@@ -1382,8 +1323,7 @@ const CreateGroupModal: React.FC<{
                                                                     position: 'absolute', top: '100%', left: 0, right: 0,
                                                                     marginTop: '6px', background: 'white', borderRadius: '12px',
                                                                     border: '1px solid #e2e8f0', boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-                                                                    zIndex: 50, maxHeight: '200px', overflowY: 'auto',
-                                                                }}
+                                                                    zIndex: 50, maxHeight: '200px', overflowY: 'auto' }}
                                                             >
                                                                 <button
                                                                     onClick={() => { setSelectedCourse(null); setShowCourseDropdown(false); }}
@@ -1392,8 +1332,7 @@ const CreateGroupModal: React.FC<{
                                                                         background: !selectedCourse ? `${selectedColor}08` : 'transparent',
                                                                         cursor: 'pointer', textAlign: 'left',
                                                                         fontSize: '12px', color: '#64748b',
-                                                                        borderBottom: '1px solid #f1f5f9',
-                                                                    }}
+                                                                        borderBottom: '1px solid #f1f5f9' }}
                                                                 >
                                                                     No course (General group)
                                                                 </button>
@@ -1405,14 +1344,12 @@ const CreateGroupModal: React.FC<{
                                                                             width: '100%', padding: '10px 14px', border: 'none',
                                                                             background: selectedCourse?.id === course.id ? `${selectedColor}08` : 'transparent',
                                                                             cursor: 'pointer', textAlign: 'left', display: 'flex',
-                                                                            alignItems: 'center', gap: '10px',
-                                                                        }}
+                                                                            alignItems: 'center', gap: '10px' }}
                                                                     >
                                                                         <span style={{
                                                                             padding: '2px 6px', borderRadius: '4px',
                                                                             background: `${selectedColor}15`, color: selectedColor,
-                                                                            fontSize: '10px', fontWeight: 600,
-                                                                        }}>
+                                                                            fontSize: '10px', fontWeight: 600 }}>
                                                                             {course.shortTitle}
                                                                         </span>
                                                                         <span style={{ fontSize: '12px', color: '#0f172a' }}>{course.title}</span>
@@ -1429,8 +1366,7 @@ const CreateGroupModal: React.FC<{
                                                 <label style={{
                                                     fontSize: '12px', fontWeight: 600, color: '#0f172a',
                                                     textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    display: 'block', marginBottom: '10px',
-                                                }}>
+                                                    display: 'block', marginBottom: '10px' }}>
                                                     Group Avatar (Optional)
                                                 </label>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -1443,8 +1379,7 @@ const CreateGroupModal: React.FC<{
                                                             background: groupAvatar ? 'transparent' : `${selectedColor}08`,
                                                             cursor: 'pointer', display: 'flex', alignItems: 'center',
                                                             justifyContent: 'center', overflow: 'hidden',
-                                                            position: 'relative',
-                                                        }}
+                                                            position: 'relative' }}
                                                     >
                                                         {isUploadingAvatar ? (
                                                             <motion.svg 
@@ -1486,8 +1421,7 @@ const CreateGroupModal: React.FC<{
                                                                 style={{
                                                                     marginTop: '6px', padding: '4px 8px', borderRadius: '6px',
                                                                     border: 'none', background: 'rgba(239, 68, 68, 0.1)',
-                                                                    color: '#ef4444', fontSize: '10px', fontWeight: 500, cursor: 'pointer',
-                                                                }}
+                                                                    color: '#ef4444', fontSize: '10px', fontWeight: 500, cursor: 'pointer' }}
                                                             >
                                                                 Remove
                                                             </motion.button>
@@ -1502,8 +1436,7 @@ const CreateGroupModal: React.FC<{
                                                     <label style={{
                                                         fontSize: '12px', fontWeight: 600,
                                                         color: '#0f172a',
-                                                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    }}>
+                                                        textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                                         {groupAvatar ? 'Fallback Icon' : 'Choose Icon'}
                                                     </label>
                                                     {groupAvatar && (
@@ -1526,8 +1459,7 @@ const CreateGroupModal: React.FC<{
                                                                         text: icon.tooltip,
                                                                         x: rect.left + rect.width / 2,
                                                                         y: rect.top,
-                                                                        color: selectedColor,
-                                                                    });
+                                                                        color: selectedColor });
                                                                 }}
                                                                 onMouseLeave={() => setHoveredTooltip(null)}
                                                                 style={{
@@ -1538,14 +1470,12 @@ const CreateGroupModal: React.FC<{
                                                                     cursor: 'pointer', display: 'flex', flexDirection: 'column',
                                                                     alignItems: 'center', gap: '8px',
                                                                     boxShadow: isSelected || isHovered ? `0 4px 12px ${selectedColor}20` : 'none',
-                                                                    transition: 'all 0.2s ease',
-                                                                }}
+                                                                    transition: 'all 0.2s ease' }}
                                                             >
                                                                 <GroupIcon icon={icon.id} color={isSelected || isHovered ? selectedColor : '#94a3b8'} size={24} />
                                                                 <span style={{
                                                                     fontSize: '11px', fontWeight: 500,
-                                                                    color: isSelected || isHovered ? selectedColor : '#64748b',
-                                                                }}>
+                                                                    color: isSelected || isHovered ? selectedColor : '#64748b' }}>
                                                                     {icon.label}
                                                                 </span>
                                                             </motion.button>
@@ -1560,16 +1490,14 @@ const CreateGroupModal: React.FC<{
                                                     <label style={{
                                                         fontSize: '12px', fontWeight: 600,
                                                         color: '#0f172a',
-                                                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    }}>
+                                                        textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                                         Theme Color
                                                     </label>
                                                 </div>
                                                 <div style={{ 
                                                     display: 'grid', 
                                                     gridTemplateColumns: 'repeat(8, 1fr)', 
-                                                    gap: '8px',
-                                                }}>
+                                                    gap: '8px' }}>
                                                     {colorOptions.map((c) => {
                                                         const isSelected = selectedColor === c.color;
                                                         return (
@@ -1584,8 +1512,7 @@ const CreateGroupModal: React.FC<{
                                                                         text: c.name,
                                                                         x: rect.left + rect.width / 2,
                                                                         y: rect.top,
-                                                                        color: c.color,
-                                                                    });
+                                                                        color: c.color });
                                                                 }}
                                                                 onMouseLeave={() => setHoveredTooltip(null)}
                                                                 style={{
@@ -1602,8 +1529,7 @@ const CreateGroupModal: React.FC<{
                                                                     alignItems: 'center', 
                                                                     justifyContent: 'center',
                                                                     transition: 'box-shadow 0.2s ease',
-                                                                    position: 'relative',
-                                                                }}
+                                                                    position: 'relative' }}
                                                             >
                                                                 {isSelected && (
                                                                     <motion.svg 
@@ -1631,24 +1557,21 @@ const CreateGroupModal: React.FC<{
                                                         <label style={{
                                                             fontSize: '12px', fontWeight: 600,
                                                             color: 'var(--text-secondary)',
-                                                            textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                        }}>
+                                                            textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                                             Group Size
                                                         </label>
                                                     </div>
                                                     <div style={{
                                                         padding: '4px 10px', borderRadius: '8px',
                                                         background: `${selectedColor}15`,
-                                                        display: 'flex', alignItems: 'center', gap: '4px',
-                                                    }}>
+                                                        display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                         <span style={{ fontSize: '14px', fontWeight: 700, color: selectedColor }}>{maxMembers}</span>
                                                         <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>members</span>
                                                     </div>
                                                 </div>
                                                 <div style={{
                                                     padding: '16px', borderRadius: '12px', background: 'var(--dashboard-surface)',
-                                                    border: `1px solid var(--border-color)`,
-                                                }}>
+                                                    border: `1px solid var(--border-color)` }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2">
@@ -1666,8 +1589,7 @@ const CreateGroupModal: React.FC<{
                                                                 flex: 1, height: '8px', borderRadius: '4px',
                                                                 appearance: 'none', 
                                                                 background: `linear-gradient(to right, ${selectedColor} 0%, ${selectedColor} ${((maxMembers - 5) / 45) * 100}%, ${'var(--bg-hover)'} ${((maxMembers - 5) / 45) * 100}%, ${'var(--bg-hover)'} 100%)`,
-                                                                cursor: 'pointer',
-                                                            }}
+                                                                cursor: 'pointer' }}
                                                         />
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                             <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>50</span>
@@ -1693,16 +1615,14 @@ const CreateGroupModal: React.FC<{
                                                 padding: '16px', borderRadius: '12px', 
                                                 background: isPrivate ? `${selectedColor}08` : 'var(--dashboard-surface)',
                                                 border: `1px solid ${isPrivate ? `${selectedColor}30` : 'var(--border-color)'}`,
-                                                transition: 'all 0.2s ease',
-                                            }}>
+                                                transition: 'all 0.2s ease' }}>
                                                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                                                     <div style={{ flex: 1 }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
                                                             <div style={{
                                                                 width: '32px', height: '32px', borderRadius: '8px',
                                                                 background: isPrivate ? `${selectedColor}20` : ('var(--bg-hover)'),
-                                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                            }}>
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={isPrivate ? selectedColor : 'var(--text-muted)'} strokeWidth="2">
                                                                     {isPrivate ? (
                                                                         <><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>
@@ -1730,8 +1650,7 @@ const CreateGroupModal: React.FC<{
                                                                     {['Invite only', 'Hidden from search', 'Secure'].map((tag, i) => (
                                                                         <span key={i} style={{
                                                                             fontSize: '9px', padding: '3px 8px', borderRadius: '4px',
-                                                                            background: `${selectedColor}15`, color: selectedColor, fontWeight: 500,
-                                                                        }}>
+                                                                            background: `${selectedColor}15`, color: selectedColor, fontWeight: 500 }}>
                                                                             {tag}
                                                                         </span>
                                                                     ))}
@@ -1746,8 +1665,7 @@ const CreateGroupModal: React.FC<{
                                                             width: '44px', height: '24px', borderRadius: '12px',
                                                             border: 'none', cursor: 'pointer', position: 'relative',
                                                             background: isPrivate ? selectedColor : ('var(--bg-hover)'),
-                                                            transition: 'background 0.2s ease',
-                                                        }}
+                                                            transition: 'background 0.2s ease' }}
                                                     >
                                                         <motion.div
                                                             animate={{ x: isPrivate ? 20 : 0 }}
@@ -1756,8 +1674,7 @@ const CreateGroupModal: React.FC<{
                                                                 width: '20px', height: '20px', borderRadius: '10px',
                                                                 background: 'white', position: 'absolute',
                                                                 top: '2px', left: '2px',
-                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                                                            }}
+                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
                                                         />
                                                     </motion.button>
                                                 </div>
@@ -1781,8 +1698,7 @@ const CreateGroupModal: React.FC<{
                                                         width: '56px', height: '56px', borderRadius: '16px',
                                                         background: `linear-gradient(135deg, ${selectedColor}20 0%, ${selectedColor}10 100%)`,
                                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                        margin: '0 auto 12px',
-                                                    }}
+                                                        margin: '0 auto 12px' }}
                                                 >
                                                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="2">
                                                         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -1803,8 +1719,7 @@ const CreateGroupModal: React.FC<{
                                             <div style={{ 
                                                 marginBottom: '20px', padding: '14px', borderRadius: '12px',
                                                 background: 'var(--bg-hover)',
-                                                border: `1px solid var(--border-color)`,
-                                            }}>
+                                                border: `1px solid var(--border-color)` }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="2">
                                                         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
@@ -1825,8 +1740,7 @@ const CreateGroupModal: React.FC<{
                                                             border: `1px dashed ${selectedColor}40`, background: `${selectedColor}05`,
                                                             cursor: 'pointer', display: 'flex', alignItems: 'center',
                                                             justifyContent: 'center', gap: '8px',
-                                                            color: selectedColor, fontSize: '12px', fontWeight: 500,
-                                                        }}
+                                                            color: selectedColor, fontSize: '12px', fontWeight: 500 }}
                                                     >
                                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                             <circle cx="12" cy="12" r="10" />
@@ -1841,8 +1755,7 @@ const CreateGroupModal: React.FC<{
                                                             flex: 1, padding: '10px 12px', borderRadius: '10px',
                                                             background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`,
                                                             fontSize: '11px', color: 'var(--text-secondary)',
-                                                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                                        }}>
+                                                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                             {inviteLink}
                                                         </div>
                                                         <motion.button
@@ -1853,8 +1766,7 @@ const CreateGroupModal: React.FC<{
                                                                 padding: '10px 14px', borderRadius: '10px', border: 'none',
                                                                 background: showInviteLinkCopied ? '#10b981' : selectedColor,
                                                                 color: 'white', cursor: 'pointer', display: 'flex',
-                                                                alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 500,
-                                                            }}
+                                                                alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 500 }}
                                                         >
                                                             {showInviteLinkCopied ? (
                                                                 <>
@@ -1880,8 +1792,7 @@ const CreateGroupModal: React.FC<{
                                                             style={{
                                                                 padding: '10px', borderRadius: '10px', border: 'none',
                                                                 background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444',
-                                                                cursor: 'pointer', display: 'flex', alignItems: 'center',
-                                                            }}
+                                                                cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                                                         >
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                 <path d="M18 6L6 18M6 6l12 12" />
@@ -1923,8 +1834,7 @@ const CreateGroupModal: React.FC<{
                                                             border: `1px solid ${emailError ? '#ef4444' : 'var(--border-color)'}`, 
                                                             background: emailError ? ('rgba(239, 68, 68, 0.1)') : 'var(--dashboard-surface)',
                                                             color: 'var(--text-primary)', fontSize: '13px', outline: 'none',
-                                                            transition: 'all 0.2s ease',
-                                                        }}
+                                                            transition: 'all 0.2s ease' }}
                                                     />
                                                     <motion.button
                                                         onClick={() => addInviteEmail(currentInviteEmail)}
@@ -1949,8 +1859,7 @@ const CreateGroupModal: React.FC<{
                                                             alignItems: 'center',
                                                             gap: '4px',
                                                             minWidth: '60px',
-                                                            justifyContent: 'center',
-                                                        }}
+                                                            justifyContent: 'center' }}
                                                     >
                                                         <AnimatePresence mode="wait">
                                                             {isCheckingEmail ? (
@@ -2010,8 +1919,7 @@ const CreateGroupModal: React.FC<{
                                                                 color: '#ef4444',
                                                                 display: 'flex',
                                                                 alignItems: 'center',
-                                                                gap: '4px',
-                                                            }}
+                                                                gap: '4px' }}
                                                         >
                                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                 <circle cx="12" cy="12" r="10" />
@@ -2057,8 +1965,7 @@ const CreateGroupModal: React.FC<{
                                                                 style={{
                                                                     fontSize: '10px', color: '#ef4444', fontWeight: 500,
                                                                     background: 'rgba(239, 68, 68, 0.1)', border: 'none',
-                                                                    padding: '4px 8px', borderRadius: '6px', cursor: 'pointer',
-                                                                }}
+                                                                    padding: '4px 8px', borderRadius: '6px', cursor: 'pointer' }}
                                                             >
                                                                 Clear All
                                                             </motion.button>
@@ -2075,8 +1982,7 @@ const CreateGroupModal: React.FC<{
                                                             gap: '10px',
                                                             maxHeight: inviteEmails.length > 9 ? '280px' : 'none',
                                                             overflowY: inviteEmails.length > 9 ? 'auto' : 'visible',
-                                                            padding: inviteEmails.length > 9 ? '4px' : '0',
-                                                        }}
+                                                            padding: inviteEmails.length > 9 ? '4px' : '0' }}
                                                     >
                                                         <AnimatePresence mode="popLayout">
                                                             {inviteEmails.slice(0, 80).map((invite, i) => {
@@ -2104,8 +2010,7 @@ const CreateGroupModal: React.FC<{
                                                                             border: `1px solid ${selectedColor}25`,
                                                                             position: 'relative',
                                                                             cursor: 'default',
-                                                                            boxShadow: `0 2px 8px ${selectedColor}10`,
-                                                                        }}
+                                                                            boxShadow: `0 2px 8px ${selectedColor}10` }}
                                                                     >
                                                                         {/* Remove button */}
                                                                         <motion.button
@@ -2118,8 +2023,7 @@ const CreateGroupModal: React.FC<{
                                                                                 border: 'none', background: 'rgba(239, 68, 68, 0.1)', 
                                                                                 cursor: 'pointer',
                                                                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                                color: '#ef4444', opacity: 0.8,
-                                                                            }}
+                                                                                color: '#ef4444', opacity: 0.8 }}
                                                                         >
                                                                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                                                 <path d="M18 6L6 18M6 6l12 12" />
@@ -2137,8 +2041,7 @@ const CreateGroupModal: React.FC<{
                                                                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                                                 fontSize: '16px', fontWeight: 700, color: selectedColor,
                                                                                 marginBottom: '8px',
-                                                                                boxShadow: `0 4px 12px ${selectedColor}20`,
-                                                                            }}
+                                                                                boxShadow: `0 4px 12px ${selectedColor}20` }}
                                                                         >
                                                                             {initial}
                                                                         </motion.div>
@@ -2148,8 +2051,7 @@ const CreateGroupModal: React.FC<{
                                                                             fontSize: '11px', color: 'var(--text-primary)', fontWeight: 600,
                                                                             textAlign: 'center', lineHeight: 1.3,
                                                                             maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis',
-                                                                            whiteSpace: 'nowrap', marginBottom: '6px',
-                                                                        }}>
+                                                                            whiteSpace: 'nowrap', marginBottom: '6px' }}>
                                                                             {displayName.length > 14 ? displayName.slice(0, 12) + '..' : displayName}
                                                                         </span>
                                                                         
@@ -2161,8 +2063,7 @@ const CreateGroupModal: React.FC<{
                                                                                 background: `${selectedColor}18`,
                                                                                 color: selectedColor,
                                                                                 fontSize: '8px', fontWeight: 600,
-                                                                                textTransform: 'uppercase',
-                                                                            }}>
+                                                                                textTransform: 'uppercase' }}>
                                                                                 {invite.program || 'BSIT'}
                                                                             </span>
                                                                             {/* Section Badge */}
@@ -2170,8 +2071,7 @@ const CreateGroupModal: React.FC<{
                                                                                 padding: '2px 6px', borderRadius: '4px',
                                                                                 background: 'var(--bg-hover)',
                                                                                 color: 'var(--text-secondary)',
-                                                                                fontSize: '8px', fontWeight: 500,
-                                                                            }}>
+                                                                                fontSize: '8px', fontWeight: 500 }}>
                                                                                 {invite.section || 'BSIT101A'}
                                                                             </span>
                                                                         </div>
@@ -2214,8 +2114,7 @@ const CreateGroupModal: React.FC<{
                                                             top: '50%',
                                                             transform: 'translateY(-50%)',
                                                             pointerEvents: 'none',
-                                                            zIndex: 1,
-                                                        }}
+                                                            zIndex: 1 }}
                                                     >
                                                         <circle cx="11" cy="11" r="8" />
                                                         <path d="m21 21-4.35-4.35" />
@@ -2247,8 +2146,7 @@ const CreateGroupModal: React.FC<{
                                                             color: 'var(--text-primary)',
                                                             fontSize: '12px',
                                                             outline: 'none',
-                                                            transition: 'all 0.2s ease',
-                                                        }}
+                                                            transition: 'all 0.2s ease' }}
                                                     />
                                                     {/* Right side container for spinner/clear button */}
                                                     <div style={{
@@ -2258,8 +2156,7 @@ const CreateGroupModal: React.FC<{
                                                         bottom: 0,
                                                         display: 'flex',
                                                         alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                    }}>
+                                                        justifyContent: 'center' }}>
                                                         <AnimatePresence mode="wait">
                                                             {isSearchingClassmates ? (
                                                                 <motion.div 
@@ -2301,8 +2198,7 @@ const CreateGroupModal: React.FC<{
                                                                         cursor: 'pointer',
                                                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                                         color: 'var(--text-muted)',
-                                                                        transition: 'all 0.15s ease',
-                                                                    }}
+                                                                        transition: 'all 0.15s ease' }}
                                                                     whileHover={{ scale: 1.1, background: 'var(--bg-hover)' }}
                                                                     whileTap={{ scale: 0.9 }}
                                                                 >
@@ -2335,8 +2231,7 @@ const CreateGroupModal: React.FC<{
                                                                         display: 'flex', alignItems: 'center', gap: '12px',
                                                                         padding: '12px 14px', borderRadius: '12px',
                                                                         border: `1px solid var(--border-color)`,
-                                                                        background: 'var(--dashboard-surface)',
-                                                                    }}
+                                                                        background: 'var(--dashboard-surface)' }}
                                                                 >
                                                                     {/* Avatar Skeleton */}
                                                                     <motion.div
@@ -2345,8 +2240,7 @@ const CreateGroupModal: React.FC<{
                                                                         style={{
                                                                             width: '40px', height: '40px', borderRadius: '10px',
                                                                             background: 'var(--bg-hover)',
-                                                                            flexShrink: 0,
-                                                                        }}
+                                                                            flexShrink: 0 }}
                                                                     />
                                                                     {/* Info Skeleton */}
                                                                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -2356,8 +2250,7 @@ const CreateGroupModal: React.FC<{
                                                                             style={{
                                                                                 width: '60%', height: '14px', borderRadius: '4px',
                                                                                 background: 'var(--bg-hover)',
-                                                                                marginBottom: '8px',
-                                                                            }}
+                                                                                marginBottom: '8px' }}
                                                                         />
                                                                         <div style={{ display: 'flex', gap: '6px' }}>
                                                                             <motion.div
@@ -2365,24 +2258,21 @@ const CreateGroupModal: React.FC<{
                                                                                 transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
                                                                                 style={{
                                                                                     width: '40px', height: '16px', borderRadius: '4px',
-                                                                                    background: 'var(--bg-hover)',
-                                                                                }}
+                                                                                    background: 'var(--bg-hover)' }}
                                                                             />
                                                                             <motion.div
                                                                                 animate={{ opacity: [0.5, 1, 0.5] }}
                                                                                 transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
                                                                                 style={{
                                                                                     width: '50px', height: '16px', borderRadius: '4px',
-                                                                                    background: 'var(--bg-hover)',
-                                                                                }}
+                                                                                    background: 'var(--bg-hover)' }}
                                                                             />
                                                                             <motion.div
                                                                                 animate={{ opacity: [0.5, 1, 0.5] }}
                                                                                 transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
                                                                                 style={{
                                                                                     width: '35px', height: '16px', borderRadius: '4px',
-                                                                                    background: 'var(--bg-hover)',
-                                                                                }}
+                                                                                    background: 'var(--bg-hover)' }}
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -2392,8 +2282,7 @@ const CreateGroupModal: React.FC<{
                                                                         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
                                                                         style={{
                                                                             width: '28px', height: '28px', borderRadius: '8px',
-                                                                            background: 'var(--bg-hover)',
-                                                                        }}
+                                                                            background: 'var(--bg-hover)' }}
                                                                     />
                                                                 </motion.div>
                                                             ))}
@@ -2403,8 +2292,7 @@ const CreateGroupModal: React.FC<{
                                                             padding: '20px', 
                                                             textAlign: 'center', 
                                                             color: 'var(--text-muted)',
-                                                            fontSize: '12px',
-                                                        }}>
+                                                            fontSize: '12px' }}>
                                                             {classmateSearchQuery.trim() 
                                                                 ? `No classmates match "${classmateSearchQuery.length > 20 ? classmateSearchQuery.slice(0, 20) + '...' : classmateSearchQuery}"`
                                                                 : 'No classmates found'}
@@ -2427,8 +2315,7 @@ const CreateGroupModal: React.FC<{
                                                                     color: 'var(--text-muted)',
                                                                     fontSize: '12px',
                                                                     maxWidth: '100%',
-                                                                    overflow: 'hidden',
-                                                                }}>
+                                                                    overflow: 'hidden' }}>
                                                                     No classmates match "{truncatedQuery}"
                                                                 </div>
                                                             );
@@ -2476,8 +2363,7 @@ const CreateGroupModal: React.FC<{
                                                                                 cursor: 'pointer', textAlign: 'left',
                                                                                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                                                                                 transform: isHovered ? 'translateX(4px)' : 'translateX(0)',
-                                                                                boxShadow: isHovered ? `0 4px 12px ${selectedColor}15` : 'none',
-                                                                            }}
+                                                                                boxShadow: isHovered ? `0 4px 12px ${selectedColor}15` : 'none' }}
                                                                         >
                                                                             {/* Avatar */}
                                                                             <div style={{
@@ -2487,8 +2373,7 @@ const CreateGroupModal: React.FC<{
                                                                                 fontSize: '15px', fontWeight: 600, color: selectedColor,
                                                                                 flexShrink: 0,
                                                                                 transition: 'all 0.25s ease',
-                                                                                transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-                                                                            }}>
+                                                                                transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}>
                                                                                 {classmate.avatar}
                                                                             </div>
                                                                             
@@ -2497,8 +2382,7 @@ const CreateGroupModal: React.FC<{
                                                                                 <div style={{ 
                                                                                     fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)',
                                                                                     marginBottom: '4px',
-                                                                                    transition: 'color 0.2s ease',
-                                                                                }}>
+                                                                                    transition: 'color 0.2s ease' }}>
                                                                                     {classmate.name}
                                                                                 </div>
                                                                                 {/* Badges Row */}
@@ -2510,8 +2394,7 @@ const CreateGroupModal: React.FC<{
                                                                                         color: selectedColor,
                                                                                         fontSize: '9px', fontWeight: 600,
                                                                                         textTransform: 'uppercase',
-                                                                                        letterSpacing: '0.3px',
-                                                                                    }}>
+                                                                                        letterSpacing: '0.3px' }}>
                                                                                         {classmate.program}
                                                                                     </span>
                                                                                     {/* Section Badge */}
@@ -2519,8 +2402,7 @@ const CreateGroupModal: React.FC<{
                                                                                         padding: '2px 6px', borderRadius: '4px',
                                                                                         background: 'var(--bg-hover)',
                                                                                         color: 'var(--text-secondary)',
-                                                                                        fontSize: '9px', fontWeight: 500,
-                                                                                    }}>
+                                                                                        fontSize: '9px', fontWeight: 500 }}>
                                                                                         {classmate.section}
                                                                                     </span>
                                                                                     {/* Year Level Badge */}
@@ -2528,8 +2410,7 @@ const CreateGroupModal: React.FC<{
                                                                                         padding: '2px 6px', borderRadius: '4px',
                                                                                         background: 'rgba(16, 185, 129, 0.1)',
                                                                                         color: '#10b981',
-                                                                                        fontSize: '9px', fontWeight: 500,
-                                                                                    }}>
+                                                                                        fontSize: '9px', fontWeight: 500 }}>
                                                                                         {classmate.yearLevel}
                                                                                     </span>
                                                                                 </div>
@@ -2548,8 +2429,7 @@ const CreateGroupModal: React.FC<{
                                                                                             : ('var(--bg-hover)'),
                                                                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                                                     transition: 'all 0.25s ease',
-                                                                                    transform: isHovered && !isAdded ? 'scale(1.1)' : 'scale(1)',
-                                                                                }}
+                                                                                    transform: isHovered && !isAdded ? 'scale(1.1)' : 'scale(1)' }}
                                                                             >
                                                                                 <AnimatePresence mode="wait">
                                                                                     {isAdded ? (
@@ -2593,8 +2473,7 @@ const CreateGroupModal: React.FC<{
                                                                         style={{
                                                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                                             gap: '8px', marginTop: '12px', paddingTop: '12px',
-                                                                            borderTop: `1px solid var(--border-color)`,
-                                                                        }}
+                                                                            borderTop: `1px solid var(--border-color)` }}
                                                                     >
                                                                         {/* Previous Button */}
                                                                         <motion.button
@@ -2611,8 +2490,7 @@ const CreateGroupModal: React.FC<{
                                                                                 cursor: classmatesPage === 1 ? 'not-allowed' : 'pointer',
                                                                                 opacity: classmatesPage === 1 ? 0.5 : 1,
                                                                                 display: 'flex', alignItems: 'center', gap: '4px',
-                                                                                transition: 'all 0.2s ease',
-                                                                            }}
+                                                                                transition: 'all 0.2s ease' }}
                                                                         >
                                                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                                 <path d="M15 18l-6-6 6-6" />
@@ -2624,8 +2502,7 @@ const CreateGroupModal: React.FC<{
                                                                         <span style={{
                                                                             fontSize: '11px', color: 'var(--text-muted)',
                                                                             padding: '6px 12px', borderRadius: '8px',
-                                                                            background: 'var(--bg-hover)',
-                                                                        }}>
+                                                                            background: 'var(--bg-hover)' }}>
                                                                             {classmatesPage} / {totalPages}
                                                                         </span>
                                                                         
@@ -2644,8 +2521,7 @@ const CreateGroupModal: React.FC<{
                                                                                 cursor: classmatesPage === totalPages ? 'not-allowed' : 'pointer',
                                                                                 opacity: classmatesPage === totalPages ? 0.5 : 1,
                                                                                 display: 'flex', alignItems: 'center', gap: '4px',
-                                                                                transition: 'all 0.2s ease',
-                                                                            }}
+                                                                                transition: 'all 0.2s ease' }}
                                                                         >
                                                                             Next
                                                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -2667,8 +2543,7 @@ const CreateGroupModal: React.FC<{
                             {/* Footer */}
                             <div style={{
                                 padding: '16px 24px', borderTop: `1px solid var(--border-color)`,
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            }}>
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 {step > 1 ? (
                                     <motion.button
                                         onClick={() => setStep(step - 1)}
@@ -2678,8 +2553,7 @@ const CreateGroupModal: React.FC<{
                                             padding: '10px 16px', borderRadius: '10px',
                                             border: `1px solid var(--border-color)`, background: 'transparent',
                                             color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 500,
-                                            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-                                        }}
+                                            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -2701,8 +2575,7 @@ const CreateGroupModal: React.FC<{
                                                 padding: '10px 16px', borderRadius: '10px',
                                                 border: `1px solid var(--border-color)`, background: 'transparent',
                                                 color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 500,
-                                                cursor: 'pointer',
-                                            }}
+                                                cursor: 'pointer' }}
                                         >
                                             Skip & Create
                                         </motion.button>
@@ -2732,8 +2605,7 @@ const CreateGroupModal: React.FC<{
                                             display: 'flex', 
                                             alignItems: 'center', 
                                             gap: '6px',
-                                            transition: 'all 0.2s ease',
-                                        }}
+                                            transition: 'all 0.2s ease' }}
                                     >
                                         {isCreating ? (
                                             <>
@@ -2792,8 +2664,7 @@ const CreateGroupModal: React.FC<{
                                 color: hoveredTooltip.color,
                                 whiteSpace: 'nowrap',
                                 pointerEvents: 'none',
-                                zIndex: 99999,
-                            }}
+                                zIndex: 99999 }}
                         >
                             {hoveredTooltip.text}
                             {/* Tooltip Arrow */}
@@ -2805,8 +2676,7 @@ const CreateGroupModal: React.FC<{
                                 width: '8px',
                                 height: '8px',
                                 background: '#ffffff',
-                                boxShadow: '2px 2px 4px rgba(0,0,0,0.08)',
-                            }} />
+                                boxShadow: '2px 2px 4px rgba(0,0,0,0.08)' }} />
                         </motion.div>,
                         document.body
                     )}
@@ -2833,15 +2703,13 @@ const CreateGroupModal: React.FC<{
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '12px',
-                                        zIndex: 99999,
-                                    }}
+                                        zIndex: 99999 }}
                                 >
                                     <div style={{
                                         width: '32px', height: '32px', borderRadius: '8px',
                                         background: `${selectedColor}15`,
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '13px', fontWeight: 600, color: selectedColor,
-                                    }}>
+                                        fontSize: '13px', fontWeight: 600, color: selectedColor }}>
                                         {removedInvite.name?.charAt(0)?.toUpperCase() || '?'}
                                     </div>
                                     <div>
@@ -2860,8 +2728,7 @@ const CreateGroupModal: React.FC<{
                                             padding: '6px 12px', borderRadius: '8px',
                                             border: 'none', background: selectedColor,
                                             color: 'white', fontSize: '11px', fontWeight: 600,
-                                            cursor: 'pointer', marginLeft: '8px',
-                                        }}
+                                            cursor: 'pointer', marginLeft: '8px' }}
                                     >
                                         Undo
                                     </motion.button>
@@ -2873,8 +2740,7 @@ const CreateGroupModal: React.FC<{
                                             width: '20px', height: '20px', borderRadius: '6px',
                                             border: 'none', background: 'transparent',
                                             color: 'var(--text-muted)', cursor: 'pointer',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        }}
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                     >
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M18 6L6 18M6 6l12 12" />

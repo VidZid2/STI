@@ -36,8 +36,7 @@ export const useAchievements = (refreshTrigger: number): UseAchievementsReturn =
                 total: stats.total,
                 unlocked: stats.unlocked,
                 percentage: stats.percentage,
-                recent,
-            });
+                recent });
         } catch (err) {
         }
     };
@@ -48,8 +47,7 @@ export const useAchievements = (refreshTrigger: number): UseAchievementsReturn =
 
     return {
         achievements,
-        refreshAchievements: loadAchievements,
-    };
+        refreshAchievements: loadAchievements };
 };
 
 export default useAchievements;

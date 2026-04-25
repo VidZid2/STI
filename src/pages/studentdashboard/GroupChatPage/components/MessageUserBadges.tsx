@@ -11,18 +11,15 @@ interface MessageUserBadgesProps {
     userStreak: number;
     memberRole?: 'owner' | 'admin' | 'member';
     memberStats?: MemberStats;
-    colors: ChatColors;
-    isDarkMode: boolean;
+    
+    
 }
 
 export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
     userName,
     userStreak,
     memberRole,
-    memberStats,
-    colors,
-    isDarkMode,
-}) => {
+    memberStats }) => {
     // Badge icons mapping for achievements
     const badgeIcons: Record<string, { icon: string; label: string }> = {
         'streak-3': { icon: '*', label: '3 Day Streak' },
@@ -30,8 +27,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
         'helper': { icon: '💪', label: 'Helper' },
         'super-helper': { icon: '🦸', label: 'Super Helper' },
         'contributor': { icon: '🏆', label: 'Top Contributor' },
-        'early-bird': { icon: '🌅', label: 'Early Bird' },
-    };
+        'early-bird': { icon: '🌅', label: 'Early Bird' } };
 
     const userBadges = memberStats?.badges || [];
     const userAchievements = userBadges
@@ -39,8 +35,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
         .map((badge: UserBadge) => ({
             id: badge.id,
             icon: badgeIcons[badge.id]?.icon || badge.icon,
-            label: badgeIcons[badge.id]?.label || badge.label,
-        }));
+            label: badgeIcons[badge.id]?.label || badge.label }));
 
     return (
         <div style={{
@@ -48,8 +43,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '5px',
-            margin: '0 0 4px 0',
-        }}>
+            margin: '0 0 4px 0' }}>
             {/* Username */}
             <span style={{
                 display: 'inline-flex',
@@ -57,8 +51,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                 gap: '3px',
                 fontSize: '11px',
                 fontWeight: 600,
-                color: 'var(--accent-color)',
-            }}>
+                color: 'var(--accent-color)' }}>
                 {userName}
             </span>
 
@@ -74,8 +67,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                         padding: '2px 5px',
                         borderRadius: '4px',
                         background: 'rgba(249, 115, 22, 0.15)',
-                        fontWeight: 500,
-                    }}
+                        fontWeight: 500 }}
                     title={`${userStreak} day study streak!`}
                 >
                     <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" stroke="none">
@@ -96,8 +88,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                 padding: '2px 5px',
                 borderRadius: '4px',
                 background: 'rgba(139, 92, 246, 0.15)',
-                fontWeight: 500,
-            }}>
+                fontWeight: 500 }}>
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                     <path d="M6 12v5c3 3 9 3 12 0v-5" />
@@ -115,8 +106,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                 padding: '2px 5px',
                 borderRadius: '4px',
                 background: 'rgba(5, 150, 105, 0.15)',
-                fontWeight: 500,
-            }}>
+                fontWeight: 500 }}>
                 <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -137,8 +127,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                     background: memberRole === 'owner'
                         ? 'rgba(245, 158, 11, 0.15)'
                         : 'rgba(139, 92, 246, 0.15)',
-                    fontWeight: 500,
-                }}>
+                    fontWeight: 500 }}>
                     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                     </svg>
@@ -158,8 +147,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                         padding: '2px 5px',
                         borderRadius: '4px',
                         background: 'rgba(236, 72, 153, 0.15)',
-                        fontWeight: 500,
-                    }}
+                        fontWeight: 500 }}
                     title={`Helped ${memberStats?.helpfulCount} times`}
                 >
                     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -185,8 +173,7 @@ export const MessageUserBadges: React.FC<MessageUserBadgesProps> = ({
                                 fontSize: '10px',
                                 borderRadius: '4px',
                                 background: 'rgba(255,255,255,0.08)',
-                                cursor: 'default',
-                            }}
+                                cursor: 'default' }}
                         >
                             {achievement.icon}
                         </span>

@@ -28,20 +28,17 @@ const StatCard: React.FC<{ stat: StatData; index: number }> = ({ stat, index }) 
             animate={{
                 opacity: 1,
                 y: isHovered ? -4 : 0,
-                scale: isHovered ? 1.02 : 1,
-            }}
+                scale: isHovered ? 1.02 : 1 }}
             transition={{
                 opacity: { delay: 0.25 + index * 0.08, duration: 0.4 },
                 y: isHovered ? { duration: 0.1 } : { delay: 0.25 + index * 0.08, duration: 0.4 },
-                scale: { duration: 0.1 },
-            }}
+                scale: { duration: 0.1 } }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             style={{
                 background: stat.bgColor,
                 borderColor: stat.borderColor,
-                boxShadow: isHovered ? '0 8px 25px rgba(0,0,0,0.1)' : 'none',
-            }}
+                boxShadow: isHovered ? '0 8px 25px rgba(0,0,0,0.1)' : 'none' }}
             className="flex flex-col items-center p-5 rounded-2xl cursor-default border"
         >
             <div
@@ -49,8 +46,7 @@ const StatCard: React.FC<{ stat: StatData; index: number }> = ({ stat, index }) 
                 style={{
                     background: `${stat.iconColor}15`,
                     color: stat.iconColor,
-                    transform: isHovered ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)',
-                }}
+                    transform: isHovered ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)' }}
             >
                 {stat.icon}
             </div>
@@ -86,8 +82,7 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({ courseId: _courseI
         grade: 0,
         attendance: 0,
         nextDeadline: { title: 'No assignments yet', days: 0 },
-        unreadNews: 0,
-    };
+        unreadNews: 0 };
 
     const getGradeLetter = (grade: number) => {
         if (grade >= 90) return 'A';
@@ -114,8 +109,7 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({ courseId: _courseI
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
-            ),
-        },
+            ) },
         {
             label: 'Attendance',
             value: `${stats.attendance}%`,
@@ -132,8 +126,7 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({ courseId: _courseI
                     <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
-            ),
-        },
+            ) },
         {
             label: 'Next Deadline',
             value: stats.nextDeadline.days === 0 ? '-' : `${stats.nextDeadline.days}`,
@@ -148,8 +141,7 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({ courseId: _courseI
                     <circle cx="12" cy="12" r="10" />
                     <polyline points="12 6 12 12 16 14" />
                 </svg>
-            ),
-        },
+            ) },
         {
             label: 'Course Progress',
             value: `${progress}%`,
@@ -164,8 +156,7 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({ courseId: _courseI
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                     <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
-            ),
-        },
+            ) },
     ];
 
     return (

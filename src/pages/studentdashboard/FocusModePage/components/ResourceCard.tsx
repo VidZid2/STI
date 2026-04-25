@@ -10,16 +10,14 @@ import type { Resource, FilterTab } from '../FocusModePage';
 import { RESOURCE_TYPE_CONFIG } from './DistractionBlocker';
 
 // Skeleton Loading Component
-const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
-    const colors = {
+const FocusSkeleton: React.FC<{ : boolean }> = ({ }) => {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-primary)',
         border: 'rgba(255,255,255,0.06)',
         skeleton: 'rgba(255,255,255,0.06)',
-        shimmer: isDarkMode
-            ? 'linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 100%)'
-            : 'linear-gradient(90deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.02) 100%)',
-    };
+        shimmer: ? 'linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 100%)'
+            : 'linear-gradient(90deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.02) 100%)' };
 
     const SkeletonBox: React.FC<{ width?: string; height?: string; borderRadius?: string; style?: React.CSSProperties }> = ({
         width = '100%', height = '16px', borderRadius = '6px', style
@@ -30,11 +28,10 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
             style={{
                 width, height, borderRadius,
-                background: colors.skeleton,
+                background: .skeleton,
                 backgroundImage: 'var(--shimmer-bg)',
                 backgroundSize: '200% 100%',
-                ...style,
-            }}
+                ...style }}
         />
     );
 
@@ -45,8 +42,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             padding: '16px 24px',
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'hidden',
-        }}>
+            overflow: 'hidden' }}>
             <div style={{ maxWidth: '1600px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: '100%', gap: '16px' }}>
                 {/* Header Skeleton */}
                 <div style={{
@@ -55,8 +51,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                     borderRadius: '14px',
                     background: 'var(--dashboard-surface)',
                     border: `1px solid var(--border-color)`,
-                    flexShrink: 0,
-                }}>
+                    flexShrink: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <SkeletonBox width="36px" height="36px" borderRadius="10px" />
                         <SkeletonBox width="40px" height="40px" borderRadius="12px" />
@@ -77,8 +72,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                     gridTemplateColumns: '280px 1fr 300px',
                     gap: '16px',
                     flex: 1,
-                    minHeight: 0,
-                }}>
+                    minHeight: 0 }}>
                     {/* Left Column */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {/* Timer Skeleton */}
@@ -86,8 +80,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                             padding: '14px',
                             borderRadius: '14px',
                             background: 'var(--dashboard-surface)',
-                            border: `1px solid var(--border-color)`,
-                        }}>
+                            border: `1px solid var(--border-color)` }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <SkeletonBox width="28px" height="28px" borderRadius="8px" />
@@ -112,8 +105,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                             padding: '14px',
                             borderRadius: '14px',
                             background: 'var(--dashboard-surface)',
-                            border: `1px solid var(--border-color)`,
-                        }}>
+                            border: `1px solid var(--border-color)` }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                                 <SkeletonBox width="28px" height="28px" borderRadius="8px" />
                                 <SkeletonBox width="100px" height="12px" />
@@ -131,8 +123,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                             padding: '14px',
                             borderRadius: '14px',
                             background: 'var(--dashboard-surface)',
-                            border: `1px solid var(--border-color)`,
-                        }}>
+                            border: `1px solid var(--border-color)` }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <SkeletonBox width="28px" height="28px" borderRadius="8px" />
@@ -159,8 +150,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                         border: `1px solid var(--border-color)`,
                         display: 'flex',
                         flexDirection: 'column',
-                        overflow: 'hidden',
-                    }}>
+                        overflow: 'hidden' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                             <SkeletonBox width="120px" height="16px" />
                             <SkeletonBox width="200px" height="32px" borderRadius="12px" />
@@ -179,8 +169,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                             padding: '16px',
                             borderRadius: '14px',
                             background: 'var(--dashboard-surface)',
-                            border: `1px solid var(--border-color)`,
-                        }}>
+                            border: `1px solid var(--border-color)` }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
                                 <SkeletonBox width="32px" height="32px" borderRadius="10px" />
                                 <div>
@@ -200,8 +189,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                             padding: '20px',
                             borderRadius: '16px',
                             background: 'var(--dashboard-surface)',
-                            border: `1px solid rgba(59, 130, 246, 0.2)`,
-                        }}>
+                            border: `1px solid rgba(59, 130, 246, 0.2)` }}>
                             <SkeletonBox width="24px" height="24px" borderRadius="4px" style={{ marginBottom: '16px' }} />
                             <SkeletonBox width="100%" height="14px" style={{ marginBottom: '8px' }} />
                             <SkeletonBox width="90%" height="14px" style={{ marginBottom: '12px' }} />
@@ -213,8 +201,7 @@ const FocusSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                             padding: '14px 16px',
                             borderRadius: '14px',
                             background: 'var(--dashboard-surface)',
-                            border: `1px solid var(--border-color)`,
-                        }}>
+                            border: `1px solid var(--border-color)` }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                                 <SkeletonBox width="28px" height="28px" borderRadius="8px" />
                                 <SkeletonBox width="70px" height="12px" />
@@ -278,8 +265,7 @@ const ResourceIcon: React.FC<{ type: Resource['type']; color: string; size?: num
                 <path d="M12 8v8" />
                 <path d="M8 12h8" />
             </svg>
-        ),
-    };
+        ) };
     return <div style={{ color }}>{icons[type]}</div>;
 };
 
@@ -288,10 +274,9 @@ const ResourceIcon: React.FC<{ type: Resource['type']; color: string; size?: num
 const FilterTabs: React.FC<{
     activeFilter: FilterTab;
     setActiveFilter: (filter: FilterTab) => void;
-    isDarkMode: boolean;
-    colors: { accent: string; textSecondary: string };
-    resourceCounts: Record<FilterTab, number>;
-}> = ({ activeFilter, setActiveFilter, isDarkMode, colors, resourceCounts }) => {
+    
+    
+}> = ({ activeFilter, setActiveFilter,   resourceCounts }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [indicatorStyle, setIndicatorStyle] = useState({ left: 5, width: 60 });
 
@@ -358,8 +343,7 @@ const FilterTabs: React.FC<{
             const buttonRect = button.getBoundingClientRect();
             setIndicatorStyle({
                 left: buttonRect.left - containerRect.left,
-                width: buttonRect.width,
-            });
+                width: buttonRect.width });
         }
     }, [activeFilter]);
 
@@ -375,8 +359,7 @@ const FilterTabs: React.FC<{
                 const buttonRect = button.getBoundingClientRect();
                 setIndicatorStyle({
                     left: buttonRect.left - containerRect.left,
-                    width: buttonRect.width,
-                });
+                    width: buttonRect.width });
             }
         }, 50);
         return () => clearTimeout(timer);
@@ -394,8 +377,7 @@ const FilterTabs: React.FC<{
                 padding: '4px',
                 borderRadius: '12px',
                 background: 'var(--dashboard-surface)',
-                position: 'relative',
-            }}
+                position: 'relative' }}
         >
             <motion.div
                 layoutId="activeFilterIndicator"
@@ -406,16 +388,14 @@ const FilterTabs: React.FC<{
                     borderRadius: '8px',
                     background: 'var(--dashboard-surface)',
                     border: `1px solid ${'var(--dashboard-surface)'}`,
-                    zIndex: 0,
-                }}
+                    zIndex: 0 }}
                 initial={false}
                 animate={{ left: indicatorStyle.left, width: indicatorStyle.width }}
                 transition={{
                     type: 'spring',
                     stiffness: 400,
                     damping: 30,
-                    mass: 0.8,
-                }}
+                    mass: 0.8 }}
             />
 
             {tabs.map((tab) => (
@@ -439,8 +419,7 @@ const FilterTabs: React.FC<{
                         cursor: 'pointer',
                         position: 'relative',
                         zIndex: 1,
-                        transition: 'color 0.2s ease',
-                    }}
+                        transition: 'color 0.2s ease' }}
                 >
                     {tab.icon}
                     {tab.label}
@@ -458,8 +437,7 @@ const FilterTabs: React.FC<{
                                 background: activeFilter === tab.id
                                     ? 'var(--accent-color)'
                                     : ('var(--bg-hover)'),
-                                color: activeFilter === tab.id ? '#fff' : 'var(--text-secondary)',
-                            }}
+                                color: activeFilter === tab.id ? '#fff' : 'var(--text-secondary)' }}
                         >
                             {resourceCounts[tab.id]}
                         </motion.span>
@@ -474,10 +452,9 @@ const FilterTabs: React.FC<{
 // Resource Card Component - Minimalistic Professional Design
 const ResourceCard: React.FC<{
     resource: Resource;
-    isDarkMode: boolean;
-    colors: FocusModeColors;
-    index: number;
-}> = ({ resource, isDarkMode, colors, index }) => {
+    
+    
+}> = ({ resource,   index }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [showCopied, setShowCopied] = useState(false);
     const config = RESOURCE_TYPE_CONFIG[resource.type];
@@ -530,15 +507,12 @@ const ResourceCard: React.FC<{
                 cursor: 'pointer',
                 overflow: 'hidden',
                 boxShadow: isHovered
-                    ? isDarkMode
-                        ? `0 8px 24px ${config.color}25, 0 4px 12px rgba(0,0,0,0.3)`
+                    ? ? `0 8px 24px ${config.color}25, 0 4px 12px rgba(0,0,0,0.3)`
                         : `0 8px 24px ${config.color}15, 0 4px 8px rgba(0,0,0,0.04)`
-                    : isDarkMode
-                        ? '0 2px 4px rgba(0,0,0,0.2)'
+                    : ? '0 2px 4px rgba(0,0,0,0.2)'
                         : '0 1px 3px rgba(0,0,0,0.02)',
                 transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
-                transition: 'border-color 0.2s ease, box-shadow 0.3s ease, transform 0.2s ease',
-            }}
+                transition: 'border-color 0.2s ease, box-shadow 0.3s ease, transform 0.2s ease' }}
         >
             {/* Type indicator bar */}
             <div style={{
@@ -549,8 +523,7 @@ const ResourceCard: React.FC<{
                 height: '3px',
                 background: config.bgGradient,
                 opacity: isHovered ? 1 : 0.6,
-                transition: 'opacity 0.2s ease',
-            }} />
+                transition: 'opacity 0.2s ease' }} />
 
             <div style={{ padding: '16px 18px' }}>
                 {/* Header Row */}
@@ -568,8 +541,7 @@ const ResourceCard: React.FC<{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            flexShrink: 0,
-                        }}
+                            flexShrink: 0 }}
                     >
                         <ResourceIcon type={resource.type} color={config.color} size={20} />
                     </motion.div>
@@ -584,16 +556,14 @@ const ResourceCard: React.FC<{
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            letterSpacing: '-0.2px',
-                        }}>
+                            letterSpacing: '-0.2px' }}>
                             {resource.title}
                         </div>
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
-                            flexWrap: 'wrap',
-                        }}>
+                            flexWrap: 'wrap' }}>
                             {/* Type Badge */}
                             <span style={{
                                 fontSize: '10px',
@@ -603,15 +573,13 @@ const ResourceCard: React.FC<{
                                 background: `${config.color}20`,
                                 color: config.color,
                                 textTransform: 'uppercase',
-                                letterSpacing: '0.3px',
-                            }}>
+                                letterSpacing: '0.3px' }}>
                                 {config.label}
                             </span>
                             {/* Date */}
                             <span style={{
                                 fontSize: '11px',
-                                color: 'var(--text-muted)',
-                            }}>
+                                color: 'var(--text-muted)' }}>
                                 {formatDate(resource.createdAt)}
                             </span>
                         </div>
@@ -632,8 +600,7 @@ const ResourceCard: React.FC<{
                             border: `1px solid ${config.color}25`,
                             color: config.color,
                             fontSize: '11px',
-                            fontWeight: 600,
-                        }}
+                            fontWeight: 600 }}
                     >
                         {showCopied ? (
                             <>
@@ -696,8 +663,7 @@ const ResourceCard: React.FC<{
                             borderRadius: '10px',
                             overflow: 'hidden',
                             background: 'rgba(0,0,0,0.2)',
-                            border: `1px solid ${'var(--bg-hover)'}`,
-                        }}
+                            border: `1px solid ${'var(--bg-hover)'}` }}
                     >
                         <img
                             src={resource.previewUrl || resource.url}
@@ -706,8 +672,7 @@ const ResourceCard: React.FC<{
                                 width: '100%',
                                 height: '120px',
                                 objectFit: 'cover',
-                                display: 'block',
-                            }}
+                                display: 'block' }}
                             onError={(e) => {
                                 // Hide broken images
                                 (e.target as HTMLImageElement).style.display = 'none';
@@ -727,8 +692,7 @@ const ResourceCard: React.FC<{
                         whiteSpace: 'pre-wrap',
                         wordBreak: 'break-all',
                         maxHeight: '60px',
-                        overflow: 'hidden',
-                    }}>
+                        overflow: 'hidden' }}>
                         {resource.content.substring(0, 120)}{resource.content.length > 120 ? '...' : ''}
                     </div>
                 ) : (
@@ -739,8 +703,7 @@ const ResourceCard: React.FC<{
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                    }}>
+                        overflow: 'hidden' }}>
                         {resource.content.length > 100
                             ? resource.content.substring(0, 100) + '...'
                             : resource.content}
@@ -755,13 +718,11 @@ const ResourceCard: React.FC<{
                         justifyContent: 'space-between',
                         marginTop: '12px',
                         paddingTop: '12px',
-                        borderTop: `1px solid ${'rgba(255,255,255,0.04)'}`,
-                    }}>
+                        borderTop: `1px solid ${'rgba(255,255,255,0.04)'}` }}>
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '6px',
-                        }}>
+                            gap: '6px' }}>
                             <div style={{
                                 width: 20,
                                 height: 20,
@@ -769,8 +730,7 @@ const ResourceCard: React.FC<{
                                 background: `${config.color}15`,
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
+                                justifyContent: 'center' }}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={config.color} strokeWidth="2">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                     <circle cx="12" cy="7" r="4" />
@@ -779,8 +739,7 @@ const ResourceCard: React.FC<{
                             <span style={{
                                 fontSize: '11px',
                                 fontWeight: 500,
-                                color: 'var(--text-muted)',
-                            }}>
+                                color: 'var(--text-muted)' }}>
                                 {resource.sharedBy}
                             </span>
                         </div>
@@ -793,8 +752,7 @@ const ResourceCard: React.FC<{
                                 padding: '2px 6px',
                                 borderRadius: '4px',
                                 background: 'var(--bg-hover)',
-                                color: 'var(--text-muted)',
-                            }}>
+                                color: 'var(--text-muted)' }}>
                                 {resource.language}
                             </span>
                         )}
@@ -807,8 +765,7 @@ const ResourceCard: React.FC<{
                                 maxWidth: '120px',
                                 whiteSpace: 'nowrap',
                                 overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                            }}>
+                                textOverflow: 'ellipsis' }}>
                                 {(() => {
                                     try {
                                         return new URL(resource.url).hostname.replace('www.', '');

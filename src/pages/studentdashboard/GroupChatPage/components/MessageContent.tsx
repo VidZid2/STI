@@ -9,16 +9,15 @@ import { CodeBlock, extractCodeBlocks } from './CodeBlock';
 interface MessageContentProps {
     content: string;
     isOwn: boolean;
-    isDarkMode: boolean;
+    
     currentUserName?: string;
 }
 
 export const MessageContent = React.memo<MessageContentProps>(({
     content,
     isOwn,
-    isDarkMode,
-    currentUserName,
-}) => {
+    
+    currentUserName }) => {
     const { parts: codeParts, hasCode } = extractCodeBlocks(content);
 
     return (
@@ -31,7 +30,7 @@ export const MessageContent = React.memo<MessageContentProps>(({
                             code={part.content}
                             language={part.language}
                             isOwn={isOwn}
-                            isDarkMode={isDarkMode}
+                            
                         />
                     );
                 }
@@ -68,8 +67,7 @@ export const MessageContent = React.memo<MessageContentProps>(({
                                 fontWeight: 600,
                                 fontSize: '13px',
                                 cursor: 'pointer',
-                                transition: 'all 0.15s ease',
-                            }}
+                                transition: 'all 0.15s ease' }}
                             title={`View ${mentionName}'s profile`}
                         >
                             @{mentionName}
@@ -86,8 +84,7 @@ export const MessageContent = React.memo<MessageContentProps>(({
                         margin: hasCode && partIndex > 0 ? '8px 0 0 0' : 0,
                         fontSize: '14px',
                         lineHeight: 1.5,
-                        wordBreak: 'break-word',
-                    }}>
+                        wordBreak: 'break-word' }}>
                         {textParts.length > 0 ? textParts : textContent}
                     </p>
                 );

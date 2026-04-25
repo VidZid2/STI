@@ -110,8 +110,7 @@ export const useCalendar = (upcomingDeadlines: Deadline[]): UseCalendarReturn =>
         hasDeadlines,
         goToPrevMonth,
         goToNextMonth,
-        goToToday,
-    };
+        goToToday };
 };
 
 export default useCalendar;

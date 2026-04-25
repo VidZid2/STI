@@ -8,10 +8,10 @@ import { motion } from 'motion/react';
 import type { ChatColors } from '../types';
 
 interface EmptyStateProps {
-    colors: ChatColors;
+    
 }
 
-export const EmptyState: React.FC<EmptyStateProps> = ({ colors }) => {
+export const EmptyState: React.FC<EmptyStateProps> = ({ }) => {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -29,8 +29,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ colors }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '40px 20px',
-                textAlign: 'center',
-            }}
+                textAlign: 'center' }}
         >
             {/* Icon Container */}
             <motion.div
@@ -47,8 +46,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ colors }) => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginBottom: '20px',
-                    boxShadow: `0 8px 32px var(--accent-color)10`,
-                }}
+                    boxShadow: `0 8px 32px var(--accent-color)10` }}
             >
                 {/* Minimalistic Send/Chat Icon */}
                 <motion.svg
@@ -79,8 +77,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ colors }) => {
                     fontSize: '18px',
                     fontWeight: 600,
                     color: 'var(--text-primary)',
-                    marginBottom: '8px',
-                }}
+                    marginBottom: '8px' }}
             >
                 Start the conversation
             </motion.h3>
@@ -95,8 +92,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ colors }) => {
                     fontSize: '14px',
                     color: 'var(--text-muted)',
                     maxWidth: '280px',
-                    lineHeight: 1.5,
-                }}
+                    lineHeight: 1.5 }}
             >
                 Be the first to send a message and get the discussion started!
             </motion.p>
@@ -109,8 +105,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ colors }) => {
                 style={{
                     display: 'flex',
                     gap: '6px',
-                    marginTop: '24px',
-                }}
+                    marginTop: '24px' }}
             >
                 {[0, 1, 2].map((i) => (
                     <motion.div
@@ -123,14 +118,12 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ colors }) => {
                             duration: 1.5,
                             repeat: Infinity,
                             delay: i * 0.2,
-                            ease: 'easeInOut',
-                        }}
+                            ease: 'easeInOut' }}
                         style={{
                             width: 6,
                             height: 6,
                             borderRadius: '50%',
-                            background: 'var(--accent-color)',
-                        }}
+                            background: 'var(--accent-color)' }}
                     />
                 ))}
             </motion.div>

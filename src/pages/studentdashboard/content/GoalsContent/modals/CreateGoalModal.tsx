@@ -13,8 +13,7 @@ import {
     type Goal,
     type GoalType,
     type GoalPriority,
-    type GoalStatus,
-} from '../../../../../services/goalsService';
+    type GoalStatus } from '../../../../../services/goalsService';
 import { COURSES_DATA } from '../../../../../services/pathsService';
 import { GoalTypeIcons, PriorityIcons } from '../shared';
 
@@ -67,29 +66,26 @@ const CreateGoalModal: React.FC<{
             const rect = dateInputRef.current.getBoundingClientRect();
             setCalendarPosition({
                 top: rect.top,
-                left: rect.right + 12,
-            });
+                left: rect.right + 12 });
         }
     }, [showCalendar]);
     
     // Get courses list
     const coursesList = Object.values(COURSES_DATA);
 
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-secondary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
         textMuted: 'var(--text-muted)',
-        accent: 'var(--brand-blue)',
-    };
+        accent: 'var(--brand-blue)' };
 
     const priorityColors = {
         low: '#94a3b8',
         medium: '#f59e0b',
-        high: '#ef4444',
-    };
+        high: '#ef4444' };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -121,8 +117,7 @@ const CreateGoalModal: React.FC<{
             status: 'active' as GoalStatus,
             start_date: new Date().toISOString(),
             end_date: endDate ? new Date(endDate).toISOString() : undefined,
-            metadata,
-        });
+            metadata });
 
         setTitle('');
         setDescription('');
@@ -149,8 +144,7 @@ const CreateGoalModal: React.FC<{
                             inset: 0,
                             background: 'rgba(0,0,0,0.4)',
                             backdropFilter: 'blur(4px)',
-                            zIndex: 9998,
-                        }}
+                            zIndex: 9998 }}
                     />
                     <div
                         ref={modalRef}
@@ -163,8 +157,7 @@ const CreateGoalModal: React.FC<{
                             justifyContent: 'center',
                             zIndex: 9999,
                             pointerEvents: 'none',
-                            padding: '20px',
-                        }}
+                            padding: '20px' }}
                     >
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -181,15 +174,13 @@ const CreateGoalModal: React.FC<{
                                 overflow: 'hidden',
                                 pointerEvents: 'auto',
                                 display: 'flex',
-                                flexDirection: 'column',
-                            }}
+                                flexDirection: 'column' }}
                         >
                         <div style={{
                             padding: '20px 24px',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'space-between',
-                        }}>
+                            justifyContent: 'space-between' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <motion.div
                                     initial={{ scale: 0, rotate: -180 }}
@@ -203,8 +194,7 @@ const CreateGoalModal: React.FC<{
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: goalTypeConfig[type].color,
-                                    }}
+                                        color: goalTypeConfig[type].color }}
                                 >
                                     {GoalTypeIcons[type]}
                                 </motion.div>
@@ -231,8 +221,7 @@ const CreateGoalModal: React.FC<{
                                     color: 'var(--text-secondary)',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
+                                    justifyContent: 'center' }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -267,8 +256,7 @@ const CreateGoalModal: React.FC<{
                                         outline: 'none',
                                         background: 'var(--bg-hover)',
                                         color: 'var(--text-primary)',
-                                        boxSizing: 'border-box',
-                                    }}
+                                        boxSizing: 'border-box' }}
                                 />
                             </div>
 
@@ -300,8 +288,7 @@ const CreateGoalModal: React.FC<{
                                         background: 'var(--bg-hover)',
                                         color: 'var(--text-primary)',
                                         boxSizing: 'border-box',
-                                        fontFamily: 'inherit',
-                                    }}
+                                        fontFamily: 'inherit' }}
                                 />
                             </div>
 
@@ -333,8 +320,7 @@ const CreateGoalModal: React.FC<{
                                                 flexDirection: 'column',
                                                 alignItems: 'center',
                                                 gap: '4px',
-                                                color: type === key ? config.color : 'var(--text-secondary)',
-                                            }}
+                                                color: type === key ? config.color : 'var(--text-secondary)' }}
                                         >
                                             {GoalTypeIcons[key]}
                                             <span style={{ fontSize: '9px', fontWeight: 500, textAlign: 'center', lineHeight: 1.2 }}>
@@ -370,8 +356,7 @@ const CreateGoalModal: React.FC<{
                                         gap: '6px',
                                         maxHeight: '180px',
                                         overflowY: 'auto',
-                                        padding: '2px',
-                                    }}>
+                                        padding: '2px' }}>
                                         {/* All Courses Option */}
                                         <motion.button
                                             type="button"
@@ -403,8 +388,7 @@ const CreateGoalModal: React.FC<{
                                                 gap: '4px',
                                                 color: selectedCourse === null 
                                                     ? (type === 'grade' ? '#8b5cf6' : '#10b981') 
-                                                    : 'var(--text-secondary)',
-                                            }}
+                                                    : 'var(--text-secondary)' }}
                                         >
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <rect x="3" y="3" width="7" height="7" />
@@ -446,8 +430,7 @@ const CreateGoalModal: React.FC<{
                                                     gap: '4px',
                                                     color: selectedCourse === course.id 
                                                         ? (type === 'grade' ? '#8b5cf6' : '#10b981') 
-                                                        : 'var(--text-secondary)',
-                                                }}
+                                                        : 'var(--text-secondary)' }}
                                             >
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -471,8 +454,7 @@ const CreateGoalModal: React.FC<{
                                                 border: `1px solid ${type === 'grade' ? 'rgba(139, 92, 246, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`,
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                            }}
+                                                justifyContent: 'space-between' }}
                                         >
                                             <div>
                                                 <p style={{ margin: 0, fontSize: '11px', color: type === 'grade' ? '#8b5cf6' : '#10b981', fontWeight: 500 }}>
@@ -488,8 +470,7 @@ const CreateGoalModal: React.FC<{
                                                 background: type === 'grade' ? '#8b5cf6' : '#10b981',
                                                 color: '#fff',
                                                 fontSize: '11px',
-                                                fontWeight: 600,
-                                            }}>
+                                                fontWeight: 600 }}>
                                                 {type === 'grade' 
                                                     ? `Target: ${targetValue}%` 
                                                     : `${COURSES_DATA[selectedCourse].modules} module${COURSES_DATA[selectedCourse].modules !== 1 ? 's' : ''}`
@@ -517,8 +498,7 @@ const CreateGoalModal: React.FC<{
                                         padding: '6px 10px',
                                         border: `1px solid var(--border-color)`,
                                         borderRadius: '10px',
-                                        background: 'var(--bg-hover)',
-                                    }}>
+                                        background: 'var(--bg-hover)' }}>
                                         <motion.button
                                             type="button"
                                             onClick={() => setTargetValue(Math.max(1, targetValue - 1))}
@@ -537,8 +517,7 @@ const CreateGoalModal: React.FC<{
                                                 color: 'var(--text-primary)',
                                                 cursor: 'pointer',
                                                 fontSize: '16px',
-                                                fontWeight: 500,
-                                            }}
+                                                fontWeight: 500 }}
                                         >
                                             −
                                         </motion.button>
@@ -548,8 +527,7 @@ const CreateGoalModal: React.FC<{
                                             alignItems: 'center', 
                                             justifyContent: 'center',
                                             gap: '6px',
-                                            cursor: 'pointer',
-                                        }}
+                                            cursor: 'pointer' }}
                                         onDoubleClick={() => {
                                             setIsEditingTarget(true);
                                             setTempTargetValue(targetValue.toString());
@@ -604,8 +582,7 @@ const CreateGoalModal: React.FC<{
                                                         borderRadius: '6px',
                                                         outline: 'none',
                                                         textAlign: 'center',
-                                                        padding: '4px 6px',
-                                                    }}
+                                                        padding: '4px 6px' }}
                                                 />
                                             ) : (
                                                 <motion.span
@@ -616,8 +593,7 @@ const CreateGoalModal: React.FC<{
                                                     style={{
                                                         fontSize: '15px',
                                                         fontWeight: 600,
-                                                        color: 'var(--text-primary)',
-                                                    }}
+                                                        color: 'var(--text-primary)' }}
                                                 >
                                                     {targetValue}
                                                 </motion.span>
@@ -625,8 +601,7 @@ const CreateGoalModal: React.FC<{
                                             <span style={{
                                                 fontSize: '11px',
                                                 color: 'var(--text-muted)',
-                                                fontWeight: 500,
-                                            }}>
+                                                fontWeight: 500 }}>
                                                 {goalTypeConfig[type].defaultUnit}
                                             </span>
                                         </div>
@@ -651,8 +626,7 @@ const CreateGoalModal: React.FC<{
                                                 color: 'var(--text-primary)',
                                                 cursor: 'pointer',
                                                 fontSize: '16px',
-                                                fontWeight: 500,
-                                            }}
+                                                fontWeight: 500 }}
                                         >
                                             +
                                         </motion.button>
@@ -680,8 +654,7 @@ const CreateGoalModal: React.FC<{
                                                 borderRadius: '10px',
                                                 background: 'var(--bg-hover)',
                                                 height: '40px',
-                                                boxSizing: 'border-box',
-                                            }}
+                                                boxSizing: 'border-box' }}
                                         >
                                             <motion.button
                                                 type="button"
@@ -712,8 +685,7 @@ const CreateGoalModal: React.FC<{
                                                     cursor: endDate ? 'pointer' : 'not-allowed',
                                                     fontSize: '16px',
                                                     fontWeight: 500,
-                                                    opacity: endDate ? 1 : 0.4,
-                                                }}
+                                                    opacity: endDate ? 1 : 0.4 }}
                                             >
                                                 −
                                             </motion.button>
@@ -723,8 +695,7 @@ const CreateGoalModal: React.FC<{
                                                     display: 'flex', 
                                                     alignItems: 'center', 
                                                     justifyContent: 'center',
-                                                    cursor: 'pointer',
-                                                }}
+                                                    cursor: 'pointer' }}
                                                 onDoubleClick={() => {
                                                     setShowCalendar(true);
                                                     if (endDate) {
@@ -741,8 +712,7 @@ const CreateGoalModal: React.FC<{
                                                 <span style={{
                                                     fontSize: '13px',
                                                     fontWeight: 500,
-                                                    color: endDate ? 'var(--text-primary)' : 'var(--text-muted)',
-                                                }}>
+                                                    color: endDate ? 'var(--text-primary)' : 'var(--text-muted)' }}>
                                                     {endDate ? new Date(endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Select'}
                                                 </span>
                                             </div>
@@ -772,8 +742,7 @@ const CreateGoalModal: React.FC<{
                                                     color: 'var(--text-primary)',
                                                     cursor: 'pointer',
                                                     fontSize: '16px',
-                                                    fontWeight: 500,
-                                                }}
+                                                    fontWeight: 500 }}
                                             >
                                                 +
                                             </motion.button>
@@ -798,8 +767,7 @@ const CreateGoalModal: React.FC<{
                                                         borderRadius: '12px',
                                                         padding: '12px',
                                                         boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                                                        zIndex: 10000,
-                                                    }}
+                                                        zIndex: 10000 }}
                                                 >
                                                     {/* Month/Year Header */}
                                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
@@ -828,8 +796,7 @@ const CreateGoalModal: React.FC<{
                                                                 cursor: 'pointer',
                                                                 display: 'flex',
                                                                 alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                            }}
+                                                                justifyContent: 'center' }}
                                                         >
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                 <polyline points="15 18 9 12 15 6" />
@@ -863,8 +830,7 @@ const CreateGoalModal: React.FC<{
                                                                 cursor: 'pointer',
                                                                 display: 'flex',
                                                                 alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                            }}
+                                                                justifyContent: 'center' }}
                                                         >
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                 <polyline points="9 18 15 12 9 6" />
@@ -931,8 +897,7 @@ const CreateGoalModal: React.FC<{
                                                                             opacity: isDisabled ? 0.4 : 1,
                                                                             display: 'flex',
                                                                             alignItems: 'center',
-                                                                            justifyContent: 'center',
-                                                                        }}
+                                                                            justifyContent: 'center' }}
                                                                     >
                                                                         {day}
                                                                     </motion.button>
@@ -962,8 +927,7 @@ const CreateGoalModal: React.FC<{
                                                                 color: 'var(--text-secondary)',
                                                                 fontSize: '11px',
                                                                 fontWeight: 500,
-                                                                cursor: 'pointer',
-                                                            }}
+                                                                cursor: 'pointer' }}
                                                         >
                                                             Clear
                                                         </motion.button>
@@ -981,8 +945,7 @@ const CreateGoalModal: React.FC<{
                                                                 color: '#fff',
                                                                 fontSize: '11px',
                                                                 fontWeight: 500,
-                                                                cursor: 'pointer',
-                                                            }}
+                                                                cursor: 'pointer' }}
                                                         >
                                                             Done
                                                         </motion.button>
@@ -1022,8 +985,7 @@ const CreateGoalModal: React.FC<{
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 gap: '6px',
-                                                color: priority === p ? priorityColors[p] : 'var(--text-secondary)',
-                                            }}
+                                                color: priority === p ? priorityColors[p] : 'var(--text-secondary)' }}
                                         >
                                             <span style={{ color: priorityColors[p] }}>{PriorityIcons[p]}</span>
                                             <span style={{ fontSize: '12px', fontWeight: 500, textTransform: 'capitalize' }}>{p}</span>
@@ -1040,8 +1002,7 @@ const CreateGoalModal: React.FC<{
                                 background: 'var(--dashboard-surface)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'space-between',
-                            }}>
+                                justifyContent: 'space-between' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <div style={{ 
                                         width: '32px', 
@@ -1051,8 +1012,7 @@ const CreateGoalModal: React.FC<{
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: '#3b82f6',
-                                    }}>
+                                        color: '#3b82f6' }}>
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                                             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
@@ -1095,8 +1055,7 @@ const CreateGoalModal: React.FC<{
                                 border: '1px solid rgba(16, 185, 129, 0.15)',
                                 display: 'flex',
                                 alignItems: 'flex-start',
-                                gap: '8px',
-                            }}>
+                                gap: '8px' }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" style={{ marginTop: '1px', flexShrink: 0 }}>
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
@@ -1127,8 +1086,7 @@ const CreateGoalModal: React.FC<{
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     gap: '8px',
-                                    transition: 'all 0.2s ease',
-                                }}
+                                    transition: 'all 0.2s ease' }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />

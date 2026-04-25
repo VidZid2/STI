@@ -25,8 +25,8 @@ interface MessageInputAreaProps {
     showEmojiPicker: boolean;
     showGifPicker: boolean;
     isSending: boolean;
-    isDarkMode: boolean;
-    colors: ChatColors;
+    
+    
     
     // Refs
     inputRef: React.RefObject<HTMLTextAreaElement | null>;
@@ -57,8 +57,8 @@ export const MessageInputArea: React.FC<MessageInputAreaProps> = ({
     showEmojiPicker,
     showGifPicker,
     isSending,
-    isDarkMode,
-    colors,
+    
+    
     inputRef,
     gifButtonRef,
     onMessageChange,
@@ -71,8 +71,7 @@ export const MessageInputArea: React.FC<MessageInputAreaProps> = ({
     onEmojiToggle,
     onGifToggle,
     onVoiceNoteClick,
-    onSend,
-}) => {
+    onSend }) => {
     return (
         <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -83,8 +82,7 @@ export const MessageInputArea: React.FC<MessageInputAreaProps> = ({
                 padding: '16px 20px',
                 display: 'flex',
                 alignItems: 'flex-end',
-                gap: '12px',
-            }}
+                gap: '12px' }}
         >
             <div
                 style={{
@@ -95,8 +93,7 @@ export const MessageInputArea: React.FC<MessageInputAreaProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    border: `1px solid ${'var(--bg-hover)'}`,
-                }}
+                    border: `1px solid ${'var(--bg-hover)'}` }}
             >
                 <InputToolbarLeft onStudyToolsClick={onStudyToolsClick} onAttachClick={onAttachClick} />
 
@@ -106,8 +103,7 @@ export const MessageInputArea: React.FC<MessageInputAreaProps> = ({
                         width: '1px',
                         height: '20px',
                         background: 'var(--bg-hover)',
-                        flexShrink: 0,
-                    }}
+                        flexShrink: 0 }}
                 />
 
                 <div style={{ flex: 1, position: 'relative' }}>
@@ -132,8 +128,7 @@ export const MessageInputArea: React.FC<MessageInputAreaProps> = ({
                             resize: 'none',
                             outline: 'none',
                             fontFamily: 'inherit',
-                            maxHeight: '120px',
-                        }}
+                            maxHeight: '120px' }}
                     />
 
                     {/* Smart Mentions Autocomplete */}
@@ -157,7 +152,7 @@ export const MessageInputArea: React.FC<MessageInputAreaProps> = ({
                         }}
                         onClose={onCloseMentions}
                         inputRef={inputRef}
-                        isDarkMode={isDarkMode}
+                        
                         messageContext={newMessage}
                     />
                 </div>

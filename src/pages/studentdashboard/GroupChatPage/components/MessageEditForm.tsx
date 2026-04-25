@@ -13,8 +13,8 @@ interface MessageEditFormProps {
     onSave: () => void;
     onCancel: () => void;
     isOwn: boolean;
-    isDarkMode: boolean;
-    colors: ChatColors;
+    
+    
 }
 
 export const MessageEditForm: React.FC<MessageEditFormProps> = ({
@@ -22,10 +22,7 @@ export const MessageEditForm: React.FC<MessageEditFormProps> = ({
     setEditingContent,
     onSave,
     onCancel,
-    isOwn,
-    isDarkMode,
-    colors,
-}) => {
+    isOwn }) => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <textarea
@@ -44,8 +41,7 @@ export const MessageEditForm: React.FC<MessageEditFormProps> = ({
                     lineHeight: 1.5,
                     resize: 'none',
                     outline: 'none',
-                    fontFamily: 'inherit',
-                }}
+                    fontFamily: 'inherit' }}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
@@ -69,8 +65,7 @@ export const MessageEditForm: React.FC<MessageEditFormProps> = ({
                         color: isOwn ? 'rgba(255,255,255,0.9)' : 'var(--text-secondary)',
                         fontSize: '12px',
                         fontWeight: 500,
-                        cursor: 'pointer',
-                    }}
+                        cursor: 'pointer' }}
                 >
                     Cancel
                 </motion.button>
@@ -86,8 +81,7 @@ export const MessageEditForm: React.FC<MessageEditFormProps> = ({
                         color: '#fff',
                         fontSize: '12px',
                         fontWeight: 500,
-                        cursor: 'pointer',
-                    }}
+                        cursor: 'pointer' }}
                 >
                     Save
                 </motion.button>

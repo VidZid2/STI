@@ -23,8 +23,7 @@ const ActionTooltip: React.FC<{
                         transform: 'translateX(-50%)',
                         marginBottom: '6px',
                         zIndex: 100,
-                        pointerEvents: 'none',
-                    }}>
+                        pointerEvents: 'none' }}>
                         <motion.div
                             initial={{ opacity: 0, y: 4, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -38,8 +37,7 @@ const ActionTooltip: React.FC<{
                                 fontWeight: 500,
                                 borderRadius: '6px',
                                 whiteSpace: 'nowrap',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            }}
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
                         >
                             {label}
                             <div style={{
@@ -50,8 +48,7 @@ const ActionTooltip: React.FC<{
                                 width: '8px',
                                 height: '8px',
                                 background: '#ffffff',
-                                boxShadow: '2px 2px 4px rgba(0,0,0,0.05)',
-                            }} />
+                                boxShadow: '2px 2px 4px rgba(0,0,0,0.05)' }} />
                         </motion.div>
                     </div>
                 )}

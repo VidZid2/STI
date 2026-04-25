@@ -14,7 +14,7 @@ interface ScheduleModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSend: (title: string, date: string, time: string) => void;
-    colors: ModalColors;
+    
 }
 
 // Custom Calendar Picker Component
@@ -22,9 +22,9 @@ const CalendarPicker: React.FC<{
     selectedDate: Date | null;
     onSelect: (date: Date) => void;
     onClose: () => void;
-    isDarkMode: boolean;
-    colors: { textPrimary: string; textSecondary: string; textMuted: string };
-}> = ({ selectedDate, onSelect, onClose, isDarkMode, colors }) => {
+    
+    
+}> = ({ selectedDate, onSelect, onClose }) => {
     const [viewDate, setViewDate] = useState(selectedDate || new Date());
     const blueAccent = '#3b82f6';
     const blueBg = 'rgba(59, 130, 246, 0.1)';
@@ -83,8 +83,7 @@ const CalendarPicker: React.FC<{
             onClick={onClose}
             style={{
                 position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)',
-                zIndex: 1002, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
+                zIndex: 1002, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
             <motion.div
                 initial={{ scale: 0.95, opacity: 0 }}
@@ -94,8 +93,7 @@ const CalendarPicker: React.FC<{
                 onClick={(e) => e.stopPropagation()}
                 style={{
                     background: cardBg, borderRadius: '16px', padding: '20px',
-                    width: '320px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-                }}
+                    width: '320px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}
             >
                 {/* Month Navigation */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
@@ -106,8 +104,7 @@ const CalendarPicker: React.FC<{
                         style={{
                             width: 32, height: 32, borderRadius: '8px', border: 'none',
                             background: 'transparent', cursor: 'pointer', display: 'flex',
-                            alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)',
-                        }}
+                            alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <polyline points="15 18 9 12 15 6" />
@@ -123,8 +120,7 @@ const CalendarPicker: React.FC<{
                         style={{
                             width: 32, height: 32, borderRadius: '8px', border: 'none',
                             background: 'transparent', cursor: 'pointer', display: 'flex',
-                            alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)',
-                        }}
+                            alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <polyline points="9 18 15 12 9 6" />
@@ -138,8 +134,7 @@ const CalendarPicker: React.FC<{
                     {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
                         <div key={i} style={{
                             textAlign: 'center', fontSize: '11px', fontWeight: 600,
-                            color: 'var(--text-muted)', padding: '4px',
-                        }}>
+                            color: 'var(--text-muted)', padding: '4px' }}>
                             {day}
                         </div>
                     ))}
@@ -162,8 +157,7 @@ const CalendarPicker: React.FC<{
                                 fontSize: '13px', fontWeight: isSelected(date) || isToday(date) ? 600 : 500,
                                 color: isSelected(date) ? '#fff' : isPast(date) ? 'var(--text-muted)' : 'var(--text-primary)',
                                 opacity: date ? 1 : 0,
-                                transition: 'background 0.15s ease',
-                            }}
+                                transition: 'background 0.15s ease' }}
                         >
                             {date?.getDate()}
                         </motion.button>
@@ -179,8 +173,7 @@ const CalendarPicker: React.FC<{
                         style={{
                             flex: 1, padding: '10px', borderRadius: '10px',
                             border: `1px solid ${borderColor}`, background: 'transparent',
-                            cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)',
-                        }}
+                            cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)' }}
                     >
                         Clear
                     </motion.button>
@@ -191,8 +184,7 @@ const CalendarPicker: React.FC<{
                         style={{
                             flex: 1, padding: '10px', borderRadius: '10px', border: 'none',
                             background: blueAccent, cursor: 'pointer',
-                            fontSize: '13px', fontWeight: 600, color: '#fff',
-                        }}
+                            fontSize: '13px', fontWeight: 600, color: '#fff' }}
                     >
                         Done
                     </motion.button>
@@ -212,9 +204,9 @@ const NumberStepper: React.FC<{
     max: number;
     label: string;
     format?: (value: number) => string;
-    isDarkMode: boolean;
-    colors: { textPrimary: string; textSecondary: string; textMuted: string };
-}> = ({ value, onChange, min, max, label, format, isDarkMode, colors }) => {
+    
+    
+}> = ({ value, onChange, min, max, label, format }) => {
     const subtleBg = 'rgba(255,255,255,0.04)';
     const borderColor = 'rgba(255,255,255,0.08)';
 
@@ -225,8 +217,7 @@ const NumberStepper: React.FC<{
         <div style={{
             display: 'flex', alignItems: 'center', gap: '0',
             background: subtleBg, borderRadius: '12px', padding: '4px',
-            border: `1px solid ${borderColor}`,
-        }}>
+            border: `1px solid ${borderColor}` }}>
             <motion.button
                 whileHover={{ scale: 1.05, background: 'var(--bg-hover)' }}
                 whileTap={{ scale: 0.95 }}
@@ -237,8 +228,7 @@ const NumberStepper: React.FC<{
                     background: 'transparent', cursor: value > min ? 'pointer' : 'not-allowed',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: value > min ? 'var(--text-secondary)' : 'var(--text-muted)',
-                    transition: 'background 0.15s ease',
-                }}
+                    transition: 'background 0.15s ease' }}
             >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="5" y1="12" x2="19" y2="12" />
@@ -246,8 +236,7 @@ const NumberStepper: React.FC<{
             </motion.button>
             <div style={{
                 flex: 1, textAlign: 'center', minWidth: '70px',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
-            }}>
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
                 <span style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>
                     {format ? format(value) : value}
                 </span>
@@ -265,8 +254,7 @@ const NumberStepper: React.FC<{
                     background: 'transparent', cursor: value < max ? 'pointer' : 'not-allowed',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     color: value < max ? 'var(--text-secondary)' : 'var(--text-muted)',
-                    transition: 'background 0.15s ease',
-                }}
+                    transition: 'background 0.15s ease' }}
             >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="12" y1="5" x2="12" y2="19" />
@@ -278,7 +266,7 @@ const NumberStepper: React.FC<{
 };
 
 
-export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, onSend, colors }) => {
+export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, onSend }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'schedule-modal-title');
     const [title, setTitle] = useState('');
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -289,9 +277,8 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
     const [focusedField, setFocusedField] = useState<string | null>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
 
-    // Blue accent colors
-    const blueAccent = '#3b82f6';
-    const isDarkMode = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
+    // Blue accent const blueAccent = '#3b82f6';
+    const = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
     const blueBg = 'rgba(59, 130, 246, 0.1)';
     const blueBorder = 'rgba(59, 130, 246, 0.25)';
     const subtleBg = 'var(--dashboard-surface)';
@@ -346,8 +333,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                         position: 'fixed', inset: 0,
                         background: 'rgba(0,0,0,0.6)',
                         backdropFilter: 'blur(8px)', zIndex: 1001,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
-                    }}
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
                 >
                     <motion.div
                         initial={{ scale: 0.95, opacity: 0, y: 10 }}
@@ -360,17 +346,14 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                         style={{
                             background: 'var(--dashboard-surface)', borderRadius: '20px',
                             width: '100%', maxWidth: '440px',
-                            boxShadow: isDarkMode
-                                ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
+                            boxShadow: ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
                                 : '0 24px 48px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04)',
-                            overflow: 'hidden',
-                        }}
+                            overflow: 'hidden' }}
                     >
                         {/* Header */}
                         <div style={{
                             padding: '20px 24px', borderBottom: `1px solid ${borderColor}`,
-                            display: 'flex', alignItems: 'center', gap: '14px',
-                        }}>
+                            display: 'flex', alignItems: 'center', gap: '14px' }}>
                             <motion.div
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
@@ -378,8 +361,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                 style={{
                                     width: 44, height: 44, borderRadius: '12px',
                                     background: blueBg, border: `1px solid ${blueBorder}`,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                }}
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                             >
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -405,8 +387,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                 style={{
                                     width: 32, height: 32, borderRadius: '10px', border: 'none',
                                     background: subtleBg, cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)',
-                                }}
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -425,15 +406,13 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                 style={{
                                     background: `linear-gradient(135deg, ${blueAccent} 0%, #2563eb 100%)`,
                                     borderRadius: '14px', padding: '16px 18px', marginBottom: '20px',
-                                    boxShadow: '0 4px 16px rgba(59, 130, 246, 0.25)',
-                                }}
+                                    boxShadow: '0 4px 16px rgba(59, 130, 246, 0.25)' }}
                             >
                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                                     <div style={{
                                         width: 36, height: 36, borderRadius: '10px',
                                         background: 'rgba(255,255,255,0.2)',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                    }}>
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
                                             <circle cx="12" cy="12" r="10" />
                                             <polyline points="12 6 12 12 16 14" />
@@ -471,8 +450,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                     display: 'flex', alignItems: 'center', gap: '6px',
                                     fontSize: '11px', fontWeight: 600, marginBottom: '8px',
                                     color: focusedField === 'title' ? blueAccent : 'var(--text-secondary)',
-                                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                                }}>
+                                    textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: focusedField === 'title' ? blueAccent : 'var(--text-muted)' }} />
                                     Session Title
                                 </label>
@@ -489,8 +467,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                         background: focusedField === 'title' ? blueBg : subtleBg,
                                         fontSize: '14px', outline: 'none', color: 'var(--text-primary)', fontFamily: 'inherit',
                                         transition: 'all 0.2s ease',
-                                        boxShadow: focusedField === 'title' ? `0 0 0 3px ${blueBg}` : 'none',
-                                    }}
+                                        boxShadow: focusedField === 'title' ? `0 0 0 3px ${blueBg}` : 'none' }}
                                 />
                             </motion.div>
 
@@ -500,8 +477,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                 <label style={{
                                     display: 'flex', alignItems: 'center', gap: '6px',
                                     fontSize: '11px', fontWeight: 600, marginBottom: '8px',
-                                    color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px',
-                                }}>
+                                    color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--text-muted)' }} />
                                     Date
                                 </label>
@@ -513,8 +489,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                         width: '100%', padding: '12px 14px', borderRadius: '12px',
                                         border: `1px solid ${borderColor}`, background: subtleBg,
                                         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                        transition: 'all 0.2s ease',
-                                    }}
+                                        transition: 'all 0.2s ease' }}
                                 >
                                     <span style={{ fontSize: '14px', fontWeight: 500, color: selectedDate ? 'var(--text-primary)' : 'var(--text-muted)' }}>
                                         {selectedDate ? selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : 'Select a date'}
@@ -533,8 +508,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                 <label style={{
                                     display: 'flex', alignItems: 'center', gap: '6px',
                                     fontSize: '11px', fontWeight: 600, marginBottom: '10px',
-                                    color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px',
-                                }}>
+                                    color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--text-muted)' }} />
                                     Time
                                 </label>
@@ -543,20 +517,19 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                         value={hour === 0 ? 12 : hour > 12 ? hour - 12 : hour}
                                         onChange={(v) => setHour(period === 'PM' ? (v === 12 ? 12 : v + 12) : (v === 12 ? 0 : v))}
                                         min={1} max={12} label="hour"
-                                        isDarkMode={isDarkMode} colors={colors}
+                                         
                                     />
                                     <NumberStepper
                                         value={minute}
                                         onChange={setMinute}
                                         min={0} max={59} label="min"
                                         format={(v) => v.toString().padStart(2, '0')}
-                                        isDarkMode={isDarkMode} colors={colors}
+                                         
                                     />
                                     <div style={{
                                         display: 'flex', flexDirection: 'column', gap: '4px',
                                         background: subtleBg, borderRadius: '12px', padding: '4px',
-                                        border: `1px solid ${borderColor}`,
-                                    }}>
+                                        border: `1px solid ${borderColor}` }}>
                                         {(['AM', 'PM'] as const).map((p) => (
                                             <motion.button
                                                 key={p}
@@ -568,8 +541,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                                     background: period === p ? blueAccent : 'transparent',
                                                     cursor: 'pointer', fontSize: '12px', fontWeight: 600,
                                                     color: period === p ? '#fff' : 'var(--text-secondary)',
-                                                    transition: 'all 0.15s ease',
-                                                }}
+                                                    transition: 'all 0.15s ease' }}
                                             >
                                                 {p}
                                             </motion.button>
@@ -583,8 +555,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                         {/* Footer */}
                         <div style={{
                             padding: '16px 24px 20px', borderTop: `1px solid ${borderColor}`,
-                            display: 'flex', gap: '10px', justifyContent: 'flex-end', background: subtleBg,
-                        }}>
+                            display: 'flex', gap: '10px', justifyContent: 'flex-end', background: subtleBg }}>
                             <motion.button
                                 whileHover={{ scale: 1.02, background: 'var(--bg-hover)' }}
                                 whileTap={{ scale: 0.98 }}
@@ -592,8 +563,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                 style={{
                                     padding: '10px 18px', borderRadius: '10px',
                                     border: `1px solid ${borderColor}`, background: 'transparent',
-                                    cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)',
-                                }}
+                                    cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)' }}
                             >
                                 Cancel
                             </motion.button>
@@ -611,8 +581,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                     fontSize: '13px', fontWeight: 600,
                                     color: isValid ? '#fff' : 'var(--text-muted)',
                                     display: 'flex', alignItems: 'center', gap: '8px',
-                                    boxShadow: isValid ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none',
-                                }}
+                                    boxShadow: isValid ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none' }}
                             >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -632,8 +601,8 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({ isOpen, onClose, o
                                 selectedDate={selectedDate}
                                 onSelect={(date) => { setSelectedDate(date); setShowCalendar(false); }}
                                 onClose={() => setShowCalendar(false)}
-                                isDarkMode={isDarkMode}
-                                colors={colors}
+                                
+                                
                             />
                         )}
                     </AnimatePresence>

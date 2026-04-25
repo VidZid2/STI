@@ -20,8 +20,7 @@ import {
     type CatalogCourse,
     type CatalogStats,
     type CourseCategory,
-    type SortOption,
-} from '../../../../services/catalogService';
+    type SortOption } from '../../../../services/catalogService';
 import { AnimatedNumber, CategoryIcon, CatalogSkeleton } from './components/CatalogShared';
 import { FilterTabs } from './components/CatalogFilterTabs';
 import { CourseCard, CourseListItem } from './components/CourseCard';
@@ -52,15 +51,14 @@ const CatalogContent: React.FC = () => {
     const suggestionsRef = useRef<HTMLDivElement>(null);
     const loadMoreRef = useRef<HTMLDivElement>(null);
 
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-secondary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
         textMuted: 'var(--text-muted)',
-        accent: 'var(--brand-blue)',
-    };
+        accent: 'var(--brand-blue)' };
 
     useEffect(() => {
         const loadData = async () => {
@@ -397,8 +395,7 @@ const CatalogContent: React.FC = () => {
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     justifyContent: 'center',
-                                    pointerEvents: 'none',
-                                }}
+                                    pointerEvents: 'none' }}
                             >
                                 <div 
                                     style={{ 
@@ -409,8 +406,7 @@ const CatalogContent: React.FC = () => {
                                         fontSize: '11px', 
                                         fontWeight: 500, 
                                         color: 'var(--text-muted)',
-                                        fontFamily: 'monospace',
-                                    }}
+                                        fontFamily: 'monospace' }}
                                     title="Press / to search"
                                 >
                                     /
@@ -441,8 +437,7 @@ const CatalogContent: React.FC = () => {
                                     borderRadius: '10px',
                                     boxShadow: 'var(--shadow-lg)',
                                     zIndex: 50,
-                                    overflow: 'hidden',
-                                }}
+                                    overflow: 'hidden' }}
                             >
                                 {/* Suggestions Header */}
                                 <div style={{
@@ -450,8 +445,7 @@ const CatalogContent: React.FC = () => {
                                     borderBottom: `1px solid var(--border-color)`,
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                }}>
+                                    justifyContent: 'space-between' }}>
                                     <span style={{ fontSize: '9px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                         Suggestions
                                     </span>
@@ -484,8 +478,7 @@ const CatalogContent: React.FC = () => {
                                                 cursor: 'pointer',
                                                 background: isSelected ? ('rgba(59, 130, 246, 0.1)') : 'transparent',
                                                 borderLeft: isSelected ? '2px solid #3b82f6' : '2px solid transparent',
-                                                transition: 'all 0.1s ease',
-                                            }}
+                                                transition: 'all 0.1s ease' }}
                                         >
                                             {/* Course Image */}
                                             <div style={{
@@ -493,8 +486,7 @@ const CatalogContent: React.FC = () => {
                                                 height: '32px',
                                                 borderRadius: '6px',
                                                 overflow: 'hidden',
-                                                flexShrink: 0,
-                                            }}>
+                                                flexShrink: 0 }}>
                                                 <img src={course.image} alt={course.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                             </div>
                                             
@@ -535,7 +527,7 @@ const CatalogContent: React.FC = () => {
 
                 {/* Filter Tabs */}
                 <motion.div layout transition={{ type: 'spring', stiffness: 400, damping: 30 }}>
-                    <FilterTabs activeFilter={activeFilter} setActiveFilter={setActiveFilter} stats={stats} colors={colors} favoritesCount={bookmarks.length} />
+                    <FilterTabs activeFilter={activeFilter} setActiveFilter={setActiveFilter} stats={stats}  favoritesCount={bookmarks.length} />
                 </motion.div>
 
 
@@ -549,8 +541,7 @@ const CatalogContent: React.FC = () => {
                         gap: '2px',
                         padding: '3px',
                         borderRadius: '10px',
-                        background: 'var(--bg-hover)',
-                    }}
+                        background: 'var(--bg-hover)' }}
                 >
                     <motion.button
                         aria-label="Grid view"
@@ -571,8 +562,7 @@ const CatalogContent: React.FC = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: 'all 0.2s ease',
-                        }}
+                            transition: 'all 0.2s ease' }}
                         title="Grid View"
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -601,8 +591,7 @@ const CatalogContent: React.FC = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: 'all 0.2s ease',
-                        }}
+                            transition: 'all 0.2s ease' }}
                         title="List View"
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -718,8 +707,7 @@ const CatalogContent: React.FC = () => {
                             padding: '10px 14px',
                             borderRadius: '10px',
                             background: 'rgba(59, 130, 246, 0.1)',
-                            border: `1px solid ${'rgba(59, 130, 246, 0.1)'}`,
-                        }}
+                            border: `1px solid ${'rgba(59, 130, 246, 0.1)'}` }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -748,8 +736,7 @@ const CatalogContent: React.FC = () => {
                                 color: 'var(--text-muted)',
                                 fontSize: '11px',
                                 fontWeight: 500,
-                                cursor: 'pointer',
-                            }}
+                                cursor: 'pointer' }}
                         >
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M18 6L6 18M6 6l12 12" />
@@ -795,8 +782,7 @@ const CatalogContent: React.FC = () => {
                             borderRadius: '14px',
                             background: 'var(--dashboard-surface)',
                             border: `1px solid var(--border-color)`,
-                            overflow: 'hidden',
-                        }}
+                            overflow: 'hidden' }}
                     >
                         {/* Section Header */}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
@@ -812,8 +798,7 @@ const CatalogContent: React.FC = () => {
                                         background: 'rgba(59, 130, 246, 0.1)',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
+                                        justifyContent: 'center' }}
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <circle cx="12" cy="12" r="10" />
@@ -846,8 +831,7 @@ const CatalogContent: React.FC = () => {
                                             cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '4px',
-                                        }}
+                                            gap: '4px' }}
                                     >
                                         {recentlyViewedExpanded ? (
                                             <>
@@ -884,8 +868,7 @@ const CatalogContent: React.FC = () => {
                                         cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '4px',
-                                    }}
+                                        gap: '4px' }}
                                 >
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <polyline points="3 6 5 6 21 6" />
@@ -903,8 +886,7 @@ const CatalogContent: React.FC = () => {
                                 initial={false}
                                 animate={{ 
                                     opacity: 1,
-                                    height: 'auto',
-                                }}
+                                    height: 'auto' }}
                                 transition={{ 
                                     layout: { 
                                         type: 'spring', 
@@ -923,8 +905,7 @@ const CatalogContent: React.FC = () => {
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
                                     gap: '10px',
-                                    overflow: 'hidden',
-                                }}
+                                    overflow: 'hidden' }}
                             >
                                 <AnimatePresence mode="popLayout">
                                 {recentlyViewed.slice(0, recentlyViewedExpanded ? recentlyViewed.length : 4).map((courseId, index) => {
@@ -977,8 +958,7 @@ const CatalogContent: React.FC = () => {
                                                 cursor: 'pointer',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                gap: '10px',
-                                            }}
+                                                gap: '10px' }}
                                         >
                                             {/* Course Image */}
                                             <div style={{
@@ -986,8 +966,7 @@ const CatalogContent: React.FC = () => {
                                                 height: '48px',
                                                 borderRadius: '10px',
                                                 overflow: 'hidden',
-                                                flexShrink: 0,
-                                            }}>
+                                                flexShrink: 0 }}>
                                                 <img 
                                                     src={course.image} 
                                                     alt={course.title}
@@ -1005,8 +984,7 @@ const CatalogContent: React.FC = () => {
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
                                                     whiteSpace: 'nowrap',
-                                                    marginBottom: '4px',
-                                                }}>
+                                                    marginBottom: '4px' }}>
                                                     {course.title}
                                                 </div>
                                                 
@@ -1015,16 +993,14 @@ const CatalogContent: React.FC = () => {
                                                     display: 'flex', 
                                                     alignItems: 'center', 
                                                     gap: '6px',
-                                                    marginBottom: '2px',
-                                                }}>
+                                                    marginBottom: '2px' }}>
                                                     <span style={{ 
                                                         fontSize: '9px', 
                                                         fontWeight: 600, 
                                                         color: '#3b82f6',
                                                         background: 'rgba(59, 130, 246, 0.1)',
                                                         padding: '2px 6px',
-                                                        borderRadius: '4px',
-                                                    }}>
+                                                        borderRadius: '4px' }}>
                                                         {categoryInfo[course.category].label}
                                                     </span>
                                                     <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
@@ -1038,8 +1014,7 @@ const CatalogContent: React.FC = () => {
                                                     alignItems: 'center',
                                                     gap: '4px',
                                                     fontSize: '10px', 
-                                                    color: 'var(--text-muted)',
-                                                }}>
+                                                    color: 'var(--text-muted)' }}>
                                                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                                         <circle cx="12" cy="7" r="4" />
@@ -1059,8 +1034,7 @@ const CatalogContent: React.FC = () => {
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                flexShrink: 0,
-                                            }}>
+                                                flexShrink: 0 }}>
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
                                                     <path d="M9 18l6-6-6-6" />
                                                 </svg>
@@ -1098,8 +1072,7 @@ const CatalogContent: React.FC = () => {
                         padding: '60px 24px',
                         borderRadius: '16px',
                         background: 'var(--dashboard-surface)',
-                        border: `1px solid var(--border-color)`,
-                    }}
+                        border: `1px solid var(--border-color)` }}
                 >
                     {/* Empty State Icon */}
                     <motion.div
@@ -1114,8 +1087,7 @@ const CatalogContent: React.FC = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            marginBottom: '20px',
-                        }}
+                            marginBottom: '20px' }}
                     >
                         {activeFilter === 'favorites' ? (
                             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1140,8 +1112,7 @@ const CatalogContent: React.FC = () => {
                             fontSize: '16px',
                             fontWeight: 600,
                             color: 'var(--text-primary)',
-                            marginBottom: '8px',
-                        }}
+                            marginBottom: '8px' }}
                     >
                         {activeFilter === 'favorites' ? 'No favorites yet' : 'No courses found'}
                     </motion.h3>
@@ -1158,8 +1129,7 @@ const CatalogContent: React.FC = () => {
                             textAlign: 'center',
                             maxWidth: '320px',
                             lineHeight: 1.5,
-                            marginBottom: '20px',
-                        }}
+                            marginBottom: '20px' }}
                     >
                         {activeFilter === 'favorites'
                             ? 'Bookmark courses to add them to your favorites for quick access.'
@@ -1191,8 +1161,7 @@ const CatalogContent: React.FC = () => {
                                     color: 'white',
                                     fontSize: '13px',
                                     fontWeight: 500,
-                                    cursor: 'pointer',
-                                }}
+                                    cursor: 'pointer' }}
                             >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M18 6L6 18M6 6l12 12" />
@@ -1216,8 +1185,7 @@ const CatalogContent: React.FC = () => {
                                     color: 'var(--text-secondary)',
                                     fontSize: '13px',
                                     fontWeight: 500,
-                                    cursor: 'pointer',
-                                }}
+                                    cursor: 'pointer' }}
                             >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -1253,7 +1221,7 @@ const CatalogContent: React.FC = () => {
                             <CourseCard 
                                 key={course.id} 
                                 course={course} 
-                                index={index} colors={colors} 
+                                index={index}  
                                 onClick={handleCourseClick}
                                 isBookmarked={bookmarks.includes(course.id)}
                                 onToggleBookmark={handleToggleBookmark}
@@ -1284,7 +1252,7 @@ const CatalogContent: React.FC = () => {
                             <CourseListItem 
                                 key={course.id} 
                                 course={course} 
-                                index={index} colors={colors} 
+                                index={index}  
                                 onClick={handleCourseClick}
                                 isBookmarked={bookmarks.includes(course.id)}
                                 onToggleBookmark={handleToggleBookmark}
@@ -1302,8 +1270,7 @@ const CatalogContent: React.FC = () => {
                         display: 'flex',
                         justifyContent: 'center',
                         marginTop: '24px',
-                        paddingBottom: '16px',
-                    }}
+                        paddingBottom: '16px' }}
                 >
                     {isLoadingMore ? (
                         <motion.div
@@ -1312,8 +1279,7 @@ const CatalogContent: React.FC = () => {
                             style={{
                                 padding: '10px 24px',
                                 fontSize: '13px',
-                                color: 'var(--text-secondary)',
-                            }}
+                                color: 'var(--text-secondary)' }}
                         >
                             Loading more...
                         </motion.div>
@@ -1333,8 +1299,7 @@ const CatalogContent: React.FC = () => {
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px',
-                            }}
+                                gap: '8px' }}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="6 9 12 15 18 9" />
@@ -1351,8 +1316,7 @@ const CatalogContent: React.FC = () => {
                     textAlign: 'center',
                     padding: '16px',
                     fontSize: '12px',
-                    color: 'var(--text-muted)',
-                }}>
+                    color: 'var(--text-muted)' }}>
                     Showing {paginatedCourses.length} of {filteredCourses.length} courses
                 </div>
             )}

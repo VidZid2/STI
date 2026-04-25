@@ -27,8 +27,7 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
             const tabRect = activeTab.getBoundingClientRect();
             setTabDimensions({
                 left: tabRect.left - containerRect.left,
-                width: tabRect.width,
-            });
+                width: tabRect.width });
         }
     }, [activeCategory]);
 
@@ -60,8 +59,7 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
                 background: '#f1f5f9',
                 borderRadius: '14px',
                 border: '1px solid #e2e8f0',
-                width: 'fit-content',
-            }}
+                width: 'fit-content' }}
             className="category-tabs-container"
         >
             {/* Sliding Background Indicator */}
@@ -73,19 +71,16 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
                     background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                     borderRadius: '10px',
                     boxShadow: '0 4px 15px rgba(59, 130, 246, 0.35)',
-                    zIndex: 0,
-                }}
+                    zIndex: 0 }}
                 initial={false}
                 animate={{
                     left: tabDimensions.left,
-                    width: tabDimensions.width,
-                }}
+                    width: tabDimensions.width }}
                 transition={{
                     type: 'spring',
                     stiffness: 500,
                     damping: 35,
-                    mass: 0.8,
-                }}
+                    mass: 0.8 }}
             />
 
             {categories.map((category, idx) => (
@@ -112,15 +107,13 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.5rem',
-                        whiteSpace: 'nowrap',
-                    }}
+                        whiteSpace: 'nowrap' }}
                 >
                     <motion.span
                         style={{ fontSize: '1rem', display: 'flex' }}
                         animate={{
                             scale: activeCategory === category.id ? 1.15 : 1,
-                            filter: activeCategory === category.id ? 'brightness(1.2)' : 'brightness(1)',
-                        }}
+                            filter: activeCategory === category.id ? 'brightness(1.2)' : 'brightness(1)' }}
                         transition={{ type: 'spring', stiffness: 500, damping: 25 }}
                     >
                         {category.icon}
@@ -128,8 +121,7 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
                     <motion.span
                         animate={{
                             color: activeCategory === category.id ? '#ffffff' : '#64748b',
-                            fontWeight: activeCategory === category.id ? 600 : 500,
-                        }}
+                            fontWeight: activeCategory === category.id ? 600 : 500 }}
                         transition={{ duration: 0.2 }}
                     >
                         {category.name}
@@ -152,8 +144,7 @@ const ToolsSkeleton: React.FC = () => (
                 display: 'flex',
                 gap: '1rem',
                 marginBottom: '2rem',
-                alignItems: 'stretch',
-            }}
+                alignItems: 'stretch' }}
         >
             {/* Main Hero Card Skeleton */}
             <motion.div
@@ -167,8 +158,7 @@ const ToolsSkeleton: React.FC = () => (
                     borderRadius: '20px',
                     padding: '2rem 2.5rem',
                     position: 'relative',
-                    overflow: 'hidden',
-                }}
+                    overflow: 'hidden' }}
             >
                 {/* Shimmer overlay */}
                 <motion.div
@@ -181,8 +171,7 @@ const ToolsSkeleton: React.FC = () => (
                         right: 0,
                         bottom: 0,
                         background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
-                        pointerEvents: 'none',
-                    }}
+                        pointerEvents: 'none' }}
                 />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                     {/* Icon skeleton */}
@@ -193,8 +182,7 @@ const ToolsSkeleton: React.FC = () => (
                             width: '72px',
                             height: '72px',
                             borderRadius: '20px',
-                            background: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)',
-                        }}
+                            background: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)' }}
                     />
                     <div style={{ flex: 1 }}>
                         {/* Label skeleton */}
@@ -227,8 +215,7 @@ const ToolsSkeleton: React.FC = () => (
                                         height: '48px',
                                         background: '#f1f5f9',
                                         border: '1px solid #e2e8f0',
-                                        borderRadius: '10px',
-                                    }}
+                                        borderRadius: '10px' }}
                                 />
                             ))}
                         </div>
@@ -248,8 +235,7 @@ const ToolsSkeleton: React.FC = () => (
                     padding: '1.5rem',
                     position: 'relative',
                     overflow: 'hidden',
-                    flexShrink: 0,
-                }}
+                    flexShrink: 0 }}
             >
                 {/* Shimmer overlay */}
                 <motion.div
@@ -262,8 +248,7 @@ const ToolsSkeleton: React.FC = () => (
                         right: 0,
                         bottom: 0,
                         background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-                        pointerEvents: 'none',
-                    }}
+                        pointerEvents: 'none' }}
                 />
                 {/* Header skeleton */}
                 <motion.div
@@ -310,8 +295,7 @@ const ToolsSkeleton: React.FC = () => (
                 background: '#f1f5f9',
                 borderRadius: '14px',
                 border: '1px solid #e2e8f0',
-                width: 'fit-content',
-            }}
+                width: 'fit-content' }}
         >
             {[0, 1, 2].map(i => (
                 <motion.div
@@ -322,8 +306,7 @@ const ToolsSkeleton: React.FC = () => (
                         width: '120px',
                         height: '40px',
                         background: i === 0 ? 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)' : '#e2e8f0',
-                        borderRadius: '10px',
-                    }}
+                        borderRadius: '10px' }}
                 />
             ))}
         </motion.div>
@@ -336,8 +319,7 @@ const ToolsSkeleton: React.FC = () => (
             style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                gap: '1.25rem',
-            }}
+                gap: '1.25rem' }}
         >
             {[...Array(7)].map((_, i) => (
                 <motion.div
@@ -352,8 +334,7 @@ const ToolsSkeleton: React.FC = () => (
                         borderRadius: '20px',
                         padding: '1.5rem',
                         position: 'relative',
-                        overflow: 'hidden',
-                    }}
+                        overflow: 'hidden' }}
                 >
                     {/* Shimmer overlay */}
                     <motion.div
@@ -366,8 +347,7 @@ const ToolsSkeleton: React.FC = () => (
                             right: 0,
                             bottom: 0,
                             background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
-                            pointerEvents: 'none',
-                        }}
+                            pointerEvents: 'none' }}
                     />
                     {/* Icon skeleton */}
                     <motion.div
@@ -378,8 +358,7 @@ const ToolsSkeleton: React.FC = () => (
                             height: '52px',
                             background: '#e2e8f0',
                             borderRadius: '14px',
-                            marginBottom: '1rem',
-                        }}
+                            marginBottom: '1rem' }}
                     />
                     {/* Title skeleton */}
                     <motion.div
@@ -409,8 +388,7 @@ const ToolsSkeleton: React.FC = () => (
                             borderRadius: '8px',
                             position: 'absolute',
                             bottom: '1.5rem',
-                            left: '1.5rem',
-                        }}
+                            left: '1.5rem' }}
                     />
                 </motion.div>
             ))}

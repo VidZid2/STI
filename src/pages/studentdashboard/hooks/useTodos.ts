@@ -86,8 +86,7 @@ export const useTodos = (): UseTodosReturn => {
         toggleTodo,
         deleteTodo,
         clearAllTodos,
-        completedCount,
-    };
+        completedCount };
 };
 
 export default useTodos;

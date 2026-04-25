@@ -18,6 +18,18 @@ export default {
                 'border-strong': 'var(--border-strong)',
                 accent: 'var(--accent-primary)',
                 'accent-bg': 'var(--accent-bg)',
+                dashboard: {
+                    bg: 'var(--bg-primary)',
+                    surface: 'var(--bg-secondary)',
+                    tertiary: 'var(--bg-tertiary)',
+                    elevated: 'var(--bg-elevated)',
+                    hover: 'var(--bg-hover)',
+                    border: 'var(--border-light)',
+                    'border-medium': 'var(--border-medium)',
+                    text: 'var(--text-primary)',
+                    'text-secondary': 'var(--text-secondary)',
+                    muted: 'var(--text-muted)'
+                }
             }
         },
     },

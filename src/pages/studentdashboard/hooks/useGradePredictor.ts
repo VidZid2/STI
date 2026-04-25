@@ -82,8 +82,7 @@ export const useGradePredictor = (refreshTrigger: number): UseGradePredictorRetu
 
     return {
         gradePredictor,
-        refreshGradePredictor: loadGradePrediction,
-    };
+        refreshGradePredictor: loadGradePrediction };
 };
 
 export default useGradePredictor;

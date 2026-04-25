@@ -31,8 +31,7 @@ const SkeuomorphicToggle: React.FC<{
                 backgroundImage: 'linear-gradient(to bottom, #d5d5d5, #e8e8e8)',
                 boxShadow: '0 1px 1px rgba(255, 255, 255, 0.6)',
                 fontSize: '14px',
-                cursor: 'pointer',
-            }}
+                cursor: 'pointer' }}
         >
             <div
                 style={{
@@ -44,8 +43,7 @@ const SkeuomorphicToggle: React.FC<{
                     height: '1.5em',
                     backgroundColor: checked ? activeColor : '#e8e8e8',
                     boxShadow: 'inset 0 0 0.0625em 0.125em rgba(255, 255, 255, 0.2), inset 0 0.0625em 0.125em rgba(0, 0, 0, 0.4)',
-                    transition: 'background-color 0.4s linear',
-                }}
+                    transition: 'background-color 0.4s linear' }}
             >
                 <motion.div
                     animate={{ left: checked ? '1.5625em' : '0.0625em' }}
@@ -59,8 +57,7 @@ const SkeuomorphicToggle: React.FC<{
                         width: '1.375em',
                         height: '1.375em',
                         backgroundColor: '#e8e8e8',
-                        boxShadow: 'inset 0 -0.0625em 0.0625em 0.125em rgba(0, 0, 0, 0.1), inset 0 -0.125em 0.0625em rgba(0, 0, 0, 0.2), inset 0 0.1875em 0.0625em rgba(255, 255, 255, 0.3), 0 0.125em 0.125em rgba(0, 0, 0, 0.5)',
-                    }}
+                        boxShadow: 'inset 0 -0.0625em 0.0625em 0.125em rgba(0, 0, 0, 0.1), inset 0 -0.125em 0.0625em rgba(0, 0, 0, 0.2), inset 0 0.1875em 0.0625em rgba(255, 255, 255, 0.3), 0 0.125em 0.125em rgba(0, 0, 0, 0.5)' }}
                 >
                     <div
                         style={{
@@ -68,8 +65,7 @@ const SkeuomorphicToggle: React.FC<{
                             gridTemplateColumns: 'repeat(3, min-content)',
                             gap: '0.125em',
                             position: 'absolute',
-                            margin: '0 auto',
-                        }}
+                            margin: '0 auto' }}
                     >
                         {[...Array(12)].map((_, i) => (
                             <div
@@ -78,8 +74,7 @@ const SkeuomorphicToggle: React.FC<{
                                     borderRadius: '50%',
                                     width: '0.125em',
                                     height: '0.125em',
-                                    backgroundImage: 'radial-gradient(circle at 50% 0, #f5f5f5, #c4c4c4)',
-                                }}
+                                    backgroundImage: 'radial-gradient(circle at 50% 0, #f5f5f5, #c4c4c4)' }}
                             />
                         ))}
                     </div>
@@ -95,11 +90,10 @@ const GroupInfoModal: React.FC<{
     onClose: () => void;
     groupInfo: GroupWithMembers | null;
     messageCount: number;
-    colors: { cardBg: string; textPrimary: string; textSecondary: string; textMuted: string; accent: string; border: string };
-    profile: { id: string; full_name?: string; email?: string } | null;
+     full_name?: string; email?: string } | null;
     showReadReceipts?: boolean;
     onReadReceiptsChange?: (value: boolean) => void;
-}> = ({ isOpen, onClose, groupInfo, messageCount, colors, profile, showReadReceipts = true, onReadReceiptsChange }) => {
+}> = ({ isOpen, onClose, groupInfo, messageCount,  profile, showReadReceipts = true, onReadReceiptsChange }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'group-info-modal-title');
     const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'media' | 'settings'>('overview');
     const [, /* slideDirection */ setSlideDirection] = useState<1 | -1>(1); // For tab animation direction
@@ -131,13 +125,12 @@ const GroupInfoModal: React.FC<{
 
     if (!isOpen || !groupInfo) return null;
 
-    const isDarkMode = 'var(--dashboard-surface)' !== '#ffffff';
+    const = 'var(--dashboard-surface)' !== '#ffffff';
     const categoryConfig: Record<string, { label: string; color: string }> = {
         study: { label: 'Study Group', color: '#3b82f6' },
         project: { label: 'Project Team', color: '#8b5cf6' },
         review: { label: 'Review Session', color: '#10b981' },
-        discussion: { label: 'Discussion', color: '#f59e0b' },
-    };
+        discussion: { label: 'Discussion', color: '#f59e0b' } };
     const category = categoryConfig[groupInfo.category] || categoryConfig.study;
 
     return createPortal(
@@ -150,8 +143,7 @@ const GroupInfoModal: React.FC<{
             style={{
                 position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
                 backdropFilter: 'blur(8px)', zIndex: 1001,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
-            }}
+                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
         >
             <motion.div
                 layout
@@ -176,15 +168,13 @@ const GroupInfoModal: React.FC<{
                     border: `1px solid var(--border-color)`,
                     overflow: 'hidden',
                     display: 'flex',
-                    flexDirection: 'column',
-                }}
+                    flexDirection: 'column' }}
             >
                 {/* Header with Group Avatar */}
                 <div style={{
                     padding: '24px 24px 20px',
                     borderBottom: `1px solid var(--border-color)`,
-                    background: 'var(--bg-primary)',
-                }}>
+                    background: 'var(--bg-primary)' }}>
                     {/* Close Button */}
                     <motion.button
                         whileHover={{ background: 'var(--bg-hover)' }}
@@ -204,8 +194,7 @@ const GroupInfoModal: React.FC<{
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: 'var(--text-muted)',
-                            transition: 'background 0.15s ease',
-                        }}
+                            transition: 'background 0.15s ease' }}
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -225,8 +214,7 @@ const GroupInfoModal: React.FC<{
                             alignItems: 'center',
                             justifyContent: 'center',
                             flexShrink: 0,
-                            overflow: 'hidden',
-                        }}>
+                            overflow: 'hidden' }}>
                             {groupInfo.avatar ? (
                                 <img
                                     src={groupInfo.avatar}
@@ -234,8 +222,7 @@ const GroupInfoModal: React.FC<{
                                     style={{
                                         width: '100%',
                                         height: '100%',
-                                        objectFit: 'cover',
-                                    }}
+                                        objectFit: 'cover' }}
                                 />
                             ) : (
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={category.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -282,8 +269,7 @@ const GroupInfoModal: React.FC<{
                                 fontSize: '20px',
                                 fontWeight: 700,
                                 color: 'var(--text-primary)',
-                                lineHeight: 1.3,
-                            }}>
+                                lineHeight: 1.3 }}>
                                 {groupInfo.name}
                             </h2>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -295,8 +281,7 @@ const GroupInfoModal: React.FC<{
                                     padding: '4px 10px',
                                     borderRadius: '6px',
                                     textTransform: 'uppercase',
-                                    letterSpacing: '0.3px',
-                                }}>
+                                    letterSpacing: '0.3px' }}>
                                     {category.label}
                                 </span>
                                 {groupInfo.is_private && (
@@ -309,8 +294,7 @@ const GroupInfoModal: React.FC<{
                                         borderRadius: '6px',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '4px',
-                                    }}>
+                                        gap: '4px' }}>
                                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -329,8 +313,7 @@ const GroupInfoModal: React.FC<{
                     gap: '4px',
                     padding: '12px 24px',
                     borderBottom: `1px solid var(--border-color)`,
-                    position: 'relative',
-                }}>
+                    position: 'relative' }}>
                     {/* Sliding Background Indicator */}
                     <motion.div
                         layout
@@ -341,18 +324,15 @@ const GroupInfoModal: React.FC<{
                             height: 'calc(100% - 24px)',
                             borderRadius: '10px',
                             background: 'var(--dashboard-surface)',
-                            zIndex: 0,
-                        }}
+                            zIndex: 0 }}
                         initial={false}
                         animate={{
                             left: `calc(24px + ${tabs.indexOf(activeTab)} * (100% - 48px - 12px) / 4 + ${tabs.indexOf(activeTab)} * 4px)`,
-                            width: `calc((100% - 48px - 12px) / 4)`,
-                        }}
+                            width: `calc((100% - 48px - 12px) / 4)` }}
                         transition={{
                             type: 'spring',
                             stiffness: 400,
-                            damping: 30,
-                        }}
+                            damping: 30 }}
                     />
                     {tabs.map((tab) => (
                         <motion.button
@@ -372,8 +352,7 @@ const GroupInfoModal: React.FC<{
                                 transition: 'color 0.2s ease',
                                 textTransform: 'capitalize',
                                 position: 'relative',
-                                zIndex: 1,
-                            }}
+                                zIndex: 1 }}
                         >
                             {tab}
                         </motion.button>
@@ -384,8 +363,7 @@ const GroupInfoModal: React.FC<{
                 <div style={{
                     overflowY: 'auto',
                     overflowX: 'hidden',
-                    position: 'relative',
-                }}>
+                    position: 'relative' }}>
                     <AnimatePresence mode="wait" initial={false}>
                         {/* Overview Tab */}
                         {activeTab === 'overview' && (
@@ -410,16 +388,14 @@ const GroupInfoModal: React.FC<{
                                                 fontWeight: 600,
                                                 color: 'var(--text-muted)',
                                                 textTransform: 'uppercase',
-                                                letterSpacing: '0.5px',
-                                            }}>
+                                                letterSpacing: '0.5px' }}>
                                                 Description
                                             </h4>
                                             <p style={{
                                                 margin: 0,
                                                 fontSize: '14px',
                                                 color: 'var(--text-secondary)',
-                                                lineHeight: 1.6,
-                                            }}>
+                                                lineHeight: 1.6 }}>
                                                 {groupInfo.description}
                                             </p>
                                         </div>
@@ -430,8 +406,7 @@ const GroupInfoModal: React.FC<{
                                         display: 'grid',
                                         gridTemplateColumns: 'repeat(2, 1fr)',
                                         gap: '12px',
-                                        marginBottom: '20px',
-                                    }}>
+                                        marginBottom: '20px' }}>
                                         {[
                                             { label: 'Members', value: groupInfo.member_count, icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', color: '#3b82f6' },
                                             { label: 'Online Now', value: groupInfo.online_count, icon: 'M22 12h-4l-3 9L9 3l-3 9H2', color: '#22c55e' },
@@ -442,14 +417,12 @@ const GroupInfoModal: React.FC<{
                                                 padding: '16px',
                                                 borderRadius: '14px',
                                                 background: 'var(--dashboard-surface)',
-                                                border: `1px solid var(--border-color)`,
-                                            }}>
+                                                border: `1px solid var(--border-color)` }}>
                                                 <div style={{
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     gap: '8px',
-                                                    marginBottom: '8px',
-                                                }}>
+                                                    marginBottom: '8px' }}>
                                                     <div style={{
                                                         width: 28,
                                                         height: 28,
@@ -457,8 +430,7 @@ const GroupInfoModal: React.FC<{
                                                         background: `${stat.color}15`,
                                                         display: 'flex',
                                                         alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                    }}>
+                                                        justifyContent: 'center' }}>
                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={stat.color} strokeWidth="2">
                                                             <path d={stat.icon} />
                                                         </svg>
@@ -479,16 +451,14 @@ const GroupInfoModal: React.FC<{
                                         padding: '16px',
                                         borderRadius: '14px',
                                         background: 'var(--dashboard-surface)',
-                                        border: `1px solid var(--border-color)`,
-                                    }}>
+                                        border: `1px solid var(--border-color)` }}>
                                         <h4 style={{
                                             margin: '0 0 12px 0',
                                             fontSize: '12px',
                                             fontWeight: 600,
                                             color: 'var(--text-muted)',
                                             textTransform: 'uppercase',
-                                            letterSpacing: '0.5px',
-                                        }}>
+                                            letterSpacing: '0.5px' }}>
                                             Details
                                         </h4>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -511,8 +481,7 @@ const GroupInfoModal: React.FC<{
                                                     background: groupInfo.user_role === 'owner' ? 'rgba(245, 158, 11, 0.1)' : groupInfo.user_role === 'admin' ? 'rgba(139, 92, 246, 0.1)' : 'rgba(59, 130, 246, 0.1)',
                                                     padding: '4px 10px',
                                                     borderRadius: '6px',
-                                                    textTransform: 'capitalize',
-                                                }}>
+                                                    textTransform: 'capitalize' }}>
                                                     {groupInfo.user_role || 'Member'}
                                                 </span>
                                             </div>
@@ -540,8 +509,7 @@ const GroupInfoModal: React.FC<{
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
-                                        marginBottom: '16px',
-                                    }}>
+                                        marginBottom: '16px' }}>
                                         <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
                                             {groupInfo.member_count} members • {groupInfo.online_count} online
                                         </span>
@@ -555,8 +523,7 @@ const GroupInfoModal: React.FC<{
                                                 padding: '12px 14px',
                                                 borderRadius: '12px',
                                                 background: 'var(--dashboard-surface)',
-                                                border: `1px solid var(--border-color)`,
-                                            }}>
+                                                border: `1px solid var(--border-color)` }}>
                                                 {/* Avatar with Level Badge and Online Status */}
                                                 <div style={{ position: 'relative', flexShrink: 0 }}>
                                                     {/* Avatar Circle */}
@@ -572,8 +539,7 @@ const GroupInfoModal: React.FC<{
                                                         fontWeight: 600,
                                                         color: 'var(--accent-color)',
                                                         overflow: 'hidden',
-                                                        border: `2px solid ${'var(--dashboard-surface)'}`,
-                                                    }}>
+                                                        border: `2px solid ${'var(--dashboard-surface)'}` }}>
                                                         {member.user_avatar ? (
                                                             <img
                                                                 src={member.user_avatar}
@@ -599,8 +565,7 @@ const GroupInfoModal: React.FC<{
                                                         border: `2px solid var(--dashboard-surface)`,
                                                         lineHeight: 1.2,
                                                         whiteSpace: 'nowrap',
-                                                        boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
-                                                    }}>
+                                                        boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}>
                                                         Lv.{(member.user_id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 10) + 1}
                                                     </div>
                                                     {/* Online Status Dot */}
@@ -613,8 +578,7 @@ const GroupInfoModal: React.FC<{
                                                         borderRadius: '50%',
                                                         background: member.is_online ? '#22c55e' : '#9ca3af',
                                                         border: `2px solid var(--dashboard-surface)`,
-                                                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                                                    }} />
+                                                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }} />
                                                 </div>
 
                                                 {/* Info */}
@@ -623,16 +587,14 @@ const GroupInfoModal: React.FC<{
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         gap: '8px',
-                                                        marginBottom: '2px',
-                                                    }}>
+                                                        marginBottom: '2px' }}>
                                                         <span style={{
                                                             fontSize: '14px',
                                                             fontWeight: 500,
                                                             color: 'var(--text-primary)',
                                                             overflow: 'hidden',
                                                             textOverflow: 'ellipsis',
-                                                            whiteSpace: 'nowrap',
-                                                        }}>
+                                                            whiteSpace: 'nowrap' }}>
                                                             {member.user_name}
                                                         </span>
                                                         {member.role !== 'member' && (
@@ -643,8 +605,7 @@ const GroupInfoModal: React.FC<{
                                                                 background: member.role === 'owner' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(139, 92, 246, 0.1)',
                                                                 padding: '2px 6px',
                                                                 borderRadius: '4px',
-                                                                textTransform: 'uppercase',
-                                                            }}>
+                                                                textTransform: 'uppercase' }}>
                                                                 {member.role}
                                                             </span>
                                                         )}
@@ -679,8 +640,7 @@ const GroupInfoModal: React.FC<{
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     padding: '40px 20px',
-                                    color: 'var(--text-muted)',
-                                }}>
+                                    color: 'var(--text-muted)' }}>
                                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.4, marginBottom: '16px' }}>
                                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                                         <circle cx="8.5" cy="8.5" r="1.5" />
@@ -715,15 +675,13 @@ const GroupInfoModal: React.FC<{
                                         borderRadius: '12px',
                                         background: 'var(--dashboard-surface)',
                                         border: `1px solid var(--border-color)`,
-                                        marginBottom: '12px',
-                                    }}>
+                                        marginBottom: '12px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                             <motion.div
                                                 animate={{
                                                     background: isMuted
                                                         ? ('rgba(239, 68, 68, 0.1)')
-                                                        : ('var(--bg-hover)'),
-                                                }}
+                                                        : ('var(--bg-hover)') }}
                                                 transition={{ duration: 0.3 }}
                                                 style={{
                                                     width: 36,
@@ -733,8 +691,7 @@ const GroupInfoModal: React.FC<{
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     position: 'relative',
-                                                    overflow: 'hidden',
-                                                }}
+                                                    overflow: 'hidden' }}
                                             >
                                                 <AnimatePresence mode="wait">
                                                     <motion.svg
@@ -800,15 +757,13 @@ const GroupInfoModal: React.FC<{
                                         borderRadius: '12px',
                                         background: 'var(--dashboard-surface)',
                                         border: `1px solid var(--border-color)`,
-                                        marginBottom: '12px',
-                                    }}>
+                                        marginBottom: '12px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                             <motion.div
                                                 animate={{
                                                     background: showReadReceipts
                                                         ? ('var(--bg-hover)')
-                                                        : ('rgba(107, 114, 128, 0.1)'),
-                                                }}
+                                                        : ('rgba(107, 114, 128, 0.1)') }}
                                                 transition={{ duration: 0.3 }}
                                                 style={{
                                                     width: 36,
@@ -818,8 +773,7 @@ const GroupInfoModal: React.FC<{
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     position: 'relative',
-                                                    overflow: 'hidden',
-                                                }}
+                                                    overflow: 'hidden' }}
                                             >
                                                 <AnimatePresence mode="wait">
                                                     <motion.svg
@@ -897,8 +851,7 @@ const GroupInfoModal: React.FC<{
                                                 border: `1px solid var(--border-color)`,
                                                 marginBottom: '12px',
                                                 cursor: 'pointer',
-                                                transition: 'background 0.15s ease',
-                                            }}
+                                                transition: 'background 0.15s ease' }}
                                         >
                                             <div style={{
                                                 width: 36,
@@ -907,8 +860,7 @@ const GroupInfoModal: React.FC<{
                                                 background: 'rgba(251, 191, 36, 0.1)',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                justifyContent: 'center',
-                                            }}>
+                                                justifyContent: 'center' }}>
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
                                                     <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
                                                     <line x1="4" y1="22" x2="4" y2="15" />
@@ -969,8 +921,7 @@ const GroupInfoModal: React.FC<{
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    padding: '20px',
-                                                }}
+                                                    padding: '20px' }}
                                             >
                                                 <motion.div
                                                     initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -984,14 +935,12 @@ const GroupInfoModal: React.FC<{
                                                         width: '100%',
                                                         maxWidth: '420px',
                                                         maxHeight: '85vh',
-                                                        boxShadow: isDarkMode
-                                                            ? '0 20px 40px rgba(0,0,0,0.4)'
+                                                        boxShadow: ? '0 20px 40px rgba(0,0,0,0.4)'
                                                             : '0 20px 40px rgba(0,0,0,0.15)',
                                                         border: `1px solid var(--border-color)`,
                                                         overflow: 'hidden',
                                                         display: 'flex',
-                                                        flexDirection: 'column',
-                                                    }}
+                                                        flexDirection: 'column' }}
                                                 >
                                                     {reportSubmitted ? (
                                                         /* Success State */
@@ -1008,8 +957,7 @@ const GroupInfoModal: React.FC<{
                                                                     display: 'flex',
                                                                     alignItems: 'center',
                                                                     justifyContent: 'center',
-                                                                    margin: '0 auto 20px',
-                                                                }}
+                                                                    margin: '0 auto 20px' }}
                                                             >
                                                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2">
                                                                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -1040,8 +988,7 @@ const GroupInfoModal: React.FC<{
                                                                     borderRadius: '10px',
                                                                     fontSize: '14px',
                                                                     fontWeight: 600,
-                                                                    cursor: 'pointer',
-                                                                }}
+                                                                    cursor: 'pointer' }}
                                                             >
                                                                 Done
                                                             </motion.button>
@@ -1051,8 +998,7 @@ const GroupInfoModal: React.FC<{
                                                             {/* Header */}
                                                             <div style={{
                                                                 padding: '20px 24px 16px',
-                                                                borderBottom: `1px solid var(--border-color)`,
-                                                            }}>
+                                                                borderBottom: `1px solid var(--border-color)` }}>
                                                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                                                         <div style={{
@@ -1062,8 +1008,7 @@ const GroupInfoModal: React.FC<{
                                                                             background: 'rgba(251, 191, 36, 0.1)',
                                                                             display: 'flex',
                                                                             alignItems: 'center',
-                                                                            justifyContent: 'center',
-                                                                        }}>
+                                                                            justifyContent: 'center' }}>
                                                                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
                                                                                 <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
                                                                                 <line x1="4" y1="22" x2="4" y2="15" />
@@ -1096,8 +1041,7 @@ const GroupInfoModal: React.FC<{
                                                                             display: 'flex',
                                                                             alignItems: 'center',
                                                                             justifyContent: 'center',
-                                                                            color: 'var(--text-muted)',
-                                                                        }}
+                                                                            color: 'var(--text-muted)' }}
                                                                     >
                                                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -1134,8 +1078,7 @@ const GroupInfoModal: React.FC<{
                                                                                     : 'var(--border-color)'}`,
                                                                                 cursor: 'pointer',
                                                                                 transition: 'all 0.15s ease',
-                                                                                textAlign: 'left',
-                                                                            }}
+                                                                                textAlign: 'left' }}
                                                                         >
                                                                             <div style={{
                                                                                 width: 20,
@@ -1145,8 +1088,7 @@ const GroupInfoModal: React.FC<{
                                                                                 display: 'flex',
                                                                                 alignItems: 'center',
                                                                                 justifyContent: 'center',
-                                                                                flexShrink: 0,
-                                                                            }}>
+                                                                                flexShrink: 0 }}>
                                                                                 {reportReason === reason.id && (
                                                                                     <motion.div
                                                                                         initial={{ scale: 0 }}
@@ -1155,8 +1097,7 @@ const GroupInfoModal: React.FC<{
                                                                                             width: 10,
                                                                                             height: 10,
                                                                                             borderRadius: '50%',
-                                                                                            background: '#f59e0b',
-                                                                                        }}
+                                                                                            background: '#f59e0b' }}
                                                                                     />
                                                                                 )}
                                                                             </div>
@@ -1166,8 +1107,7 @@ const GroupInfoModal: React.FC<{
                                                                             <span style={{
                                                                                 fontSize: '13px',
                                                                                 fontWeight: 500,
-                                                                                color: reportReason === reason.id ? '#f59e0b' : 'var(--text-primary)',
-                                                                            }}>
+                                                                                color: reportReason === reason.id ? '#f59e0b' : 'var(--text-primary)' }}>
                                                                                 {reason.label}
                                                                             </span>
                                                                         </motion.button>
@@ -1193,8 +1133,7 @@ const GroupInfoModal: React.FC<{
                                                                         fontSize: '13px',
                                                                         resize: 'vertical',
                                                                         outline: 'none',
-                                                                        fontFamily: 'inherit',
-                                                                    }}
+                                                                        fontFamily: 'inherit' }}
                                                                     onFocus={(e) => {
                                                                         e.target.style.borderColor = '#f59e0b';
                                                                     }}
@@ -1209,8 +1148,7 @@ const GroupInfoModal: React.FC<{
                                                                 padding: '16px 24px',
                                                                 borderTop: `1px solid var(--border-color)`,
                                                                 display: 'flex',
-                                                                gap: '10px',
-                                                            }}>
+                                                                gap: '10px' }}>
                                                                 <motion.button
                                                                     whileHover={{ scale: 1.02, boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)' }}
                                                                     whileTap={{ scale: 0.98 }}
@@ -1228,8 +1166,7 @@ const GroupInfoModal: React.FC<{
                                                                         borderRadius: '10px',
                                                                         fontSize: '14px',
                                                                         fontWeight: 600,
-                                                                        cursor: 'pointer',
-                                                                    }}
+                                                                        cursor: 'pointer' }}
                                                                 >
                                                                     Cancel
                                                                 </motion.button>
@@ -1249,8 +1186,7 @@ const GroupInfoModal: React.FC<{
                                                                             reporter_name: profile?.full_name || 'Anonymous User',
                                                                             reporter_email: profile?.email,
                                                                             reason: reportReason as 'spam' | 'harassment' | 'inappropriate' | 'cheating' | 'other',
-                                                                            details: reportDetails || undefined,
-                                                                        });
+                                                                            details: reportDetails || undefined });
 
                                                                         if (result.success) {
                                                                             setIsSubmittingReport(false);
@@ -1278,8 +1214,7 @@ const GroupInfoModal: React.FC<{
                                                                         display: 'flex',
                                                                         alignItems: 'center',
                                                                         justifyContent: 'center',
-                                                                        gap: '6px',
-                                                                    }}
+                                                                        gap: '6px' }}
                                                                 >
                                                                     {isSubmittingReport ? (
                                                                         <motion.div
@@ -1327,8 +1262,7 @@ const GroupInfoModal: React.FC<{
                                                 background: 'rgba(239, 68, 68, 0.08)',
                                                 border: `1px solid ${'rgba(239, 68, 68, 0.2)'}`,
                                                 cursor: 'pointer',
-                                                transition: 'background 0.15s ease',
-                                            }}
+                                                transition: 'background 0.15s ease' }}
                                         >
                                             <div style={{
                                                 width: 36,
@@ -1337,8 +1271,7 @@ const GroupInfoModal: React.FC<{
                                                 background: 'rgba(239, 68, 68, 0.12)',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                justifyContent: 'center',
-                                            }}>
+                                                justifyContent: 'center' }}>
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
                                                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                                                     <polyline points="16 17 21 12 16 7" />
@@ -1394,8 +1327,7 @@ const GroupInfoModal: React.FC<{
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    padding: '20px',
-                                                }}
+                                                    padding: '20px' }}
                                             >
                                                 <motion.div
                                                     initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -1408,18 +1340,15 @@ const GroupInfoModal: React.FC<{
                                                         borderRadius: '16px',
                                                         width: '100%',
                                                         maxWidth: '360px',
-                                                        boxShadow: isDarkMode
-                                                            ? '0 20px 40px rgba(0,0,0,0.4)'
+                                                        boxShadow: ? '0 20px 40px rgba(0,0,0,0.4)'
                                                             : '0 20px 40px rgba(0,0,0,0.15)',
                                                         border: `1px solid var(--border-color)`,
-                                                        overflow: 'hidden',
-                                                    }}
+                                                        overflow: 'hidden' }}
                                                 >
                                                     {/* Warning Icon & Title */}
                                                     <div style={{
                                                         padding: '24px 24px 16px',
-                                                        textAlign: 'center',
-                                                    }}>
+                                                        textAlign: 'center' }}>
                                                         <div style={{
                                                             width: 56,
                                                             height: 56,
@@ -1428,8 +1357,7 @@ const GroupInfoModal: React.FC<{
                                                             display: 'flex',
                                                             alignItems: 'center',
                                                             justifyContent: 'center',
-                                                            margin: '0 auto 16px',
-                                                        }}>
+                                                            margin: '0 auto 16px' }}>
                                                             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
                                                                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                                                                 <line x1="12" y1="9" x2="12" y2="13" />
@@ -1440,16 +1368,14 @@ const GroupInfoModal: React.FC<{
                                                             margin: '0 0 8px 0',
                                                             fontSize: '18px',
                                                             fontWeight: 600,
-                                                            color: 'var(--text-primary)',
-                                                        }}>
+                                                            color: 'var(--text-primary)' }}>
                                                             Leave Group?
                                                         </h3>
                                                         <p style={{
                                                             margin: 0,
                                                             fontSize: '14px',
                                                             color: 'var(--text-secondary)',
-                                                            lineHeight: 1.5,
-                                                        }}>
+                                                            lineHeight: 1.5 }}>
                                                             Are you sure you want to leave <strong style={{ color: 'var(--text-primary)' }}>{groupInfo.name}</strong>?
                                                             {groupInfo.is_private
                                                                 ? " You'll need an invite to rejoin this private group."
@@ -1462,14 +1388,12 @@ const GroupInfoModal: React.FC<{
                                                     <div style={{
                                                         padding: '16px 24px 24px',
                                                         display: 'flex',
-                                                        gap: '10px',
-                                                    }}>
+                                                        gap: '10px' }}>
                                                         {/* Cancel Button - Same style as New Group button */}
                                                         <motion.button
                                                             whileHover={{
                                                                 scale: 1.02,
-                                                                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)',
-                                                            }}
+                                                                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)' }}
                                                             whileTap={{ scale: 0.98 }}
                                                             onClick={() => setShowLeaveConfirm(false)}
                                                             style={{
@@ -1486,8 +1410,7 @@ const GroupInfoModal: React.FC<{
                                                                 fontSize: '14px',
                                                                 fontWeight: 600,
                                                                 cursor: 'pointer',
-                                                                transition: 'all 0.15s ease',
-                                                            }}
+                                                                transition: 'all 0.15s ease' }}
                                                         >
                                                             Cancel
                                                         </motion.button>
@@ -1496,8 +1419,7 @@ const GroupInfoModal: React.FC<{
                                                         <motion.button
                                                             whileHover={{
                                                                 scale: 1.02,
-                                                                boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)',
-                                                            }}
+                                                                boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)' }}
                                                             whileTap={{ scale: 0.98 }}
                                                             onClick={() => {
                                                                 // TODO: Implement leave group logic
@@ -1518,8 +1440,7 @@ const GroupInfoModal: React.FC<{
                                                                 fontSize: '14px',
                                                                 fontWeight: 600,
                                                                 cursor: 'pointer',
-                                                                transition: 'all 0.15s ease',
-                                                            }}
+                                                                transition: 'all 0.15s ease' }}
                                                         >
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -1542,8 +1463,7 @@ const GroupInfoModal: React.FC<{
                 {/* Footer - Simple Done Button */}
                 <div style={{
                     padding: '16px 24px',
-                    borderTop: `1px solid var(--border-color)`,
-                }}>
+                    borderTop: `1px solid var(--border-color)` }}>
                     <motion.button
                         whileHover={{ background: 'rgba(59, 130, 246, 0.9)' }}
                         whileTap={{ scale: 0.98 }}
@@ -1558,8 +1478,7 @@ const GroupInfoModal: React.FC<{
                             fontSize: '14px',
                             fontWeight: 600,
                             cursor: 'pointer',
-                            transition: 'background 0.15s ease',
-                        }}
+                            transition: 'background 0.15s ease' }}
                     >
                         Done
                     </motion.button>

@@ -11,9 +11,9 @@ import { getStudyTimeData, type StudyTimeData } from '../../../../services/study
 
 // Session History Component - Shows weekly focus trends
 const SessionHistory: React.FC<{
-    isDarkMode: boolean;
-    colors: FocusModeColors;
-}> = ({ isDarkMode: _isDarkMode, colors: _colors }) => {
+    
+    
+}> = ({ : _isDarkMode, : _colors }) => {
     const [studyData, setStudyData] = useState<StudyTimeData | null>(null);
 
     useEffect(() => {
@@ -38,8 +38,7 @@ const SessionHistory: React.FC<{
             last7Days.push({
                 day: dayName,
                 minutes: entry?.minutes || 0,
-                date: dateStr,
-            });
+                date: dateStr });
         }
 
         return last7Days;
@@ -62,8 +61,7 @@ const SessionHistory: React.FC<{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '12px',
-            }}>
+                marginBottom: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{
                         width: 28,
@@ -73,8 +71,7 @@ const SessionHistory: React.FC<{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: 'var(--brand-blue)',
-                    }}>
+                        color: 'var(--brand-blue)' }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M3 3v18h18" />
                             <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
@@ -95,8 +92,7 @@ const SessionHistory: React.FC<{
                     background: 'rgba(59, 130, 246, 0.1)',
                     fontSize: '11px',
                     fontWeight: 600,
-                    color: 'var(--brand-blue)',
-                }}>
+                    color: 'var(--brand-blue)' }}>
                     {Math.floor(totalWeekMinutes / 60)}h {totalWeekMinutes % 60}m
                 </div>
             </div>
@@ -108,8 +104,7 @@ const SessionHistory: React.FC<{
                 justifyContent: 'space-between',
                 height: '60px',
                 gap: '6px',
-                padding: '0 4px',
-            }}>
+                padding: '0 4px' }}>
                 {weekData.map((day, index) => {
                     const height = maxMinutes > 0 ? (day.minutes / maxMinutes) * 100 : 0;
                     const isToday = index === weekData.length - 1;
@@ -131,13 +126,11 @@ const SessionHistory: React.FC<{
                                         : 'var(--bg-hover)'),
                                 position: 'relative',
                                 cursor: 'pointer',
-                                transition: 'background 0.2s ease',
-                            }}
+                                transition: 'background 0.2s ease' }}
                             whileHover={{
                                 background: isToday
                                     ? 'linear-gradient(180deg, var(--lighter-blue) 0%, var(--brand-blue) 100%)'
-                                    : 'var(--brand-blue-hover)',
-                            }}
+                                    : 'var(--brand-blue-hover)' }}
                             title={`${day.day}: ${day.minutes}m`}
                         />
                     );
@@ -149,8 +142,7 @@ const SessionHistory: React.FC<{
                 display: 'flex',
                 justifyContent: 'space-between',
                 marginTop: '6px',
-                padding: '0 4px',
-            }}>
+                padding: '0 4px' }}>
                 {weekData.map((day, index) => (
                     <span
                         key={day.date}
@@ -160,8 +152,7 @@ const SessionHistory: React.FC<{
                             fontSize: '9px',
                             fontWeight: index === weekData.length - 1 ? 600 : 500,
                             color: index === weekData.length - 1 ? 'var(--brand-blue)' : 'var(--text-muted)',
-                            textTransform: 'uppercase',
-                        }}
+                            textTransform: 'uppercase' }}
                     >
                         {day.day}
                     </span>

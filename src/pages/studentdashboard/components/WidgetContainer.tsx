@@ -59,8 +59,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
     setCalendarView,
     calendarMonth,
     setCalendarMonth,
-    hasDeadlines,
-}) => {
+    hasDeadlines }) => {
     return (
         <>
                             {/* Widget Container - Minimalistic Professional Design */}
@@ -84,7 +83,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     whileHover={{ scale: 1.15, backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
                                                     whileTap={{ scale: 0.9 }}
                                                     onClick={() => toggleWidget('quote-widget')}
-                                                    className={`absolute top-2 right-2 flex items-center justify-center rounded-md text-yellow-300/60 hover:text-white transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                    className={`absolute top-2 right-2 flex items-center justify-center rounded-md text-yellow-300/60 hover:text-white transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                 >
                                                     <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -160,7 +159,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     whileHover={{ scale: 1.15, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                                                     whileTap={{ scale: 0.9 }}
                                                     onClick={() => toggleWidget('weather-widget')}
-                                                    className={`absolute top-2 right-2 flex items-center justify-center rounded-md text-sky-300 hover:text-red-400 transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                    className={`absolute top-2 right-2 flex items-center justify-center rounded-md text-sky-300 hover:text-red-400 transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                 >
                                                     <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -303,7 +302,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     whileHover={{ scale: 1.15, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                                                     whileTap={{ scale: 0.9 }}
                                                     onClick={() => toggleWidget('activity-widget')}
-                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                 >
                                                     <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -357,7 +356,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                                     exit={{ opacity: 0, x: 10 }}
                                                                     transition={{ delay: index * 0.05 }}
                                                                     whileHover={{ x: 4, backgroundColor: 'rgba(139, 92, 246, 0.05)' }}
-                                                                    className={`flex items-center gap-2.5 rounded-lg cursor-pointer transition-colors ${quickViewSettings.compactMode ? 'p-1.5' : 'p-2'}`}
+                                                                    className={`flex items-center gap-2.5 rounded-lg cursor-pointer transition-${quickViewSettings.compactMode ? 'p-1.5' : 'p-2'}`}
                                                                 >
                                                                     <div className={`flex-shrink-0 rounded-md flex items-center justify-center ${activity.type === 'course_access' ? 'bg-blue-50 text-blue-500' :
                                                                             activity.type === 'material_view' ? 'bg-amber-50 text-amber-500' :
@@ -436,7 +435,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     whileHover={{ scale: 1.15, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                                                     whileTap={{ scale: 0.9 }}
                                                     onClick={() => toggleWidget('courses-widget')}
-                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                 >
                                                     <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -457,8 +456,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                         'ppc': 'Philippine Popular Culture',
                                                         'purcom': 'Purposive Communication',
                                                         'tcw': 'The Contemporary World',
-                                                        'uts': 'Understanding the Self',
-                                                    };
+                                                        'uts': 'Understanding the Self' };
 
                                                     // Get top 3 courses sorted by last accessed (most recent first)
                                                     const sortedCourses = Object.entries(courseProgress)
@@ -519,7 +517,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                                             });
                                                                             window.dispatchEvent(event);
                                                                         }}
-                                                                        className={`rounded-lg cursor-pointer transition-colors ${quickViewSettings.compactMode ? 'p-2' : 'p-2.5'}`}
+                                                                        className={`rounded-lg cursor-pointer transition-${quickViewSettings.compactMode ? 'p-2' : 'p-2.5'}`}
                                                                     >
                                                                         <div className="flex items-center justify-between mb-1.5">
                                                                             <p className={`font-medium text-zinc-700 truncate flex-1 ${quickViewSettings.compactMode ? 'text-[10px]' : 'text-xs'}`}>
@@ -589,7 +587,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     whileHover={{ scale: 1.15, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                                                     whileTap={{ scale: 0.9 }}
                                                     onClick={() => toggleWidget('mastery-widget')}
-                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                 >
                                                     <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -700,7 +698,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     whileHover={{ scale: 1.15, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                                                     whileTap={{ scale: 0.9 }}
                                                     onClick={() => toggleWidget('calendar-widget')}
-                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                 >
                                                     <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -775,7 +773,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
                                                     whileTap={{ scale: 0.98 }}
                                                     onClick={() => setCalendarView(calendarView === 'mini' ? 'full' : 'mini')}
-                                                    className={`flex items-center justify-center gap-1.5 w-full border-t border-zinc-50 text-blue-500 transition-colors ${quickViewSettings.compactMode ? 'mt-2 py-2 text-[9px]' : 'mt-3 py-2.5 text-xs'}`}
+                                                    className={`flex items-center justify-center gap-1.5 w-full border-t border-zinc-50 text-blue-500 transition-${quickViewSettings.compactMode ? 'mt-2 py-2 text-[9px]' : 'mt-3 py-2.5 text-xs'}`}
                                                 >
                                                     {calendarView === 'mini' ? 'Full calendar' : 'Mini view'}
                                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -963,7 +961,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                         whileHover={{ scale: 1.1, backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
                                                         whileTap={{ scale: 0.95 }}
                                                         onClick={() => setIsAddingTodo(true)}
-                                                        className={`flex items-center justify-center rounded-md text-blue-500 hover:text-blue-600 transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                        className={`flex items-center justify-center rounded-md text-blue-500 hover:text-blue-600 transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                     >
                                                         <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -976,7 +974,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                             whileHover={{ scale: 1.1, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                                                             whileTap={{ scale: 0.95 }}
                                                             onClick={clearAllTodos}
-                                                            className={`flex items-center justify-center rounded-md text-zinc-400 hover:text-red-500 transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                            className={`flex items-center justify-center rounded-md text-zinc-400 hover:text-red-500 transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                             title="Clear all tasks"
                                                         >
                                                             <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -988,7 +986,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                         whileHover={{ scale: 1.1, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                                                         whileTap={{ scale: 0.95 }}
                                                         onClick={() => toggleWidget('todo-widget')}
-                                                        className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                        className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                     >
                                                         <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1028,7 +1026,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                                 whileTap={{ scale: 0.95 }}
                                                                 onClick={addTodo}
                                                                 disabled={!newTodoText.trim()}
-                                                                className="px-3 py-2 text-xs font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                                className="px-3 py-2 text-xs font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-"
                                                             >
                                                                 Add
                                                             </motion.button>
@@ -1039,7 +1037,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                                     setIsAddingTodo(false);
                                                                     setNewTodoText('');
                                                                 }}
-                                                                className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
+                                                                className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-"
                                                             >
                                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1068,7 +1066,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                             whileHover={{ scale: 1.02 }}
                                                             whileTap={{ scale: 0.98 }}
                                                             onClick={() => setIsAddingTodo(true)}
-                                                            className="text-xs text-blue-500 hover:text-blue-600 transition-colors"
+                                                            className="text-xs text-blue-500 hover:text-blue-600 transition-"
                                                         >
                                                             + Add your first task
                                                         </motion.button>
@@ -1084,7 +1082,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                                     animate={{ opacity: 1, x: 0 }}
                                                                     exit={{ opacity: 0, x: 20, transition: { duration: 0.15 } }}
                                                                     transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                                                                    className="group flex items-center gap-2 p-2 rounded-lg hover:bg-zinc-50 transition-colors"
+                                                                    className="group flex items-center gap-2 p-2 rounded-lg hover:bg-zinc-50 transition-"
                                                                 >
                                                                     {/* Checkbox */}
                                                                     <motion.button
@@ -1214,7 +1212,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     whileHover={{ scale: 1.1, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                                                     whileTap={{ scale: 0.95 }}
                                                     onClick={() => toggleWidget('announcements-widget')}
-                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                 >
                                                     <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1266,7 +1264,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     <motion.button
                                                         whileHover={{ scale: 1.02, x: 2 }}
                                                         whileTap={{ scale: 0.98 }}
-                                                        className={`flex items-center gap-1 text-blue-500 hover:text-blue-600 font-medium transition-colors ${quickViewSettings.compactMode ? 'text-[9px]' : 'text-[10px]'}`}
+                                                        className={`flex items-center gap-1 text-blue-500 hover:text-blue-600 font-medium transition-${quickViewSettings.compactMode ? 'text-[9px]' : 'text-[10px]'}`}
                                                     >
                                                         Read more
                                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1319,7 +1317,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     whileHover={{ scale: 1.15, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                                                     whileTap={{ scale: 0.9 }}
                                                     onClick={() => toggleWidget('grade-predictor-widget')}
-                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                 >
                                                     <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1483,7 +1481,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     whileHover={{ scale: 1.15, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                                                     whileTap={{ scale: 0.9 }}
                                                     onClick={() => toggleWidget('achievements-widget')}
-                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-colors ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                                                 >
                                                     <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

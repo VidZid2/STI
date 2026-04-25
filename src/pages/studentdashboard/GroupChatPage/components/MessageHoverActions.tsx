@@ -18,11 +18,8 @@ interface MessageHoverActionsProps {
     message: ChatMessage;
     isOwn: boolean;
     isHovered: boolean;
-    isDarkMode: boolean;
-    colors: ChatColors;
-    formattedTime: string;
-    isBookmarked: boolean;
-    isPinned: boolean;
+    
+    
     helpfulVote?: HelpfulVote;
     showReactionsFor: string | null;
     onToggleReactions: () => void;
@@ -91,8 +88,8 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
     message,
     isOwn,
     isHovered,
-    isDarkMode,
-    colors,
+    
+    
     formattedTime,
     isBookmarked,
     isPinned,
@@ -103,8 +100,7 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
     onTogglePin,
     onEdit,
     onDelete,
-    onToggleHelpful,
-}) => {
+    onToggleHelpful }) => {
     const baseButtonStyle = {
         display: 'flex',
         alignItems: 'center',
@@ -115,8 +111,7 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
         border: 'none',
         background: 'transparent',
         cursor: 'pointer',
-        transition: 'all 0.2s ease',
-    };
+        transition: 'all 0.2s ease' };
 
     return (
         <motion.div
@@ -124,22 +119,19 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
             animate={{
                 height: isHovered ? 'auto' : 0,
                 opacity: isHovered ? 1 : 0,
-                marginTop: isHovered ? 6 : 0,
-            }}
+                marginTop: isHovered ? 6 : 0 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             style={{
                 overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                gap: '8px',
-            }}
+                gap: '8px' }}
         >
             {/* Left side: Timestamp */}
             <span style={{
                 fontSize: '10px',
-                color: isOwn ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)',
-            }}>
+                color: isOwn ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)' }}>
                 {formattedTime}{message.is_edited && ' • edited'}
             </span>
 
@@ -150,14 +142,12 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                     <motion.button
                         whileHover={{
                             scale: 1.1,
-                            background: isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)',
-                        }}
+                            background: isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' }}
                         whileTap={{ scale: 0.9 }}
                         onClick={onToggleReactions}
                         style={{
                             ...baseButtonStyle,
-                            color: isOwn ? 'rgba(255,255,255,0.8)' : ('var(--bg-hover)'),
-                        }}
+                            color: isOwn ? 'rgba(255,255,255,0.8)' : ('var(--bg-hover)') }}
                     >
                         <ReactionIcon />
                     </motion.button>
@@ -168,14 +158,12 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                     <motion.button
                         whileHover={{
                             scale: 1.1,
-                            background: isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(59, 130, 246, 0.1)',
-                        }}
+                            background: isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(59, 130, 246, 0.1)' }}
                         whileTap={{ scale: 0.9 }}
                         onClick={onOpenThread}
                         style={{
                             ...baseButtonStyle,
-                            color: isOwn ? 'rgba(255,255,255,0.8)' : '#3b82f6',
-                        }}
+                            color: isOwn ? 'rgba(255,255,255,0.8)' : '#3b82f6' }}
                     >
                         <ThreadIcon />
                     </motion.button>
@@ -188,15 +176,13 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                             scale: 1.1,
                             background: isBookmarked
                                 ? (isOwn ? 'rgba(255,255,255,0.2)' : `var(--accent-color)20`)
-                                : (isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)'),
-                        }}
+                                : (isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)') }}
                         whileTap={{ scale: 0.9 }}
                         onClick={onToggleBookmark}
                         style={{
                             ...baseButtonStyle,
                             background: isBookmarked ? (isOwn ? 'rgba(255,255,255,0.1)' : `var(--accent-color)10`) : 'transparent',
-                            color: isBookmarked ? (isOwn ? '#fff' : 'var(--accent-color)') : (isOwn ? 'rgba(255,255,255,0.8)' : ('var(--bg-hover)')),
-                        }}
+                            color: isBookmarked ? (isOwn ? '#fff' : 'var(--accent-color)') : (isOwn ? 'rgba(255,255,255,0.8)' : ('var(--bg-hover)')) }}
                     >
                         <BookmarkIcon filled={isBookmarked} />
                     </motion.button>
@@ -209,15 +195,13 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                             scale: 1.1,
                             background: isPinned
                                 ? (isOwn ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.15)')
-                                : (isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)'),
-                        }}
+                                : (isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)') }}
                         whileTap={{ scale: 0.9 }}
                         onClick={onTogglePin}
                         style={{
                             ...baseButtonStyle,
                             background: isPinned ? (isOwn ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)') : 'transparent',
-                            color: isPinned ? '#ef4444' : (isOwn ? 'rgba(255,255,255,0.8)' : ('var(--bg-hover)')),
-                        }}
+                            color: isPinned ? '#ef4444' : (isOwn ? 'rgba(255,255,255,0.8)' : ('var(--bg-hover)')) }}
                     >
                         <PinIcon filled={isPinned} />
                     </motion.button>
@@ -232,8 +216,7 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                             onClick={onEdit}
                             style={{
                                 ...baseButtonStyle,
-                                color: 'rgba(255,255,255,0.8)',
-                            }}
+                                color: 'rgba(255,255,255,0.8)' }}
                         >
                             <EditIcon />
                         </motion.button>
@@ -249,8 +232,7 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                             onClick={onDelete}
                             style={{
                                 ...baseButtonStyle,
-                                color: 'rgba(255,255,255,0.8)',
-                            }}
+                                color: 'rgba(255,255,255,0.8)' }}
                         >
                             <DeleteIcon />
                         </motion.button>
@@ -263,8 +245,7 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                         <motion.button
                             whileHover={{
                                 scale: 1.1,
-                                background: helpfulVote?.voted ? 'rgba(34, 197, 94, 0.2)' : 'rgba(0,0,0,0.08)',
-                            }}
+                                background: helpfulVote?.voted ? 'rgba(34, 197, 94, 0.2)' : 'rgba(0,0,0,0.08)' }}
                             whileTap={{ scale: 0.9 }}
                             onClick={onToggleHelpful}
                             style={{
@@ -281,8 +262,7 @@ export const MessageHoverActions: React.FC<MessageHoverActionsProps> = ({
                                 color: helpfulVote?.voted ? '#22c55e' : ('var(--bg-hover)'),
                                 fontSize: '11px',
                                 fontWeight: 600,
-                                transition: 'all 0.2s ease',
-                            }}
+                                transition: 'all 0.2s ease' }}
                         >
                             <ThumbsUpIcon filled={helpfulVote?.voted || false} />
                             {helpfulVote?.count ?? 0}

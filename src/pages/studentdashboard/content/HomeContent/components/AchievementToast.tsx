@@ -28,8 +28,7 @@ const AchievementToast: React.FC<{
                         top: 'auto',
                         right: 'auto',
                         zIndex: 99998, // Below custom cursor (99999)
-                        maxWidth: '320px',
-                    }}
+                        maxWidth: '320px' }}
                     initial={{ opacity: 0, y: 50, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 30, scale: 0.95 }}

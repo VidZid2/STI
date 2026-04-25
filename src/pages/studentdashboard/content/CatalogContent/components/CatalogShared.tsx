@@ -68,8 +68,7 @@ const CategoryIcon: React.FC<{ category: string; size?: number }> = ({ category,
                 <rect x="14" y="14" width="7" height="7" rx="1" />
                 <rect x="3" y="14" width="7" height="7" rx="1" />
             </svg>
-        ),
-    };
+        ) };
     return <>{icons[category] || icons.all}</>;
 };
 
@@ -78,18 +77,16 @@ const CategoryIcon: React.FC<{ category: string; size?: number }> = ({ category,
 // Skeleton Shimmer Animation
 const shimmerAnimation = {
     initial: { backgroundPosition: '-200% 0' },
-    animate: { backgroundPosition: '200% 0' },
-};
+    animate: { backgroundPosition: '200% 0' } };
 
 
 // Skeleton Loading Component
 const CatalogSkeleton: React.FC<{ }> = ({ }) => {
-    const colors = {
+    const = {
         cardBg: 'var(--bg-secondary)',
         border: 'var(--border-light)',
         skeleton: 'var(--border-light)',
-        shimmer: 'var(--shimmer-bg)',
-    };
+        shimmer: 'var(--shimmer-bg)' };
 
     const SkeletonBox: React.FC<{ width?: string; height?: string; borderRadius?: string; style?: React.CSSProperties }> = ({ 
         width = '100%', height = '16px', borderRadius = '6px', style 
@@ -103,11 +100,10 @@ const CatalogSkeleton: React.FC<{ }> = ({ }) => {
                 width,
                 height,
                 borderRadius,
-                background: colors.skeleton,
+                background: .skeleton,
                 backgroundImage: 'var(--shimmer-bg)',
                 backgroundSize: '200% 100%',
-                ...style,
-            }}
+                ...style }}
         />
     );
 
@@ -127,8 +123,7 @@ const CatalogSkeleton: React.FC<{ }> = ({ }) => {
                     padding: '18px 22px',
                     borderRadius: '14px',
                     background: 'var(--dashboard-surface)',
-                    border: `1px solid var(--border-color)`,
-                }}>
+                    border: `1px solid var(--border-color)` }}>
                     {/* Icon Skeleton */}
                     <SkeletonBox width="46px" height="46px" borderRadius="12px" />
                     
@@ -151,8 +146,7 @@ const CatalogSkeleton: React.FC<{ }> = ({ }) => {
                                 padding: '10px 16px',
                                 borderRadius: '10px',
                                 background: 'var(--bg-hover)',
-                                minWidth: '72px',
-                            }}>
+                                minWidth: '72px' }}>
                                 <SkeletonBox width="16px" height="16px" borderRadius="4px" style={{ marginBottom: '6px' }} />
                                 <SkeletonBox width="24px" height="20px" borderRadius="4px" style={{ marginBottom: '4px' }} />
                                 <SkeletonBox width="40px" height="10px" borderRadius="3px" />
@@ -195,8 +189,7 @@ const CatalogSkeleton: React.FC<{ }> = ({ }) => {
                             background: 'var(--dashboard-surface)',
                             borderRadius: '16px',
                             border: `1px solid var(--border-color)`,
-                            overflow: 'hidden',
-                        }}
+                            overflow: 'hidden' }}
                     >
                         {/* Image Skeleton */}
                         <SkeletonBox width="100%" height="140px" borderRadius="0" />
@@ -218,8 +211,7 @@ const CatalogSkeleton: React.FC<{ }> = ({ }) => {
                                 alignItems: 'center', 
                                 justifyContent: 'space-between',
                                 paddingTop: '12px',
-                                borderTop: `1px solid var(--border-color)`,
-                            }}>
+                                borderTop: `1px solid var(--border-color)` }}>
                                 <SkeletonBox width="80px" height="12px" borderRadius="3px" />
                                 <SkeletonBox width="40px" height="12px" borderRadius="3px" />
                             </div>

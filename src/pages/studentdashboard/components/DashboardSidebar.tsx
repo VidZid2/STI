@@ -26,8 +26,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     setActiveView,
     selectedCourse,
     setSelectedCourse,
-    openSettingsModal,
-}) => (
+    openSettingsModal }) => (
     <>
         {/* Sidebar Overlay */}
         <AnimatePresence mode="wait">

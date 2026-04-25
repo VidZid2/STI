@@ -12,7 +12,7 @@ interface ReactionsDisplayProps {
     messageId: string;
     isOwn: boolean;
     currentUserId?: string;
-    colors: ChatColors;
+    
     onReactionClick: (messageId: string, emoji: string) => void;
 }
 
@@ -21,9 +21,8 @@ export const ReactionsDisplay = React.memo<ReactionsDisplayProps>(({
     messageId,
     isOwn,
     currentUserId,
-    colors,
-    onReactionClick,
-}) => {
+    
+    onReactionClick }) => {
     if (reactions.length === 0) return null;
 
     return (
@@ -38,8 +37,7 @@ export const ReactionsDisplay = React.memo<ReactionsDisplayProps>(({
                     gap: '4px',
                     marginTop: '4px',
                     flexWrap: 'wrap',
-                    justifyContent: isOwn ? 'flex-end' : 'flex-start',
-                }}
+                    justifyContent: isOwn ? 'flex-end' : 'flex-start' }}
             >
                 {reactions.map((reaction) => (
                     <motion.button
@@ -62,8 +60,7 @@ export const ReactionsDisplay = React.memo<ReactionsDisplayProps>(({
                                 ? `var(--accent-color)15`
                                 : 'var(--dashboard-surface)',
                             cursor: 'pointer',
-                            fontSize: '12px',
-                        }}
+                            fontSize: '12px' }}
                     >
                         <span>{reaction.emoji}</span>
                         <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>

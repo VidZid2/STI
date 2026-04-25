@@ -34,8 +34,7 @@ export const PaginationButton: React.FC<PaginationButtonProps> = ({ onClick, dis
                 cursor: disabled ? 'not-allowed' : 'pointer',
                 opacity: disabled ? 0.5 : 1,
                 display: 'flex', alignItems: 'center', gap: '4px',
-                transition: 'all 0.15s ease',
-            }}
+                transition: 'all 0.15s ease' }}
         >
             {direction === 'prev' && (
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -77,8 +76,7 @@ export const PageNumberButton: React.FC<PageNumberButtonProps> = ({ page, isActi
                 color: isActive ? '#ffffff' : isHovered ? '#3b82f6' : '#64748b',
                 fontSize: '12px', fontWeight: isActive ? 600 : 500, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.15s ease',
-            }}
+                transition: 'all 0.15s ease' }}
         >
             {page}
         </motion.button>

@@ -24,7 +24,7 @@ const SuccessConfetti: React.FC<{ isActive: boolean; onComplete?: () => void }> 
     const [pieces, setPieces] = useState<ConfettiPiece[]>([]);
 
     // Professional, muted color palette
-    const colors = [
+    const = [
         '#3b82f6', // Blue
         '#60a5fa', // Light blue
         '#1d4ed8', // Dark blue
@@ -46,10 +46,9 @@ const SuccessConfetti: React.FC<{ isActive: boolean; onComplete?: () => void }> 
                     x: Math.random() * 100, // Random horizontal position (%)
                     delay: Math.random() * 0.3, // Staggered start
                     duration: 2 + Math.random() * 1.5, // 2-3.5s fall time
-                    color: colors[Math.floor(Math.random() * colors.length)],
+                    color: [Math.floor(Math.random() * .length)],
                     size: 6 + Math.random() * 6, // 6-12px
-                    rotation: Math.random() * 360,
-                });
+                    rotation: Math.random() * 360 });
             }
             setPieces(newPieces);
 
@@ -77,8 +76,7 @@ const SuccessConfetti: React.FC<{ isActive: boolean; onComplete?: () => void }> 
                 bottom: 0,
                 pointerEvents: 'none',
                 zIndex: 99999,
-                overflow: 'hidden',
-            }}
+                overflow: 'hidden' }}
         >
             {pieces.map((piece) => (
                 <motion.div
@@ -88,27 +86,23 @@ const SuccessConfetti: React.FC<{ isActive: boolean; onComplete?: () => void }> 
                         y: -20,
                         rotate: piece.rotation,
                         opacity: 1,
-                        scale: 0,
-                    }}
+                        scale: 0 }}
                     animate={{
                         y: '110vh',
                         rotate: piece.rotation + (Math.random() > 0.5 ? 720 : -720),
                         opacity: [1, 1, 1, 0],
-                        scale: [0, 1, 1, 0.5],
-                    }}
+                        scale: [0, 1, 1, 0.5] }}
                     transition={{
                         duration: piece.duration,
                         delay: piece.delay,
-                        ease: [0.25, 0.46, 0.45, 0.94],
-                    }}
+                        ease: [0.25, 0.46, 0.45, 0.94] }}
                     style={{
                         position: 'absolute',
                         width: piece.size,
                         height: piece.size,
                         backgroundColor: piece.color,
                         borderRadius: Math.random() > 0.5 ? '50%' : '2px',
-                        boxShadow: `0 2px 8px ${piece.color}40`,
-                    }}
+                        boxShadow: `0 2px 8px ${piece.color}40` }}
                 />
             ))}
         </div>,
@@ -256,15 +250,13 @@ const ToolItem: React.FC<{
                     y: isHovered ? -8 : 0,
                     boxShadow: isHovered
                         ? '0 25px 50px rgba(59, 130, 246, 0.15)'
-                        : '0 4px 20px rgba(0, 0, 0, 0.04)',
-                }}
+                        : '0 4px 20px rgba(0, 0, 0, 0.04)' }}
                 whileTap={{ scale: 0.98 }}
                 transition={{
                     type: 'spring',
                     stiffness: 400,
                     damping: 25,
-                    mass: 0.8,
-                }}
+                    mass: 0.8 }}
                 style={{
                     width: '100%',
                     height: '220px', // Fixed height for uniform cards
@@ -275,16 +267,14 @@ const ToolItem: React.FC<{
                     cursor: 'pointer',
                     textAlign: 'left',
                     position: 'relative',
-                    padding: 0,
-                }}
+                    padding: 0 }}
             >
                 {/* Animated gradient overlay */}
                 <motion.div
                     className="tool-card-hover-gradient"
                     animate={{
                         opacity: isHovered ? 1 : 0,
-                        scale: isHovered ? 1.2 : 1,
-                    }}
+                        scale: isHovered ? 1.2 : 1 }}
                     transition={{ duration: 0.4, ease: 'easeOut' }}
                     style={{
                         position: 'absolute',
@@ -295,8 +285,7 @@ const ToolItem: React.FC<{
                         background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%)',
                         borderRadius: '50%',
                         transform: 'translate(30%, -30%)',
-                        pointerEvents: 'none',
-                    }}
+                        pointerEvents: 'none' }}
                 />
 
                 <div
@@ -306,8 +295,7 @@ const ToolItem: React.FC<{
                         padding: '1.5rem',
                         height: '100%',
                         display: 'flex',
-                        flexDirection: 'column',
-                    }}
+                        flexDirection: 'column' }}
                 >
                     {/* Header with Icon and Arrow */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1rem' }}>
@@ -323,13 +311,11 @@ const ToolItem: React.FC<{
                                 rotate: isHovered ? 3 : 0,
                                 boxShadow: isHovered
                                     ? '0 10px 25px rgba(59, 130, 246, 0.3)'
-                                    : '0 0 0 rgba(0, 0, 0, 0)',
-                            }}
+                                    : '0 0 0 rgba(0, 0, 0, 0)' }}
                             transition={{
                                 type: 'spring',
                                 stiffness: 400,
-                                damping: 20,
-                            }}
+                                damping: 20 }}
                             style={{
                                 width: '52px',
                                 height: '52px',
@@ -338,8 +324,7 @@ const ToolItem: React.FC<{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                flexShrink: 0,
-                            }}
+                                flexShrink: 0 }}
                         >
                             {tool.icon}
                         </motion.div>
@@ -348,13 +333,11 @@ const ToolItem: React.FC<{
                         <motion.div
                             animate={{
                                 opacity: isHovered ? 1 : 0,
-                                x: isHovered ? 0 : -10,
-                            }}
+                                x: isHovered ? 0 : -10 }}
                             transition={{
                                 type: 'spring',
                                 stiffness: 400,
-                                damping: 25,
-                            }}
+                                damping: 25 }}
                         >
                             <svg
                                 style={{ width: '18px', height: '18px', color: '#3b82f6' }}
@@ -372,15 +355,13 @@ const ToolItem: React.FC<{
                         <motion.h3
                             className="tool-title-modern"
                             animate={{
-                                color: isHovered ? '#3b82f6' : '#0f172a',
-                            }}
+                                color: isHovered ? '#3b82f6' : '#0f172a' }}
                             transition={{ duration: 0.2 }}
                             style={{
                                 fontSize: '1rem',
                                 fontWeight: 600,
                                 margin: 0,
-                                letterSpacing: '-0.01em',
-                            }}
+                                letterSpacing: '-0.01em' }}
                         >
                             {tool.name}
                         </motion.h3>
@@ -393,8 +374,7 @@ const ToolItem: React.FC<{
                                 display: '-webkit-box',
                                 WebkitLineClamp: 2,
                                 WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                            }}
+                                overflow: 'hidden' }}
                         >
                             {tool.description}
                         </p>
@@ -404,8 +384,7 @@ const ToolItem: React.FC<{
                     <motion.div
                         className="tool-badge-modern"
                         animate={{
-                            background: isHovered ? '#dbeafe' : '#f0fdf4',
-                        }}
+                            background: isHovered ? '#dbeafe' : '#f0fdf4' }}
                         transition={{ duration: 0.2 }}
                         style={{
                             display: 'inline-flex',
@@ -415,24 +394,20 @@ const ToolItem: React.FC<{
                             padding: '0.375rem 0.625rem',
                             background: '#f0fdf4',
                             borderRadius: '8px',
-                            alignSelf: 'flex-start',
-                        }}
+                            alignSelf: 'flex-start' }}
                     >
                         <motion.div
                             animate={{
-                                background: isHovered ? '#3b82f6' : '#22c55e',
-                            }}
+                                background: isHovered ? '#3b82f6' : '#22c55e' }}
                             transition={{ duration: 0.2 }}
                             style={{
                                 width: '6px',
                                 height: '6px',
-                                borderRadius: '50%',
-                            }}
+                                borderRadius: '50%' }}
                         />
                         <motion.span
                             animate={{
-                                color: isHovered ? '#1d4ed8' : '#15803d',
-                            }}
+                                color: isHovered ? '#1d4ed8' : '#15803d' }}
                             transition={{ duration: 0.2 }}
                             style={{ fontSize: '0.7rem', fontWeight: 500 }}
                         >
@@ -459,8 +434,7 @@ const ToolItem: React.FC<{
                                     inset: 0,
                                     background: 'rgba(15, 23, 42, 0.6)',
                                     backdropFilter: 'blur(8px)',
-                                    zIndex: 9998,
-                                }}
+                                    zIndex: 9998 }}
                             />
 
                             {/* Modal Container */}
@@ -473,8 +447,7 @@ const ToolItem: React.FC<{
                                     justifyContent: 'center',
                                     zIndex: 9999,
                                     pointerEvents: 'none',
-                                    padding: '1rem',
-                                }}
+                                    padding: '1rem' }}
                             >
                                 <motion.div
                                     layout
@@ -485,8 +458,7 @@ const ToolItem: React.FC<{
                                         type: 'spring',
                                         damping: 28,
                                         stiffness: 400,
-                                        mass: 0.8,
-                                    }}
+                                        mass: 0.8 }}
                                     className="tool-modal-container"
                                     style={{
                                         borderRadius: '24px',
@@ -496,8 +468,7 @@ const ToolItem: React.FC<{
                                         boxShadow: '0 25px 80px -15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.05)',
                                         pointerEvents: 'auto',
                                         position: 'relative',
-                                        overflow: 'hidden',
-                                    }}
+                                        overflow: 'hidden' }}
                                 >
                                     {/* Decorative gradient accent */}
                                     <div style={{
@@ -506,8 +477,7 @@ const ToolItem: React.FC<{
                                         left: 0,
                                         right: 0,
                                         height: '4px',
-                                        background: 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 50%, #3b82f6 100%)',
-                                    }} />
+                                        background: 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 50%, #3b82f6 100%)' }} />
 
                                     {/* Modal Content */}
                                     <div style={{ padding: '2rem' }}>
@@ -517,8 +487,7 @@ const ToolItem: React.FC<{
                                                 display: 'flex',
                                                 alignItems: 'flex-start',
                                                 gap: '1rem',
-                                                marginBottom: '1.5rem',
-                                            }}
+                                                marginBottom: '1.5rem' }}
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.1, type: 'spring', stiffness: 300 }}
@@ -538,8 +507,7 @@ const ToolItem: React.FC<{
                                                     justifyContent: 'center',
                                                     color: 'white',
                                                     boxShadow: '0 8px 24px rgba(59, 130, 246, 0.3)',
-                                                    flexShrink: 0,
-                                                }}
+                                                    flexShrink: 0 }}
                                             >
                                                 {tool.icon}
                                             </motion.div>
@@ -556,8 +524,7 @@ const ToolItem: React.FC<{
                                                         color: '#0f172a',
                                                         margin: 0,
                                                         marginBottom: '0.375rem',
-                                                        letterSpacing: '-0.02em',
-                                                    }}
+                                                        letterSpacing: '-0.02em' }}
                                                 >
                                                     {tool.name}
                                                 </motion.h2>
@@ -569,8 +536,7 @@ const ToolItem: React.FC<{
                                                         fontSize: '0.9rem',
                                                         color: '#64748b',
                                                         margin: 0,
-                                                        lineHeight: 1.5,
-                                                    }}
+                                                        lineHeight: 1.5 }}
                                                 >
                                                     {tool.description}
                                                 </motion.p>
@@ -599,8 +565,7 @@ const ToolItem: React.FC<{
                                                             textAlign: 'center',
                                                             background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
                                                             position: 'relative',
-                                                            overflow: 'hidden',
-                                                        }}
+                                                            overflow: 'hidden' }}
                                                     >
                                                         {/* Success Icon */}
                                                         <motion.div
@@ -616,8 +581,7 @@ const ToolItem: React.FC<{
                                                                 alignItems: 'center',
                                                                 justifyContent: 'center',
                                                                 margin: '0 auto 1rem',
-                                                                boxShadow: '0 8px 24px rgba(34, 197, 94, 0.3)',
-                                                            }}
+                                                                boxShadow: '0 8px 24px rgba(34, 197, 94, 0.3)' }}
                                                         >
                                                             <motion.svg
                                                                 width="32"
@@ -660,13 +624,11 @@ const ToolItem: React.FC<{
                                                                 initial={{ opacity: 0, scale: 0 }}
                                                                 animate={{
                                                                     opacity: [0, 1, 0],
-                                                                    scale: [0, 1, 0],
-                                                                }}
+                                                                    scale: [0, 1, 0] }}
                                                                 transition={{
                                                                     delay: 0.3 + i * 0.1,
                                                                     duration: 0.6,
-                                                                    ease: 'easeOut',
-                                                                }}
+                                                                    ease: 'easeOut' }}
                                                                 style={{
                                                                     position: 'absolute',
                                                                     width: '8px',
@@ -674,8 +636,7 @@ const ToolItem: React.FC<{
                                                                     borderRadius: '50%',
                                                                     background: i % 2 === 0 ? '#22c55e' : '#fbbf24',
                                                                     top: `${20 + Math.random() * 60}%`,
-                                                                    left: `${10 + Math.random() * 80}%`,
-                                                                }}
+                                                                    left: `${10 + Math.random() * 80}%` }}
                                                             />
                                                         ))}
                                                     </motion.div>
@@ -691,8 +652,7 @@ const ToolItem: React.FC<{
                                                             borderRadius: '16px',
                                                             padding: '3rem 2rem',
                                                             textAlign: 'center',
-                                                            background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
-                                                        }}
+                                                            background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' }}
                                                     >
                                                         {/* Processing Spinner */}
                                                         <motion.div
@@ -704,8 +664,7 @@ const ToolItem: React.FC<{
                                                                 border: '3px solid #dbeafe',
                                                                 borderTopColor: '#3b82f6',
                                                                 borderRadius: '50%',
-                                                                margin: '0 auto 1rem',
-                                                            }}
+                                                                margin: '0 auto 1rem' }}
                                                         />
                                                         <p style={{ fontSize: '1rem', fontWeight: 600, color: '#1d4ed8', margin: 0 }}>
                                                             Processing your file...
@@ -738,8 +697,7 @@ const ToolItem: React.FC<{
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 gap: '0.5rem',
-                                                marginTop: '1rem',
-                                            }}
+                                                marginTop: '1rem' }}
                                         >
                                             <span style={{
                                                 display: 'inline-flex',
@@ -750,8 +708,7 @@ const ToolItem: React.FC<{
                                                 borderRadius: '8px',
                                                 fontSize: '0.75rem',
                                                 fontWeight: 500,
-                                                color: '#64748b',
-                                            }}>
+                                                color: '#64748b' }}>
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                                                     <polyline points="14 2 14 8 20 8" />
@@ -783,8 +740,7 @@ const ToolItem: React.FC<{
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             color: '#64748b',
-                                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-                                        }}
+                                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }}
                                     >
                                         <svg
                                             width="18"
@@ -825,8 +781,7 @@ const ToolItem: React.FC<{
                                     inset: 0,
                                     background: 'rgba(0, 0, 0, 0.5)',
                                     backdropFilter: 'blur(8px)',
-                                    zIndex: 9998,
-                                }}
+                                    zIndex: 9998 }}
                             />
 
                             {/* Tutorial Modal */}
@@ -838,8 +793,7 @@ const ToolItem: React.FC<{
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     zIndex: 9999,
-                                    pointerEvents: 'none',
-                                }}
+                                    pointerEvents: 'none' }}
                             >
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.85, y: 40 }}
@@ -848,8 +802,7 @@ const ToolItem: React.FC<{
                                     transition={{
                                         type: 'spring',
                                         damping: 28,
-                                        stiffness: 400,
-                                    }}
+                                        stiffness: 400 }}
                                     style={{
                                         borderRadius: '24px',
                                         backgroundColor: 'white',
@@ -859,8 +812,7 @@ const ToolItem: React.FC<{
                                         boxShadow: '0 25px 80px -15px rgba(0, 0, 0, 0.3)',
                                         pointerEvents: 'auto',
                                         position: 'relative',
-                                        overflow: 'hidden',
-                                    }}
+                                        overflow: 'hidden' }}
                                 >
                                     {/* Progress Bar */}
                                     <div style={{
@@ -878,8 +830,7 @@ const ToolItem: React.FC<{
                                             style={{
                                                 height: '100%',
                                                 background: 'linear-gradient(90deg, #3b82f6, #2563eb)',
-                                                borderRadius: '0 2px 2px 0',
-                                            }}
+                                                borderRadius: '0 2px 2px 0' }}
                                         />
                                     </div>
 
@@ -903,8 +854,7 @@ const ToolItem: React.FC<{
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 margin: '0 auto 16px',
-                                                color: '#1d4ed8',
-                                            }}
+                                                color: '#1d4ed8' }}
                                         >
                                             {tool.icon}
                                         </motion.div>
@@ -929,8 +879,7 @@ const ToolItem: React.FC<{
                                                 borderRadius: '16px',
                                                 padding: '20px',
                                                 marginBottom: '20px',
-                                                minHeight: '100px',
-                                            }}
+                                                minHeight: '100px' }}
                                         >
                                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
                                                 <motion.div
@@ -948,8 +897,7 @@ const ToolItem: React.FC<{
                                                         justifyContent: 'center',
                                                         fontWeight: 700,
                                                         fontSize: '14px',
-                                                        flexShrink: 0,
-                                                    }}
+                                                        flexShrink: 0 }}
                                                 >
                                                     {currentStep + 1}
                                                 </motion.div>
@@ -958,8 +906,7 @@ const ToolItem: React.FC<{
                                                     color: '#374151',
                                                     lineHeight: 1.6,
                                                     margin: 0,
-                                                    paddingTop: '4px',
-                                                }}>
+                                                    paddingTop: '4px' }}>
                                                     {tool.tutorial.steps[currentStep]}
                                                 </p>
                                             </div>
@@ -978,8 +925,7 @@ const ToolItem: React.FC<{
                                             padding: '12px 16px',
                                             background: '#fef3c7',
                                             borderRadius: '12px',
-                                            marginBottom: '24px',
-                                        }}
+                                            marginBottom: '24px' }}
                                     >
                                         <span style={{ fontSize: '18px' }}>💡</span>
                                         <p style={{ fontSize: '13px', color: '#92400e', margin: 0, lineHeight: 1.5 }}>
@@ -1002,8 +948,7 @@ const ToolItem: React.FC<{
                                                     width: '8px',
                                                     height: '8px',
                                                     borderRadius: '50%',
-                                                    cursor: 'pointer',
-                                                }}
+                                                    cursor: 'pointer' }}
                                                 onClick={() => setCurrentStep(idx)}
                                             />
                                         ))}
@@ -1031,8 +976,7 @@ const ToolItem: React.FC<{
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    gap: '6px',
-                                                }}
+                                                    gap: '6px' }}
                                             >
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                     <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -1060,8 +1004,7 @@ const ToolItem: React.FC<{
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     gap: '6px',
-                                                    boxShadow: '0 4px 14px rgba(59, 130, 246, 0.4)',
-                                                }}
+                                                    boxShadow: '0 4px 14px rgba(59, 130, 246, 0.4)' }}
                                             >
                                                 Next
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1087,8 +1030,7 @@ const ToolItem: React.FC<{
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     gap: '8px',
-                                                    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)',
-                                                }}
+                                                    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)' }}
                                             >
                                                 Open {tool.name}
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1112,8 +1054,7 @@ const ToolItem: React.FC<{
                                             border: 'none',
                                             color: '#9ca3af',
                                             fontSize: '13px',
-                                            cursor: 'pointer',
-                                        }}
+                                            cursor: 'pointer' }}
                                     >
                                         Skip tutorial & open directly
                                     </motion.button>
@@ -1138,8 +1079,7 @@ const ToolItem: React.FC<{
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             color: '#9ca3af',
-                                            transition: 'all 0.2s ease',
-                                        }}
+                                            transition: 'all 0.2s ease' }}
                                         whileHover={{ backgroundColor: '#f3f4f6', color: '#4b5563' }}
                                     >
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

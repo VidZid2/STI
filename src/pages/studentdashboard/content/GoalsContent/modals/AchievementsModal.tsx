@@ -41,14 +41,13 @@ const AchievementsModal: React.FC<{
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'achievements-title');
     const [selectedBadge, setSelectedBadge] = useState<string | null>(null);
     
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-secondary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
-        textMuted: 'var(--text-muted)',
-    };
+        textMuted: 'var(--text-muted)' };
 
     const milestoneStatus = useMemo(() => {
         const totalCreated = goals.length;
@@ -70,8 +69,7 @@ const AchievementsModal: React.FC<{
                 ...milestone,
                 current,
                 unlocked,
-                progress: Math.min(100, (current / milestone.requirement) * 100),
-            };
+                progress: Math.min(100, (current / milestone.requirement) * 100) };
         });
     }, [goals]);
 
@@ -95,8 +93,7 @@ const AchievementsModal: React.FC<{
                         alignItems: 'center',
                         justifyContent: 'center',
                         zIndex: 10000,
-                        padding: '20px',
-                    }}
+                        padding: '20px' }}
                 >
                     <motion.div
                         ref={modalRef}
@@ -113,31 +110,27 @@ const AchievementsModal: React.FC<{
                             borderRadius: '20px',
                             border: `1px solid var(--border-color)`,
                             boxShadow: 'var(--shadow-lg)',
-                            overflow: 'hidden',
-                        }}
+                            overflow: 'hidden' }}
                     >
                         {/* Header - Clean & Simple */}
                         <div style={{
                             padding: '24px 24px 20px',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'space-between',
-                        }}>
+                            justifyContent: 'space-between' }}>
                             <div>
                                 <h2 style={{ 
                                     margin: 0, 
                                     fontSize: '18px', 
                                     fontWeight: 600, 
                                     color: 'var(--text-primary)',
-                                    letterSpacing: '-0.3px',
-                                }}>
+                                    letterSpacing: '-0.3px' }}>
                                     Achievements
                                 </h2>
                                 <p style={{ 
                                     margin: '4px 0 0', 
                                     fontSize: '13px', 
-                                    color: 'var(--text-muted)',
-                                }}>
+                                    color: 'var(--text-muted)' }}>
                                     {unlockedCount} of {milestoneStatus.length} unlocked
                                 </p>
                             </div>
@@ -156,8 +149,7 @@ const AchievementsModal: React.FC<{
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    transition: 'background 0.15s ease',
-                                }}
+                                    transition: 'background 0.15s ease' }}
                             >
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -170,8 +162,7 @@ const AchievementsModal: React.FC<{
                         <div style={{
                             padding: '0 24px 24px',
                             maxHeight: '400px',
-                            overflowY: 'auto',
-                        }}>
+                            overflowY: 'auto' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 {milestoneStatus.map((milestone, index) => (
                                     <motion.div
@@ -188,16 +179,14 @@ const AchievementsModal: React.FC<{
                                                 ? 'var(--bg-hover)'
                                                 : 'transparent',
                                             cursor: 'pointer',
-                                            transition: 'background 0.15s ease',
-                                        }}
+                                            transition: 'background 0.15s ease' }}
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                                             {/* Icon */}
                                             <motion.div
                                                 animate={milestone.unlocked && selectedBadge === milestone.id ? { 
                                                     scale: [1, 1.15, 1],
-                                                    rotate: [0, -5, 5, 0],
-                                                } : {}}
+                                                    rotate: [0, -5, 5, 0] } : {}}
                                                 transition={{ duration: 0.4 }}
                                                 style={{
                                                     width: '44px',
@@ -212,8 +201,7 @@ const AchievementsModal: React.FC<{
                                                     color: milestone.unlocked ? milestone.color : 'var(--text-muted)',
                                                     flexShrink: 0,
                                                     position: 'relative',
-                                                    overflow: 'hidden',
-                                                }}
+                                                    overflow: 'hidden' }}
                                             >
                                                 <MilestoneIcon icon={milestone.icon} size={20} />
                                                 {milestone.unlocked && (
@@ -223,8 +211,7 @@ const AchievementsModal: React.FC<{
                                                         style={{
                                                             position: 'absolute',
                                                             inset: 0,
-                                                            background: `radial-gradient(circle at center, ${milestone.color}15 0%, transparent 70%)`,
-                                                        }}
+                                                            background: `radial-gradient(circle at center, ${milestone.color}15 0%, transparent 70%)` }}
                                                     />
                                                 )}
                                             </motion.div>
@@ -235,13 +222,11 @@ const AchievementsModal: React.FC<{
                                                     display: 'flex', 
                                                     alignItems: 'center', 
                                                     gap: '8px',
-                                                    marginBottom: '4px',
-                                                }}>
+                                                    marginBottom: '4px' }}>
                                                     <span style={{ 
                                                         fontSize: '14px', 
                                                         fontWeight: 600, 
-                                                        color: milestone.unlocked ? 'var(--text-primary)' : 'var(--text-muted)',
-                                                    }}>
+                                                        color: milestone.unlocked ? 'var(--text-primary)' : 'var(--text-muted)' }}>
                                                         {milestone.name}
                                                     </span>
                                                     {milestone.unlocked && (
@@ -258,8 +243,7 @@ const AchievementsModal: React.FC<{
                                                 </div>
                                                 <div style={{ 
                                                     fontSize: '12px', 
-                                                    color: 'var(--text-muted)',
-                                                }}>
+                                                    color: 'var(--text-muted)' }}>
                                                     {milestone.description}
                                                 </div>
                                             </div>
@@ -267,13 +251,11 @@ const AchievementsModal: React.FC<{
                                             {/* Progress indicator */}
                                             <div style={{ 
                                                 textAlign: 'right',
-                                                flexShrink: 0,
-                                            }}>
+                                                flexShrink: 0 }}>
                                                 <div style={{ 
                                                     fontSize: '14px', 
                                                     fontWeight: 600, 
-                                                    color: milestone.unlocked ? milestone.color : 'var(--text-muted)',
-                                                }}>
+                                                    color: milestone.unlocked ? milestone.color : 'var(--text-muted)' }}>
                                                     {milestone.current}/{milestone.requirement}
                                                 </div>
                                             </div>
@@ -294,8 +276,7 @@ const AchievementsModal: React.FC<{
                                                             height: '6px',
                                                             background: 'var(--bg-hover)',
                                                             borderRadius: '3px',
-                                                            overflow: 'hidden',
-                                                        }}>
+                                                            overflow: 'hidden' }}>
                                                             <motion.div
                                                                 initial={{ width: 0 }}
                                                                 animate={{ width: `${milestone.progress}%` }}
@@ -303,15 +284,13 @@ const AchievementsModal: React.FC<{
                                                                 style={{
                                                                     height: '100%',
                                                                     background: milestone.color,
-                                                                    borderRadius: '3px',
-                                                                }}
+                                                                    borderRadius: '3px' }}
                                                             />
                                                         </div>
                                                         <div style={{ 
                                                             fontSize: '11px', 
                                                             color: 'var(--text-muted)',
-                                                            marginTop: '6px',
-                                                        }}>
+                                                            marginTop: '6px' }}>
                                                             {Math.round(milestone.progress)}% complete
                                                         </div>
                                                     </div>

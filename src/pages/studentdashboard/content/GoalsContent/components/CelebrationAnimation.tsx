@@ -19,17 +19,16 @@ const CelebrationAnimation: React.FC<{
     
     // Subtle confetti particles - blue theme
     const particles = useMemo(() => {
-        const colors = ['#3b82f6', '#60a5fa', '#93c5fd', '#2563eb', '#1d4ed8'];
+        const = ['#3b82f6', '#60a5fa', '#93c5fd', '#2563eb', '#1d4ed8'];
         return Array.from({ length: 30 }, (_, i) => ({
             id: i,
             x: Math.random() * 100,
             delay: Math.random() * 0.3,
             duration: 2.5 + Math.random() * 1,
-            color: colors[Math.floor(Math.random() * colors.length)],
+            color: [Math.floor(Math.random() * .length)],
             size: 4 + Math.random() * 6,
             rotation: Math.random() * 360,
-            type: Math.random() > 0.6 ? 'circle' : 'rect',
-        }));
+            type: Math.random() > 0.6 ? 'circle' : 'rect' }));
     }, []);
 
     useEffect(() => {
@@ -57,8 +56,7 @@ const CelebrationAnimation: React.FC<{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        cursor: 'pointer',
-                    }}
+                        cursor: 'pointer' }}
                 >
                     {/* Subtle confetti */}
                     {particles.map((particle) => (
@@ -68,26 +66,22 @@ const CelebrationAnimation: React.FC<{
                                 x: `${particle.x}vw`,
                                 y: '-5vh',
                                 rotate: 0,
-                                opacity: 0.8,
-                            }}
+                                opacity: 0.8 }}
                             animate={{ 
                                 y: '105vh',
                                 rotate: particle.rotation + 540,
-                                opacity: [0.8, 0.6, 0],
-                            }}
+                                opacity: [0.8, 0.6, 0] }}
                             transition={{
                                 duration: particle.duration,
                                 delay: particle.delay,
-                                ease: 'easeOut',
-                            }}
+                                ease: 'easeOut' }}
                             style={{
                                 position: 'absolute',
                                 width: particle.size,
                                 height: particle.type === 'rect' ? particle.size * 0.5 : particle.size,
                                 background: particle.color,
                                 borderRadius: particle.type === 'circle' ? '50%' : '1px',
-                                pointerEvents: 'none',
-                            }}
+                                pointerEvents: 'none' }}
                         />
                     ))}
 
@@ -108,8 +102,7 @@ const CelebrationAnimation: React.FC<{
                             gap: '20px',
                             boxShadow: '0 24px 48px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.04)',
                             maxWidth: '340px',
-                            textAlign: 'center',
-                        }}
+                            textAlign: 'center' }}
                     >
                         {/* Icon */}
                         <motion.div
@@ -124,18 +117,15 @@ const CelebrationAnimation: React.FC<{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                boxShadow: '0 8px 24px rgba(59, 130, 246, 0.35)',
-                            }}
+                                boxShadow: '0 8px 24px rgba(59, 130, 246, 0.35)' }}
                         >
                             <motion.div
                                 animate={{ 
-                                    scale: [1, 1.1, 1],
-                                }}
+                                    scale: [1, 1.1, 1] }}
                                 transition={{ 
                                     duration: 1.5,
                                     repeat: Infinity,
-                                    ease: 'easeInOut',
-                                }}
+                                    ease: 'easeInOut' }}
                             >
                                 <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -156,8 +146,7 @@ const CelebrationAnimation: React.FC<{
                                 fontWeight: 700,
                                 color: '#0f172a',
                                 letterSpacing: '-0.02em',
-                                marginBottom: '6px',
-                            }}>
+                                marginBottom: '6px' }}>
                                 Goal Completed!
                             </h3>
                             {goalTitle && (
@@ -165,8 +154,7 @@ const CelebrationAnimation: React.FC<{
                                     margin: 0,
                                     fontSize: '14px',
                                     color: '#64748b',
-                                    lineHeight: 1.5,
-                                }}>
+                                    lineHeight: 1.5 }}>
                                     {goalTitle}
                                 </p>
                             )}
@@ -184,20 +172,17 @@ const CelebrationAnimation: React.FC<{
                                 padding: '10px 16px',
                                 background: blueBg,
                                 border: `1px solid ${blueBorder}`,
-                                borderRadius: '12px',
-                            }}
+                                borderRadius: '12px' }}
                         >
                             <div style={{
                                 width: 8,
                                 height: 8,
                                 borderRadius: '50%',
-                                background: '#10b981',
-                            }} />
+                                background: '#10b981' }} />
                             <span style={{
                                 fontSize: '13px',
                                 fontWeight: 600,
-                                color: blueAccent,
-                            }}>
+                                color: blueAccent }}>
                                 100% Complete
                             </span>
                         </motion.div>
@@ -223,8 +208,7 @@ const CelebrationAnimation: React.FC<{
                                 alignItems: 'center',
                                 gap: '8px',
                                 boxShadow: '0 2px 8px rgba(59, 130, 246, 0.25)',
-                                marginTop: '4px',
-                            }}
+                                marginTop: '4px' }}
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M18 6L6 18M6 6l12 12" />
@@ -246,8 +230,7 @@ const CelebrationAnimation: React.FC<{
                                 top: '50%',
                                 left: '50%',
                                 transform: 'translate(-50%, -80%)',
-                                pointerEvents: 'none',
-                            }}
+                                pointerEvents: 'none' }}
                         />
                     </motion.div>
                 </motion.div>

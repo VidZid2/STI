@@ -10,11 +10,11 @@ import type { Resource } from '../FocusModePage';
 // Distraction Blocker Overlay Component
 const DistractionBlocker: React.FC<{
     isActive: boolean;
-    isDarkMode: boolean;
+    
     timeLeft: string;
     mode: 'focus' | 'break';
     onExit: () => void;
-}> = ({ isActive, timeLeft, mode, onExit, isDarkMode }) => {
+}> = ({ isActive, timeLeft, mode, onExit }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     const accentColor = mode === 'focus' ? '#3b82f6' : '#10b981';
@@ -30,8 +30,7 @@ const DistractionBlocker: React.FC<{
                         type: 'spring',
                         stiffness: 400,
                         damping: 30,
-                        mass: 0.8,
-                    }}
+                        mass: 0.8 }}
                     onHoverStart={() => setIsHovered(true)}
                     onHoverEnd={() => setIsHovered(false)}
                     style={{
@@ -55,8 +54,7 @@ const DistractionBlocker: React.FC<{
                         justifyContent: 'center',
                         gap: '16px',
                         border: `1px solid ${'rgba(255,255,255,0.1)'}`,
-                        transition: 'box-shadow 0.3s ease',
-                    }}
+                        transition: 'box-shadow 0.3s ease' }}
                 >
                     {/* Status text with icon */}
                     <motion.span
@@ -70,8 +68,7 @@ const DistractionBlocker: React.FC<{
                             letterSpacing: '-0.2px',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px',
-                        }}
+                            gap: '8px' }}
                     >
                         {mode === 'focus' ? (
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -95,8 +92,7 @@ const DistractionBlocker: React.FC<{
                     <div style={{
                         width: 1,
                         height: 20,
-                        background: 'var(--bg-hover)',
-                    }} />
+                        background: 'var(--bg-hover)' }} />
 
                     {/* Timer display */}
                     <motion.div
@@ -112,8 +108,7 @@ const DistractionBlocker: React.FC<{
                             padding: '6px 16px',
                             borderRadius: '10px',
                             background: `${accentColor}12`,
-                            border: `1px solid ${accentColor}20`,
-                        }}
+                            border: `1px solid ${accentColor}20` }}
                     >
                         {timeLeft}
                     </motion.div>
@@ -122,8 +117,7 @@ const DistractionBlocker: React.FC<{
                     <div style={{
                         width: 1,
                         height: 20,
-                        background: 'var(--bg-hover)',
-                    }} />
+                        background: 'var(--bg-hover)' }} />
 
                     {/* Exit button */}
                     <motion.button
@@ -145,8 +139,7 @@ const DistractionBlocker: React.FC<{
                             display: 'flex',
                             alignItems: 'center',
                             gap: '6px',
-                            transition: 'all 0.2s ease',
-                        }}
+                            transition: 'all 0.2s ease' }}
                     >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -171,39 +164,32 @@ const RESOURCE_TYPE_CONFIG: Record<Resource['type'], {
         color: '#3b82f6',
         bgGradient: 'linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.04) 100%)',
         label: 'Link',
-        actionLabel: 'Open',
-    },
+        actionLabel: 'Open' },
     file: {
         color: '#f59e0b',
         bgGradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(245, 158, 11, 0.04) 100%)',
         label: 'File',
-        actionLabel: 'Download',
-    },
+        actionLabel: 'Download' },
     image: {
         color: '#22c55e',
         bgGradient: 'linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, rgba(34, 197, 94, 0.04) 100%)',
         label: 'Image',
-        actionLabel: 'View',
-    },
+        actionLabel: 'View' },
     code: {
         color: '#10b981',
         bgGradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.04) 100%)',
         label: 'Code',
-        actionLabel: 'Copy',
-    },
+        actionLabel: 'Copy' },
     note: {
         color: '#8b5cf6',
         bgGradient: 'linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(139, 92, 246, 0.04) 100%)',
         label: 'Note',
-        actionLabel: 'View',
-    },
+        actionLabel: 'View' },
     flashcard: {
         color: '#ec4899',
         bgGradient: 'linear-gradient(135deg, rgba(236, 72, 153, 0.12) 0%, rgba(236, 72, 153, 0.04) 100%)',
         label: 'Flashcard',
-        actionLabel: 'Study',
-    },
-};
+        actionLabel: 'Study' } };
 
 
 export { DistractionBlocker, RESOURCE_TYPE_CONFIG };

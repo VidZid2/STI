@@ -42,8 +42,7 @@ const QuickActionButton: React.FC<{
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                }}
+                    transition: 'all 0.15s ease' }}
             >
                 {icon}
             </motion.button>
@@ -80,19 +79,13 @@ const HeartIcon: React.FC<{ filled?: boolean }> = ({ filled }) => (
 const UserCard: React.FC<{
     user: UserAccount;
     index: number;
-    colors: {
-        cardBg: string;
-        border: string;
-        textPrimary: string;
-        textSecondary: string;
-        textMuted: string;
-    };
+    
     onClick?: (user: UserAccount) => void;
     favorites?: string[];
     onToggleFavorite?: (userId: string) => void;
     reducedMotion?: boolean;
     isMobile?: boolean;
-}> = ({ user, index, colors, onClick, favorites = [], onToggleFavorite, reducedMotion = false, isMobile = false }) => {
+}> = ({ user, index,  onClick, favorites = [], onToggleFavorite, reducedMotion = false, isMobile = false }) => {
     const roleInfo = getRoleInfo(user.role);
     const [isHovered, setIsHovered] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
@@ -175,8 +168,7 @@ const UserCard: React.FC<{
                 transition: reducedMotion ? 'none' : 'all 0.2s ease',
                 position: 'relative',
                 outline: 'none',
-                boxShadow: isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.3)' : undefined,
-            }}
+                boxShadow: isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.3)' : undefined }}
         >
             {/* Card Content */}
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
@@ -190,8 +182,7 @@ const UserCard: React.FC<{
                         justifyContent: 'space-between',
                         gap: '8px', 
                         marginBottom: '4px',
-                        minHeight: '28px',
-                    }}>
+                        minHeight: '28px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, minWidth: 0 }}>
                             <h3 style={{
                                 margin: 0,
@@ -200,8 +191,7 @@ const UserCard: React.FC<{
                                 color: 'var(--text-primary)',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                            }}>
+                                whiteSpace: 'nowrap' }}>
                                 {user.full_name}
                             </h3>
                             {!user.is_active && (
@@ -212,8 +202,7 @@ const UserCard: React.FC<{
                                     background: 'rgba(239, 68, 68, 0.1)',
                                     color: '#ef4444',
                                     fontWeight: 600,
-                                    flexShrink: 0,
-                                }}>
+                                    flexShrink: 0 }}>
                                     Inactive
                                 </span>
                             )}
@@ -231,8 +220,7 @@ const UserCard: React.FC<{
                                     opacity: showActions ? 1 : 0,
                                     transform: showActions ? 'translateX(0)' : 'translateX(8px)',
                                     transition: reducedMotion ? 'opacity 0.01s' : 'all 0.2s ease',
-                                    pointerEvents: showActions ? 'auto' : 'none',
-                                }}
+                                    pointerEvents: showActions ? 'auto' : 'none' }}
                             >
                                 <ActionTooltip label="Send Email">
                                     <motion.button
@@ -251,8 +239,7 @@ const UserCard: React.FC<{
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            cursor: 'pointer',
-                                        }}
+                                            cursor: 'pointer' }}
                                     >
                                         <EmailIcon />
                                     </motion.button>
@@ -274,8 +261,7 @@ const UserCard: React.FC<{
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            cursor: 'pointer',
-                                        }}
+                                            cursor: 'pointer' }}
                                     >
                                         <ScheduleIcon />
                                     </motion.button>
@@ -298,8 +284,7 @@ const UserCard: React.FC<{
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            cursor: 'pointer',
-                                        }}
+                                            cursor: 'pointer' }}
                                     >
                                         <HeartIcon filled={isFavorite} />
                                     </motion.button>
@@ -324,8 +309,7 @@ const UserCard: React.FC<{
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
-                            marginBottom: '2px',
-                        }}>
+                            marginBottom: '2px' }}>
                             {user.email}
                         </p>
                         <p style={{
@@ -334,15 +318,13 @@ const UserCard: React.FC<{
                             color: user.is_online ? '#10b981' : 'var(--text-muted)',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '4px',
-                        }}>
+                            gap: '4px' }}>
                             <span style={{
                                 width: '6px',
                                 height: '6px',
                                 borderRadius: '50%',
                                 background: user.is_online ? '#10b981' : '#94a3b8',
-                                flexShrink: 0,
-                            }} />
+                                flexShrink: 0 }} />
                             {getLastSeenText(user.last_active, user.is_online || false)}
                         </p>
                     </div>
@@ -358,8 +340,7 @@ const UserCard: React.FC<{
                             background: roleInfo.bgColor,
                             fontSize: '11px',
                             fontWeight: 500,
-                            color: roleInfo.color,
-                        }}>
+                            color: roleInfo.color }}>
                             <RoleIcon role={user.role} size={11} />
                             {roleInfo.label}
                         </span>
@@ -370,8 +351,7 @@ const UserCard: React.FC<{
                                 color: 'var(--text-muted)',
                                 padding: '3px 7px',
                                 borderRadius: '5px',
-                                background: 'var(--bg-hover)',
-                            }}>
+                                background: 'var(--bg-hover)' }}>
                                 {user.section}
                             </span>
                         )}
@@ -387,8 +367,7 @@ const UserCard: React.FC<{
                                 padding: '3px 7px',
                                 borderRadius: '5px',
                                 background: 'rgba(16, 185, 129, 0.1)',
-                                fontWeight: 500,
-                            }}>
+                                fontWeight: 500 }}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -407,8 +386,7 @@ const UserCard: React.FC<{
                                 padding: '3px 7px',
                                 borderRadius: '5px',
                                 background: 'rgba(59, 130, 246, 0.1)',
-                                fontWeight: 500,
-                            }}>
+                                fontWeight: 500 }}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                                     <path d="M6 12v5c3 3 9 3 12 0v-5" />
@@ -430,8 +408,7 @@ const UserCard: React.FC<{
                         gap: '8px',
                         marginTop: '12px',
                         paddingTop: '12px',
-                        borderTop: `1px solid var(--border-color)`,
-                    }}
+                        borderTop: `1px solid var(--border-color)` }}
                 >
                     <motion.button
                         aria-label={`Send email to ${user.full_name}`}
@@ -450,8 +427,7 @@ const UserCard: React.FC<{
                             gap: '6px',
                             cursor: 'pointer',
                             fontSize: '12px',
-                            fontWeight: 500,
-                        }}
+                            fontWeight: 500 }}
                     >
                         <EmailIcon />
                         Email
@@ -473,8 +449,7 @@ const UserCard: React.FC<{
                             gap: '6px',
                             cursor: 'pointer',
                             fontSize: '12px',
-                            fontWeight: 500,
-                        }}
+                            fontWeight: 500 }}
                     >
                         <ScheduleIcon />
                         Details
@@ -497,8 +472,7 @@ const UserCard: React.FC<{
                             alignItems: 'center',
                             justifyContent: 'center',
                             cursor: 'pointer',
-                            flexShrink: 0,
-                        }}
+                            flexShrink: 0 }}
                     >
                         <HeartIcon filled={isFavorite} />
                     </motion.button>
@@ -514,19 +488,13 @@ const UserCard: React.FC<{
 const UserListItem: React.FC<{
     user: UserAccount;
     index: number;
-    colors: {
-        cardBg: string;
-        border: string;
-        textPrimary: string;
-        textSecondary: string;
-        textMuted: string;
-    };
+    
     onClick?: (user: UserAccount) => void;
     favorites?: string[];
     onToggleFavorite?: (userId: string) => void;
     reducedMotion?: boolean;
     isMobile?: boolean;
-}> = ({ user, index, colors, onClick, favorites = [], onToggleFavorite, reducedMotion = false, isMobile = false }) => {
+}> = ({ user, index,  onClick, favorites = [], onToggleFavorite, reducedMotion = false, isMobile = false }) => {
     const roleInfo = getRoleInfo(user.role);
     const [isHovered, setIsHovered] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
@@ -588,8 +556,7 @@ const UserListItem: React.FC<{
                 transition: reducedMotion ? 'none' : 'all 0.2s ease',
                 position: 'relative',
                 outline: 'none',
-                boxShadow: isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.3)' : undefined,
-            }}
+                boxShadow: isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.3)' : undefined }}
         >
             <UserAvatar user={user} size={42} reducedMotion={reducedMotion} />
             
@@ -604,8 +571,7 @@ const UserListItem: React.FC<{
                             color: 'var(--text-primary)',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                        }}>
+                            whiteSpace: 'nowrap' }}>
                             {user.full_name}
                         </h3>
                         {isFavorite && (
@@ -620,8 +586,7 @@ const UserListItem: React.FC<{
                                 borderRadius: '4px',
                                 background: 'rgba(239, 68, 68, 0.1)',
                                 color: '#ef4444',
-                                fontWeight: 600,
-                            }}>
+                                fontWeight: 600 }}>
                                 Inactive
                             </span>
                         )}
@@ -632,8 +597,7 @@ const UserListItem: React.FC<{
                         color: 'var(--text-secondary)',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                    }}>
+                        whiteSpace: 'nowrap' }}>
                         {user.email}
                     </p>
                 </div>
@@ -649,8 +613,7 @@ const UserListItem: React.FC<{
                         background: roleInfo.bgColor,
                         fontSize: '11px',
                         fontWeight: 500,
-                        color: roleInfo.color,
-                    }}>
+                        color: roleInfo.color }}>
                         <RoleIcon role={user.role} size={12} />
                         {roleInfo.label}
                     </span>
@@ -660,8 +623,7 @@ const UserListItem: React.FC<{
                 <div style={{ flex: 1, textAlign: 'center' }}>
                     <span style={{
                         fontSize: '12px',
-                        color: 'var(--text-muted)',
-                    }}>
+                        color: 'var(--text-muted)' }}>
                         {user.section || user.campus}
                     </span>
                 </div>
@@ -680,13 +642,11 @@ const UserListItem: React.FC<{
                             height: '8px',
                             borderRadius: '50%',
                             background: user.is_online ? '#10b981' : '#94a3b8',
-                            boxShadow: user.is_online ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
-                        }} />
+                            boxShadow: user.is_online ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none' }} />
                         <span style={{
                             fontSize: '11px',
                             color: user.is_online ? '#10b981' : 'var(--text-muted)',
-                            fontWeight: 500,
-                        }}>
+                            fontWeight: 500 }}>
                             {user.is_online ? 'Online' : 'Offline'}
                         </span>
                     </div>
@@ -694,8 +654,7 @@ const UserListItem: React.FC<{
                         <span style={{
                             fontSize: '9px',
                             color: 'var(--text-muted)',
-                            whiteSpace: 'nowrap',
-                        }}>
+                            whiteSpace: 'nowrap' }}>
                             {getLastSeenText(user.last_active, false).replace('Last seen ', '')}
                         </span>
                     )}
@@ -715,8 +674,7 @@ const UserListItem: React.FC<{
                         style={{
                             display: 'flex',
                             gap: '6px',
-                            flexShrink: 0,
-                        }}
+                            flexShrink: 0 }}
                     >
                         <QuickActionButton
                             icon={<EmailIcon />}

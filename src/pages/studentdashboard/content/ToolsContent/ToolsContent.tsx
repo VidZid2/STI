@@ -14,14 +14,12 @@ import {
     convertDocxToPdfILovePDF,
     convertImagesToPdfILovePDF,
     mergePdfsILovePDF,
-    isILovePDFConfigured,
-} from '../../../../lib/converters/ilovepdfService';
+    isILovePDFConfigured } from '../../../../lib/converters/ilovepdfService';
 // Adobe PDF Services API - For PDF to Word (best quality!)
 // 5 accounts × 500 files = 2,500/month
 import {
     convertPdfToDocxAdobe,
-    isAdobeConfigured,
-} from '../../../../lib/converters/adobePdfService';
+    isAdobeConfigured } from '../../../../lib/converters/adobePdfService';
 // LanguageTool Grammar Checker - Free, no API key required!
 import LanguageToolGrammarChecker from '../../../../components/tools/LanguageToolGrammarChecker';
 // Word Counter - Offline text analysis
@@ -214,7 +212,7 @@ const ToolsContent: React.FC = () => {
                 if (text.match(/\b(their|there|they're)\b/i)) issues.push("Check usage of 'their/there/they're'");
                 if (text.match(/\b(its|it's)\b/i)) issues.push("Check usage of 'its/it's'");
                 if (text.match(/\b(your|you're)\b/i)) issues.push("Check usage of 'your/you're'");
-                if (text.match(/\s{2,}/)) issues.push("Multiple spaces detected");
+                if (text.match(/\s{2 }/)) issues.push("Multiple spaces detected");
                 if (!text.match(/^[A-Z]/)) issues.push("Sentence should start with a capital letter");
 
                 setAnalysisResult({
@@ -290,8 +288,7 @@ const ToolsContent: React.FC = () => {
                         originalSize: formatFileSize(result.originalSize),
                         compressedSize: formatFileSize(result.compressedSize),
                         savings: formatFileSize(result.savings),
-                        savingsPercent: result.savingsPercent,
-                    }
+                        savingsPercent: result.savingsPercent }
                 });
 
                 // Also download the compressed file
@@ -353,8 +350,7 @@ const ToolsContent: React.FC = () => {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-            ),
-        },
+            ) },
         {
             id: 'merge-pdf',
             name: 'Merge PDFs',
@@ -366,8 +362,7 @@ const ToolsContent: React.FC = () => {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                 </svg>
-            ),
-        },
+            ) },
         {
             id: 'word-pdf',
             name: 'Word to PDF',
@@ -379,8 +374,7 @@ const ToolsContent: React.FC = () => {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-            ),
-        },
+            ) },
         {
             id: 'compress-pdf',
             name: 'Compress PDF',
@@ -392,8 +386,7 @@ const ToolsContent: React.FC = () => {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
-            ),
-        },
+            ) },
     ];
 
     const newTools: Tool[] = [
@@ -409,8 +402,7 @@ const ToolsContent: React.FC = () => {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
-            ),
-        },
+            ) },
         {
             id: 'pdf-word',
             name: 'PDF to Word',
@@ -423,8 +415,7 @@ const ToolsContent: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 11v6m0 0l-3-3m3 3l3-3" />
                 </svg>
-            ),
-        },
+            ) },
         {
             id: 'grammar-check',
             name: 'Grammar Checker',
@@ -437,8 +428,7 @@ const ToolsContent: React.FC = () => {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-            ),
-        },
+            ) },
         {
             id: 'citation-generator',
             name: 'Citation Generator',
@@ -452,8 +442,7 @@ const ToolsContent: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                 </svg>
-            ),
-        },
+            ) },
         {
             id: 'text-summarizer',
             name: 'Text Summarizer',
@@ -470,8 +459,7 @@ const ToolsContent: React.FC = () => {
                     <line strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} x1="16" y1="17" x2="8" y2="17" />
                     <polyline strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} points="10 9 9 9 8 9" />
                 </svg>
-            ),
-        },
+            ) },
         {
             id: 'reference-manager',
             name: 'Reference Manager',
@@ -484,8 +472,7 @@ const ToolsContent: React.FC = () => {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                 </svg>
-            ),
-        },
+            ) },
         {
             id: 'paraphraser',
             name: 'Paraphraser',
@@ -498,8 +485,7 @@ const ToolsContent: React.FC = () => {
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                 </svg>
-            ),
-        },
+            ) },
         // HIDDEN: Plagiarism Checker - Reserved for Teacher Dashboard
         // Uncomment when building teacher side
         // {
@@ -540,8 +526,7 @@ const ToolsContent: React.FC = () => {
                     marginBottom: '2rem',
                     display: 'flex',
                     gap: '1rem',
-                    alignItems: 'stretch',
-                }}
+                    alignItems: 'stretch' }}
             >
                 {/* Main Hero Card - Slide in from left */}
                 <motion.div
@@ -552,12 +537,10 @@ const ToolsContent: React.FC = () => {
                         type: 'spring',
                         stiffness: 300,
                         damping: 25,
-                        delay: 0.1,
-                    }}
+                        delay: 0.1 }}
                     whileHover={{
                         borderColor: '#93c5fd',
-                        boxShadow: '0 20px 40px rgba(59, 130, 246, 0.1)',
-                    }}
+                        boxShadow: '0 20px 40px rgba(59, 130, 246, 0.1)' }}
                     style={{
                         flex: 1,
                         background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
@@ -565,8 +548,7 @@ const ToolsContent: React.FC = () => {
                         borderRadius: '20px',
                         padding: '2rem 2.5rem',
                         position: 'relative',
-                        overflow: 'hidden',
-                    }}
+                        overflow: 'hidden' }}
                 >
                     {/* Decorative Background Elements */}
                     <div style={{
@@ -577,8 +559,7 @@ const ToolsContent: React.FC = () => {
                         height: '200px',
                         background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%)',
                         borderRadius: '50%',
-                        pointerEvents: 'none',
-                    }} />
+                        pointerEvents: 'none' }} />
                     <div style={{
                         position: 'absolute',
                         bottom: '-30px',
@@ -587,8 +568,7 @@ const ToolsContent: React.FC = () => {
                         height: '120px',
                         background: 'radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 70%)',
                         borderRadius: '50%',
-                        pointerEvents: 'none',
-                    }} />
+                        pointerEvents: 'none' }} />
 
                     <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                         {/* Icon Container */}
@@ -605,8 +585,7 @@ const ToolsContent: React.FC = () => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 boxShadow: '0 8px 24px rgba(59, 130, 246, 0.25)',
-                                flexShrink: 0,
-                            }}
+                                flexShrink: 0 }}
                         >
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
@@ -624,8 +603,7 @@ const ToolsContent: React.FC = () => {
                                     color: '#64748b',
                                     fontWeight: 500,
                                     margin: 0,
-                                    marginBottom: '0.25rem',
-                                }}
+                                    marginBottom: '0.25rem' }}
                             >
                                 Document Utilities
                             </motion.p>
@@ -639,8 +617,7 @@ const ToolsContent: React.FC = () => {
                                     color: '#0f172a',
                                     margin: 0,
                                     letterSpacing: '-0.03em',
-                                    lineHeight: 1.1,
-                                }}
+                                    lineHeight: 1.1 }}
                             >
                                 Student <span style={{ color: '#3b82f6' }}>Tools</span>
                             </motion.h1>
@@ -652,8 +629,7 @@ const ToolsContent: React.FC = () => {
                                     fontSize: '0.9rem',
                                     color: '#64748b',
                                     margin: 0,
-                                    marginTop: '0.5rem',
-                                }}
+                                    marginTop: '0.5rem' }}
                             >
                                 Convert, merge, and analyze your documents with ease
                             </motion.p>
@@ -667,8 +643,7 @@ const ToolsContent: React.FC = () => {
                                     display: 'flex',
                                     gap: '0.5rem',
                                     marginTop: '1rem',
-                                    flexWrap: 'wrap',
-                                }}
+                                    flexWrap: 'wrap' }}
                             >
                                 {[
                                     { icon: '🔒', label: 'Privacy First', desc: 'Files stay local' },
@@ -689,8 +664,7 @@ const ToolsContent: React.FC = () => {
                                             background: '#f8fafc',
                                             border: '1px solid #e2e8f0',
                                             borderRadius: '10px',
-                                            cursor: 'default',
-                                        }}
+                                            cursor: 'default' }}
                                     >
                                         <span style={{ fontSize: '1rem' }}>{feature.icon}</span>
                                         <div>
@@ -712,12 +686,10 @@ const ToolsContent: React.FC = () => {
                         type: 'spring',
                         stiffness: 300,
                         damping: 25,
-                        delay: 0.2,
-                    }}
+                        delay: 0.2 }}
                     whileHover={{
                         scale: 1.02,
-                        boxShadow: '0 25px 50px rgba(30, 64, 175, 0.3)',
-                    }}
+                        boxShadow: '0 25px 50px rgba(30, 64, 175, 0.3)' }}
                     style={{
                         width: '280px',
                         background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
@@ -728,8 +700,7 @@ const ToolsContent: React.FC = () => {
                         justifyContent: 'space-between',
                         position: 'relative',
                         overflow: 'hidden',
-                        flexShrink: 0,
-                    }}
+                        flexShrink: 0 }}
                 >
                     {/* Decorative circles */}
                     <div style={{
@@ -739,8 +710,7 @@ const ToolsContent: React.FC = () => {
                         width: '100px',
                         height: '100px',
                         background: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '50%',
-                    }} />
+                        borderRadius: '50%' }} />
                     <div style={{
                         position: 'absolute',
                         bottom: '-30px',
@@ -748,8 +718,7 @@ const ToolsContent: React.FC = () => {
                         width: '80px',
                         height: '80px',
                         background: 'rgba(255, 255, 255, 0.05)',
-                        borderRadius: '50%',
-                    }} />
+                        borderRadius: '50%' }} />
 
                     <div style={{ position: 'relative', zIndex: 1 }}>
                         <motion.div
@@ -830,8 +799,7 @@ const ToolsContent: React.FC = () => {
                             background: 'rgba(255, 255, 255, 0.15)',
                             borderRadius: '10px',
                             marginTop: '1rem',
-                            backdropFilter: 'blur(10px)',
-                        }}
+                            backdropFilter: 'blur(10px)' }}
                     >
                         <motion.div
                             animate={{
@@ -847,8 +815,7 @@ const ToolsContent: React.FC = () => {
                                 width: '8px',
                                 height: '8px',
                                 borderRadius: '50%',
-                                background: '#22c55e',
-                            }}
+                                background: '#22c55e' }}
                         />
                         <span style={{ fontSize: '0.75rem', color: 'white', fontWeight: 500 }}>Available 24/7</span>
                     </motion.div>
@@ -889,8 +856,7 @@ const ToolsContent: React.FC = () => {
                                 type: 'spring',
                                 stiffness: 350,
                                 damping: 25,
-                                delay: idx * 0.04,
-                            }}
+                                delay: idx * 0.04 }}
                             style={{ height: '100%' }} // Ensure wrapper takes full height
                         >
                             <ToolItem
@@ -920,8 +886,7 @@ const ToolsContent: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '0.75rem',
-                }}
+                    gap: '0.75rem' }}
             >
                 <span style={{ fontSize: '1.25rem' }}>💡</span>
                 <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0, fontWeight: 500 }}>

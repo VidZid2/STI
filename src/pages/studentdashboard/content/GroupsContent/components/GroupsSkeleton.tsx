@@ -8,12 +8,11 @@ import { motion } from 'motion/react';
 
 // Skeleton Loading Component
 const GroupsSkeleton: React.FC<{ }> = ({ }) => {
-    const colors = {
+    const = {
         cardBg: 'var(--text-muted)',
         border: 'var(--bg-hover)',
         skeleton: 'var(--bg-hover)',
-        shimmer: 'var(--shimmer-bg)',
-    };
+        shimmer: 'var(--shimmer-bg)' };
 
     const SkeletonBox: React.FC<{ width?: string; height?: string; borderRadius?: string; style?: React.CSSProperties }> = ({ 
         width = '100%', height = '16px', borderRadius = '6px', style 
@@ -24,11 +23,10 @@ const GroupsSkeleton: React.FC<{ }> = ({ }) => {
             transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
             style={{
                 width, height, borderRadius,
-                background: colors.skeleton,
+                background: .skeleton,
                 backgroundImage: 'var(--shimmer-bg)',
                 backgroundSize: '200% 100%',
-                ...style,
-            }}
+                ...style }}
         />
     );
 
@@ -38,8 +36,7 @@ const GroupsSkeleton: React.FC<{ }> = ({ }) => {
             <div style={{ marginBottom: '28px' }}>
                 <div style={{
                     display: 'flex', alignItems: 'center', gap: '16px', padding: '18px 22px',
-                    borderRadius: '14px', background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`,
-                }}>
+                    borderRadius: '14px', background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)` }}>
                     <SkeletonBox width="46px" height="46px" borderRadius="12px" />
                     <div style={{ flex: 1 }}>
                         <SkeletonBox width="140px" height="24px" style={{ marginBottom: '8px' }} />
@@ -58,8 +55,7 @@ const GroupsSkeleton: React.FC<{ }> = ({ }) => {
                         transition={{ delay: i * 0.05 }}
                         style={{
                             background: 'var(--dashboard-surface)', borderRadius: '16px',
-                            border: `1px solid var(--border-color)`, padding: '16px',
-                        }}
+                            border: `1px solid var(--border-color)`, padding: '16px' }}
                     >
                         <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
                             <SkeletonBox width="44px" height="44px" borderRadius="12px" />

@@ -22,15 +22,14 @@ const CourseDetailModal: React.FC<{
     const blueBg = 'rgba(59, 130, 246, 0.1)';
     const blueBorder = 'rgba(59, 130, 246, 0.1)';
     
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardbg: 'var(--bg-primary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
         textMuted: 'var(--text-muted)',
-        accent: blueAccent,
-    };
+        accent: blueAccent };
 
     // Escape key, focus trap, body scroll lock handled by useModalAccessibility hook
 
@@ -82,8 +81,7 @@ const CourseDetailModal: React.FC<{
                                     style={{ 
                                         width: '100%', 
                                         height: '100%', 
-                                        objectFit: 'cover',
-                                    }} 
+                                        objectFit: 'cover' }} 
                                 />
                                 <div style={{ 
                                     position: 'absolute', 
@@ -111,8 +109,7 @@ const CourseDetailModal: React.FC<{
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: '#64748b',
-                                    }}
+                                        color: '#64748b' }}
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                                         <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -137,8 +134,7 @@ const CourseDetailModal: React.FC<{
                                         backdropFilter: 'blur(8px)',
                                         fontSize: '11px',
                                         fontWeight: 600,
-                                        color: blueAccent,
-                                    }}
+                                        color: blueAccent }}
                                 >
                                     <CategoryIcon category={course.category} size={12} />
                                     {categoryInfo[course.category].label}
@@ -163,8 +159,7 @@ const CourseDetailModal: React.FC<{
                                             backdropFilter: 'blur(8px)',
                                             fontSize: '11px',
                                             fontWeight: 600,
-                                            color: blueAccent,
-                                        }}
+                                            color: blueAccent }}
                                     >
                                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                             <polyline points="20 6 9 17 4 12" />
@@ -208,8 +203,7 @@ const CourseDetailModal: React.FC<{
                                                 borderRadius: '12px',
                                                 background: blueBg,
                                                 border: `1px solid ${blueBorder}`,
-                                                textAlign: 'center',
-                                            }}
+                                                textAlign: 'center' }}
                                         >
                                             <div style={{ marginBottom: '4px', display: 'flex', justifyContent: 'center' }}>{stat.icon}</div>
                                             <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>{stat.value}</div>
@@ -230,8 +224,7 @@ const CourseDetailModal: React.FC<{
                                         padding: '12px 14px',
                                         borderRadius: '12px',
                                         background: 'var(--bg-hover)',
-                                        marginBottom: '20px',
-                                    }}
+                                        marginBottom: '20px' }}
                                 >
                                     <div style={{ 
                                         width: '40px', 
@@ -243,8 +236,7 @@ const CourseDetailModal: React.FC<{
                                         justifyContent: 'center',
                                         color: 'white',
                                         fontSize: '14px',
-                                        fontWeight: 600,
-                                    }}>
+                                        fontWeight: 600 }}>
                                         {course.instructor.charAt(0).toUpperCase()}
                                     </div>
                                     <div style={{ flex: 1 }}>
@@ -287,8 +279,7 @@ const CourseDetailModal: React.FC<{
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     flexShrink: 0,
-                                                    marginTop: '1px',
-                                                }}>
+                                                    marginTop: '1px' }}>
                                                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="3">
                                                         <polyline points="20 6 9 17 4 12" />
                                                     </svg>
@@ -319,8 +310,7 @@ const CourseDetailModal: React.FC<{
                                                         border: `1px solid ${blueBorder}`,
                                                         fontSize: '11px', 
                                                         fontWeight: 500,
-                                                        color: blueAccent,
-                                                    }}
+                                                        color: blueAccent }}
                                                 >
                                                     {tag}
                                                 </motion.span>
@@ -350,8 +340,7 @@ const CourseDetailModal: React.FC<{
                                         alignItems: 'center', 
                                         justifyContent: 'center', 
                                         gap: '8px',
-                                        boxShadow: `0 4px 12px ${blueAccent}30`,
-                                    }}
+                                        boxShadow: `0 4px 12px ${blueAccent}30` }}
                                 >
                                     {course.enrolled ? (
                                         <>

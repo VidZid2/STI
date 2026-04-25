@@ -14,8 +14,7 @@ const UserAvatar = React.memo<UserAvatarProps>(({
     user,
     size = 44,
     showOnlineStatus = true,
-    reducedMotion = false,
-}) => {
+    reducedMotion = false }) => {
     const initials = `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase();
     const roleInfo = getRoleInfo(user.role);
 
@@ -34,8 +33,7 @@ const UserAvatar = React.memo<UserAvatarProps>(({
                     fontSize: size * 0.35,
                     fontWeight: 600,
                     color: roleInfo.color,
-                    cursor: 'pointer',
-                }}
+                    cursor: 'pointer' }}
             >
                 {user.profile_image ? (
                     <img
@@ -59,8 +57,7 @@ const UserAvatar = React.memo<UserAvatarProps>(({
                         borderRadius: '50%',
                         background: user.is_online ? '#10b981' : '#94a3b8',
                         border: '2px solid white',
-                        boxShadow: user.is_online ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
-                    }}
+                        boxShadow: user.is_online ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none' }}
                     role="status"
                     aria-label={user.is_online ? 'Online' : 'Offline'}
                     title={user.is_online ? 'Online' : 'Offline'}

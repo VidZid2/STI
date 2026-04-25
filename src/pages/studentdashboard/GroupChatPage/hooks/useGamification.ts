@@ -30,8 +30,7 @@ export interface UseGamificationReturn {
 export function useGamification({
     groupInfo,
     messages,
-    profileId,
-}: UseGamificationOptions): UseGamificationReturn {
+    profileId }: UseGamificationOptions): UseGamificationReturn {
     const [userXP, setUserXP] = useState(245);
     const [userStreak] = useState(5);
     const [xpNotification, setXpNotification] = useState<{ amount: number; reason: string } | null>(null);
@@ -69,8 +68,7 @@ export function useGamification({
                 level,
                 badges,
                 messagesCount: msgCount,
-                helpfulCount: Math.floor(msgCount / 4),
-            };
+                helpfulCount: Math.floor(msgCount / 4) };
         }).sort((a, b) => b.xp - a.xp);
     }, [groupInfo?.members, messages, profileId]);
 
@@ -82,6 +80,5 @@ export function useGamification({
         showLeaderboard,
         setShowLeaderboard,
         memberStats,
-        awardXP,
-    };
+        awardXP };
 }

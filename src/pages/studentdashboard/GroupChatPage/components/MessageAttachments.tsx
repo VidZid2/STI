@@ -14,18 +14,15 @@ interface MessageAttachmentsProps {
     content: string;
     attachments?: FileAttachment[];
     isOwn: boolean;
-    isDarkMode: boolean;
-    colors: ChatColors;
+    
+    
 }
 
 export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({
     messageId,
     content,
     attachments,
-    isOwn,
-    isDarkMode,
-    colors,
-}) => {
+    isOwn }) => {
     const urls = extractUrls(content);
 
     return (
@@ -38,8 +35,8 @@ export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({
                             key={`${messageId}-link-${idx}`}
                             url={url}
                             isOwn={isOwn}
-                            isDarkMode={isDarkMode}
-                            colors={colors}
+                            
+                            
                         />
                     ))}
                 </div>
@@ -51,15 +48,14 @@ export const MessageAttachments: React.FC<MessageAttachmentsProps> = ({
                     display: 'flex',
                     flexWrap: 'wrap',
                     gap: '6px',
-                    marginTop: '4px',
-                }}>
+                    marginTop: '4px' }}>
                     {attachments.map((attachment) => (
                         <FilePreviewCard
                             key={attachment.id}
                             attachment={attachment}
                             isOwn={isOwn}
-                            isDarkMode={isDarkMode}
-                            colors={colors}
+                            
+                            
                         />
                     ))}
                 </div>

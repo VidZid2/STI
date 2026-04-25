@@ -30,8 +30,7 @@ export const XPNotification: React.FC<XPNotificationProps> = ({ amount, reason, 
                 display: 'flex',
                 justifyContent: 'center',
                 pointerEvents: 'none',
-                zIndex: 1000,
-            }}
+                zIndex: 1000 }}
         >
             <div
                 style={{
@@ -43,8 +42,7 @@ export const XPNotification: React.FC<XPNotificationProps> = ({ amount, reason, 
                     gap: '8px',
                     border: '1px solid rgba(59, 130, 246, 0.12)',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-                    pointerEvents: 'auto',
-                }}
+                    pointerEvents: 'auto' }}
             >
                 {/* Small Star Icon */}
                 <svg
@@ -64,8 +62,7 @@ export const XPNotification: React.FC<XPNotificationProps> = ({ amount, reason, 
                 <span style={{
                     fontSize: '13px',
                     fontWeight: 600,
-                    color: '#3b82f6',
-                }}>
+                    color: '#3b82f6' }}>
                     +{amount} XP
                 </span>
 
@@ -73,15 +70,13 @@ export const XPNotification: React.FC<XPNotificationProps> = ({ amount, reason, 
                 <span style={{
                     width: '1px',
                     height: '12px',
-                    background: 'rgba(148, 163, 184, 0.3)',
-                }} />
+                    background: 'rgba(148, 163, 184, 0.3)' }} />
 
                 {/* Reason */}
                 <span style={{
                     fontSize: '12px',
                     fontWeight: 500,
-                    color: '#64748b',
-                }}>
+                    color: '#64748b' }}>
                     {reason}
                 </span>
             </div>

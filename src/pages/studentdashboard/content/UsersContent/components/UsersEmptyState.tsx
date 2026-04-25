@@ -7,7 +7,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 
 // Empty State Component
-const EmptyState: React.FC<{ searchQuery: string; colors: { textPrimary: string; textSecondary: string } }> = ({ searchQuery, colors }) => {
+const EmptyState: React.FC<{ searchQuery: string;  textSecondary: string } }> = ({ searchQuery }) => {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -19,8 +19,7 @@ const EmptyState: React.FC<{ searchQuery: string; colors: { textPrimary: string;
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '60px 20px',
-                textAlign: 'center',
-            }}
+                textAlign: 'center' }}
         >
             <motion.div
                 initial={{ scale: 0, rotate: -180 }}
@@ -34,8 +33,7 @@ const EmptyState: React.FC<{ searchQuery: string; colors: { textPrimary: string;
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginBottom: '20px',
-                }}
+                    marginBottom: '20px' }}
             >
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -49,16 +47,14 @@ const EmptyState: React.FC<{ searchQuery: string; colors: { textPrimary: string;
                 fontSize: '16px',
                 fontWeight: 600,
                 color: 'var(--text-primary)',
-                marginBottom: '8px',
-            }}>
+                marginBottom: '8px' }}>
                 {searchQuery ? 'No users found' : 'No users yet'}
             </h3>
             <p style={{
                 margin: 0,
                 fontSize: '13px',
                 color: 'var(--text-secondary)',
-                maxWidth: '300px',
-            }}>
+                maxWidth: '300px' }}>
                 {searchQuery 
                     ? `No users match "${searchQuery}". Try a different search term.`
                     : 'Users will appear here once they are added to the system.'

@@ -66,8 +66,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                         position: 'fixed', inset: 0, zIndex: 99999,
                         background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(8px)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        padding: '24px',
-                    }}
+                        padding: '24px' }}
                 >
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 30 }}
@@ -84,8 +83,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                             borderRadius: '20px',
                             boxShadow: '0 25px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.05)',
                             overflow: 'hidden',
-                            display: 'flex', flexDirection: 'column' as const,
-                        }}
+                            display: 'flex', flexDirection: 'column' as const }}
                     >
                         {/* Success State */}
                         {submitSuccess ? (
@@ -103,21 +101,19 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                         background: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)',
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         margin: '0 auto 24px',
-                                        boxShadow: isDark ? 'inset 0 0 20px rgba(16, 185, 129, 0.05)' : 'inset 0 0 20px rgba(16, 185, 129, 0.1)',
-                                    }}
+                                        boxShadow: isDark ? 'inset 0 0 20px rgba(16, 185, 129, 0.05)' : 'inset 0 0 20px rgba(16, 185, 129, 0.1)' }}
                                 >
                                     {/* @ts-ignore */}
                                     <lord-icon
                                         src="https://cdn.lordicon.com/uvofdfal.json"
                                         trigger="hover"
-                                        colors="primary:#10b981,secondary:#059669"
+                                        ="primary:#10b981,secondary:#059669"
                                         style={{ width: '64px', height: '64px' }}
                                     ></lord-icon>
                                 </motion.div>
                                 <h3 style={{
                                     fontSize: '22px', fontWeight: 800, marginBottom: '10px',
-                                    color: isDark ? '#f1f5f9' : '#0f172a',
-                                }}>Submission Successful!</h3>
+                                    color: isDark ? '#f1f5f9' : '#0f172a' }}>Submission Successful!</h3>
                                 <p style={{
                                     fontSize: '14px', marginBottom: '36px', lineHeight: 1.6,
                                     color: isDark ? '#94a3b8' : '#64748b',
@@ -136,8 +132,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                         background: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.08)',
                                         color: '#10b981',
                                         border: `1px solid ${isDark ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.2)'}`,
-                                        borderRadius: '10px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
-                                    }}
+                                        borderRadius: '10px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}
                                 >
                                     Done
                                 </motion.button>
@@ -147,15 +142,13 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                 {/* Header */}
                                 <div style={{
                                     padding: '24px 28px 0',
-                                    display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-                                }}>
+                                    display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1 }}>
                                         <div style={{
                                             width: '48px', height: '48px', borderRadius: '14px',
                                             background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)', flexShrink: 0,
-                                        }}>
+                                            boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)', flexShrink: 0 }}>
                                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M22 2L11 13" />
                                                 <path d="M22 2l-7 20-4-9-9-4 20-7z" />
@@ -164,12 +157,10 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                         <div>
                                             <h2 id="submit-modal-title" style={{
                                                 fontSize: '17px', fontWeight: 700, margin: 0, lineHeight: 1.3,
-                                                color: isDark ? '#f1f5f9' : '#0f172a',
-                                            }}>Submit Assignment</h2>
+                                                color: isDark ? '#f1f5f9' : '#0f172a' }}>Submit Assignment</h2>
                                             <p style={{
                                                 fontSize: '12px', margin: 0, marginTop: '2px',
-                                                color: isDark ? '#94a3b8' : '#64748b',
-                                            }}>{task.title}</p>
+                                                color: isDark ? '#94a3b8' : '#64748b' }}>{task.title}</p>
                                         </div>
                                     </div>
                                     <motion.button
@@ -181,8 +172,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                             border: 'none', background: 'transparent',
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                             cursor: 'pointer', flexShrink: 0,
-                                            color: isDark ? '#94a3b8' : '#94a3b8',
-                                        }}
+                                            color: isDark ? '#94a3b8' : '#94a3b8' }}
                                     >
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -197,8 +187,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                         display: 'inline-flex', alignItems: 'center', gap: '5px',
                                         padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
                                         background: isDark ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
-                                        color: '#3b82f6',
-                                    }}>
+                                        color: '#3b82f6' }}>
                                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                             <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
                                         </svg>
@@ -208,8 +197,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                         display: 'inline-flex', alignItems: 'center', gap: '5px',
                                         padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
                                         background: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.08)',
-                                        color: '#10b981',
-                                    }}>
+                                        color: '#10b981' }}>
                                         {task.points || 100} pts
                                     </span>
                                     {(task.maxAttempts || 1) > 1 && (
@@ -217,8 +205,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                             display: 'inline-flex', alignItems: 'center', gap: '5px',
                                             padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
                                             background: isDark ? 'rgba(0, 61, 165, 0.15)' : 'rgba(0, 61, 165, 0.08)',
-                                            color: '#003DA5',
-                                        }}>
+                                            color: '#003DA5' }}>
                                             {(task.maxAttempts || 1) - (task.submissionCount || 0)} attempt{(task.maxAttempts || 1) - (task.submissionCount || 0) !== 1 ? 's' : ''} left
                                         </span>
                                     )}
@@ -227,16 +214,14 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                 {/* Divider */}
                                 <div style={{
                                     height: '1px', margin: '0 28px',
-                                    background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                                }} />
+                                    background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }} />
 
                                 {/* Submission Content */}
                                 <div style={{ padding: '20px 28px', flex: 1 }}>
                                     <label style={{
                                         display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '8px',
                                         color: isDark ? '#94a3b8' : '#64748b',
-                                        textTransform: 'uppercase' as const, letterSpacing: '0.5px',
-                                    }}>
+                                        textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>
                                         Your Answer / Comments
                                     </label>
                                     <textarea
@@ -251,8 +236,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                             color: isDark ? '#e2e8f0' : '#1e293b',
                                             fontSize: '14px', lineHeight: 1.6, resize: 'vertical' as const,
                                             outline: 'none', fontFamily: 'inherit',
-                                            transition: 'border-color 0.2s, box-shadow 0.2s',
-                                        }}
+                                            transition: 'border-color 0.2s, box-shadow 0.2s' }}
                                         onFocus={(e) => {
                                             e.currentTarget.style.borderColor = '#3b82f6';
                                             e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
@@ -268,8 +252,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                         <label style={{
                                             display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '8px',
                                             color: isDark ? '#94a3b8' : '#64748b',
-                                            textTransform: 'uppercase' as const, letterSpacing: '0.5px',
-                                        }}>
+                                            textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>
                                             Attachments
                                         </label>
                                         <FileUpload
@@ -283,8 +266,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                 <div style={{
                                     padding: '16px 28px 24px',
                                     display: 'flex', gap: '10px', justifyContent: 'flex-end',
-                                    borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'}`,
-                                }}>
+                                    borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'}` }}>
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
@@ -296,8 +278,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                             background: isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc',
                                             color: isDark ? '#94a3b8' : '#64748b',
                                             cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                                            opacity: isSubmitting ? 0.5 : 1,
-                                        }}
+                                            opacity: isSubmitting ? 0.5 : 1 }}
                                     >
                                         Cancel
                                     </motion.button>
@@ -339,8 +320,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                             cursor: isSubmitting || (!submissionText.trim() && submissionFiles.length === 0) ? 'not-allowed' : 'pointer',
                                             display: 'flex', alignItems: 'center', gap: '8px',
                                             boxShadow: isSubmitting || (!submissionText.trim() && submissionFiles.length === 0)
-                                                ? 'none' : '0 4px 14px rgba(59, 130, 246, 0.25)',
-                                        }}
+                                                ? 'none' : '0 4px 14px rgba(59, 130, 246, 0.25)' }}
                                     >
                                         {isSubmitting ? (
                                             <>

@@ -163,14 +163,12 @@ export const COURSE_DATA: Record<string, CourseDataType> = {
         ],
         tasks: [],
         instructor: { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' }
-    },
-};
+    } };
 
 const DEFAULT_FALLBACK: CourseDataType = {
     modules: COURSE_DATA['cp1'].modules,
     tasks: [],
-    instructor: { name: 'Instructor', title: 'Instructor', email: 'instructor@university.edu' },
-};
+    instructor: { name: 'Instructor', title: 'Instructor', email: 'instructor@university.edu' } };
 
 /** Returns course data. Supabase data takes priority; this is the explicit fallback. */
 export const getDemoCourseData = (courseId: string): CourseDataType => {

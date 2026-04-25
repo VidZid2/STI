@@ -15,16 +15,16 @@ interface LeaderboardModalProps {
     onClose: () => void;
     members: MemberStats[];
     currentUserId: string;
-    colors: ModalColors;
+    
 }
 
-export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose, members, currentUserId, colors }) => {
+export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose, members, currentUserId }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'leaderboard-modal-title');
     const [hoveredMember, setHoveredMember] = useState<string | null>(null);
     
     if (!isOpen) return null;
 
-    const isDarkMode = 'var(--dashboard-surface)' !== '#ffffff';
+    const = 'var(--dashboard-surface)' !== '#ffffff';
     const sortedMembers = [...members].sort((a, b) => b.xp - a.xp);
     
     const getRankStyle = (index: number) => {
@@ -44,8 +44,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
             style={{
                 position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
                 backdropFilter: 'blur(8px)', zIndex: 1001,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
-            }}
+                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
         >
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -63,15 +62,13 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                     maxHeight: '75vh',
                     boxShadow: 'var(--shadow-xl)',
                     border: `1.5px solid #3b82f6`,
-                    overflow: 'hidden',
-                }}
+                    overflow: 'hidden' }}
             >
                 {/* Header */}
                 <div style={{ 
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '14px 18px',
-                    borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}`,
-                }}>
+                    borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}` }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <motion.div 
                             whileHover={{ scale: 1.05 }}
@@ -79,8 +76,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                 width: 34, height: 34, borderRadius: '10px',
                                 border: '1.5px solid #3b82f6',
                                 background: 'var(--bg-primary)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            }}
+                                display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                 <path d="M15 21H9V12.6C9 12.2686 9.26863 12 9.6 12H14.4C14.7314 12 15 12.2686 15 12.6V21Z" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -107,8 +103,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                             border: '1.5px solid #3b82f6',
                             background: 'var(--bg-primary)',
                             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: '#3b82f6',
-                        }}
+                            color: '#3b82f6' }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -142,8 +137,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                     border: isCurrentUser 
                                         ? `1px solid ${'rgba(59, 130, 246, 0.2)'}`
                                         : '1px solid transparent',
-                                    cursor: 'pointer',
-                                }}
+                                    cursor: 'pointer' }}
                             >
                                 <motion.div 
                                     whileHover={{ scale: 1.1 }}
@@ -152,8 +146,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                         background: index < 3 ? rankStyle.bg : 'rgba(255,255,255,0.04)',
                                         border: `1px solid ${index < 3 ? rankStyle.border : 'transparent'}`,
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: index < 3 ? '12px' : '10px', fontWeight: 600, color: rankStyle.color, flexShrink: 0,
-                                    }}
+                                        fontSize: index < 3 ? '12px' : '10px', fontWeight: 600, color: rankStyle.color, flexShrink: 0 }}
                                 >
                                     {index < 3 ? rankStyle.icon : index + 1}
                                 </motion.div>
@@ -165,8 +158,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                         background: 'rgba(59, 130, 246, 0.1)',
                                         border: `1px solid ${'rgba(59, 130, 246, 0.2)'}`,
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '13px', fontWeight: 600, color: '#3b82f6', flexShrink: 0,
-                                    }}
+                                        fontSize: '13px', fontWeight: 600, color: '#3b82f6', flexShrink: 0 }}
                                 >
                                     {member.odName.charAt(0).toUpperCase()}
                                 </motion.div>
@@ -175,16 +167,14 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         <span style={{ 
                                             fontSize: '12.5px', fontWeight: 500, color: 'var(--text-primary)',
-                                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                        }}>
+                                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                             {member.odName}
                                         </span>
                                         {isCurrentUser && (
                                             <span style={{
                                                 fontSize: '8px', fontWeight: 600, color: '#3b82f6',
                                                 background: 'rgba(59, 130, 246, 0.1)',
-                                                padding: '2px 5px', borderRadius: '4px', textTransform: 'uppercase',
-                                            }}>
+                                                padding: '2px 5px', borderRadius: '4px', textTransform: 'uppercase' }}>
                                                 You
                                             </span>
                                         )}
@@ -227,8 +217,7 @@ export const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onCl
                                 border: '1.5px solid #3b82f6',
                                 background: 'var(--bg-primary)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                margin: '0 auto 12px',
-                            }}>
+                                margin: '0 auto 12px' }}>
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5">
                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                     <circle cx="9" cy="7" r="4" />

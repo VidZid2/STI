@@ -12,8 +12,7 @@ import {
     groupCategoryConfig,
     getRoleInfo,
     formatLastActive,
-    type GroupWithMembers,
-} from '../../../../../services/groupsService';
+    type GroupWithMembers } from '../../../../../services/groupsService';
 import GroupIcon from '../components/GroupIcon';
 
 interface GroupDetailModalProps {
@@ -30,14 +29,13 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
 }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'group-detail-title');
 
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-secondary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
-        textMuted: 'var(--text-muted)',
-    };
+        textMuted: 'var(--text-muted)' };
 
     if (!group) return null;
 
@@ -52,16 +50,14 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                         transition={{ duration: 0.2 }} onClick={onClose}
                         style={{
                             position: 'fixed', inset: 0, background: 'rgba(0, 0, 0, 0.5)',
-                            backdropFilter: 'blur(4px)', zIndex: 9998,
-                        }}
+                            backdropFilter: 'blur(4px)', zIndex: 9998 }}
                     />
                     <div
                         ref={modalRef}
                         {...modalProps}
                         style={{
                             position: 'fixed', inset: 0, display: 'flex', alignItems: 'center',
-                            justifyContent: 'center', zIndex: 9999, pointerEvents: 'none', padding: '20px',
-                        }}>
+                            justifyContent: 'center', zIndex: 9999, pointerEvents: 'none', padding: '20px' }}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -71,8 +67,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                 width: '100%', maxWidth: '520px', maxHeight: '85vh',
                                 background: 'var(--bg-primary)', borderRadius: '20px',
                                 boxShadow: 'var(--shadow-lg)',
-                                overflow: 'hidden', display: 'flex', flexDirection: 'column', pointerEvents: 'auto',
-                            }}
+                                overflow: 'hidden', display: 'flex', flexDirection: 'column', pointerEvents: 'auto' }}
                         >
                             {/* Header */}
                             <div style={{
@@ -80,8 +75,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                 borderBottom: `1px solid var(--border-color)`,
                                 background: `linear-gradient(135deg, ${group.color}12 0%, ${group.color}06 50%, transparent 100%)`,
                                 borderTop: `3px solid ${group.color}`,
-                                borderRadius: '20px 20px 0 0',
-                            }}>
+                                borderRadius: '20px 20px 0 0' }}>
                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
                                     <motion.div
                                         initial={{ scale: 0, rotate: -180 }}
@@ -93,8 +87,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                             background: group.avatar ? 'transparent' : `linear-gradient(135deg, ${group.color}20 0%, ${group.color}10 100%)`,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                             flexShrink: 0, cursor: 'pointer', boxShadow: `0 4px 12px ${group.color}20`,
-                                            overflow: 'hidden',
-                                        }}
+                                            overflow: 'hidden' }}
                                     >
                                         {group.avatar ? (
                                             <img src={group.avatar} alt={group.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -111,8 +104,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                                 <div style={{
                                                     display: 'flex', alignItems: 'center', gap: '4px',
                                                     padding: '2px 6px', borderRadius: '4px',
-                                                    background: 'rgba(245, 158, 11, 0.15)',
-                                                }}>
+                                                    background: 'rgba(245, 158, 11, 0.15)' }}>
                                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="2">
                                                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                                                     </svg>
@@ -133,8 +125,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                             <span style={{
                                                 padding: '3px 8px', borderRadius: '6px',
                                                 background: `${categoryConfig.color}15`, fontSize: '11px',
-                                                fontWeight: 500, color: categoryConfig.color,
-                                            }}>
+                                                fontWeight: 500, color: categoryConfig.color }}>
                                                 {categoryConfig.label}
                                             </span>
                                             {group.course_name && (
@@ -142,8 +133,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                                     display: 'inline-flex', alignItems: 'center', gap: '5px',
                                                     padding: '3px 10px', borderRadius: '6px',
                                                     background: 'rgba(139, 92, 246, 0.1)',
-                                                    fontSize: '11px', fontWeight: 500, color: '#8b5cf6',
-                                                }}>
+                                                    fontSize: '11px', fontWeight: 500, color: '#8b5cf6' }}>
                                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -159,8 +149,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                             width: '36px', height: '36px', borderRadius: '10px', border: 'none',
                                             background: 'var(--bg-hover)',
                                             cursor: 'pointer', display: 'flex', alignItems: 'center',
-                                            justifyContent: 'center', color: 'var(--text-secondary)',
-                                        }}
+                                            justifyContent: 'center', color: 'var(--text-secondary)' }}
                                     >
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -173,8 +162,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
                                     style={{
                                         display: 'flex', gap: '12px', padding: '12px 16px', borderRadius: '12px',
-                                        background: 'var(--bg-hover)',
-                                    }}
+                                        background: 'var(--bg-hover)' }}
                                 >
                                     <div style={{ flex: 1, textAlign: 'center' }}>
                                         <div style={{ fontSize: '18px', fontWeight: 700, color: '#3b82f6' }}>{group.member_count}</div>
@@ -208,16 +196,14 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                             style={{
                                                 display: 'flex', alignItems: 'center', gap: '12px',
                                                 padding: '10px 12px', borderRadius: '10px',
-                                                background: 'var(--bg-hover)',
-                                            }}
+                                                background: 'var(--bg-hover)' }}
                                         >
                                             <div style={{ position: 'relative' }}>
                                                 <div style={{
                                                     width: 36, height: 36, borderRadius: '10px',
                                                     background: `linear-gradient(135deg, ${getRoleInfo(member.role).color}20 0%, ${getRoleInfo(member.role).color}10 100%)`,
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                    fontSize: '14px', fontWeight: 600, color: getRoleInfo(member.role).color,
-                                                }}>
+                                                    fontSize: '14px', fontWeight: 600, color: getRoleInfo(member.role).color }}>
                                                     {member.user_name.charAt(0).toUpperCase()}
                                                 </div>
                                                 {member.is_online && (
@@ -225,8 +211,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                                         position: 'absolute', bottom: -2, right: -2, width: 10, height: 10,
                                                         borderRadius: '50%', background: '#22c55e',
                                                         border: `2px solid ${'var(--bg-primary)'}`,
-                                                        boxShadow: '0 0 6px rgba(34, 197, 94, 0.5)',
-                                                    }} />
+                                                        boxShadow: '0 0 6px rgba(34, 197, 94, 0.5)' }} />
                                                 )}
                                             </div>
                                             <div style={{ flex: 1, minWidth: 0 }}>
@@ -240,8 +225,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                             <span style={{
                                                 padding: '3px 8px', borderRadius: '6px',
                                                 background: `${getRoleInfo(member.role).color}15`,
-                                                fontSize: '10px', fontWeight: 600, color: getRoleInfo(member.role).color,
-                                            }}>
+                                                fontSize: '10px', fontWeight: 600, color: getRoleInfo(member.role).color }}>
                                                 {getRoleInfo(member.role).label}
                                             </span>
                                         </motion.div>
@@ -252,8 +236,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                             {/* Footer Actions */}
                             <div style={{
                                 padding: '16px 24px', borderTop: `1px solid var(--border-color)`,
-                                display: 'flex', gap: '12px',
-                            }}>
+                                display: 'flex', gap: '12px' }}>
                                 {group.is_member ? (
                                     <>
                                         <motion.button
@@ -262,8 +245,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                             style={{
                                                 flex: 1, padding: '12px', borderRadius: '10px',
                                                 border: '1px solid rgba(239, 68, 68, 0.3)', background: 'rgba(239, 68, 68, 0.1)',
-                                                color: '#ef4444', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-                                            }}
+                                                color: '#ef4444', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
                                         >
                                             Leave Group
                                         </motion.button>
@@ -276,8 +258,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                                 background: 'rgba(59, 130, 246, 0.1)',
                                                 border: `1px solid ${'rgba(59, 130, 246, 0.1)'}`,
                                                 color: '#3b82f6', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                                            }}
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                                         >
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -295,8 +276,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                             background: 'rgba(16, 185, 129, 0.1)',
                                             border: `1px solid ${'rgba(16, 185, 129, 0.1)'}`,
                                             color: '#10b981', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                                        }}
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                                     >
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />

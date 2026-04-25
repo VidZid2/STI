@@ -17,13 +17,12 @@ interface ThreadModalProps {
     onClose: () => void;
     parentMessage: ChatMessage | null;
     allMessages: ChatMessage[];
-    colors: ModalColors;
-    currentUserId: string;
+    
     onSendReply: (content: string) => void;
 }
 
 export const ThreadModal: React.FC<ThreadModalProps> = ({ 
-    isOpen, onClose, parentMessage, allMessages, colors, currentUserId, onSendReply 
+    isOpen, onClose, parentMessage, allMessages,  currentUserId, onSendReply 
 }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'thread-modal-title');
     const [replyContent, setReplyContent] = useState('');
@@ -34,7 +33,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
     
     if (!isOpen || !parentMessage) return null;
     
-    const isDarkMode = 'var(--dashboard-surface)' !== '#ffffff';
+    const = 'var(--dashboard-surface)' !== '#ffffff';
     
     const replies: ThreadReply[] = useMemo(() => {
         if (!parentMessage) return [];
@@ -47,8 +46,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                 user_avatar: m.user_avatar,
                 content: m.content,
                 created_at: m.created_at,
-                reactions: m.reactions,
-            }))
+                reactions: m.reactions }))
             .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
     }, [parentMessage, allMessages]);
     
@@ -71,8 +69,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
             style={{
                 position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
                 backdropFilter: 'blur(8px)', zIndex: 1001,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
-            }}
+                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
         >
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -87,22 +84,19 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                     width: '100%', maxWidth: '480px', maxHeight: '85vh',
                     boxShadow: 'var(--shadow-xl)',
                     border: '1.5px solid #3b82f6', overflow: 'hidden',
-                    display: 'flex', flexDirection: 'column',
-                }}
+                    display: 'flex', flexDirection: 'column' }}
             >
                 {/* Header */}
                 <div style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '14px 18px',
-                    borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}`,
-                }}>
+                    borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}` }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <motion.div whileHover={{ scale: 1.05 }} style={{
                             width: 34, height: 34, borderRadius: '10px',
                             border: '1.5px solid #3b82f6',
                             background: 'var(--bg-primary)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
+                            display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                 <path d="M8 9h8" /><path d="M8 13h6" />
@@ -124,8 +118,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                             border: '1.5px solid #3b82f6',
                             background: 'var(--bg-primary)',
                             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: '#3b82f6',
-                        }}
+                            color: '#3b82f6' }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                             <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -137,16 +130,14 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                 <div style={{
                     padding: '14px 18px',
                     borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}`,
-                    background: 'rgba(59, 130, 246, 0.05)',
-                }}>
+                    background: 'rgba(59, 130, 246, 0.05)' }}>
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <motion.div whileHover={{ scale: 1.05 }} style={{
                             width: 36, height: 36, borderRadius: '10px',
                             background: 'var(--dashboard-surface)',
                             border: `1px solid ${'rgba(59, 130, 246, 0.25)'}`,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '14px', fontWeight: 600, color: '#3b82f6', flexShrink: 0,
-                        }}>
+                            fontSize: '14px', fontWeight: 600, color: '#3b82f6', flexShrink: 0 }}>
                             {parentMessage.user_name.charAt(0).toUpperCase()}
                         </motion.div>
                         <div style={{ flex: 1, minWidth: 0 }}>
@@ -179,16 +170,14 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                                     style={{
                                         display: 'flex', gap: '10px', padding: '10px 12px', marginBottom: '6px', borderRadius: '10px',
                                         background: isHovered ? ('var(--dashboard-surface)') : 'transparent',
-                                        border: isOwn ? `1px solid ${'var(--dashboard-surface)'}` : '1px solid transparent',
-                                    }}
+                                        border: isOwn ? `1px solid ${'var(--dashboard-surface)'}` : '1px solid transparent' }}
                                 >
                                     <motion.div whileHover={{ scale: 1.05 }} style={{
                                         width: 32, height: 32, borderRadius: '9px',
                                         background: isOwn ? ('var(--dashboard-surface)') : ('var(--bg-hover)'),
                                         border: `1px solid ${isOwn ? 'rgba(59, 130, 246, 0.25)' : 'transparent'}`,
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '12px', fontWeight: 600, color: isOwn ? '#3b82f6' : 'var(--text-secondary)', flexShrink: 0,
-                                    }}>
+                                        fontSize: '12px', fontWeight: 600, color: isOwn ? '#3b82f6' : 'var(--text-secondary)', flexShrink: 0 }}>
                                         {reply.user_name.charAt(0).toUpperCase()}
                                     </motion.div>
                                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -211,8 +200,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                             <div style={{
                                 width: 44, height: 44, borderRadius: '12px', border: '1.5px solid #3b82f6',
                                 background: 'var(--bg-primary)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px',
-                            }}>
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px' }}>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5">
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                                 </svg>
@@ -228,8 +216,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                 <div style={{
                     padding: '14px 18px',
                     borderTop: `1px solid ${'rgba(255,255,255,0.06)'}`,
-                    background: 'rgba(0,0,0,0.2)',
-                }}>
+                    background: 'rgba(0,0,0,0.2)' }}>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
                         <textarea
                             ref={inputRef}
@@ -243,8 +230,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                                 border: '1.5px solid #3b82f6',
                                 background: 'var(--bg-primary)',
                                 color: 'var(--text-primary)', fontSize: '13px', resize: 'none', outline: 'none',
-                                fontFamily: 'inherit', lineHeight: 1.4, minHeight: '40px', maxHeight: '100px',
-                            }}
+                                fontFamily: 'inherit', lineHeight: 1.4, minHeight: '40px', maxHeight: '100px' }}
                         />
                         <motion.button
                             whileHover={{ scale: 1.05 }}
@@ -256,8 +242,7 @@ export const ThreadModal: React.FC<ThreadModalProps> = ({
                                 background: replyContent.trim() ? '#3b82f6' : 'rgba(59, 130, 246, 0.2)',
                                 color: replyContent.trim() ? '#ffffff' : '#3b82f6',
                                 cursor: replyContent.trim() ? 'pointer' : 'not-allowed',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                            }}
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                         >
                             {isSending ? (
                                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>

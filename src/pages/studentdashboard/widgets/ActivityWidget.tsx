@@ -61,8 +61,7 @@ const getActivityColor = (type: ActivityItem['type']) => {
 export const ActivityWidget: React.FC<ActivityWidgetProps> = ({
     activities,
     compactMode = false,
-    onClose,
-}) => {
+    onClose }) => {
     return (
         <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -94,7 +93,7 @@ export const ActivityWidget: React.FC<ActivityWidgetProps> = ({
                     whileHover={{ scale: 1.15, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                     whileTap={{ scale: 0.9 }}
                     onClick={onClose}
-                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-colors ${compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                    className={`flex items-center justify-center rounded-md text-zinc-300 hover:text-red-400 transition-${compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                 >
                     <svg className={compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -148,7 +147,7 @@ export const ActivityWidget: React.FC<ActivityWidgetProps> = ({
                                     exit={{ opacity: 0, x: 10 }}
                                     transition={{ delay: index * 0.05 }}
                                     whileHover={{ x: 4, backgroundColor: 'rgba(139, 92, 246, 0.05)' }}
-                                    className={`flex items-center gap-2.5 rounded-lg cursor-pointer transition-colors ${compactMode ? 'p-1.5' : 'p-2'}`}
+                                    className={`flex items-center gap-2.5 rounded-lg cursor-pointer transition-${compactMode ? 'p-1.5' : 'p-2'}`}
                                 >
                                     <div className={`flex-shrink-0 rounded-md flex items-center justify-center ${getActivityColor(activity.type)} ${compactMode ? 'w-6 h-6' : 'w-7 h-7'}`}>
                                         <ActivityIcon type={activity.type} compact={compactMode} />

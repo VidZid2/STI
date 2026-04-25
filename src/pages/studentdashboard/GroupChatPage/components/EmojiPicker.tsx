@@ -11,23 +11,14 @@ interface EmojiPickerProps {
     isOpen: boolean;
     onClose: () => void;
     onSelect: (emoji: string) => void;
-    isDarkMode: boolean;
-    colors: {
-        cardBg: string;
-        border: string;
-        textPrimary: string;
-        textMuted: string;
-        accent: string;
-    };
+    
+    
 }
 
 export const EmojiPicker: React.FC<EmojiPickerProps> = ({
     isOpen,
     onClose,
-    onSelect,
-    isDarkMode,
-    colors,
-}) => {
+    onSelect }) => {
     const [emojiSearch, setEmojiSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('recent');
 
@@ -55,14 +46,12 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                         border: `1px solid var(--border-color)`,
                         zIndex: 1000,
                         width: '320px',
-                        overflow: 'hidden',
-                    }}
+                        overflow: 'hidden' }}
                 >
                     {/* Header with Search */}
                     <div style={{
                         padding: '12px',
-                        borderBottom: `1px solid var(--border-color)`,
-                    }}>
+                        borderBottom: `1px solid var(--border-color)` }}>
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -70,8 +59,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                             padding: '8px 12px',
                             borderRadius: '10px',
                             background: 'var(--dashboard-surface)',
-                            border: `1px solid var(--border-color)`,
-                        }}>
+                            border: `1px solid var(--border-color)` }}>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2">
                                 <circle cx="11" cy="11" r="8" />
                                 <path d="M21 21l-4.35-4.35" />
@@ -87,8 +75,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                                     background: 'transparent',
                                     color: 'var(--text-primary)',
                                     fontSize: '13px',
-                                    outline: 'none',
-                                }}
+                                    outline: 'none' }}
                             />
                             {emojiSearch && (
                                 <motion.button
@@ -106,8 +93,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: 'var(--text-muted)',
-                                    }}
+                                        color: 'var(--text-muted)' }}
                                 >
                                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <line x1="18" y1="6" x2="6" y2="18" />
@@ -124,8 +110,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                         gap: '2px',
                         padding: '8px 12px',
                         borderBottom: `1px solid var(--border-color)`,
-                        overflowX: 'auto',
-                    }}>
+                        overflowX: 'auto' }}>
                         {EMOJI_CATEGORIES.map((category) => (
                             <motion.button
                                 key={category.id}
@@ -148,8 +133,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    flexShrink: 0,
-                                }}
+                                    flexShrink: 0 }}
                                 title={category.name}
                             >
                                 {category.icon}
@@ -161,8 +145,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                     <div style={{
                         padding: '8px 12px',
                         height: '200px',
-                        overflowY: 'auto',
-                    }}>
+                        overflowY: 'auto' }}>
                         {/* Category Label */}
                         <div style={{
                             fontSize: '11px',
@@ -170,8 +153,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                             color: 'var(--text-muted)',
                             marginBottom: '8px',
                             textTransform: 'uppercase',
-                            letterSpacing: '0.5px',
-                        }}>
+                            letterSpacing: '0.5px' }}>
                             {emojiSearch
                                 ? 'Search Results'
                                 : EMOJI_CATEGORIES.find(c => c.id === selectedCategory)?.name
@@ -182,8 +164,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                         <div style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(8, 1fr)',
-                            gap: '4px',
-                        }}>
+                            gap: '4px' }}>
                             {(() => {
                                 let emojisToShow: string[] = [];
 
@@ -210,8 +191,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                                             padding: '20px',
                                             textAlign: 'center',
                                             color: 'var(--text-muted)',
-                                            fontSize: '13px',
-                                        }}>
+                                            fontSize: '13px' }}>
                                             No emojis found
                                         </div>
                                     );
@@ -233,8 +213,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                                             fontSize: '20px',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
+                                            justifyContent: 'center' }}
                                     >
                                         {emoji}
                                     </motion.button>
@@ -249,8 +228,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                         borderTop: `1px solid var(--border-color)`,
                         display: 'flex',
                         gap: '4px',
-                        justifyContent: 'center',
-                    }}>
+                        justifyContent: 'center' }}>
                         {QUICK_EMOJIS.map((emoji) => (
                             <motion.button
                                 key={emoji}
@@ -267,8 +245,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                                     fontSize: '16px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
+                                    justifyContent: 'center' }}
                             >
                                 {emoji}
                             </motion.button>

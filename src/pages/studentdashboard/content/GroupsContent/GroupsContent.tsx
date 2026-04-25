@@ -25,9 +25,7 @@ import {
     type GroupWithMembers,
     type GroupStats,
     type GroupFilter,
-    type GroupSortOption,
-
-} from '../../../../services/groupsService';
+    type GroupSortOption } from '../../../../services/groupsService';
 import GroupIcon from './components/GroupIcon';
 import GroupDetailModal from './modals/GroupDetailModal';
 import InviteModal from './modals/InviteModal';
@@ -82,15 +80,14 @@ const GroupsContent: React.FC = () => {
     const suggestionsRef = useRef<HTMLDivElement>(null);
     const reducedMotion = useReducedMotion();
 
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-secondary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
         textMuted: 'var(--text-muted)',
-        accent: 'var(--brand-blue)',
-    };
+        accent: 'var(--brand-blue)' };
 
     // Load groups
     // Load groups and set online status
@@ -319,16 +316,14 @@ const GroupsContent: React.FC = () => {
                 <div style={{
                     display: 'flex', alignItems: 'center', gap: '16px', padding: '18px 22px',
                     borderRadius: '14px', background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`,
-                    flexWrap: 'wrap',
-                }}>
+                    flexWrap: 'wrap' }}>
                     {/* Icon */}
                     <motion.div
                         whileHover={reducedMotion ? {} : { scale: 1.05, rotate: 5 }}
                         style={{
                             width: '46px', height: '46px', borderRadius: '12px',
                             background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}
+                            display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -352,8 +347,7 @@ const GroupsContent: React.FC = () => {
                             <span style={{
                                 padding: '3px 8px', borderRadius: '6px',
                                 background: 'rgba(59, 130, 246, 0.1)', fontSize: '11px',
-                                fontWeight: 600, color: '#3b82f6',
-                            }}>
+                                fontWeight: 600, color: '#3b82f6' }}>
                                 {stats.totalGroups} groups
                             </span>
                         </motion.div>
@@ -389,8 +383,7 @@ const GroupsContent: React.FC = () => {
                                 style={{
                                     display: 'flex', flexDirection: 'column', alignItems: 'center',
                                     padding: '10px 16px', borderRadius: '10px', background: stat.bgColor,
-                                    cursor: 'default', minWidth: '72px',
-                                }}
+                                    cursor: 'default', minWidth: '72px' }}
                                 title={`${stat.label}: ${stat.value}`}
                             >
                                 <div style={{ color: stat.color, marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -421,8 +414,7 @@ const GroupsContent: React.FC = () => {
                 }}
                 style={{
                     display: 'flex', gap: '12px', marginBottom: '24px',
-                    flexWrap: 'wrap', alignItems: 'center',
-                }}
+                    flexWrap: 'wrap', alignItems: 'center' }}
             >
                 {/* Search Input - matching CatalogContent design */}
                 <motion.div
@@ -435,8 +427,7 @@ const GroupsContent: React.FC = () => {
                         x: { delay: 0.3, duration: 0.4 }
                     }}
                     style={{
-                        flex: 1, minWidth: '220px', position: 'relative',
-                    }}
+                        flex: 1, minWidth: '220px', position: 'relative' }}
                 >
                     <svg
                         width="16"
@@ -453,8 +444,7 @@ const GroupsContent: React.FC = () => {
                             top: '50%',
                             transform: 'translateY(-50%)',
                             pointerEvents: 'none',
-                            zIndex: 1,
-                        }}
+                            zIndex: 1 }}
                     >
                         <circle cx="11" cy="11" r="8" />
                         <path d="m21 21-4.35-4.35" />
@@ -489,8 +479,7 @@ const GroupsContent: React.FC = () => {
                             color: 'var(--text-primary)',
                             fontSize: '13px',
                             outline: 'none',
-                            transition: reducedMotion ? 'none' : 'all 0.2s ease',
-                        }}
+                            transition: reducedMotion ? 'none' : 'all 0.2s ease' }}
                     />
                     {/* Loading Spinner */}
                     <AnimatePresence>
@@ -569,8 +558,7 @@ const GroupsContent: React.FC = () => {
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     justifyContent: 'center',
-                                    pointerEvents: 'none',
-                                }}
+                                    pointerEvents: 'none' }}
                             >
                                 <div 
                                     style={{ 
@@ -581,8 +569,7 @@ const GroupsContent: React.FC = () => {
                                         fontSize: '11px', 
                                         fontWeight: 500, 
                                         color: 'var(--text-muted)',
-                                        fontFamily: 'monospace',
-                                    }}
+                                        fontFamily: 'monospace' }}
                                     title="Press / to search"
                                 >
                                     /
@@ -614,8 +601,7 @@ const GroupsContent: React.FC = () => {
                                     borderRadius: '10px',
                                     boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
                                     zIndex: 50,
-                                    overflow: 'hidden',
-                                }}
+                                    overflow: 'hidden' }}
                             >
                                 {/* Suggestions Header */}
                                 <div style={{
@@ -623,8 +609,7 @@ const GroupsContent: React.FC = () => {
                                     borderBottom: `1px solid var(--border-color)`,
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                }}>
+                                    justifyContent: 'space-between' }}>
                                     <span style={{ fontSize: '9px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                         Suggestions
                                     </span>
@@ -657,8 +642,7 @@ const GroupsContent: React.FC = () => {
                                                 cursor: 'pointer',
                                                 background: isSelected ? 'rgba(59, 130, 246, 0.05)' : 'transparent',
                                                 borderLeft: isSelected ? '2px solid #3b82f6' : '2px solid transparent',
-                                                transition: 'all 0.1s ease',
-                                            }}
+                                                transition: 'all 0.1s ease' }}
                                         >
                                             {/* Group Icon */}
                                             <div style={{
@@ -670,8 +654,7 @@ const GroupsContent: React.FC = () => {
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 flexShrink: 0,
-                                                overflow: 'hidden',
-                                            }}>
+                                                overflow: 'hidden' }}>
                                                 {group.avatar ? (
                                                     <img 
                                                         src={group.avatar} 
@@ -708,8 +691,7 @@ const GroupsContent: React.FC = () => {
                                                             display: 'inline-flex', alignItems: 'center', gap: '3px',
                                                             fontSize: '9px', padding: '1px 5px', borderRadius: '3px',
                                                             background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', fontWeight: 500,
-                                                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100px',
-                                                        }}>
+                                                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100px' }}>
                                                             <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                                                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -740,7 +722,7 @@ const GroupsContent: React.FC = () => {
                 <FilterTabs
                     activeFilter={activeFilter}
                     setActiveFilter={setActiveFilter} stats={stats}
-                    colors={colors}
+                    
                 />
 
                 {/* Sort Dropdown - Matching CatalogContent design */}
@@ -833,8 +815,7 @@ const GroupsContent: React.FC = () => {
                     }}
                     whileHover={{ 
                         scale: 1.02,
-                        boxShadow: '0 6px 20px rgba(59, 130, 246, 0.25)',
-                    }}
+                        boxShadow: '0 6px 20px rgba(59, 130, 246, 0.25)' }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setIsCreateModalOpen(true)}
                     style={{
@@ -848,8 +829,7 @@ const GroupsContent: React.FC = () => {
                         borderRadius: '10px',
                         fontSize: '12px',
                         fontWeight: 500,
-                        cursor: 'pointer',
-                    }}
+                        cursor: 'pointer' }}
                 >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -865,8 +845,7 @@ const GroupsContent: React.FC = () => {
                     style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                        gap: '16px',
-                    }}
+                        gap: '16px' }}
                 >
                     <AnimatePresence mode="popLayout">
                         {filteredGroups.length > 0 ? (
@@ -874,7 +853,7 @@ const GroupsContent: React.FC = () => {
                                 <GroupCard
                                     key={group.id}
                                     group={group}
-                                    index={index} colors={colors}
+                                    index={index} 
                                     onClick={(g) => { setSelectedGroup(g); setIsModalOpen(true); }}
                                     onJoin={handleJoin}
                                     onLeave={handleLeave}
@@ -889,14 +868,12 @@ const GroupsContent: React.FC = () => {
                                 animate={{ opacity: 1 }}
                                 style={{
                                     gridColumn: '1 / -1', padding: '60px 20px', textAlign: 'center',
-                                    background: 'var(--dashboard-surface)', borderRadius: '16px', border: `1px solid var(--border-color)`,
-                                }}
+                                    background: 'var(--dashboard-surface)', borderRadius: '16px', border: `1px solid var(--border-color)` }}
                             >
                                 <div style={{
                                     width: '64px', height: '64px', borderRadius: '16px', margin: '0 auto 16px',
                                     background: 'rgba(59, 130, 246, 0.1)', display: 'flex',
-                                    alignItems: 'center', justifyContent: 'center',
-                                }}>
+                                    alignItems: 'center', justifyContent: 'center' }}>
                                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
                                         <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                                     </svg>
@@ -936,8 +913,7 @@ const GroupsContent: React.FC = () => {
                         course_name: groupData.courseName,
                         max_members: groupData.maxMembers,
                         is_private: groupData.isPrivate,
-                        created_by: 'current-user',
-                    });
+                        created_by: 'current-user' });
                     if (newGroup) {
                         // Refresh groups list
                         const [groupsData, statsData] = await Promise.all([

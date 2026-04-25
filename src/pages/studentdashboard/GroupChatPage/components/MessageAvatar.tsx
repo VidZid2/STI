@@ -12,8 +12,8 @@ interface MessageAvatarProps {
     userLevel: number;
     isOnline: boolean;
     showAvatar: boolean;
-    colors: ChatColors;
-    isDarkMode: boolean;
+    
+    
 }
 
 export const MessageAvatar = React.memo<MessageAvatarProps>(({
@@ -21,10 +21,7 @@ export const MessageAvatar = React.memo<MessageAvatarProps>(({
     userName,
     userLevel,
     isOnline,
-    showAvatar,
-    colors,
-    isDarkMode,
-}) => {
+    showAvatar }) => {
     return (
         <div
             style={{
@@ -32,8 +29,7 @@ export const MessageAvatar = React.memo<MessageAvatarProps>(({
                 flexShrink: 0,
                 width: 36,
                 height: 36,
-                visibility: showAvatar ? 'visible' : 'hidden',
-            }}
+                visibility: showAvatar ? 'visible' : 'hidden' }}
             title={`Level ${userLevel}`}
         >
             {/* Avatar Circle */}
@@ -50,8 +46,7 @@ export const MessageAvatar = React.memo<MessageAvatarProps>(({
                     fontWeight: 600,
                     color: 'var(--accent-color)',
                     overflow: 'hidden',
-                    border: `2px solid ${'var(--dashboard-surface)'}`,
-                }}
+                    border: `2px solid ${'var(--dashboard-surface)'}` }}
             >
                 {userAvatar ? (
                     <img
@@ -80,8 +75,7 @@ export const MessageAvatar = React.memo<MessageAvatarProps>(({
                 border: `2px solid var(--dashboard-surface)`,
                 lineHeight: 1.2,
                 whiteSpace: 'nowrap',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
-            }}>
+                boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}>
                 Lv.{userLevel}
             </div>
             {/* Online Status Dot */}
@@ -94,8 +88,7 @@ export const MessageAvatar = React.memo<MessageAvatarProps>(({
                 borderRadius: '50%',
                 background: isOnline ? '#22c55e' : '#9ca3af',
                 border: `2px solid var(--dashboard-surface)`,
-                boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-            }} />
+                boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }} />
         </div>
     );
 });

@@ -11,11 +11,10 @@ interface CodeBlockProps {
     code: string;
     language?: string;
     isOwn?: boolean;
-    isDarkMode?: boolean;
+    
 }
 
-// Language display names and colors
-const LANGUAGE_CONFIG: Record<string, { name: string; color: string }> = {
+// Language display names and const LANGUAGE_CONFIG: Record<string, { name: string; color: string }> = {
     javascript: { name: 'JavaScript', color: '#f7df1e' },
     js: { name: 'JavaScript', color: '#f7df1e' },
     typescript: { name: 'TypeScript', color: '#3178c6' },
@@ -46,8 +45,7 @@ const LANGUAGE_CONFIG: Record<string, { name: string; color: string }> = {
     yaml: { name: 'YAML', color: '#cb171e' },
     xml: { name: 'XML', color: '#0060ac' },
     markdown: { name: 'Markdown', color: '#083fa1' },
-    md: { name: 'Markdown', color: '#083fa1' },
-};
+    md: { name: 'Markdown', color: '#083fa1' } };
 
 // Simple syntax highlighting (keywords, strings, comments, numbers)
 const highlightCode = (code: string, language: string): React.ReactNode[] => {
@@ -62,8 +60,7 @@ const highlightCode = (code: string, language: string): React.ReactNode[] => {
         cpp: ['int', 'float', 'double', 'char', 'void', 'bool', 'class', 'struct', 'public', 'private', 'protected', 'return', 'if', 'else', 'for', 'while', 'switch', 'case', 'break', 'continue', 'new', 'delete', 'this', 'true', 'false', 'nullptr', 'const', 'static', 'virtual', 'override', 'template', 'typename', 'namespace', 'using', 'include'],
         sql: ['SELECT', 'FROM', 'WHERE', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP', 'ALTER', 'TABLE', 'INDEX', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 'AND', 'OR', 'NOT', 'NULL', 'IS', 'IN', 'LIKE', 'ORDER', 'BY', 'GROUP', 'HAVING', 'LIMIT', 'OFFSET', 'AS', 'DISTINCT', 'COUNT', 'SUM', 'AVG', 'MAX', 'MIN'],
         html: ['html', 'head', 'body', 'div', 'span', 'p', 'a', 'img', 'ul', 'ol', 'li', 'table', 'tr', 'td', 'th', 'form', 'input', 'button', 'script', 'style', 'link', 'meta', 'title', 'header', 'footer', 'nav', 'section', 'article', 'aside', 'main'],
-        css: ['color', 'background', 'margin', 'padding', 'border', 'width', 'height', 'display', 'flex', 'grid', 'position', 'top', 'left', 'right', 'bottom', 'font', 'text', 'align', 'justify', 'transform', 'transition', 'animation', 'opacity', 'z-index', 'overflow', 'cursor', 'box-shadow'],
-    };
+        css: ['color', 'background', 'margin', 'padding', 'border', 'width', 'height', 'display', 'flex', 'grid', 'position', 'top', 'left', 'right', 'bottom', 'font', 'text', 'align', 'justify', 'transform', 'transition', 'animation', 'opacity', 'z-index', 'overflow', 'cursor', 'box-shadow'] };
 
     const keywords = keywordSets[language] || keywordSets['javascript'] || [];
     
@@ -143,8 +140,7 @@ const highlightCode = (code: string, language: string): React.ReactNode[] => {
                         key={tokenKey++} 
                         style={{ 
                             color: isKeyword ? '#8b5cf6' : undefined,
-                            fontWeight: isKeyword ? 500 : undefined,
-                        }}
+                            fontWeight: isKeyword ? 500 : undefined }}
                     >
                         {word}
                     </span>
@@ -182,8 +178,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
     code,
     language = '',
     isOwn = false,
-    isDarkMode = false,
-}) => {
+    = false }) => {
     const [copied, setCopied] = useState(false);
     
     const langConfig = LANGUAGE_CONFIG[language.toLowerCase()] || { 
@@ -212,8 +207,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
             overflow: 'hidden',
             marginTop: '6px',
             maxWidth: '100%',
-            border: isOwn ? '1px solid rgba(255,255,255,0.1)' : `1px solid ${'rgba(255,255,255,0.1)'}`,
-        }}>
+            border: isOwn ? '1px solid rgba(255,255,255,0.1)' : `1px solid ${'rgba(255,255,255,0.1)'}` }}>
             {/* Header */}
             <div style={{
                 display: 'flex',
@@ -221,23 +215,20 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                 justifyContent: 'space-between',
                 padding: '8px 12px',
                 background: isOwn ? 'rgba(0, 0, 0, 0.15)' : ('var(--bg-hover)'),
-                borderBottom: `1px solid ${isOwn ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}`,
-            }}>
+                borderBottom: `1px solid ${isOwn ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}` }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     {/* Language indicator dot */}
                     <div style={{
                         width: 8,
                         height: 8,
                         borderRadius: '50%',
-                        background: langConfig.color,
-                    }} />
+                        background: langConfig.color }} />
                     <span style={{
                         fontSize: '11px',
                         fontWeight: 600,
                         color: '#94a3b8',
                         textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                    }}>
+                        letterSpacing: '0.5px' }}>
                         {langConfig.name}
                     </span>
                 </div>
@@ -259,8 +250,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                         fontSize: '10px',
                         fontWeight: 500,
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                    }}
+                        transition: 'all 0.2s ease' }}
                 >
                     {copied ? (
                         <>
@@ -290,8 +280,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                 fontFamily: "'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace",
                 lineHeight: 1.5,
                 color: textColor,
-                whiteSpace: 'pre',
-            }}>
+                whiteSpace: 'pre' }}>
                 {highlightCode(code, language.toLowerCase())}
             </div>
         </div>
@@ -324,8 +313,7 @@ export const extractCodeBlocks = (content: string): {
         parts.push({
             type: 'code',
             content: match[2].trim(),
-            language: match[1] || 'text',
-        });
+            language: match[1] || 'text' });
         
         lastIndex = match.index + match[0].length;
     }

@@ -18,8 +18,7 @@ import {
     checkAndUnlockCourses,
     getPathRecommendations,
     type PathWithProgress,
-    type PathRecommendation,
-} from '../../../../services/pathsService';
+    type PathRecommendation } from '../../../../services/pathsService';
 import { fetchStudentStats } from '../../../../services/databaseService';
 import { getCurrentUser } from '../../../../services/authService';
 import { PathIcon, type FilterTab } from './components/PathIcon';
@@ -228,15 +227,14 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
     };
 
     // Colors based on theme
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-secondary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
         textMuted: 'var(--text-muted)',
-        accent: 'var(--brand-blue)',
-    };
+        accent: 'var(--brand-blue)' };
 
     return (
         <div className="p-6 max-w-[1200px] mx-auto min-h-screen">
@@ -312,8 +310,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                                     </svg>
-                                ),
-                            },
+                                ) },
                             {
                                 label: 'Enrolled',
                                 value: stats.enrolledPaths,
@@ -327,8 +324,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                         <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                     </svg>
-                                ),
-                            },
+                                ) },
                             {
                                 label: 'In Progress',
                                 value: stats.inProgressPaths,
@@ -340,8 +336,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                         <circle cx="12" cy="12" r="10" />
                                         <polyline points="12 6 12 12 16 14" />
                                     </svg>
-                                ),
-                            },
+                                ) },
                             {
                                 label: 'Completed',
                                 value: stats.completedPaths,
@@ -353,8 +348,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                                         <polyline points="22 4 12 14.01 9 11.01" />
                                     </svg>
-                                ),
-                            },
+                                ) },
                         ].map((stat, i) => (
                             <motion.div
                                 key={stat.label}
@@ -422,8 +416,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                             background: 'rgba(139, 92, 246, 0.1)',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
+                                            justifyContent: 'center' }}
                                     >
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
@@ -465,8 +458,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                 delay: 0.15 + index * 0.08,
                                                 type: 'spring',
                                                 stiffness: 400,
-                                                damping: 25,
-                                            }}
+                                                damping: 25 }}
                                             whileHover={{ 
                                                 y: -4, 
                                                 scale: 1.02,
@@ -509,8 +501,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                 gap: '6px',
                                                 padding: '6px 10px',
                                                 borderRadius: '8px',
-                                                background: 'rgba(139, 92, 246, 0.1)',
-                                            }}>
+                                                background: 'rgba(139, 92, 246, 0.1)' }}>
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                     {rec.reason.includes('Includes') ? (
                                                         <>
@@ -529,8 +520,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                 <span style={{
                                                     fontSize: '11px',
                                                     fontWeight: 500,
-                                                    color: '#8b5cf6',
-                                                }}>
+                                                    color: '#8b5cf6' }}>
                                                     {rec.reason}
                                                 </span>
                                             </div>
@@ -582,8 +572,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                     gap: '12px',
                     marginBottom: '24px',
                     flexWrap: 'wrap',
-                    alignItems: 'center',
-                }}
+                    alignItems: 'center' }}
             >
                 {/* Search with Suggestions */}
                 <motion.div 
@@ -696,7 +685,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                 {/* Filter Tabs - Minimalistic with Icons */}
                 <FilterTabs 
                     activeFilter={activeFilter} 
-                    setActiveFilter={setActiveFilter} colors={colors}
+                    setActiveFilter={setActiveFilter} 
                 />
 
                 {/* Show Recommendations Button - appears when hidden and there are 2+ paths */}
@@ -739,8 +728,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                             backgroundColor: showSortDropdown 
                                 ? ('rgba(59, 130, 246, 0.1)')
                                 : 'var(--dashboard-surface)',
-                            color: showSortDropdown ? 'var(--accent-color)' : 'var(--text-secondary)',
-                        }}
+                            color: showSortDropdown ? 'var(--accent-color)' : 'var(--text-secondary)' }}
                         transition={{ 
                             layout: { type: 'spring', stiffness: 500, damping: 30 },
                             default: { duration: 0.2 }
@@ -797,8 +785,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                     style={{
                                         position: 'fixed',
                                         inset: 0,
-                                        zIndex: 99,
-                                    }}
+                                        zIndex: 99 }}
                                 />
                                 <motion.div
                                     initial={{ opacity: 0, y: -8, scale: 0.95 }}
@@ -843,8 +830,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                     ? ('rgba(59, 130, 246, 0.1)')
                                                     : 'transparent',
                                                 color: sortBy === option.id ? 'var(--accent-color)' : 'var(--text-primary)',
-                                                fontWeight: sortBy === option.id ? 500 : 400,
-                                            }}
+                                                fontWeight: sortBy === option.id ? 500 : 400 }}
                                         >
                                             <span style={{ color: sortBy === option.id ? 'var(--accent-color)' : 'var(--text-secondary)' }}>
                                                 {option.icon}
@@ -919,14 +905,12 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                     {/* Shimmer effect overlay */}
                                     <motion.div
                                         animate={{
-                                            x: ['-100%', '100%'],
-                                        }}
+                                            x: ['-100%', '100%'] }}
                                         transition={{
                                             duration: 1.2,
                                             repeat: Infinity,
                                             ease: 'linear',
-                                            delay: i * 0.1,
-                                        }}
+                                            delay: i * 0.1 }}
                                         className="absolute inset-0 pointer-events-none"
                                         style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)' }}
                                     />
@@ -958,8 +942,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                             width: '90%',
                                             borderRadius: '3px',
                                             background: 'var(--bg-hover)',
-                                            marginBottom: '8px',
-                                        }} 
+                                            marginBottom: '8px' }} 
                                     />
                                     <motion.div 
                                         animate={{ opacity: [0.4, 0.7, 0.4] }}
@@ -968,8 +951,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                             height: '10px',
                                             width: '60%',
                                             borderRadius: '3px',
-                                            background: 'var(--bg-hover)',
-                                        }} 
+                                            background: 'var(--bg-hover)' }} 
                                     />
                                 </motion.div>
                             ))
@@ -1011,21 +993,18 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                             delay: index * 0.05,
                                             type: 'spring',
                                             stiffness: 400,
-                                            damping: 25,
-                                        }}
+                                            damping: 25 }}
                                         whileHover={{ 
                                             y: -6,
                                             transition: { 
                                                 type: 'spring', 
                                                 stiffness: 400, 
                                                 damping: 20,
-                                                mass: 0.8,
-                                            }
+                                                mass: 0.8 }
                                         }}
                                         className="path-card dashboard-interactive-card p-5 rounded-2xl bg-dashboard-surface cursor-pointer shadow-lg outline-none"
                                         style={{
-                                            border: `1px solid ${isEnrolled ? `${path.color}30` : 'var(--border-light)'}`,
-                                        }}
+                                            border: `1px solid ${isEnrolled ? `${path.color}30` : 'var(--border-light)'}` }}
                                         tabIndex={0}
                                         role="button"
                                         aria-label={`${path.title} — ${path.difficulty} difficulty, ${progress}% complete`}
@@ -1054,8 +1033,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                         color: difficultyInfo.color,
                                                         padding: '3px 8px',
                                                         borderRadius: '4px',
-                                                        background: `${difficultyInfo.color}15`,
-                                                    }}>
+                                                        background: `${difficultyInfo.color}15` }}>
                                                         {difficultyInfo.label}
                                                     </span>
                                                     <span style={{ 
@@ -1063,8 +1041,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                         color: 'var(--text-muted)',
                                                         display: 'flex',
                                                         alignItems: 'center',
-                                                        gap: '4px',
-                                                    }}>
+                                                        gap: '4px' }}>
                                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                             <circle cx="12" cy="12" r="10" />
                                                             <polyline points="12 6 12 12 16 14" />
@@ -1110,8 +1087,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                     fontSize: '18px', 
                                                     fontWeight: 700, 
                                                     color: '#10b981',
-                                                    lineHeight: 1,
-                                                }}>
+                                                    lineHeight: 1 }}>
                                                     {path.enrolled_count}
                                                 </div>
                                                 <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -1269,8 +1245,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                         <div style={{
                                                             width: '40px',
                                                             height: '40px',
-                                                            position: 'relative',
-                                                        }}>
+                                                            position: 'relative' }}>
                                                             <svg width="40" height="40" viewBox="0 0 40 40" style={{ transform: 'rotate(-90deg)' }}>
                                                                 <circle
                                                                     cx="20"
@@ -1336,8 +1311,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                                         style={{
                                                                             background: isCompleted ? '#10b981' : isCurrent ? path.color : 'var(--bg-hover)',
                                                                             border: isCurrent ? `2px solid ${path.color}40` : 'none',
-                                                                            boxShadow: isCurrent ? `0 0 0 3px ${path.color}20` : 'none',
-                                                                        }}
+                                                                            boxShadow: isCurrent ? `0 0 0 3px ${path.color}20` : 'none' }}
                                                                     >
                                                                         {isCompleted ? (
                                                                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -1372,8 +1346,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                     handleEnroll(path.id);
                                                 }}
                                                 style={{
-                                                    background: `linear-gradient(135deg, ${path.color} 0%, ${path.color}cc 100%)`,
-                                                }}
+                                                    background: `linear-gradient(135deg, ${path.color} 0%, ${path.color}cc 100%)` }}
                                             >
                                                 <svg 
                                                     width="16" 

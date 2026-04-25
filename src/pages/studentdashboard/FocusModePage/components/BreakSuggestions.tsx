@@ -19,10 +19,9 @@ const BREAK_SUGGESTIONS = [
 
 // Break Suggestions Component
 const BreakSuggestions: React.FC<{
-    isDarkMode: boolean;
-    colors: FocusModeColors;
-    isBreakMode: boolean;
-}> = ({ isDarkMode, colors, isBreakMode }) => {
+    
+    
+}> = ({   isBreakMode }) => {
     const [currentSuggestion, setCurrentSuggestion] = useState(0);
 
     // Rotate suggestions
@@ -48,16 +47,14 @@ const BreakSuggestions: React.FC<{
                 padding: '16px',
                 borderRadius: '14px',
                 background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)',
-                border: '1px solid rgba(16, 185, 129, 0.2)',
-            }}
+                border: '1px solid rgba(16, 185, 129, 0.2)' }}
         >
             {/* Header */}
             <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                marginBottom: '12px',
-            }}>
+                marginBottom: '12px' }}>
                 <div style={{
                     width: 28,
                     height: 28,
@@ -67,8 +64,7 @@ const BreakSuggestions: React.FC<{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#10b981',
-                }}>
+                    color: '#10b981' }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
                         <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
@@ -87,8 +83,7 @@ const BreakSuggestions: React.FC<{
                     background: 'rgba(16, 185, 129, 0.15)',
                     fontSize: '10px',
                     fontWeight: 600,
-                    color: '#10b981',
-                }}>
+                    color: '#10b981' }}>
                     {suggestion.duration}
                 </div>
             </div>
@@ -104,8 +99,7 @@ const BreakSuggestions: React.FC<{
                     style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '12px',
-                    }}
+                        gap: '12px' }}
                 >
                     <div style={{
                         width: 44,
@@ -116,8 +110,7 @@ const BreakSuggestions: React.FC<{
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '22px',
-                        flexShrink: 0,
-                    }}>
+                        flexShrink: 0 }}>
                         {suggestion.icon}
                     </div>
                     <div style={{ flex: 1 }}>
@@ -125,15 +118,13 @@ const BreakSuggestions: React.FC<{
                             fontSize: '13px',
                             fontWeight: 600,
                             color: 'var(--text-primary)',
-                            marginBottom: '2px',
-                        }}>
+                            marginBottom: '2px' }}>
                             {suggestion.title}
                         </div>
                         <div style={{
                             fontSize: '11px',
                             color: 'var(--text-secondary)',
-                            lineHeight: 1.4,
-                        }}>
+                            lineHeight: 1.4 }}>
                             {suggestion.description}
                         </div>
                     </div>
@@ -145,8 +136,7 @@ const BreakSuggestions: React.FC<{
                 display: 'flex',
                 justifyContent: 'center',
                 gap: '6px',
-                marginTop: '12px',
-            }}>
+                marginTop: '12px' }}>
                 {BREAK_SUGGESTIONS.map((_, index) => (
                     <motion.button
                         key={index}
@@ -162,8 +152,7 @@ const BreakSuggestions: React.FC<{
                                 ? '#10b981'
                                 : ('var(--bg-hover)'),
                             cursor: 'pointer',
-                            transition: 'all 0.2s ease',
-                        }}
+                            transition: 'all 0.2s ease' }}
                     />
                 ))}
             </div>

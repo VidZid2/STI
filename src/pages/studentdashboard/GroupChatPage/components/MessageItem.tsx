@@ -21,8 +21,7 @@ import {
     ThreadIndicator,
     ReactionsPicker,
     DateSeparator,
-    UnreadIndicator,
-} from './index';
+    UnreadIndicator } from './index';
 
 export interface MessageItemProps {
     // Message data
@@ -64,8 +63,8 @@ export interface MessageItemProps {
     unreadCount: number;
     
     // Theme
-    colors: ChatColors;
-    isDarkMode: boolean;
+    
+    
     
     // Callbacks
     onHover: (messageId: string) => void;
@@ -108,8 +107,8 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
     uniqueAuthors,
     showUnreadIndicator,
     unreadCount,
-    colors,
-    isDarkMode,
+    
+    
     onHover,
     onLeave,
     onReaction,
@@ -122,8 +121,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
     onToggleHelpful,
     onSetEditingContent,
     onSaveEdit,
-    onCancelEdit,
-}) => {
+    onCancelEdit }) => {
     const isOwn = message.user_id === currentUserId;
     const showDateSeparator = shouldShowDateSeparator(message, prevMessage);
     const isFirstInGroup = !prevMessage || prevMessage.user_id !== message.user_id || showDateSeparator;
@@ -167,7 +165,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
             {showDateSeparator && (
                 <DateSeparator
                     date={message.created_at}
-                    isDarkMode={isDarkMode}
+                    
                     textMutedColor={'var(--text-muted)'}
                 />
             )}
@@ -176,7 +174,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
             {showUnreadIndicator && (
                 <UnreadIndicator
                     unreadCount={unreadCount}
-                    isDarkMode={isDarkMode}
+                    
                 />
             )}
             
@@ -189,15 +187,13 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                     y: 0,
                     boxShadow: isHighlighted
                         ? `0 0 0 2px var(--accent-color), 0 4px 20px var(--accent-color)30`
-                        : 'none',
-                }}
+                        : 'none' }}
                 exit={{ opacity: 0, transition: { duration: 0.1 } }}
                 transition={{ 
                     type: 'spring', 
                     stiffness: 500, 
                     damping: 30,
-                    mass: 0.8,
-                }}
+                    mass: 0.8 }}
                 layout="position"
                 style={{
                     display: 'flex',
@@ -208,8 +204,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                     marginTop,
                     borderRadius: '12px',
                     padding: isHighlighted ? '4px' : '0',
-                    margin: isHighlighted ? '-4px' : '0',
-                }}
+                    margin: isHighlighted ? '-4px' : '0' }}
             >
                 {/* Avatar */}
                 {!isOwn && (
@@ -219,8 +214,8 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                         userLevel={memberLevel}
                         isOnline={memberIsOnline}
                         showAvatar={showAvatar}
-                        colors={colors}
-                        isDarkMode={isDarkMode}
+                        
+                        
                     />
                 )}
 
@@ -243,8 +238,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                             position: 'relative',
                             border: isPinned
                                 ? '2px solid #ef4444'
-                                : (isBookmarked ? `2px solid var(--accent-color)` : 'none'),
-                        }}
+                                : (isBookmarked ? `2px solid var(--accent-color)` : 'none') }}
                     >
                         {/* Bookmark Indicator */}
                         {isBookmarked && (
@@ -253,8 +247,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                                     position: 'absolute',
                                     top: -1,
                                     right: 8,
-                                    color: 'var(--accent-color)',
-                                }}
+                                    color: 'var(--accent-color)' }}
                                 title="Bookmarked"
                             >
                                 <svg width="12" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1">
@@ -269,8 +262,8 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                                 userStreak={memberStreak}
                                 memberRole={memberRole}
                                 memberStats={memberStats}
-                                colors={colors}
-                                isDarkMode={isDarkMode}
+                                
+                                
                             />
                         )}
 
@@ -286,15 +279,15 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                                 onSave={onSaveEdit}
                                 onCancel={onCancelEdit}
                                 isOwn={isOwn}
-                                isDarkMode={isDarkMode}
-                                colors={colors}
+                                
+                                
                             />
                         ) : (
                             !message.content.startsWith('[GIF]') && (
                                 <MessageContent
                                     content={message.content}
                                     isOwn={isOwn}
-                                    isDarkMode={isDarkMode}
+                                    
                                     currentUserName={currentUserName}
                                 />
                             )
@@ -309,16 +302,16 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                             content={message.content}
                             attachments={message.attachments}
                             isOwn={isOwn}
-                            isDarkMode={isDarkMode}
-                            colors={colors}
+                            
+                            
                         />
 
                         <MessageHoverActions
                             message={message}
                             isOwn={isOwn}
                             isHovered={isHovered}
-                            isDarkMode={isDarkMode}
-                            colors={colors}
+                            
+                            
                             formattedTime={formatTime(message.created_at)}
                             isBookmarked={isBookmarked}
                             isPinned={isPinned}
@@ -339,15 +332,15 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                         messageId={message.id}
                         isOwn={isOwn}
                         currentUserId={currentUserId}
-                        colors={colors}
+                        
                         onReactionClick={onReaction}
                     />
 
                     <ThreadIndicator
                         replyCount={replyCount}
                         uniqueAuthors={uniqueAuthors}
-                        isDarkMode={isDarkMode}
-                        colors={colors}
+                        
+                        
                         onClick={handleOpenThread}
                     />
 
@@ -355,7 +348,7 @@ const MessageItemComponent: React.FC<MessageItemProps> = ({
                         messageId={message.id}
                         isVisible={showReactionsFor}
                         isOwn={isOwn}
-                        colors={colors}
+                        
                         onReactionSelect={onReaction}
                     />
                 </div>
@@ -411,7 +404,7 @@ const arePropsEqual = (prevProps: MessageItemProps, nextProps: MessageItemProps)
     if (prevProps.memberIsOnline !== nextProps.memberIsOnline) return false;
     
     // Theme changes (rare)
-    if (prevProps.isDarkMode !== nextProps.isDarkMode) return false;
+    if (prevProps.!== nextProps.) return false;
     
     // Props are equal, don't re-render
     return true;

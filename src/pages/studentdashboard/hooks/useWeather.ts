@@ -62,8 +62,7 @@ export const useWeather = (): UseWeatherReturn => {
                 humidity: current.relative_humidity_2m,
                 windSpeed: Math.round(current.wind_speed_10m),
                 location: locationName,
-                icon,
-            });
+                icon });
         } catch (err) {
             setWeatherError('Unable to load weather');
         } finally {
@@ -82,8 +81,7 @@ export const useWeather = (): UseWeatherReturn => {
         weather,
         weatherLoading,
         weatherError,
-        refreshWeather: fetchWeather,
-    };
+        refreshWeather: fetchWeather };
 };
 
 export default useWeather;

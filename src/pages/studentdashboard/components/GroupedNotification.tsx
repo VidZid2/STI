@@ -46,7 +46,7 @@ export const GroupedNotification: React.FC<GroupedNotificationProps> = ({ notifi
         >
             {/* Header */}
             <motion.div
-                className="flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer hover:bg-zinc-50/50 transition-colors"
+                className="flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer hover:bg-zinc-50/50 transition-"
                 onClick={() => setIsExpanded(!isExpanded)}
                 whileHover={{ backgroundColor: 'rgba(244, 244, 245, 0.5)' }}
                 whileTap={{ scale: 0.99 }}
@@ -119,7 +119,7 @@ export const GroupedNotification: React.FC<GroupedNotificationProps> = ({ notifi
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.03, type: 'spring', stiffness: 300 }}
-                                    className="flex items-center gap-2.5 px-3.5 py-2 hover:bg-zinc-50/50 transition-colors border-b border-zinc-50 last:border-b-0"
+                                    className="flex items-center gap-2.5 px-3.5 py-2 hover:bg-zinc-50/50 transition-border-b border-zinc-50 last:border-b-0"
                                 >
                                     <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
                                         <SmallTypeIcon title={notif.title} />
@@ -138,7 +138,7 @@ export const GroupedNotification: React.FC<GroupedNotificationProps> = ({ notifi
                                 onClick={onViewAll}
                                 whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.08)' }}
                                 whileTap={{ scale: 0.98 }}
-                                className="flex-1 py-2 text-[11px] font-medium text-blue-600 transition-colors flex items-center justify-center gap-1.5"
+                                className="flex-1 py-2 text-[11px] font-medium text-blue-600 transition-flex items-center justify-center gap-1.5"
                             >
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -151,7 +151,7 @@ export const GroupedNotification: React.FC<GroupedNotificationProps> = ({ notifi
                                 onClick={onClearAll}
                                 whileHover={{ backgroundColor: 'rgba(244, 244, 245, 0.8)' }}
                                 whileTap={{ scale: 0.98 }}
-                                className="flex-1 py-2 text-[11px] font-medium text-zinc-500 hover:text-zinc-700 transition-colors flex items-center justify-center gap-1.5"
+                                className="flex-1 py-2 text-[11px] font-medium text-zinc-500 hover:text-zinc-700 transition-flex items-center justify-center gap-1.5"
                             >
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

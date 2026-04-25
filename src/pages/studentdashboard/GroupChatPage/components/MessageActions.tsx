@@ -13,12 +13,8 @@ interface MessageActionsProps {
     message: ChatMessage;
     isOwn: boolean;
     isHovered: boolean;
-    isDarkMode: boolean;
-    colors: ChatColors;
-    timestamp: string;
-    isEdited: boolean;
-    isBookmarked: boolean;
-    isPinned: boolean;
+    
+    
     helpfulData?: { count: number; voted: boolean };
     showReactionsFor: string | null;
     onToggleReactions: (messageId: string | null) => void;
@@ -34,8 +30,8 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
     message,
     isOwn,
     isHovered,
-    isDarkMode,
-    colors,
+    
+    
     timestamp,
     isEdited,
     isBookmarked,
@@ -48,8 +44,7 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
     onTogglePin,
     onStartEdit,
     onDeleteConfirm,
-    onToggleHelpful,
-}) => {
+    onToggleHelpful }) => {
     const buttonBaseStyle = {
         display: 'flex',
         alignItems: 'center',
@@ -60,8 +55,7 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
         border: 'none',
         background: 'transparent',
         cursor: 'pointer',
-        transition: 'all 0.2s ease',
-    };
+        transition: 'all 0.2s ease' };
 
     const getButtonColor = (isActive: boolean, activeColor?: string) => {
         if (isActive && activeColor) return activeColor;
@@ -74,22 +68,19 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
             animate={{
                 height: isHovered ? 'auto' : 0,
                 opacity: isHovered ? 1 : 0,
-                marginTop: isHovered ? 6 : 0,
-            }}
+                marginTop: isHovered ? 6 : 0 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             style={{
                 overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                gap: '8px',
-            }}
+                gap: '8px' }}
         >
             {/* Left side: Timestamp */}
             <span style={{
                 fontSize: '10px',
-                color: isOwn ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)',
-            }}>
+                color: isOwn ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)' }}>
                 {timestamp}{isEdited && ' • edited'}
             </span>
 
@@ -100,14 +91,12 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
                     <motion.button
                         whileHover={{
                             scale: 1.1,
-                            background: isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)',
-                        }}
+                            background: isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => onToggleReactions(showReactionsFor === message.id ? null : message.id)}
                         style={{
                             ...buttonBaseStyle,
-                            color: getButtonColor(false),
-                        }}
+                            color: getButtonColor(false) }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="12" cy="12" r="10" />
@@ -123,14 +112,12 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
                     <motion.button
                         whileHover={{
                             scale: 1.1,
-                            background: isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(59, 130, 246, 0.1)',
-                        }}
+                            background: isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(59, 130, 246, 0.1)' }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => onOpenThread(message)}
                         style={{
                             ...buttonBaseStyle,
-                            color: isOwn ? 'rgba(255,255,255,0.8)' : '#3b82f6',
-                        }}
+                            color: isOwn ? 'rgba(255,255,255,0.8)' : '#3b82f6' }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -147,15 +134,13 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
                             scale: 1.1,
                             background: isBookmarked
                                 ? (isOwn ? 'rgba(255,255,255,0.2)' : `var(--accent-color)20`)
-                                : (isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)'),
-                        }}
+                                : (isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)') }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => onToggleBookmark(message.id)}
                         style={{
                             ...buttonBaseStyle,
                             background: isBookmarked ? (isOwn ? 'rgba(255,255,255,0.1)' : `var(--accent-color)10`) : 'transparent',
-                            color: isBookmarked ? (isOwn ? '#fff' : 'var(--accent-color)') : getButtonColor(false),
-                        }}
+                            color: isBookmarked ? (isOwn ? '#fff' : 'var(--accent-color)') : getButtonColor(false) }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill={isBookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
@@ -170,15 +155,13 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
                             scale: 1.1,
                             background: isPinned
                                 ? (isOwn ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.15)')
-                                : (isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)'),
-                        }}
+                                : (isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)') }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => onTogglePin(message.id)}
                         style={{
                             ...buttonBaseStyle,
                             background: isPinned ? (isOwn ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)') : 'transparent',
-                            color: isPinned ? '#ef4444' : getButtonColor(false),
-                        }}
+                            color: isPinned ? '#ef4444' : getButtonColor(false) }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill={isPinned ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M12 17v5" />
@@ -198,8 +181,7 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
                             onClick={() => onStartEdit(message)}
                             style={{
                                 ...buttonBaseStyle,
-                                color: 'rgba(255,255,255,0.8)',
-                            }}
+                                color: 'rgba(255,255,255,0.8)' }}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -218,8 +200,7 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
                             onClick={() => onDeleteConfirm(message.id)}
                             style={{
                                 ...buttonBaseStyle,
-                                color: 'rgba(255,255,255,0.8)',
-                            }}
+                                color: 'rgba(255,255,255,0.8)' }}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="3 6 5 6 21 6" />
@@ -235,8 +216,7 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
                         <motion.button
                             whileHover={{
                                 scale: 1.1,
-                                background: helpfulData?.voted ? 'rgba(34, 197, 94, 0.2)' : 'rgba(0,0,0,0.08)',
-                            }}
+                                background: helpfulData?.voted ? 'rgba(34, 197, 94, 0.2)' : 'rgba(0,0,0,0.08)' }}
                             whileTap={{ scale: 0.9 }}
                             onClick={() => onToggleHelpful(message.id)}
                             style={{
@@ -253,8 +233,7 @@ export const MessageActions: React.FC<MessageActionsProps> = ({
                                 color: helpfulData?.voted ? '#22c55e' : ('var(--bg-hover)'),
                                 fontSize: '11px',
                                 fontWeight: 600,
-                                transition: 'all 0.2s ease',
-                            }}
+                                transition: 'all 0.2s ease' }}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill={helpfulData?.voted ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />

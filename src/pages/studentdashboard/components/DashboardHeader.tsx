@@ -24,8 +24,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     toggleSidebar,
     setActiveView,
     setSidebarActive,
-    isDemoMode,
-}) => (
+    isDemoMode }) => (
     <header className="header">
         <div className="header-content">
             <div className="header-left">
@@ -75,8 +74,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                             width: 36, height: 36,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             borderRadius: 8, overflow: 'hidden',
-                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                        }}
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
                     >
                         <img src="/file.svg" alt="STI Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
@@ -110,8 +108,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                 display: 'flex', alignItems: 'center', gap: '6px',
                                 padding: '4px 10px', borderRadius: '6px',
                                 background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-                                border: '1px solid #f59e0b', fontSize: '11px', fontWeight: 600, color: '#b45309',
-                            }}
+                                border: '1px solid #f59e0b', fontSize: '11px', fontWeight: 600, color: '#b45309' }}
                         >
                             <motion.div
                                 animate={{ scale: [1, 1.2, 1] }}
@@ -134,8 +131,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                                 padding: '6px 12px', borderRadius: '8px',
                                 border: '1px solid #fca5a5',
                                 background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
-                                color: '#dc2626', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                            }}
+                                color: '#dc2626', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                             title="Exit demo mode and reset all data"
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -159,8 +155,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                             padding: '6px 12px', borderRadius: '8px',
                             border: '1px solid #e5e7eb',
                             background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
-                            color: '#0369a1', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                        }}
+                            color: '#0369a1', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                         title="Load demo data (temporary - clears on refresh)"
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

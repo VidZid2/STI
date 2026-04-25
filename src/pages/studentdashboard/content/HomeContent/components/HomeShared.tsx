@@ -60,8 +60,7 @@ const WhatsNewButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
             const rect = wrapperRef.current.getBoundingClientRect();
             setTooltipPos({
                 top: rect.bottom + 8,
-                left: rect.left + rect.width / 2,
-            });
+                left: rect.left + rect.width / 2 });
         }
         setIsHovered(true);
     };
@@ -82,8 +81,7 @@ const WhatsNewButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
                     fontWeight: 600,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                }}
+                    gap: '8px' }}
             >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -99,8 +97,7 @@ const WhatsNewButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
                                 top: tooltipPos.top,
                                 left: tooltipPos.left,
                                 transform: 'translateX(-50%)',
-                                zIndex: 9999,
-                            }}
+                                zIndex: 9999 }}
                         >
                             <motion.div
                                 className="whats-new-tooltip-portal"
@@ -111,8 +108,7 @@ const WhatsNewButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
                                 style={{
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    alignItems: 'center',
-                                }}
+                                    alignItems: 'center' }}
                             >
                                 <div className="whats-new-tooltip-arrow" />
                                 <div className="whats-new-tooltip-content">
@@ -137,7 +133,7 @@ const WhatsNewButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
 // Confetti Burst Component for Milestone Celebrations
 const ConfettiBurst: React.FC<{ color: string; isActive: boolean }> = ({ color, isActive }) => {
     const particles = Array.from({ length: 8 }, (_, i) => i);
-    const colors = [color, '#f59e0b', '#10b981', '#3b82f6', '#ec4899'];
+    const = [color, '#f59e0b', '#10b981', '#3b82f6', '#ec4899'];
     
     return (
         <AnimatePresence>
@@ -153,7 +149,7 @@ const ConfettiBurst: React.FC<{ color: string; isActive: boolean }> = ({ color, 
                         const angle = (i / particles.length) * 360;
                         const distance = 20 + Math.random() * 15;
                         const size = 4 + Math.random() * 3;
-                        const particleColor = colors[i % colors.length];
+                        const particleColor = [i % .length];
                         
                         return (
                             <motion.div
@@ -163,8 +159,7 @@ const ConfettiBurst: React.FC<{ color: string; isActive: boolean }> = ({ color, 
                                     width: size,
                                     height: size,
                                     backgroundColor: particleColor,
-                                    borderRadius: Math.random() > 0.5 ? '50%' : '2px',
-                                }}
+                                    borderRadius: Math.random() > 0.5 ? '50%' : '2px' }}
                                 initial={{ 
                                     x: 0, 
                                     y: 0, 
@@ -237,8 +232,7 @@ const RoleBadge: React.FC = () => {
                         color: role.color,
                         cursor: 'default',
                         transition: 'background-color 0.2s ease, transform 0.2s ease',
-                        transform: hoveredIndex === index ? 'translateY(-1px)' : 'translateY(0)',
-                    }}
+                        transform: hoveredIndex === index ? 'translateY(-1px)' : 'translateY(0)' }}
                 >
                     <span
                         style={{
@@ -247,8 +241,7 @@ const RoleBadge: React.FC = () => {
                             borderRadius: '50%',
                             backgroundColor: role.color,
                             opacity: hoveredIndex === index ? 1 : 0.7,
-                            transition: 'opacity 0.2s ease',
-                        }}
+                            transition: 'opacity 0.2s ease' }}
                     />
                     {role.name}
                 </motion.span>
@@ -272,8 +265,7 @@ const HomeSkeleton: React.FC = () => {
         return () => observer.disconnect();
     }, []);
     
-    // Dark mode aware colors
-    const cardBg = isDark ? 'rgba(30, 41, 59, 0.8)' : '#f4f4f5';
+    // Dark mode aware const cardBg = isDark ? 'rgba(30, 41, 59, 0.8)' : '#f4f4f5';
     const shimmerBg = isDark ? 'rgba(51, 65, 85, 0.6)' : undefined;
     const shimmerClass = isDark ? '' : 'bg-zinc-200';
     const containerClass = isDark ? '' : 'bg-zinc-100';

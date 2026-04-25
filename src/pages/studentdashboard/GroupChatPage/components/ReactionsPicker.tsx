@@ -13,7 +13,7 @@ interface ReactionsPickerProps {
     messageId: string;
     isVisible: boolean;
     isOwn: boolean;
-    colors: ChatColors;
+    
     onReactionSelect: (messageId: string, emoji: string) => void;
 }
 
@@ -21,9 +21,8 @@ export const ReactionsPicker: React.FC<ReactionsPickerProps> = ({
     messageId,
     isVisible,
     isOwn,
-    colors,
-    onReactionSelect,
-}) => {
+    
+    onReactionSelect }) => {
     return (
         <AnimatePresence>
             {isVisible && (
@@ -43,8 +42,7 @@ export const ReactionsPicker: React.FC<ReactionsPickerProps> = ({
                         padding: '6px 8px',
                         boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                         border: `1px solid var(--border-color)`,
-                        zIndex: 10,
-                    }}
+                        zIndex: 10 }}
                 >
                     {STUDY_REACTIONS.map((reaction) => (
                         <Tooltip key={reaction.emoji} text={reaction.label} placement="above">
@@ -62,8 +60,7 @@ export const ReactionsPicker: React.FC<ReactionsPickerProps> = ({
                                     fontSize: '18px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
+                                    justifyContent: 'center' }}
                             >
                                 {reaction.emoji}
                             </motion.button>

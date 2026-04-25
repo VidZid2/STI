@@ -14,21 +14,13 @@ export interface StudyToolsMenuProps {
     isOpen: boolean;
     onClose: () => void;
     onSelectTool: (tool: string) => void;
-    colors: {
-        cardBg: string;
-        textPrimary: string;
-        textSecondary: string;
-        accent: string;
-        border: string;
-    };
+    
 }
 
 export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
     isOpen,
     onClose,
-    onSelectTool,
-    colors,
-}) => {
+    onSelectTool }) => {
     const [activeTab, setActiveTab] = useState<'study' | 'collab'>('study');
     const [hoveredTool, setHoveredTool] = useState<string | null>(null);
 
@@ -65,8 +57,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'flex-end',
-                paddingRight: '20px',
-            }}
+                paddingRight: '20px' }}
         >
             <motion.div
                 initial={{ x: 80, opacity: 0 }}
@@ -88,8 +79,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '6px',
-                }}
+                    gap: '6px' }}
             >
                 {/* Tab Switcher - Vertical compact pill */}
                 <div
@@ -100,8 +90,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                         background: 'rgba(0, 0, 0, 0.04)',
                         borderRadius: '10px',
                         padding: '3px',
-                        marginBottom: '4px',
-                    }}
+                        marginBottom: '4px' }}
                 >
                     <motion.div
                         layoutId="dock-tab-indicator"
@@ -114,8 +103,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                             height: 'calc(50% - 4px)',
                             background: 'white',
                             borderRadius: '8px',
-                            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
-                        }}
+                            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)' }}
                     />
                     {[
                         {
@@ -135,8 +123,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                                 </svg>
-                            ),
-                        },
+                            ) },
                         {
                             id: 'collab' as const,
                             label: 'Collaborate',
@@ -155,8 +142,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                                     <circle cx="9" cy="7" r="4" />
                                     <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
                                 </svg>
-                            ),
-                        },
+                            ) },
                     ].map((tab) => (
                         <Tooltip key={tab.id} text={tab.label} placement="left">
                             <motion.button
@@ -178,8 +164,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                                         activeTab === tab.id
                                             ? 'var(--accent-color)'
                                             : 'rgba(0, 0, 0, 0.4)',
-                                    transition: 'color 0.2s ease',
-                                }}
+                                    transition: 'color 0.2s ease' }}
                             >
                                 {tab.icon}
                             </motion.button>
@@ -193,8 +178,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                         width: '28px',
                         height: '1px',
                         background: 'rgba(0, 0, 0, 0.08)',
-                        marginBottom: '2px',
-                    }}
+                        marginBottom: '2px' }}
                 />
 
                 {/* Tools Column */}
@@ -209,8 +193,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            gap: '4px',
-                        }}
+                            gap: '4px' }}
                     >
                         {tools.map((tool, index) => {
                             const config = TOOL_COLOR_CONFIG[tool.id];
@@ -243,19 +226,16 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                                             justifyContent: 'center',
                                             gap: '2px',
                                             transition: 'background 0.2s ease',
-                                            position: 'relative',
-                                        }}
+                                            position: 'relative' }}
                                     >
                                         <motion.div
                                             animate={{
                                                 scale: isHovered ? 1.15 : 1,
-                                                x: isHovered ? -2 : 0,
-                                            }}
+                                                x: isHovered ? -2 : 0 }}
                                             transition={{
                                                 type: 'spring',
                                                 stiffness: 400,
-                                                damping: 20,
-                                            }}
+                                                damping: 20 }}
                                         >
                                             <ToolIcon
                                                 type={tool.id}
@@ -278,8 +258,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                         width: '28px',
                         height: '1px',
                         background: 'rgba(0, 0, 0, 0.08)',
-                        marginTop: '2px',
-                    }}
+                        marginTop: '2px' }}
                 />
 
                 {/* Close button */}
@@ -300,8 +279,7 @@ export const StudyToolsMenu: React.FC<StudyToolsMenuProps> = ({
                             justifyContent: 'center',
                             color: 'rgba(0, 0, 0, 0.4)',
                             marginTop: '4px',
-                            transition: 'color 0.2s ease',
-                        }}
+                            transition: 'color 0.2s ease' }}
                     >
                         <svg
                             width="14"

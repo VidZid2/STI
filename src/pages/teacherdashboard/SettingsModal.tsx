@@ -4,7 +4,7 @@
  * Professional blue theme with smooth hover effects
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT } from './constants';
 import { useGradingSettings } from './contexts';
@@ -197,7 +197,6 @@ const TabButton: React.FC<{
 // ============================================
 const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     const [activeTab, setActiveTab] = useState<SettingsTab>('notifications');
-    const modalRef = useRef<HTMLDivElement>(null);
     const focusTrapRef = useFocusTrap(isOpen);
     
     // Use grading settings from context

@@ -31,8 +31,7 @@ export const InputToolbarLeft: React.FC<{
                         justifyContent: 'center',
                         color: '#3b82f6',
                         flexShrink: 0,
-                        boxShadow: '0 1px 3px rgba(59, 130, 246, 0.15)',
-                    }}
+                        boxShadow: '0 1px 3px rgba(59, 130, 246, 0.15)' }}
                 >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <line x1="12" y1="5" x2="12" y2="19" />
@@ -58,8 +57,7 @@ export const InputToolbarLeft: React.FC<{
                         justifyContent: 'center',
                         color: '#22c55e',
                         flexShrink: 0,
-                        boxShadow: '0 1px 3px rgba(34, 197, 94, 0.15)',
-                    }}
+                        boxShadow: '0 1px 3px rgba(34, 197, 94, 0.15)' }}
                 >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
@@ -90,8 +88,7 @@ export const InputToolbarRight: React.FC<{
     onEmojiToggle,
     onGifToggle,
     onVoiceNoteClick,
-    onSend,
-}) => {
+    onSend }) => {
     const canSend = hasMessage || hasAttachments;
     return (
         <>
@@ -110,8 +107,7 @@ export const InputToolbarRight: React.FC<{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 1px 3px rgba(59, 130, 246, 0.15)',
-                    }}
+                        boxShadow: '0 1px 3px rgba(59, 130, 246, 0.15)' }}
                 >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10" />
@@ -138,8 +134,7 @@ export const InputToolbarRight: React.FC<{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 1px 3px rgba(245, 158, 11, 0.15)',
-                    }}
+                        boxShadow: '0 1px 3px rgba(245, 158, 11, 0.15)' }}
                 >
                     <span style={{ fontSize: '14px', fontWeight: 700, color: '#f59e0b' }}>GIF</span>
                 </motion.button>
@@ -160,8 +155,7 @@ export const InputToolbarRight: React.FC<{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: '0 1px 3px rgba(139, 92, 246, 0.15)',
-                    }}
+                        boxShadow: '0 1px 3px rgba(139, 92, 246, 0.15)' }}
                 >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
@@ -194,8 +188,7 @@ export const InputToolbarRight: React.FC<{
                         color: canSend ? '#fff' : '#9ca3af',
                         flexShrink: 0,
                         transition: 'all 0.2s ease',
-                        boxShadow: canSend ? '0 1px 3px rgba(59, 130, 246, 0.3)' : '0 1px 3px rgba(0,0,0,0.08)',
-                    }}
+                        boxShadow: canSend ? '0 1px 3px rgba(59, 130, 246, 0.3)' : '0 1px 3px rgba(0,0,0,0.08)' }}
                 >
                     {isSending ? (
                         <motion.div
@@ -206,8 +199,7 @@ export const InputToolbarRight: React.FC<{
                                 height: 14,
                                 border: '2px solid rgba(255,255,255,0.3)',
                                 borderTopColor: '#fff',
-                                borderRadius: '50%',
-                            }}
+                                borderRadius: '50%' }}
                         />
                     ) : (
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -38,8 +38,8 @@ export interface VirtualizedMessageListProps {
     helpfulVotes: Record<string, { count: number; voted: boolean }>;
     showReactionsFor: string | null;
     scrollState: { lastReadIndex: number | null; unreadCount: number };
-    colors: ChatColors;
-    isDarkMode: boolean;
+    
+    
     
     // Callbacks
     onHover: (messageId: string) => void;
@@ -69,8 +69,7 @@ const ScrollContainer = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivE
             {...props}
             style={{
                 ...props.style,
-                scrollBehavior: 'smooth',
-            }}
+                scrollBehavior: 'smooth' }}
         />
     )
 );
@@ -94,8 +93,8 @@ export const VirtualizedMessageList = forwardRef<VirtuosoHandle, VirtualizedMess
             helpfulVotes,
             showReactionsFor,
             scrollState,
-            colors,
-            isDarkMode,
+            
+            
             onHover,
             onLeave,
             onReaction,
@@ -109,8 +108,7 @@ export const VirtualizedMessageList = forwardRef<VirtuosoHandle, VirtualizedMess
             onSetEditingContent,
             onSaveEdit,
             onCancelEdit,
-            onAtBottomChange,
-        } = props;
+            onAtBottomChange } = props;
 
         const listRef = useRef<VirtuosoHandle>(null);
 
@@ -134,7 +132,7 @@ export const VirtualizedMessageList = forwardRef<VirtuosoHandle, VirtualizedMess
                     {showDateSep && (
                         <DateSeparator
                             date={message.created_at}
-                            isDarkMode={isDarkMode}
+                            
                             textMutedColor={'var(--text-muted)'}
                         />
                     )}
@@ -164,8 +162,8 @@ export const VirtualizedMessageList = forwardRef<VirtuosoHandle, VirtualizedMess
                             uniqueAuthors={uniqueAuthors}
                             showUnreadIndicator={scrollState.lastReadIndex !== null && index === scrollState.lastReadIndex && scrollState.unreadCount > 0}
                             unreadCount={scrollState.unreadCount}
-                            colors={colors}
-                            isDarkMode={isDarkMode}
+                            
+                            
                             onHover={onHover}
                             onLeave={onLeave}
                             onReaction={onReaction}
@@ -199,8 +197,8 @@ export const VirtualizedMessageList = forwardRef<VirtuosoHandle, VirtualizedMess
             helpfulVotes,
             showReactionsFor,
             scrollState,
-            colors,
-            isDarkMode,
+            
+            
             onHover,
             onLeave,
             onReaction,
@@ -225,8 +223,7 @@ export const VirtualizedMessageList = forwardRef<VirtuosoHandle, VirtualizedMess
                 </div>
             ),
             Header: () => <div style={{ height: 20 }} />,
-            Footer: () => <div style={{ height: 20 }} />,
-        };
+            Footer: () => <div style={{ height: 20 }} /> };
 
         return (
             <Virtuoso
@@ -239,8 +236,7 @@ export const VirtualizedMessageList = forwardRef<VirtuosoHandle, VirtualizedMess
                 overscan={200}
                 style={{
                     height: '100%',
-                    width: '100%',
-                }}
+                    width: '100%' }}
                 components={virtuosoComponents}
             />
         );

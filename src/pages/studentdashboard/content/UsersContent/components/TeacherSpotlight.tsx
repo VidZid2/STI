@@ -10,8 +10,8 @@ import { SkeletonPulse } from './UsersSkeleton';
 // Teacher Spotlight Skeleton
 
 const TeacherSpotlightSkeleton: React.FC<{
-    colors: { cardBg: string; border: string };
-}> = ({ colors }) => {
+    
+}> = ({ }) => {
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -22,8 +22,7 @@ const TeacherSpotlightSkeleton: React.FC<{
                 padding: '18px',
                 borderRadius: '14px',
                 background: 'var(--dashboard-surface)',
-                border: `1px solid var(--border-color)`,
-            }}
+                border: `1px solid var(--border-color)` }}
         >
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
@@ -42,8 +41,7 @@ const TeacherSpotlightSkeleton: React.FC<{
                     padding: '16px',
                     borderRadius: '12px',
                     border: `1px solid var(--border-color)`,
-                    textAlign: 'center',
-                }}>
+                    textAlign: 'center' }}>
                     <SkeletonPulse width="64px" height="64px" borderRadius="16px"  style={{ margin: '0 auto 12px' }} />
                     <SkeletonPulse width="80%" height="14px" borderRadius="4px"  style={{ margin: '0 auto 8px' }} />
                     <SkeletonPulse width="50px" height="20px" borderRadius="6px"  style={{ margin: '0 auto' }} />
@@ -62,8 +60,7 @@ const TeacherSpotlightSkeleton: React.FC<{
                                 padding: '10px 14px',
                                 borderRadius: '10px',
                                 border: `1px solid var(--border-color)`,
-                                marginBottom: '8px',
-                            }}
+                                marginBottom: '8px' }}
                         >
                             <SkeletonPulse width="36px" height="36px" borderRadius="8px"  />
                             <div style={{ flex: 1 }}>
@@ -86,15 +83,9 @@ interface TeacherWithCourses {
 }
 
 const TeacherSpotlight: React.FC<{
-    colors: {
-        cardBg: string;
-        border: string;
-        textPrimary: string;
-        textSecondary: string;
-        textMuted: string;
-    };
+    
     onTeacherClick: (teacher: UserAccount) => void;
-}> = ({ colors, onTeacherClick }) => {
+}> = ({  onTeacherClick }) => {
     const [teachers, setTeachers] = useState<TeacherWithCourses[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -144,21 +135,19 @@ const TeacherSpotlight: React.FC<{
     }, [teachers.length]);
 
     if (isLoading) {
-        return <TeacherSpotlightSkeleton  colors={colors} />;
+        return <TeacherSpotlightSkeleton   />;
     }
 
     if (teachers.length === 0) return null;
 
     const currentTeacher = teachers[currentIndex];
 
-    // Category colors
-    const getCategoryColor = (category: string) => {
+    // Category const getCategoryColor = (category: string) => {
         const categoryColors: Record<string, string> = {
             major: '#3b82f6',
             ge: '#10b981',
             pe: '#f59e0b',
-            nstp: '#8b5cf6',
-        };
+            nstp: '#8b5cf6' };
         return categoryColors[category] || '#64748b';
     };
 
@@ -173,8 +162,7 @@ const TeacherSpotlight: React.FC<{
                 borderRadius: '14px',
                 background: 'var(--dashboard-surface)',
                 border: `1px solid var(--border-color)`,
-                overflow: 'hidden',
-            }}
+                overflow: 'hidden' }}
         >
             {/* Section Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
@@ -190,8 +178,7 @@ const TeacherSpotlight: React.FC<{
                             background: 'rgba(245, 158, 11, 0.1)',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
+                            justifyContent: 'center' }}
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -223,8 +210,7 @@ const TeacherSpotlight: React.FC<{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            cursor: 'pointer',
-                        }}
+                            cursor: 'pointer' }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="15 18 9 12 15 6" />
@@ -244,8 +230,7 @@ const TeacherSpotlight: React.FC<{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            cursor: 'pointer',
-                        }}
+                            cursor: 'pointer' }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="9 18 15 12 9 6" />
@@ -266,8 +251,7 @@ const TeacherSpotlight: React.FC<{
                         style={{
                             display: 'flex',
                             gap: '16px',
-                            alignItems: 'flex-start',
-                        }}
+                            alignItems: 'flex-start' }}
                     >
                         {/* Teacher Card */}
                         <motion.div
@@ -282,8 +266,7 @@ const TeacherSpotlight: React.FC<{
                                 background: 'var(--bg-hover)',
                                 border: `1px solid var(--border-color)`,
                                 cursor: 'pointer',
-                                textAlign: 'center',
-                            }}
+                                textAlign: 'center' }}
                         >
                             {/* Avatar */}
                             <motion.div
@@ -302,8 +285,7 @@ const TeacherSpotlight: React.FC<{
                                     fontWeight: 600,
                                     color: '#f59e0b',
                                     margin: '0 auto 12px',
-                                    position: 'relative',
-                                }}
+                                    position: 'relative' }}
                             >
                                 {currentTeacher.teacher.profile_image ? (
                                     <img 
@@ -324,8 +306,7 @@ const TeacherSpotlight: React.FC<{
                                     borderRadius: '50%',
                                     background: currentTeacher.teacher.is_online ? '#10b981' : '#94a3b8',
                                     border: '3px solid white',
-                                    boxShadow: currentTeacher.teacher.is_online ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
-                                }} />
+                                    boxShadow: currentTeacher.teacher.is_online ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none' }} />
                             </motion.div>
                             
                             {/* Name */}
@@ -333,8 +314,7 @@ const TeacherSpotlight: React.FC<{
                                 margin: '0 0 4px',
                                 fontSize: '14px',
                                 fontWeight: 600,
-                                color: 'var(--text-primary)',
-                            }}>
+                                color: 'var(--text-primary)' }}>
                                 {currentTeacher.teacher.full_name}
                             </h4>
                             
@@ -348,8 +328,7 @@ const TeacherSpotlight: React.FC<{
                                 background: 'rgba(245, 158, 11, 0.1)',
                                 fontSize: '10px',
                                 fontWeight: 500,
-                                color: '#f59e0b',
-                            }}>
+                                color: '#f59e0b' }}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                     <circle cx="9" cy="7" r="4" />
@@ -368,8 +347,7 @@ const TeacherSpotlight: React.FC<{
                                 fontWeight: 600,
                                 color: 'var(--text-muted)',
                                 textTransform: 'uppercase',
-                                letterSpacing: '0.5px',
-                            }}>
+                                letterSpacing: '0.5px' }}>
                                 Teaching This Semester
                             </p>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -386,8 +364,7 @@ const TeacherSpotlight: React.FC<{
                                             padding: '10px 14px',
                                             borderRadius: '10px',
                                             background: 'var(--bg-hover)',
-                                            border: `1px solid var(--border-color)`,
-                                        }}
+                                            border: `1px solid var(--border-color)` }}
                                     >
                                         {/* Course Icon */}
                                         <div style={{
@@ -398,8 +375,7 @@ const TeacherSpotlight: React.FC<{
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            flexShrink: 0,
-                                        }}>
+                                            flexShrink: 0 }}>
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={getCategoryColor(course.category)} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -415,15 +391,13 @@ const TeacherSpotlight: React.FC<{
                                                 color: 'var(--text-primary)',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
-                                                whiteSpace: 'nowrap',
-                                            }}>
+                                                whiteSpace: 'nowrap' }}>
                                                 {course.title}
                                             </p>
                                             <p style={{
                                                 margin: 0,
                                                 fontSize: '11px',
-                                                color: 'var(--text-muted)',
-                                            }}>
+                                                color: 'var(--text-muted)' }}>
                                                 {course.subtitle} · {course.short_title}
                                             </p>
                                         </div>
@@ -437,8 +411,7 @@ const TeacherSpotlight: React.FC<{
                                             fontWeight: 600,
                                             color: getCategoryColor(course.category),
                                             textTransform: 'uppercase',
-                                            flexShrink: 0,
-                                        }}>
+                                            flexShrink: 0 }}>
                                             {course.category}
                                         </span>
                                     </motion.div>
@@ -455,8 +428,7 @@ const TeacherSpotlight: React.FC<{
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '6px',
-                marginTop: '16px',
-            }}>
+                marginTop: '16px' }}>
                 {teachers.map((_, idx) => (
                     <motion.button
                         key={idx}
@@ -473,8 +445,7 @@ const TeacherSpotlight: React.FC<{
                             border: 'none',
                             background: idx === currentIndex ? '#f59e0b' : 'var(--border-medium)',
                             cursor: 'pointer',
-                            transition: 'all 0.2s ease',
-                        }}
+                            transition: 'all 0.2s ease' }}
                     />
                 ))}
             </div>

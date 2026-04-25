@@ -10,17 +10,8 @@ import { getAggregatedProgressHistory, getRealTimeProgress, type GoalWithProgres
 
 // Progress History Chart Component
 const ProgressHistoryChart: React.FC<{
-    colors: {
-        bg: string;
-        cardBg: string;
-        border: string;
-        textPrimary: string;
-        textSecondary: string;
-        textMuted: string;
-        accent: string;
-    };
-    goals: GoalWithProgress[];
-}> = ({ colors, goals }) => {
+    
+}> = ({  goals }) => {
     const [historyData, setHistoryData] = useState<{ date: string; completed: number; active: number; totalProgress: number }[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -76,8 +67,7 @@ const ProgressHistoryChart: React.FC<{
         return {
             totalProgress: avgProgress,
             active: activeGoals.length,
-            completed: completedGoals.length,
-        };
+            completed: completedGoals.length };
     }, [goals]);
 
     // Merge historical data with current real-time stats for today
@@ -90,8 +80,7 @@ const ProgressHistoryChart: React.FC<{
             if (index === historyData.length - 1 && entry.date === today) {
                 return {
                     ...entry,
-                    ...currentStats,
-                };
+                    ...currentStats };
             }
             return entry;
         });
@@ -112,8 +101,7 @@ const ProgressHistoryChart: React.FC<{
                 padding: '16px 20px',
                 borderRadius: '14px',
                 background: 'var(--dashboard-surface)',
-                border: `1px solid var(--border-color)`,
-            }}
+                border: `1px solid var(--border-color)` }}
         >
             {/* Header */}
             <div 
@@ -122,8 +110,7 @@ const ProgressHistoryChart: React.FC<{
                     alignItems: 'center', 
                     justifyContent: 'space-between',
                     marginBottom: isExpanded ? '16px' : '0',
-                    cursor: 'pointer',
-                }}
+                    cursor: 'pointer' }}
                 onClick={() => setIsExpanded(!isExpanded)}
             >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -138,8 +125,7 @@ const ProgressHistoryChart: React.FC<{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: '#3b82f6',
-                        }}
+                            color: '#3b82f6' }}
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M3 3v18h18" />
@@ -198,8 +184,7 @@ const ProgressHistoryChart: React.FC<{
                                 justifyContent: 'center', 
                                 height: '120px',
                                 color: 'var(--text-muted)',
-                                fontSize: '12px',
-                            }}>
+                                fontSize: '12px' }}>
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ marginBottom: '8px', opacity: 0.5 }}>
                                     <path d="M3 3v18h18" />
                                     <path d="m19 9-5 5-4-4-3 3" />
@@ -221,15 +206,13 @@ const ProgressHistoryChart: React.FC<{
                                         flexDirection: 'column',
                                         justifyContent: 'space-between',
                                         paddingTop: '2px',
-                                        paddingBottom: '2px',
-                                    }}>
+                                        paddingBottom: '2px' }}>
                                         {[100, 50, 0].map((val) => (
                                             <span key={val} style={{ 
                                                 fontSize: '9px', 
                                                 color: 'var(--text-muted)',
                                                 textAlign: 'right',
-                                                lineHeight: 1,
-                                            }}>
+                                                lineHeight: 1 }}>
                                                 {val}
                                             </span>
                                         ))}
@@ -241,8 +224,7 @@ const ProgressHistoryChart: React.FC<{
                                         height: '100%',
                                         background: 'var(--bg-hover)',
                                         borderRadius: '8px',
-                                        overflow: 'hidden',
-                                    }}>
+                                        overflow: 'hidden' }}>
                                         {/* Grid lines */}
                                         <div style={{ 
                                             position: 'absolute', 
@@ -250,12 +232,10 @@ const ProgressHistoryChart: React.FC<{
                                             display: 'flex', 
                                             flexDirection: 'column', 
                                             justifyContent: 'space-between',
-                                            padding: '0 8px',
-                                        }}>
+                                            padding: '0 8px' }}>
                                             {[0, 1, 2].map((i) => (
                                                 <div key={i} style={{ 
-                                                    borderBottom: `1px dashed ${'var(--border-light)'}`,
-                                                }} />
+                                                    borderBottom: `1px dashed ${'var(--border-light)'}` }} />
                                             ))}
                                         </div>
                                         
@@ -354,8 +334,7 @@ const ProgressHistoryChart: React.FC<{
                                     display: 'flex', 
                                     justifyContent: 'space-between',
                                     paddingLeft: '0',
-                                    marginBottom: '12px',
-                                }}>
+                                    marginBottom: '12px' }}>
                                     {chartData.map((d, i) => (
                                         <motion.span
                                             key={i}
@@ -365,8 +344,7 @@ const ProgressHistoryChart: React.FC<{
                                             style={{ 
                                                 fontSize: '10px', 
                                                 color: 'var(--text-muted)',
-                                                fontWeight: 500,
-                                            }}
+                                                fontWeight: 500 }}
                                         >
                                             {formatDate(d.date)}
                                         </motion.span>
@@ -380,8 +358,7 @@ const ProgressHistoryChart: React.FC<{
                                     gap: '10px',
                                     padding: '10px',
                                     borderRadius: '10px',
-                                    background: 'var(--bg-hover)',
-                                }}>
+                                    background: 'var(--bg-hover)' }}>
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}

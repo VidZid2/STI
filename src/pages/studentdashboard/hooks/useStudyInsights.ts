@@ -63,8 +63,7 @@ export const useStudyInsights = (refreshTrigger: number): UseStudyInsightsReturn
 
     return {
         studyInsights,
-        refreshStudyInsights,
-    };
+        refreshStudyInsights };
 };
 
 export default useStudyInsights;

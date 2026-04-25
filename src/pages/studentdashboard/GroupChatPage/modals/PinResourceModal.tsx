@@ -14,10 +14,10 @@ interface PinResourceModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSend: (title: string, url: string, description: string) => void;
-    colors: ModalColors;
+    
 }
 
-export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onClose, onSend, colors }) => {
+export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onClose, onSend }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'pin-resource-modal-title');
     const [title, setTitle] = useState('');
     const [url, setUrl] = useState('');
@@ -25,9 +25,8 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
     const [focusedField, setFocusedField] = useState<string | null>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
 
-    // Blue accent colors
-    const blueAccent = '#3b82f6';
-    const isDarkMode = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
+    // Blue accent const blueAccent = '#3b82f6';
+    const = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
     const blueBg = 'rgba(59, 130, 246, 0.1)';
     const blueBorder = 'rgba(59, 130, 246, 0.25)';
     const subtleBg = 'var(--dashboard-surface)';
@@ -68,8 +67,7 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                         position: 'fixed', inset: 0,
                         background: 'rgba(0,0,0,0.6)',
                         backdropFilter: 'blur(8px)', zIndex: 1001,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
-                    }}
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
                 >
                     <motion.div
                         initial={{ scale: 0.95, opacity: 0, y: 10 }}
@@ -82,17 +80,14 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                         style={{
                             background: 'var(--dashboard-surface)', borderRadius: '20px',
                             width: '100%', maxWidth: '440px',
-                            boxShadow: isDarkMode
-                                ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
+                            boxShadow: ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
                                 : '0 24px 48px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04)',
-                            overflow: 'hidden',
-                        }}
+                            overflow: 'hidden' }}
                     >
                         {/* Header */}
                         <div style={{
                             padding: '20px 24px', borderBottom: `1px solid ${borderColor}`,
-                            display: 'flex', alignItems: 'center', gap: '14px',
-                        }}>
+                            display: 'flex', alignItems: 'center', gap: '14px' }}>
                             <motion.div
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
@@ -100,8 +95,7 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                 style={{
                                     width: 44, height: 44, borderRadius: '12px',
                                     background: blueBg, border: `1px solid ${blueBorder}`,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                }}
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                             >
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M12 17v5" />
@@ -125,8 +119,7 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                 style={{
                                     width: 32, height: 32, borderRadius: '10px', border: 'none',
                                     background: subtleBg, cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)',
-                                }}
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -146,14 +139,12 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                     background: 'var(--dashboard-surface)',
                                     border: `1px solid ${borderColor}`,
                                     borderRadius: '14px', padding: '14px 16px', marginBottom: '20px',
-                                    display: 'flex', alignItems: 'flex-start', gap: '12px',
-                                }}
+                                    display: 'flex', alignItems: 'flex-start', gap: '12px' }}
                             >
                                 <div style={{
                                     width: 36, height: 36, borderRadius: '10px',
                                     background: blueBg, border: `1px solid ${blueBorder}`,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                }}>
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill={blueAccent} stroke="none">
                                         <path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" />
                                     </svg>
@@ -165,16 +156,14 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                     {url && (
                                         <div style={{
                                             fontSize: '11px', color: blueAccent, marginBottom: '4px',
-                                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                        }}>
+                                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                             {url}
                                         </div>
                                     )}
                                     <div style={{
                                         fontSize: '12px', color: 'var(--text-secondary)',
                                         overflow: 'hidden', textOverflow: 'ellipsis',
-                                        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                                    }}>
+                                        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                                         {description || 'Add a description...'}
                                     </div>
                                 </div>
@@ -186,8 +175,7 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                     display: 'flex', alignItems: 'center', gap: '6px',
                                     fontSize: '11px', fontWeight: 600, marginBottom: '8px',
                                     color: focusedField === 'title' ? blueAccent : 'var(--text-secondary)',
-                                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                                }}>
+                                    textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: focusedField === 'title' ? blueAccent : 'var(--text-muted)' }} />
                                     Title
                                     <span style={{ color: '#ef4444', marginLeft: '2px' }}>*</span>
@@ -205,8 +193,7 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                         background: focusedField === 'title' ? blueBg : subtleBg,
                                         fontSize: '14px', outline: 'none', color: 'var(--text-primary)', fontFamily: 'inherit',
                                         transition: 'all 0.2s ease',
-                                        boxShadow: focusedField === 'title' ? `0 0 0 3px ${blueBg}` : 'none',
-                                    }}
+                                        boxShadow: focusedField === 'title' ? `0 0 0 3px ${blueBg}` : 'none' }}
                                 />
                             </motion.div>
 
@@ -217,8 +204,7 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                     display: 'flex', alignItems: 'center', gap: '6px',
                                     fontSize: '11px', fontWeight: 600, marginBottom: '8px',
                                     color: focusedField === 'url' ? blueAccent : 'var(--text-secondary)',
-                                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                                }}>
+                                    textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: focusedField === 'url' ? blueAccent : 'var(--text-muted)' }} />
                                     URL
                                     <span style={{ fontSize: '9px', fontWeight: 500, color: 'var(--text-muted)', textTransform: 'none', letterSpacing: 'normal', marginLeft: '4px' }}>
@@ -238,13 +224,11 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                             background: focusedField === 'url' ? blueBg : subtleBg,
                                             fontSize: '14px', outline: 'none', color: 'var(--text-primary)', fontFamily: 'inherit',
                                             transition: 'all 0.2s ease',
-                                            boxShadow: focusedField === 'url' ? `0 0 0 3px ${blueBg}` : 'none',
-                                        }}
+                                            boxShadow: focusedField === 'url' ? `0 0 0 3px ${blueBg}` : 'none' }}
                                     />
                                     <div style={{
                                         position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
-                                        color: focusedField === 'url' ? blueAccent : 'var(--text-muted)',
-                                    }}>
+                                        color: focusedField === 'url' ? blueAccent : 'var(--text-muted)' }}>
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                                             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
@@ -273,8 +257,7 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                     display: 'flex', alignItems: 'center', gap: '6px',
                                     fontSize: '11px', fontWeight: 600, marginBottom: '8px',
                                     color: focusedField === 'description' ? blueAccent : 'var(--text-secondary)',
-                                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                                }}>
+                                    textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: focusedField === 'description' ? blueAccent : 'var(--text-muted)' }} />
                                     Description
                                 </label>
@@ -291,8 +274,7 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                         fontSize: '14px', outline: 'none', color: 'var(--text-primary)', fontFamily: 'inherit',
                                         resize: 'none', minHeight: '80px',
                                         transition: 'all 0.2s ease',
-                                        boxShadow: focusedField === 'description' ? `0 0 0 3px ${blueBg}` : 'none',
-                                    }}
+                                        boxShadow: focusedField === 'description' ? `0 0 0 3px ${blueBg}` : 'none' }}
                                 />
                             </motion.div>
                         </div>
@@ -301,8 +283,7 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                         {/* Footer */}
                         <div style={{
                             padding: '16px 24px 20px', borderTop: `1px solid ${borderColor}`,
-                            display: 'flex', gap: '10px', justifyContent: 'flex-end', background: subtleBg,
-                        }}>
+                            display: 'flex', gap: '10px', justifyContent: 'flex-end', background: subtleBg }}>
                             <motion.button
                                 whileHover={{ scale: 1.02, background: 'var(--bg-hover)' }}
                                 whileTap={{ scale: 0.98 }}
@@ -310,8 +291,7 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                 style={{
                                     padding: '10px 18px', borderRadius: '10px',
                                     border: `1px solid ${borderColor}`, background: 'transparent',
-                                    cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)',
-                                }}
+                                    cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)' }}
                             >
                                 Cancel
                             </motion.button>
@@ -329,8 +309,7 @@ export const PinResourceModal: React.FC<PinResourceModalProps> = ({ isOpen, onCl
                                     fontSize: '13px', fontWeight: 600,
                                     color: isValid && isValidUrl ? '#fff' : 'var(--text-muted)',
                                     display: 'flex', alignItems: 'center', gap: '8px',
-                                    boxShadow: isValid && isValidUrl ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none',
-                                }}
+                                    boxShadow: isValid && isValidUrl ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none' }}
                             >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M12 17v5" />

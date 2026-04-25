@@ -10,7 +10,7 @@ import { useAssignmentContext } from '../../AssignmentFormContext';
 
 const QuickStartSection: React.FC = () => {
     const {
-        formData, updateFormData,
+        updateFormData,
         isMobile, isSmallMobile,
         recentAssignments, loadingRecentAssignments,
     } = useAssignmentContext();
@@ -43,7 +43,6 @@ const QuickStartSection: React.FC = () => {
                 {QUICK_TEMPLATES.map((template) => (
                     <motion.button
                         key={template.id}
-                        className="quick-template-btn text-left"
                         whileHover={!isMobile ? { scale: 1.02, y: -2, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', background: 'var(--bg-surface)' } : undefined}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => {

@@ -13,8 +13,8 @@ const FilterTabs: React.FC<{
     activeFilter: FilterTab;
     setActiveFilter: (filter: FilterTab) => void;
     stats: UserStats;
-    colors: { accent: string; textSecondary: string; textMuted: string };
-}> = ({ activeFilter, setActiveFilter, stats, colors }) => {
+    
+}> = ({ activeFilter, setActiveFilter, stats }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [indicatorStyle, setIndicatorStyle] = useState({ left: 5, width: 60 });
     
@@ -37,8 +37,7 @@ const FilterTabs: React.FC<{
             const buttonRect = button.getBoundingClientRect();
             setIndicatorStyle({
                 left: buttonRect.left - containerRect.left,
-                width: buttonRect.width,
-            });
+                width: buttonRect.width });
         }
     }, [activeFilter]);
 
@@ -54,8 +53,7 @@ const FilterTabs: React.FC<{
                 const buttonRect = button.getBoundingClientRect();
                 setIndicatorStyle({
                     left: buttonRect.left - containerRect.left,
-                    width: buttonRect.width,
-                });
+                    width: buttonRect.width });
             }
         }, 50);
         return () => clearTimeout(timer);
@@ -73,8 +71,7 @@ const FilterTabs: React.FC<{
                 padding: '4px',
                 borderRadius: '12px',
                 background: 'var(--bg-hover)',
-                position: 'relative',
-            }}
+                position: 'relative' }}
         >
             <motion.div
                 style={{
@@ -84,8 +81,7 @@ const FilterTabs: React.FC<{
                     borderRadius: '8px',
                     background: 'rgba(59, 130, 246, 0.1)',
                     border: `1px solid ${'rgba(59, 130, 246, 0.3)'}`,
-                    zIndex: 0,
-                }}
+                    zIndex: 0 }}
                 initial={false}
                 animate={{ left: indicatorStyle.left, width: indicatorStyle.width }}
                 transition={{ type: 'spring', stiffness: 500, damping: 35 }}
@@ -112,8 +108,7 @@ const FilterTabs: React.FC<{
                         cursor: 'pointer',
                         position: 'relative',
                         zIndex: 1,
-                        transition: 'color 0.2s ease',
-                    }}
+                        transition: 'color 0.2s ease' }}
                 >
                     {tab.label}
                     <span style={{
@@ -122,8 +117,7 @@ const FilterTabs: React.FC<{
                         borderRadius: '10px',
                         background: activeFilter === tab.id 
                             ? 'rgba(59, 130, 246, 0.2)' 
-                            : 'var(--border-light)',
-                    }}>
+                            : 'var(--border-light)' }}>
                         {tab.count}
                     </span>
                 </motion.button>

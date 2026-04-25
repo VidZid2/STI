@@ -1,6 +1,6 @@
 /**
  * StreakWidget Component
- * Dynamic colors based on streak tier with dark mode support
+ * Dynamic based on streak tier with dark mode support
  */
 
 import React from 'react';
@@ -13,7 +13,7 @@ interface StreakWidgetProps {
 
 export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false }) => {
     const [streakData, setStreakData] = React.useState(() => getStreakData());
-    const [isDarkMode, setIsDarkMode] = React.useState(false);
+    const [ setIsDarkMode] = React.useState(false);
 
     // Check for dark mode
     React.useEffect(() => {
@@ -47,33 +47,29 @@ export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false }) =
         }
     };
 
-    // Dark mode aware colors
-    const getColors = () => {
-        if (isDarkMode) {
+    // Dark mode aware const getColors = () => {
+        if () {
             if (tier.tier === 'legendary') {
                 return {
                     bgGradient: 'linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
                     borderColor: 'rgba(251, 191, 36, 0.5)',
                     textColor: '#fbbf24',
                     subTextColor: 'rgba(251, 191, 36, 0.8)',
-                    badgeBg: 'rgba(251, 191, 36, 0.3)',
-                };
+                    badgeBg: 'rgba(251, 191, 36, 0.3)' };
             } else if (tier.tier === 'warming') {
                 return {
                     bgGradient: 'linear-gradient(to right, rgba(251, 191, 36, 0.15), rgba(249, 115, 22, 0.15))',
                     borderColor: 'rgba(251, 191, 36, 0.5)',
                     textColor: '#fbbf24',
                     subTextColor: 'rgba(251, 191, 36, 0.7)',
-                    badgeBg: 'rgba(251, 191, 36, 0.3)',
-                };
+                    badgeBg: 'rgba(251, 191, 36, 0.3)' };
             } else {
                 return {
                     bgGradient: 'linear-gradient(to right, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.15))',
                     borderColor: 'rgba(59, 130, 246, 0.4)',
                     textColor: '#60a5fa',
                     subTextColor: 'rgba(96, 165, 250, 0.8)',
-                    badgeBg: 'rgba(59, 130, 246, 0.3)',
-                };
+                    badgeBg: 'rgba(59, 130, 246, 0.3)' };
             }
         }
         return {
@@ -83,11 +79,10 @@ export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false }) =
             subTextColor: tier.subTextColor,
             badgeBg: tier.tier === 'legendary' || tier.tier === 'warming'
                 ? 'rgba(251, 191, 36, 0.3)'
-                : 'rgba(59, 130, 246, 0.2)',
-        };
+                : 'rgba(59, 130, 246, 0.2)' };
     };
 
-    const colors = getColors();
+    const = getColors();
 
     return (
         <motion.div
@@ -98,8 +93,7 @@ export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false }) =
             className={`mx-3 mt-3 rounded-xl ${compact ? 'p-2' : 'p-3'}`}
             style={{
                 background: 'var(--bg-primary)'Gradient,
-                border: `1px solid ${'var(--border-color)'Color}`,
-            }}
+                border: `1px solid ${'var(--border-color)'Color}` }}
         >
             <div className={`flex items-center ${compact ? 'gap-2' : 'gap-3'}`}>
                 <motion.div
@@ -113,7 +107,7 @@ export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false }) =
                     <div className="flex items-center gap-2">
                         <span
                             className={`font-semibold ${compact ? 'text-xs' : 'text-sm'}`}
-                            style={{ color: colors.textColor }}
+                            style={{ color: .textColor }}
                         >
                             {streakData.currentStreak} Day Streak!
                         </span>
@@ -123,16 +117,15 @@ export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false }) =
                             transition={{ type: 'spring', delay: 0.5 }}
                             className={`px-1.5 py-0.5 rounded-full ${compact ? 'text-[8px]' : 'text-[10px]'}`}
                             style={{
-                                backgroundColor: colors.badgeBg,
-                                color: colors.textColor,
-                            }}
+                                backgroundColor: .badgeBg,
+                                color: .textColor }}
                         >
                             +{tier.xpBonus} XP
                         </motion.span>
                     </div>
                     <p
                         className={compact ? 'text-[9px]' : 'text-[11px]'}
-                        style={{ color: colors.subTextColor }}
+                        style={{ color: .subTextColor }}
                     >
                         {getMessage()}
                     </p>

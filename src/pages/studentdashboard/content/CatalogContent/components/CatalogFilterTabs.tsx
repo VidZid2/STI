@@ -12,9 +12,8 @@ const FilterTabs: React.FC<{
     activeFilter: CourseCategory | 'favorites';
     setActiveFilter: (filter: CourseCategory | 'favorites') => void;
     stats: CatalogStats;
-    colors: { accent: string; textSecondary: string };
-    favoritesCount: number;
-}> = ({ activeFilter, setActiveFilter, stats, colors, favoritesCount }) => {
+    
+}> = ({ activeFilter, setActiveFilter, stats,  favoritesCount }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [indicatorStyle, setIndicatorStyle] = useState({ left: 5, width: 60 });
     
@@ -98,8 +97,7 @@ const FilterTabs: React.FC<{
                         position: 'relative', 
                         zIndex: 1, 
                         transition: 'color 0.2s ease',
-                        outline: 'none',
-                    }}
+                        outline: 'none' }}
                 >
                     {tab.icon && <span style={{ display: 'flex', alignItems: 'center' }}>{tab.icon}</span>}
                     {tab.label}

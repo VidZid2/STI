@@ -132,8 +132,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                                     : 'rgba(239, 68, 68, 0.06)',
                                                 border: task.allowLateSubmission
                                                     ? '1px solid rgba(245, 158, 11, 0.15)'
-                                                    : '1px solid rgba(239, 68, 68, 0.12)',
-                                            }}>
+                                                    : '1px solid rgba(239, 68, 68, 0.12)' }}>
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                                     stroke={task.allowLateSubmission ? '#f59e0b' : '#ef4444'}
                                                     strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -144,8 +143,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                                     <div style={{
                                                         fontSize: '13px',
                                                         fontWeight: 600,
-                                                        color: task.allowLateSubmission ? '#92400e' : '#991b1b',
-                                                    }}>
+                                                        color: task.allowLateSubmission ? '#92400e' : '#991b1b' }}>
                                                         {task.allowLateSubmission
                                                             ? 'Late submissions allowed'
                                                             : 'No late submissions'}
@@ -164,8 +162,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                                     padding: '10px 14px',
                                                     borderRadius: '12px',
                                                     background: 'rgba(59, 130, 246, 0.06)',
-                                                    border: '1px solid rgba(59, 130, 246, 0.12)',
-                                                }}>
+                                                    border: '1px solid rgba(59, 130, 246, 0.12)' }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                             <polyline points="1 4 1 10 7 10" />
@@ -196,8 +193,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                                     padding: '14px',
                                                     borderRadius: '12px',
                                                     background: 'rgba(16, 185, 129, 0.06)',
-                                                    border: '1px solid rgba(16, 185, 129, 0.12)',
-                                                }}>
+                                                    border: '1px solid rgba(16, 185, 129, 0.12)' }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: (task.rubricCriteria?.length ?? 0) > 0 ? '12px' : '0' }}>
                                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
@@ -216,8 +212,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                                                     padding: '10px 12px',
                                                                     borderRadius: '8px',
                                                                     background: 'rgba(255, 255, 255, 0.7)',
-                                                                    border: '1px solid rgba(16, 185, 129, 0.1)',
-                                                                }}>
+                                                                    border: '1px solid rgba(16, 185, 129, 0.1)' }}>
                                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: criterion.description ? '4px' : '0' }}>
                                                                         <span style={{ fontSize: '12px', fontWeight: 600, color: '#334155' }}>
                                                                             {criterion.name}
@@ -228,8 +223,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                                                             padding: '2px 8px',
                                                                             borderRadius: '6px',
                                                                             background: 'rgba(16, 185, 129, 0.1)',
-                                                                            color: '#10b981',
-                                                                        }}>
+                                                                            color: '#10b981' }}>
                                                                             {criterion.points} pts
                                                                         </span>
                                                                     </div>

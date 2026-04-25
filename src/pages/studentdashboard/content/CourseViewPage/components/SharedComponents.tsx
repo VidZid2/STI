@@ -22,8 +22,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     placeholder = 'Search...',
     resultCount: _resultCount,
     totalCount: _totalCount,
-    isSearching = false,
-}) => {
+    isSearching = false }) => {
     void _resultCount;
     void _totalCount;
 
@@ -85,7 +84,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => onChange('')}
                                 aria-label="Clear search"
-                                className="w-5 h-5 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center transition-colors"
+                                className="w-5 h-5 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center transition-"
                             >
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500">
                                     <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
@@ -137,7 +136,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, description
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={action.onClick}
-                className="px-4 py-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-"
             >
                 {action.label}
             </motion.button>
@@ -166,8 +165,7 @@ export const TeacherActionButton: React.FC<TeacherActionButtonProps> = ({ varian
                     background: 'rgba(59, 130, 246, 0.08)', color: '#3b82f6',
                     border: '1px solid rgba(59, 130, 246, 0.2)',
                     transform: isHovered ? 'scale(1.02)' : 'scale(1)',
-                    boxShadow: isHovered ? '0 6px 20px rgba(59, 130, 246, 0.2)' : 'none',
-                }}
+                    boxShadow: isHovered ? '0 6px 20px rgba(59, 130, 246, 0.2)' : 'none' }}
             >
                 {icon}{label}
             </button>
@@ -183,8 +181,7 @@ export const TeacherActionButton: React.FC<TeacherActionButtonProps> = ({ varian
                 style={{
                     background: isHovered ? 'rgba(0,0,0,0.03)' : 'transparent', color: '#71717a',
                     border: '1px solid rgba(0,0,0,0.1)',
-                    transform: isHovered ? 'scale(1.02)' : 'scale(1)',
-                }}
+                    transform: isHovered ? 'scale(1.02)' : 'scale(1)' }}
             >
                 {icon}{label}
             </button>
@@ -199,8 +196,7 @@ export const TeacherActionButton: React.FC<TeacherActionButtonProps> = ({ varian
             style={{
                 background: isHovered ? 'rgba(0,0,0,0.05)' : 'rgba(0,0,0,0.02)', color: '#71717a',
                 border: '1px solid rgba(0,0,0,0.08)',
-                transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-            }}
+                transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
         >
             {icon}
         </button>

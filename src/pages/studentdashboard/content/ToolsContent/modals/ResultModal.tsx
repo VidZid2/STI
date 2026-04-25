@@ -44,8 +44,7 @@ const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void
                         zIndex: 10000,
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
+                        justifyContent: 'center' }}
                 >
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
@@ -60,8 +59,7 @@ const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void
                             maxWidth: '550px',
                             maxHeight: '80vh',
                             overflowY: 'auto',
-                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                        }}
+                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
                     >
                         <h3 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '20px', color: '#111827' }}>
                             {getTitle()}
@@ -193,8 +191,7 @@ const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void
                                 border: 'none',
                                 borderRadius: '12px',
                                 fontWeight: 600,
-                                cursor: 'pointer',
-                            }}
+                                cursor: 'pointer' }}
                         >
                             Close
                         </button>

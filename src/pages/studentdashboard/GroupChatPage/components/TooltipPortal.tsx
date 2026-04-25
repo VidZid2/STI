@@ -141,8 +141,7 @@ export const TooltipPortal: React.FC<TooltipPortalProps> = ({
                 pointerEvents: 'none',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
-            }}
+                gap: '6px' }}
         >
             {isRight && (
                 <>
@@ -150,14 +149,12 @@ export const TooltipPortal: React.FC<TooltipPortalProps> = ({
                         position: 'absolute', left: -6, top: position?.arrowPos ?? '50%',
                         transform: 'translateY(-50%)',
                         borderTop: '5px solid transparent', borderBottom: '5px solid transparent',
-                        borderRight: '5px solid rgba(0, 0, 0, 0.08)',
-                    }} />
+                        borderRight: '5px solid rgba(0, 0, 0, 0.08)' }} />
                     <div style={{
                         position: 'absolute', left: -4, top: position?.arrowPos ?? '50%',
                         transform: 'translateY(-50%)',
                         borderTop: '4px solid transparent', borderBottom: '4px solid transparent',
-                        borderRight: '4px solid rgba(255, 255, 255, 0.98)',
-                    }} />
+                        borderRight: '4px solid rgba(255, 255, 255, 0.98)' }} />
                 </>
             )}
             {isLeft && (
@@ -166,14 +163,12 @@ export const TooltipPortal: React.FC<TooltipPortalProps> = ({
                         position: 'absolute', right: -6, top: position?.arrowPos ?? '50%',
                         transform: 'translateY(-50%)',
                         borderTop: '5px solid transparent', borderBottom: '5px solid transparent',
-                        borderLeft: '5px solid rgba(0, 0, 0, 0.08)',
-                    }} />
+                        borderLeft: '5px solid rgba(0, 0, 0, 0.08)' }} />
                     <div style={{
                         position: 'absolute', right: -4, top: position?.arrowPos ?? '50%',
                         transform: 'translateY(-50%)',
                         borderTop: '4px solid transparent', borderBottom: '4px solid transparent',
-                        borderLeft: '4px solid rgba(255, 255, 255, 0.98)',
-                    }} />
+                        borderLeft: '4px solid rgba(255, 255, 255, 0.98)' }} />
                 </>
             )}
             {!isLeft && !isRight && (
@@ -187,8 +182,7 @@ export const TooltipPortal: React.FC<TooltipPortalProps> = ({
                         ...(isAbove 
                             ? { borderTop: '5px solid rgba(0, 0, 0, 0.08)' }
                             : { borderBottom: '5px solid rgba(0, 0, 0, 0.08)' }
-                        ),
-                    }} />
+                        ) }} />
                     <div style={{
                         position: 'absolute',
                         ...(isAbove ? { bottom: -4 } : { top: -4 }),
@@ -198,8 +192,7 @@ export const TooltipPortal: React.FC<TooltipPortalProps> = ({
                         ...(isAbove 
                             ? { borderTop: '4px solid rgba(255, 255, 255, 0.98)' }
                             : { borderBottom: '4px solid rgba(255, 255, 255, 0.98)' }
-                        ),
-                    }} />
+                        ) }} />
                 </>
             )}
             {icon}

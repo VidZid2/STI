@@ -11,11 +11,11 @@ import { formatFileSize } from '../utils';
 interface FilePreviewCardProps {
     attachment: FileAttachment;
     isOwn: boolean;
-    isDarkMode: boolean;
-    colors: { cardBg: string; textPrimary: string; textSecondary: string; textMuted: string; accent: string; border: string };
+    
+    
 }
 
-export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, isOwn, isDarkMode, colors }) => {
+export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, isOwn }) => {
     const [isImageLoaded, setIsImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
     const [showFullImage, setShowFullImage] = useState(false);
@@ -120,8 +120,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                         height: '120px',
                         background: 'var(--dashboard-surface)',
                         position: 'relative',
-                        flexShrink: 0,
-                    }}
+                        flexShrink: 0 }}
                 >
                     {/* Loading spinner */}
                     {!isImageLoaded && !imageError && (
@@ -131,8 +130,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: 'var(--text-muted)',
-                        }}>
+                            color: 'var(--text-muted)' }}>
                             <motion.div
                                 animate={{ rotate: 360 }}
                                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
@@ -153,8 +151,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: 'var(--text-muted)',
-                            gap: '4px',
-                        }}>
+                            gap: '4px' }}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                                 <circle cx="8.5" cy="8.5" r="1.5" />
@@ -176,8 +173,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                             height: '100%',
                             objectFit: 'cover',
                             display: isImageLoaded && !imageError ? 'block' : 'none',
-                            cursor: 'pointer',
-                        }}
+                            cursor: 'pointer' }}
                     />
                 </motion.div>
                 
@@ -197,8 +193,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                             alignItems: 'center',
                             justifyContent: 'center',
                             padding: '20px',
-                            cursor: 'zoom-out',
-                        }}
+                            cursor: 'zoom-out' }}
                     >
                         <motion.img
                             initial={{ scale: 0.9, opacity: 0 }}
@@ -213,8 +208,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                                 maxHeight: '90vh',
                                 objectFit: 'contain',
                                 borderRadius: '8px',
-                                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-                            }}
+                                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}
                             onClick={(e) => e.stopPropagation()}
                         />
                         <motion.button
@@ -235,8 +229,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backdropFilter: 'blur(8px)',
-                            }}
+                                backdropFilter: 'blur(8px)' }}
                         >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -264,8 +257,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                         ? 'rgba(255,255,255,0.1)' 
                         : ('var(--dashboard-surface)'),
                     border: `1px solid ${isOwn ? 'rgba(255,255,255,0.15)' : 'var(--border-color)'}`,
-                    maxWidth: '280px',
-                }}
+                    maxWidth: '280px' }}
             >
                 <div style={{
                     width: '40px',
@@ -276,8 +268,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: getFileColor(),
-                    flexShrink: 0,
-                }}>
+                    flexShrink: 0 }}>
                     {getFileIcon()}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -288,15 +279,13 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                         color: isOwn ? '#fff' : 'var(--text-primary)',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                    }}>
+                        whiteSpace: 'nowrap' }}>
                         {attachment.name}
                     </p>
                     <p style={{
                         margin: '2px 0 0',
                         fontSize: '11px',
-                        color: isOwn ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)',
-                    }}>
+                        color: isOwn ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)' }}>
                         {formatFileSize(attachment.size)} • Image
                     </p>
                 </div>
@@ -322,8 +311,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                     : ('var(--dashboard-surface)'),
                 border: `1px solid ${isOwn ? 'rgba(255,255,255,0.15)' : 'var(--border-color)'}`,
                 textDecoration: 'none',
-                maxWidth: '280px',
-            }}
+                maxWidth: '280px' }}
         >
             <div style={{
                 width: '40px',
@@ -334,8 +322,7 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: getFileColor(),
-                flexShrink: 0,
-            }}>
+                flexShrink: 0 }}>
                 {getFileIcon()}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -346,15 +333,13 @@ export const FilePreviewCard: React.FC<FilePreviewCardProps> = ({ attachment, is
                     color: isOwn ? '#fff' : 'var(--text-primary)',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                }}>
+                    whiteSpace: 'nowrap' }}>
                     {attachment.name}
                 </p>
                 <p style={{
                     margin: '2px 0 0',
                     fontSize: '11px',
-                    color: isOwn ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)',
-                }}>
+                    color: isOwn ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)' }}>
                     {formatFileSize(attachment.size)}
                 </p>
             </div>

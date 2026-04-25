@@ -7,16 +7,14 @@ import type {
     CatalogCourse,
     CatalogStats,
     CourseCategory,
-    SortOption,
-} from '../../../../services/catalogService';
+    SortOption } from '../../../../services/catalogService';
 
 // Re-export types from catalogService for convenience
 export type {
     CatalogCourse,
     CatalogStats,
     CourseCategory,
-    SortOption,
-};
+    SortOption };
 
 // Component-specific types
 export interface AnimatedNumberProps {

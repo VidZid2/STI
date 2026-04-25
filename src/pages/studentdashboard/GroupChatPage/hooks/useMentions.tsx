@@ -143,8 +143,7 @@ export const useMentions = ({ users, onMention }: UseMentionsOptions): UseMentio
                         background: 'rgba(59, 130, 246, 0.1)',
                         padding: '1px 4px',
                         borderRadius: '4px',
-                        cursor: mentionedUser ? 'pointer' : 'default',
-                    }}
+                        cursor: mentionedUser ? 'pointer' : 'default' }}
                     title={mentionedUser ? `Click to view ${mentionedUser.name}'s profile` : undefined}
                 >
                     @{mentionName}
@@ -183,8 +182,7 @@ export const useMentions = ({ users, onMention }: UseMentionsOptions): UseMentio
         handleSelect,
         closeMentions,
         formatMessageWithMentions,
-        extractMentions,
-    };
+        extractMentions };
 };
 
 export default useMentions;

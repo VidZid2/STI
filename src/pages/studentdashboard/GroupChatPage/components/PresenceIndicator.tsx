@@ -11,18 +11,17 @@ import type { ChatColors } from '../types';
 interface PresenceIndicatorProps {
     viewers: PresenceUser[];
     currentUserId: string;
-    isDarkMode: boolean;
-    colors: ChatColors;
+    
+    
     maxAvatars?: number;
 }
 
 export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
     viewers,
     currentUserId,
-    isDarkMode,
-    colors,
-    maxAvatars = 4,
-}) => {
+    
+    
+    maxAvatars = 4 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     // Filter out current user and get other viewers
@@ -42,8 +41,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                     padding: '5px 10px',
                     background: 'rgba(100, 116, 139, 0.1)',
                     border: `1px solid ${'rgba(100, 116, 139, 0.2)'}`,
-                    borderRadius: '16px',
-                }}
+                    borderRadius: '16px' }}
             >
                 <svg
                     width="12"
@@ -61,8 +59,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                 <span style={{
                     fontSize: '11px',
                     fontWeight: 500,
-                    color: '#64748b',
-                }}>
+                    color: '#64748b' }}>
                     Only you
                 </span>
             </motion.div>
@@ -90,15 +87,13 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                     border: `1px solid ${'rgba(34, 197, 94, 0.2)'}`,
                     borderRadius: '20px',
                     cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                }}
+                    transition: 'all 0.2s ease' }}
             >
                 {/* Eye Icon */}
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                }}>
+                    justifyContent: 'center' }}>
                     <svg
                         width="14"
                         height="14"
@@ -117,8 +112,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                 {/* Stacked Avatars */}
                 <div style={{
                     display: 'flex',
-                    alignItems: 'center',
-                }}>
+                    alignItems: 'center' }}>
                     {displayedViewers.map((viewer, idx) => (
                         <motion.div
                             key={viewer.id}
@@ -140,8 +134,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                 marginLeft: idx > 0 ? '-8px' : 0,
                                 overflow: 'hidden',
                                 position: 'relative',
-                                zIndex: maxAvatars - idx,
-                            }}
+                                zIndex: maxAvatars - idx }}
                             title={viewer.name}
                         >
                             {viewer.avatar ? (
@@ -151,8 +144,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                     style={{
                                         width: '100%',
                                         height: '100%',
-                                        objectFit: 'cover',
-                                    }}
+                                        objectFit: 'cover' }}
                                 />
                             ) : (
                                 viewer.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
@@ -166,8 +158,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                 height: 6,
                                 borderRadius: '50%',
                                 background: '#22c55e',
-                                border: `1.5px solid ${'var(--bg-hover)'}`,
-                            }} />
+                                border: `1.5px solid ${'var(--bg-hover)'}` }} />
                         </motion.div>
                     ))}
                     {remainingCount > 0 && (
@@ -184,8 +175,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                 fontWeight: 700,
                                 color: '#fff',
                                 border: `2px solid ${'var(--bg-hover)'}`,
-                                marginLeft: '-8px',
-                            }}
+                                marginLeft: '-8px' }}
                         >
                             +{remainingCount}
                         </div>
@@ -197,8 +187,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                     fontSize: '11px',
                     fontWeight: 600,
                     color: '#22c55e',
-                    whiteSpace: 'nowrap',
-                }}>
+                    whiteSpace: 'nowrap' }}>
                     {viewerCount} viewing
                 </span>
 
@@ -236,12 +225,10 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                             background: 'var(--bg-primary)',
                             borderRadius: '12px',
                             border: `1px solid ${'rgba(255,255,255,0.08)'}`,
-                            boxShadow: isDarkMode
-                                ? '0 8px 32px rgba(0,0,0,0.4)'
+                            boxShadow: ? '0 8px 32px rgba(0,0,0,0.4)'
                                 : '0 8px 32px rgba(0,0,0,0.12)',
                             overflow: 'hidden',
-                            zIndex: 100,
-                        }}
+                            zIndex: 100 }}
                     >
                         {/* Header */}
                         <div style={{
@@ -249,8 +236,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                             borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}`,
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px',
-                        }}>
+                            gap: '8px' }}>
                             <svg
                                 width="14"
                                 height="14"
@@ -269,8 +255,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                             <span style={{
                                 fontSize: '12px',
                                 fontWeight: 600,
-                                color: 'var(--text-primary)',
-                            }}>
+                                color: 'var(--text-primary)' }}>
                                 Currently Viewing
                             </span>
                             <span style={{
@@ -280,8 +265,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                 color: '#22c55e',
                                 background: 'rgba(34, 197, 94, 0.15)',
                                 padding: '2px 6px',
-                                borderRadius: '6px',
-                            }}>
+                                borderRadius: '6px' }}>
                                 {viewerCount}
                             </span>
                         </div>
@@ -290,8 +274,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                         <div style={{
                             maxHeight: '200px',
                             overflowY: 'auto',
-                            padding: '8px',
-                        }}>
+                            padding: '8px' }}>
                             {otherViewers.map((viewer, idx) => (
                                 <motion.div
                                     key={viewer.id}
@@ -304,8 +287,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                         gap: '10px',
                                         padding: '8px 6px',
                                         borderRadius: '8px',
-                                        transition: 'background 0.15s ease',
-                                    }}
+                                        transition: 'background 0.15s ease' }}
                                     onMouseEnter={(e) => {
                                         e.currentTarget.style.background = 'rgba(0,0,0,0.03)';
                                     }}
@@ -327,8 +309,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                         color: '#fff',
                                         overflow: 'hidden',
                                         position: 'relative',
-                                        flexShrink: 0,
-                                    }}>
+                                        flexShrink: 0 }}>
                                         {viewer.avatar ? (
                                             <img
                                                 src={viewer.avatar}
@@ -336,8 +317,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                                 style={{
                                                     width: '100%',
                                                     height: '100%',
-                                                    objectFit: 'cover',
-                                                }}
+                                                    objectFit: 'cover' }}
                                             />
                                         ) : (
                                             viewer.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
@@ -351,8 +331,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                             height: 8,
                                             borderRadius: '50%',
                                             background: '#22c55e',
-                                            border: `2px solid ${'var(--bg-hover)'}`,
-                                        }} />
+                                            border: `2px solid ${'var(--bg-hover)'}` }} />
                                     </div>
 
                                     {/* Name */}
@@ -363,8 +342,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                             color: 'var(--text-primary)',
                                             whiteSpace: 'nowrap',
                                             overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                        }}>
+                                            textOverflow: 'ellipsis' }}>
                                             {viewer.name}
                                         </div>
                                         <div style={{
@@ -372,15 +350,13 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                                             color: '#22c55e',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '4px',
-                                        }}>
+                                            gap: '4px' }}>
                                             <span style={{
                                                 width: 4,
                                                 height: 4,
                                                 borderRadius: '50%',
                                                 background: '#22c55e',
-                                                animation: 'pulse 2s ease-in-out infinite',
-                                            }} />
+                                                animation: 'pulse 2s ease-in-out infinite' }} />
                                             Online now
                                         </div>
                                     </div>
@@ -400,8 +376,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        zIndex: 99,
-                    }}
+                        zIndex: 99 }}
                     onClick={() => setIsExpanded(false)}
                 />
             )}

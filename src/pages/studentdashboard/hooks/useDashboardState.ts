@@ -205,8 +205,7 @@ export const useDashboardState = (): UseDashboardStateReturn => {
         setShowIntro,
 
         // Demo
-        isDemoMode,
-    };
+        isDemoMode };
 };
 
 export default useDashboardState;

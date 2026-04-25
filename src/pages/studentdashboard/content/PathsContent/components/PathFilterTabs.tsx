@@ -11,13 +11,10 @@ import type { FilterTab } from './PathIcon';
 interface FilterTabsProps {
     activeFilter: FilterTab;
     setActiveFilter: (filter: FilterTab) => void;
-    colors: {
-        accent: string;
-        textSecondary: string;
-    };
+    
 }
 
-const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, colors }) => {
+const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter }) => {
     const containerRef = React.useRef<HTMLDivElement>(null);
     const [indicatorStyle, setIndicatorStyle] = useState({ left: 5, width: 60 });
     
@@ -32,8 +29,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, 
                     <rect x="14" y="14" width="7" height="7" />
                     <rect x="3" y="14" width="7" height="7" />
                 </svg>
-            ),
-        },
+            ) },
         {
             id: 'enrolled',
             label: 'Enrolled',
@@ -42,8 +38,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, 
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                     <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
-            ),
-        },
+            ) },
         {
             id: 'available',
             label: 'Available',
@@ -53,8 +48,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, 
                     <line x1="12" y1="8" x2="12" y2="16" />
                     <line x1="8" y1="12" x2="16" y2="12" />
                 </svg>
-            ),
-        },
+            ) },
     ];
 
     // Update indicator position when active filter changes
@@ -71,8 +65,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, 
             
             setIndicatorStyle({
                 left: buttonRect.left - containerRect.left,
-                width: buttonRect.width,
-            });
+                width: buttonRect.width });
         }
     }, [activeFilter]);
 
@@ -91,8 +84,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, 
                 
                 setIndicatorStyle({
                     left: buttonRect.left - containerRect.left,
-                    width: buttonRect.width,
-                });
+                    width: buttonRect.width });
             }
         }, 50);
         return () => clearTimeout(timer);
@@ -110,8 +102,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, 
                 padding: '4px',
                 borderRadius: '12px',
                 background: 'var(--bg-hover)',
-                position: 'relative',
-            }}
+                position: 'relative' }}
         >
             {/* Sliding Background Indicator */}
             <motion.div
@@ -122,13 +113,11 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, 
                     borderRadius: '8px',
                     background: 'rgba(59, 130, 246, 0.1)',
                     border: `1px solid ${'rgba(59, 130, 246, 0.1)'}`,
-                    zIndex: 0,
-                }}
+                    zIndex: 0 }}
                 initial={false}
                 animate={{
                     left: indicatorStyle.left,
-                    width: indicatorStyle.width,
-                }}
+                    width: indicatorStyle.width }}
                 transition={{ type: 'spring', stiffness: 500, damping: 35 }}
             />
             
@@ -153,8 +142,7 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter, 
                         cursor: 'pointer',
                         position: 'relative',
                         zIndex: 1,
-                        transition: 'color 0.2s ease',
-                    }}
+                        transition: 'color 0.2s ease' }}
                 >
                     {tab.icon}
                     {tab.label}

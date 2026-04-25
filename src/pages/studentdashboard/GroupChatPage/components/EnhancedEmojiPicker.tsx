@@ -11,10 +11,8 @@ import type { ChatColors } from '../types';
 
 interface EnhancedEmojiPickerProps {
     isOpen: boolean;
-    isDarkMode: boolean;
-    colors: ChatColors;
-    emojiSearch: string;
-    emojiPickerCategory: string;
+    
+    
     onEmojiSearchChange: (value: string) => void;
     onCategoryChange: (categoryId: string) => void;
     onEmojiSelect: (emoji: string) => void;
@@ -23,15 +21,14 @@ interface EnhancedEmojiPickerProps {
 
 export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
     isOpen,
-    isDarkMode,
-    colors: _colors, // Using isDarkMode for consistent blue theme
+    
+    : _colors, // Using for consistent blue theme
     emojiSearch,
     emojiPickerCategory,
     onEmojiSearchChange,
     onCategoryChange,
     onEmojiSelect,
-    onClose,
-}) => {
+    onClose }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [indicatorStyle, setIndicatorStyle] = useState({ left: 4, width: 32 });
     
@@ -51,8 +48,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
             const scrollLeft = containerRef.current.scrollLeft;
             setIndicatorStyle({
                 left: buttonRect.left - containerRect.left + scrollLeft,
-                width: buttonRect.width,
-            });
+                width: buttonRect.width });
             
             // Auto-scroll to keep selected item visible
             const button = buttons[activeIndex];
@@ -89,8 +85,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                 const scrollLeft = containerRef.current.scrollLeft;
                 setIndicatorStyle({
                     left: buttonRect.left - containerRect.left + scrollLeft,
-                    width: buttonRect.width,
-                });
+                    width: buttonRect.width });
             }
         }, 50);
         return () => clearTimeout(timer);
@@ -115,13 +110,11 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                         right: 20,
                         background: 'var(--bg-primary)',
                         borderRadius: '16px',
-                        boxShadow: isDarkMode 
-                            ? '0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
+                        boxShadow: ? '0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
                             : '0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
                         zIndex: 1000,
                         width: '340px',
-                        overflow: 'hidden',
-                    }}
+                        overflow: 'hidden' }}
                 >
                     {/* Header with Search */}
                     <div style={{ padding: '14px 16px', borderBottom: `1px solid ${'rgba(255,255,255,0.06)'}` }}>
@@ -134,8 +127,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                 borderRadius: '12px',
                                 background: 'rgba(255,255,255,0.04)',
                                 border: `1px solid ${'rgba(255,255,255,0.06)'}`,
-                                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-                            }}
+                                transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
                             onFocus={(e) => {
                                 e.currentTarget.style.borderColor = blueBorder;
                                 e.currentTarget.style.boxShadow = `0 0 0 3px ${blueBg}`;
@@ -170,8 +162,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                     color: 'var(--bg-hover)',
                                     fontSize: '13px',
                                     fontWeight: 500,
-                                    outline: 'none',
-                                }}
+                                    outline: 'none' }}
                             />
                             {emojiSearch && (
                                 <motion.button
@@ -192,8 +183,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         color: 'var(--bg-hover)',
-                                        transition: 'background 0.15s ease',
-                                    }}
+                                        transition: 'background 0.15s ease' }}
                                 >
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <line x1="18" y1="6" x2="6" y2="18" />
@@ -237,8 +227,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                 borderRadius: '10px',
                                 background: blueBg,
                                 border: `1px solid ${blueBorder}`,
-                                zIndex: 0,
-                            }}
+                                zIndex: 0 }}
                             initial={false}
                             animate={{ left: indicatorStyle.left, width: indicatorStyle.width }}
                             transition={{ type: 'spring', stiffness: 500, damping: 35 }}
@@ -268,8 +257,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                     flexShrink: 0,
                                     position: 'relative',
                                     zIndex: 1,
-                                    transition: 'transform 0.15s ease',
-                                }}
+                                    transition: 'transform 0.15s ease' }}
                                 title={category.name}
                             >
                                 {category.icon}
@@ -290,15 +278,13 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                 color: blueAccent,
                                 marginBottom: '10px',
                                 textTransform: 'uppercase',
-                                letterSpacing: '0.5px',
-                            }}
+                                letterSpacing: '0.5px' }}
                         >
                             <div style={{
                                 width: 4,
                                 height: 4,
                                 borderRadius: '50%',
-                                background: blueAccent,
-                            }} />
+                                background: blueAccent }} />
                             {emojiSearch
                                 ? 'Search Results'
                                 : EMOJI_CATEGORIES.find((c) => c.id === emojiPickerCategory)?.name}
@@ -309,8 +295,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                             style={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(8, 1fr)',
-                                gap: '4px',
-                            }}
+                                gap: '4px' }}
                         >
                             {(() => {
                                 let emojisToShow: string[] = [];
@@ -340,8 +325,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                                 textAlign: 'center',
                                                 color: 'var(--bg-hover)',
                                                 fontSize: '13px',
-                                                fontWeight: 500,
-                                            }}
+                                                fontWeight: 500 }}
                                         >
                                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ margin: '0 auto 8px', opacity: 0.5 }}>
                                                 <circle cx="12" cy="12" r="10" />
@@ -360,8 +344,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                         transition={{ delay: Math.min(idx * 0.01, 0.2) }}
                                         whileHover={{
                                             scale: 1.25,
-                                            background: blueBg,
-                                        }}
+                                            background: blueBg }}
                                         whileTap={{ scale: 0.9 }}
                                         onClick={() => handleEmojiClick(emoji)}
                                         style={{
@@ -375,8 +358,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            transition: 'background 0.15s ease',
-                                        }}
+                                            transition: 'background 0.15s ease' }}
                                     >
                                         {emoji}
                                     </motion.button>
@@ -393,8 +375,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                             background: 'var(--bg-primary)',
                             display: 'flex',
                             gap: '6px',
-                            justifyContent: 'center',
-                        }}
+                            justifyContent: 'center' }}
                     >
                         {QUICK_EMOJIS.map((emoji, idx) => (
                             <motion.button
@@ -405,8 +386,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                 whileHover={{ 
                                     scale: 1.15, 
                                     background: blueBg,
-                                    boxShadow: `0 2px 8px ${blueAccent}20`,
-                                }}
+                                    boxShadow: `0 2px 8px ${blueAccent}20` }}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => handleEmojiClick(emoji)}
                                 style={{
@@ -420,8 +400,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    transition: 'all 0.15s ease',
-                                }}
+                                    transition: 'all 0.15s ease' }}
                             >
                                 {emoji}
                             </motion.button>

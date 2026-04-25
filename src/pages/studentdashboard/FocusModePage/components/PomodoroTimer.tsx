@@ -15,12 +15,12 @@ const BREAK_DURATIONS = [5, 10, 15, 20];
 const TIMER_SETTINGS_KEY = 'focus-timer-settings';
 
 const PomodoroTimer: React.FC<{
-    isDarkMode: boolean;
-    colors: FocusModeColors;
+    
+    
     onSessionComplete: (duration: number) => void;
     onStateChange?: (state: { isRunning: boolean; mode: 'focus' | 'break'; timeLeft: number }) => void;
     controlsRef?: React.MutableRefObject<{ toggleTimer: () => void; resetTimer: () => void } | null>;
-}> = ({ isDarkMode, colors, onSessionComplete, onStateChange, controlsRef }) => {
+}> = ({   onSessionComplete, onStateChange, controlsRef }) => {
     // Load saved settings from localStorage
     const getSavedSettings = () => {
         try {
@@ -29,8 +29,7 @@ const PomodoroTimer: React.FC<{
                 const parsed = JSON.parse(saved);
                 return {
                     focusDuration: parsed.focusDuration || 25,
-                    breakDuration: parsed.breakDuration || 5,
-                };
+                    breakDuration: parsed.breakDuration || 5 };
             }
         } catch (e) {
         }
@@ -52,8 +51,7 @@ const PomodoroTimer: React.FC<{
     useEffect(() => {
         localStorage.setItem(TIMER_SETTINGS_KEY, JSON.stringify({
             focusDuration,
-            breakDuration,
-        }));
+            breakDuration }));
     }, [focusDuration, breakDuration]);
 
     // Play completion sound
@@ -77,8 +75,7 @@ const PomodoroTimer: React.FC<{
         if (controlsRef) {
             controlsRef.current = {
                 toggleTimer: () => setIsRunning(prev => !prev),
-                resetTimer: () => handleReset(),
-            };
+                resetTimer: () => handleReset() };
         }
     }, [controlsRef]);
 
@@ -158,16 +155,14 @@ const PomodoroTimer: React.FC<{
                 padding: '14px',
                 borderRadius: '14px',
                 background: 'var(--bg-primary)',
-                border: `1px solid var(--border-color)`,
-            }}
+                border: `1px solid var(--border-color)` }}
         >
             {/* Compact Header */}
             <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '12px',
-            }}>
+                marginBottom: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div
                         style={{
@@ -179,8 +174,7 @@ const PomodoroTimer: React.FC<{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: '#3b82f6',
-                        }}
+                            color: '#3b82f6' }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="12" cy="12" r="10" />
@@ -191,14 +185,12 @@ const PomodoroTimer: React.FC<{
                         <div style={{
                             fontSize: '12px',
                             fontWeight: 600,
-                            color: 'var(--text-primary)',
-                        }}>
+                            color: 'var(--text-primary)' }}>
                             {mode === 'focus' ? 'Focus' : 'Break'}
                         </div>
                         <div style={{
                             fontSize: '10px',
-                            color: 'var(--text-muted)',
-                        }}>
+                            color: 'var(--text-muted)' }}>
                             {sessions} session{sessions !== 1 ? 's' : ''}
                         </div>
                     </div>
@@ -225,8 +217,7 @@ const PomodoroTimer: React.FC<{
                             justifyContent: 'center',
                             color: showSettings ? '#3b82f6' : 'var(--text-muted)',
                             opacity: isRunning ? 0.5 : 1,
-                            transition: 'all 0.15s ease',
-                        }}
+                            transition: 'all 0.15s ease' }}
                     >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="12" cy="12" r="3" />
@@ -240,8 +231,7 @@ const PomodoroTimer: React.FC<{
                         gap: '2px',
                         padding: '2px',
                         borderRadius: '6px',
-                        background: 'var(--dashboard-surface)',
-                    }}>
+                        background: 'var(--dashboard-surface)' }}>
                         <button
                             onClick={() => { if (!isRunning) { setMode('focus'); setTimeLeft(focusDuration * 60); } }}
                             style={{
@@ -253,8 +243,7 @@ const PomodoroTimer: React.FC<{
                                 fontSize: '10px',
                                 fontWeight: 500,
                                 cursor: isRunning ? 'not-allowed' : 'pointer',
-                                transition: 'all 0.15s ease',
-                            }}
+                                transition: 'all 0.15s ease' }}
                         >
                             Focus
                         </button>
@@ -269,8 +258,7 @@ const PomodoroTimer: React.FC<{
                                 fontSize: '10px',
                                 fontWeight: 500,
                                 cursor: isRunning ? 'not-allowed' : 'pointer',
-                                transition: 'all 0.15s ease',
-                            }}
+                                transition: 'all 0.15s ease' }}
                         >
                             Break
                         </button>
@@ -292,8 +280,7 @@ const PomodoroTimer: React.FC<{
                             padding: '12px',
                             borderRadius: '10px',
                             background: 'rgba(255,255,255,0.03)',
-                            border: `1px solid ${'rgba(255,255,255,0.06)'}`,
-                        }}>
+                            border: `1px solid ${'rgba(255,255,255,0.06)'}` }}>
                             {/* Focus Duration */}
                             <div style={{ marginBottom: '10px' }}>
                                 <div style={{
@@ -302,8 +289,7 @@ const PomodoroTimer: React.FC<{
                                     color: '#3b82f6',
                                     marginBottom: '6px',
                                     textTransform: 'uppercase',
-                                    letterSpacing: '0.3px',
-                                }}>
+                                    letterSpacing: '0.3px' }}>
                                     Focus Duration
                                 </div>
                                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
@@ -326,8 +312,7 @@ const PomodoroTimer: React.FC<{
                                                 fontSize: '11px',
                                                 fontWeight: 600,
                                                 cursor: 'pointer',
-                                                transition: 'all 0.15s ease',
-                                            }}
+                                                transition: 'all 0.15s ease' }}
                                         >
                                             {dur}m
                                         </motion.button>
@@ -343,8 +328,7 @@ const PomodoroTimer: React.FC<{
                                     color: '#10b981',
                                     marginBottom: '6px',
                                     textTransform: 'uppercase',
-                                    letterSpacing: '0.3px',
-                                }}>
+                                    letterSpacing: '0.3px' }}>
                                     Break Duration
                                 </div>
                                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
@@ -367,8 +351,7 @@ const PomodoroTimer: React.FC<{
                                                 fontSize: '11px',
                                                 fontWeight: 600,
                                                 cursor: 'pointer',
-                                                transition: 'all 0.15s ease',
-                                            }}
+                                                transition: 'all 0.15s ease' }}
                                         >
                                             {dur}m
                                         </motion.button>
@@ -384,14 +367,12 @@ const PomodoroTimer: React.FC<{
             <div style={{
                 display: 'flex',
                 justifyContent: 'center',
-                marginBottom: '12px',
-            }}>
+                marginBottom: '12px' }}>
                 <motion.div
                     style={{ position: 'relative', width: size, height: size }}
                     animate={isResetting ? {
                         rotate: [0, -8, 0],
-                        scale: [1, 0.95, 1],
-                    } : {}}
+                        scale: [1, 0.95, 1] } : {}}
                     transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 >
                     <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
@@ -414,15 +395,12 @@ const PomodoroTimer: React.FC<{
                             strokeDasharray={circumference}
                             animate={{
                                 strokeDashoffset: circumference * (1 - progress / 100),
-                                opacity: isResetting ? [1, 0.5, 1] : 1,
-                            }}
+                                opacity: isResetting ? [1, 0.5, 1] : 1 }}
                             transition={isResetting ? {
                                 strokeDashoffset: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-                                opacity: { duration: 0.4, ease: 'easeInOut' },
-                            } : {
+                                opacity: { duration: 0.4, ease: 'easeInOut' } } : {
                                 duration: 0.3,
-                                ease: 'easeOut',
-                            }}
+                                ease: 'easeOut' }}
                             style={{ filter: `drop-shadow(0 0 4px ${mode === 'focus' ? 'rgba(59, 130, 246, 0.25)' : 'rgba(16, 185, 129, 0.25)'})` }}
                         />
                     </svg>
@@ -433,11 +411,9 @@ const PomodoroTimer: React.FC<{
                             top: '50%',
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
-                            textAlign: 'center',
-                        }}
+                            textAlign: 'center' }}
                         animate={isResetting ? {
-                            opacity: [1, 0.6, 1],
-                        } : {}}
+                            opacity: [1, 0.6, 1] } : {}}
                         transition={{ duration: 0.4, ease: 'easeInOut' }}
                     >
                         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '1px' }}>
@@ -446,23 +422,20 @@ const PomodoroTimer: React.FC<{
                                 fontWeight: 700,
                                 color: mode === 'focus' ? '#3b82f6' : '#10b981',
                                 fontVariantNumeric: 'tabular-nums',
-                                letterSpacing: '-1px',
-                            }}>
+                                letterSpacing: '-1px' }}>
                                 {time.mins}
                             </span>
                             <span style={{
                                 fontSize: '18px',
                                 fontWeight: 600,
                                 color: mode === 'focus' ? '#3b82f6' : '#10b981',
-                                opacity: 0.5,
-                            }}>:</span>
+                                opacity: 0.5 }}>:</span>
                             <span style={{
                                 fontSize: '24px',
                                 fontWeight: 700,
                                 color: mode === 'focus' ? '#3b82f6' : '#10b981',
                                 fontVariantNumeric: 'tabular-nums',
-                                letterSpacing: '-1px',
-                            }}>
+                                letterSpacing: '-1px' }}>
                                 {time.secs}
                             </span>
                         </div>
@@ -492,8 +465,7 @@ const PomodoroTimer: React.FC<{
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '5px',
-                        transition: 'all 0.15s ease',
-                    }}
+                        transition: 'all 0.15s ease' }}
                 >
                     {isRunning ? (
                         <>
@@ -531,8 +503,7 @@ const PomodoroTimer: React.FC<{
                         justifyContent: 'center',
                         gap: '4px',
                         transition: 'all 0.15s ease',
-                        opacity: isResetting ? 0.6 : 1,
-                    }}
+                        opacity: isResetting ? 0.6 : 1 }}
                 >
                     <motion.svg
                         width="10"

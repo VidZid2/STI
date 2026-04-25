@@ -8,8 +8,7 @@ import type {
     GroupStats,
     GroupFilter,
     GroupSortOption,
-    GroupCategory,
-} from '../../../../services/groupsService';
+    GroupCategory } from '../../../../services/groupsService';
 
 // Re-export for convenience
 export type {
@@ -17,8 +16,7 @@ export type {
     GroupStats,
     GroupFilter,
     GroupSortOption,
-    GroupCategory,
-};
+    GroupCategory };
 
 // Component props
 export interface GroupsContentProps {
@@ -71,7 +69,7 @@ export interface GroupSearchState {
     category: GroupCategory | 'all';
 }
 
-// Skeleton colors for dark/light mode
+// Skeleton for dark/light mode
 export interface SkeletonColors {
     cardBg: string;
     border: string;

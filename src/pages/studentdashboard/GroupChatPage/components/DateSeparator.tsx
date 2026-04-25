@@ -9,15 +9,14 @@ import { formatDateSeparator } from '../utils';
 
 interface DateSeparatorProps {
     date: string;
-    isDarkMode: boolean;
+    
     textMutedColor: string;
 }
 
 export const DateSeparator = React.memo<DateSeparatorProps>(({
     date,
-    isDarkMode,
-    textMutedColor,
-}) => {
+    
+    textMutedColor }) => {
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -29,17 +28,14 @@ export const DateSeparator = React.memo<DateSeparatorProps>(({
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '12px',
-                padding: '20px 0 12px 0',
-            }}
+                padding: '20px 0 12px 0' }}
         >
             {/* Left line */}
             <div style={{
                 flex: 1,
                 height: '1px',
-                background: isDarkMode
-                    ? 'linear-gradient(to left, rgba(255,255,255,0.08), transparent)'
-                    : 'linear-gradient(to left, rgba(0,0,0,0.06), transparent)',
-            }} />
+                background: ? 'linear-gradient(to left, rgba(255,255,255,0.08), transparent)'
+                    : 'linear-gradient(to left, rgba(0,0,0,0.06), transparent)' }} />
             {/* Date text */}
             <span style={{
                 fontSize: '11px',
@@ -47,18 +43,15 @@ export const DateSeparator = React.memo<DateSeparatorProps>(({
                 color: textMutedColor,
                 letterSpacing: '0.2px',
                 textTransform: 'uppercase',
-                whiteSpace: 'nowrap',
-            }}>
+                whiteSpace: 'nowrap' }}>
                 {formatDateSeparator(date)}
             </span>
             {/* Right line */}
             <div style={{
                 flex: 1,
                 height: '1px',
-                background: isDarkMode
-                    ? 'linear-gradient(to right, rgba(255,255,255,0.08), transparent)'
-                    : 'linear-gradient(to right, rgba(0,0,0,0.06), transparent)',
-            }} />
+                background: ? 'linear-gradient(to right, rgba(255,255,255,0.08), transparent)'
+                    : 'linear-gradient(to right, rgba(0,0,0,0.06), transparent)' }} />
         </motion.div>
     );
 });

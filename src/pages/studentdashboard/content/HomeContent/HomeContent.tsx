@@ -19,8 +19,7 @@ import {
     initializeTracking,
     type StudyTimeData,
     type StreakData,
-    type CourseProgressData,
-} from '../../../../services/studyTimeService';
+    type CourseProgressData } from '../../../../services/studyTimeService';
 import { getUpcomingDeadlines } from '../../../../services/deadlinesService';
 import BroadcastBanner from '../../../../components/shared/BroadcastBanner';
 import { ProgressRing, WhatsNewButton, ConfettiBurst, RoleBadge, HomeSkeleton } from './components/HomeShared';
@@ -1263,8 +1262,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                                     initial={false}
                                                     animate={{
                                                         width: isActive ? 24 : 8,
-                                                        backgroundColor: isActive ? '#3b82f6' : '#d1d5db',
-                                                    }}
+                                                        backgroundColor: isActive ? '#3b82f6' : '#d1d5db' }}
                                                     whileHover={{ scale: 1.15 }}
                                                     whileTap={{ scale: 0.9 }}
                                                     transition={{

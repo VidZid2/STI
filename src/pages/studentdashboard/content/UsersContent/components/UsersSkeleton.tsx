@@ -15,21 +15,18 @@ const SkeletonPulse: React.FC<{
     return (
         <motion.div
             animate={{
-                backgroundPosition: ['200% 0', '-200% 0'],
-            }}
+                backgroundPosition: ['200% 0', '-200% 0'] }}
             transition={{
                 duration: 1.5,
                 repeat: Infinity,
-                ease: 'linear',
-            }}
+                ease: 'linear' }}
             style={{
                 width,
                 height,
                 borderRadius,
                 background: 'var(--shimmer-bg)',
                 backgroundSize: '200% 100%',
-                ...style,
-            }}
+                ...style }}
         />
     );
 };
@@ -38,8 +35,8 @@ const SkeletonPulse: React.FC<{
 // User Card Skeleton Component
 const UserCardSkeleton: React.FC<{
     index: number;
-    colors: { cardBg: string; border: string };
-}> = ({ index, colors }) => {
+    
+}> = ({ index }) => {
     return (
         <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -49,8 +46,7 @@ const UserCardSkeleton: React.FC<{
                 background: 'var(--dashboard-surface)',
                 borderRadius: '16px',
                 border: `1px solid var(--border-color)`,
-                padding: '16px',
-            }}
+                padding: '16px' }}
         >
             <div style={{ display: 'flex', gap: '12px' }}>
                 {/* Avatar Skeleton */}
@@ -106,8 +102,8 @@ const UserCardSkeleton: React.FC<{
 // Classmates Section Skeleton
 // @ts-ignore - Reserved for future use
 const _ClassmatesSkeleton: React.FC<{
-    colors: { cardBg: string; border: string };
-}> = ({ colors }) => {
+    
+}> = ({ }) => {
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -118,8 +114,7 @@ const _ClassmatesSkeleton: React.FC<{
                 padding: '18px',
                 borderRadius: '14px',
                 background: 'var(--dashboard-surface)',
-                border: `1px solid var(--border-color)`,
-            }}
+                border: `1px solid var(--border-color)` }}
         >
             {/* Header Skeleton */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
@@ -134,8 +129,7 @@ const _ClassmatesSkeleton: React.FC<{
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                gap: '10px',
-            }}>
+                gap: '10px' }}>
                 {[...Array(6)].map((_, i) => (
                     <div
                         key={i}
@@ -145,8 +139,7 @@ const _ClassmatesSkeleton: React.FC<{
                             gap: '10px',
                             padding: '10px 12px',
                             borderRadius: '10px',
-                            border: `1px solid var(--border-color)`,
-                        }}
+                            border: `1px solid var(--border-color)` }}
                     >
                         <SkeletonPulse width="36px" height="36px" borderRadius="10px"  />
                         <div style={{ flex: 1 }}>

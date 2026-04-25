@@ -10,18 +10,17 @@ import type { ChatColors } from '../types';
 interface ThreadIndicatorProps {
     replyCount: number;
     uniqueAuthors: string[];
-    isDarkMode: boolean;
-    colors: ChatColors;
+    
+    
     onClick: () => void;
 }
 
 export const ThreadIndicator = React.memo<ThreadIndicatorProps>(({
     replyCount,
     uniqueAuthors,
-    isDarkMode,
-    colors,
-    onClick,
-}) => {
+    
+    
+    onClick }) => {
     if (replyCount === 0) return null;
 
     return (
@@ -30,8 +29,7 @@ export const ThreadIndicator = React.memo<ThreadIndicatorProps>(({
             whileHover={{
                 scale: 1.02,
                 background: 'rgba(59, 130, 246, 0.08)',
-                borderColor: '#3b82f6',
-            }}
+                borderColor: '#3b82f6' }}
             whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             onClick={onClick}
@@ -46,8 +44,7 @@ export const ThreadIndicator = React.memo<ThreadIndicatorProps>(({
                 background: 'rgba(59, 130, 246, 0.05)',
                 cursor: 'pointer',
                 width: 'fit-content',
-                transition: 'all 0.2s ease',
-            }}
+                transition: 'all 0.2s ease' }}
         >
             {/* Thread icon */}
             <svg
@@ -86,8 +83,7 @@ export const ThreadIndicator = React.memo<ThreadIndicatorProps>(({
                             fontWeight: 600,
                             color: '#3b82f6',
                             marginLeft: idx > 0 ? '-6px' : 0,
-                            zIndex: uniqueAuthors.length - idx,
-                        }}
+                            zIndex: uniqueAuthors.length - idx }}
                     >
                         {author.charAt(0)}
                     </motion.div>
@@ -100,8 +96,7 @@ export const ThreadIndicator = React.memo<ThreadIndicatorProps>(({
                     style={{
                         fontSize: '11px',
                         fontWeight: 600,
-                        color: '#3b82f6',
-                    }}
+                        color: '#3b82f6' }}
                 >
                     {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
                 </span>

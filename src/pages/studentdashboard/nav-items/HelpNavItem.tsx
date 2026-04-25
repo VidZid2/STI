@@ -91,8 +91,7 @@ export const HelpNavItem: React.FC<HelpNavItemProps> = React.memo(({ onSidebarCl
                         right: -20,
                         width: '20px',
                         height: '100%',
-                        zIndex: 9999,
-                    }}
+                        zIndex: 9999 }}
                     onMouseEnter={handleMouseEnter}
                 />
             )}

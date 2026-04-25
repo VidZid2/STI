@@ -26,14 +26,13 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
     const [copiedField, setCopiedField] = useState<string | null>(null);
     const [isLoadingCourses, setIsLoadingCourses] = useState(false);
 
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardbg: 'var(--bg-primary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
-        textMuted: 'var(--text-muted)',
-    };
+        textMuted: 'var(--text-muted)' };
 
     // Load courses and office hours when modal opens
     useEffect(() => {
@@ -76,8 +75,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                             inset: 0,
                             background: 'rgba(0, 0, 0, 0.5)',
                             backdropFilter: 'blur(4px)',
-                            zIndex: 9998,
-                        }}
+                            zIndex: 9998 }}
                     />
 
                     {/* Modal */}
@@ -92,8 +90,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                             justifyContent: 'center',
                             zIndex: 9999,
                             pointerEvents: 'none',
-                            padding: '20px',
-                        }}
+                            padding: '20px' }}
                     >
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -110,8 +107,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                 overflow: 'hidden',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                pointerEvents: 'auto',
-                            }}
+                                pointerEvents: 'auto' }}
                         >
                             {/* Header */}
                             <div style={{ padding: '24px 24px 20px', borderBottom: `1px solid var(--border-color)` }}>
@@ -132,8 +128,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                             fontSize: '24px',
                                             fontWeight: 600,
                                             color: roleInfo.color,
-                                            flexShrink: 0,
-                                        }}
+                                            flexShrink: 0 }}
                                     >
                                         {user.profile_image ? (
                                             <img src={user.profile_image} alt={user.full_name} style={{ width: '100%', height: '100%', borderRadius: '16px', objectFit: 'cover' }} />
@@ -154,8 +149,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                                 background: roleInfo.bgColor,
                                                 fontSize: '12px',
                                                 fontWeight: 500,
-                                                color: roleInfo.color,
-                                            }}>
+                                                color: roleInfo.color }}>
                                                 <RoleIcon role={user.role} size={12} />
                                                 {roleInfo.label}
                                             </span>
@@ -165,15 +159,13 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                                 alignItems: 'center',
                                                 gap: '4px',
                                                 fontSize: '11px',
-                                                color: user.is_online ? '#10b981' : 'var(--text-muted)',
-                                            }}>
+                                                color: user.is_online ? '#10b981' : 'var(--text-muted)' }}>
                                                 <span style={{ 
                                                     width: '6px', 
                                                     height: '6px', 
                                                     borderRadius: '50%', 
                                                     background: user.is_online ? '#10b981' : '#94a3b8',
-                                                    boxShadow: user.is_online ? '0 0 6px rgba(16, 185, 129, 0.5)' : 'none',
-                                                }} />
+                                                    boxShadow: user.is_online ? '0 0 6px rgba(16, 185, 129, 0.5)' : 'none' }} />
                                                 {getLastSeenText(user.last_active, user.is_online || false)}
                                             </span>
                                         </div>
@@ -195,8 +187,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            color: 'var(--text-secondary)',
-                                        }}
+                                            color: 'var(--text-secondary)' }}
                                     >
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -226,8 +217,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                             borderRadius: '12px',
                                             cursor: 'pointer',
                                             marginBottom: '8px',
-                                            border: `1px solid var(--border-color)`,
-                                        }}
+                                            border: `1px solid var(--border-color)` }}
                                     >
                                         <div style={{
                                             width: '36px',
@@ -236,8 +226,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                             background: 'rgba(59, 130, 246, 0.1)',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}>
+                                            justifyContent: 'center' }}>
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                                                 <polyline points="22,6 12,13 2,6" />
@@ -274,8 +263,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                         gap: '12px',
                                         padding: '12px',
                                         borderRadius: '12px',
-                                        border: `1px solid var(--border-color)`,
-                                    }}>
+                                        border: `1px solid var(--border-color)` }}>
                                         <div style={{
                                             width: '36px',
                                             height: '36px',
@@ -283,8 +271,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                             background: 'rgba(139, 92, 246, 0.1)',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}>
+                                            justifyContent: 'center' }}>
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                                                 <polyline points="9 22 9 12 15 12 15 22" />
@@ -314,8 +301,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                                             gap: '12px',
                                                             padding: '12px',
                                                             borderRadius: '12px',
-                                                            border: `1px solid var(--border-color)`,
-                                                        }}
+                                                            border: `1px solid var(--border-color)` }}
                                                     >
                                                         <SkeletonPulse width="36px" height="36px" borderRadius="10px" />
                                                         <div style={{ flex: 1 }}>
@@ -340,8 +326,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                                             padding: '12px',
                                                             borderRadius: '12px',
                                                             border: `1px solid var(--border-color)`,
-                                                            background: 'var(--bg-hover)',
-                                                        }}
+                                                            background: 'var(--bg-hover)' }}
                                                     >
                                                         <div style={{
                                                             width: '36px',
@@ -350,8 +335,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                                             background: 'rgba(16, 185, 129, 0.1)',
                                                             display: 'flex',
                                                             alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                        }}>
+                                                            justifyContent: 'center' }}>
                                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                                                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -368,8 +352,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                                             borderRadius: '6px',
                                                             background: course.category === 'major' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(139, 92, 246, 0.1)',
                                                             color: course.category === 'major' ? '#3b82f6' : '#8b5cf6',
-                                                            textTransform: 'uppercase',
-                                                        }}>
+                                                            textTransform: 'uppercase' }}>
                                                             {course.short_title}
                                                         </span>
                                                     </motion.div>
@@ -403,8 +386,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                                         padding: '10px 12px',
                                                         borderRadius: '10px',
                                                         background: 'var(--bg-hover)',
-                                                        border: `1px solid var(--border-color)`,
-                                                    }}
+                                                        border: `1px solid var(--border-color)` }}
                                                 >
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                         <circle cx="12" cy="12" r="10" />
@@ -467,8 +449,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                         color: 'var(--text-secondary)',
                                         fontSize: '14px',
                                         fontWeight: 500,
-                                        cursor: 'pointer',
-                                    }}
+                                        cursor: 'pointer' }}
                                 >
                                     Close
                                 </motion.button>
@@ -489,8 +470,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        gap: '8px',
-                                    }}
+                                        gap: '8px' }}
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />

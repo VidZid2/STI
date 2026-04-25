@@ -89,7 +89,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({ notification
                         e.stopPropagation();
                         onClose(notification.id);
                     }}
-                    className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-slate-700 dark:hover:text-zinc-300 transition-colors"
+                    className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-slate-700 dark:hover:text-zinc-300 transition-"
                 >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

@@ -11,20 +11,13 @@ import { Tooltip } from './Tooltip';
 interface ReplyIndicatorProps {
     replyingTo: ReplyInfo | null;
     onCancel: () => void;
-    isDarkMode: boolean;
-    colors: {
-        border: string;
-        textMuted: string;
-        textSecondary: string;
-    };
+    
+    
 }
 
 export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
     replyingTo,
-    onCancel,
-    isDarkMode,
-    colors,
-}) => {
+    onCancel }) => {
     return (
         <AnimatePresence>
             {replyingTo && (
@@ -39,8 +32,7 @@ export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         gap: '10px',
-                        overflow: 'hidden',
-                    }}
+                        overflow: 'hidden' }}
                 >
                     {/* Reply icon */}
                     <div style={{
@@ -51,8 +43,7 @@ export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        flexShrink: 0,
-                    }}>
+                        flexShrink: 0 }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="9 14 4 9 9 4" />
                             <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
@@ -65,20 +56,17 @@ export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
                             display: 'flex',
                             alignItems: 'center',
                             gap: '6px',
-                            marginBottom: '2px',
-                        }}>
+                            marginBottom: '2px' }}>
                             <span style={{
                                 fontSize: '11px',
                                 fontWeight: 500,
-                                color: 'var(--text-muted)',
-                            }}>
+                                color: 'var(--text-muted)' }}>
                                 Replying to
                             </span>
                             <span style={{
                                 fontSize: '11px',
                                 fontWeight: 600,
-                                color: 'var(--bg-hover)',
-                            }}>
+                                color: 'var(--bg-hover)' }}>
                                 {replyingTo.userName}
                             </span>
                         </div>
@@ -89,8 +77,7 @@ export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
-                            lineHeight: 1.4,
-                        }}>
+                            lineHeight: 1.4 }}>
                             {replyingTo.content}
                         </p>
                     </div>
@@ -113,8 +100,7 @@ export const ReplyIndicator: React.FC<ReplyIndicatorProps> = ({
                                 justifyContent: 'center',
                                 color: 'var(--bg-hover)',
                                 transition: 'all 0.2s ease',
-                                flexShrink: 0,
-                            }}
+                                flexShrink: 0 }}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M18 6L6 18M6 6l12 12" />

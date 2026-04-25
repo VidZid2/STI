@@ -14,8 +14,7 @@ import {
     classifyMessage,
     uploadAttachments,
     type ChatMessage,
-    type MessageType,
-} from '../../../services/chatService';
+    type MessageType } from '../../../services/chatService';
 import { saveAttachmentsAsResources } from '../../../services/resourceService';
 import { getProfile, getImages } from '../../../services/profileService';
 import { fetchGroups, type GroupWithMembers } from '../../../services/groupsService';
@@ -25,15 +24,12 @@ import type {
     MessageReaction,
     ReplyInfo,
     UserBadge,
-    MemberStats,
-} from './types';
+    MemberStats } from './types';
 import {
     BADGES,
-    XP_REWARDS,
-} from './constants';
+    XP_REWARDS } from './constants';
 import {
-    calculateLevel,
-} from './utils';
+    calculateLevel } from './utils';
 
 // Import modal components (regular imports - lazy loading caused issues with AnimatePresence)
 import {
@@ -47,8 +43,7 @@ import {
     CourseMaterialModal,
     LeaderboardModal,
     ThreadModal,
-    GroupInfoModal,
-} from './modals';
+    GroupInfoModal } from './modals';
 
 // Import UI components from extracted modules
 import {
@@ -71,8 +66,7 @@ import {
     MentionNotificationPreview,
     PresenceIndicator,
     PendingAttachmentsPreview,
-    MessageItem,
-} from './components';
+    MessageItem } from './components';
 
 // Import custom hooks
 import { useMentions, usePresence } from './hooks';
@@ -120,8 +114,7 @@ const GroupChatPage: React.FC = () => {
     // Consolidated emoji picker state
     const [emojiPickerState, setEmojiPickerState] = useState({
         category: 'recent',
-        search: '',
-    });
+        search: '' });
 
     // Pending attachments state
     const [pendingAttachments, setPendingAttachments] = useState<{
@@ -162,8 +155,7 @@ const GroupChatPage: React.FC = () => {
         showButton: false,
         newMessageCount: 0,
         lastReadIndex: null as number | null,
-        unreadCount: 0,
-    });
+        unreadCount: 0 });
 
     // Search state
     const [searchQuery, setSearchQuery] = useState('');
@@ -206,8 +198,7 @@ const GroupChatPage: React.FC = () => {
                 level,
                 badges,
                 messagesCount: msgCount,
-                helpfulCount: Math.floor(msgCount / 4),
-            };
+                helpfulCount: Math.floor(msgCount / 4) };
         }).sort((a, b) => b.xp - a.xp);
     }, [groupInfo?.members, messageCountByUser, profile?.studentId]);
 
@@ -248,8 +239,7 @@ const GroupChatPage: React.FC = () => {
                     expertise: expertiseMap[member.user_id] || [],
                     level: stats?.level || 1,
                     studyStreak: stats?.streak || 0,
-                    availability,
-                };
+                    availability };
             });
     }, [groupInfo?.members, profile?.studentId, profile?.id, memberStats]);
 
@@ -276,25 +266,21 @@ const GroupChatPage: React.FC = () => {
         query: mentionQuery,
         handleInputChange: handleMentionInputChange,
         handleSelect: handleMentionSelect,
-        closeMentions,
-    } = useMentions({
+        closeMentions } = useMentions({
         users: mentionUsers,
         onMention: (_user) => {
-        },
-    });
+        } });
 
     // Presence hook
     const presenceUser = profile ? {
         id: profile.id || profile.studentId,
         name: profile.full_name || 'Anonymous',
-        avatar: profile.avatar_url,
-    } : null;
+        avatar: profile.avatar_url } : null;
 
     const { viewers } = usePresence({
         groupId,
         user: presenceUser,
-        enabled: !!profile && !!groupId,
-    });
+        enabled: !!profile && !!groupId });
 
     // Award XP function
     const awardXP = useCallback((amount: number, reason: string) => {
@@ -302,17 +288,16 @@ const GroupChatPage: React.FC = () => {
         setXpNotification({ amount, reason });
     }, []);
 
-    const isDarkMode = false;
+    const = false;
 
-    const colors = useMemo(() => ({
+    const = useMemo(() => ({
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-primary)',
         border: 'rgba(255,255,255,0.08)',
         textPrimary: 'var(--bg-hover)',
         textSecondary: 'var(--bg-hover)',
         textMuted: 'var(--bg-hover)',
-        accent: '#3b82f6',
-    }), [isDarkMode]);
+        accent: '#3b82f6' }), []);
 
     // Pre-compute thread info for all messages (O(n) instead of O(n²))
     const threadInfo = useMemo(() => {
@@ -528,8 +513,7 @@ const GroupChatPage: React.FC = () => {
                 return {
                     ...prev,
                     showButton: newShowButton,
-                    newMessageCount,
-                };
+                    newMessageCount };
             });
         }, 16);
     }, [hasMoreMessages, isLoadingMore, loadMoreMessages]);
@@ -595,8 +579,7 @@ const GroupChatPage: React.FC = () => {
             type: att.type,
             size: att.size,
             url: att.preview || '',
-            thumbnail_url: att.preview,
-        }));
+            thumbnail_url: att.preview }));
 
         const messageType = pendingAttachments.some(a => a.type.startsWith('image/'))
             ? 'image'
@@ -616,8 +599,7 @@ const GroupChatPage: React.FC = () => {
             created_at: new Date().toISOString(),
             is_edited: false,
             reply_to: replyingTo?.messageId,
-            attachments: attachments.length > 0 ? attachments : undefined,
-        };
+            attachments: attachments.length > 0 ? attachments : undefined };
 
         setNewMessage('');
         setReplyingTo(null);
@@ -815,8 +797,7 @@ const GroupChatPage: React.FC = () => {
                 background: 'var(--bg-primary)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-            }}>
+                justifyContent: 'center' }}>
                 <div
                     style={{
                         width: 40,
@@ -824,8 +805,7 @@ const GroupChatPage: React.FC = () => {
                         border: `3px solid var(--border-color)`,
                         borderTopColor: 'var(--accent-color)',
                         borderRadius: '50%',
-                        animation: 'spin 0.8s linear infinite',
-                    }}
+                        animation: 'spin 0.8s linear infinite' }}
                 />
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
@@ -839,8 +819,7 @@ const GroupChatPage: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            position: 'relative',
-        }}>
+            position: 'relative' }}>
             {/* Header */}
             <ChatHeader
                 groupInfo={groupInfo}
@@ -922,8 +901,7 @@ const GroupChatPage: React.FC = () => {
                     position: 'relative',
                     scrollBehavior: 'smooth',
                     willChange: 'scroll-position',
-                    overscrollBehavior: 'contain',
-                }}
+                    overscrollBehavior: 'contain' }}
             >
                 {/* Load More Indicator */}
                 {hasMoreMessages && (
@@ -932,8 +910,7 @@ const GroupChatPage: React.FC = () => {
                             display: 'flex',
                             justifyContent: 'center',
                             padding: '12px',
-                            marginBottom: '8px',
-                        }}
+                            marginBottom: '8px' }}
                     >
                         {isLoadingMore ? (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)' }}>
@@ -944,8 +921,7 @@ const GroupChatPage: React.FC = () => {
                                         border: `2px solid var(--border-color)`,
                                         borderTopColor: 'var(--accent-color)',
                                         borderRadius: '50%',
-                                        animation: 'spin 0.8s linear infinite',
-                                    }}
+                                        animation: 'spin 0.8s linear infinite' }}
                                 />
                                 <span style={{ fontSize: '12px' }}>Loading older messages...</span>
                             </div>
@@ -960,8 +936,7 @@ const GroupChatPage: React.FC = () => {
                                     border: `1px solid var(--border-color)`,
                                     borderRadius: '16px',
                                     cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                }}
+                                    transition: 'all 0.2s' }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.background = 'rgba(59,130,246,0.1)';
                                 }}
@@ -983,8 +958,7 @@ const GroupChatPage: React.FC = () => {
                             padding: '12px',
                             marginBottom: '8px',
                             color: 'var(--text-muted)',
-                            fontSize: '12px',
-                        }}
+                            fontSize: '12px' }}
                     >
                         — Beginning of conversation —
                     </div>
@@ -1077,8 +1051,7 @@ const GroupChatPage: React.FC = () => {
                 flexShrink: 0,
                 zIndex: 100,
                 background: 'var(--dashboard-surface)',
-                borderTop: `1px solid var(--border-color)`,
-            }}>
+                borderTop: `1px solid var(--border-color)` }}>
                 <ReplyIndicator
                     replyingTo={replyingTo}
                     onCancel={() => setReplyingTo(null)}
@@ -1285,8 +1258,7 @@ const GroupChatPage: React.FC = () => {
                                     name: f.name,
                                     type: f.type,
                                     size: f.size,
-                                    preview: f.preview,
-                                }));
+                                    preview: f.preview }));
                                 setPendingAttachments(prev => [...prev, ...newAttachments]);
                             } else {
                                 const icon = fileType.includes('pdf') ? '📄' :

@@ -67,6 +67,5 @@ export function useMessageEditing({ setMessages }: UseMessageEditingOptions): Us
         handleStartEdit,
         handleSaveEdit,
         handleCancelEdit,
-        handleDeleteMessage,
-    };
+        handleDeleteMessage };
 }

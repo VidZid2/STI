@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-    GraduationCap, Star, Clock, Users, TrendingUp, TrendingDown,
+    GraduationCap, Star, Users, TrendingUp,
     ChevronDown, ChevronUp, Flag, Sparkles, Download, RefreshCw
 } from 'lucide-react';
 import {

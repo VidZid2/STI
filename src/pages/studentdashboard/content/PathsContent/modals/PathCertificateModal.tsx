@@ -11,8 +11,7 @@ import {
     getPathTotalModules,
     formatEstimatedTime,
     getPathEstimatedHours,
-    type PathWithProgress,
-} from '../../../../../services/pathsService';
+    type PathWithProgress } from '../../../../../services/pathsService';
 
 export interface PathCertificateModalProps {
     path: PathWithProgress | null;
@@ -26,10 +25,9 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
     path,
     isOpen,
     onClose,
-    completedAt,
-}) => {
+    completedAt }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'path-certificate-title');
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-secondary)',
         border: 'var(--border-light)',
@@ -37,8 +35,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
         textSecondary: 'var(--text-secondary)',
         textMuted: 'var(--text-muted)',
         gold: '#f59e0b',
-        goldLight: '#fef3c7',
-    };
+        goldLight: '#fef3c7' };
 
     // Escape key + focus trap handled by useModalAccessibility hook
 
@@ -72,8 +69,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                             inset: 0,
                             background: 'rgba(0, 0, 0, 0.6)',
                             backdropFilter: 'blur(8px)',
-                            zIndex: 9998,
-                        }}
+                            zIndex: 9998 }}
                     />
 
                     {/* Modal Container */}
@@ -88,8 +84,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                             justifyContent: 'center',
                             zIndex: 9999,
                             pointerEvents: 'none',
-                            padding: '20px',
-                        }}
+                            padding: '20px' }}
                     >
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8, y: 40 }}
@@ -104,18 +99,16 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                 boxShadow: 'var(--shadow-lg)',
                                 overflow: 'hidden',
                                 pointerEvents: 'auto',
-                                border: `1px solid var(--border-color)`,
-                            }}
+                                border: `1px solid var(--border-color)` }}
                         >
                             {/* Certificate Header with Confetti Effect */}
                             <div style={{
                                 position: 'relative',
                                 padding: '32px 24px 24px',
-                                background: `linear-gradient(135deg, ${path.color}15 0%, ${colors.gold}10 100%)`,
+                                background: `linear-gradient(135deg, ${path.color}15 0%, ${.gold}10 100%)`,
                                 borderBottom: `1px solid var(--border-color)`,
                                 textAlign: 'center',
-                                overflow: 'hidden',
-                            }}>
+                                overflow: 'hidden' }}>
                                 {/* Decorative Elements */}
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0 }}
@@ -128,8 +121,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         width: '100px',
                                         height: '100px',
                                         borderRadius: '50%',
-                                        background: `radial-gradient(circle, ${colors.gold}30 0%, transparent 70%)`,
-                                    }}
+                                        background: `radial-gradient(circle, ${.gold}30 0%, transparent 70%)` }}
                                 />
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0 }}
@@ -142,8 +134,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         width: '120px',
                                         height: '120px',
                                         borderRadius: '50%',
-                                        background: `radial-gradient(circle, ${path.color}30 0%, transparent 70%)`,
-                                    }}
+                                        background: `radial-gradient(circle, ${path.color}30 0%, transparent 70%)` }}
                                 />
 
                                 {/* Trophy/Badge Icon */}
@@ -156,12 +147,11 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         height: '80px',
                                         margin: '0 auto 16px',
                                         borderRadius: '50%',
-                                        background: `linear-gradient(135deg, ${colors.gold} 0%, #d97706 100%)`,
+                                        background: `linear-gradient(135deg, ${.gold} 0%, #d97706 100%)`,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        boxShadow: `0 8px 24px ${colors.gold}40`,
-                                    }}
+                                        boxShadow: `0 8px 24px ${.gold}40` }}
                                 >
                                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
@@ -183,8 +173,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         fontSize: '22px',
                                         fontWeight: 700,
                                         color: 'var(--text-primary)',
-                                        marginBottom: '8px',
-                                    }}
+                                        marginBottom: '8px' }}
                                 >
                                     🎉 Congratulations!
                                 </motion.h2>
@@ -195,8 +184,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                     style={{
                                         margin: 0,
                                         fontSize: '14px',
-                                        color: 'var(--text-secondary)',
-                                    }}
+                                        color: 'var(--text-secondary)' }}
                                 >
                                     You've completed the learning path
                                 </motion.p>
@@ -211,8 +199,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                     transition={{ delay: 0.35 }}
                                     style={{
                                         textAlign: 'center',
-                                        marginBottom: '20px',
-                                    }}
+                                        marginBottom: '20px' }}
                                 >
                                     <div style={{
                                         display: 'inline-flex',
@@ -221,14 +208,12 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         padding: '12px 20px',
                                         borderRadius: '12px',
                                         background: `${path.color}10`,
-                                        border: `1px solid ${path.color}20`,
-                                    }}>
+                                        border: `1px solid ${path.color}20` }}>
                                         <PathIcon icon={path.icon} color={path.color} size={24} />
                                         <span style={{
                                             fontSize: '16px',
                                             fontWeight: 600,
-                                            color: 'var(--text-primary)',
-                                        }}>
+                                            color: 'var(--text-primary)' }}>
                                             {path.title}
                                         </span>
                                     </div>
@@ -243,30 +228,26 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         display: 'grid',
                                         gridTemplateColumns: 'repeat(3, 1fr)',
                                         gap: '12px',
-                                        marginBottom: '20px',
-                                    }}
+                                        marginBottom: '20px' }}
                                 >
                                     {/* Courses Completed */}
                                     <div style={{
                                         padding: '12px',
                                         borderRadius: '10px',
                                         background: 'var(--dashboard-surface)',
-                                        textAlign: 'center',
-                                    }}>
+                                        textAlign: 'center' }}>
                                         <div style={{
                                             fontSize: '20px',
                                             fontWeight: 700,
                                             color: path.color,
-                                            marginBottom: '4px',
-                                        }}>
+                                            marginBottom: '4px' }}>
                                             {path.total_courses}
                                         </div>
                                         <div style={{
                                             fontSize: '10px',
                                             color: 'var(--text-muted)',
                                             textTransform: 'uppercase',
-                                            letterSpacing: '0.5px',
-                                        }}>
+                                            letterSpacing: '0.5px' }}>
                                             Courses
                                         </div>
                                     </div>
@@ -276,22 +257,19 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         padding: '12px',
                                         borderRadius: '10px',
                                         background: 'var(--dashboard-surface)',
-                                        textAlign: 'center',
-                                    }}>
+                                        textAlign: 'center' }}>
                                         <div style={{
                                             fontSize: '20px',
                                             fontWeight: 700,
                                             color: '#8b5cf6',
-                                            marginBottom: '4px',
-                                        }}>
+                                            marginBottom: '4px' }}>
                                             {getPathTotalModules(path)}
                                         </div>
                                         <div style={{
                                             fontSize: '10px',
                                             color: 'var(--text-muted)',
                                             textTransform: 'uppercase',
-                                            letterSpacing: '0.5px',
-                                        }}>
+                                            letterSpacing: '0.5px' }}>
                                             Modules
                                         </div>
                                     </div>
@@ -301,22 +279,19 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         padding: '12px',
                                         borderRadius: '10px',
                                         background: 'var(--dashboard-surface)',
-                                        textAlign: 'center',
-                                    }}>
+                                        textAlign: 'center' }}>
                                         <div style={{
                                             fontSize: '20px',
                                             fontWeight: 700,
                                             color: '#10b981',
-                                            marginBottom: '4px',
-                                        }}>
+                                            marginBottom: '4px' }}>
                                             {formatEstimatedTime(getPathEstimatedHours(path))}
                                         </div>
                                         <div style={{
                                             fontSize: '10px',
                                             color: 'var(--text-muted)',
                                             textTransform: 'uppercase',
-                                            letterSpacing: '0.5px',
-                                        }}>
+                                            letterSpacing: '0.5px' }}>
                                             Completed
                                         </div>
                                     </div>
@@ -335,8 +310,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         padding: '10px 16px',
                                         borderRadius: '8px',
                                         background: 'var(--bg-hover)',
-                                        marginBottom: '20px',
-                                    }}
+                                        marginBottom: '20px' }}
                                 >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -346,8 +320,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                     </svg>
                                     <span style={{
                                         fontSize: '12px',
-                                        color: 'var(--text-secondary)',
-                                    }}>
+                                        color: 'var(--text-secondary)' }}>
                                         Completed on {formattedDate}
                                     </span>
                                 </motion.div>
@@ -363,20 +336,18 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         gap: '12px',
                                         padding: '14px 16px',
                                         borderRadius: '12px',
-                                        background: `linear-gradient(135deg, ${colors.goldLight} 0%, ${colors.gold}15 100%)`,
-                                        border: `1px solid ${colors.gold}30`,
-                                    }}
+                                        background: `linear-gradient(135deg, ${.goldLight} 0%, ${.gold}15 100%)`,
+                                        border: `1px solid ${.gold}30` }}
                                 >
                                     <div style={{
                                         width: '40px',
                                         height: '40px',
                                         borderRadius: '10px',
-                                        background: `linear-gradient(135deg, ${colors.gold} 0%, #d97706 100%)`,
+                                        background: `linear-gradient(135deg, ${.gold} 0%, #d97706 100%)`,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        flexShrink: 0,
-                                    }}>
+                                        flexShrink: 0 }}>
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <circle cx="12" cy="8" r="6" />
                                             <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
@@ -387,14 +358,12 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                             fontSize: '13px',
                                             fontWeight: 600,
                                             color: '#92400e',
-                                            marginBottom: '2px',
-                                        }}>
+                                            marginBottom: '2px' }}>
                                             Badge Earned!
                                         </div>
                                         <div style={{
                                             fontSize: '11px',
-                                            color: '#b45309',
-                                        }}>
+                                            color: '#b45309' }}>
                                             {path.title} Completion Badge
                                         </div>
                                     </div>
@@ -413,13 +382,11 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                 padding: '16px 24px',
                                 borderTop: `1px solid var(--border-color)`,
                                 display: 'flex',
-                                gap: '12px',
-                            }}>
+                                gap: '12px' }}>
                                 <motion.button
                                     whileHover={{ 
                                         scale: 1.02,
-                                        backgroundColor: 'var(--bg-hover)',
-                                    }}
+                                        backgroundColor: 'var(--bg-hover)' }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={onClose}
                                     style={{
@@ -431,13 +398,12 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         color: 'var(--text-secondary)',
                                         fontSize: '14px',
                                         fontWeight: 500,
-                                        cursor: 'pointer',
-                                    }}
+                                        cursor: 'pointer' }}
                                 >
                                     Close
                                 </motion.button>
                                 <motion.button
-                                    whileHover={{ scale: 1.02, boxShadow: `0 8px 24px ${colors.gold}40` }}
+                                    whileHover={{ scale: 1.02, boxShadow: `0 8px 24px ${.gold}40` }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={() => {
                                         // Could implement share functionality here
@@ -448,7 +414,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         padding: '12px 20px',
                                         borderRadius: '10px',
                                         border: 'none',
-                                        background: `linear-gradient(135deg, ${colors.gold} 0%, #d97706 100%)`,
+                                        background: `linear-gradient(135deg, ${.gold} 0%, #d97706 100%)`,
                                         color: '#ffffff',
                                         fontSize: '14px',
                                         fontWeight: 600,
@@ -456,8 +422,7 @@ const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        gap: '8px',
-                                    }}
+                                        gap: '8px' }}
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <circle cx="18" cy="5" r="3" />

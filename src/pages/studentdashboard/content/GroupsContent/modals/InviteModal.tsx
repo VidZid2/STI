@@ -53,15 +53,14 @@ const InviteModal: React.FC<{
         { value: '25', label: '25 uses' },
     ];
 
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-primary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
         textMuted: 'var(--text-muted)',
-        accent: '#10b981',
-    };
+        accent: '#10b981' };
 
     useEffect(() => {
         if (!isOpen) {
@@ -110,16 +109,14 @@ const InviteModal: React.FC<{
                         transition={{ duration: 0.2 }} onClick={onClose}
                         style={{
                             position: 'fixed', inset: 0, background: 'rgba(0, 0, 0, 0.5)',
-                            backdropFilter: 'blur(4px)', zIndex: 10000,
-                        }}
+                            backdropFilter: 'blur(4px)', zIndex: 10000 }}
                     />
                     <div
                         ref={modalRef}
                         {...modalProps}
                         style={{
                             position: 'fixed', inset: 0, display: 'flex', alignItems: 'center',
-                            justifyContent: 'center', zIndex: 10001, pointerEvents: 'none', padding: '20px',
-                        }}>
+                            justifyContent: 'center', zIndex: 10001, pointerEvents: 'none', padding: '20px' }}>
                         <motion.div
                             layout
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -135,20 +132,17 @@ const InviteModal: React.FC<{
                                 width: '100%', maxWidth: '420px',
                                 background: 'var(--bg-primary)', borderRadius: '20px',
                                 boxShadow: 'var(--shadow-lg)',
-                                overflow: 'hidden', pointerEvents: 'auto',
-                            }}
+                                overflow: 'hidden', pointerEvents: 'auto' }}
                         >
                             {/* Header */}
                             <div style={{ 
                                 padding: '20px 24px', borderBottom: `1px solid var(--border-color)`,
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            }}>
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <div style={{
                                         width: '40px', height: '40px', borderRadius: '10px',
                                         background: `var(--accent-color)15`,
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    }}>
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2">
                                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                                             <circle cx="9" cy="7" r="4" />
@@ -172,8 +166,7 @@ const InviteModal: React.FC<{
                                         width: '32px', height: '32px', borderRadius: '8px', border: 'none',
                                         background: 'var(--bg-hover)',
                                         color: 'var(--text-secondary)', cursor: 'pointer',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    }}
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 >
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -187,8 +180,7 @@ const InviteModal: React.FC<{
                                 <motion.div layout style={{ marginBottom: '20px' }}>
                                     <div style={{ 
                                         display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px',
-                                        color: 'var(--accent-color)', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase',
-                                    }}>
+                                        color: 'var(--accent-color)', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase' }}>
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                                             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
@@ -215,8 +207,7 @@ const InviteModal: React.FC<{
                                                     color: 'var(--accent-color)', fontSize: '14px', fontWeight: 600,
                                                     cursor: isGenerating ? 'wait' : 'pointer',
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                                                    opacity: isGenerating ? 0.7 : 1,
-                                                }}
+                                                    opacity: isGenerating ? 0.7 : 1 }}
                                             >
                                                 {isGenerating ? (
                                                     <>
@@ -250,15 +241,13 @@ const InviteModal: React.FC<{
                                                 exit={{ opacity: 0, y: -10 }}
                                                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                                                 style={{
-                                                    display: 'flex', gap: '8px', alignItems: 'stretch',
-                                                }}
+                                                    display: 'flex', gap: '8px', alignItems: 'stretch' }}
                                             >
                                                 <div style={{
                                                     flex: 1, padding: '12px 14px', borderRadius: '10px',
                                                     background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`,
                                                     fontSize: '13px', color: 'var(--text-primary)',
-                                                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                                }}>
+                                                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                     {inviteLink}
                                                 </div>
                                                 <motion.button
@@ -272,8 +261,7 @@ const InviteModal: React.FC<{
                                                         border: `1px solid ${'rgba(16, 185, 129, 0.1)'}`,
                                                         color: 'var(--accent-color)', fontSize: '13px', fontWeight: 600,
                                                         cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-                                                        transition: 'all 0.2s ease',
-                                                    }}
+                                                        transition: 'all 0.2s ease' }}
                                                 >
                                                     {copied ? (
                                                         <>
@@ -297,8 +285,7 @@ const InviteModal: React.FC<{
                                     </AnimatePresence>
 
                                     <p style={{ 
-                                        margin: '10px 0 0', fontSize: '12px', color: 'var(--text-muted)',
-                                    }}>
+                                        margin: '10px 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>
                                         Share this link with classmates to let them join your group
                                     </p>
                                 </motion.div>
@@ -316,15 +303,13 @@ const InviteModal: React.FC<{
                                                 display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px',
                                                 padding: '16px', borderRadius: '12px',
                                                 background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`,
-                                                overflow: 'hidden',
-                                            }}
+                                                overflow: 'hidden' }}
                                         >
                                         {/* Expires After Dropdown */}
                                         <div style={{ position: 'relative' }}>
                                             <label style={{ 
                                                 display: 'block', fontSize: '11px', fontWeight: 600, 
-                                                color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase',
-                                            }}>
+                                                color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
                                                 Expires After
                                             </label>
                                             <motion.button
@@ -338,8 +323,7 @@ const InviteModal: React.FC<{
                                                     background: showExpiresDropdown ? `var(--accent-color)08` : 'var(--bg-primary)',
                                                     color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer',
                                                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                                    transition: 'border-color 0.2s ease, background 0.2s ease',
-                                                }}
+                                                    transition: 'border-color 0.2s ease, background 0.2s ease' }}
                                             >
                                                 {expiresOptions.find(o => o.value === expiresIn)?.label}
                                                 <svg 
@@ -373,8 +357,7 @@ const InviteModal: React.FC<{
                                                                     padding: '6px', borderRadius: '10px',
                                                                     background: 'var(--bg-primary)', border: `1px solid var(--border-color)`,
                                                                     boxShadow: 'var(--shadow-lg)',
-                                                                    zIndex: 10011,
-                                                                }}
+                                                                    zIndex: 10011 }}
                                                             >
                                                                 {expiresOptions.map((option) => (
                                                                     <motion.button
@@ -387,8 +370,7 @@ const InviteModal: React.FC<{
                                                                             background: expiresIn === option.value ? `var(--accent-color)10` : 'transparent',
                                                                             color: expiresIn === option.value ? 'var(--accent-color)' : 'var(--text-secondary)',
                                                                             fontSize: '12px', fontWeight: 500,
-                                                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                                                        }}
+                                                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                                                                     >
                                                                         {option.label}
                                                                         {expiresIn === option.value && (
@@ -410,8 +392,7 @@ const InviteModal: React.FC<{
                                         <div style={{ position: 'relative' }}>
                                             <label style={{ 
                                                 display: 'block', fontSize: '11px', fontWeight: 600, 
-                                                color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase',
-                                            }}>
+                                                color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' }}>
                                                 Max Uses
                                             </label>
                                             <motion.button
@@ -425,8 +406,7 @@ const InviteModal: React.FC<{
                                                     background: showMaxUsesDropdown ? `var(--accent-color)08` : 'var(--bg-primary)',
                                                     color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer',
                                                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                                    transition: 'border-color 0.2s ease, background 0.2s ease',
-                                                }}
+                                                    transition: 'border-color 0.2s ease, background 0.2s ease' }}
                                             >
                                                 {maxUsesOptions.find(o => o.value === maxUses)?.label}
                                                 <svg 
@@ -460,8 +440,7 @@ const InviteModal: React.FC<{
                                                                     padding: '6px', borderRadius: '10px',
                                                                     background: 'var(--bg-primary)', border: `1px solid var(--border-color)`,
                                                                     boxShadow: 'var(--shadow-lg)',
-                                                                    zIndex: 10011,
-                                                                }}
+                                                                    zIndex: 10011 }}
                                                             >
                                                                 {maxUsesOptions.map((option) => (
                                                                     <motion.button
@@ -474,8 +453,7 @@ const InviteModal: React.FC<{
                                                                             background: maxUses === option.value ? `var(--accent-color)10` : 'transparent',
                                                                             color: maxUses === option.value ? 'var(--accent-color)' : 'var(--text-secondary)',
                                                                             fontSize: '12px', fontWeight: 500,
-                                                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                                                        }}
+                                                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                                                                     >
                                                                         {option.label}
                                                                         {maxUses === option.value && (
@@ -512,8 +490,7 @@ const InviteModal: React.FC<{
                                                 border: `1px solid var(--border-color)`,
                                                 background: 'transparent',
                                                 color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 500,
-                                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                                            }}
+                                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                                         >
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <path d="M21 2v6h-6" />

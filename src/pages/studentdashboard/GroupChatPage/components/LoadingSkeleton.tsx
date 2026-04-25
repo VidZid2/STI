@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 
 export const LoadingSkeleton: React.FC = () => {
-    const [isDarkMode, setIsDarkMode] = useState(
+    const [ setIsDarkMode] = useState(
         () => localStorage.getItem('darkModeEnabled') === 'true'
     );
 
@@ -29,12 +29,11 @@ export const LoadingSkeleton: React.FC = () => {
             observer.disconnect();
         };
     }, []);
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-primary)',
         border: 'rgba(255,255,255,0.08)',
-        shimmer: 'var(--bg-hover)',
-    };
+        shimmer: 'var(--bg-hover)' };
 
     const MESSAGE_SKELETONS = [
         { isOwn: false, width: '60%' },
@@ -52,8 +51,7 @@ export const LoadingSkeleton: React.FC = () => {
             background: 'var(--bg-primary)',
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'hidden',
-        }}>
+            overflow: 'hidden' }}>
             {/* Header Skeleton */}
             <div style={{
                 background: 'var(--dashboard-surface)',
@@ -61,8 +59,7 @@ export const LoadingSkeleton: React.FC = () => {
                 padding: '12px 20px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '16px',
-            }}>
+                gap: '16px' }}>
                 <motion.div
                     animate={{ opacity: [0.5, 0.8, 0.5] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -115,15 +112,13 @@ export const LoadingSkeleton: React.FC = () => {
                         style={{
                             display: 'flex',
                             justifyContent: msg.isOwn ? 'flex-end' : 'flex-start',
-                            marginBottom: '16px',
-                        }}
+                            marginBottom: '16px' }}
                     >
                         <div style={{
                             display: 'flex',
                             gap: '10px',
                             maxWidth: '70%',
-                            flexDirection: msg.isOwn ? 'row-reverse' : 'row',
-                        }}>
+                            flexDirection: msg.isOwn ? 'row-reverse' : 'row' }}>
                             {/* Avatar */}
                             <motion.div
                                 animate={{ opacity: [0.5, 0.8, 0.5] }}
@@ -133,8 +128,7 @@ export const LoadingSkeleton: React.FC = () => {
                                     height: 36,
                                     borderRadius: '10px',
                                     background: 'var(--shimmer-bg)',
-                                    flexShrink: 0,
-                                }}
+                                    flexShrink: 0 }}
                             />
                             {/* Message Bubble */}
                             <motion.div
@@ -146,8 +140,7 @@ export const LoadingSkeleton: React.FC = () => {
                                     background: msg.isOwn
                                         ? 'rgba(59, 130, 246, 0.2)'
                                         : 'var(--shimmer-bg)',
-                                    minWidth: 120,
-                                }}
+                                    minWidth: 120 }}
                             >
                                 {/* Name */}
                                 <div style={{
@@ -155,22 +148,19 @@ export const LoadingSkeleton: React.FC = () => {
                                     height: 12,
                                     borderRadius: '4px',
                                     background: 'rgba(255,255,255,0.1)',
-                                    marginBottom: '8px',
-                                }} />
+                                    marginBottom: '8px' }} />
                                 {/* Content Lines */}
                                 <div style={{
                                     width: msg.width,
                                     height: 14,
                                     borderRadius: '4px',
                                     background: 'rgba(255,255,255,0.08)',
-                                    marginBottom: '4px',
-                                }} />
+                                    marginBottom: '4px' }} />
                                 <div style={{
                                     width: '70%',
                                     height: 14,
                                     borderRadius: '4px',
-                                    background: 'var(--bg-hover)',
-                                }} />
+                                    background: 'var(--bg-hover)' }} />
                             </motion.div>
                         </div>
                     </div>
@@ -184,8 +174,7 @@ export const LoadingSkeleton: React.FC = () => {
                 padding: '16px 20px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
-            }}>
+                gap: '12px' }}>
                 <div style={{
                     flex: 1,
                     background: 'var(--shimmer-bg)',
@@ -193,8 +182,7 @@ export const LoadingSkeleton: React.FC = () => {
                     padding: '12px',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                }}>
+                    gap: '8px' }}>
                     {[1, 2].map((i) => (
                         <motion.div
                             key={i}

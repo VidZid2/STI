@@ -15,17 +15,8 @@ interface ChatHeaderProps {
     groupId: string | undefined;
     userXP: number;
     userStreak: number;
-    isDarkMode: boolean;
-    colors: {
-        bg: string;
-        cardBg: string;
-        border: string;
-        textPrimary: string;
-        textSecondary: string;
-        textMuted: string;
-        accent: string;
-    };
-    showSearchPanel: boolean;
+    
+    
     onSearchToggle: () => void;
     onLeaderboardOpen: () => void;
     onGroupInfoOpen: () => void;
@@ -37,14 +28,13 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     groupId,
     userXP,
     userStreak,
-    isDarkMode,
-    colors,
+    
+    
     showSearchPanel,
     onSearchToggle,
     onLeaderboardOpen,
     onGroupInfoOpen,
-    presenceIndicator,
-}) => {
+    presenceIndicator }) => {
     const navigate = useNavigate();
 
     return (
@@ -59,8 +49,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 alignItems: 'center',
                 gap: '16px',
                 flexShrink: 0,
-                zIndex: 100,
-            }}
+                zIndex: 100 }}
         >
             <Tooltip text="Back to Groups">
                 <motion.button
@@ -78,8 +67,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         color: '#3b82f6',
-                        transition: 'background 0.15s ease',
-                    }}
+                        transition: 'background 0.15s ease' }}
                 >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -98,8 +86,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 overflow: 'hidden',
-                flexShrink: 0,
-            }}>
+                flexShrink: 0 }}>
                 {groupInfo?.avatar ? (
                     <img
                         src={groupInfo.avatar}
@@ -121,8 +108,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: '12px',
-                    marginBottom: '3px',
-                }}>
+                    marginBottom: '3px' }}>
                     <h1 style={{
                         margin: 0,
                         fontSize: '16px',
@@ -131,8 +117,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        lineHeight: 1.3,
-                    }}>
+                        lineHeight: 1.3 }}>
                         {groupInfo?.name || 'Group Chat'}
                     </h1>
                     {presenceIndicator}
@@ -144,8 +129,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                     gap: '4px',
                     fontSize: '13px',
                     color: 'var(--text-muted)',
-                    lineHeight: 1,
-                }}>
+                    lineHeight: 1 }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                         <circle cx="9" cy="7" r="4" />
@@ -153,8 +137,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                     <span>{groupInfo?.member_count || 0} members</span>
                     <span style={{ 
                         margin: '0 2px',
-                        color: 'var(--text-muted)',
-                    }}>•</span>
+                        color: 'var(--text-muted)' }}>•</span>
                     <span style={{ color: '#22c55e', fontWeight: 500 }}>
                         {groupInfo?.online_count || 0} online
                     </span>
@@ -177,8 +160,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         borderRadius: '10px',
                         background: 'var(--bg-primary)',
                         border: `1.5px solid #3b82f6`,
-                        cursor: 'pointer',
-                    }}
+                        cursor: 'pointer' }}
                 >
                     {/* Streak - Compact with Better Flame */}
                     <motion.div
@@ -189,8 +171,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         <motion.div
                             animate={{
                                 y: [0, -1.5, 0],
-                                scale: [1, 1.05, 1],
-                            }}
+                                scale: [1, 1.05, 1] }}
                             transition={{
                                 duration: 1.5,
                                 repeat: Infinity,
@@ -204,8 +185,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                boxShadow: 'var(--shadow-md)',
-                            }}
+                                boxShadow: 'var(--shadow-md)' }}
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                                 <path
@@ -229,8 +209,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                                 background: 'linear-gradient(135deg, #f97316 0%, #f59e0b 100%)',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
-                                backgroundClip: 'text',
-                            }}
+                                backgroundClip: 'text' }}
                         >
                             {userStreak}
                         </motion.span>
@@ -247,8 +226,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                             color: '#3b82f6',
                             background: 'var(--dashboard-surface)',
                             padding: '2px 6px',
-                            borderRadius: '5px',
-                        }}
+                            borderRadius: '5px' }}
                     >
                         Lv.{calculateLevel(userXP)}
                     </motion.span>
@@ -259,8 +237,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         height: 4,
                         borderRadius: '2px',
                         background: 'rgba(255,255,255,0.1)',
-                        overflow: 'hidden',
-                    }}>
+                        overflow: 'hidden' }}>
                         <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${(userXP % 100)}%` }}
@@ -268,8 +245,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                             style={{
                                 height: '100%',
                                 background: 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)',
-                                borderRadius: '2px',
-                            }}
+                                borderRadius: '2px' }}
                         />
                     </div>
                 </motion.div>
@@ -293,8 +269,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: '#3b82f6',
-                            transition: 'background 0.15s ease',
-                        }}
+                            transition: 'background 0.15s ease' }}
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                             <path d="M15 21H9V12.6C9 12.2686 9.26863 12 9.6 12H14.4C14.7314 12 15 12.2686 15 12.6V21Z" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -320,8 +295,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: '#3b82f6',
-                            transition: 'background 0.15s ease',
-                        }}
+                            transition: 'background 0.15s ease' }}
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 11V16M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21ZM12.0498 8V8.1L11.9502 8.1002V8H12.0498Z" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -346,8 +320,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: '#3b82f6',
-                            transition: 'background 0.15s ease',
-                        }}
+                            transition: 'background 0.15s ease' }}
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="11" cy="11" r="8" />
@@ -371,8 +344,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: '#8b5cf6',
-                            transition: 'background 0.15s ease',
-                        }}
+                            transition: 'background 0.15s ease' }}
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="12" cy="12" r="10" />

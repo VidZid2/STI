@@ -56,8 +56,7 @@ const JoinGroupPage: React.FC = () => {
                         style={{
                             width: 48, height: 48, borderRadius: '12px',
                             background: 'rgba(59, 130, 246, 0.08)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}
+                            display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                         <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
                             <path d="M21 12a9 9 0 1 1-6.219-8.56" />
@@ -73,8 +72,7 @@ const JoinGroupPage: React.FC = () => {
                         style={{
                             width: 48, height: 48, borderRadius: '12px',
                             background: 'rgba(16, 185, 129, 0.08)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}
+                            display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                         <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -94,7 +92,7 @@ const JoinGroupPage: React.FC = () => {
                                 trigger="in"
                                 delay="500"
                                 state="in-reveal"
-                                colors="primary:#f59e0b,secondary:#f59e0b"
+                                ="primary:#f59e0b,secondary:#f59e0b"
                                 style="width:80px;height:80px">
                             </lord-icon>`
                         }}
@@ -109,8 +107,7 @@ const JoinGroupPage: React.FC = () => {
                         style={{
                             width: 48, height: 48, borderRadius: '12px',
                             background: 'rgba(239, 68, 68, 0.08)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}
+                            display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                         <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
                             <circle cx="12" cy="12" r="10" />
@@ -135,8 +132,7 @@ const JoinGroupPage: React.FC = () => {
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-        };
+            gap: '8px' };
     };
 
     const getTitle = () => {
@@ -155,8 +151,7 @@ const JoinGroupPage: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'center',
             background: '#f8fafc',
-            padding: '20px',
-        }}>
+            padding: '20px' }}>
             <motion.div
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -169,8 +164,7 @@ const JoinGroupPage: React.FC = () => {
                     textAlign: 'center',
                     boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
                     maxWidth: '360px',
-                    width: '100%',
-                }}
+                    width: '100%' }}
             >
                 <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
                     {getStatusIcon()}
@@ -180,8 +174,7 @@ const JoinGroupPage: React.FC = () => {
                     margin: '0 0 8px',
                     fontSize: '18px',
                     fontWeight: 600,
-                    color: '#0f172a',
-                }}>
+                    color: '#0f172a' }}>
                     {getTitle()}
                 </h1>
 
@@ -189,8 +182,7 @@ const JoinGroupPage: React.FC = () => {
                     margin: '0 0 20px',
                     fontSize: '13px',
                     color: '#64748b',
-                    lineHeight: 1.5,
-                }}>
+                    lineHeight: 1.5 }}>
                     {message || 'Processing your invite link...'}
                 </p>
 
@@ -198,8 +190,7 @@ const JoinGroupPage: React.FC = () => {
                     <p style={{
                         margin: 0,
                         fontSize: '11px',
-                        color: '#94a3b8',
-                    }}>
+                        color: '#94a3b8' }}>
                         Redirecting to dashboard...
                     </p>
                 )}
@@ -211,8 +202,7 @@ const JoinGroupPage: React.FC = () => {
                                 scale: 1.02,
                                 boxShadow: status === 'already-member'
                                     ? '0 6px 20px rgba(245, 158, 11, 0.25)'
-                                    : '0 6px 20px rgba(239, 68, 68, 0.25)',
-                            }}
+                                    : '0 6px 20px rgba(239, 68, 68, 0.25)' }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => navigate('/dashboard', { state: { activeTab: 'groups' } })}
                             style={getButtonStyle() as React.CSSProperties}

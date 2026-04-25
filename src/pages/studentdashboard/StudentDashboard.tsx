@@ -51,8 +51,7 @@ import {
     useAchievements,
     useGradePredictor,
     useStudyInsights,
-    useCalendar,
-} from './hooks';
+    useCalendar } from './hooks';
 
 // Widget components - available for future refactoring
 // import { QuoteWidget, WeatherWidget, ActivityWidget, QuickStatsCard } from './widgets';
@@ -95,8 +94,7 @@ const DashboardPage: React.FC = () => {
         setShowConfetti: _setShowConfetti,
         showIntro,
         setShowIntro,
-        isDemoMode,
-    } = useDashboardState();
+        isDemoMode } = useDashboardState();
 
     // Suppress unused variable warnings - these are available for future use
     void _setTutorialActive;
@@ -153,23 +151,20 @@ const DashboardPage: React.FC = () => {
         widgetVisibility,
         toggleWidget,
         restoreAllWidgets,
-        hasHiddenWidgets,
-    } = useWidgetVisibility();
+        hasHiddenWidgets } = useWidgetVisibility();
 
     // Dashboard data hook (deadlines, activities, progress)
     const {
         upcomingDeadlines,
         recentActivities,
         overallProgress,
-        totalCourses,
-    } = useDashboardData(refreshTrigger);
+        totalCourses } = useDashboardData(refreshTrigger);
 
     // Weather hook
     const {
         weather,
         weatherLoading,
-        weatherError,
-    } = useWeather();
+        weatherError } = useWeather();
 
     // Todos hook
     const {
@@ -183,8 +178,7 @@ const DashboardPage: React.FC = () => {
         toggleTodo,
         deleteTodo,
         clearAllTodos,
-        completedCount,
-    } = useTodos();
+        completedCount } = useTodos();
 
     // Achievements hook
     const { achievements } = useAchievements(refreshTrigger);
@@ -205,8 +199,7 @@ const DashboardPage: React.FC = () => {
         calendarMonth,
         setCalendarMonth,
         calendarData,
-        hasDeadlines,
-    } = useCalendar(upcomingDeadlines);
+        hasDeadlines } = useCalendar(upcomingDeadlines);
 
     // Duplicate code removed during refactoring
 
@@ -500,7 +493,7 @@ const DashboardPage: React.FC = () => {
                                     <lord-icon
                                         src="https://cdn.lordicon.com/rrbmabsx.json"
                                         trigger="hover"
-                                        colors="primary:#1d4ed8,secondary:#eab308"
+                                        ="primary:#1d4ed8,secondary:#eab308"
                                         style={{ width: '24px', height: '24px' }}
                                     />
                                 </a>
@@ -510,7 +503,7 @@ const DashboardPage: React.FC = () => {
                                     <lord-icon
                                         src="https://cdn.lordicon.com/hmpomorl.json"
                                         trigger="hover"
-                                        colors="primary:#1d4ed8,secondary:#eab308"
+                                        ="primary:#1d4ed8,secondary:#eab308"
                                         style={{ width: '24px', height: '24px' }}
                                     />
                                 </a>
@@ -521,7 +514,7 @@ const DashboardPage: React.FC = () => {
                                         src="https://cdn.lordicon.com/psyssele.json"
                                         trigger="hover"
                                         state="hover-snooze"
-                                        colors="primary:#1d4ed8,secondary:#eab308"
+                                        ="primary:#1d4ed8,secondary:#eab308"
                                         style={{ width: '24px', height: '24px' }}
                                     />
                                 </a>
@@ -531,7 +524,7 @@ const DashboardPage: React.FC = () => {
                                     <lord-icon
                                         src="https://cdn.lordicon.com/jdgfsfzr.json"
                                         trigger="hover"
-                                        colors="primary:#1d4ed8,secondary:#eab308"
+                                        ="primary:#1d4ed8,secondary:#eab308"
                                         style={{ width: '24px', height: '24px' }}
                                     />
                                 </a>

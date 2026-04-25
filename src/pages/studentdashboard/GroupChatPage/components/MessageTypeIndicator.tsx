@@ -42,8 +42,7 @@ const ResourceIcon = () => (
 
 export const MessageTypeIndicator: React.FC<MessageTypeIndicatorProps> = ({
     messageType,
-    isOwn,
-}) => {
+    isOwn }) => {
     if (!messageType || messageType === 'general') return null;
 
     const typeConfig: Record<MessageType, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
@@ -51,28 +50,23 @@ export const MessageTypeIndicator: React.FC<MessageTypeIndicatorProps> = ({
             label: 'Urgent',
             color: isOwn ? 'rgba(255,255,255,0.95)' : '#ef4444',
             bg: isOwn ? 'rgba(255,255,255,0.2)' : 'rgba(239, 68, 68, 0.12)',
-            icon: <UrgentIcon />,
-        },
+            icon: <UrgentIcon /> },
         question: {
             label: 'Question',
             color: isOwn ? 'rgba(255,255,255,0.9)' : '#f59e0b',
             bg: isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(245, 158, 11, 0.1)',
-            icon: <QuestionIcon />,
-        },
+            icon: <QuestionIcon /> },
         answer: {
             label: 'Answer',
             color: isOwn ? 'rgba(255,255,255,0.9)' : '#22c55e',
             bg: isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(34, 197, 94, 0.1)',
-            icon: <AnswerIcon />,
-        },
+            icon: <AnswerIcon /> },
         resource: {
             label: 'Resource',
             color: isOwn ? 'rgba(255,255,255,0.9)' : '#3b82f6',
             bg: isOwn ? 'rgba(255,255,255,0.15)' : 'rgba(59, 130, 246, 0.1)',
-            icon: <ResourceIcon />,
-        },
-        general: { label: '', color: '', bg: '', icon: null },
-    };
+            icon: <ResourceIcon /> },
+        general: { label: '', color: '', bg: '', icon: null } };
 
     const config = typeConfig[messageType];
 
@@ -81,8 +75,7 @@ export const MessageTypeIndicator: React.FC<MessageTypeIndicatorProps> = ({
             display: 'flex',
             alignItems: 'center',
             gap: '4px',
-            marginBottom: '4px',
-        }}>
+            marginBottom: '4px' }}>
             <span
                 style={{
                     display: 'inline-flex',
@@ -93,8 +86,7 @@ export const MessageTypeIndicator: React.FC<MessageTypeIndicatorProps> = ({
                     padding: '2px 5px',
                     borderRadius: '4px',
                     background: config.bg,
-                    fontWeight: 500,
-                }}
+                    fontWeight: 500 }}
                 title={`AI classified as ${config.label}`}
             >
                 {config.icon}

@@ -39,11 +39,11 @@ interface GifPickerProps {
     onClose: () => void;
     onSelect: (gif: GifResult) => void;
     anchorRef?: React.RefObject<HTMLElement | null>;
-    isDarkMode?: boolean;
+    
 }
 
 // Skeleton loader component
-const GifSkeleton: React.FC<{ isDarkMode: boolean; index: number }> = ({ isDarkMode, index }) => (
+const GifSkeleton: React.FC<{  index: number }> = ({  index }) => (
     <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -51,12 +51,10 @@ const GifSkeleton: React.FC<{ isDarkMode: boolean; index: number }> = ({ isDarkM
         style={{
             aspectRatio: '1',
             borderRadius: '12px',
-            background: isDarkMode 
-                ? 'linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%)'
+            background: ? 'linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%)'
                 : 'linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%)',
             backgroundSize: '200% 100%',
-            animation: 'shimmer 1.5s infinite',
-        }}
+            animation: 'shimmer 1.5s infinite' }}
     />
 );
 
@@ -64,8 +62,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
     isOpen,
     onClose,
     onSelect,
-    isDarkMode = false,
-}) => {
+    = false }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [gifs, setGifs] = useState<GifResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -75,15 +72,14 @@ export const GifPicker: React.FC<GifPickerProps> = ({
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         border: 'rgba(255,255,255,0.06)',
         textPrimary: 'var(--bg-hover)',
         textSecondary: 'var(--bg-hover)',
         textMuted: 'var(--bg-hover)',
         accent: '#3b82f6', // Blue to match emoji picker
-        cardBg: 'var(--dashboard-surface)',
-    };
+        cardBg: 'var(--dashboard-surface)' };
 
     // Fetch GIFs from Tenor API
     const fetchGifs = useCallback(async (query: string) => {
@@ -98,8 +94,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                 client_key: TENOR_CLIENT_KEY,
                 limit: TENOR_LIMIT.toString(),
                 media_filter: 'gif,tinygif',
-                ...(query && { q: query }),
-            });
+                ...(query && { q: query }) });
 
             const response = await fetch(`${endpoint}?${params}`);
             const data = await response.json();
@@ -111,8 +106,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                     url: item.media_formats?.gif?.url || item.media_formats?.mediumgif?.url,
                     preview: item.media_formats?.tinygif?.url || item.media_formats?.nanogif?.url,
                     width: item.media_formats?.gif?.dims?.[0] || 200,
-                    height: item.media_formats?.gif?.dims?.[1] || 200,
-                }));
+                    height: item.media_formats?.gif?.dims?.[1] || 200 }));
                 setGifs(formattedGifs);
             }
         } catch (error) {
@@ -159,8 +153,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
         // Use fixed position matching emoji picker (bottom: 90, right: 20)
         setPosition({
             bottom: 90,
-            right: 20,
-        });
+            right: 20 });
     }, [isOpen]);
 
     // Close on click outside
@@ -197,14 +190,12 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                         maxHeight: '460px', // Match emoji picker height
                         background: 'var(--bg-primary)',
                         borderRadius: '16px',
-                        boxShadow: isDarkMode 
-                            ? '0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
+                        boxShadow: ? '0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
                             : '0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
                         overflow: 'hidden',
                         zIndex: 1000,
                         display: 'flex',
-                        flexDirection: 'column',
-                    }}
+                        flexDirection: 'column' }}
                 >
                     {/* Shimmer animation style */}
                     <style>{`
@@ -217,8 +208,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                     {/* Header with Search */}
                     <div style={{
                         padding: '14px 16px',
-                        borderBottom: `1px solid var(--border-color)`,
-                    }}>
+                        borderBottom: `1px solid var(--border-color)` }}>
                         {/* Search Input - matching emoji picker style */}
                         <div style={{
                             display: 'flex',
@@ -228,8 +218,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                             borderRadius: '12px',
                             background: 'rgba(255,255,255,0.04)',
                             border: `1px solid var(--border-color)`,
-                            transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-                        }}>
+                            transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}>
                             {isSearching ? (
                                 <motion.div
                                     animate={{ rotate: 360 }}
@@ -259,8 +248,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                                     outline: 'none',
                                     fontSize: '13px',
                                     fontWeight: 500,
-                                    color: 'var(--text-primary)',
-                                }}
+                                    color: 'var(--text-primary)' }}
                             />
                             {searchQuery && (
                                 <motion.button
@@ -282,8 +270,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                                         justifyContent: 'center',
                                         color: 'var(--text-muted)',
                                         flexShrink: 0,
-                                        transition: 'background 0.15s ease',
-                                    }}
+                                        transition: 'background 0.15s ease' }}
                                 >
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <line x1="18" y1="6" x2="6" y2="18" />
@@ -306,14 +293,12 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                         textTransform: 'uppercase',
                         letterSpacing: '0.5px',
                         borderBottom: `1px solid var(--border-color)`,
-                        background: 'var(--bg-primary)',
-                    }}>
+                        background: 'var(--bg-primary)' }}>
                         <div style={{
                             width: 4,
                             height: 4,
                             borderRadius: '50%',
-                            background: 'var(--accent-color)',
-                        }} />
+                            background: 'var(--accent-color)' }} />
                         {searchQuery ? 'Search Results' : 'Trending GIFs'}
                         <span style={{ 
                             marginLeft: 'auto', 
@@ -321,8 +306,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                             fontWeight: 500,
                             color: 'var(--text-muted)',
                             textTransform: 'none',
-                            letterSpacing: 'normal',
-                        }}>
+                            letterSpacing: 'normal' }}>
                             Powered by Tenor
                         </span>
                     </div>
@@ -333,8 +317,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                         overflow: 'auto',
                         padding: '12px 16px',
                         scrollbarWidth: 'none',
-                        msOverflowStyle: 'none',
-                    }}
+                        msOverflowStyle: 'none' }}
                     className="hide-scrollbar-gif"
                     >
                         <style>{`
@@ -346,10 +329,9 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                             <div style={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(2, 1fr)',
-                                gap: '10px',
-                            }}>
+                                gap: '10px' }}>
                                 {Array.from({ length: 6 }).map((_, index) => (
-                                    <GifSkeleton key={index} isDarkMode={isDarkMode} index={index} />
+                                    <GifSkeleton key={index}  index={index} />
                                 ))}
                             </div>
                         ) : gifs.length === 0 ? (
@@ -359,8 +341,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 height: '180px',
-                                color: 'var(--text-muted)',
-                            }}>
+                                color: 'var(--text-muted)' }}>
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ margin: '0 auto 8px', opacity: 0.5 }}>
                                     <circle cx="11" cy="11" r="8" />
                                     <path d="M21 21l-4.35-4.35" />
@@ -373,8 +354,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                             <div style={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(2, 1fr)',
-                                gap: '10px',
-                            }}>
+                                gap: '10px' }}>
                                 {gifs.map((gif, index) => (
                                     <motion.button
                                         key={gif.id}
@@ -403,8 +383,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                                             transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
                                             boxShadow: hoveredGif === gif.id 
                                                 ? `0 4px 16px var(--accent-color)25`
-                                                : 'none',
-                                        }}
+                                                : 'none' }}
                                     >
                                         <img
                                             src={gif.preview}
@@ -414,8 +393,7 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                                             style={{
                                                 width: '100%',
                                                 height: '100%',
-                                                objectFit: 'cover',
-                                            }}
+                                                objectFit: 'cover' }}
                                         />
                                         {/* Hover overlay */}
                                         <AnimatePresence>
@@ -431,15 +409,13 @@ export const GifPicker: React.FC<GifPickerProps> = ({
                                                         display: 'flex',
                                                         alignItems: 'flex-end',
                                                         justifyContent: 'center',
-                                                        padding: '10px',
-                                                    }}
+                                                        padding: '10px' }}
                                                 >
                                                     <span style={{
                                                         fontSize: '11px',
                                                         fontWeight: 600,
                                                         color: '#fff',
-                                                        textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                                                    }}>
+                                                        textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
                                                         Click to send
                                                     </span>
                                                 </motion.div>

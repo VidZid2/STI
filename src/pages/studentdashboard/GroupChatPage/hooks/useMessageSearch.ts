@@ -67,6 +67,5 @@ export function useMessageSearch(messages: ChatMessage[]): UseMessageSearchRetur
         searchInputRef,
         handleSearch,
         handleJumpToMessage,
-        clearSearch,
-    };
+        clearSearch };
 }

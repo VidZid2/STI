@@ -14,10 +14,10 @@ interface VoiceNoteModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSend: (duration: string, transcript: string) => void;
-    colors: ModalColors;
+    
 }
 
-export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose, onSend, colors }) => {
+export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose, onSend }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'voicenote-modal-title');
     const [recordingState, setRecordingState] = useState<'idle' | 'recording' | 'recorded' | 'playing'>('idle');
     const [duration, setDuration] = useState(0);
@@ -38,7 +38,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
     const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
     
-    const isDarkMode = 'var(--dashboard-surface)' !== '#ffffff';
+    const = 'var(--dashboard-surface)' !== '#ffffff';
     const accentColor = '#3b82f6';
     const isRecordingRef = useRef(false);
 
@@ -244,8 +244,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
             style={{
                 position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
                 backdropFilter: 'blur(4px)', zIndex: 1001,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
-            }}
+                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
         >
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -260,12 +259,10 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                     borderRadius: '16px', 
                     width: '100%', 
                     maxWidth: '340px', 
-                    boxShadow: isDarkMode 
-                        ? '0 20px 40px rgba(0,0,0,0.4)' 
+                    boxShadow: ? '0 20px 40px rgba(0,0,0,0.4)' 
                         : '0 20px 40px rgba(0,0,0,0.12)',
                     border: `1px solid var(--border-color)`,
-                    overflow: 'hidden',
-                }}
+                    overflow: 'hidden' }}
             >
                 {/* Header */}
                 <div style={{ 
@@ -273,8 +270,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                     alignItems: 'center', 
                     justifyContent: 'space-between',
                     padding: '14px 16px',
-                    borderBottom: `1px solid var(--border-color)`,
-                }}>
+                    borderBottom: `1px solid var(--border-color)` }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div style={{
                             width: 32,
@@ -283,8 +279,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                             background: 'rgba(59, 130, 246, 0.1)',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                        }}>
+                            justifyContent: 'center' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2">
                                 <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
                                 <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" />
@@ -302,8 +297,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                             width: 28, height: 28, borderRadius: '8px', border: 'none',
                             background: 'transparent', cursor: 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: 'var(--text-muted)',
-                        }}
+                            color: 'var(--text-muted)' }}
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -319,8 +313,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                             padding: '12px', borderRadius: '10px',
                             background: 'rgba(239, 68, 68, 0.1)',
                             border: '1px solid rgba(239, 68, 68, 0.2)',
-                            marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px',
-                        }}>
+                            marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="12" y1="8" x2="12" y2="12" />
@@ -336,16 +329,14 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                         <p style={{ 
                             fontSize: '42px', fontWeight: 300, 
                             color: recordingState === 'recording' ? accentColor : 'var(--text-primary)', 
-                            margin: '0', fontVariantNumeric: 'tabular-nums', letterSpacing: '-1px',
-                        }}>
+                            margin: '0', fontVariantNumeric: 'tabular-nums', letterSpacing: '-1px' }}>
                             {recordingState === 'playing' ? formatDuration(playbackPosition) : formatDuration(duration)}
                         </p>
                     </div>
 
                     <div style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        gap: '2px', height: '56px', marginBottom: '12px', padding: '0 8px',
-                    }}>
+                        gap: '2px', height: '56px', marginBottom: '12px', padding: '0 8px' }}>
                         {waveformBars.map((height, i) => {
                             const isPlayed = recordingState === 'playing' && (i / waveformBars.length) <= (playbackPosition / duration);
                             return (
@@ -360,8 +351,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                                         background: recordingState === 'recording' ? accentColor
                                             : isPlayed ? accentColor
                                             : 'var(--bg-hover)',
-                                        transition: recordingState === 'recording' ? 'none' : 'height 0.1s ease, background 0.15s ease',
-                                    }}
+                                        transition: recordingState === 'recording' ? 'none' : 'height 0.1s ease, background 0.15s ease' }}
                                 />
                             );
                         })}
@@ -395,8 +385,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                             style={{
                                 width: 40, height: 40, borderRadius: '10px', border: 'none',
                                 background: 'var(--dashboard-surface)',
-                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444',
-                            }}
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <polyline points="3 6 5 6 21 6" />
@@ -418,8 +407,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                             cursor: recordingState === 'recorded' || recordingState === 'playing' ? 'default' : 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             boxShadow: recordingState === 'recording' ? '0 0 0 4px rgba(239, 68, 68, 0.2)' 
-                                : recordingState === 'idle' ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none',
-                        }}
+                                : recordingState === 'idle' ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none' }}
                     >
                         {recordingState === 'recording' ? (
                             <div style={{ width: 16, height: 16, borderRadius: '3px', background: '#fff' }} />
@@ -441,8 +429,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                             style={{
                                 width: 40, height: 40, borderRadius: '10px', border: 'none',
                                 background: 'rgba(59, 130, 246, 0.1)',
-                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: accentColor,
-                            }}
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: accentColor }}
                         >
                             {recordingState === 'playing' ? (
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -470,8 +457,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                             background: 'rgba(255,255,255,0.02)',
                             fontSize: '13px', resize: 'none', outline: 'none', 
                             minHeight: '44px', maxHeight: '80px',
-                            color: 'var(--text-primary)', fontFamily: 'inherit',
-                        }}
+                            color: 'var(--text-primary)', fontFamily: 'inherit' }}
                         onFocus={(e) => e.target.style.borderColor = accentColor}
                         onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                     />
@@ -481,8 +467,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                 <div style={{ 
                     display: 'flex', gap: '8px', padding: '12px 16px',
                     borderTop: `1px solid var(--border-color)`,
-                    background: 'rgba(255,255,255,0.02)',
-                }}>
+                    background: 'rgba(255,255,255,0.02)' }}>
                     <motion.button
                         whileHover={{ background: 'var(--bg-hover)' }}
                         whileTap={{ scale: 0.98 }}
@@ -490,8 +475,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                         style={{
                             flex: 1, padding: '10px 16px', borderRadius: '10px', border: 'none',
                             background: 'var(--dashboard-surface)',
-                            cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)',
-                        }}
+                            cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)' }}
                     >
                         Cancel
                     </motion.button>
@@ -514,8 +498,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                             cursor: duration > 0 && recordingState !== 'recording' ? 'pointer' : 'not-allowed',
                             fontSize: '13px', fontWeight: 500,
                             color: duration > 0 && recordingState !== 'recording' ? '#fff' : 'var(--text-muted)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                        }}
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <line x1="22" y1="2" x2="11" y2="13" />

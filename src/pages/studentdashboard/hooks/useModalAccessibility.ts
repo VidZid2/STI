@@ -147,8 +147,7 @@ export function useModalAccessibility(
         role: 'dialog' as const,
         'aria-modal': true as const,
         ...(titleId ? { 'aria-labelledby': titleId } : {}),
-        tabIndex: -1 as const,
-    };
+        tabIndex: -1 as const };
 
     return { modalRef, modalProps };
 }

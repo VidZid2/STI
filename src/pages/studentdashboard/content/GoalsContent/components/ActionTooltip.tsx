@@ -14,8 +14,7 @@ const ActionTooltip: React.FC<{
                 position: 'relative',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-            }}
+                justifyContent: 'center' }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -36,8 +35,7 @@ const ActionTooltip: React.FC<{
                             display: 'flex',
                             justifyContent: 'center',
                             pointerEvents: 'none',
-                            zIndex: 50,
-                        }}
+                            zIndex: 50 }}
                     >
                         <div style={{
                             position: 'relative',
@@ -49,8 +47,7 @@ const ActionTooltip: React.FC<{
                             fontSize: '11px',
                             fontWeight: 600,
                             whiteSpace: 'nowrap',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                        }}>
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                             {label}
                             <div style={{
                                 position: 'absolute',
@@ -61,8 +58,7 @@ const ActionTooltip: React.FC<{
                                 height: 0,
                                 borderLeft: '6px solid transparent',
                                 borderRight: '6px solid transparent',
-                                borderBottom: `6px solid ${color}`,
-                            }} />
+                                borderBottom: `6px solid ${color}` }} />
                             <div style={{
                                 position: 'absolute',
                                 top: '-4px',
@@ -72,8 +68,7 @@ const ActionTooltip: React.FC<{
                                 height: 0,
                                 borderLeft: '5px solid transparent',
                                 borderRight: '5px solid transparent',
-                                borderBottom: '5px solid #ffffff',
-                            }} />
+                                borderBottom: '5px solid #ffffff' }} />
                         </div>
                     </motion.div>
                 )}

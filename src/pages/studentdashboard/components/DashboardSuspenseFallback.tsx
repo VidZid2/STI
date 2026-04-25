@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 
 export const DashboardSuspenseFallback: React.FC = () => {
-    const [isDarkMode, setIsDarkMode] = useState(
+    const [ setIsDarkMode] = useState(
         () => localStorage.getItem('darkModeEnabled') === 'true' || document.body.classList.contains('dark-mode')
     );
 
@@ -27,12 +27,11 @@ export const DashboardSuspenseFallback: React.FC = () => {
         };
     }, []);
 
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-primary)',
         border: 'rgba(255,255,255,0.08)',
-        shimmer: 'var(--bg-hover)',
-    };
+        shimmer: 'var(--bg-hover)' };
 
     return (
         <div style={{
@@ -44,8 +43,7 @@ export const DashboardSuspenseFallback: React.FC = () => {
             flexDirection: 'column',
             gap: '24px',
             padding: '24px',
-            overflow: 'hidden',
-        }}>
+            overflow: 'hidden' }}>
             {/* Header Area */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <motion.div

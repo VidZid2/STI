@@ -13,16 +13,8 @@ interface SearchPanelProps {
     searchQuery: string;
     searchResults: ChatMessage[];
     searchInputRef: React.RefObject<HTMLInputElement | null>;
-    isDarkMode: boolean;
-    colors: {
-        bg: string;
-        cardBg: string;
-        border: string;
-        textPrimary: string;
-        textSecondary: string;
-        textMuted: string;
-        accent: string;
-    };
+    
+    
     onSearch: (query: string) => void;
     onClose: () => void;
     onClearSearch: () => void;
@@ -34,13 +26,12 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
     searchQuery,
     searchResults,
     searchInputRef,
-    isDarkMode,
-    colors,
+    
+    
     onSearch,
     onClose,
     onClearSearch,
-    onJumpToMessage,
-}) => {
+    onJumpToMessage }) => {
     return (
         <AnimatePresence>
             {showSearchPanel && (
@@ -54,8 +45,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                         borderBottom: `1px solid var(--border-color)`,
                         overflow: 'hidden',
                         flexShrink: 0,
-                        zIndex: 99,
-                    }}
+                        zIndex: 99 }}
                 >
                     <div style={{ padding: '12px 20px' }}>
                         {/* Search Input */}
@@ -66,8 +56,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                             padding: '10px 14px',
                             borderRadius: '12px',
                             background: 'var(--dashboard-surface)',
-                            border: `1px solid var(--border-color)`,
-                        }}>
+                            border: `1px solid var(--border-color)` }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2">
                                 <circle cx="11" cy="11" r="8" />
                                 <path d="M21 21l-4.35-4.35" />
@@ -84,8 +73,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                     background: 'transparent',
                                     color: 'var(--text-primary)',
                                     fontSize: '14px',
-                                    outline: 'none',
-                                }}
+                                    outline: 'none' }}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Escape') {
                                         onClose();
@@ -109,8 +97,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: 'var(--text-muted)',
-                                    }}
+                                        color: 'var(--text-muted)' }}
                                 >
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <line x1="18" y1="6" x2="6" y2="18" />
@@ -129,8 +116,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                     color: 'var(--text-muted)',
                                     marginBottom: '8px',
                                     textTransform: 'uppercase',
-                                    letterSpacing: '0.5px',
-                                }}>
+                                    letterSpacing: '0.5px' }}>
                                     {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'}
                                 </div>
                                 <div style={{
@@ -138,15 +124,13 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                     overflowY: 'auto',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    gap: '6px',
-                                }}>
+                                    gap: '6px' }}>
                                     {searchResults.length === 0 ? (
                                         <div style={{
                                             padding: '16px',
                                             textAlign: 'center',
                                             color: 'var(--text-muted)',
-                                            fontSize: '13px',
-                                        }}>
+                                            fontSize: '13px' }}>
                                             No messages found
                                         </div>
                                     ) : (
@@ -166,8 +150,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                                     background: 'var(--dashboard-surface)',
                                                     cursor: 'pointer',
                                                     textAlign: 'left',
-                                                    width: '100%',
-                                                }}
+                                                    width: '100%' }}
                                             >
                                                 {/* Avatar */}
                                                 <div style={{
@@ -181,8 +164,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                                     fontSize: '12px',
                                                     fontWeight: 600,
                                                     color: 'var(--accent-color)',
-                                                    flexShrink: 0,
-                                                }}>
+                                                    flexShrink: 0 }}>
                                                     {result.user_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                                                 </div>
                                                 {/* Content */}
@@ -191,19 +173,16 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         gap: '6px',
-                                                        marginBottom: '2px',
-                                                    }}>
+                                                        marginBottom: '2px' }}>
                                                         <span style={{
                                                             fontSize: '12px',
                                                             fontWeight: 600,
-                                                            color: 'var(--text-primary)',
-                                                        }}>
+                                                            color: 'var(--text-primary)' }}>
                                                             {result.user_name}
                                                         </span>
                                                         <span style={{
                                                             fontSize: '10px',
-                                                            color: 'var(--text-muted)',
-                                                        }}>
+                                                            color: 'var(--text-muted)' }}>
                                                             {formatTime(result.created_at)}
                                                         </span>
                                                     </div>
@@ -213,8 +192,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                                         color: 'var(--text-secondary)',
                                                         overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
-                                                        whiteSpace: 'nowrap',
-                                                    }}>
+                                                        whiteSpace: 'nowrap' }}>
                                                         {/* Highlight matching text */}
                                                         {(() => {
                                                             const content = result.content;
@@ -237,8 +215,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
                                                                         color: 'var(--accent-color)',
                                                                         fontWeight: 600,
                                                                         padding: '0 2px',
-                                                                        borderRadius: '2px',
-                                                                    }}>
+                                                                        borderRadius: '2px' }}>
                                                                         {match}
                                                                     </span>
                                                                     {after}

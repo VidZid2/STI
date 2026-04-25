@@ -18,8 +18,7 @@ const CONTENT_TYPE_CONFIG: Record<ContentType, { label: string; icon: React.Reac
                 <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
             </svg>
         ),
-        color: 'blue',
-    },
+        color: 'blue' },
     'handout-b': {
         label: 'Handout B',
         icon: (
@@ -28,8 +27,7 @@ const CONTENT_TYPE_CONFIG: Record<ContentType, { label: string; icon: React.Reac
                 <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
             </svg>
         ),
-        color: 'indigo',
-    },
+        color: 'indigo' },
     'slideshow': {
         label: 'Slideshow',
         icon: (
@@ -37,8 +35,7 @@ const CONTENT_TYPE_CONFIG: Record<ContentType, { label: string; icon: React.Reac
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" />
             </svg>
         ),
-        color: 'amber',
-    },
+        color: 'amber' },
     'video': {
         label: 'Video',
         icon: (
@@ -46,23 +43,19 @@ const CONTENT_TYPE_CONFIG: Record<ContentType, { label: string; icon: React.Reac
                 <polygon points="5 3 19 12 5 21 5 3" />
             </svg>
         ),
-        color: 'rose',
-    },
-};
+        color: 'rose' } };
 
 const COLOR_CLASSES: Record<string, { base: string; hover: string }> = {
     blue: { base: 'bg-blue-50 text-blue-500 border-blue-100', hover: 'hover:bg-blue-100' },
     indigo: { base: 'bg-indigo-50 text-indigo-500 border-indigo-100', hover: 'hover:bg-indigo-100' },
     amber: { base: 'bg-amber-50 text-amber-500 border-amber-100', hover: 'hover:bg-amber-100' },
-    rose: { base: 'bg-rose-50 text-rose-500 border-rose-100', hover: 'hover:bg-rose-100' },
-};
+    rose: { base: 'bg-rose-50 text-rose-500 border-rose-100', hover: 'hover:bg-rose-100' } };
 
 const MUTED_COLOR_CLASSES: Record<string, { base: string; hover: string }> = {
     blue: { base: 'bg-zinc-50 text-zinc-400 border-zinc-100', hover: 'hover:bg-zinc-100' },
     indigo: { base: 'bg-zinc-50 text-zinc-400 border-zinc-100', hover: 'hover:bg-zinc-100' },
     amber: { base: 'bg-zinc-50 text-zinc-400 border-zinc-100', hover: 'hover:bg-zinc-100' },
-    rose: { base: 'bg-zinc-50 text-zinc-400 border-zinc-100', hover: 'hover:bg-zinc-100' },
-};
+    rose: { base: 'bg-zinc-50 text-zinc-400 border-zinc-100', hover: 'hover:bg-zinc-100' } };
 
 // ─── ContentIconWithTooltip ───────────────────────────────────────────────────
 interface ContentIconProps {
@@ -75,8 +68,7 @@ interface ContentIconProps {
 }
 
 const ContentIconWithTooltip: React.FC<ContentIconProps> = ({
-    content, config, colorClasses, isLocked, index, cIndex,
-}) => {
+    content, config, colorClasses, isLocked, index, cIndex }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -92,7 +84,7 @@ const ContentIconWithTooltip: React.FC<ContentIconProps> = ({
                 onClick={(e) => e.stopPropagation()}
                 disabled={isLocked}
                 aria-label={config.label}
-                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors cursor-pointer border ${colorClasses[config.color].base} ${!isLocked ? colorClasses[config.color].hover : ''}`}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-cursor-pointer border ${colorClasses[config.color].base} ${!isLocked ? colorClasses[config.color].hover : ''}`}
             >
                 {config.icon}
             </motion.button>
@@ -141,13 +133,11 @@ const TERM_BADGE: Record<string, { label: string; bg: string; border: string; te
     prelims:  { label: 'Prelim',      bg: 'rgba(59, 130, 246, 0.08)',  border: 'rgba(59, 130, 246, 0.2)',  text: '#3b82f6' },
     midterm:  { label: 'Midterm',     bg: 'rgba(6, 182, 212, 0.08)',   border: 'rgba(6, 182, 212, 0.2)',   text: '#06b6d4' },
     prefinals:{ label: 'Pre-Finals',  bg: 'rgba(249, 115, 22, 0.08)',  border: 'rgba(249, 115, 22, 0.2)',  text: '#f97316' },
-    finals:   { label: 'Finals',      bg: 'rgba(16, 185, 129, 0.08)',  border: 'rgba(16, 185, 129, 0.2)',  text: '#10b981' },
-};
+    finals:   { label: 'Finals',      bg: 'rgba(16, 185, 129, 0.08)',  border: 'rgba(16, 185, 129, 0.2)',  text: '#10b981' } };
 
 const SEMESTER_BADGE: Record<string, { label: string; bg: string; border: string; text: string }> = {
     first:  { label: '1st Sem', bg: 'rgba(139, 92, 246, 0.08)', border: 'rgba(139, 92, 246, 0.2)', text: '#8b5cf6' },
-    second: { label: '2nd Sem', bg: 'rgba(99, 102, 241, 0.08)', border: 'rgba(99, 102, 241, 0.2)', text: '#6366f1' },
-};
+    second: { label: '2nd Sem', bg: 'rgba(99, 102, 241, 0.08)', border: 'rgba(99, 102, 241, 0.2)', text: '#6366f1' } };
 
 export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -166,8 +156,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index }) => {
             transition={{
                 opacity: { delay: index * 0.05, duration: 0.4 },
                 y: isHovered ? { duration: 0.1 } : { delay: index * 0.05, duration: 0.4 },
-                scale: { duration: 0.1 },
-            }}
+                scale: { duration: 0.1 } }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className={`group rounded-2xl border cursor-pointer relative ${
@@ -175,8 +164,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index }) => {
             }`}
             style={{
                 boxShadow: isHovered && module.status !== 'locked' ? '0 12px 32px rgba(59, 130, 246, 0.12)' : 'none',
-                borderColor: isHovered && module.status !== 'locked' ? 'rgba(59, 130, 246, 0.3)' : undefined,
-            }}
+                borderColor: isHovered && module.status !== 'locked' ? 'rgba(59, 130, 246, 0.3)' : undefined }}
         >
             {/* Term + Semester Badges */}
             <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">

@@ -10,8 +10,7 @@ import {
     subscribeToMessages,
     classifyMessage,
     type ChatMessage,
-    type MessageType,
-} from '../../../../services/chatService';
+    type MessageType } from '../../../../services/chatService';
 import { getProfile } from '../../../../services/profileService';
 import { fetchGroups, type GroupWithMembers } from '../../../../services/groupsService';
 import { XP_REWARDS } from '../constants';
@@ -187,6 +186,5 @@ export function useGroupChat({ groupId, onXPAwarded }: UseGroupChatOptions): Use
         handleSend,
         handleKeyPress,
         messagesEndRef,
-        inputRef,
-    };
+        inputRef };
 }

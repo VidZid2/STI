@@ -137,7 +137,7 @@ export const sendEncouragement = async (teacherId: string, teacherName: string):
     return ok;
 };
 
-export const flagTeacherForReview = async (teacherId: string, teacherName: string): Promise<boolean> => {
+export const flagTeacherForReview = async (_teacherId: string, teacherName: string): Promise<boolean> => {
     if (!supabase) return false;
     try {
         const actor = await getActorInfo();

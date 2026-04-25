@@ -14,19 +14,19 @@ interface PollModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSend: (question: string, options: string[]) => void;
-    colors: ModalColors;
+    
 }
 
-export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, colors }) => {
+export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'poll-modal-title');
     const [question, setQuestion] = useState('');
     const [options, setOptions] = useState(['', '']);
     const [focusedField, setFocusedField] = useState<string | null>(null);
     const questionInputRef = useRef<HTMLInputElement>(null);
 
-    // Blue accent colors (matching other pages)
+    // Blue accent (matching other pages)
     const blueAccent = '#3b82f6';
-    const isDarkMode = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
+    const = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
     const blueBg = 'rgba(59, 130, 246, 0.1)';
     const blueBorder = 'rgba(59, 130, 246, 0.25)';
     const subtleBg = 'var(--dashboard-surface)';
@@ -90,8 +90,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        padding: '20px',
-                    }}
+                        padding: '20px' }}
                 >
                     <motion.div
                         initial={{ scale: 0.95, opacity: 0, y: 10 }}
@@ -106,11 +105,9 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                             borderRadius: '20px',
                             width: '100%',
                             maxWidth: '440px',
-                            boxShadow: isDarkMode
-                                ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
+                            boxShadow: ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
                                 : '0 24px 48px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04)',
-                            overflow: 'hidden',
-                        }}
+                            overflow: 'hidden' }}
                     >
                         {/* Header */}
                         <div style={{
@@ -118,8 +115,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                             borderBottom: `1px solid ${borderColor}`,
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '14px',
-                        }}>
+                            gap: '14px' }}>
                             {/* Icon */}
                             <motion.div
                                 initial={{ scale: 0.8, opacity: 0 }}
@@ -134,8 +130,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    flexShrink: 0,
-                                }}
+                                    flexShrink: 0 }}
                             >
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M18 20V10" />
@@ -154,8 +149,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                         fontSize: '17px',
                                         fontWeight: 600,
                                         color: 'var(--text-primary)',
-                                        letterSpacing: '-0.01em',
-                                    }}
+                                        letterSpacing: '-0.01em' }}
                                 >
                                     Create Poll
                                 </motion.h3>
@@ -166,8 +160,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                     style={{
                                         margin: '4px 0 0',
                                         fontSize: '12px',
-                                        color: 'var(--text-secondary)',
-                                    }}
+                                        color: 'var(--text-secondary)' }}
                                 >
                                     Get your group's opinion on a topic
                                 </motion.p>
@@ -189,8 +182,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     color: 'var(--text-secondary)',
-                                    transition: 'background 0.15s ease',
-                                }}
+                                    transition: 'background 0.15s ease' }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -218,15 +210,13 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                     marginBottom: '8px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
-                                    transition: 'color 0.2s ease',
-                                }}>
+                                    transition: 'color 0.2s ease' }}>
                                     <div style={{
                                         width: 4,
                                         height: 4,
                                         borderRadius: '50%',
                                         background: focusedField === 'question' ? blueAccent : 'var(--text-muted)',
-                                        transition: 'background 0.2s ease',
-                                    }} />
+                                        transition: 'background 0.2s ease' }} />
                                     Question
                                 </label>
                                 <input
@@ -247,8 +237,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                         color: 'var(--text-primary)',
                                         fontFamily: 'inherit',
                                         transition: 'border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease',
-                                        boxShadow: focusedField === 'question' ? `0 0 0 3px ${blueBg}` : 'none',
-                                    }}
+                                        boxShadow: focusedField === 'question' ? `0 0 0 3px ${blueBg}` : 'none' }}
                                 />
                             </motion.div>
 
@@ -267,14 +256,12 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                     color: 'var(--text-secondary)',
                                     marginBottom: '10px',
                                     textTransform: 'uppercase',
-                                    letterSpacing: '0.5px',
-                                }}>
+                                    letterSpacing: '0.5px' }}>
                                     <div style={{
                                         width: 4,
                                         height: 4,
                                         borderRadius: '50%',
-                                        background: 'var(--text-muted)',
-                                    }} />
+                                        background: 'var(--text-muted)' }} />
                                     Options
                                     <span style={{
                                         marginLeft: 'auto',
@@ -282,8 +269,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                         fontWeight: 500,
                                         color: 'var(--text-muted)',
                                         textTransform: 'none',
-                                        letterSpacing: 'normal',
-                                    }}>
+                                        letterSpacing: 'normal' }}>
                                         {validOptions.length}/6 filled
                                     </span>
                                 </label>
@@ -311,8 +297,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                                 fontWeight: 600,
                                                 color: opt.trim() ? blueAccent : 'var(--text-muted)',
                                                 flexShrink: 0,
-                                                transition: 'all 0.2s ease',
-                                            }}>
+                                                transition: 'all 0.2s ease' }}>
                                                 {i + 1}
                                             </div>
 
@@ -333,8 +318,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                                     color: 'var(--text-primary)',
                                                     fontFamily: 'inherit',
                                                     transition: 'border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease',
-                                                    boxShadow: focusedField === `option-${i}` ? `0 0 0 3px ${blueBg}` : 'none',
-                                                }}
+                                                    boxShadow: focusedField === `option-${i}` ? `0 0 0 3px ${blueBg}` : 'none' }}
                                             />
 
                                             {options.length > 2 && (
@@ -354,8 +338,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                                         justifyContent: 'center',
                                                         color: '#ef4444',
                                                         flexShrink: 0,
-                                                        transition: 'background 0.15s ease',
-                                                    }}
+                                                        transition: 'background 0.15s ease' }}
                                                 >
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                         <path d="M18 6L6 18M6 6l12 12" />
@@ -388,8 +371,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 gap: '6px',
-                                                transition: 'all 0.2s ease',
-                                            }}
+                                                transition: 'all 0.2s ease' }}
                                         >
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -410,16 +392,14 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                             gap: '10px',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            background: subtleBg,
-                        }}>
+                            background: subtleBg }}>
                             {/* Validation hint */}
                             <div style={{
                                 fontSize: '11px',
                                 color: isValid ? '#10b981' : 'var(--text-muted)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '6px',
-                            }}>
+                                gap: '6px' }}>
                                 {isValid ? (
                                     <>
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -454,8 +434,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                         fontSize: '13px',
                                         fontWeight: 500,
                                         color: 'var(--text-secondary)',
-                                        transition: 'background 0.15s ease',
-                                    }}
+                                        transition: 'background 0.15s ease' }}
                                 >
                                     Cancel
                                 </motion.button>
@@ -479,8 +458,7 @@ export const PollModal: React.FC<PollModalProps> = ({ isOpen, onClose, onSend, c
                                         alignItems: 'center',
                                         gap: '8px',
                                         transition: 'background 0.2s ease, box-shadow 0.2s ease',
-                                        boxShadow: isValid ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none',
-                                    }}
+                                        boxShadow: isValid ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none' }}
                                 >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M18 20V10" />

@@ -9,17 +9,16 @@ import type { ChatColors } from '../types';
 
 interface DeleteConfirmModalProps {
     isOpen: boolean;
-    colors: ChatColors;
+    
     onCancel: () => void;
     onConfirm: () => void;
 }
 
 export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
     isOpen,
-    colors,
+    
     onCancel,
-    onConfirm,
-}) => {
+    onConfirm }) => {
     return (
         <AnimatePresence>
             {isOpen && (
@@ -35,8 +34,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        zIndex: 1000,
-                    }}
+                        zIndex: 1000 }}
                 >
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -51,8 +49,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                             width: '100%',
                             maxWidth: '320px',
                             border: `1px solid var(--border-color)`,
-                            boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-                        }}
+                            boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}
                     >
                         {/* Icon */}
                         <div
@@ -64,8 +61,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                margin: '0 auto 16px',
-                            }}
+                                margin: '0 auto 16px' }}
                         >
                             <svg
                                 width="24"
@@ -91,8 +87,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                                 fontSize: '16px',
                                 fontWeight: 600,
                                 color: 'var(--text-primary)',
-                                textAlign: 'center',
-                            }}
+                                textAlign: 'center' }}
                         >
                             Delete Message?
                         </h3>
@@ -104,8 +99,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                                 fontSize: '13px',
                                 color: 'var(--text-secondary)',
                                 textAlign: 'center',
-                                lineHeight: 1.5,
-                            }}
+                                lineHeight: 1.5 }}
                         >
                             This action cannot be undone. The message will be permanently removed.
                         </p>
@@ -125,8 +119,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                                     color: 'var(--text-primary)',
                                     fontSize: '13px',
                                     fontWeight: 500,
-                                    cursor: 'pointer',
-                                }}
+                                    cursor: 'pointer' }}
                             >
                                 Cancel
                             </motion.button>
@@ -143,8 +136,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                                     color: '#fff',
                                     fontSize: '13px',
                                     fontWeight: 500,
-                                    cursor: 'pointer',
-                                }}
+                                    cursor: 'pointer' }}
                             >
                                 Delete
                             </motion.button>

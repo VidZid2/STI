@@ -15,8 +15,7 @@ import {
     getDifficultyInfo,
     formatEstimatedTime,
     isCourseUnlocked,
-    type PathWithProgress,
-} from '../../../../../services/pathsService';
+    type PathWithProgress } from '../../../../../services/pathsService';
 import { PathIcon } from '../components/PathIcon';
 import { ModalTooltip } from '../components/PathProgressRing';
 
@@ -36,19 +35,17 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
     onClose,
     courseProgress,
     onContinueLearning,
-    onViewCertificate,
-}) => {
+    onViewCertificate }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'path-detail-title');
     const [hoveredCourse, setHoveredCourse] = useState<string | null>(null);
     
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-secondary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
-        textMuted: 'var(--text-muted)',
-    };
+        textMuted: 'var(--text-muted)' };
 
     // Get courses for this path
     const courses = path ? getPathCourses(path) : [];
@@ -85,8 +82,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                             inset: 0,
                             background: 'rgba(0, 0, 0, 0.5)',
                             backdropFilter: 'blur(4px)',
-                            zIndex: 9998,
-                        }}
+                            zIndex: 9998 }}
                     />
 
                     {/* Modal Container - Centered */}
@@ -101,8 +97,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                             justifyContent: 'center',
                             zIndex: 9999,
                             pointerEvents: 'none',
-                            padding: '20px',
-                        }}
+                            padding: '20px' }}
                     >
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -119,14 +114,12 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                 overflow: 'hidden',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                pointerEvents: 'auto',
-                            }}
+                                pointerEvents: 'auto' }}
                         >
                             {/* Header */}
                             <div style={{
                                 padding: '20px 24px',
-                                borderBottom: `1px solid var(--border-color)`,
-                            }}>
+                                borderBottom: `1px solid var(--border-color)` }}>
                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
                                     {/* Path Icon with hover effect */}
                                     <ModalTooltip text={path.title} position="right">
@@ -145,8 +138,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                 justifyContent: 'center',
                                                 flexShrink: 0,
                                                 cursor: 'pointer',
-                                                boxShadow: `0 4px 12px ${path.color}20`,
-                                            }}
+                                                boxShadow: `0 4px 12px ${path.color}20` }}
                                         >
                                             <PathIcon icon={path.icon} color={path.color} size={26} />
                                         </motion.div>
@@ -158,16 +150,14 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                             fontSize: '18px',
                                             fontWeight: 600,
                                             color: 'var(--text-primary)',
-                                            marginBottom: '6px',
-                                        }}>
+                                            marginBottom: '6px' }}>
                                             {path.title}
                                         </h2>
                                         <p style={{
                                             margin: 0,
                                             fontSize: '13px',
                                             color: 'var(--text-secondary)',
-                                            marginBottom: '8px',
-                                        }}>
+                                            marginBottom: '8px' }}>
                                             {path.description}
                                         </p>
                                         {/* Difficulty Badge */}
@@ -184,8 +174,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                 background: `${difficultyInfo.color}15`,
                                                 fontSize: '11px',
                                                 fontWeight: 500,
-                                                color: difficultyInfo.color,
-                                            }}
+                                                color: difficultyInfo.color }}
                                         >
                                             <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                                                 <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
@@ -210,8 +199,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                color: 'var(--text-secondary)',
-                                            }}
+                                                color: 'var(--text-secondary)' }}
                                         >
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -229,8 +217,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                     style={{
                                         display: 'flex',
                                         gap: '12px',
-                                        flexWrap: 'wrap',
-                                    }}
+                                        flexWrap: 'wrap' }}
                                 >
                                     {/* Courses Stat */}
                                     <ModalTooltip text={`${completedCount} completed, ${totalCourses - completedCount} remaining`} position="bottom">
@@ -241,8 +228,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                             padding: '6px 10px',
                                             borderRadius: '8px',
                                             background: 'var(--dashboard-surface)',
-                                            cursor: 'default',
-                                        }}>
+                                            cursor: 'default' }}>
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={path.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -262,8 +248,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                             padding: '6px 10px',
                                             borderRadius: '8px',
                                             background: 'var(--dashboard-surface)',
-                                            cursor: 'default',
-                                        }}>
+                                            cursor: 'default' }}>
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <rect x="3" y="3" width="7" height="7" />
                                                 <rect x="14" y="3" width="7" height="7" />
@@ -285,8 +270,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                             padding: '6px 10px',
                                             borderRadius: '8px',
                                             background: 'var(--dashboard-surface)',
-                                            cursor: 'default',
-                                        }}>
+                                            cursor: 'default' }}>
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <circle cx="12" cy="12" r="10" />
                                                 <polyline points="12 6 12 12 16 14" />
@@ -306,8 +290,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                             padding: '6px 10px',
                                             borderRadius: '8px',
                                             background: 'var(--dashboard-surface)',
-                                            cursor: 'default',
-                                        }}>
+                                            cursor: 'default' }}>
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                                 <circle cx="9" cy="7" r="4" />
@@ -336,8 +319,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                 height: '6px',
                                 borderRadius: '3px',
                                 background: 'var(--bg-hover)',
-                                overflow: 'hidden',
-                            }}>
+                                overflow: 'hidden' }}>
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${pathProgress}%` }}
@@ -345,8 +327,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                     style={{
                                         height: '100%',
                                         background: pathProgress === 100 ? '#10b981' : path.color,
-                                        borderRadius: '3px',
-                                    }}
+                                        borderRadius: '3px' }}
                                 />
                             </div>
                         </div>
@@ -356,8 +337,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                 padding: '12px 24px 8px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'space-between',
-                            }}>
+                                justifyContent: 'space-between' }}>
                                 <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     Courses
                                 </span>
@@ -371,8 +351,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                 flex: 1,
                                 overflowY: 'auto',
                                 overflowX: 'hidden',
-                                padding: '12px 20px 16px',
-                            }}>
+                                padding: '12px 20px 16px' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '4px' }}>
                                     {courses.map((course, index) => {
                                         const progress = courseProgress[course.id]?.progress || 0;
@@ -390,14 +369,12 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                 initial={{ opacity: 0, x: -20 }}
                                                 animate={{ 
                                                     opacity: isLocked ? 0.6 : 1, 
-                                                    x: 0,
-                                                }}
+                                                    x: 0 }}
                                                 transition={{ 
                                                     delay: index * 0.04 + 0.1,
                                                     scale: { type: 'spring', stiffness: 400, damping: 25 },
                                                     y: { type: 'spring', stiffness: 400, damping: 25 },
-                                                    layout: { type: 'spring', stiffness: 400, damping: 30 },
-                                                }}
+                                                    layout: { type: 'spring', stiffness: 400, damping: 30 } }}
                                                 onMouseEnter={() => !isLocked && setHoveredCourse(course.id)}
                                                 onMouseLeave={() => setHoveredCourse(null)}
                                                 whileHover={!isLocked ? { backgroundColor: 'var(--bg-hover)' } : undefined}
@@ -414,15 +391,13 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                     alignItems: 'center',
                                                     gap: '12px',
                                                     cursor: isLocked ? 'not-allowed' : 'pointer',
-                                                    transition: 'border-color 0.2s ease',
-                                                }}
+                                                    transition: 'border-color 0.2s ease' }}
                                             >
                                                 {/* Status Icon with animation */}
                                                 <motion.div
                                                     animate={{
                                                         scale: isHovered && !isLocked ? 1.1 : 1,
-                                                        rotate: isHovered && isCurrent ? 10 : 0,
-                                                    }}
+                                                        rotate: isHovered && isCurrent ? 10 : 0 }}
                                                     transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                                                     style={{
                                                         width: '36px',
@@ -438,8 +413,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
-                                                        flexShrink: 0,
-                                                    }}
+                                                        flexShrink: 0 }}
                                                 >
                                                     {isLocked ? (
                                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -467,16 +441,14 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         gap: '8px',
-                                                        marginBottom: '4px',
-                                                    }}>
+                                                        marginBottom: '4px' }}>
                                                         <span style={{
                                                             fontSize: '13px',
                                                             fontWeight: 600,
                                                             color: 'var(--text-primary)',
                                                             whiteSpace: 'nowrap',
                                                             overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                        }}>
+                                                            textOverflow: 'ellipsis' }}>
                                                             {course.title}
                                                         </span>
                                                         {isCurrent && (
@@ -492,8 +464,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                                     color: path.color,
                                                                     textTransform: 'uppercase',
                                                                     letterSpacing: '0.3px',
-                                                                    flexShrink: 0,
-                                                                }}
+                                                                    flexShrink: 0 }}
                                                             >
                                                                 Current
                                                             </motion.span>
@@ -504,8 +475,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                         alignItems: 'center',
                                                         gap: '8px',
                                                         fontSize: '11px',
-                                                        color: 'var(--text-muted)',
-                                                    }}>
+                                                        color: 'var(--text-muted)' }}>
                                                         <span>{course.subtitle}</span>
                                                         <span style={{ opacity: 0.5 }}>•</span>
                                                         <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -528,8 +498,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                         flexDirection: 'column',
                                                         alignItems: 'flex-end',
                                                         gap: '4px',
-                                                        minWidth: '60px',
-                                                    }}
+                                                        minWidth: '60px' }}
                                                 >
                                                     <motion.span
                                                         layout
@@ -537,8 +506,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                         style={{
                                                             fontSize: '12px',
                                                             fontWeight: 600,
-                                                            color: isCompleted ? '#10b981' : isCurrent ? path.color : 'var(--text-muted)',
-                                                        }}
+                                                            color: isCompleted ? '#10b981' : isCurrent ? path.color : 'var(--text-muted)' }}
                                                     >
                                                         {progress}%
                                                     </motion.span>
@@ -551,8 +519,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                             height: '4px',
                                                             borderRadius: '2px',
                                                             background: 'var(--bg-hover)',
-                                                            overflow: 'hidden',
-                                                        }}
+                                                            overflow: 'hidden' }}
                                                     >
                                                         <motion.div
                                                             initial={{ width: 0 }}
@@ -561,8 +528,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                             style={{
                                                                 height: '100%',
                                                                 background: isCompleted ? '#10b981' : isCurrent ? path.color : 'var(--text-muted)',
-                                                                borderRadius: '2px',
-                                                            }}
+                                                                borderRadius: '2px' }}
                                                         />
                                                     </motion.div>
                                                 </motion.div>
@@ -583,8 +549,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                                 color: '#fff',
                                                                 fontSize: '10px',
                                                                 fontWeight: 500,
-                                                                whiteSpace: 'nowrap',
-                                                            }}
+                                                                whiteSpace: 'nowrap' }}
                                                         >
                                                             {statusText}
                                                         </motion.div>
@@ -605,8 +570,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                             whiteSpace: 'nowrap',
                                                             display: 'flex',
                                                             alignItems: 'center',
-                                                            gap: '4px',
-                                                        }}
+                                                            gap: '4px' }}
                                                     >
                                                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -626,14 +590,12 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                             padding: '16px 24px',
                             borderTop: `1px solid var(--border-color)`,
                             display: 'flex',
-                            gap: '12px',
-                        }}>
+                            gap: '12px' }}>
                             <motion.button
                                 whileHover={{ 
                                     scale: 1.02,
                                     backgroundColor: 'var(--bg-hover)',
-                                    borderColor: 'var(--bg-hover)',
-                                }}
+                                    borderColor: 'var(--bg-hover)' }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={onClose}
                                 style={{
@@ -646,8 +608,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                     fontSize: '14px',
                                     fontWeight: 500,
                                     cursor: 'pointer',
-                                    transition: 'all 0.2s ease',
-                                }}
+                                    transition: 'all 0.2s ease' }}
                             >
                                 Close
                             </motion.button>
@@ -669,8 +630,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        gap: '8px',
-                                    }}
+                                        gap: '8px' }}
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <circle cx="12" cy="8" r="6" />
@@ -696,8 +656,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        gap: '8px',
-                                    }}
+                                        gap: '8px' }}
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <polygon points="5 3 19 12 5 21 5 3" />

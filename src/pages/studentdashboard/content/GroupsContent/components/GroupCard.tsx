@@ -10,8 +10,7 @@ import {
     groupCategoryConfig,
     getRoleInfo,
     formatLastActive,
-    type GroupWithMembers,
-} from '../../../../../services/groupsService';
+    type GroupWithMembers } from '../../../../../services/groupsService';
 import GroupIcon from './GroupIcon';
 
 // Simple Tooltip Portal Component
@@ -35,8 +34,7 @@ const TooltipPortal: React.FC<{
                     const buttonCenterX = buttonRect.left + buttonRect.width / 2;
                     setPosition({
                         top: buttonRect.top - tooltipRect.height - 8,
-                        left: buttonCenterX - tooltipRect.width / 2,
-                    });
+                        left: buttonCenterX - tooltipRect.width / 2 });
                 }
             });
         }
@@ -62,8 +60,7 @@ const TooltipPortal: React.FC<{
                 boxShadow: 'var(--shadow-lg)',
                 pointerEvents: 'none',
                 opacity: position ? 1 : 0,
-                transition: 'opacity 0.1s ease',
-            }}
+                transition: 'opacity 0.1s ease' }}
         >
             {text}
             <div style={{
@@ -75,8 +72,7 @@ const TooltipPortal: React.FC<{
                 height: 0,
                 borderLeft: '4px solid transparent',
                 borderRight: '4px solid transparent',
-                borderTop: `4px solid ${'var(--bg-secondary)'}`,
-            }} />
+                borderTop: `4px solid ${'var(--bg-secondary)'}` }} />
         </div>,
         document.body
     );
@@ -112,8 +108,7 @@ const ActionButtonWithTooltip: React.FC<{
                     background: bgColor, border: 'none',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer', color: iconColor,
-                    transition: 'background 0.2s ease',
-                }}
+                    transition: 'background 0.2s ease' }}
             >
                 {children}
             </motion.button>
@@ -155,8 +150,7 @@ const PinnedBadgeWithTooltip: React.FC<{
                     padding: '4px 8px', borderRadius: '6px',
                     background: 'rgba(245, 158, 11, 0.1)',
                     display: 'flex', alignItems: 'center', gap: '4px',
-                    cursor: 'default',
-                }}
+                    cursor: 'default' }}
             >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="2">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -186,9 +180,9 @@ const MemberAvatarStack: React.FC<{
 
     // Generate consistent color from name
     const getAvatarColor = (name: string, baseColor: string) => {
-        const colors = [baseColor, '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+        const = [baseColor, '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
         const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        return colors[hash % colors.length];
+        return [hash % .length];
     };
 
     return (
@@ -204,8 +198,7 @@ const MemberAvatarStack: React.FC<{
                         style={{
                             position: 'relative',
                             marginLeft: index > 0 ? -8 : 0,
-                            zIndex: maxShow - index,
-                        }}
+                            zIndex: maxShow - index }}
                     >
                         <div style={{
                             width: size, height: size, borderRadius: '50%',
@@ -213,8 +206,7 @@ const MemberAvatarStack: React.FC<{
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: size * 0.4, fontWeight: 600, color: 'white',
                             border: '2px solid white',
-                            overflow: 'hidden',
-                        }}>
+                            overflow: 'hidden' }}>
                             {member.user_avatar ? (
                                 <img src={member.user_avatar} alt={member.user_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
@@ -225,8 +217,7 @@ const MemberAvatarStack: React.FC<{
                             <div style={{
                                 position: 'absolute', bottom: -2, right: -2, width: 10, height: 10,
                                 borderRadius: '50%', background: '#22c55e', border: '2px solid white',
-                                boxShadow: '0 0 4px rgba(34, 197, 94, 0.5)',
-                            }} />
+                                boxShadow: '0 0 4px rgba(34, 197, 94, 0.5)' }} />
                         )}
                     </motion.div>
                 );
@@ -240,8 +231,7 @@ const MemberAvatarStack: React.FC<{
                         background: `${color}15`, display: 'flex',
                         alignItems: 'center', justifyContent: 'center',
                         fontSize: 10, fontWeight: 600, color: color,
-                        border: '2px solid white', marginLeft: -8,
-                    }}
+                        border: '2px solid white', marginLeft: -8 }}
                 >
                     +{remaining}
                 </motion.div>
@@ -255,14 +245,14 @@ const MemberAvatarStack: React.FC<{
 const GroupCard: React.FC<{
     group: GroupWithMembers;
     index: number;
-    colors: { cardBg: string; border: string; textPrimary: string; textSecondary: string; textMuted: string };
+    
     onClick: (group: GroupWithMembers) => void;
     onJoin: (groupId: string) => void;
     onLeave: (groupId: string) => void;
     onPin: (groupId: string, isPinned: boolean) => void;
     onInvite: (group: GroupWithMembers) => void;
     reducedMotion: boolean;
-}> = ({ group, index, colors, onClick, onJoin, onLeave, onPin, onInvite, reducedMotion }) => {
+}> = ({ group, index,  onClick, onJoin, onLeave, onPin, onInvite, reducedMotion }) => {
     const [isHovered, setIsHovered] = useState(false);
     const categoryConfig = groupCategoryConfig[group.category];
 
@@ -291,8 +281,7 @@ const GroupCard: React.FC<{
                 boxShadow: isHovered 
                     ? `0 12px 32px ${group.color}15`
                     : 'none',
-                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-            }}
+                transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
         >
             {/* Quick Action Buttons on Hover */}
             <AnimatePresence>
@@ -304,8 +293,7 @@ const GroupCard: React.FC<{
                         transition={{ duration: 0.15 }}
                         style={{
                             position: 'absolute', top: '10px', right: '10px',
-                            display: 'flex', gap: '6px', zIndex: 10,
-                        }}
+                            display: 'flex', gap: '6px', zIndex: 10 }}
                     >
                         {/* Chat Button */}
                         <ActionButtonWithTooltip
@@ -363,8 +351,7 @@ const GroupCard: React.FC<{
                         padding: '3px 8px', borderRadius: '6px',
                         background: `${getRoleInfo(group.user_role).color}15`,
                         fontSize: '9px', fontWeight: 600, color: getRoleInfo(group.user_role).color,
-                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                    }}
+                        textTransform: 'uppercase', letterSpacing: '0.5px' }}
                 >
                     {getRoleInfo(group.user_role).label}
                 </motion.div>
@@ -377,8 +364,7 @@ const GroupCard: React.FC<{
                         width: 44, height: 44, borderRadius: '12px',
                         background: group.avatar ? 'transparent' : `linear-gradient(135deg, ${group.color}20 0%, ${group.color}10 100%)`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                        overflow: 'hidden',
-                    }}
+                        overflow: 'hidden' }}
                 >
                     {group.avatar ? (
                         <img 
@@ -394,8 +380,7 @@ const GroupCard: React.FC<{
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                         <h3 style={{
                             margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)',
-                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                        }}>
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {group.name}
                         </h3>
                         {group.is_private && (
@@ -408,8 +393,7 @@ const GroupCard: React.FC<{
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                         <span style={{
                             fontSize: '10px', padding: '2px 6px', borderRadius: '4px',
-                            background: `${categoryConfig.color}15`, color: categoryConfig.color, fontWeight: 500,
-                        }}>
+                            background: `${categoryConfig.color}15`, color: categoryConfig.color, fontWeight: 500 }}>
                             {categoryConfig.label}
                         </span>
                         {group.course_name && (
@@ -417,8 +401,7 @@ const GroupCard: React.FC<{
                                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                                 fontSize: '10px', padding: '2px 8px', borderRadius: '4px',
                                 background: 'rgba(139, 92, 246, 0.1)', 
-                                color: '#8b5cf6', fontWeight: 500,
-                            }}>
+                                color: '#8b5cf6', fontWeight: 500 }}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -434,23 +417,20 @@ const GroupCard: React.FC<{
             <p style={{
                 margin: '0 0 8px 0', fontSize: '12px', color: 'var(--text-secondary)',
                 lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical', overflow: 'hidden',
-            }}>
+                WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                 {group.description}
             </p>
 
             {/* Activity Status Badges */}
             <div style={{ 
                 display: 'flex', alignItems: 'center', gap: '6px', 
-                marginBottom: '12px', flexWrap: 'wrap',
-            }}>
+                marginBottom: '12px', flexWrap: 'wrap' }}>
                 {group.unread_messages !== undefined && group.unread_messages > 0 && (
                     <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: '4px',
                         padding: '3px 8px', borderRadius: '6px',
                         background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', 
-                        fontSize: '10px', fontWeight: 600,
-                    }}>
+                        fontSize: '10px', fontWeight: 600 }}>
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                         </svg>
@@ -462,8 +442,7 @@ const GroupCard: React.FC<{
                         display: 'inline-flex', alignItems: 'center', gap: '4px',
                         padding: '3px 8px', borderRadius: '6px',
                         background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e',
-                        fontSize: '10px', fontWeight: 600,
-                    }}>
+                        fontSize: '10px', fontWeight: 600 }}>
                         <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
                         {group.online_count} active
                     </span>
@@ -474,8 +453,7 @@ const GroupCard: React.FC<{
                         padding: '3px 8px', borderRadius: '6px',
                         background: 'var(--bg-hover)', 
                         color: 'var(--text-muted)',
-                        fontSize: '10px', fontWeight: 500,
-                    }}>
+                        fontSize: '10px', fontWeight: 500 }}>
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
@@ -495,8 +473,7 @@ const GroupCard: React.FC<{
                         display: 'inline-flex', alignItems: 'center', gap: '4px',
                         padding: '3px 8px', borderRadius: '6px',
                         background: 'var(--bg-hover)',
-                        fontSize: '10px', fontWeight: 600, color: 'var(--text-secondary)',
-                    }}>
+                        fontSize: '10px', fontWeight: 600, color: 'var(--text-secondary)' }}>
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                             <circle cx="9" cy="7" r="4" />
@@ -520,8 +497,7 @@ const GroupCard: React.FC<{
                                 padding: '6px 12px', borderRadius: '8px', border: 'none',
                                 background: 'rgba(16, 185, 129, 0.1)', color: '#10b981',
                                 fontSize: '11px', fontWeight: 600, cursor: 'pointer',
-                                display: 'flex', alignItems: 'center', gap: '4px',
-                            }}
+                                display: 'flex', alignItems: 'center', gap: '4px' }}
                         >
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -542,8 +518,7 @@ const GroupCard: React.FC<{
                                 padding: '6px 12px', borderRadius: '8px', border: 'none',
                                 background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6',
                                 fontSize: '11px', fontWeight: 600, cursor: 'pointer',
-                                display: 'flex', alignItems: 'center', gap: '4px',
-                            }}
+                                display: 'flex', alignItems: 'center', gap: '4px' }}
                         >
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <circle cx="12" cy="12" r="10" />

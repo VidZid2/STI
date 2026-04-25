@@ -10,16 +10,13 @@ import type { ChatColors } from '../types';
 interface ScrollToBottomButtonProps {
     newMessageCount: number;
     onScrollToBottom: () => void;
-    isDarkMode: boolean;
-    colors: ChatColors;
+    
+    
 }
 
 export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
     newMessageCount,
-    onScrollToBottom,
-    isDarkMode,
-    colors,
-}) => {
+    onScrollToBottom }) => {
     return (
         <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -34,8 +31,7 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                 display: 'flex',
                 justifyContent: 'center',
                 zIndex: 50,
-                pointerEvents: 'none',
-            }}
+                pointerEvents: 'none' }}
         >
             <motion.button
                 whileHover={{ scale: 1.02, transition: { duration: 0.1 } }}
@@ -51,13 +47,11 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                     WebkitBackdropFilter: 'blur(12px)',
                     borderRadius: '12px',
                     border: `1px solid ${'var(--bg-hover)'}`,
-                    boxShadow: isDarkMode
-                        ? '0 4px 16px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2)'
+                    boxShadow: ? '0 4px 16px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2)'
                         : '0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04)',
                     cursor: 'pointer',
                     pointerEvents: 'auto',
-                    transition: 'all 0.2s ease',
-                }}
+                    transition: 'all 0.2s ease' }}
             >
                 {/* Arrow Icon */}
                 <div style={{
@@ -69,8 +63,7 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                         : ('var(--bg-hover)'),
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                }}>
+                    justifyContent: 'center' }}>
                     <svg
                         width="14"
                         height="14"
@@ -91,8 +84,7 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                         fontSize: '12px',
                         fontWeight: 600,
                         color: newMessageCount > 0 ? 'var(--accent-color)' : 'var(--text-primary)',
-                        lineHeight: 1.2,
-                    }}>
+                        lineHeight: 1.2 }}>
                         {newMessageCount > 0 ? `${newMessageCount} new message${newMessageCount > 1 ? 's' : ''}` : 'Jump to latest'}
                     </span>
                     {newMessageCount > 0 && (
@@ -100,8 +92,7 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                             fontSize: '10px',
                             fontWeight: 500,
                             color: 'var(--text-muted)',
-                            lineHeight: 1.2,
-                        }}>
+                            lineHeight: 1.2 }}>
                             Click to scroll down
                         </span>
                     )}
@@ -115,8 +106,7 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                         borderRadius: '50%',
                         background: 'var(--accent-color)',
                         boxShadow: `0 0 8px var(--accent-color)60`,
-                        animation: 'pulse 2s ease-in-out infinite',
-                    }} />
+                        animation: 'pulse 2s ease-in-out infinite' }} />
                 )}
             </motion.button>
         </motion.div>

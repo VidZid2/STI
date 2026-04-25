@@ -62,19 +62,18 @@ const SoundIcon: React.FC<{ id: string; color: string; size?: number }> = ({ id,
                 <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
                 <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
             </svg>
-        ),
-    };
+        ) };
     return <>{icons[id] || icons.lofi}</>;
 };
 
 
 // Ambient Sounds Component
 const AmbientSounds: React.FC<{
-    isDarkMode: boolean;
-    colors: FocusModeColors;
+    
+    
     activeSound?: string | null;
     onSoundChange?: (soundId: string | null) => void;
-}> = ({ isDarkMode: _isDarkMode, colors: _colors, activeSound: externalActiveSound, onSoundChange }) => {
+}> = ({ : _isDarkMode, : _colors, activeSound: externalActiveSound, onSoundChange }) => {
     const [internalActiveSound, setInternalActiveSound] = useState<string | null>(null);
     const [volume, setVolume] = useState(70);
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -142,8 +141,7 @@ const AmbientSounds: React.FC<{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
-                marginBottom: '14px',
-            }}>
+                marginBottom: '14px' }}>
                 <div style={{
                     width: 32,
                     height: 32,
@@ -152,8 +150,7 @@ const AmbientSounds: React.FC<{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: 'var(--brand-blue)',
-                }}>
+                    color: 'var(--brand-blue)' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                         <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
@@ -164,14 +161,12 @@ const AmbientSounds: React.FC<{
                     <div style={{
                         fontSize: '13px',
                         fontWeight: 600,
-                        color: 'var(--text-primary)',
-                    }}>
+                        color: 'var(--text-primary)' }}>
                         Ambient Sounds
                     </div>
                     <div style={{
                         fontSize: '11px',
-                        color: 'var(--text-muted)',
-                    }}>
+                        color: 'var(--text-muted)' }}>
                         {activeSound ? 'Playing...' : 'Select to play'}
                     </div>
                 </div>
@@ -185,8 +180,7 @@ const AmbientSounds: React.FC<{
                             height: 8,
                             borderRadius: '50%',
                             background: 'var(--success)',
-                            boxShadow: '0 0 8px var(--success)',
-                        }}
+                            boxShadow: '0 0 8px var(--success)' }}
                     />
                 )}
             </div>
@@ -196,8 +190,7 @@ const AmbientSounds: React.FC<{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
                 gap: '8px',
-                marginBottom: activeSound ? '16px' : '0',
-            }}>
+                marginBottom: activeSound ? '16px' : '0' }}>
                 {AMBIENT_SOUNDS.map((sound) => {
                     const isActive = activeSound === sound.id;
                     return (
@@ -220,20 +213,17 @@ const AmbientSounds: React.FC<{
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 gap: '8px',
-                                transition: 'all 0.2s ease',
-                            }}
+                                transition: 'all 0.2s ease' }}
                         >
                             <div style={{
                                 color: isActive ? sound.color : 'var(--text-muted)',
-                                transition: 'color 0.2s ease',
-                            }}>
+                                transition: 'color 0.2s ease' }}>
                                 <SoundIcon id={sound.icon} color="currentColor" />
                             </div>
                             <span style={{
                                 fontSize: '10px',
                                 fontWeight: isActive ? 600 : 500,
-                                color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-                            }}>
+                                color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
                                 {sound.label}
                             </span>
                         </motion.button>
@@ -255,8 +245,7 @@ const AmbientSounds: React.FC<{
                             alignItems: 'center',
                             gap: '12px',
                             paddingTop: '12px',
-                            borderTop: '1px solid var(--border-light)',
-                        }}>
+                            borderTop: '1px solid var(--border-light)' }}>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2">
                                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                             </svg>
@@ -272,8 +261,7 @@ const AmbientSounds: React.FC<{
                                     borderRadius: '2px',
                                     appearance: 'none',
                                     background: 'var(--bg-hover)',
-                                    cursor: 'pointer',
-                                }}
+                                    cursor: 'pointer' }}
                             />
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2">
                                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />

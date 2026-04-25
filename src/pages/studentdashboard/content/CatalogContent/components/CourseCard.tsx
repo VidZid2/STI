@@ -13,11 +13,11 @@ import { CategoryIcon } from './CatalogShared';
 const CourseCard: React.FC<{
     course: CatalogCourse;
     index: number;
-    colors: { cardBg: string; border: string; textPrimary: string; textSecondary: string; textMuted: string };
+    
     onClick: (course: CatalogCourse) => void;
     isBookmarked: boolean;
     onToggleBookmark: (courseId: string) => void;
-}> = ({ course, index, colors, onClick, isBookmarked, onToggleBookmark }) => {
+}> = ({ course, index,  onClick, isBookmarked, onToggleBookmark }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [instructorHovered, setInstructorHovered] = useState(false);
@@ -40,8 +40,7 @@ const CourseCard: React.FC<{
                     const rect = cardRef.current.getBoundingClientRect();
                     setPreviewPosition({
                         top: rect.bottom + window.scrollY + 8,
-                        left: rect.left + rect.width / 2 + window.scrollX,
-                    });
+                        left: rect.left + rect.width / 2 + window.scrollX });
                 }
                 setShowPreview(true);
             }, 600);
@@ -84,8 +83,7 @@ const CourseCard: React.FC<{
                     ? ('0 8px 30px rgba(59, 130, 246, 0.1)')
                     : ('0 2px 8px rgba(0,0,0,0.06)'),
                 transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-                outline: 'none',
-            }}
+                outline: 'none' }}
             onFocus={() => setIsHovered(true)}
             onBlur={() => setIsHovered(false)}
         >
@@ -95,8 +93,7 @@ const CourseCard: React.FC<{
                     transform: isHovered ? 'scale(1.03)' : 'scale(1)',
                     transition: 'transform 0.2s ease-out',
                     width: '100%',
-                    height: '100%',
-                }}>
+                    height: '100%' }}>
                     <img 
                         src={course.image} 
                         alt={course.title} 
@@ -105,16 +102,14 @@ const CourseCard: React.FC<{
                             height: '100%', 
                             objectFit: 'cover',
                             opacity: imageLoaded ? 1 : 0,
-                            transition: 'opacity 0.2s ease-out',
-                        }}
+                            transition: 'opacity 0.2s ease-out' }}
                         onLoad={() => setImageLoaded(true)}
                     />
                     {!imageLoaded && (
                         <div style={{
                             position: 'absolute',
                             inset: 0,
-                            background: 'var(--text-muted)',
-                        }} />
+                            background: 'var(--text-muted)' }} />
                     )}
                 </div>
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)' }} />
@@ -135,8 +130,7 @@ const CourseCard: React.FC<{
                             alignItems: 'center',
                             justifyContent: 'center',
                             border: '2px solid rgba(255,255,255,0.9)',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                        }}
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
                         whileHover={{ scale: 1.05 }}
                     >
                         <span style={{ fontSize: '12px', fontWeight: 600, color: 'white' }}>
@@ -160,8 +154,7 @@ const CourseCard: React.FC<{
                         transition: 'opacity 0.15s ease, transform 0.15s ease',
                         pointerEvents: instructorHovered ? 'auto' : 'none',
                         whiteSpace: 'nowrap',
-                        zIndex: 10,
-                    }}>
+                        zIndex: 10 }}>
                         <div style={{ fontSize: '9px', fontWeight: 500, color: blueAccent, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Instructor</div>
                         <div style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-primary)' }}>{course.instructor}</div>
                     </div>
@@ -183,8 +176,7 @@ const CourseCard: React.FC<{
                         display: 'flex', 
                         alignItems: 'center', 
                         gap: '5px',
-                        border: `1px solid ${blueBorder}`,
-                    }}
+                        border: `1px solid ${blueBorder}` }}
                 >
                     <div style={{ color: blueAccent }}><CategoryIcon category={course.category} size={11} /></div>
                     <span style={{ fontSize: '10px', fontWeight: 600, color: blueAccent }}>{categoryInfo[course.category].label}</span>
@@ -212,8 +204,7 @@ const CourseCard: React.FC<{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                        }}
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
                     >
                         <svg 
                             width="14" 
@@ -250,8 +241,7 @@ const CourseCard: React.FC<{
                                     zIndex: 20,
                                     fontSize: '11px',
                                     fontWeight: 500,
-                                    color: blueAccent,
-                                }}
+                                    color: blueAccent }}
                             >
                                 {isBookmarked ? 'Remove from favorites' : 'Add to favorites'}
                             </motion.div>
@@ -273,8 +263,7 @@ const CourseCard: React.FC<{
                             overflow: 'hidden', 
                             textOverflow: 'ellipsis', 
                             whiteSpace: 'nowrap',
-                            flex: 1,
-                        }}>
+                            flex: 1 }}>
                             {course.title}
                         </h3>
                         {course.enrolled && (
@@ -290,8 +279,7 @@ const CourseCard: React.FC<{
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     gap: '4px',
-                                    flexShrink: 0,
-                                }}
+                                    flexShrink: 0 }}
                             >
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
                                 <span style={{ fontSize: '9px', fontWeight: 600, color: blueAccent }}>Enrolled</span>
@@ -309,8 +297,7 @@ const CourseCard: React.FC<{
                     padding: '10px 12px',
                     borderRadius: '10px',
                     background: blueBg,
-                    marginBottom: '12px',
-                }}>
+                    marginBottom: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1 }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -346,8 +333,7 @@ const CourseCard: React.FC<{
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '8px',
-                        transition: 'all 0.2s ease',
-                    }}
+                        transition: 'all 0.2s ease' }}
                     onClick={(e) => { e.stopPropagation(); onClick(course); }}
                 >
                     <span>{course.enrolled ? 'Continue' : 'View Course'}</span>
@@ -405,8 +391,7 @@ const CourseCard: React.FC<{
                                 border: `1px solid ${blueBorder}`,
                                 boxShadow: 'var(--shadow-lg)',
                                 zIndex: 9999,
-                                pointerEvents: 'none',
-                            }}
+                                pointerEvents: 'none' }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             {/* Preview Header */}
@@ -416,8 +401,7 @@ const CourseCard: React.FC<{
                                 gap: '6px', 
                                 marginBottom: '10px',
                                 paddingBottom: '10px',
-                                borderBottom: `1px solid var(--border-color)`,
-                            }}>
+                                borderBottom: `1px solid var(--border-color)` }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2" aria-hidden="true">
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M12 16v-4M12 8h.01" />
@@ -437,8 +421,7 @@ const CourseCard: React.FC<{
                                 display: '-webkit-box',
                                 WebkitLineClamp: 3,
                                 WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                            }}>
+                                overflow: 'hidden' }}>
                                 {course.description}
                             </p>
 
@@ -478,8 +461,7 @@ const CourseCard: React.FC<{
                                                 background: blueBg,
                                                 fontSize: '10px', 
                                                 fontWeight: 500,
-                                                color: blueAccent,
-                                            }}
+                                                color: blueAccent }}
                                         >
                                             {tag}
                                         </span>
@@ -495,8 +477,7 @@ const CourseCard: React.FC<{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '6px',
-                            }}>
+                                gap: '6px' }}>
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2">
                                     <path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
                                 </svg>
@@ -517,11 +498,11 @@ const CourseCard: React.FC<{
 const CourseListItem: React.FC<{
     course: CatalogCourse;
     index: number;
-    colors: { cardBg: string; border: string; textPrimary: string; textSecondary: string; textMuted: string };
+    
     onClick: (course: CatalogCourse) => void;
     isBookmarked: boolean;
     onToggleBookmark: (courseId: string) => void;
-}> = ({ course, index, colors, onClick, isBookmarked, onToggleBookmark }) => {
+}> = ({ course, index,  onClick, isBookmarked, onToggleBookmark }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const [previewPosition, setPreviewPosition] = useState({ top: 0, left: 0 });
@@ -539,8 +520,7 @@ const CourseListItem: React.FC<{
                     const rect = listItemRef.current.getBoundingClientRect();
                     setPreviewPosition({
                         top: rect.bottom + window.scrollY + 8,
-                        left: rect.left + 80 + window.scrollX,
-                    });
+                        left: rect.left + 80 + window.scrollX });
                 }
                 setShowPreview(true);
             }, 600);
@@ -581,8 +561,7 @@ const CourseListItem: React.FC<{
                 transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
                 boxShadow: isHovered 
                     ? ('0 4px 16px rgba(59, 130, 246, 0.08)')
-                    : 'none',
-            }}
+                    : 'none' }}
         >
             {/* Course Image */}
             <div style={{
@@ -591,8 +570,7 @@ const CourseListItem: React.FC<{
                 borderRadius: '12px',
                 overflow: 'hidden',
                 flexShrink: 0,
-                position: 'relative',
-            }}>
+                position: 'relative' }}>
                 <img 
                     src={course.image} 
                     alt={course.title} 
@@ -616,8 +594,7 @@ const CourseListItem: React.FC<{
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
+                        justifyContent: 'center' }}
                 >
                     <svg width="10" height="10" viewBox="0 0 24 24" fill={isBookmarked ? blueAccent : 'none'} stroke={blueAccent} strokeWidth="2">
                         <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
@@ -635,8 +612,7 @@ const CourseListItem: React.FC<{
                         color: 'var(--text-primary)',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                    }}>
+                        whiteSpace: 'nowrap' }}>
                         {course.title}
                     </h3>
                     {course.enrolled && (
@@ -650,8 +626,7 @@ const CourseListItem: React.FC<{
                             color: blueAccent,
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '4px',
-                        }}>
+                            gap: '4px' }}>
                             <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
                             Enrolled
                         </span>
@@ -702,8 +677,7 @@ const CourseListItem: React.FC<{
                     alignItems: 'center',
                     gap: '6px',
                     transition: 'all 0.2s ease',
-                    flexShrink: 0,
-                }}
+                    flexShrink: 0 }}
             >
                 {course.enrolled ? 'Continue' : 'View'}
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -749,8 +723,7 @@ const CourseListItem: React.FC<{
                                 border: `1px solid ${blueBorder}`,
                                 boxShadow: 'var(--shadow-lg)',
                                 zIndex: 9999,
-                                pointerEvents: 'none',
-                            }}
+                                pointerEvents: 'none' }}
                         >
                             {/* Preview Header */}
                             <div style={{ 
@@ -759,8 +732,7 @@ const CourseListItem: React.FC<{
                                 gap: '6px', 
                                 marginBottom: '10px',
                                 paddingBottom: '10px',
-                                borderBottom: `1px solid var(--border-color)`,
-                            }}>
+                                borderBottom: `1px solid var(--border-color)` }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2">
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M12 16v-4M12 8h.01" />
@@ -776,8 +748,7 @@ const CourseListItem: React.FC<{
                                 fontSize: '12px', 
                                 color: 'var(--text-secondary)', 
                                 lineHeight: 1.5,
-                                marginBottom: '12px',
-                            }}>
+                                marginBottom: '12px' }}>
                                 {course.description}
                             </p>
 
@@ -793,8 +764,7 @@ const CourseListItem: React.FC<{
                                                 background: blueBg,
                                                 fontSize: '10px', 
                                                 fontWeight: 500,
-                                                color: blueAccent,
-                                            }}
+                                                color: blueAccent }}
                                         >
                                             {tag}
                                         </span>

@@ -56,14 +56,12 @@ const ProgressRingWithTooltip: React.FC<{
                             border: '1px solid rgba(59, 130, 246, 0.2)',
                             whiteSpace: 'nowrap',
                             pointerEvents: 'none',
-                            zIndex: 50,
-                        }}
+                            zIndex: 50 }}
                     >
                         <span style={{
                             fontSize: '11px',
                             fontWeight: 500,
-                            color: '#3b82f6',
-                        }}>
+                            color: '#3b82f6' }}>
                             {getDescription()}
                         </span>
                         {/* Tooltip Arrow - Right Side */}
@@ -76,8 +74,7 @@ const ProgressRingWithTooltip: React.FC<{
                             height: '8px',
                             background: '#ffffff',
                             borderRight: '1px solid rgba(59, 130, 246, 0.2)',
-                            borderTop: '1px solid rgba(59, 130, 246, 0.2)',
-                        }} />
+                            borderTop: '1px solid rgba(59, 130, 246, 0.2)' }} />
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -115,8 +112,7 @@ const ProgressRingWithTooltip: React.FC<{
                 transform: 'translate(-50%, -50%)',
                 fontSize: '12px',
                 fontWeight: 700,
-                color: progress === 100 ? '#10b981' : pathColor,
-            }}>
+                color: progress === 100 ? '#10b981' : pathColor }}>
                 {progress}%
             </div>
         </motion.div>
@@ -179,8 +175,7 @@ const ModalTooltip: React.FC<{
             position: 'absolute',
             width: '6px',
             height: '6px',
-            background: '#ffffff',
-        };
+            background: '#ffffff' };
         switch (position) {
             case 'top':
                 return { ...base, bottom: '-3px', left: '50%', transform: 'translateX(-50%) rotate(45deg)', borderRight: '1px solid rgba(59, 130, 246, 0.15)', borderBottom: '1px solid rgba(59, 130, 246, 0.15)' };
@@ -223,8 +218,7 @@ const ModalTooltip: React.FC<{
                                 border: '1px solid rgba(59, 130, 246, 0.15)',
                                 whiteSpace: 'nowrap',
                                 pointerEvents: 'none',
-                                zIndex: 99999,
-                            }}
+                                zIndex: 99999 }}
                         >
                             <span style={{ fontSize: '10px', fontWeight: 500, color: '#3b82f6' }}>
                                 {text}

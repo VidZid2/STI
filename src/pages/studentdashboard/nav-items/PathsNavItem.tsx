@@ -123,8 +123,7 @@ export const PathsNavItem: React.FC<PathsNavItemProps> = React.memo(({ onSidebar
                         right: -20,
                         width: '20px',
                         height: '100%',
-                        zIndex: 9999,
-                    }}
+                        zIndex: 9999 }}
                     onMouseEnter={handleMouseEnter}
                 />
             )}

@@ -48,8 +48,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
     systemConfig,
     showAddTaskModal: _showAddTaskModal,
     setShowAddTaskModal: _setShowAddTaskModal,
-    refetchTasks: _refetchTasks,
-}) => {
+    refetchTasks: _refetchTasks }) => {
     const [_submitModalTask, setSubmitModalTask] = React.useState<CourseTask | null>(null);
     const [_instructionsTask, setInstructionsTask] = React.useState<CourseTask | null>(null);
     const [_tasksPage, _setTasksPage] = React.useState(1);
@@ -190,8 +189,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                         performance: { bg: 'rgba(139, 92, 246, 0.1)', text: '#7c3aed', border: 'rgba(139, 92, 246, 0.2)' },
                                         quiz: { bg: 'rgba(245, 158, 11, 0.1)', text: '#d97706', border: 'rgba(245, 158, 11, 0.2)' },
                                         practical: { bg: 'rgba(244, 63, 94, 0.1)', text: '#e11d48', border: 'rgba(244, 63, 94, 0.2)' },
-                                        journal: { bg: 'rgba(6, 182, 212, 0.1)', text: '#0891b2', border: 'rgba(6, 182, 212, 0.2)' },
-                                    };
+                                        journal: { bg: 'rgba(6, 182, 212, 0.1)', text: '#0891b2', border: 'rgba(6, 182, 212, 0.2)' } };
 
                                     const typeColor = typeColors[task.category] || typeColors.assignment;
 
@@ -275,8 +273,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                                         setContactTooltip({
                                                             visible: true,
                                                             x: rect.left + rect.width / 2,
-                                                            y: rect.bottom + 10,
-                                                        });
+                                                            y: rect.bottom + 10 });
                                                     }}
                                                     onMouseLeave={() => {
                                                         setContactTooltip(prev => ({ ...prev, visible: false }));
@@ -583,8 +580,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                                                         gap: '6px', padding: '8px 14px',
                                                                         background: 'rgba(239, 68, 68, 0.06)', color: '#ef4444',
                                                                         border: '1px solid rgba(239, 68, 68, 0.15)', borderRadius: '10px',
-                                                                        fontSize: '12px', fontWeight: 600,
-                                                                    }}>
+                                                                        fontSize: '12px', fontWeight: 600 }}>
                                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                                                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -602,8 +598,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                                                         gap: '6px', padding: '8px 14px',
                                                                         background: 'rgba(239, 68, 68, 0.06)', color: '#ef4444',
                                                                         border: '1px solid rgba(239, 68, 68, 0.15)', borderRadius: '10px',
-                                                                        fontSize: '12px', fontWeight: 600,
-                                                                    }}>
+                                                                        fontSize: '12px', fontWeight: 600 }}>
                                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                                                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -625,8 +620,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                                                                 background: 'rgba(245, 158, 11, 0.08)',
                                                                                 border: '1px solid rgba(245, 158, 11, 0.15)',
                                                                                 borderRadius: '8px',
-                                                                                fontSize: '11px', fontWeight: 500, color: '#92400e',
-                                                                            }}>
+                                                                                fontSize: '11px', fontWeight: 500, color: '#92400e' }}>
                                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
                                                                                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                                                                                     <line x1="12" y1="9" x2="12" y2="13" />
@@ -677,8 +671,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                                                             {maxAttempts > 1 && (
                                                                                 <span style={{
                                                                                     fontSize: '10px', padding: '1px 6px', borderRadius: '6px',
-                                                                                    background: 'rgba(245, 158, 11, 0.12)', marginLeft: '2px',
-                                                                                }}>
+                                                                                    background: 'rgba(245, 158, 11, 0.12)', marginLeft: '2px' }}>
                                                                                     {maxAttempts - submissionCount} left
                                                                                 </span>
                                                                             )}
@@ -735,8 +728,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                                                     {maxAttempts > 1 && (
                                                                         <span style={{
                                                                             fontSize: '10px', padding: '1px 6px', borderRadius: '6px',
-                                                                            background: 'rgba(59, 130, 246, 0.12)', marginLeft: '2px',
-                                                                        }}>
+                                                                            background: 'rgba(59, 130, 246, 0.12)', marginLeft: '2px' }}>
                                                                             {maxAttempts - submissionCount} left
                                                                         </span>
                                                                     )}
@@ -758,8 +750,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                                     whileHover={{
                                                         scale: 1.02,
                                                         boxShadow: '0 6px 20px rgba(236, 72, 153, 0.25)',
-                                                        borderColor: 'rgba(236, 72, 153, 0.5)',
-                                                    }}
+                                                        borderColor: 'rgba(236, 72, 153, 0.5)' }}
                                                     whileTap={{ scale: 0.98 }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
@@ -783,14 +774,12 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                                         flexShrink: 0,
                                                         position: 'relative',
                                                         overflow: 'hidden',
-                                                        transition: 'border-color 0.2s ease',
-                                                    }}
+                                                        transition: 'border-color 0.2s ease' }}
                                                 >
                                                     <div style={{
                                                         position: 'absolute', inset: 0,
                                                         background: 'linear-gradient(135deg, transparent, rgba(236, 72, 153, 0.08), transparent)',
-                                                        opacity: 0.8, pointerEvents: 'none',
-                                                    }} />
+                                                        opacity: 0.8, pointerEvents: 'none' }} />
                                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginRight: '2px' }}>
                                                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                                                         <polyline points="14 2 14 8 20 8" />

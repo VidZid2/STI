@@ -30,8 +30,7 @@ export interface UseMessageReactionsReturn {
 export function useMessageReactions({
     profileId,
     inputRef,
-    setReplyingTo,
-}: UseMessageReactionsOptions): UseMessageReactionsReturn {
+    setReplyingTo }: UseMessageReactionsOptions): UseMessageReactionsReturn {
     const [messageReactions, setMessageReactions] = useState<Record<string, MessageReaction[]>>({});
     const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
     const [showReactionsFor, setShowReactionsFor] = useState<string | null>(null);
@@ -70,8 +69,7 @@ export function useMessageReactions({
         setReplyingTo?.({
             messageId: message.id,
             userName: message.user_name,
-            content: message.content.length > 50 ? message.content.substring(0, 50) + '...' : message.content,
-        });
+            content: message.content.length > 50 ? message.content.substring(0, 50) + '...' : message.content });
         inputRef?.current?.focus();
     }, [inputRef, setReplyingTo]);
 
@@ -94,9 +92,7 @@ export function useMessageReactions({
                 ...prev,
                 [messageId]: {
                     count: current.voted ? current.count - 1 : current.count + 1,
-                    voted: !current.voted,
-                },
-            };
+                    voted: !current.voted } };
         });
     }, []);
 
@@ -111,6 +107,5 @@ export function useMessageReactions({
         handleReaction,
         handleReply,
         toggleBookmark,
-        toggleHelpful,
-    };
+        toggleHelpful };
 }

@@ -128,8 +128,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
     setCalendarView,
     calendarMonth,
     setCalendarMonth,
-    hasDeadlines,
-}) => {
+    hasDeadlines }) => {
     return (
             <AnimatePresence mode="wait">
                 {widgetsSidebarActive && (
@@ -144,8 +143,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                 type: 'spring',
                                 stiffness: 300,
                                 damping: 30,
-                                mass: 0.8,
-                            }
+                                mass: 0.8 }
                         }}
                         exit={{
                             x: '100%',
@@ -154,8 +152,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                 type: 'spring',
                                 stiffness: 400,
                                 damping: 35,
-                                mass: 0.6,
-                            }
+                                mass: 0.6 }
                         }}
                     >
 
@@ -171,7 +168,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={toggleWidgetsSidebar}
-                                    className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
+                                    className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -188,7 +185,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                         exit={{ opacity: 0, height: 0 }}
                                         transition={{ duration: 0.2 }}
                                         onClick={restoreAllWidgets}
-                                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-blue-500 hover:text-blue-600 hover:bg-blue-50/50 transition-colors border-b border-zinc-100"
+                                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-blue-500 hover:text-blue-600 hover:bg-blue-50/50 transition-border-b border-zinc-100"
                                     >
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -331,7 +328,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                                 exit={{ opacity: 0, x: 10 }}
                                                                 transition={{ delay: index * 0.05 }}
                                                                 whileHover={{ x: 4 }}
-                                                                className={`flex items-center gap-3 rounded-lg hover:bg-zinc-50 cursor-pointer transition-colors ${quickViewSettings.compactMode ? 'p-1.5' : 'p-2'}`}
+                                                                className={`flex items-center gap-3 rounded-lg hover:bg-zinc-50 cursor-pointer transition-${quickViewSettings.compactMode ? 'p-1.5' : 'p-2'}`}
                                                             >
                                                                 <div className={`w-2 h-2 rounded-full ${typeColor}`} />
                                                                 <div className="flex-1 min-w-0">
@@ -353,7 +350,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                         </div>
                                         <a
                                             href="#"
-                                            className={`flex items-center justify-center gap-1.5 border-t border-zinc-50 text-blue-500 hover:bg-blue-50/50 transition-colors ${quickViewSettings.compactMode ? 'py-2 text-[10px]' : 'py-2.5 text-xs'}`}
+                                            className={`flex items-center justify-center gap-1.5 border-t border-zinc-50 text-blue-500 hover:bg-blue-50/50 transition-${quickViewSettings.compactMode ? 'py-2 text-[10px]' : 'py-2.5 text-xs'}`}
                                         >
                                             View all deadlines
                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

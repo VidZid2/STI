@@ -26,9 +26,8 @@ const STUDY_QUOTES = [
 
 // Motivational Quote Component
 const MotivationalQuote: React.FC<{
-    isDarkMode: boolean;
-    colors: FocusModeColors;
-    isBreakMode: boolean;
+    
+    
 }> = ({ isBreakMode }) => {
     const [quote, setQuote] = useState(STUDY_QUOTES[0]);
     const [isChanging, setIsChanging] = useState(false);
@@ -56,8 +55,7 @@ const MotivationalQuote: React.FC<{
                 borderRadius: '16px',
                 background: 'linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-hover) 100%)',
                 position: 'relative',
-                overflow: 'hidden',
-            }}
+                overflow: 'hidden' }}
         >
             {/* Yellow quote marks */}
             <div style={{
@@ -68,8 +66,7 @@ const MotivationalQuote: React.FC<{
                 fontSize: '32px',
                 fontWeight: 900,
                 lineHeight: 1,
-                fontFamily: 'Georgia, serif',
-            }}>
+                fontFamily: 'Georgia, serif' }}>
                 "
             </div>
 
@@ -92,8 +89,7 @@ const MotivationalQuote: React.FC<{
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: 'rgba(255,255,255,0.8)',
-                    transition: 'all 0.2s ease',
-                }}
+                    transition: 'all 0.2s ease' }}
             >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -118,16 +114,14 @@ const MotivationalQuote: React.FC<{
                         color: '#ffffff',
                         lineHeight: 1.6,
                         marginBottom: '12px',
-                        fontWeight: 500,
-                    }}>
+                        fontWeight: 500 }}>
                         "{quote.text}"
                     </p>
                     <p style={{
                         margin: 0,
                         fontSize: '12px',
                         color: 'var(--brand-gold)',
-                        fontWeight: 600,
-                    }}>
+                        fontWeight: 600 }}>
                         — {quote.author}
                     </p>
                 </motion.div>
@@ -140,8 +134,7 @@ const MotivationalQuote: React.FC<{
                 borderTop: '1px solid rgba(255,255,255,0.15)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
-            }}>
+                gap: '6px' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-gold)" strokeWidth="2">
                     <circle cx="12" cy="12" r="4" />
                     <path d="M12 2v2" />
@@ -156,8 +149,7 @@ const MotivationalQuote: React.FC<{
                 <span style={{
                     fontSize: '11px',
                     color: 'rgba(255,255,255,0.8)',
-                    fontWeight: 500,
-                }}>
+                    fontWeight: 500 }}>
                     Daily inspiration
                 </span>
             </div>

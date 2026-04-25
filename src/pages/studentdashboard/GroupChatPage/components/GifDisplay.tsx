@@ -22,8 +22,7 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({ content }) => {
                 borderRadius: '12px',
                 overflow: 'hidden',
                 maxWidth: '280px',
-                marginTop: '4px',
-            }}
+                marginTop: '4px' }}
         >
             <img
                 src={gifUrl}
@@ -32,8 +31,7 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({ content }) => {
                     width: '100%',
                     height: 'auto',
                     display: 'block',
-                    borderRadius: '12px',
-                }}
+                    borderRadius: '12px' }}
                 loading="lazy"
             />
         </motion.div>

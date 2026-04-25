@@ -74,8 +74,7 @@ export function useCourseTasks(courseId: string): UseCourseTasksReturn {
                 quiz: 'quiz',
                 performance: 'performance',
                 practical: 'practical',
-                journal: 'journal',
-            };
+                journal: 'journal' };
 
             const now = new Date();
             const mapped = rawTasks.map((task) => {
@@ -115,8 +114,7 @@ export function useCourseTasks(courseId: string): UseCourseTasksReturn {
                     prerequisiteAssignmentId: task.prerequisite_assignment_id || null,
                     attachments: task.attachments || [],
                     submissionCount: submission?.count || 0,
-                    _diffDays: diffDays,
-                } satisfies CourseTask;
+                    _diffDays: diffDays } satisfies CourseTask;
             }).map((t: CourseTask) => {
                 // Auto-lock tasks overdue by more than 15 days with no submission
                 if (t.status === 'overdue' && (t._diffDays ?? 0) <= -15) {
@@ -152,8 +150,7 @@ export function useCourseTasks(courseId: string): UseCourseTasksReturn {
                     event: 'UPDATE',
                     schema: 'public',
                     table: 'student_submissions',
-                    filter: `student_id=eq.${studentId}`,
-                },
+                    filter: `student_id=eq.${studentId}` },
                 (payload) => {
                     const updated = payload.new as { task_id: string; score: number | null; status: string };
                     setTasks(prev => prev.map(t =>

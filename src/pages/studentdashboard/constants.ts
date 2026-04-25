@@ -29,8 +29,7 @@ export const COURSE_NAMES: Record<string, string> = {
     'ppc': 'Philippine Popular Culture',
     'purcom': 'Purposive Communication',
     'tcw': 'The Contemporary World',
-    'uts': 'Understanding the Self',
-};
+    'uts': 'Understanding the Self' };
 
 // Default widget visibility state
 export const DEFAULT_WIDGET_VISIBILITY: WidgetVisibility = {
@@ -43,8 +42,7 @@ export const DEFAULT_WIDGET_VISIBILITY: WidgetVisibility = {
     'quote-widget': true,
     'weather-widget': true,
     'grade-predictor-widget': true,
-    'achievements-widget': true,
-};
+    'achievements-widget': true };
 
 // Motivational Quotes - rotates daily
 export const MOTIVATIONAL_QUOTES = [
@@ -88,8 +86,7 @@ export const WEATHER_REFRESH_INTERVAL = 30 * 60 * 1000;
 export const DEFAULT_LOCATION = {
     lat: 14.7569,
     lon: 120.9603,
-    name: 'Meycauayan',
-};
+    name: 'Meycauayan' };
 
 // Day names for calendar/insights
 export const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

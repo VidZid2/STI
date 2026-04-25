@@ -16,43 +16,37 @@ const TUTORIAL_STEPS: TutorialStep[] = [
         target: '.logo',
         title: 'STI eLMS',
         description: 'Welcome to the new STI Enhanced Learning Management System. Let us show you around!',
-        position: 'bottom',
-    },
+        position: 'bottom' },
     {
         id: 'menu',
         target: '.sidebar-toggle',
         title: 'Menu Button',
         description: 'Click here to open the navigation sidebar. Access all your courses, tools, and settings.',
-        position: 'bottom',
-    },
+        position: 'bottom' },
     {
         id: 'toolbar',
         target: '.header-right',
         title: 'Quick Actions',
         description: 'Your notifications, messages, and profile are here. Click any icon to see more options.',
-        position: 'bottom',
-    },
+        position: 'bottom' },
     {
         id: 'welcome',
         target: '.welcome-main-card',
         title: 'Welcome Area',
         description: 'See your personalized greeting, current streak, and quick stats at a glance.',
-        position: 'bottom',
-    },
+        position: 'bottom' },
     {
         id: 'stats',
         target: '.stats-row-cards',
         title: 'Your Statistics',
         description: 'Track your progress with detailed statistics. Click on any stat card to see more details.',
-        position: 'top',
-    },
+        position: 'top' },
     {
         id: 'courses',
         target: '.courses-section-premium',
         title: 'Your Courses',
         description: 'All your enrolled courses appear here. Click any course to continue learning where you left off.',
-        position: 'top',
-    },
+        position: 'top' },
     {
         id: 'widgets-toggle',
         target: '.floating-widgets-toggle',
@@ -74,15 +68,13 @@ const TUTORIAL_STEPS: TutorialStep[] = [
         target: '.floating-dock-container',
         title: 'Quick Actions Dock',
         description: 'Access frequently used features instantly from this dock. Hover over icons to see tooltips.',
-        position: 'top',
-    },
+        position: 'top' },
     {
         id: 'finish',
         target: '.welcome-main-card',
         title: 'You\'re All Set!',
         description: 'That\'s the tour! Explore the dashboard and start learning. You can always access help from the menu.',
-        position: 'bottom',
-    },
+        position: 'bottom' },
 ];
 
 interface DashboardTutorialProps {
@@ -147,8 +139,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
             top: rect.top - padding,
             left: rect.left - padding,
             width: rect.width + padding * 2,
-            height: rect.height + padding * 2,
-        });
+            height: rect.height + padding * 2 });
 
         // Calculate tooltip position
         const tooltipWidth = 320;
@@ -211,8 +202,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                         top: rect.top - padding,
                         left: rect.left - padding,
                         width: rect.width + padding * 2,
-                        height: rect.height + padding * 2,
-                    });
+                        height: rect.height + padding * 2 });
                 }
             }, 500);
             return () => clearTimeout(timer);
@@ -228,8 +218,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                         top: rect.top - padding,
                         left: rect.left - padding,
                         width: rect.width + padding * 2,
-                        height: rect.height + padding * 2,
-                    });
+                        height: rect.height + padding * 2 });
                 }
             }, 400);
             return () => clearTimeout(timer);
@@ -292,8 +281,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                         position: 'fixed',
                         inset: 0,
                         zIndex: 10000,
-                        pointerEvents: 'auto',
-                    }}
+                        pointerEvents: 'auto' }}
                 >
                     {/* Backdrop with cutout */}
                     <svg
@@ -301,8 +289,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                             position: 'absolute',
                             inset: 0,
                             width: '100%',
-                            height: '100%',
-                        }}
+                            height: '100%' }}
                     >
                         <defs>
                             <mask id="tutorial-mask">
@@ -314,12 +301,10 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                                             x: highlightRect.left,
                                             y: highlightRect.top,
                                             width: highlightRect.width,
-                                            height: highlightRect.height,
-                                        }}
+                                            height: highlightRect.height }}
                                         transition={{ 
                                             duration: 0.35, 
-                                            ease: [0.4, 0, 0.2, 1],
-                                        }}
+                                            ease: [0.4, 0, 0.2, 1] }}
                                         rx="12"
                                         fill="black"
                                     />
@@ -346,19 +331,16 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                                 top: highlightRect.top,
                                 left: highlightRect.left,
                                 width: highlightRect.width,
-                                height: highlightRect.height,
-                            }}
+                                height: highlightRect.height }}
                             transition={{ 
                                 duration: 0.35, 
-                                ease: [0.4, 0, 0.2, 1],
-                            }}
+                                ease: [0.4, 0, 0.2, 1] }}
                             style={{
                                 position: 'absolute',
                                 borderRadius: '12px',
                                 border: '2px solid #3b82f6',
                                 boxShadow: '0 0 0 4px rgba(59, 130, 246, 0.2), 0 0 30px rgba(59, 130, 246, 0.3)',
-                                pointerEvents: 'none',
-                            }}
+                                pointerEvents: 'none' }}
                         />
                     )}
 
@@ -377,8 +359,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                             backgroundColor: '#fff',
                             borderRadius: '16px',
                             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                            overflow: 'hidden',
-                        }}
+                            overflow: 'hidden' }}
                     >
                         {/* Progress bar */}
                         <div className="h-[3px] bg-slate-200">
@@ -398,7 +379,7 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                                 </span>
                                 <button
                                     onClick={handleSkip}
-                                    className="text-xs text-slate-400 cursor-pointer px-2 py-1 rounded hover:bg-slate-100 bg-transparent border-none transition-colors"
+                                    className="text-xs text-slate-400 cursor-pointer px-2 py-1 rounded hover:bg-slate-100 bg-transparent border-none transition-"
                                 >
                                     Skip tour
                                 </button>
@@ -447,14 +428,12 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                                     key={index}
                                     animate={{
                                         backgroundColor: index === currentStep ? '#3b82f6' : index < currentStep ? '#93c5fd' : '#e2e8f0',
-                                        scale: index === currentStep ? 1.2 : 1,
-                                    }}
+                                        scale: index === currentStep ? 1.2 : 1 }}
                                     style={{
                                         width: '6px',
                                         height: '6px',
                                         borderRadius: '50%',
-                                        cursor: 'pointer',
-                                    }}
+                                        cursor: 'pointer' }}
                                     onClick={() => setCurrentStep(index)}
                                 />
                             ))}

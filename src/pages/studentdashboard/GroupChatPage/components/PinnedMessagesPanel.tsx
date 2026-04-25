@@ -20,8 +20,8 @@ interface PinnedMessagesPanelProps {
         is_online?: boolean;
     }>;
     isExpanded: boolean;
-    isDarkMode: boolean;
-    colors: ChatColors;
+    
+    
     onToggleExpand: () => void;
     onUnpin: (messageId: string) => void;
     onJumpToMessage: (messageId: string) => void;
@@ -33,12 +33,11 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
     memberStats,
     groupMembers,
     isExpanded,
-    isDarkMode,
-    colors,
+    
+    
     onToggleExpand,
     onUnpin,
-    onJumpToMessage,
-}) => {
+    onJumpToMessage }) => {
     if (pinnedMessages.size === 0) return null;
 
     const pinnedMessagesList = messages.filter((msg) => pinnedMessages.has(msg.id));
@@ -53,8 +52,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                 style={{
                     overflow: 'hidden',
                     borderBottom: `1px solid var(--border-color)`,
-                    background: 'var(--dashboard-surface)',
-                }}
+                    background: 'var(--dashboard-surface)' }}
             >
                 <div style={{ padding: '8px 20px' }}>
                     {/* Header */}
@@ -64,8 +62,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            cursor: 'pointer',
-                        }}
+                            cursor: 'pointer' }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <svg
@@ -120,8 +117,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                                         gap: '4px',
                                         marginTop: '8px',
                                         maxHeight: '200px',
-                                        overflowY: 'auto',
-                                    }}
+                                        overflowY: 'auto' }}
                                 >
                                     {pinnedMessagesList.map((msg) => {
                                         const memberInfo = groupMembers?.find(
@@ -140,16 +136,14 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: -5 }}
                                                 whileHover={{
-                                                    background: 'rgba(0,0,0,0.02)',
-                                                }}
+                                                    background: 'rgba(0,0,0,0.02)' }}
                                                 style={{
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     gap: '10px',
                                                     padding: '8px 10px',
                                                     borderRadius: '8px',
-                                                    cursor: 'pointer',
-                                                }}
+                                                    cursor: 'pointer' }}
                                                 onClick={() => onJumpToMessage(msg.id)}
                                             >
                                                 {/* Avatar with Level Badge and Online Status */}
@@ -158,8 +152,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                                                         position: 'relative',
                                                         flexShrink: 0,
                                                         width: 32,
-                                                        height: 38,
-                                                    }}
+                                                        height: 38 }}
                                                 >
                                                     <div
                                                         style={{
@@ -174,8 +167,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                                                             fontWeight: 600,
                                                             color: 'var(--accent-color)',
                                                             overflow: 'hidden',
-                                                            border: `2px solid ${'var(--dashboard-surface)'}`,
-                                                        }}
+                                                            border: `2px solid ${'var(--dashboard-surface)'}` }}
                                                     >
                                                         {memberInfo?.user_avatar ? (
                                                             <img
@@ -185,8 +177,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                                                                     width: '100%',
                                                                     height: '100%',
                                                                     borderRadius: '50%',
-                                                                    objectFit: 'cover',
-                                                                }}
+                                                                    objectFit: 'cover' }}
                                                             />
                                                         ) : (
                                                             msg.user_name.charAt(0).toUpperCase()
@@ -206,8 +197,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                                                             borderRadius: '6px',
                                                             border: `2px solid var(--dashboard-surface)`,
                                                             lineHeight: 1.2,
-                                                            whiteSpace: 'nowrap',
-                                                        }}
+                                                            whiteSpace: 'nowrap' }}
                                                     >
                                                         Lv.{pinnedUserLevel}
                                                     </div>
@@ -220,8 +210,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                                                             height: 9,
                                                             borderRadius: '50%',
                                                             background: pinnedIsOnline ? '#22c55e' : '#9ca3af',
-                                                            border: `2px solid var(--dashboard-surface)`,
-                                                        }}
+                                                            border: `2px solid var(--dashboard-surface)` }}
                                                     />
                                                 </div>
 
@@ -231,23 +220,20 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                                                         style={{
                                                             display: 'flex',
                                                             alignItems: 'center',
-                                                            gap: '6px',
-                                                        }}
+                                                            gap: '6px' }}
                                                     >
                                                         <span
                                                             style={{
                                                                 fontSize: '12px',
                                                                 fontWeight: 600,
-                                                                color: 'var(--text-primary)',
-                                                            }}
+                                                                color: 'var(--text-primary)' }}
                                                         >
                                                             {msg.user_name}
                                                         </span>
                                                         <span
                                                             style={{
                                                                 fontSize: '10px',
-                                                                color: 'var(--text-muted)',
-                                                            }}
+                                                                color: 'var(--text-muted)' }}
                                                         >
                                                             {formatTime(msg.created_at)}
                                                         </span>
@@ -259,8 +245,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                                                             color: 'var(--text-secondary)',
                                                             overflow: 'hidden',
                                                             textOverflow: 'ellipsis',
-                                                            whiteSpace: 'nowrap',
-                                                        }}
+                                                            whiteSpace: 'nowrap' }}
                                                     >
                                                         {msg.content}
                                                     </p>
@@ -285,8 +270,7 @@ export const PinnedMessagesPanel: React.FC<PinnedMessagesPanelProps> = ({
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
                                                         color: 'var(--text-muted)',
-                                                        flexShrink: 0,
-                                                    }}
+                                                        flexShrink: 0 }}
                                                 >
                                                     <svg
                                                         width="12"

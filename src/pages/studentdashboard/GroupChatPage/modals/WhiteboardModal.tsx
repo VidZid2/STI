@@ -14,13 +14,13 @@ interface WhiteboardModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSend: (dataUrl: string) => void;
-    colors: ModalColors;
+    
 }
 
 // Tool types
 type Tool = 'pen' | 'eraser';
 
-export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClose, onSend, colors }) => {
+export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClose, onSend }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'whiteboard-modal-title');
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
@@ -29,9 +29,8 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
     const [tool, setTool] = useState<Tool>('pen');
     const [hasDrawn, setHasDrawn] = useState(false);
 
-    // Blue accent colors
-    const blueAccent = '#3b82f6';
-    const isDarkMode = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
+    // Blue accent const blueAccent = '#3b82f6';
+    const = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
     const blueBg = 'rgba(59, 130, 246, 0.1)';
     const blueBorder = 'rgba(59, 130, 246, 0.25)';
     const subtleBg = 'var(--dashboard-surface)';
@@ -124,8 +123,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                         position: 'fixed', inset: 0,
                         background: 'rgba(0,0,0,0.6)',
                         backdropFilter: 'blur(8px)', zIndex: 1001,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
-                    }}
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
                 >
                     <motion.div
                         initial={{ scale: 0.95, opacity: 0, y: 10 }}
@@ -138,17 +136,14 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                         style={{
                             background: 'var(--dashboard-surface)', borderRadius: '20px',
                             width: '100%', maxWidth: '540px',
-                            boxShadow: isDarkMode
-                                ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
+                            boxShadow: ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
                                 : '0 24px 48px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04)',
-                            overflow: 'hidden',
-                        }}
+                            overflow: 'hidden' }}
                     >
                         {/* Header */}
                         <div style={{
                             padding: '20px 24px', borderBottom: `1px solid ${borderColor}`,
-                            display: 'flex', alignItems: 'center', gap: '14px',
-                        }}>
+                            display: 'flex', alignItems: 'center', gap: '14px' }}>
                             <motion.div
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
@@ -156,8 +151,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                 style={{
                                     width: 44, height: 44, borderRadius: '12px',
                                     background: blueBg, border: `1px solid ${blueBorder}`,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                }}
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                             >
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M12 19l7-7 3 3-7 7-3-3z" />
@@ -183,8 +177,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                 style={{
                                     width: 32, height: 32, borderRadius: '10px', border: 'none',
                                     background: subtleBg, cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)',
-                                }}
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -206,8 +199,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                     overflow: 'hidden',
                                     marginBottom: '16px',
                                     background: '#fff',
-                                    boxShadow: 'var(--shadow-inner)',
-                                }}
+                                    boxShadow: 'var(--shadow-inner)' }}
                             >
                                 <canvas
                                     ref={canvasRef}
@@ -221,8 +213,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                         display: 'block',
                                         width: '100%',
                                         cursor: tool === 'eraser' ? 'cell' : 'crosshair',
-                                        background: '#fff',
-                                    }}
+                                        background: '#fff' }}
                                 />
                             </motion.div>
 
@@ -235,8 +226,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                     display: 'flex', flexDirection: 'column', gap: '10px',
                                     padding: '12px 14px', borderRadius: '12px',
                                     background: subtleBg, border: `1px solid ${borderColor}`,
-                                    overflow: 'hidden',
-                                }}
+                                    overflow: 'hidden' }}
                             >
                                 {/* Row 1: Tools and Colors */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
@@ -244,8 +234,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                     <div style={{
                                         display: 'flex', gap: '4px', padding: '4px',
                                         background: 'rgba(255,255,255,0.04)',
-                                        borderRadius: '10px', flexShrink: 0,
-                                    }}>
+                                        borderRadius: '10px', flexShrink: 0 }}>
                                         <motion.button
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
@@ -255,8 +244,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                                 background: tool === 'pen' ? blueAccent : 'transparent',
                                                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                 color: tool === 'pen' ? '#fff' : 'var(--text-secondary)',
-                                                transition: 'all 0.15s ease',
-                                            }}
+                                                transition: 'all 0.15s ease' }}
                                             title="Pen"
                                         >
                                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -273,8 +261,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                                 background: tool === 'eraser' ? blueAccent : 'transparent',
                                                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                 color: tool === 'eraser' ? '#fff' : 'var(--text-secondary)',
-                                                transition: 'all 0.15s ease',
-                                            }}
+                                                transition: 'all 0.15s ease' }}
                                             title="Eraser"
                                         >
                                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -306,8 +293,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                                     boxShadow: brushColor === c.color && tool === 'pen'
                                                         ? `0 0 0 2px ${c.color}40`
                                                         : 'none',
-                                                    transition: 'all 0.15s ease',
-                                                }}
+                                                    transition: 'all 0.15s ease' }}
                                             />
                                         ))}
                                     </div>
@@ -324,8 +310,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                             background: 'rgba(239,68,68,0.1)',
                                             cursor: 'pointer', fontSize: '11px', fontWeight: 500,
                                             color: '#ef4444', display: 'flex', alignItems: 'center', gap: '5px',
-                                            transition: 'all 0.15s ease', flexShrink: 0,
-                                        }}
+                                            transition: 'all 0.15s ease', flexShrink: 0 }}
                                     >
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M3 6h18" />
@@ -339,8 +324,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                 {/* Row 2: Brush Size */}
                                 <div style={{
                                     display: 'flex', alignItems: 'center', gap: '10px',
-                                    paddingTop: '8px', borderTop: `1px solid ${borderColor}`,
-                                }}>
+                                    paddingTop: '8px', borderTop: `1px solid ${borderColor}` }}>
                                     {/* Brush Size Label */}
                                     <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 500, flexShrink: 0 }}>
                                         Size
@@ -350,15 +334,13 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                     <div style={{
                                         width: 26, height: 26, borderRadius: '8px',
                                         background: 'rgba(255,255,255,0.04)',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                    }}>
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                         <div style={{
                                             width: Math.min(brushSize * 2 + 4, 18),
                                             height: Math.min(brushSize * 2 + 4, 18),
                                             borderRadius: '50%',
                                             background: tool === 'pen' ? brushColor : 'var(--text-muted)',
-                                            transition: 'all 0.15s ease',
-                                        }} />
+                                            transition: 'all 0.15s ease' }} />
                                     </div>
 
                                     {/* Brush Size Slider */}
@@ -373,15 +355,13 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                             minWidth: 80,
                                             maxWidth: 140,
                                             accentColor: blueAccent,
-                                            cursor: 'pointer',
-                                        }}
+                                            cursor: 'pointer' }}
                                     />
 
                                     {/* Size Value */}
                                     <span style={{
                                         fontSize: '11px', color: blueAccent, fontWeight: 600,
-                                        minWidth: 20, textAlign: 'center',
-                                    }}>
+                                        minWidth: 20, textAlign: 'center' }}>
                                         {brushSize}
                                     </span>
                                 </div>
@@ -392,8 +372,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                         {/* Footer */}
                         <div style={{
                             padding: '16px 24px 20px', borderTop: `1px solid ${borderColor}`,
-                            display: 'flex', gap: '10px', justifyContent: 'flex-end', background: subtleBg,
-                        }}>
+                            display: 'flex', gap: '10px', justifyContent: 'flex-end', background: subtleBg }}>
                             <motion.button
                                 whileHover={{ scale: 1.02, background: 'var(--bg-hover)' }}
                                 whileTap={{ scale: 0.98 }}
@@ -401,8 +380,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                 style={{
                                     padding: '10px 18px', borderRadius: '10px',
                                     border: `1px solid ${borderColor}`, background: 'transparent',
-                                    cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)',
-                                }}
+                                    cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)' }}
                             >
                                 Cancel
                             </motion.button>
@@ -420,8 +398,7 @@ export const WhiteboardModal: React.FC<WhiteboardModalProps> = ({ isOpen, onClos
                                     fontSize: '13px', fontWeight: 600,
                                     color: hasDrawn ? '#fff' : 'var(--text-muted)',
                                     display: 'flex', alignItems: 'center', gap: '8px',
-                                    boxShadow: hasDrawn ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none',
-                                }}
+                                    boxShadow: hasDrawn ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none' }}
                             >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <line x1="22" y1="2" x2="11" y2="13" />

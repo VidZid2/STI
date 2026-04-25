@@ -14,10 +14,10 @@ interface FlashcardModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSend: (front: string, back: string) => void;
-    colors: ModalColors;
+    
 }
 
-export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, onSend, colors }) => {
+export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, onSend }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'flashcard-modal-title');
     const [front, setFront] = useState('');
     const [back, setBack] = useState('');
@@ -25,9 +25,9 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
     const [isFlipped, setIsFlipped] = useState(false);
     const frontInputRef = useRef<HTMLTextAreaElement>(null);
     
-    // Blue accent colors (matching other pages)
+    // Blue accent (matching other pages)
     const blueAccent = '#3b82f6';
-    const isDarkMode = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
+    const = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
     const blueBg = 'rgba(59, 130, 246, 0.1)';
     const blueBorder = 'rgba(59, 130, 246, 0.25)';
     const subtleBg = 'var(--dashboard-surface)';
@@ -72,8 +72,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        padding: '20px',
-                    }}
+                        padding: '20px' }}
                 >
                     <motion.div
                         initial={{ scale: 0.95, opacity: 0, y: 10 }}
@@ -88,11 +87,9 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                             borderRadius: '20px',
                             width: '100%',
                             maxWidth: '440px',
-                            boxShadow: isDarkMode 
-                                ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
+                            boxShadow: ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
                                 : '0 24px 48px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04)',
-                            overflow: 'hidden',
-                        }}
+                            overflow: 'hidden' }}
                     >
                         {/* Header */}
                         <div style={{
@@ -100,8 +97,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                             borderBottom: `1px solid ${borderColor}`,
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '14px',
-                        }}>
+                            gap: '14px' }}>
                             {/* Icon */}
                             <motion.div
                                 initial={{ scale: 0.8, opacity: 0 }}
@@ -116,8 +112,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    flexShrink: 0,
-                                }}
+                                    flexShrink: 0 }}
                             >
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -136,8 +131,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                         fontSize: '17px',
                                         fontWeight: 600,
                                         color: 'var(--text-primary)',
-                                        letterSpacing: '-0.01em',
-                                    }}
+                                        letterSpacing: '-0.01em' }}
                                 >
                                     Create Flashcard
                                 </motion.h3>
@@ -148,8 +142,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                     style={{
                                         margin: '4px 0 0',
                                         fontSize: '12px',
-                                        color: 'var(--text-secondary)',
-                                    }}
+                                        color: 'var(--text-secondary)' }}
                                 >
                                     Share a study flashcard with your group
                                 </motion.p>
@@ -171,8 +164,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     color: 'var(--text-secondary)',
-                                    transition: 'background 0.15s ease',
-                                }}
+                                    transition: 'background 0.15s ease' }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -192,8 +184,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                 style={{
                                     perspective: '1000px',
                                     marginBottom: '20px',
-                                    cursor: 'pointer',
-                                }}
+                                    cursor: 'pointer' }}
                             >
                                 <motion.div
                                     animate={{ rotateY: isFlipped ? 180 : 0 }}
@@ -201,8 +192,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                     style={{
                                         position: 'relative',
                                         height: '100px',
-                                        transformStyle: 'preserve-3d',
-                                    }}
+                                        transformStyle: 'preserve-3d' }}
                                 >
                                     {/* Front Side */}
                                     <div style={{
@@ -215,8 +205,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                         display: 'flex',
                                         flexDirection: 'column',
                                         justifyContent: 'center',
-                                        boxShadow: '0 4px 16px rgba(59, 130, 246, 0.25)',
-                                    }}>
+                                        boxShadow: '0 4px 16px rgba(59, 130, 246, 0.25)' }}>
                                         <span style={{ fontSize: '9px', fontWeight: 600, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
                                             Question
                                         </span>
@@ -240,8 +229,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                         padding: '16px 20px',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        justifyContent: 'center',
-                                    }}>
+                                        justifyContent: 'center' }}>
                                         <span style={{ fontSize: '9px', fontWeight: 600, color: blueAccent, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
                                             Answer
                                         </span>
@@ -272,15 +260,13 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                     marginBottom: '8px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
-                                    transition: 'color 0.2s ease',
-                                }}>
+                                    transition: 'color 0.2s ease' }}>
                                     <div style={{
                                         width: 4,
                                         height: 4,
                                         borderRadius: '50%',
                                         background: focusedField === 'front' ? blueAccent : 'var(--text-muted)',
-                                        transition: 'background 0.2s ease',
-                                    }} />
+                                        transition: 'background 0.2s ease' }} />
                                     Question (Front)
                                 </label>
                                 <textarea
@@ -303,8 +289,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                         color: 'var(--text-primary)',
                                         fontFamily: 'inherit',
                                         transition: 'border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease',
-                                        boxShadow: focusedField === 'front' ? `0 0 0 3px ${blueBg}` : 'none',
-                                    }}
+                                        boxShadow: focusedField === 'front' ? `0 0 0 3px ${blueBg}` : 'none' }}
                                 />
                             </motion.div>
 
@@ -324,15 +309,13 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                     marginBottom: '8px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '0.5px',
-                                    transition: 'color 0.2s ease',
-                                }}>
+                                    transition: 'color 0.2s ease' }}>
                                     <div style={{
                                         width: 4,
                                         height: 4,
                                         borderRadius: '50%',
                                         background: focusedField === 'back' ? blueAccent : 'var(--text-muted)',
-                                        transition: 'background 0.2s ease',
-                                    }} />
+                                        transition: 'background 0.2s ease' }} />
                                     Answer (Back)
                                 </label>
                                 <textarea
@@ -354,8 +337,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                         color: 'var(--text-primary)',
                                         fontFamily: 'inherit',
                                         transition: 'border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease',
-                                        boxShadow: focusedField === 'back' ? `0 0 0 3px ${blueBg}` : 'none',
-                                    }}
+                                        boxShadow: focusedField === 'back' ? `0 0 0 3px ${blueBg}` : 'none' }}
                                 />
                             </motion.div>
                         </div>
@@ -367,8 +349,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                             display: 'flex',
                             gap: '10px',
                             justifyContent: 'flex-end',
-                            background: subtleBg,
-                        }}>
+                            background: subtleBg }}>
                             <motion.button
                                 whileHover={{ scale: 1.02, background: 'var(--bg-hover)' }}
                                 whileTap={{ scale: 0.98 }}
@@ -382,8 +363,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                     fontSize: '13px',
                                     fontWeight: 500,
                                     color: 'var(--text-secondary)',
-                                    transition: 'background 0.15s ease',
-                                }}
+                                    transition: 'background 0.15s ease' }}
                             >
                                 Cancel
                             </motion.button>
@@ -407,8 +387,7 @@ export const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose,
                                     alignItems: 'center',
                                     gap: '8px',
                                     transition: 'background 0.2s ease, box-shadow 0.2s ease',
-                                    boxShadow: isValid ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none',
-                                }}
+                                    boxShadow: isValid ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none' }}
                             >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <line x1="22" y1="2" x2="11" y2="13" />

@@ -3,7 +3,7 @@
  * Shared type definitions for modal components
  */
 
-// Common colors type used by all modals
+// Common type used by all modals
 export type ModalColors = {
     cardBg: string;
     textPrimary: string;
@@ -18,7 +18,7 @@ export type ModalColors = {
 export interface BaseModalProps {
     isOpen: boolean;
     onClose: () => void;
-    colors: ModalColors;
+    
 }
 
 // File data for file sharing

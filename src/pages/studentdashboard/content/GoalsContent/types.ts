@@ -7,8 +7,7 @@ import type {
     GoalWithProgress,
     GoalType,
     GoalPriority,
-    GoalStatus,
-} from '../../../../services/goalsService';
+    GoalStatus } from '../../../../services/goalsService';
 
 // Re-export for convenience
 export type { GoalWithProgress, GoalType, GoalPriority, GoalStatus };

@@ -9,12 +9,11 @@ import type { FocusModeColors } from '../FocusModePage';
 
 // Session Goal Component
 const SessionGoal: React.FC<{
-    isDarkMode: boolean;
-    colors: FocusModeColors;
-    sessionGoal: number;
+    
+    
     setSessionGoal: (goal: number) => void;
     currentProgress: number;
-}> = ({ isDarkMode, colors, sessionGoal, setSessionGoal, currentProgress }) => {
+}> = ({   sessionGoal, setSessionGoal, currentProgress }) => {
     const [isEditing, setIsEditing] = useState(false);
     const progressPercent = Math.min((currentProgress / sessionGoal) * 100, 100);
     const goalOptions = [15, 25, 45, 60, 90, 120];
@@ -28,20 +27,17 @@ const SessionGoal: React.FC<{
                 padding: '16px',
                 borderRadius: '14px',
                 background: 'var(--bg-primary)',
-                border: `1px solid var(--border-color)`,
-            }}
+                border: `1px solid var(--border-color)` }}
         >
             <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '12px',
-            }}>
+                marginBottom: '12px' }}>
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                }}>
+                    gap: '8px' }}>
                     <div style={{
                         width: 28,
                         height: 28,
@@ -51,8 +47,7 @@ const SessionGoal: React.FC<{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#f59e0b',
-                    }}>
+                        color: '#f59e0b' }}>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="12" cy="12" r="10" />
                             <circle cx="12" cy="12" r="6" />
@@ -62,8 +57,7 @@ const SessionGoal: React.FC<{
                     <span style={{
                         fontSize: '12px',
                         fontWeight: 600,
-                        color: 'var(--text-primary)',
-                    }}>
+                        color: 'var(--text-primary)' }}>
                         Session Goal
                     </span>
                 </div>
@@ -79,8 +73,7 @@ const SessionGoal: React.FC<{
                         cursor: 'pointer',
                         fontSize: '10px',
                         fontWeight: 500,
-                        color: 'var(--text-muted)',
-                    }}
+                        color: 'var(--text-muted)' }}
                 >
                     {isEditing ? 'Done' : 'Edit'}
                 </motion.button>
@@ -91,19 +84,16 @@ const SessionGoal: React.FC<{
                 display: 'flex',
                 alignItems: 'baseline',
                 gap: '4px',
-                marginBottom: '10px',
-            }}>
+                marginBottom: '10px' }}>
                 <span style={{
                     fontSize: '24px',
                     fontWeight: 700,
-                    color: '#f59e0b',
-                }}>
+                    color: '#f59e0b' }}>
                     {sessionGoal}
                 </span>
                 <span style={{
                     fontSize: '12px',
-                    color: 'var(--text-muted)',
-                }}>
+                    color: 'var(--text-muted)' }}>
                     min target
                 </span>
             </div>
@@ -114,8 +104,7 @@ const SessionGoal: React.FC<{
                 borderRadius: '3px',
                 background: 'var(--bg-hover)',
                 overflow: 'hidden',
-                marginBottom: '8px',
-            }}>
+                marginBottom: '8px' }}>
                 <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${progressPercent}%` }}
@@ -125,15 +114,13 @@ const SessionGoal: React.FC<{
                         borderRadius: '3px',
                         background: progressPercent >= 100
                             ? 'linear-gradient(90deg, #10b981 0%, #34d399 100%)'
-                            : 'linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%)',
-                    }}
+                            : 'linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%)' }}
                 />
             </div>
 
             <div style={{
                 fontSize: '11px',
-                color: 'var(--text-muted)',
-            }}>
+                color: 'var(--text-muted)' }}>
                 {currentProgress} of {sessionGoal} min completed
             </div>
 
@@ -150,8 +137,7 @@ const SessionGoal: React.FC<{
                         <div style={{
                             display: 'flex',
                             gap: '6px',
-                            flexWrap: 'wrap',
-                        }}>
+                            flexWrap: 'wrap' }}>
                             {goalOptions.map((goal) => (
                                 <motion.button
                                     key={goal}
@@ -174,8 +160,7 @@ const SessionGoal: React.FC<{
                                         fontSize: '11px',
                                         fontWeight: 500,
                                         color: sessionGoal === goal ? '#f59e0b' : 'var(--text-secondary)',
-                                        transition: 'all 0.15s ease',
-                                    }}
+                                        transition: 'all 0.15s ease' }}
                                 >
                                     {goal}m
                                 </motion.button>

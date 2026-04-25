@@ -15,8 +15,7 @@ import { useCourseTasks } from './hooks/useCourseTasks';
 import { TeacherModeContent } from './components/TeacherModeContent';
 import { CourseAssignmentsTab } from './tabs/CourseAssignmentsTab';
 import {
-    type TaskCategory,
-} from './data/demoCourses';
+    type TaskCategory } from './data/demoCourses';
 
 interface CourseViewPageProps {
     course: {
@@ -152,8 +151,7 @@ const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
             </svg>
-        ),
-    },
+        ) },
     {
         id: 'assignments',
         label: 'Tasks',
@@ -162,8 +160,7 @@ const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
                 <path d="M9 11l3 3L22 4" />
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
             </svg>
-        ),
-    },
+        ) },
     {
         id: 'news',
         label: 'News',
@@ -172,8 +169,7 @@ const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
-        ),
-    },
+        ) },
     {
         id: 'students',
         label: 'Students',
@@ -184,8 +180,7 @@ const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
-        ),
-    },
+        ) },
     {
         id: 'teachers',
         label: 'Teachers',
@@ -194,8 +189,7 @@ const TABS: { id: TabType; label: string; icon: React.ReactNode }[] = [
                 <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                 <path d="M6 12v5c3 3 9 3 12 0v-5" />
             </svg>
-        ),
-    },
+        ) },
 ];
 
 
@@ -337,8 +331,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             const buttonRect = activeButton.getBoundingClientRect();
             setTabIndicatorStyle({
                 left: buttonRect.left - containerRect.left,
-                width: buttonRect.width,
-            });
+                width: buttonRect.width });
         }
     }, [activeTab, teacherTab, isTeacherMode]);
 
@@ -355,8 +348,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 const buttonRect = activeButton.getBoundingClientRect();
                 setTabIndicatorStyle({
                     left: buttonRect.left - containerRect.left,
-                    width: buttonRect.width,
-                });
+                    width: buttonRect.width });
             }
         }, 100);
         return () => clearTimeout(timer);
@@ -593,8 +585,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 top: combinedRect.top - padding + offset.top,
                 left: combinedRect.left - padding + offset.left,
                 width: (combinedRect.right - combinedRect.left) + padding * 2 + offset.width,
-                height: (combinedRect.bottom - combinedRect.top) + padding * 2 + offset.height,
-            });
+                height: (combinedRect.bottom - combinedRect.top) + padding * 2 + offset.height });
 
             // Calculate modal position based on step's modalPosition hint
             const modalWidth = 320;
@@ -690,8 +681,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             'ppc': { name: 'Claire Maurillo', title: 'Instructor', email: 'c.maurillo@university.edu' },
             'purcom': { name: 'John Denielle San Martin', title: 'Instructor', email: 'j.sanmartin@university.edu' },
             'tcw': { name: 'Anne Jenell Lumintigar', title: 'Instructor', email: 'a.lumintigar@university.edu' },
-            'uts': { name: 'Jocel Lazalita', title: 'Instructor', email: 'j.lazalita@university.edu' },
-        };
+            'uts': { name: 'Jocel Lazalita', title: 'Instructor', email: 'j.lazalita@university.edu' } };
         return instructors[course.id] || { name: 'Instructor', title: 'Instructor', email: 'instructor@university.edu' };
     };
 
@@ -784,8 +774,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 role: 'Student',
                 email: s.email,
                 avatar: s.profile_image,
-                lastActive: s.last_active,
-            }));
+                lastActive: s.last_active }));
         }
         return [];
     }, [supabaseStudents]);
@@ -1222,8 +1211,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                         gap: '8px',
                                                         marginTop: '24px',
                                                         paddingTop: '20px',
-                                                        borderTop: '1px solid rgba(0, 0, 0, 0.06)',
-                                                    }}
+                                                        borderTop: '1px solid rgba(0, 0, 0, 0.06)' }}
                                                 >
                                                     {/* Previous Button */}
                                                     <PaginationButton
@@ -1250,8 +1238,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                                         style={{
                                                                             padding: '0 4px',
                                                                             color: '#94a3b8',
-                                                                            fontSize: '12px',
-                                                                        }}
+                                                                            fontSize: '12px' }}
                                                                     >
                                                                         ...
                                                                     </span>
@@ -1287,8 +1274,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                         textAlign: 'center',
                                                         marginTop: '12px',
                                                         fontSize: '11px',
-                                                        color: '#94a3b8',
-                                                    }}
+                                                        color: '#94a3b8' }}
                                                 >
                                                     Showing {startIndex + 1}-{Math.min(startIndex + MODULES_PER_PAGE, filteredModules.length)} of {filteredModules.length} modules
                                                 </motion.p>
@@ -1651,7 +1637,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     <p className="text-xs text-zinc-500">{instructor.title} · Computer Science Department</p>
                                     <a
                                         href={`mailto:${instructor.email}`}
-                                        className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors mt-1"
+                                        className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium transition-mt-1"
                                     >
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                             <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -1735,7 +1721,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         whileHover={{ scale: 1.05, backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
                         whileTap={{ scale: 0.95 }}
                         onClick={onBack}
-                        className="w-10 h-10 rounded-xl bg-zinc-50 hover:bg-blue-50 flex items-center justify-center transition-colors flex-shrink-0"
+                        className="w-10 h-10 rounded-xl bg-zinc-50 hover:bg-blue-50 flex items-center justify-center transition-flex-shrink-0"
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -1750,8 +1736,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         whileHover={{ scale: 1.08, rotate: 5, transition: { duration: 0.2 } }}
                         className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden"
                         style={{
-                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)',
-                        }}
+                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)' }}
                     >
                         {course.image ? (
                             <img src={course.image} alt="" className="w-full h-full object-cover" />
@@ -1820,7 +1805,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 <div className="relative" onClick={(e) => e.stopPropagation()}>
                                     <motion.button
                                         onClick={() => { setShowYearDropdown(!showYearDropdown); setShowSectionDropdown(false); }}
-                                        className="h-9 px-3 pr-8 text-[11px] font-medium bg-white/10 text-white border border-white/20 rounded-xl hover:bg-white/20 transition-colors flex items-center gap-2"
+                                        className="h-9 px-3 pr-8 text-[11px] font-medium bg-white/10 text-white border border-white/20 rounded-xl hover:bg-white/20 transition-flex items-center gap-2"
                                         whileTap={{ scale: 0.98 }}
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -1865,7 +1850,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     <motion.button
                                                         key={option.value}
                                                         onClick={() => { setYearLevelFilter(option.value as YearLevel); setShowYearDropdown(false); }}
-                                                        className={`w-full px-3 py-2.5 text-[11px] font-medium flex items-center gap-2.5 transition-colors ${yearLevelFilter === option.value
+                                                        className={`w-full px-3 py-2.5 text-[11px] font-medium flex items-center gap-2.5 transition-${yearLevelFilter === option.value
                                                             ? 'bg-blue-50 text-blue-600'
                                                             : 'text-zinc-700 hover:bg-zinc-50'
                                                             }`}
@@ -1893,7 +1878,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 <div className="relative" onClick={(e) => e.stopPropagation()}>
                                     <motion.button
                                         onClick={() => { setShowSectionDropdown(!showSectionDropdown); setShowYearDropdown(false); }}
-                                        className="h-9 px-3 pr-8 text-[11px] font-medium bg-white/10 text-white border border-white/20 rounded-xl hover:bg-white/20 transition-colors flex items-center gap-2"
+                                        className="h-9 px-3 pr-8 text-[11px] font-medium bg-white/10 text-white border border-white/20 rounded-xl hover:bg-white/20 transition-flex items-center gap-2"
                                         whileTap={{ scale: 0.98 }}
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -1938,7 +1923,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     <motion.button
                                                         key={option.value}
                                                         onClick={() => { setSectionFilter(option.value as Section); setShowSectionDropdown(false); }}
-                                                        className={`w-full px-3 py-2.5 text-[11px] font-medium flex items-center gap-2.5 transition-colors ${sectionFilter === option.value
+                                                        className={`w-full px-3 py-2.5 text-[11px] font-medium flex items-center gap-2.5 transition-${sectionFilter === option.value
                                                             ? 'bg-blue-50 text-blue-600'
                                                             : 'text-zinc-700 hover:bg-zinc-50'
                                                             }`}
@@ -2018,7 +2003,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             key={tab.id}
                                             data-tab-id={tab.id}
                                             onClick={() => setTeacherTab(tab.id)}
-                                            className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-colors duration-100 whitespace-nowrap ${teacherTab === tab.id
+                                            className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-duration-100 whitespace-nowrap ${teacherTab === tab.id
                                                 ? 'text-blue-600'
                                                 : 'text-zinc-500 hover:text-zinc-700'
                                                 }`}
@@ -2035,7 +2020,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         key={tab.id}
                                         data-tab-id={tab.id}
                                         onClick={() => { setActiveTab(tab.id); setSearchQuery(''); }}
-                                        className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-colors duration-100 whitespace-nowrap ${activeTab === tab.id
+                                        className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-duration-100 whitespace-nowrap ${activeTab === tab.id
                                             ? 'text-blue-600'
                                             : 'text-zinc-500 hover:text-zinc-700'
                                             }`}
@@ -2183,8 +2168,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         top: highlightRect.top,
                                         left: highlightRect.left,
                                         width: highlightRect.width,
-                                        height: highlightRect.height,
-                                    }}
+                                        height: highlightRect.height }}
                                 />
                             )}
                         </motion.div>
@@ -2197,8 +2181,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             className="fixed z-[100] pointer-events-none"
                             style={{
                                 top: modalPosition.top,
-                                left: modalPosition.left,
-                            }}
+                                left: modalPosition.left }}
                         >
                             <motion.div
                                 key={tutorialStep}
@@ -2230,7 +2213,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             onClick={handleTutorialSkip}
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
-                                            className="text-[11px] font-medium text-zinc-500 hover:text-zinc-700 transition-colors"
+                                            className="text-[11px] font-medium text-zinc-500 hover:text-zinc-700 transition-"
                                         >
                                             Skip Tutorial
                                         </motion.button>
@@ -2275,7 +2258,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             <motion.button
                                                 key={index}
                                                 onClick={() => setTutorialStep(index)}
-                                                className={`w-2 h-2 rounded-full transition-colors ${index === tutorialStep ? 'bg-blue-600' :
+                                                className={`w-2 h-2 rounded-full transition-${index === tutorialStep ? 'bg-blue-600' :
                                                     index < tutorialStep ? 'bg-blue-300' : 'bg-zinc-200'
                                                     }`}
                                                 whileHover={{ scale: 1.3 }}
@@ -2291,7 +2274,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                 onClick={handleTutorialPrev}
                                                 whileHover={{ scale: 1.02 }}
                                                 whileTap={{ scale: 0.98 }}
-                                                className="flex-1 py-3 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                                className="flex-1 py-3 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-xl transition-flex items-center justify-center gap-2"
                                             >
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                                     <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -2303,7 +2286,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             onClick={handleTutorialNext}
                                             whileHover={{ scale: 1.02 }}
                                             whileTap={{ scale: 0.98 }}
-                                            className={`flex-1 py-3 text-sm font-semibold text-white rounded-xl transition-colors flex items-center justify-center gap-2 ${tutorialStep === TEACHER_TUTORIAL_STEPS.length - 1
+                                            className={`flex-1 py-3 text-sm font-semibold text-white rounded-xl transition-flex items-center justify-center gap-2 ${tutorialStep === TEACHER_TUTORIAL_STEPS.length - 1
                                                 ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
                                                 : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
                                                 }`}
@@ -2347,8 +2330,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 top: contactTooltip.y,
                                 left: contactTooltip.x,
                                 zIndex: 99999,
-                                pointerEvents: 'none',
-                            }}
+                                pointerEvents: 'none' }}
                         >
                             {/* Arrow pointing up */}
                             <div style={{
@@ -2358,8 +2340,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 transform: 'translateX(-50%)',
                                 width: '12px',
                                 height: '6px',
-                                overflow: 'hidden',
-                            }}>
+                                overflow: 'hidden' }}>
                                 <div style={{
                                     width: '10px',
                                     height: '10px',
@@ -2369,8 +2350,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     position: 'absolute',
                                     top: '3px',
                                     left: '1px',
-                                    boxShadow: '0 -1px 3px rgba(0, 0, 0, 0.04)',
-                                }} />
+                                    boxShadow: '0 -1px 3px rgba(0, 0, 0, 0.04)' }} />
                             </div>
                             {/* Tooltip body */}
                             <div style={{
@@ -2382,8 +2362,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 whiteSpace: 'nowrap',
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: '4px',
-                            }}>
+                                gap: '4px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                     <div style={{
                                         width: '22px',
@@ -2393,8 +2372,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        flexShrink: 0,
-                                    }}>
+                                        flexShrink: 0 }}>
                                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                                             <polyline points="22,6 12,13 2,6" />
@@ -2416,8 +2394,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     padding: '2px 5px',
                                     borderRadius: '4px',
                                     background: 'rgba(245, 158, 11, 0.06)',
-                                    border: '1px solid rgba(245, 158, 11, 0.12)',
-                                }}>
+                                    border: '1px solid rgba(245, 158, 11, 0.12)' }}>
                                     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
                                         <line x1="12" y1="9" x2="12" y2="13" />

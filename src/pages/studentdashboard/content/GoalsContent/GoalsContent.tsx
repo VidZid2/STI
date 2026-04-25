@@ -16,8 +16,7 @@ import {
     syncAllGoalsProgress,
     getRealTimeProgress,
     type Goal,
-    type GoalWithProgress,
-} from '../../../../services/goalsService';
+    type GoalWithProgress } from '../../../../services/goalsService';
 import { useNotifications } from '../../../../contexts/NotificationContext';
 import GoalIcon from './components/GoalIcon';
 import ActionTooltip from './components/ActionTooltip';
@@ -85,8 +84,7 @@ const _ProgressRingWithTooltip: React.FC<{
                             border: '1px solid rgba(59, 130, 246, 0.2)',
                             whiteSpace: 'nowrap',
                             pointerEvents: 'none',
-                            zIndex: 50,
-                        }}
+                            zIndex: 50 }}
                     >
                         <span style={{ fontSize: '11px', fontWeight: 500, color: '#3b82f6' }}>
                             {getDescription()}
@@ -100,8 +98,7 @@ const _ProgressRingWithTooltip: React.FC<{
                             height: '8px',
                             background: '#ffffff',
                             borderRight: '1px solid rgba(59, 130, 246, 0.2)',
-                            borderTop: '1px solid rgba(59, 130, 246, 0.2)',
-                        }} />
+                            borderTop: '1px solid rgba(59, 130, 246, 0.2)' }} />
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -136,8 +133,7 @@ const _ProgressRingWithTooltip: React.FC<{
                 transform: 'translate(-50%, -50%)',
                 fontSize: '12px',
                 fontWeight: 700,
-                color: progress === 100 ? '#10b981' : color,
-            }}>
+                color: progress === 100 ? '#10b981' : color }}>
                 {progress}%
             </div>
         </motion.div>
@@ -173,15 +169,14 @@ const GoalsContent: React.FC = () => {
 
     // Detect dark mode from body class (synced with dashboard)
 
-    const colors = {
+    const = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-secondary)',
         border: 'var(--border-light)',
         textPrimary: 'var(--text-primary)',
         textSecondary: 'var(--text-secondary)',
         textMuted: 'var(--text-muted)',
-        accent: 'var(--brand-blue)',
-    };
+        accent: 'var(--brand-blue)' };
 
     const loadGoals = useCallback(async () => {
         setIsLoading(true);
@@ -211,8 +206,7 @@ const GoalsContent: React.FC = () => {
                         const updatedGoal = {
                             ...goal,
                             current_value: realProgress,
-                            progress_percentage: Math.min(Math.round((realProgress / goal.target_value) * 100), 100),
-                        };
+                            progress_percentage: Math.min(Math.round((realProgress / goal.target_value) * 100), 100) };
                         if (realProgress >= goal.target_value && goal.status === 'active') {
                             updatedGoal.status = 'completed';
                             updatedGoal.completed_at = new Date().toISOString();
@@ -421,8 +415,7 @@ const GoalsContent: React.FC = () => {
             style={{
                 padding: '24px 32px',
                 minHeight: '100%',
-                background: 'var(--bg-primary)',
-            }}
+                background: 'var(--bg-primary)' }}
         >
             {/* Header Section - Matching PathsContent */}
             <motion.div
@@ -437,8 +430,7 @@ const GoalsContent: React.FC = () => {
                     padding: '20px 24px',
                     borderRadius: '16px',
                     background: 'var(--dashboard-surface)',
-                    border: `1px solid var(--border-color)`,
-                }}
+                    border: `1px solid var(--border-color)` }}
             >
 
                 {/* Left side - Title and description */}
@@ -460,8 +452,7 @@ const GoalsContent: React.FC = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: '#3b82f6',
-                        }}
+                            color: '#3b82f6' }}
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="12" cy="12" r="10" />
@@ -485,8 +476,7 @@ const GoalsContent: React.FC = () => {
                                     background: 'rgba(59, 130, 246, 0.1)',
                                     padding: '3px 8px',
                                     borderRadius: '6px',
-                                    textTransform: 'uppercase',
-                                }}
+                                    textTransform: 'uppercase' }}
                             >
                                 {stats.total} Goal{stats.total !== 1 ? 's' : ''}
                             </motion.span>
@@ -535,8 +525,7 @@ const GoalsContent: React.FC = () => {
                                 padding: '10px 16px',
                                 borderRadius: '10px',
                                 background: `${stat.color}10`,
-                                minWidth: '72px',
-                            }}
+                                minWidth: '72px' }}
                         >
                             <div style={{ color: stat.color, marginBottom: '4px' }}>{stat.icon}</div>
                             <span style={{ fontSize: '18px', fontWeight: 700, color: stat.color, lineHeight: 1 }}>{stat.value}</span>
@@ -557,8 +546,7 @@ const GoalsContent: React.FC = () => {
                     alignItems: 'center',
                     gap: '12px',
                     marginBottom: '24px',
-                    flexWrap: 'wrap',
-                }}
+                    flexWrap: 'wrap' }}
             >
                 {/* Search Input with Suggestions */}
                 <motion.div style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
@@ -586,8 +574,7 @@ const GoalsContent: React.FC = () => {
                             fontSize: '13px',
                             color: 'var(--text-primary)',
                             outline: 'none',
-                            boxSizing: 'border-box',
-                        }}
+                            boxSizing: 'border-box' }}
                     />
                     {/* Keyboard hint */}
                     {!searchQuery && (
@@ -643,8 +630,7 @@ const GoalsContent: React.FC = () => {
                                     borderRadius: '10px',
                                     boxShadow: 'var(--shadow-md)',
                                     zIndex: 100,
-                                    overflow: 'hidden',
-                                }}
+                                    overflow: 'hidden' }}
                             >
                                 <div style={{ padding: '6px 10px', borderBottom: `1px solid var(--border-color)`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Suggestions</span>
@@ -664,8 +650,7 @@ const GoalsContent: React.FC = () => {
                                             borderLeft: selectedSuggestionIndex === index ? `2px solid var(--accent-color)` : '2px solid transparent',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '10px',
-                                        }}
+                                            gap: '10px' }}
                                         onMouseEnter={() => setSelectedSuggestionIndex(index)}
                                     >
                                         <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -682,7 +667,7 @@ const GoalsContent: React.FC = () => {
                     </AnimatePresence>
                 </motion.div>
 
-                <FilterTabs activeFilter={activeFilter} setActiveFilter={setActiveFilter} colors={colors} />
+                <FilterTabs activeFilter={activeFilter} setActiveFilter={setActiveFilter}  />
 
                 {/* Action Buttons */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -697,8 +682,7 @@ const GoalsContent: React.FC = () => {
                         }}
                         whileHover={{ 
                             scale: 1.02,
-                            boxShadow: '0 6px 20px rgba(245, 158, 11, 0.25)',
-                        }}
+                            boxShadow: '0 6px 20px rgba(245, 158, 11, 0.25)' }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setIsAchievementsModalOpen(true)}
                         style={{
@@ -712,8 +696,7 @@ const GoalsContent: React.FC = () => {
                             borderRadius: '10px',
                             fontSize: '12px',
                             fontWeight: 600,
-                            cursor: 'pointer',
-                        }}
+                            cursor: 'pointer' }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
@@ -737,8 +720,7 @@ const GoalsContent: React.FC = () => {
                         }}
                         whileHover={{ 
                             scale: 1.02,
-                            boxShadow: '0 6px 20px rgba(59, 130, 246, 0.25)',
-                        }}
+                            boxShadow: '0 6px 20px rgba(59, 130, 246, 0.25)' }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setIsCreateModalOpen(true)}
                         style={{
@@ -752,8 +734,7 @@ const GoalsContent: React.FC = () => {
                             borderRadius: '10px',
                             fontSize: '12px',
                             fontWeight: 600,
-                            cursor: 'pointer',
-                        }}
+                            cursor: 'pointer' }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -764,7 +745,7 @@ const GoalsContent: React.FC = () => {
             </motion.div>
 
             {/* Progress History Chart */}
-            <ProgressHistoryChart colors={colors} goals={goals} />
+            <ProgressHistoryChart  goals={goals} />
 
             {/* Goals Grid */}
             <AnimatePresence mode="popLayout">
@@ -788,8 +769,7 @@ const GoalsContent: React.FC = () => {
                                     padding: '10px 14px',
                                     borderRadius: '10px',
                                     background: 'rgba(59, 130, 246, 0.05)',
-                                    border: '1px solid rgba(59, 130, 246, 0.1)',
-                                }}
+                                    border: '1px solid rgba(59, 130, 246, 0.1)' }}
                             >
                                 <motion.svg
                                     width="16"
@@ -818,8 +798,7 @@ const GoalsContent: React.FC = () => {
                                         padding: '20px',
                                         borderRadius: '16px',
                                         background: 'var(--dashboard-surface)',
-                                        border: `1px solid var(--border-color)`,
-                                    }}
+                                        border: `1px solid var(--border-color)` }}
                                 >
                                     <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
                                         <motion.div animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(0,0,0,0.06)' }} />
@@ -848,8 +827,7 @@ const GoalsContent: React.FC = () => {
                             textAlign: 'center',
                             background: 'var(--dashboard-surface)',
                             borderRadius: '16px',
-                            border: `1px solid var(--border-color)`,
-                        }}
+                            border: `1px solid var(--border-color)` }}
                     >
                         <div style={{
                             width: '64px',
@@ -859,8 +837,7 @@ const GoalsContent: React.FC = () => {
                             background: 'rgba(59, 130, 246, 0.08)',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                        }}>
+                            justifyContent: 'center' }}>
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5">
                                 <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
                             </svg>
@@ -887,8 +864,7 @@ const GoalsContent: React.FC = () => {
                                     borderRadius: '12px',
                                     fontSize: '14px',
                                     fontWeight: 600,
-                                    cursor: 'pointer',
-                                }}
+                                    cursor: 'pointer' }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -925,8 +901,7 @@ const GoalsContent: React.FC = () => {
                                         border: `1px solid ${goal.status === 'completed' ? 'rgba(16, 185, 129, 0.3)' : 'var(--border-color)'}`,
                                         cursor: 'pointer',
                                         boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                                        outline: 'none',
-                                    }}
+                                        outline: 'none' }}
                                 >
                                     {/* Header */}
                                     <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
@@ -940,8 +915,7 @@ const GoalsContent: React.FC = () => {
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                flexShrink: 0,
-                                            }}
+                                                flexShrink: 0 }}
                                         >
                                             <GoalIcon type={goal.type} color={config.color} size={24} />
                                         </motion.div>
@@ -953,8 +927,7 @@ const GoalsContent: React.FC = () => {
                                                 color: 'var(--text-primary)',
                                                 textDecoration: goal.status === 'completed' ? 'line-through' : 'none',
                                                 opacity: goal.status === 'completed' ? 0.7 : 1,
-                                                paddingRight: goal.status !== 'completed' ? '70px' : '36px',
-                                            }}>
+                                                paddingRight: goal.status !== 'completed' ? '70px' : '36px' }}>
                                                 {goal.title}
                                             </h3>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
@@ -964,8 +937,7 @@ const GoalsContent: React.FC = () => {
                                                     color: priorityInfo.color,
                                                     padding: '3px 8px',
                                                     borderRadius: '4px',
-                                                    background: `${priorityInfo.color}15`,
-                                                }}>
+                                                    background: `${priorityInfo.color}15` }}>
                                                     {priorityInfo.label}
                                                 </span>
                                                 {goal.days_remaining !== undefined && goal.status !== 'completed' && (
@@ -982,8 +954,7 @@ const GoalsContent: React.FC = () => {
                                         <div style={{ 
                                             display: 'flex', 
                                             gap: '6px',
-                                            flexShrink: 0,
-                                        }}>
+                                            flexShrink: 0 }}>
                                             {/* Pause/Resume Button - Only for non-completed goals */}
                                             {goal.status !== 'completed' && (
                                                 <ActionTooltip 
@@ -1005,8 +976,7 @@ const GoalsContent: React.FC = () => {
                                                             display: 'flex',
                                                             alignItems: 'center',
                                                             justifyContent: 'center',
-                                                            transition: 'all 0.15s ease',
-                                                        }}
+                                                            transition: 'all 0.15s ease' }}
                                                     >
                                                         {goal.status === 'paused' ? (
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1038,8 +1008,7 @@ const GoalsContent: React.FC = () => {
                                                             display: 'flex',
                                                             alignItems: 'center',
                                                             justifyContent: 'center',
-                                                            transition: 'all 0.15s ease',
-                                                        }}
+                                                            transition: 'all 0.15s ease' }}
                                                     >
                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                             <polyline points="3 6 5 6 21 6" />
@@ -1061,8 +1030,7 @@ const GoalsContent: React.FC = () => {
                                             display: '-webkit-box',
                                             WebkitLineClamp: 2,
                                             WebkitBoxOrient: 'vertical',
-                                            overflow: 'hidden',
-                                        }}>
+                                            overflow: 'hidden' }}>
                                             {goal.description}
                                         </p>
                                     )}
@@ -1078,8 +1046,7 @@ const GoalsContent: React.FC = () => {
                                             marginBottom: '14px',
                                             padding: '12px',
                                             borderRadius: '10px',
-                                            background: 'var(--bg-hover)',
-                                        }}
+                                            background: 'var(--bg-hover)' }}
                                     >
                                         <div style={{ flex: 1, textAlign: 'center' }}>
                                             <div style={{ fontSize: '18px', fontWeight: 700, color: config.color, lineHeight: 1 }}>
@@ -1120,8 +1087,7 @@ const GoalsContent: React.FC = () => {
                                             height: '6px',
                                             background: 'var(--bg-hover)',
                                             borderRadius: '3px',
-                                            overflow: 'hidden',
-                                        }}>
+                                            overflow: 'hidden' }}>
                                             <motion.div
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${goal.progress_percentage}%` }}
@@ -1131,8 +1097,7 @@ const GoalsContent: React.FC = () => {
                                                     background: goal.progress_percentage === 100 
                                                         ? 'linear-gradient(90deg, #10b981, #34d399)' 
                                                         : `linear-gradient(90deg, ${config.color}, ${config.color}cc)`,
-                                                    borderRadius: '3px',
-                                                }}
+                                                    borderRadius: '3px' }}
                                             />
                                         </div>
                                     </div>
@@ -1141,8 +1106,7 @@ const GoalsContent: React.FC = () => {
                                     <div style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }}>
+                                        justifyContent: 'space-between' }}>
                                         <motion.button
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
@@ -1157,8 +1121,7 @@ const GoalsContent: React.FC = () => {
                                                     ? '0 4px 12px rgba(16, 185, 129, 0.25)' 
                                                     : goal.status === 'paused' 
                                                     ? '0 4px 12px rgba(245, 158, 11, 0.25)' 
-                                                    : '0 4px 12px rgba(59, 130, 246, 0.25)',
-                                            }}
+                                                    : '0 4px 12px rgba(59, 130, 246, 0.25)' }}
                                             whileTap={{ scale: 0.95 }}
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -1180,13 +1143,11 @@ const GoalsContent: React.FC = () => {
                                                 fontSize: '11px',
                                                 fontWeight: 600,
                                                 cursor: 'pointer',
-                                                transition: 'all 0.2s ease',
-                                            }}
+                                                transition: 'all 0.2s ease' }}
                                         >
                                             <motion.div
                                                 animate={goal.status === 'active' ? { 
-                                                    scale: [1, 1.2, 1],
-                                                } : {}}
+                                                    scale: [1, 1.2, 1] } : {}}
                                                 transition={{ 
                                                     duration: 1.5, 
                                                     repeat: goal.status === 'active' ? Infinity : 0,
@@ -1213,8 +1174,7 @@ const GoalsContent: React.FC = () => {
                                                 gap: '6px',
                                                 padding: '5px 10px',
                                                 borderRadius: '8px',
-                                                background: 'var(--bg-hover)',
-                                            }}
+                                                background: 'var(--bg-hover)' }}
                                         >
                                             {goal.type === 'study_time' && goal.unit === 'hours' ? (
                                                 // Show hours and minutes for study time goals
@@ -1222,22 +1182,19 @@ const GoalsContent: React.FC = () => {
                                                     <span style={{ 
                                                         fontSize: '12px', 
                                                         fontWeight: 700, 
-                                                        color: config.color,
-                                                    }}>
+                                                        color: config.color }}>
                                                         {Math.floor(goal.current_value)}h {Math.round((goal.current_value % 1) * 60)}m
                                                     </span>
                                                     <span style={{ 
                                                         fontSize: '11px', 
                                                         color: 'var(--text-secondary)',
-                                                        fontWeight: 400,
-                                                    }}>
+                                                        fontWeight: 400 }}>
                                                         of
                                                     </span>
                                                     <span style={{ 
                                                         fontSize: '12px', 
                                                         fontWeight: 600, 
-                                                        color: 'var(--text-primary)',
-                                                    }}>
+                                                        color: 'var(--text-primary)' }}>
                                                         {goal.target_value}h
                                                     </span>
                                                 </>
@@ -1247,29 +1204,25 @@ const GoalsContent: React.FC = () => {
                                                     <span style={{ 
                                                         fontSize: '12px', 
                                                         fontWeight: 700, 
-                                                        color: config.color,
-                                                    }}>
+                                                        color: config.color }}>
                                                         {goal.current_value}
                                                     </span>
                                                     <span style={{ 
                                                         fontSize: '11px', 
                                                         color: 'var(--text-secondary)',
-                                                        fontWeight: 400,
-                                                    }}>
+                                                        fontWeight: 400 }}>
                                                         of
                                                     </span>
                                                     <span style={{ 
                                                         fontSize: '12px', 
                                                         fontWeight: 600, 
-                                                        color: 'var(--text-primary)',
-                                                    }}>
+                                                        color: 'var(--text-primary)' }}>
                                                         {goal.target_value}
                                                     </span>
                                                     <span style={{ 
                                                         fontSize: '10px', 
                                                         color: 'var(--text-secondary)',
-                                                        fontWeight: 500,
-                                                    }}>
+                                                        fontWeight: 500 }}>
                                                         {goal.unit}
                                                     </span>
                                                 </>
@@ -1322,8 +1275,7 @@ const GoalsContent: React.FC = () => {
                                 inset: 0,
                                 background: 'rgba(0,0,0,0.4)',
                                 backdropFilter: 'blur(4px)',
-                                zIndex: 9998,
-                            }}
+                                zIndex: 9998 }}
                         />
                         <div
                             style={{
@@ -1333,8 +1285,7 @@ const GoalsContent: React.FC = () => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 zIndex: 9999,
-                                pointerEvents: 'none',
-                            }}
+                                pointerEvents: 'none' }}
                         >
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -1349,8 +1300,7 @@ const GoalsContent: React.FC = () => {
                                     maxWidth: '360px',
                                     boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
                                     border: `1px solid var(--border-color)`,
-                                    pointerEvents: 'auto',
-                                }}
+                                    pointerEvents: 'auto' }}
                             >
                                 {/* Icon */}
                                 <div style={{ 
@@ -1369,8 +1319,7 @@ const GoalsContent: React.FC = () => {
                                             background: 'rgba(239, 68, 68, 0.1)',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
+                                            justifyContent: 'center' }}
                                     >
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <polyline points="3 6 5 6 21 6" />
@@ -1385,8 +1334,7 @@ const GoalsContent: React.FC = () => {
                                     fontSize: '16px',
                                     fontWeight: 600,
                                     color: 'var(--text-primary)',
-                                    textAlign: 'center',
-                                }}>
+                                    textAlign: 'center' }}>
                                     Delete Goal?
                                 </h3>
 
@@ -1396,8 +1344,7 @@ const GoalsContent: React.FC = () => {
                                     fontSize: '13px',
                                     color: 'var(--text-secondary)',
                                     textAlign: 'center',
-                                    lineHeight: 1.5,
-                                }}>
+                                    lineHeight: 1.5 }}>
                                     Are you sure you want to delete this goal? This action cannot be undone.
                                 </p>
 
@@ -1417,8 +1364,7 @@ const GoalsContent: React.FC = () => {
                                             fontSize: '13px',
                                             fontWeight: 500,
                                             cursor: 'pointer',
-                                            transition: 'all 0.15s ease',
-                                        }}
+                                            transition: 'all 0.15s ease' }}
                                     >
                                         Cancel
                                     </motion.button>
@@ -1436,8 +1382,7 @@ const GoalsContent: React.FC = () => {
                                             fontSize: '13px',
                                             fontWeight: 600,
                                             cursor: 'pointer',
-                                            transition: 'all 0.15s ease',
-                                        }}
+                                            transition: 'all 0.15s ease' }}
                                     >
                                         Delete
                                     </motion.button>

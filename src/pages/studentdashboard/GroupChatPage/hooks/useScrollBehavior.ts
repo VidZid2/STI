@@ -23,8 +23,7 @@ export interface UseScrollBehaviorReturn {
 
 export function useScrollBehavior({
     messages,
-    messagesEndRef,
-}: UseScrollBehaviorOptions): UseScrollBehaviorReturn {
+    messagesEndRef }: UseScrollBehaviorOptions): UseScrollBehaviorReturn {
     const [showScrollButton, setShowScrollButton] = useState(false);
     const [newMessageCount, setNewMessageCount] = useState(0);
     const [lastReadMessageIndex, setLastReadMessageIndex] = useState<number | null>(null);
@@ -82,6 +81,5 @@ export function useScrollBehavior({
         lastReadMessageIndex,
         unreadCount,
         handleScroll,
-        scrollToBottom,
-    };
+        scrollToBottom };
 }

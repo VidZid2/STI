@@ -9,9 +9,9 @@ import type { FocusModeColors } from '../FocusModePage';
 
 // Keyboard Shortcuts Display Component
 const KeyboardShortcuts: React.FC<{
-    isDarkMode: boolean;
-    colors: FocusModeColors;
-}> = ({ isDarkMode, colors }) => {
+    
+    
+}> = ({  }) => {
     const shortcuts = [
         { key: 'Space', action: 'Start/Pause' },
         { key: 'R', action: 'Reset Timer' },
@@ -28,15 +28,13 @@ const KeyboardShortcuts: React.FC<{
                 padding: '14px 16px',
                 borderRadius: '14px',
                 background: 'var(--bg-primary)',
-                border: `1px solid var(--border-color)`,
-            }}
+                border: `1px solid var(--border-color)` }}
         >
             <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                marginBottom: '12px',
-            }}>
+                marginBottom: '12px' }}>
                 <div style={{
                     width: 28,
                     height: 28,
@@ -46,8 +44,7 @@ const KeyboardShortcuts: React.FC<{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#3b82f6',
-                }}>
+                    color: '#3b82f6' }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <rect x="2" y="4" width="20" height="16" rx="2" />
                         <path d="M6 8h.001" />
@@ -63,8 +60,7 @@ const KeyboardShortcuts: React.FC<{
                 <span style={{
                     fontSize: '12px',
                     fontWeight: 600,
-                    color: 'var(--text-primary)',
-                }}>
+                    color: 'var(--text-primary)' }}>
                     Shortcuts
                 </span>
             </div>
@@ -72,16 +68,14 @@ const KeyboardShortcuts: React.FC<{
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
-                gap: '8px',
-            }}>
+                gap: '8px' }}>
                 {shortcuts.map((shortcut) => (
                     <div
                         key={shortcut.key}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px',
-                        }}
+                            gap: '8px' }}
                     >
                         <span style={{
                             padding: '3px 8px',
@@ -90,14 +84,12 @@ const KeyboardShortcuts: React.FC<{
                             fontSize: '10px',
                             fontWeight: 600,
                             color: 'var(--text-secondary)',
-                            fontFamily: 'ui-monospace, monospace',
-                        }}>
+                            fontFamily: 'ui-monospace, monospace' }}>
                             {shortcut.key}
                         </span>
                         <span style={{
                             fontSize: '10px',
-                            color: 'var(--text-muted)',
-                        }}>
+                            color: 'var(--text-muted)' }}>
                             {shortcut.action}
                         </span>
                     </div>

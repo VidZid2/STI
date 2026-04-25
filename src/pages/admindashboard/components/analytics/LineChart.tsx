@@ -60,7 +60,7 @@ const LineChart: React.FC<Props> = ({ data }) => {
                         <rect
                             x={px(i) - xStep / 2} y={PAD.t} width={xStep} height={IH}
                             fill="transparent"
-                            onMouseEnter={e => setTooltip({ x: px(i), y: Math.min(py(d.students), py(d.teachers)) - 8, d })}
+                            onMouseEnter={_e => setTooltip({ x: px(i), y: Math.min(py(d.students), py(d.teachers)) - 8, d })}
                             onMouseLeave={() => setTooltip(null)}
                         />
                     </g>

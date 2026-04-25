@@ -17,8 +17,7 @@ interface DeadlinesWidgetProps {
 export const DeadlinesWidget: React.FC<DeadlinesWidgetProps> = ({
     deadlines,
     compactMode = false,
-    onViewAll,
-}) => {
+    onViewAll }) => {
     return (
         <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -100,7 +99,7 @@ export const DeadlinesWidget: React.FC<DeadlinesWidgetProps> = ({
                                     exit={{ opacity: 0, x: 10 }}
                                     transition={{ delay: index * 0.05 }}
                                     whileHover={{ x: 4 }}
-                                    className={`flex items-center gap-3 rounded-lg hover:bg-zinc-50 cursor-pointer transition-colors ${compactMode ? 'p-1.5' : 'p-2'}`}
+                                    className={`flex items-center gap-3 rounded-lg hover:bg-zinc-50 cursor-pointer transition-${compactMode ? 'p-1.5' : 'p-2'}`}
                                 >
                                     <div className={`w-2 h-2 rounded-full ${typeColor}`} />
                                     <div className="flex-1 min-w-0">
@@ -127,7 +126,7 @@ export const DeadlinesWidget: React.FC<DeadlinesWidgetProps> = ({
                     e.preventDefault();
                     onViewAll?.();
                 }}
-                className={`flex items-center justify-center gap-1.5 border-t border-zinc-50 text-blue-500 hover:bg-blue-50/50 transition-colors ${compactMode ? 'py-2 text-[10px]' : 'py-2.5 text-xs'}`}
+                className={`flex items-center justify-center gap-1.5 border-t border-zinc-50 text-blue-500 hover:bg-blue-50/50 transition-${compactMode ? 'py-2 text-[10px]' : 'py-2.5 text-xs'}`}
             >
                 View all deadlines
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

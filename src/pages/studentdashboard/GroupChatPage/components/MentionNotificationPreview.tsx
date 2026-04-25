@@ -9,13 +9,11 @@ import type { MentionUser } from './MentionAutocomplete';
 
 interface MentionNotificationPreviewProps {
     mentionedUsers: MentionUser[];
-    isDarkMode: boolean;
+    
 }
 
 export const MentionNotificationPreview: React.FC<MentionNotificationPreviewProps> = ({
-    mentionedUsers,
-    isDarkMode,
-}) => {
+    mentionedUsers }) => {
     return (
         <AnimatePresence>
             {mentionedUsers.length > 0 && (
@@ -31,8 +29,7 @@ export const MentionNotificationPreview: React.FC<MentionNotificationPreviewProp
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
-                        overflow: 'hidden',
-                    }}
+                        overflow: 'hidden' }}
                 >
                     {/* Bell Icon */}
                     <svg
@@ -53,8 +50,7 @@ export const MentionNotificationPreview: React.FC<MentionNotificationPreviewProp
                     <span style={{
                         fontSize: '12px',
                         color: 'var(--bg-hover)',
-                        fontWeight: 500,
-                    }}>
+                        fontWeight: 500 }}>
                         This will notify {mentionedUsers.length === 1
                             ? <strong>{mentionedUsers[0].name}</strong>
                             : <strong>{mentionedUsers.length} people</strong>
@@ -66,8 +62,7 @@ export const MentionNotificationPreview: React.FC<MentionNotificationPreviewProp
                         display: 'flex',
                         alignItems: 'center',
                         gap: '4px',
-                        marginLeft: 'auto',
-                    }}>
+                        marginLeft: 'auto' }}>
                         {mentionedUsers.slice(0, 3).map((user, idx) => (
                             <div
                                 key={user.id}
@@ -84,8 +79,7 @@ export const MentionNotificationPreview: React.FC<MentionNotificationPreviewProp
                                     color: '#fff',
                                     border: `2px solid ${'var(--bg-hover)'}`,
                                     marginLeft: idx > 0 ? '-8px' : 0,
-                                    overflow: 'hidden',
-                                }}
+                                    overflow: 'hidden' }}
                             >
                                 {user.avatar ? (
                                     <img src={user.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -108,8 +102,7 @@ export const MentionNotificationPreview: React.FC<MentionNotificationPreviewProp
                                     fontWeight: 700,
                                     color: '#fff',
                                     border: `2px solid ${'var(--bg-hover)'}`,
-                                    marginLeft: '-8px',
-                                }}
+                                    marginLeft: '-8px' }}
                             >
                                 +{mentionedUsers.length - 3}
                             </div>

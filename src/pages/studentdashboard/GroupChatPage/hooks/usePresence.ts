@@ -8,8 +8,7 @@ import {
     joinPresence,
     updatePresence,
     leavePresence,
-    type PresenceUser,
-} from '../../../../services/presenceService';
+    type PresenceUser } from '../../../../services/presenceService';
 
 interface UsePresenceOptions {
     groupId: string | undefined;
@@ -30,8 +29,7 @@ interface UsePresenceReturn {
 export const usePresence = ({
     groupId,
     user,
-    enabled = true,
-}: UsePresenceOptions): UsePresenceReturn => {
+    enabled = true }: UsePresenceOptions): UsePresenceReturn => {
     const [viewers, setViewers] = useState<PresenceUser[]>([]);
     const [isConnected, setIsConnected] = useState(false);
     const cleanupRef = useRef<(() => void) | null>(null);
@@ -107,8 +105,7 @@ export const usePresence = ({
     return {
         viewers,
         viewerCount: viewers.length,
-        isConnected,
-    };
+        isConnected };
 };
 
 export default usePresence;

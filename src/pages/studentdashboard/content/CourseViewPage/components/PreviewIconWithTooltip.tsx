@@ -17,8 +17,7 @@ interface PreviewIconWithTooltipProps {
 }
 
 export const PreviewIconWithTooltip: React.FC<PreviewIconWithTooltipProps> = ({
-    label, subtitle, color, bgColor, borderColor, children,
-}) => {
+    label, subtitle, color, bgColor, borderColor, children }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -34,8 +33,7 @@ export const PreviewIconWithTooltip: React.FC<PreviewIconWithTooltipProps> = ({
                     width: '32px', height: '32px', borderRadius: '8px',
                     background: bgColor, border: `1px solid ${borderColor}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    cursor: 'pointer',
-                }}
+                    cursor: 'pointer' }}
             >
                 {children}
             </motion.div>
@@ -52,22 +50,19 @@ export const PreviewIconWithTooltip: React.FC<PreviewIconWithTooltipProps> = ({
                             bottom: 'calc(100% + 12px)',
                             left: '50%',
                             zIndex: 100,
-                            pointerEvents: 'none',
-                        }}
+                            pointerEvents: 'none' }}
                     >
                         <div style={{
                             position: 'relative', background: '#fff',
                             border: `1px solid ${color}30`, borderRadius: '10px',
                             padding: '8px 12px', boxShadow: `0 4px 16px ${color}15`,
-                            whiteSpace: 'nowrap', transform: 'translateX(-50%)',
-                        }}>
+                            whiteSpace: 'nowrap', transform: 'translateX(-50%)' }}>
                             <p style={{ margin: 0, fontSize: '12px', fontWeight: 600, color, textAlign: 'center' }}>{label}</p>
                             <p style={{ margin: '2px 0 0 0', fontSize: '10px', color: `${color}cc`, maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', textAlign: 'center' }}>{subtitle}</p>
                             <div style={{
                                 position: 'absolute', width: '10px', height: '10px', background: '#fff',
                                 borderRight: `1px solid ${color}30`, borderBottom: `1px solid ${color}30`,
-                                bottom: '-6px', left: '50%', transform: 'translateX(-50%) rotate(45deg)',
-                            }} />
+                                bottom: '-6px', left: '50%', transform: 'translateX(-50%) rotate(45deg)' }} />
                         </div>
                     </motion.div>
                 )}

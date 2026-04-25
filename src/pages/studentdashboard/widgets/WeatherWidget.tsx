@@ -71,8 +71,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
     loading,
     error,
     compactMode = false,
-    onClose,
-}) => {
+    onClose }) => {
     return (
         <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -89,7 +88,7 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({
                     whileHover={{ scale: 1.15, backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                     whileTap={{ scale: 0.9 }}
                     onClick={onClose}
-                    className={`absolute top-2 right-2 flex items-center justify-center rounded-md text-sky-300 hover:text-red-400 transition-colors ${compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                    className={`absolute top-2 right-2 flex items-center justify-center rounded-md text-sky-300 hover:text-red-400 transition-${compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
                 >
                     <svg className={compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

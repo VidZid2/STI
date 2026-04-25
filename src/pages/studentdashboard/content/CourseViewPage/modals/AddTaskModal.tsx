@@ -62,8 +62,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
     isTeacherMode,
     courseId,
     onClose,
-    onTaskCreated,
-}) => {
+    onTaskCreated }) => {
     const [selectedTaskType, setSelectedTaskType] = React.useState<TaskCategory>('assignment');
     const [newTaskTitle, setNewTaskTitle] = React.useState('');
     const [newTaskDescription, setNewTaskDescription] = React.useState('');
@@ -121,7 +120,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleClose}
                                 aria-label="Close create task"
-                                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isTeacherMode ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400' : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-600'}`}
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-${isTeacherMode ? 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400' : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-600'}`}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                     <path d="M18 6L6 18M6 6l12 12" />
@@ -251,7 +250,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
                                 <motion.div
                                     onClick={() => newTaskFiles.length === 0 && taskFileInputRef.current?.click()}
                                     whileHover={newTaskFiles.length === 0 ? "animate" : undefined}
-                                    className={`p-6 group/file block rounded-2xl w-full relative border-2 border-dashed transition-colors ${newTaskFiles.length === 0
+                                    className={`p-6 group/file block rounded-2xl w-full relative border-2 border-dashed transition-${newTaskFiles.length === 0
                                         ? isTeacherMode
                                             ? "cursor-pointer border-zinc-700 hover:border-blue-500 bg-zinc-800/50"
                                             : "cursor-pointer border-gray-200 hover:border-blue-400 bg-gray-50/50"
@@ -321,7 +320,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
                                                                     </span>
                                                                     <button
                                                                         onClick={(e) => { e.stopPropagation(); setNewTaskFiles(prev => prev.filter((_, i) => i !== idx)); }}
-                                                                        className={`p-1 rounded-full transition-colors ${isTeacherMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'}`}
+                                                                        className={`p-1 rounded-full transition-${isTeacherMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'}`}
                                                                     >
                                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={isTeacherMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-gray-400 hover:text-gray-600'}>
                                                                             <path d="M18 6L6 18M6 6l12 12" />
@@ -374,7 +373,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
                                                     animate={{ opacity: 1, y: 0 }}
                                                     transition={{ delay: 0.1 }}
                                                     onClick={(e) => { e.stopPropagation(); taskFileInputRef.current?.click(); }}
-                                                    className={`w-full py-2.5 px-4 rounded-xl border-2 border-dashed text-sm font-medium hover:border-blue-400 hover:text-blue-500 transition-colors mt-1 ${isTeacherMode ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'}`}
+                                                    className={`w-full py-2.5 px-4 rounded-xl border-2 border-dashed text-sm font-medium hover:border-blue-400 hover:text-blue-500 transition-mt-1 ${isTeacherMode ? 'border-zinc-600 text-zinc-400' : 'border-gray-300 text-gray-500'}`}
                                                 >
                                                     + Add more files
                                                 </motion.button>
@@ -390,7 +389,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
                             <motion.button
                                 whileTap={{ scale: 0.97 }}
                                 onClick={handleClose}
-                                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${isTeacherMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-zinc-600 hover:bg-zinc-100'}`}
+                                className={`px-4 py-2 text-sm font-medium rounded-lg transition-${isTeacherMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-zinc-600 hover:bg-zinc-100'}`}
                             >
                                 Cancel
                             </motion.button>

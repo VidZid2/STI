@@ -14,7 +14,7 @@ interface CourseMaterialModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSend: (title: string, url: string, type: string) => void;
-    colors: ModalColors;
+    
 }
 
 const materialTypes = [
@@ -61,7 +61,7 @@ const materialTypes = [
     )},
 ];
 
-export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen, onClose, onSend, colors }) => {
+export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen, onClose, onSend }) => {
     const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'course-material-modal-title');
     const [title, setTitle] = useState('');
     const [url, setUrl] = useState('');
@@ -69,9 +69,8 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
     const [focusedField, setFocusedField] = useState<string | null>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
 
-    // Blue accent colors
-    const blueAccent = '#3b82f6';
-    const isDarkMode = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
+    // Blue accent const blueAccent = '#3b82f6';
+    const = 'var(--dashboard-surface)' === '#1e293b' || 'var(--dashboard-surface)'.includes('30, 41, 59');
     const blueBg = 'rgba(59, 130, 246, 0.1)';
     const blueBorder = 'rgba(59, 130, 246, 0.25)';
     const subtleBg = 'var(--dashboard-surface)';
@@ -121,8 +120,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                         position: 'fixed', inset: 0,
                         background: 'rgba(0,0,0,0.6)',
                         backdropFilter: 'blur(8px)', zIndex: 1001,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
-                    }}
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
                 >
                     <motion.div
                         initial={{ scale: 0.95, opacity: 0, y: 10 }}
@@ -135,17 +133,14 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                         style={{
                             background: 'var(--dashboard-surface)', borderRadius: '20px',
                             width: '100%', maxWidth: '460px',
-                            boxShadow: isDarkMode
-                                ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
+                            boxShadow: ? '0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
                                 : '0 24px 48px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04)',
-                            overflow: 'hidden',
-                        }}
+                            overflow: 'hidden' }}
                     >
                         {/* Header */}
                         <div style={{
                             padding: '20px 24px', borderBottom: `1px solid ${borderColor}`,
-                            display: 'flex', alignItems: 'center', gap: '14px',
-                        }}>
+                            display: 'flex', alignItems: 'center', gap: '14px' }}>
                             <motion.div
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
@@ -153,8 +148,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                 style={{
                                     width: 44, height: 44, borderRadius: '12px',
                                     background: blueBg, border: `1px solid ${blueBorder}`,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                }}
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                             >
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={blueAccent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
@@ -178,8 +172,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                 style={{
                                     width: 32, height: 32, borderRadius: '10px', border: 'none',
                                     background: subtleBg, cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)',
-                                }}
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -199,14 +192,12 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                 <label style={{
                                     display: 'flex', alignItems: 'center', gap: '6px',
                                     fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)',
-                                    marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px',
-                                }}>
+                                    marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--text-muted)' }} />
                                     Material Type
                                 </label>
                                 <div style={{
-                                    display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px',
-                                }}>
+                                    display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                                     {materialTypes.map((m, i) => (
                                         <motion.button
                                             key={m.id}
@@ -223,8 +214,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                                 cursor: 'pointer', display: 'flex', flexDirection: 'column',
                                                 alignItems: 'center', gap: '6px',
                                                 color: type === m.id ? blueAccent : 'var(--text-secondary)',
-                                                transition: 'all 0.15s ease',
-                                            }}
+                                                transition: 'all 0.15s ease' }}
                                         >
                                             <div style={{ opacity: type === m.id ? 1 : 0.7 }}>{m.icon}</div>
                                             <span style={{ fontSize: '11px', fontWeight: 500 }}>{m.label}</span>
@@ -245,13 +235,11 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                     fontSize: '11px', fontWeight: 600,
                                     color: focusedField === 'title' ? blueAccent : 'var(--text-secondary)',
                                     marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px',
-                                    transition: 'color 0.2s ease',
-                                }}>
+                                    transition: 'color 0.2s ease' }}>
                                     <div style={{
                                         width: 4, height: 4, borderRadius: '50%',
                                         background: focusedField === 'title' ? blueAccent : 'var(--text-muted)',
-                                        transition: 'background 0.2s ease',
-                                    }} />
+                                        transition: 'background 0.2s ease' }} />
                                     Title
                                 </label>
                                 <input
@@ -268,8 +256,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                         fontSize: '14px', outline: 'none', color: 'var(--text-primary)',
                                         fontFamily: 'inherit',
                                         transition: 'all 0.2s ease',
-                                        boxShadow: focusedField === 'title' ? `0 0 0 3px ${blueBg}` : 'none',
-                                    }}
+                                        boxShadow: focusedField === 'title' ? `0 0 0 3px ${blueBg}` : 'none' }}
                                 />
                             </motion.div>
 
@@ -285,13 +272,11 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                     fontSize: '11px', fontWeight: 600,
                                     color: focusedField === 'url' ? blueAccent : 'var(--text-secondary)',
                                     marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px',
-                                    transition: 'color 0.2s ease',
-                                }}>
+                                    transition: 'color 0.2s ease' }}>
                                     <div style={{
                                         width: 4, height: 4, borderRadius: '50%',
                                         background: focusedField === 'url' ? blueAccent : 'var(--text-muted)',
-                                        transition: 'background 0.2s ease',
-                                    }} />
+                                        transition: 'background 0.2s ease' }} />
                                     URL
                                     {url && !isValidUrl(url) && (
                                         <span style={{ marginLeft: 'auto', color: '#ef4444', fontSize: '10px', textTransform: 'none', letterSpacing: 'normal' }}>
@@ -313,14 +298,12 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                             fontSize: '14px', outline: 'none', color: 'var(--text-primary)',
                                             fontFamily: 'inherit',
                                             transition: 'all 0.2s ease',
-                                            boxShadow: focusedField === 'url' ? `0 0 0 3px ${blueBg}` : 'none',
-                                        }}
+                                            boxShadow: focusedField === 'url' ? `0 0 0 3px ${blueBg}` : 'none' }}
                                     />
                                     <div style={{
                                         position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
                                         color: url && isValidUrl(url) ? blueAccent : 'var(--text-muted)',
-                                        transition: 'color 0.2s ease',
-                                    }}>
+                                        transition: 'color 0.2s ease' }}>
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                                             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
@@ -337,13 +320,11 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                                     style={{
                                         padding: '14px', borderRadius: '12px',
-                                        background: subtleBg, border: `1px solid ${borderColor}`,
-                                    }}
+                                        background: subtleBg, border: `1px solid ${borderColor}` }}
                                 >
                                     <div style={{
                                         fontSize: '10px', fontWeight: 600, color: 'var(--text-muted)',
-                                        marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px',
-                                    }}>
+                                        marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                         Preview
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
@@ -351,23 +332,20 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                             width: 40, height: 40, borderRadius: '10px',
                                             background: blueBg, border: `1px solid ${blueBorder}`,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            color: blueAccent, flexShrink: 0,
-                                        }}>
+                                            color: blueAccent, flexShrink: 0 }}>
                                             {selectedType?.icon}
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>
                                             <div style={{
                                                 fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)',
                                                 marginBottom: '4px',
-                                                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                            }}>
+                                                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                 {title || 'Untitled Material'}
                                             </div>
                                             <div style={{
                                                 fontSize: '11px', color: blueAccent,
                                                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                                display: 'flex', alignItems: 'center', gap: '4px',
-                                            }}>
+                                                display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                                                     <polyline points="15 3 21 3 21 9" />
@@ -378,8 +356,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                             <div style={{
                                                 marginTop: '6px', display: 'inline-flex', alignItems: 'center', gap: '4px',
                                                 padding: '3px 8px', borderRadius: '6px',
-                                                background: blueBg, fontSize: '10px', fontWeight: 500, color: blueAccent,
-                                            }}>
+                                                background: blueBg, fontSize: '10px', fontWeight: 500, color: blueAccent }}>
                                                 {selectedType?.label}
                                             </div>
                                         </div>
@@ -392,14 +369,12 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                         <div style={{
                             padding: '16px 24px 20px', borderTop: `1px solid ${borderColor}`,
                             display: 'flex', gap: '10px', justifyContent: 'space-between', alignItems: 'center',
-                            background: subtleBg,
-                        }}>
+                            background: subtleBg }}>
                             {/* Validation hint */}
                             <div style={{
                                 fontSize: '11px',
                                 color: isValid ? '#10b981' : 'var(--text-muted)',
-                                display: 'flex', alignItems: 'center', gap: '6px',
-                            }}>
+                                display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 {isValid ? (
                                     <>
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -428,8 +403,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                     style={{
                                         padding: '10px 18px', borderRadius: '10px',
                                         border: `1px solid ${borderColor}`, background: 'transparent',
-                                        cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)',
-                                    }}
+                                        cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)' }}
                                 >
                                     Cancel
                                 </motion.button>
@@ -447,8 +421,7 @@ export const CourseMaterialModal: React.FC<CourseMaterialModalProps> = ({ isOpen
                                         fontSize: '13px', fontWeight: 600,
                                         color: isValid ? '#fff' : 'var(--text-muted)',
                                         display: 'flex', alignItems: 'center', gap: '8px',
-                                        boxShadow: isValid ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none',
-                                    }}
+                                        boxShadow: isValid ? '0 2px 8px rgba(59, 130, 246, 0.25)' : 'none' }}
                                 >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <line x1="22" y1="2" x2="11" y2="13" />

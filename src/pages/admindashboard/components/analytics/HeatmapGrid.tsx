@@ -47,7 +47,7 @@ const HeatmapGrid: React.FC<Props> = ({ data }) => {
                                     fill="#3b82f6"
                                     fillOpacity={opacity(count)}
                                     style={{ cursor: count > 0 ? 'pointer' : 'default' }}
-                                    onMouseEnter={e => count > 0 && setTooltip({ day: dayIdx, hour, count, x: x + cellW / 2, y })}
+                                    onMouseEnter={_e => count > 0 && setTooltip({ day: dayIdx, hour, count, x: x + cellW / 2, y })}
                                     onMouseLeave={() => setTooltip(null)}
                                 />
                             );

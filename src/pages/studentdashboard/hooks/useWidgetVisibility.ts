@@ -38,8 +38,7 @@ export const useWidgetVisibility = (): UseWidgetVisibilityReturn => {
         toggleWidget,
         restoreAllWidgets,
         hasHiddenWidgets,
-        isWidgetVisible,
-    };
+        isWidgetVisible };
 };
 
 export default useWidgetVisibility;
