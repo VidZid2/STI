@@ -6,16 +6,22 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
+import { PathIcon } from '../components/PathIcon';
 
 // Stub functions for standalone modal use
-const PathIcon = ({ size = 20, color = '#3b82f6' }: { size?: number; color?: string }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
-);
 const getPathTotalModules = (path: any) => (path?.courses || []).reduce((t: number, c: any) => t + (c?.modules || 0), 0);
 const getPathEstimatedHours = (path: any) => (path?.courses || []).reduce((t: number, c: any) => t + (c?.hours || 0), 0);
 const formatEstimatedTime = (hours: number) => hours > 0 ? hours + 'h' : 'N/A';
 
-const PathCertificateModal: React.FC<{ path: any; isOpen: boolean; onClose: () => void }> = ({
+interface PathCertificateModalProps {
+    path: any;
+    isOpen: boolean;
+    onClose: () => void;
+    isDarkMode?: boolean;
+    completedAt?: string;
+}
+
+const PathCertificateModal: React.FC<PathCertificateModalProps> = ({
     path,
     isOpen,
     onClose,

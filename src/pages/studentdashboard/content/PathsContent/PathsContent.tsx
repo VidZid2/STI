@@ -26,7 +26,7 @@ import { FilterTabs } from './components/PathFilterTabs';
 import { PathDetailModal } from './modals/PathDetailModal';
 import { PathCertificateModal } from './modals/PathCertificateModal';
 
-type FilterTab = 'all' | 'in-progress' | 'completed' | 'not-started';
+type FilterTab = 'all' | 'enrolled' | 'available';
 
 interface PathsContentProps {
     onPathSelect?: (pathId: string) => void;

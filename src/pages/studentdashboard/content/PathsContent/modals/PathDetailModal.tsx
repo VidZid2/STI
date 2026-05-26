@@ -7,19 +7,17 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import {
+    getPathCourses,
+    getPathTotalModules,
+    getPathEstimatedHours,
+    getDifficultyInfo,
+    formatEstimatedTime,
+    getCurrentCourse,
+    isCourseUnlocked,
     type PathWithProgress,
 } from '../../../../../services/pathsService';
 import { PathIcon } from '../components/PathIcon';
 import { ModalTooltip } from '../components/PathProgressRing';
-
-// Stub functions for standalone modal use
-const getPathCourses = (path: any) => path?.courses || [];
-const _getCurrentCourse = (path: any) => path?.courses?.[0] || null;
-const getPathTotalModules = (path: any) => (path?.courses || []).reduce((t: number, c: any) => t + (c?.modules || 0), 0);
-const _getPathEstimatedHours = (path: any) => (path?.courses || []).reduce((t: number, c: any) => t + (c?.hours || 0), 0);
-const _getDifficultyInfo = (d: string) => ({ label: d || 'Beginner', color: '#3b82f6', icon: '📚' });
-const formatEstimatedTime = (hours: number) => hours > 0 ? hours + 'h' : 'N/A';
-const isCourseUnlocked = (_course: any, index: number) => index === 0 || true;
 
 // Path Detail Modal Component
 interface PathDetailModalProps {
@@ -52,15 +50,15 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
     };
 
     // Get courses for this path
-    const courses = path ? ((path: any) => path?.courses || []) (path) : [];
+    const courses = path ? getPathCourses(path) : [];
     
     // Find current course (first incomplete unlocked course)
-    const currentCourse = path ? ((p: any) => p?.courses?.[0] || null) (path, courseProgress) : courses[0];
+    const currentCourse = path ? getCurrentCourse(path, courseProgress) : courses[0];
 
     // Calculate stats
-    const totalModules = path ? ((p: any) => (p?.courses || []).reduce((t: number, c: any) => t + (c?.modules || 0), 0)) (path) : 0;
-    const estimatedHours = path ? ((p: any) => (p?.courses || []).reduce((t: number, c: any) => t + (c?.hours || 0), 0)) (path) : 0;
-    const difficultyInfo = path ? ((d: any) => ({ label: d || 'Beginner', color: '#3b82f6', icon: '📚' })) (path.difficulty) : { label: '', color: '' };
+    const totalModules = path ? getPathTotalModules(path) : 0;
+    const estimatedHours = path ? getPathEstimatedHours(path) : 0;
+    const difficultyInfo = path ? getDifficultyInfo(path.difficulty) : { label: '', color: '' };
 
     // Handle escape key
     useEffect(() => {
@@ -312,7 +310,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                 <polyline points="12 6 12 12 16 14" />
                                             </svg>
                                             <span style={{ fontSize: '12px', fontWeight: 500, color: colors.textPrimary }}>
-                                                {((h: any) => h > 0 ? `${h}h` : 'N/A') (estimatedHours)}
+                                                {formatEstimatedTime(estimatedHours)}
                                             </span>
                                         </div>
                                     </ModalTooltip>
@@ -397,7 +395,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                     {courses.map((course: any, index: number) => {
                                         const progress = courseProgress[course.id]?.progress || 0;
                                         const isCompleted = progress === 100;
-                                        const isUnlocked = ((c: any, i: number) => i === 0 || true) (course.id, path);
+                                        const isUnlocked = isCourseUnlocked(course, index);
                                         const isLocked = !isUnlocked;
                                         const isCurrent = course.id === currentCourse?.id && !isCompleted && isUnlocked;
                                         const isHovered = hoveredCourse === course.id;
@@ -734,14 +732,5 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
         document.body
     );
 };
-
-// Path Certificate Modal - Shows achievement when path is completed
-interface PathCertificateModalProps {
-    path: PathWithProgress | null;
-    isOpen: boolean;
-    onClose: () => void;
-    completedAt?: string;
-}
-
 
 export { PathDetailModal };
