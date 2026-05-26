@@ -81,7 +81,7 @@ function HomePage() {
       <IntroAnimation />
       <HorizontalHome onLoginClick={() => setIsLoginOpen(true)} />
       <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
-      <audio id="click-sound" src="sounds/clicksfx.mp3" preload="auto" ref={clickSoundRef}></audio>
+      <audio id="click-sound" src="/sounds/clicksfx.mp3" preload="auto" ref={clickSoundRef}></audio>
     </>
   );
 }

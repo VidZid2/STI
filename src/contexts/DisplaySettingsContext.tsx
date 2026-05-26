@@ -47,7 +47,7 @@ const DEFAULT_SETTINGS: DisplaySettings = {
     compactView: false,
     showAvatars: true,
     animations: true,
-    hideCustomCursor: false,
+    hideCustomCursor: true,
 };
 
 const STORAGE_KEY = 'app_display_settings';
