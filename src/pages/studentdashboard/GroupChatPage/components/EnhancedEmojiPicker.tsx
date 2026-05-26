@@ -7,12 +7,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { EMOJI_CATEGORIES, QUICK_EMOJIS } from '../constants';
-import type { ChatColors } from '../types';
 
 interface EnhancedEmojiPickerProps {
     isOpen: boolean;
-    
-    
+    emojiSearch: string;
+    emojiPickerCategory: string;
     onEmojiSearchChange: (value: string) => void;
     onCategoryChange: (categoryId: string) => void;
     onEmojiSelect: (emoji: string) => void;
@@ -21,8 +20,7 @@ interface EnhancedEmojiPickerProps {
 
 export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
     isOpen,
-    
-    : _colors, // Using for consistent blue theme
+    // Using for consistent blue theme
     emojiSearch,
     emojiPickerCategory,
     onEmojiSearchChange,
@@ -110,8 +108,7 @@ export const EnhancedEmojiPicker: React.FC<EnhancedEmojiPickerProps> = ({
                         right: 20,
                         background: 'var(--bg-primary)',
                         borderRadius: '16px',
-                        boxShadow: ? '0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)'
-                            : '0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
                         zIndex: 1000,
                         width: '340px',
                         overflow: 'hidden' }}

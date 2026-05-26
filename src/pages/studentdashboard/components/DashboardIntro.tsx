@@ -65,7 +65,7 @@ const DashboardIntro: React.FC<DashboardIntroProps> = ({ onComplete }) => {
                             <lord-icon
                                 src="https://cdn.lordicon.com/evxithfv.json"
                                 trigger="hover"
-                                ="primary:#1e40af,secondary:#ffd700"
+                                colors="primary:#1e40af,secondary:#ffd700"
                                 style="width:250px;height:250px">
                             </lord-icon>
                         `

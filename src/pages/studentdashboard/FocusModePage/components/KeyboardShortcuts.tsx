@@ -5,13 +5,9 @@
  */
 import React from 'react';
 import { motion } from 'motion/react';
-import type { FocusModeColors } from '../FocusModePage';
 
 // Keyboard Shortcuts Display Component
-const KeyboardShortcuts: React.FC<{
-    
-    
-}> = ({  }) => {
+const KeyboardShortcuts: React.FC<{ isBreakMode?: boolean }> = ({  }) => {
     const shortcuts = [
         { key: 'Space', action: 'Start/Pause' },
         { key: 'R', action: 'Reset Timer' },

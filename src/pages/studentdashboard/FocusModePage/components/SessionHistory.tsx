@@ -11,9 +11,9 @@ import { getStudyTimeData, type StudyTimeData } from '../../../../services/study
 
 // Session History Component - Shows weekly focus trends
 const SessionHistory: React.FC<{
-    
-    
-}> = ({ : _isDarkMode, : _colors }) => {
+    isDarkMode: boolean;
+    colors: FocusModeColors;
+}> = ({ isDarkMode: _isDarkMode, colors: _colors }) => {
     const [studyData, setStudyData] = useState<StudyTimeData | null>(null);
 
     useEffect(() => {

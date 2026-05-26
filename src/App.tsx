@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { Toaster } from 'sonner'
-import { Navbar, Hero, Features, NeoLMS, Footer, IntroAnimation } from './components/landing'
+import { HorizontalHome, IntroAnimation } from './components/landing'
 import { LoginModal } from './components/modals'
-import { WelcomeNotification } from './components/shared'
-import { SmoothCursor } from '../@/components/ui/smooth-cursor'
+import { SmoothCursor } from '@/components/ui/smooth-cursor'
 import StudentLogin from './pages/studentdashboard/StudentLogin'
 import DashboardPage from './pages/studentdashboard'
 import JoinGroupPage from './pages/studentdashboard/JoinGroupPage'
@@ -80,13 +79,8 @@ function HomePage() {
         }
       `}</style>
       <IntroAnimation />
-      <Navbar onLoginClick={() => setIsLoginOpen(true)} />
-      <WelcomeNotification />
-      <Hero />
-      <Features />
-      <NeoLMS />
+      <HorizontalHome onLoginClick={() => setIsLoginOpen(true)} />
       <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
-      <Footer />
       <audio id="click-sound" src="sounds/clicksfx.mp3" preload="auto" ref={clickSoundRef}></audio>
     </>
   );

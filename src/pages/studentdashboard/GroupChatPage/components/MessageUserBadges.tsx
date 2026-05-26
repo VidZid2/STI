@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import type { ChatColors, UserBadge, MemberStats } from '../types';
+import type { UserBadge, MemberStats } from '../types';
 
 interface MessageUserBadgesProps {
     userName: string;

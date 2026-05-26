@@ -7,7 +7,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { STUDY_REACTIONS } from '../constants';
 import { Tooltip } from './Tooltip';
-import type { ChatColors } from '../types';
+import type {} from '../types';
 
 interface ReactionsPickerProps {
     messageId: string;

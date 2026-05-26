@@ -109,7 +109,7 @@ html {
         font-size: 1rem !important;
     }
     
-    .sidebar {
+    .sidebar-wrapper:not(.collapsed) {
         width: 240px !important;
     }
     
@@ -242,12 +242,8 @@ html {
     }
     
     /* Dashboard specific */
-    .sidebar {
-        width: 260px !important;
-    }
-    
-    .main-content {
-        margin-left: 260px !important;
+    .sidebar-wrapper:not(.collapsed) {
+        width: 220px !important;
     }
     
     /* Index.html features */
@@ -333,8 +329,8 @@ html {
     }
     
     /* Dashboard optimization */
-    .sidebar {
-        width: 260px !important;
+    .sidebar-wrapper:not(.collapsed) {
+        width: 220px !important;
     }
     
     .course-grid {
@@ -368,8 +364,8 @@ html {
         grid-template-columns: repeat(3, 1fr) !important;
     }
     
-    .sidebar {
-        width: 280px !important;
+    .sidebar-wrapper:not(.collapsed) {
+        width: 240px !important;
     }
 }
 
@@ -422,7 +418,7 @@ html {
     }
     
     /* Dashboard */
-    .sidebar {
+    .sidebar-wrapper:not(.collapsed) {
         width: 300px !important;
     }
     
@@ -789,7 +785,7 @@ html {
 
 /* ===== SAMSUNG DEX MODE ===== */
 @media (min-width: 1920px) and (pointer: fine) {
-    [data-device-type="mobile"] .sidebar {
+    [data-device-type="mobile"] .sidebar-wrapper:not(.collapsed) {
         width: 280px !important;
     }
     

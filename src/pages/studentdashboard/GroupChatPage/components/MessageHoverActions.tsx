@@ -6,7 +6,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Tooltip } from './Tooltip';
-import type { ChatColors } from '../types';
+import type {} from '../types';
 import type { ChatMessage } from '../../../../services/chatService';
 
 interface HelpfulVote {
@@ -18,8 +18,9 @@ interface MessageHoverActionsProps {
     message: ChatMessage;
     isOwn: boolean;
     isHovered: boolean;
-    
-    
+    formattedTime: string;
+    isBookmarked: boolean;
+    isPinned: boolean;
     helpfulVote?: HelpfulVote;
     showReactionsFor: string | null;
     onToggleReactions: () => void;

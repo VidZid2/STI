@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 
 export const DashboardSuspenseFallback: React.FC = () => {
-    const [ setIsDarkMode] = useState(
+    const [isDarkMode, setIsDarkMode] = useState(
         () => localStorage.getItem('darkModeEnabled') === 'true' || document.body.classList.contains('dark-mode')
     );
 
@@ -27,7 +27,7 @@ export const DashboardSuspenseFallback: React.FC = () => {
         };
     }, []);
 
-    const = {
+    const _colors = {
         bg: 'var(--bg-primary)',
         cardBg: 'var(--bg-primary)',
         border: 'rgba(255,255,255,0.08)',

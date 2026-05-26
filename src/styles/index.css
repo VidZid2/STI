@@ -798,7 +798,6 @@ html.pink-theme .shadow-\[0_4px_20px_rgba\(59\,130\,246\,0\.15\)\] { box-shadow:
 html.pink-theme .shadow-\[0_4px_12px_rgba\(59\,130\,246\,0\.2\)\] { box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2) !important; }
 html.pink-theme .shadow-\[0_4px_12px_rgba\(59\,130\,246\,0\.15\)\] { box-shadow: 0 4px 12px rgba(236, 72, 153, 0.15) !important; }
 
-
 /* EMERALD -> PINK */
 html.pink-theme .text-emerald-500 { color: #db2777 !important; }
 html.pink-theme .bg-emerald-500\/10 { background-color: rgba(219, 39, 119, 0.1) !important; }
@@ -827,8 +826,6 @@ html.pink-theme .hover\:bg-blue-500\/\[0\.08\]:hover { background-color: rgba(23
 
 /* Text colors */
 html.pink-theme .text-slate-900 { color: #831843 !important; }
-
-
 
 /* Override Tailwind blue hover classes to pink */
 html.pink-theme .hover\:bg-indigo-500\/10:hover {
@@ -968,8 +965,6 @@ html.pink-theme.dark [style*="rgba(59, 130, 246, 0.15)"] {
 html.pink-theme.dark [style*="rgba(59, 130, 246, 0.08)"] {
     background: linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0.06) 100%) !important;
 }
-
-
 
 html.pink-theme.dark {
     background: #1a0a12 !important;
@@ -5667,7 +5662,6 @@ body.dark-mode .App {
     }
 }
 
-
 /* ============================================
    DISPLAY SETTINGS - Global CSS Classes
    Applied via DisplaySettingsContext
@@ -5744,7 +5738,6 @@ html.hide-avatars [class*="avatar-container"] {
     display: none !important;
 }
 
-
 /* Shimmer animation for skeleton loading */
 @keyframes shimmer {
     0% {
@@ -5753,5 +5746,63 @@ html.hide-avatars [class*="avatar-container"] {
 
     100% {
         background-position: 200% 0;
+    }
+}
+
+@layer base {
+  .theme {
+        --animate-aurora: aurora 8s ease-in-out infinite alternate;
+        --animate-gradient: gradient 8s linear infinite;
+        --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
+        --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+    }
+}
+
+@theme inline {
+  @keyframes aurora {
+  0% {
+    background-position: 0% 50%;
+    transform: rotate(-5deg) scale(0.9);
+        }
+  25% {
+    background-position: 50% 100%;
+    transform: rotate(5deg) scale(1.1);
+        }
+  50% {
+    background-position: 100% 50%;
+    transform: rotate(-3deg) scale(0.95);
+        }
+  75% {
+    background-position: 50% 0%;
+    transform: rotate(3deg) scale(1.05);
+        }
+  100% {
+    background-position: 0% 50%;
+    transform: rotate(-5deg) scale(0.9);
+        }
+    }
+  @keyframes gradient {
+  to {
+    background-position: var(--bg-size, 300%) 0;
+        }
+    }
+  @keyframes shimmer-slide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+        }
+    }
+  @keyframes spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+        }
+  15%, 35% {
+    transform: translateZ(0) rotate(90deg);
+        }
+  65%, 85% {
+    transform: translateZ(0) rotate(270deg);
+        }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+        }
     }
 }

@@ -5,12 +5,10 @@
  */
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import type { FocusModeColors } from '../FocusModePage';
 
 // Session Goal Component
 const SessionGoal: React.FC<{
-    
-    
+    sessionGoal: number;
     setSessionGoal: (goal: number) => void;
     currentProgress: number;
 }> = ({   sessionGoal, setSessionGoal, currentProgress }) => {

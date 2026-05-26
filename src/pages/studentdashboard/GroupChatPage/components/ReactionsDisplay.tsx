@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import type { MessageReaction, ChatColors } from '../types';
+import type { MessageReaction } from '../types';
 
 interface ReactionsDisplayProps {
     reactions: MessageReaction[];

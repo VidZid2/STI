@@ -6,7 +6,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
-
+import { createPortal } from 'react-dom';
 import {
     fetchGroups,
     getGroupStats,
@@ -18,14 +18,16 @@ import {
     createGroup,
     togglePinGroup,
     groupCategoryConfig,
-
-
+    getRoleInfo,
+    formatLastActive,
     updateOnlineStatus,
     subscribeToAllGroupMembers,
     type GroupWithMembers,
     type GroupStats,
     type GroupFilter,
-    type GroupSortOption } from '../../../../services/groupsService';
+    type GroupSortOption,
+    type GroupCategory,
+} from '../../../../services/groupsService';
 import GroupIcon from './components/GroupIcon';
 import GroupDetailModal from './modals/GroupDetailModal';
 import InviteModal from './modals/InviteModal';
@@ -33,8 +35,8 @@ import CreateGroupModal from './modals/CreateGroupModal';
 import { GroupCard } from './components/GroupCard';
 import { GroupsSkeleton } from './components/GroupsSkeleton';
 import { FilterTabs } from './components/FilterTabs';
-
-import { getSettings } from '../../../../services/profileService';
+import { supabase, isSupabaseConfigured } from '../../../../lib/supabase';
+import { getProfile, getSettings } from '../../../../services/profileService';
 
 // Custom hook for detecting reduced motion preference
 const useReducedMotion = (): boolean => {
@@ -53,9 +55,9 @@ const useReducedMotion = (): boolean => {
     return prefersReducedMotion;
 };
 
-// GroupsSkeleton � moved to ./components/GroupsSkeleton.tsx
-// FilterTabs � moved to ./components/FilterTabs.tsx
-// MemberAvatarStack, TooltipPortal, ActionButtonWithTooltip, PinnedBadgeWithTooltip, GroupCard � moved to ./components/GroupCard.tsx
+// GroupsSkeleton — moved to ./components/GroupsSkeleton.tsx
+// FilterTabs — moved to ./components/FilterTabs.tsx
+// MemberAvatarStack, TooltipPortal, ActionButtonWithTooltip, PinnedBadgeWithTooltip, GroupCard — moved to ./components/GroupCard.tsx
 
 // Main GroupsContent Component
 const GroupsContent: React.FC = () => {
@@ -80,14 +82,39 @@ const GroupsContent: React.FC = () => {
     const suggestionsRef = useRef<HTMLDivElement>(null);
     const reducedMotion = useReducedMotion();
 
-    const = {
-        bg: 'var(--bg-primary)',
-        cardBg: 'var(--bg-secondary)',
-        border: 'var(--border-light)',
-        textPrimary: 'var(--text-primary)',
-        textSecondary: 'var(--text-secondary)',
-        textMuted: 'var(--text-muted)',
-        accent: 'var(--brand-blue)' };
+    // Detect dark mode from body class (synced with dashboard)
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        if (typeof document !== 'undefined') {
+            return document.body.classList.contains('dark-mode');
+        }
+        return false;
+    });
+
+    // Listen for dark mode changes
+    useEffect(() => {
+        const checkDarkMode = () => {
+            setIsDarkMode(document.body.classList.contains('dark-mode'));
+        };
+        
+        // Initial check
+        checkDarkMode();
+        
+        // Observe body class changes
+        const observer = new MutationObserver(checkDarkMode);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        
+        return () => observer.disconnect();
+    }, []);
+
+    const colors = {
+        bg: isDarkMode ? '#0f172a' : '#f8fafc',
+        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
+        border: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
+        textSecondary: isDarkMode ? '#94a3b8' : '#475569',
+        textMuted: isDarkMode ? '#64748b' : '#94a3b8',
+        accent: '#3b82f6',
+    };
 
     // Load groups
     // Load groups and set online status
@@ -301,7 +328,7 @@ const GroupsContent: React.FC = () => {
     };
 
     if (isLoading) {
-        return <GroupsSkeleton />;
+        return <GroupsSkeleton isDarkMode={isDarkMode} />;
     }
 
     return (
@@ -315,15 +342,17 @@ const GroupsContent: React.FC = () => {
             >
                 <div style={{
                     display: 'flex', alignItems: 'center', gap: '16px', padding: '18px 22px',
-                    borderRadius: '14px', background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`,
-                    flexWrap: 'wrap' }}>
+                    borderRadius: '14px', background: colors.cardBg, border: `1px solid ${colors.border}`,
+                    flexWrap: 'wrap',
+                }}>
                     {/* Icon */}
                     <motion.div
                         whileHover={reducedMotion ? {} : { scale: 1.05, rotate: 5 }}
                         style={{
                             width: '46px', height: '46px', borderRadius: '12px',
                             background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -341,13 +370,14 @@ const GroupsContent: React.FC = () => {
                             transition={{ delay: 0.1 }}
                             style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}
                         >
-                            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: colors.textPrimary }}>
                                 Study Groups
                             </h1>
                             <span style={{
                                 padding: '3px 8px', borderRadius: '6px',
                                 background: 'rgba(59, 130, 246, 0.1)', fontSize: '11px',
-                                fontWeight: 600, color: '#3b82f6' }}>
+                                fontWeight: 600, color: '#3b82f6',
+                            }}>
                                 {stats.totalGroups} groups
                             </span>
                         </motion.div>
@@ -355,7 +385,7 @@ const GroupsContent: React.FC = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.15 }}
-                            style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}
+                            style={{ margin: 0, fontSize: '13px', color: colors.textSecondary }}
                         >
                             Collaborate with classmates and join study sessions
                         </motion.p>
@@ -369,10 +399,10 @@ const GroupsContent: React.FC = () => {
                         style={{ display: 'flex', alignItems: 'stretch', gap: '10px' }}
                     >
                         {[
-                            { label: 'Total', value: stats.totalGroups, description: 'Groups', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)', icon: 'grid' },
-                            { label: 'My Groups', value: stats.myGroups, description: 'Joined', color: '#8b5cf6', bgColor: 'rgba(139, 92, 246, 0.1)', icon: 'check' },
-                            { label: 'Public', value: stats.publicGroups, description: 'Open', color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.1)', icon: 'users' },
-                            { label: 'Online', value: stats.onlineMembers, description: 'Active', color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.1)', icon: 'chat' },
+                            { label: 'Total', value: stats.totalGroups, description: 'Groups', color: '#3b82f6', bgColor: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.06)', icon: 'grid' },
+                            { label: 'My Groups', value: stats.myGroups, description: 'Joined', color: '#8b5cf6', bgColor: isDarkMode ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.06)', icon: 'check' },
+                            { label: 'Public', value: stats.publicGroups, description: 'Open', color: '#f59e0b', bgColor: isDarkMode ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.06)', icon: 'users' },
+                            { label: 'Online', value: stats.onlineMembers, description: 'Active', color: '#10b981', bgColor: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.06)', icon: 'chat' },
                         ].map((stat, i) => (
                             <motion.div
                                 key={stat.label}
@@ -383,7 +413,8 @@ const GroupsContent: React.FC = () => {
                                 style={{
                                     display: 'flex', flexDirection: 'column', alignItems: 'center',
                                     padding: '10px 16px', borderRadius: '10px', background: stat.bgColor,
-                                    cursor: 'default', minWidth: '72px' }}
+                                    cursor: 'default', minWidth: '72px',
+                                }}
                                 title={`${stat.label}: ${stat.value}`}
                             >
                                 <div style={{ color: stat.color, marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -392,7 +423,7 @@ const GroupsContent: React.FC = () => {
                                 <span style={{ fontSize: '18px', fontWeight: 700, color: stat.color, lineHeight: 1, marginBottom: '2px' }}>
                                     {stat.value}
                                 </span>
-                                <span style={{ fontSize: '10px', fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                                <span style={{ fontSize: '10px', fontWeight: 500, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                                     {stat.description}
                                 </span>
                             </motion.div>
@@ -414,7 +445,8 @@ const GroupsContent: React.FC = () => {
                 }}
                 style={{
                     display: 'flex', gap: '12px', marginBottom: '24px',
-                    flexWrap: 'wrap', alignItems: 'center' }}
+                    flexWrap: 'wrap', alignItems: 'center',
+                }}
             >
                 {/* Search Input - matching CatalogContent design */}
                 <motion.div
@@ -427,14 +459,15 @@ const GroupsContent: React.FC = () => {
                         x: { delay: 0.3, duration: 0.4 }
                     }}
                     style={{
-                        flex: 1, minWidth: '220px', position: 'relative' }}
+                        flex: 1, minWidth: '220px', position: 'relative',
+                    }}
                 >
                     <svg
                         width="16"
                         height="16"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke={'var(--text-muted)'}
+                        stroke={colors.textMuted}
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -444,7 +477,8 @@ const GroupsContent: React.FC = () => {
                             top: '50%',
                             transform: 'translateY(-50%)',
                             pointerEvents: 'none',
-                            zIndex: 1 }}
+                            zIndex: 1,
+                        }}
                     >
                         <circle cx="11" cy="11" r="8" />
                         <path d="m21 21-4.35-4.35" />
@@ -466,7 +500,7 @@ const GroupsContent: React.FC = () => {
                             if (searchSuggestions.length > 0) setShowSuggestions(true);
                         }}
                         onBlur={(e) => {
-                            e.target.style.borderColor = 'var(--border-color)';
+                            e.target.style.borderColor = colors.border;
                             e.target.style.boxShadow = 'none';
                         }}
                         placeholder="Search groups..."
@@ -474,12 +508,13 @@ const GroupsContent: React.FC = () => {
                             width: '100%',
                             padding: '11px 42px 11px 42px',
                             borderRadius: '12px',
-                            border: `1px solid var(--border-color)`,
-                            background: 'var(--dashboard-surface)',
-                            color: 'var(--text-primary)',
+                            border: `1px solid ${colors.border}`,
+                            background: colors.cardBg,
+                            color: colors.textPrimary,
                             fontSize: '13px',
                             outline: 'none',
-                            transition: reducedMotion ? 'none' : 'all 0.2s ease' }}
+                            transition: reducedMotion ? 'none' : 'all 0.2s ease',
+                        }}
                     />
                     {/* Loading Spinner */}
                     <AnimatePresence>
@@ -500,8 +535,8 @@ const GroupsContent: React.FC = () => {
                                     animate={{ rotate: 360 }} 
                                     transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
                                 >
-                                    <circle cx="8" cy="8" r="6" stroke={'rgba(59, 130, 246, 0.1)'} strokeWidth="2" fill="none" />
-                                    <circle cx="8" cy="8" r="6" stroke={'var(--accent-color)'} strokeWidth="2" strokeLinecap="round" strokeDasharray="28" strokeDashoffset="21" fill="none" />
+                                    <circle cx="8" cy="8" r="6" stroke={isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)'} strokeWidth="2" fill="none" />
+                                    <circle cx="8" cy="8" r="6" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeDasharray="28" strokeDashoffset="21" fill="none" />
                                 </motion.svg>
                             </motion.div>
                         )}
@@ -521,7 +556,7 @@ const GroupsContent: React.FC = () => {
                                     aria-label="Clear search (Esc)"
                                     title="Clear search (Esc)"
                                     style={{ 
-                                        background: 'var(--bg-hover)', 
+                                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)', 
                                         border: 'none', 
                                         borderRadius: '6px', 
                                         width: '20px', 
@@ -535,7 +570,7 @@ const GroupsContent: React.FC = () => {
                                     whileHover={{ scale: 1.1 }} 
                                     whileTap={{ scale: 0.9 }}
                                 >
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }} aria-hidden="true">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }} aria-hidden="true">
                                         <path d="M18 6L6 18M6 6l12 12" />
                                     </svg>
                                 </motion.button>
@@ -558,18 +593,20 @@ const GroupsContent: React.FC = () => {
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     justifyContent: 'center',
-                                    pointerEvents: 'none' }}
+                                    pointerEvents: 'none',
+                                }}
                             >
                                 <div 
                                     style={{ 
                                         padding: '4px 8px', 
                                         borderRadius: '6px', 
-                                        background: 'var(--bg-hover)', 
-                                        border: `1px solid ${'var(--bg-hover)'}`,
+                                        background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', 
+                                        border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
                                         fontSize: '11px', 
                                         fontWeight: 500, 
-                                        color: 'var(--text-muted)',
-                                        fontFamily: 'monospace' }}
+                                        color: colors.textMuted,
+                                        fontFamily: 'monospace',
+                                    }}
                                     title="Press / to search"
                                 >
                                     /
@@ -596,25 +633,27 @@ const GroupsContent: React.FC = () => {
                                     left: 0,
                                     right: 0,
                                     marginTop: '4px',
-                                    background: 'var(--dashboard-surface)',
-                                    border: `1px solid var(--border-color)`,
+                                    background: colors.cardBg,
+                                    border: `1px solid ${colors.border}`,
                                     borderRadius: '10px',
                                     boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
                                     zIndex: 50,
-                                    overflow: 'hidden' }}
+                                    overflow: 'hidden',
+                                }}
                             >
                                 {/* Suggestions Header */}
                                 <div style={{
                                     padding: '6px 10px',
-                                    borderBottom: `1px solid var(--border-color)`,
+                                    borderBottom: `1px solid ${colors.border}`,
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between' }}>
-                                    <span style={{ fontSize: '9px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                    justifyContent: 'space-between',
+                                }}>
+                                    <span style={{ fontSize: '9px', fontWeight: 600, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                         Suggestions
                                     </span>
-                                    <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>
-                                        ?? � Enter
+                                    <span style={{ fontSize: '9px', color: colors.textMuted }}>
+                                        ↑↓ · Enter
                                     </span>
                                 </div>
                                 
@@ -642,7 +681,8 @@ const GroupsContent: React.FC = () => {
                                                 cursor: 'pointer',
                                                 background: isSelected ? 'rgba(59, 130, 246, 0.05)' : 'transparent',
                                                 borderLeft: isSelected ? '2px solid #3b82f6' : '2px solid transparent',
-                                                transition: 'all 0.1s ease' }}
+                                                transition: 'all 0.1s ease',
+                                            }}
                                         >
                                             {/* Group Icon */}
                                             <div style={{
@@ -654,7 +694,8 @@ const GroupsContent: React.FC = () => {
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 flexShrink: 0,
-                                                overflow: 'hidden' }}>
+                                                overflow: 'hidden',
+                                            }}>
                                                 {group.avatar ? (
                                                     <img 
                                                         src={group.avatar} 
@@ -669,7 +710,7 @@ const GroupsContent: React.FC = () => {
                                             {/* Group Info */}
                                             <div style={{ flex: 1, minWidth: 0 }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                                    <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    <span style={{ fontSize: '12px', fontWeight: 500, color: colors.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                         {group.name}
                                                     </span>
                                                     {group.is_member && (
@@ -691,7 +732,8 @@ const GroupsContent: React.FC = () => {
                                                             display: 'inline-flex', alignItems: 'center', gap: '3px',
                                                             fontSize: '9px', padding: '1px 5px', borderRadius: '3px',
                                                             background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', fontWeight: 500,
-                                                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100px' }}>
+                                                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100px',
+                                                        }}>
                                                             <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                                                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -704,11 +746,11 @@ const GroupsContent: React.FC = () => {
                                             
                                             {/* Members Count */}
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
-                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                                                     <circle cx="9" cy="7" r="4" />
                                                 </svg>
-                                                <span style={{ fontSize: '10px', fontWeight: 500, color: 'var(--text-muted)' }}>{group.member_count}</span>
+                                                <span style={{ fontSize: '10px', fontWeight: 500, color: colors.textMuted }}>{group.member_count}</span>
                                             </div>
                                         </motion.div>
                                     );
@@ -721,8 +763,8 @@ const GroupsContent: React.FC = () => {
                 {/* Filter Tabs */}
                 <FilterTabs
                     activeFilter={activeFilter}
-                    setActiveFilter={setActiveFilter} stats={stats}
-                    
+                    setActiveFilter={setActiveFilter}
+                    stats={stats}
                 />
 
                 {/* Sort Dropdown - Matching CatalogContent design */}
@@ -746,9 +788,9 @@ const GroupsContent: React.FC = () => {
                         aria-haspopup="listbox"
                         style={{ 
                             display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 12px', borderRadius: '10px', 
-                            border: `1px solid ${showSortDropdown ? 'var(--accent-color)' : 'var(--border-color)'}`,
-                            background: showSortDropdown ? ('rgba(59, 130, 246, 0.1)') : 'var(--dashboard-surface)',
-                            color: showSortDropdown ? 'var(--accent-color)' : 'var(--text-secondary)',
+                            border: `1px solid ${showSortDropdown ? colors.accent : colors.border}`,
+                            background: showSortDropdown ? (isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : colors.cardBg,
+                            color: showSortDropdown ? colors.accent : colors.textSecondary,
                             fontSize: '12px', fontWeight: 500, cursor: 'pointer',
                             transition: 'border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease'
                         }}
@@ -770,7 +812,7 @@ const GroupsContent: React.FC = () => {
                                     animate={{ opacity: 1, y: 0, scale: 1 }} 
                                     exit={{ opacity: 0, y: -8, scale: 0.95 }} 
                                     transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                                    style={{ position: 'absolute', top: '100%', right: 0, marginTop: '6px', padding: '6px', borderRadius: '12px', background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`, boxShadow: 'var(--shadow-lg)', zIndex: 50, minWidth: '160px' }}
+                                    style={{ position: 'absolute', top: '100%', right: 0, marginTop: '6px', padding: '6px', borderRadius: '12px', background: colors.cardBg, border: `1px solid ${colors.border}`, boxShadow: isDarkMode ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(0,0,0,0.1)', zIndex: 50, minWidth: '160px' }}
                                 >
                                     {([
                                         { value: 'recent', label: 'Most Recent' },
@@ -783,17 +825,17 @@ const GroupsContent: React.FC = () => {
                                             role="option"
                                             aria-selected={sortBy === option.value}
                                             onClick={() => { setSortBy(option.value); setShowSortDropdown(false); }} 
-                                            whileHover={{ backgroundColor: 'var(--bg-hover)' }}
+                                            whileHover={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
                                             style={{ 
                                                 width: '100%', padding: '10px 12px', borderRadius: '8px', border: 'none', 
-                                                background: sortBy === option.value ? ('rgba(59, 130, 246, 0.1)') : 'transparent', 
-                                                color: sortBy === option.value ? 'var(--accent-color)' : 'var(--text-secondary)', 
+                                                background: sortBy === option.value ? (isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.06)') : 'transparent', 
+                                                color: sortBy === option.value ? colors.accent : colors.textSecondary, 
                                                 fontSize: '12px', fontWeight: 500, cursor: 'pointer', textAlign: 'left', 
                                                 display: 'flex', alignItems: 'center', justifyContent: 'space-between' 
                                             }}
                                         >
                                             {option.label}
-                                            {sortBy === option.value && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>}
+                                            {sortBy === option.value && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>}
                                         </motion.button>
                                     ))}
                                 </motion.div>
@@ -815,7 +857,8 @@ const GroupsContent: React.FC = () => {
                     }}
                     whileHover={{ 
                         scale: 1.02,
-                        boxShadow: '0 6px 20px rgba(59, 130, 246, 0.25)' }}
+                        boxShadow: '0 6px 20px rgba(59, 130, 246, 0.25)',
+                    }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setIsCreateModalOpen(true)}
                     style={{
@@ -823,13 +866,14 @@ const GroupsContent: React.FC = () => {
                         alignItems: 'center',
                         gap: '6px',
                         padding: '8px 12px',
-                        background: 'rgba(59, 130, 246, 0.1)',
+                        background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
                         color: '#3b82f6',
-                        border: `1px solid ${'rgba(59, 130, 246, 0.1)'}`,
+                        border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
                         borderRadius: '10px',
                         fontSize: '12px',
                         fontWeight: 500,
-                        cursor: 'pointer' }}
+                        cursor: 'pointer',
+                    }}
                 >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -845,7 +889,8 @@ const GroupsContent: React.FC = () => {
                     style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                        gap: '16px' }}
+                        gap: '16px',
+                    }}
                 >
                     <AnimatePresence mode="popLayout">
                         {filteredGroups.length > 0 ? (
@@ -853,7 +898,9 @@ const GroupsContent: React.FC = () => {
                                 <GroupCard
                                     key={group.id}
                                     group={group}
-                                    index={index} 
+                                    index={index}
+                                    colors={colors}
+                                    isDarkMode={isDarkMode}
                                     onClick={(g) => { setSelectedGroup(g); setIsModalOpen(true); }}
                                     onJoin={handleJoin}
                                     onLeave={handleLeave}
@@ -868,20 +915,22 @@ const GroupsContent: React.FC = () => {
                                 animate={{ opacity: 1 }}
                                 style={{
                                     gridColumn: '1 / -1', padding: '60px 20px', textAlign: 'center',
-                                    background: 'var(--dashboard-surface)', borderRadius: '16px', border: `1px solid var(--border-color)` }}
+                                    background: colors.cardBg, borderRadius: '16px', border: `1px solid ${colors.border}`,
+                                }}
                             >
                                 <div style={{
                                     width: '64px', height: '64px', borderRadius: '16px', margin: '0 auto 16px',
                                     background: 'rgba(59, 130, 246, 0.1)', display: 'flex',
-                                    alignItems: 'center', justifyContent: 'center' }}>
+                                    alignItems: 'center', justifyContent: 'center',
+                                }}>
                                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
                                         <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                                     </svg>
                                 </div>
-                                <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                                <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 600, color: colors.textPrimary }}>
                                     No groups found
                                 </h3>
-                                <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>
+                                <p style={{ margin: 0, fontSize: '13px', color: colors.textSecondary }}>
                                     {searchQuery ? 'Try a different search term' : 'No groups match your current filters'}
                                 </p>
                             </motion.div>
@@ -894,7 +943,8 @@ const GroupsContent: React.FC = () => {
             <GroupDetailModal
                 group={selectedGroup}
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)} onJoin={handleJoin}
+                onClose={() => setIsModalOpen(false)}
+                onJoin={handleJoin}
                 onLeave={handleLeave}
                 onOpenChat={handleOpenChat}
             />
@@ -902,7 +952,8 @@ const GroupsContent: React.FC = () => {
             {/* Create Group Modal */}
             <CreateGroupModal
                 isOpen={isCreateModalOpen}
-                onClose={() => setIsCreateModalOpen(false)} onCreateGroup={async (groupData) => {
+                onClose={() => setIsCreateModalOpen(false)}
+                onCreateGroup={async (groupData) => {
                     const newGroup = await createGroup({
                         name: groupData.name,
                         description: groupData.description,
@@ -913,7 +964,8 @@ const GroupsContent: React.FC = () => {
                         course_name: groupData.courseName,
                         max_members: groupData.maxMembers,
                         is_private: groupData.isPrivate,
-                        created_by: 'current-user' });
+                        created_by: 'current-user',
+                    });
                     if (newGroup) {
                         // Refresh groups list
                         const [groupsData, statsData] = await Promise.all([
@@ -930,10 +982,10 @@ const GroupsContent: React.FC = () => {
             <InviteModal
                 group={inviteGroup}
                 isOpen={isInviteModalOpen}
-                onClose={() => setIsInviteModalOpen(false)} />
+                onClose={() => setIsInviteModalOpen(false)}
+            />
         </div>
     );
 };
 
 export default GroupsContent;
-

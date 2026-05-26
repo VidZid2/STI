@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase';
 export type NotificationCategory = 'all' | 'assignment' | 'quiz' | 'announcement';
 
 export interface Notification {
-    id: number;
+    id: number | string;
     teacher?: string;
     title: string;
     message: string;
@@ -24,7 +24,7 @@ const STORAGE_KEYS = {
 };
 
 // Helper to get stored IDs from localStorage
-const getStoredIds = (key: string): Set<number> => {
+const getStoredIds = (key: string): Set<any> => {
     try {
         const stored = localStorage.getItem(key);
         if (stored) {
@@ -37,7 +37,7 @@ const getStoredIds = (key: string): Set<number> => {
 };
 
 // Helper to save IDs to localStorage
-const saveStoredIds = (key: string, ids: Set<number>) => {
+const saveStoredIds = (key: string, ids: Set<any>) => {
     try {
         localStorage.setItem(key, JSON.stringify([...ids]));
     } catch (e) {
@@ -80,9 +80,9 @@ interface NotificationContextType {
     toastNotifications: Notification[];
 
     // Actions
-    dismissNotification: (id: number) => void;
-    dismissToast: (id: number) => void;
-    markAsRead: (id: number) => void;
+    dismissNotification: (id: number | string) => void;
+    dismissToast: (id: number | string) => void;
+    markAsRead: (id: number | string) => void;
     markAllAsRead: () => void;
     clearAllNotifications: () => void;
     clearAllToasts: () => void;
@@ -97,8 +97,55 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
     // Initialize with persisted state
     const [notifications, setNotifications] = useState<Notification[]>(() => getInitialNotifications());
-    const [dismissedToastIds, setDismissedToastIds] = useState<Set<number>>(() => getStoredIds(STORAGE_KEYS.DISMISSED_TOAST_IDS));
+    const [dismissedToastIds, setDismissedToastIds] = useState<Set<any>>(() => getStoredIds(STORAGE_KEYS.DISMISSED_TOAST_IDS));
     const nextIdRef = useRef(100);
+
+    const [userId, setUserId] = useState<string | null>(null);
+
+    // Resolve user id from Supabase Auth
+    useEffect(() => {
+        if (!supabase) return;
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            if (user) setUserId(user.id);
+        });
+    }, []);
+
+    // Fetch on mount + subscribe to realtime notifications
+    useEffect(() => {
+        if (!userId) return;
+        
+        import('../services/notificationService').then(({ fetchNotifications, subscribeToNotifications }) => {
+            fetchNotifications(userId).then(dbNotifs => {
+                const mapped = dbNotifs.map(n => ({
+                    id: n.id,
+                    title: n.title,
+                    message: n.message || '',
+                    isRead: n.is_read,
+                    timestamp: new Date(n.created_at),
+                    category: 'announcement' as NotificationCategory,
+                    type: (n.type === 'info' ? 'system' : n.type === 'error' ? 'warning' : 'announcement') as any,
+                }));
+                // Prepend db notifications so they appear at top
+                setNotifications(prev => [...mapped, ...prev.filter(p => typeof p.id === 'number')]);
+            });
+
+            const channel = subscribeToNotifications(userId, (n) => {
+                const mapped = {
+                    id: n.id,
+                    title: n.title,
+                    message: n.message || '',
+                    isRead: n.is_read,
+                    timestamp: new Date(n.created_at),
+                    category: 'announcement' as NotificationCategory,
+                    type: (n.type === 'info' ? 'system' : n.type === 'error' ? 'warning' : 'announcement') as any,
+                };
+                setNotifications(prev => [mapped, ...prev]);
+            });
+
+            return () => { if (channel && supabase) supabase.removeChannel(channel); };
+        });
+    }, [userId]);
+
 
     // Persist read IDs whenever notifications change
     useEffect(() => {
@@ -116,7 +163,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     const unreadCount = notifications.filter(n => !n.isRead).length;
 
-    const dismissNotification = useCallback((id: number) => {
+    const dismissNotification = useCallback((id: number | string) => {
         // Also persist deleted IDs
         const deletedIds = getStoredIds(STORAGE_KEYS.DELETED_IDS);
         deletedIds.add(id);
@@ -130,7 +177,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         });
     }, []);
 
-    const dismissToast = useCallback((id: number) => {
+    const dismissToast = useCallback((id: number | string) => {
         // Only dismiss from toast view, keep in notification list
         // Also mark as read so it won't show again on refresh
         setDismissedToastIds(prev => new Set(prev).add(id));
@@ -140,15 +187,21 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         ));
     }, []);
 
-    const markAsRead = useCallback((id: number) => {
+    const markAsRead = useCallback((id: number | string) => {
         setNotifications(prev => prev.map(n =>
             n.id === id ? { ...n, isRead: true } : n
         ));
+        if (typeof id === 'string') {
+            import('../services/notificationService').then(({ markAsRead }) => markAsRead(id));
+        }
     }, []);
 
     const markAllAsRead = useCallback(() => {
         setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-    }, []);
+        if (userId) {
+            import('../services/notificationService').then(({ markAllAsRead }) => markAllAsRead(userId));
+        }
+    }, [userId]);
 
     const clearAllNotifications = useCallback(() => {
         // Persist all current IDs as deleted

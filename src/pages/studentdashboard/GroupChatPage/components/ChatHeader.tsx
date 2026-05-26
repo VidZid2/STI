@@ -15,8 +15,7 @@ interface ChatHeaderProps {
     groupId: string | undefined;
     userXP: number;
     userStreak: number;
-    
-    
+    showSearchPanel?: boolean;
     onSearchToggle: () => void;
     onLeaderboardOpen: () => void;
     onGroupInfoOpen: () => void;
@@ -28,8 +27,6 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     groupId,
     userXP,
     userStreak,
-    
-    
     showSearchPanel,
     onSearchToggle,
     onLeaderboardOpen,

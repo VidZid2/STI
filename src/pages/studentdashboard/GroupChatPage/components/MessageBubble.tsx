@@ -10,7 +10,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { ChatMessage, MessageType } from '../../../../services/chatService';
-import type { MemberStats, MessageReaction, ChatColors, ChatProfile } from '../types';
+import type { MemberStats, MessageReaction, ChatProfile } from '../types';
 import { STUDY_REACTIONS } from '../constants';
 import { formatTime } from '../utils';
 import { FilePreviewCard } from './FilePreviewCard';
@@ -798,7 +798,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
         prev.isPinned === next.isPinned &&
         prev.isBookmarked === next.isBookmarked &&
         prev.reactions.length === next.reactions.length &&
-        prev.=== next.&&
         prev.isOnline === next.isOnline &&
         prev.helpfulData?.count === next.helpfulData?.count &&
         prev.helpfulData?.voted === next.helpfulData?.voted

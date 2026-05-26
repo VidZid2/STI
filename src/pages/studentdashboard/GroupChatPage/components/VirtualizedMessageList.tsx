@@ -7,7 +7,7 @@ import React, { useCallback, useRef, forwardRef } from 'react';
 import { Virtuoso, type VirtuosoHandle, type Components } from 'react-virtuoso';
 import { AnimatePresence } from 'motion/react';
 import type { ChatMessage, MessageType } from '../../../../services/chatService';
-import type { MessageReaction, MemberStats, ChatColors } from '../types';
+import type { MessageReaction, MemberStats } from '../types';
 import { MessageItem } from './MessageItem';
 import { DateSeparator } from './DateSeparator';
 import { shouldShowDateSeparator } from '../utils';

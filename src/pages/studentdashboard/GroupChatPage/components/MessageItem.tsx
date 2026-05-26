@@ -6,7 +6,7 @@
 import React, { memo, useCallback } from 'react';
 import { motion } from 'motion/react';
 import type { ChatMessage, MessageType } from '../../../../services/chatService';
-import type { MessageReaction, MemberStats, ChatColors } from '../types';
+import type { MessageReaction, MemberStats } from '../types';
 import { formatTime, shouldShowDateSeparator } from '../utils';
 import {
     MessageAvatar,
@@ -403,8 +403,7 @@ const arePropsEqual = (prevProps: MessageItemProps, nextProps: MessageItemProps)
     // Re-render if member online status changed
     if (prevProps.memberIsOnline !== nextProps.memberIsOnline) return false;
     
-    // Theme changes (rare)
-    if (prevProps.!== nextProps.) return false;
+    // Theme changes (rare) - Handled via CSS variables now
     
     // Props are equal, don't re-render
     return true;

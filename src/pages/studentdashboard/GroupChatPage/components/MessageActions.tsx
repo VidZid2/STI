@@ -6,7 +6,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Tooltip } from './Tooltip';
-import type { ChatColors } from '../types';
+import type {} from '../types';
 import type { ChatMessage } from '../../../../services/chatService';
 
 interface MessageActionsProps {

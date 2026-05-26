@@ -10,9 +10,12 @@ import type { FocusModeColors } from '../FocusModePage';
 
 // Session Stats Component - Shows today's focus progress
 const SessionStats: React.FC<{
-    
-    
-}> = ({ : _isDarkMode, : _colors, totalFocusTime, sessionsCompleted, currentStreak }) => {
+    isDarkMode: boolean;
+    colors: FocusModeColors;
+    totalFocusTime: number;
+    sessionsCompleted: number;
+    currentStreak: number;
+}> = ({ isDarkMode: _isDarkMode, colors: _colors, totalFocusTime, sessionsCompleted, currentStreak }) => {
     // Calculate stats - format compactly for large numbers
     const hours = Math.floor(totalFocusTime / 3600);
     const minutes = Math.floor((totalFocusTime % 3600) / 60);

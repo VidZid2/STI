@@ -5,7 +5,6 @@
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import type { FocusModeColors } from '../FocusModePage';
 
 // Timer Duration Options
 const FOCUS_DURATIONS = [15, 25, 30, 45, 60, 90];

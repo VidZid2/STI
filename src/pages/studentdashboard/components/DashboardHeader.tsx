@@ -3,96 +3,69 @@
  * Pure presentational component — receives all state via props.
  * Zero logic changes from the original.
  */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import ToolbarExpandable from '../../../components/ui/toolbar/ToolbarExpandable';
 import UserProfileDropdown from '../../../components/ui/dropdowns/UserProfileDropdown';
-import NotificationBell from '../../../components/shared/NotificationBell';
-import { ContainerTextFlip } from '../../../components/ui/primitives/container-text-flip';
+
+import { cn } from '../../../lib/utils';
 import StreakDropdown from '../../../components/ui/dropdowns/StreakDropdown';
 import type { DashboardView } from '../types';
 interface DashboardHeaderProps {
-    sidebarActive: boolean;
-    toggleSidebar: () => void;
     setActiveView: (view: DashboardView) => void;
-    setSidebarActive: (active: boolean) => void;
     isDemoMode: boolean;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
-    sidebarActive,
-    toggleSidebar,
     setActiveView,
-    setSidebarActive,
-    isDemoMode }) => (
+    isDemoMode 
+}) => {
+    const [isDarkMode, setIsDarkMode] = useState(() => 
+        typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
+    );
+    
+    useEffect(() => {
+        const checkDarkMode = () => {
+            setIsDarkMode(document.body.classList.contains('dark-mode'));
+        };
+        checkDarkMode();
+        
+        const observer = new MutationObserver(checkDarkMode);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        
+        return () => observer.disconnect();
+    }, []);
+
+    return (
     <header className="header">
         <div className="header-content">
             <div className="header-left">
-                <motion.button
-                    className="sidebar-toggle"
-                    onClick={toggleSidebar}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <motion.path
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            animate={sidebarActive ? { d: "M 5 5 L 19 19" } : { d: "M 4 6 L 20 6" }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                        />
-                        <motion.path
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            animate={sidebarActive ? { opacity: 0 } : { opacity: 1 }}
-                            d="M 4 12 L 20 12"
-                            transition={{ duration: 0.2, ease: "easeInOut" }}
-                        />
-                        <motion.path
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            animate={sidebarActive ? { d: "M 5 19 L 19 5" } : { d: "M 4 18 L 20 18" }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                        />
-                    </svg>
-                </motion.button>
 
                 <motion.div
-                    className="logo"
-                    onClick={() => { setActiveView('home'); setSidebarActive(false); }}
+                    className="logo flex items-center gap-2.5"
+                    onClick={() => { setActiveView('home'); }}
                     style={{ cursor: 'pointer' }}
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.15 }}
                 >
+                    {/* Logo Icon */}
                     <div
-                        className="logo-icon-wrapper"
-                        style={{
-                            width: 36, height: 36,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            borderRadius: 8, overflow: 'hidden',
-                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
+                        className={cn(
+                            "w-[100px] h-10 flex items-center justify-center rounded-xl overflow-hidden border transition-all duration-200",
+                            isDarkMode 
+                                ? "border-white/[0.06] bg-slate-800" 
+                                : "border-black/[0.06] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+                        )}
                     >
-                        <img src="/file.svg" alt="STI Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
-                        <ContainerTextFlip
-                            words={['eLMS', 'Learn', 'Grow', 'Excel']}
-                            interval={3000}
-                            animationDuration={500}
-                            className="!text-sm !py-1 !px-2 !rounded-md !font-bold"
-                            textClassName="!text-sm"
-                        />
-                        <span style={{ fontSize: '0.6rem', fontWeight: 500, color: '#94a3b8', letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: 4 }}>
-                            Learning Portal
-                        </span>
+                        <img src="/file.svg" alt="STI Logo" className="w-full h-full object-cover" />
                     </div>
                 </motion.div>
 
-                <div style={{ width: 1, height: 24, backgroundColor: '#e4e4e7', marginLeft: 12, marginRight: 4 }} />
+                <div
+                    className="h-5 w-[1px] mx-2"
+                    style={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}
+                />
                 <StreakDropdown />
             </div>
 
@@ -164,12 +137,21 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                         Demo
                     </motion.button>
                 )}
-                <ToolbarExpandable />
-                <NotificationBell />
-                <UserProfileDropdown />
+                
+                {/* Unified Toolbar & Profile Container */}
+                <div className={`flex items-center gap-2 p-1.5 rounded-2xl border transition-all duration-200 ${
+                    isDarkMode 
+                        ? 'border-slate-700/60 bg-slate-800/90 shadow-[0_1px_3px_rgba(0,0,0,0.3)]' 
+                        : 'border-black/[0.08] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                }`}>
+                    <ToolbarExpandable />
+                    <div className={`w-[1px] h-8 mx-1 ${isDarkMode ? 'bg-slate-700' : 'bg-zinc-200'}`}></div>
+                    <UserProfileDropdown />
+                </div>
             </div>
         </div>
     </header>
-);
+    );
+};
 
 export default DashboardHeader;

@@ -12,9 +12,10 @@ interface CoursesNavItemProps {
     onSidebarClose: () => void;
     onCourseSelect: (course: SidebarCourse) => void;
     currentCourseId?: string | null;
+    isExpanded?: boolean;
 }
 
-export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSidebarClose, onCourseSelect, currentCourseId }) => {
+export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSidebarClose, onCourseSelect, currentCourseId, isExpanded = true }) => {
     const [isOpen, setIsOpen] = useState(false);
     const anchorRef = useRef<HTMLDivElement>(null);
     const closeTimeoutRef = useRef<number | null>(null);
@@ -24,6 +25,8 @@ export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSid
     const coursesWithProgress = useMemo(() => getSidebarCoursesWithProgress(), []);
 
     const handleMouseEnter = useCallback(() => {
+        // Don't open dropdown when sidebar is collapsed
+        if (!isExpanded) return;
         // Clear any pending close
         if (closeTimeoutRef.current) {
             clearTimeout(closeTimeoutRef.current);
@@ -33,7 +36,7 @@ export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSid
         openTimeoutRef.current = window.setTimeout(() => {
             setIsOpen(true);
         }, 150);
-    }, []);
+    }, [isExpanded]);
 
     const handleMouseLeave = useCallback(() => {
         // Clear any pending open
@@ -58,6 +61,13 @@ export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSid
         setIsOpen(false);
         onSidebarClose();
     }, [onSidebarClose, onCourseSelect, coursesWithProgress]);
+
+    // Close dropdown when sidebar collapses
+    useEffect(() => {
+        if (!isExpanded) {
+            setIsOpen(false);
+        }
+    }, [isExpanded]);
 
     useEffect(() => {
         return () => {
@@ -94,25 +104,28 @@ export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSid
                     <span className="nav-text">Courses</span>
                     <span className="nav-description">Your enrolled classes</span>
                 </div>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    style={{
-                        marginLeft: 'auto',
-                        color: '#94a3b8',
-                        transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.12s ease'
-                    }}
-                >
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
+                {isExpanded && (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="nav-chevron"
+                        style={{
+                            marginLeft: 'auto',
+                            color: '#94a3b8',
+                            transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.12s ease'
+                        }}
+                    >
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                )}
             </a>
             {/* Invisible bridge to connect anchor to dropdown */}
             {isOpen && (

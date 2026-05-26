@@ -119,7 +119,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     transition={{ delay: 0.25 }}
                                                     className={`text-yellow-400 mt-2 font-semibold ${quickViewSettings.compactMode ? 'text-[9px]' : 'text-[10px]'}`}
                                                 >
-                                                    â€” {todaysQuote?.author}
+                                                    Ã¢â‚¬â€ {todaysQuote?.author}
                                                 </motion.p>
 
                                                 {/* Daily indicator */}
@@ -234,7 +234,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                                     animate={{ opacity: 1, y: 0 }}
                                                                     className={`font-bold text-slate-700 ${quickViewSettings.compactMode ? 'text-2xl' : 'text-3xl'}`}
                                                                 >
-                                                                    {weather.temperature}Â°
+                                                                    {weather.temperature}Ã‚Â°
                                                                 </motion.span>
                                                                 <span className={`text-slate-400 ${quickViewSettings.compactMode ? 'text-[10px]' : 'text-xs'}`}>C</span>
                                                             </div>
@@ -258,7 +258,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                                     </svg>
                                                                     {weather.location}
                                                                 </span>
-                                                                <span>â€¢</span>
+                                                                <span>Ã¢â‚¬Â¢</span>
                                                                 <span>{weather.humidity}% humidity</span>
                                                             </motion.div>
                                                         </div>
@@ -579,7 +579,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                     {studyInsights.trend !== 'stable' && (
                                                         <span className={`px-1.5 py-0.5 rounded-full ${studyInsights.trend === 'up' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
                                                             } ${quickViewSettings.compactMode ? 'text-[9px]' : 'text-[10px]'}`}>
-                                                            {studyInsights.trend === 'up' ? 'â†‘' : 'â†“'} {Math.abs(studyInsights.trendPercent)}%
+                                                            {studyInsights.trend === 'up' ? 'Ã¢â€ â€˜' : 'Ã¢â€ â€œ'} {Math.abs(studyInsights.trendPercent)}%
                                                         </span>
                                                     )}
                                                 </div>
@@ -1465,7 +1465,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                         transition={{ duration: 0.3 }}
                                                         className={`rounded-lg bg-gradient-to-br from-amber-50 to-yellow-100/50 flex items-center justify-center ${quickViewSettings.compactMode ? 'w-6 h-6' : 'w-8 h-8'}`}
                                                     >
-                                                        <span className={quickViewSettings.compactMode ? 'text-sm' : 'text-base'}>ðŸ†</span>
+                                                        <span className={quickViewSettings.compactMode ? 'text-sm' : 'text-base'}>🏆</span>
                                                     </motion.div>
                                                     <span className={`font-medium text-zinc-700 ${quickViewSettings.compactMode ? 'text-xs' : 'text-sm'}`}>Achievements</span>
                                                     <motion.span
@@ -1570,7 +1570,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                                                             transition={{ duration: 2, repeat: Infinity }}
                                                             className="text-2xl mb-1"
                                                         >
-                                                            ðŸŽ¯
+                                                            🎯
                                                         </motion.div>
                                                         <p className={`text-zinc-400 text-center ${quickViewSettings.compactMode ? 'text-[9px]' : 'text-[10px]'}`}>
                                                             Complete tasks to unlock badges!

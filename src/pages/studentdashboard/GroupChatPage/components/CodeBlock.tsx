@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Code Block Component
  * Renders code with syntax highlighting and copy functionality
  * Minimalistic design matching the app's style
@@ -14,7 +14,8 @@ interface CodeBlockProps {
     
 }
 
-// Language display names and const LANGUAGE_CONFIG: Record<string, { name: string; color: string }> = {
+// Language display names and colors
+const LANGUAGE_CONFIG: Record<string, { name: string; color: string }> = {
     javascript: { name: 'JavaScript', color: '#f7df1e' },
     js: { name: 'JavaScript', color: '#f7df1e' },
     typescript: { name: 'TypeScript', color: '#3178c6' },
@@ -177,8 +178,8 @@ const highlightCode = (code: string, language: string): React.ReactNode[] => {
 export const CodeBlock: React.FC<CodeBlockProps> = ({
     code,
     language = '',
-    isOwn = false,
-    = false }) => {
+    isOwn = false
+}) => {
     const [copied, setCopied] = useState(false);
     
     const langConfig = LANGUAGE_CONFIG[language.toLowerCase()] || { 

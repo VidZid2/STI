@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
     gradeSubmission,
@@ -220,7 +220,7 @@ const GradingPanel: React.FC<{
             />
 
             {/* Scrollable content */}
-            <div className="flex-1 overflow-auto" style={{ padding: isMobile ? '10px 12px' : '16px 20px' }}>
+            <div className={`flex-1 overflow-auto ${isMobile ? 'p-[10px_12px]' : 'p-[16px_20px]'}`}>
 
                 {/* Grade history */}
                 {submission.grade_history && submission.grade_history.length > 0 && (
@@ -229,38 +229,28 @@ const GradingPanel: React.FC<{
 
                 {/* Attachments */}
                 {submission.attachments.length > 0 && (
-                    <div style={{ marginBottom: isMobile ? '16px' : '20px' }}>
-                        <div className="font-semibold uppercase tracking-[0.5px]"
-                            style={{ fontSize: isMobile ? '11px' : '12px', color: 'var(--text-secondary)', marginBottom: isMobile ? '8px' : '10px' }}>
+                    <div className={isMobile ? 'mb-4' : 'mb-5'}>
+                        <div className={`font-semibold uppercase tracking-[0.5px] text-[var(--text-secondary)] ${isMobile ? 'text-[11px] mb-2' : 'text-[12px] mb-2.5'}`}>
                             SUBMITTED FILES
                         </div>
-                        <div className="flex flex-col" style={{ gap: isMobile ? '6px' : '8px' }}>
+                        <div className={`flex flex-col ${isMobile ? 'gap-1.5' : 'gap-2'}`}>
                             {submission.attachments.map((file, idx) => (
                                 <motion.button
                                     key={idx}
                                     whileHover={!isMobile ? { scale: 1.01, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' } : undefined}
                                     transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                                     onClick={() => onPreviewFile(file)}
-                                    className="flex items-center w-full text-left transition-all"
-                                    style={{
-                                        gap: isMobile ? '10px' : '12px',
-                                        padding: isMobile ? '10px 12px' : '12px 16px',
-                                        borderRadius: isMobile ? '8px' : '10px',
-                                        background: 'var(--bg-surface)',
-                                        border: '1px solid var(--border-subtle)',
-                                        cursor: 'pointer',
-                                    }}
+                                    className={`flex items-center w-full text-left transition-all bg-[var(--bg-surface)] border border-[var(--border-subtle)] cursor-pointer ${isMobile ? 'gap-2.5 p-[10px_12px] rounded-lg' : 'gap-3 p-[12px_16px] rounded-[10px]'}`}
                                 >
-                                    <div className="flex items-center" style={{ color: 'var(--color-danger)' }}>
+                                    <div className="flex items-center text-[var(--color-danger)]">
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
                                         </svg>
                                     </div>
-                                    <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-medium"
-                                        style={{ fontSize: isMobile ? '13px' : '14px', color: 'var(--text-primary)' }}>
+                                    <span className={`flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[var(--text-primary)] ${isMobile ? 'text-[13px]' : 'text-[14px]'}`}>
                                         {file.name}
                                     </span>
-                                    <div className="flex items-center" style={{ color: 'var(--text-secondary)' }}>
+                                    <div className="flex items-center text-[var(--text-secondary)]">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
                                         </svg>
@@ -272,12 +262,11 @@ const GradingPanel: React.FC<{
                 )}
 
                 {/* Score section */}
-                <div style={{ marginBottom: isMobile ? '12px' : '16px' }}>
+                <div className={isMobile ? 'mb-3' : 'mb-4'}>
                     {/* Score header row */}
-                    <div className="flex items-center justify-between flex-wrap" style={{ marginBottom: isMobile ? '10px' : '12px', gap: '8px' }}>
-                        <div className="flex items-center flex-wrap" style={{ gap: isMobile ? '8px' : '12px' }}>
-                            <div className="font-semibold uppercase tracking-[0.5px]"
-                                style={{ fontSize: isMobile ? '11px' : '12px', color: 'var(--text-secondary)' }}>
+                    <div className={`flex items-center justify-between flex-wrap gap-2 ${isMobile ? 'mb-2.5' : 'mb-3'}`}>
+                        <div className={`flex items-center flex-wrap ${isMobile ? 'gap-2' : 'gap-3'}`}>
+                            <div className={`font-semibold uppercase tracking-[0.5px] text-[var(--text-secondary)] ${isMobile ? 'text-[11px]' : 'text-[12px]'}`}>
                                 SCORE
                             </div>
                             {aiEnabled && aiConfigured && isTaskAIGradable && !aiGradingResult && !dismissedAISuggestion && (
@@ -286,10 +275,8 @@ const GradingPanel: React.FC<{
                                     whileTap={{ scale: 0.95 }}
                                     onClick={handleAIGrade}
                                     disabled={isAIGrading}
-                                    className="flex items-center gap-1.5 rounded-lg border-none font-semibold text-white"
+                                    className={`flex items-center gap-1.5 rounded-lg border-none font-semibold text-white ${isMobile ? 'p-[4px_10px] text-[11px]' : 'p-[6px_12px] text-[12px]'}`}
                                     style={{
-                                        padding: isMobile ? '4px 10px' : '6px 12px',
-                                        fontSize: isMobile ? '11px' : '12px',
                                         background: isAIGrading ? 'var(--accent-bg)' : 'var(--accent-primary)',
                                         cursor: isAIGrading ? 'wait' : 'pointer',
                                     }}
@@ -317,13 +304,9 @@ const GradingPanel: React.FC<{
                             whileHover={!isMobile ? { scale: 1.05, background: 'var(--color-purple-bg)' } : undefined}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => setShowRubric(!showRubric)}
-                            className="flex items-center gap-1.5 rounded-lg font-semibold cursor-pointer"
+                            className={`flex items-center gap-1.5 rounded-lg font-semibold cursor-pointer border border-[rgba(139,92,246,0.3)] text-[var(--color-purple)] ${isMobile ? 'p-[4px_10px] text-[11px]' : 'p-[6px_12px] text-[12px]'}`}
                             style={{
-                                padding: isMobile ? '4px 10px' : '6px 12px',
-                                border: '1px solid rgba(139,92,246,0.3)',
                                 background: showRubric ? 'var(--color-purple-bg)' : 'var(--bg-surface)',
-                                color: 'var(--color-purple)',
-                                fontSize: isMobile ? '11px' : '12px',
                             }}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -351,18 +334,14 @@ const GradingPanel: React.FC<{
                                 onChange={e => setScore(e.target.value)}
                                 placeholder="0"
                                 aria-label={`Score out of ${maxPoints}`}
-                                className="w-full rounded-xl outline-none transition-all font-bold leading-none"
+                                className={`w-full rounded-xl outline-none transition-all font-bold leading-none bg-[var(--bg-surface)] shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] ${isMobile ? 'p-[12px_64px_12px_16px] text-[20px]' : 'p-[16px_72px_16px_20px] text-[24px]'}`}
                                 style={{
-                                    padding: isMobile ? '12px 64px 12px 16px' : '16px 72px 16px 20px',
-                                    fontSize: isMobile ? '20px' : '24px',
                                     color: score ? scoreColor : 'var(--text-muted)',
                                     border: `1px solid ${score ? `${scoreColor}50` : 'var(--border-subtle)'}`,
-                                    background: 'var(--bg-surface)',
-                                    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)',
                                 }}
                             />
                             <div className="absolute right-4 inset-y-0 flex items-center">
-                                <span className="font-semibold" style={{ fontSize: isMobile ? '13px' : '15px', color: 'var(--text-muted)' }}>/{maxPoints}</span>
+                                <span className={`font-semibold text-[var(--text-muted)] ${isMobile ? 'text-[13px]' : 'text-[15px]'}`}>/{maxPoints}</span>
                             </div>
                         </motion.div>
                     </div>
@@ -376,14 +355,7 @@ const GradingPanel: React.FC<{
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => handleQuickScore(Math.round((pct / 100) * maxPoints))}
                                 aria-label={`Set score to ${pct}% (${Math.round((pct / 100) * maxPoints)} out of ${maxPoints})`}
-                                className="rounded-md font-medium cursor-pointer transition-all"
-                                style={{
-                                    padding: isMobile ? '4px 8px' : '5px 10px',
-                                    border: '1px solid var(--border-subtle)',
-                                    background: 'var(--bg-surface)',
-                                    color: 'var(--text-secondary)',
-                                    fontSize: isMobile ? '11px' : '12px',
-                                }}
+                                className={`rounded-md font-medium cursor-pointer transition-all border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)] ${isMobile ? 'p-[4px_8px] text-[11px]' : 'p-[5px_10px] text-[12px]'}`}
                             >
                                 {pct}%
                             </motion.button>
@@ -392,13 +364,12 @@ const GradingPanel: React.FC<{
 
                     {/* Late penalty */}
                     {submission.is_late && gradingSettings?.latePenalty && score && (
-                        <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg mb-3"
-                            style={{ background: 'var(--color-warning-bg)', border: '1px solid rgba(245,158,11,0.15)' }}>
+                        <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg mb-3 bg-[var(--color-warning-bg)] border border-[rgba(245,158,11,0.15)]">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-warning)" strokeWidth="2">
                                 <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                             </svg>
-                            <span className="text-xs font-medium" style={{ color: 'var(--color-warning)' }}>
-                                Late penalty: {gradingSettings.latePenaltyPercent}% â€” Final: {calculateFinalScore(parseInt(score) || 0)}/{maxPoints}
+                            <span className="text-xs font-medium text-[var(--color-warning)]">
+                                Late penalty: {gradingSettings.latePenaltyPercent}% — Final: {calculateFinalScore(parseInt(score) || 0)}/{maxPoints}
                             </span>
                         </div>
                     )}
@@ -408,18 +379,16 @@ const GradingPanel: React.FC<{
                         {aiSuggestion && score && isTaskAIGradable && !dismissedAISuggestion && !aiGradingResult && (
                             <motion.div
                                 initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                                className="flex items-start justify-between gap-3 px-3.5 py-3 rounded-[10px] mb-3"
-                                style={{ background: 'var(--accent-bg)', border: '1px solid var(--border-subtle)' }}
+                                className="flex items-start justify-between gap-3 px-3.5 py-3 rounded-[10px] mb-3 bg-[var(--accent-bg)] border border-[var(--border-subtle)]"
                             >
                                 <div className="flex-1">
-                                    <div className="text-[11px] font-bold uppercase tracking-[0.5px] mb-1" style={{ color: 'var(--accent-primary)' }}>AI Suggestion</div>
-                                    <div className="text-[13px] leading-[1.5]" style={{ color: 'var(--text-secondary)' }}>{aiSuggestion}</div>
+                                    <div className="text-[11px] font-bold uppercase tracking-[0.5px] mb-1 text-[var(--accent-primary)]">AI Suggestion</div>
+                                    <div className="text-[13px] leading-[1.5] text-[var(--text-secondary)]">{aiSuggestion}</div>
                                 </div>
                                 <motion.button
                                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                                     onClick={handleApplyAISuggestion}
-                                    className="px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shrink-0"
-                                    style={{ border: '1px solid var(--border-subtle)', background: 'var(--bg-surface)', color: 'var(--accent-primary)' }}
+                                    className="px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer shrink-0 border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--accent-primary)]"
                                 >
                                     Apply
                                 </motion.button>

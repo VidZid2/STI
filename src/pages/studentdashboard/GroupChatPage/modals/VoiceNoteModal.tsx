@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Voice Note Modal Component
  * Allows users to record and share voice notes in the chat
  */
@@ -6,7 +6,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'motion/react';
-import { useModalAccessibility } from '../../hooks/useModalAccessibility';
 import type { ModalColors } from './types';
 import { formatDuration } from '../utils';
 
@@ -14,11 +13,10 @@ interface VoiceNoteModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSend: (duration: string, transcript: string) => void;
-    
+    colors: ModalColors;
 }
 
-export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose, onSend }) => {
-    const { modalRef, modalProps } = useModalAccessibility(isOpen, onClose, 'voicenote-modal-title');
+export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose, onSend, colors }) => {
     const [recordingState, setRecordingState] = useState<'idle' | 'recording' | 'recorded' | 'playing'>('idle');
     const [duration, setDuration] = useState(0);
     const [playbackPosition, setPlaybackPosition] = useState(0);
@@ -38,7 +36,7 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
     const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
     
-    const = 'var(--dashboard-surface)' !== '#ffffff';
+    const isDarkMode = colors.cardBg !== '#ffffff';
     const accentColor = '#3b82f6';
     const isRecordingRef = useRef(false);
 
@@ -244,25 +242,26 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
             style={{
                 position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
                 backdropFilter: 'blur(4px)', zIndex: 1001,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
+            }}
         >
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.2, ease: 'easeOut' }}
-                ref={modalRef}
-                {...modalProps}
                 onClick={(e) => e.stopPropagation()}
                 style={{
-                    background: 'var(--dashboard-surface)', 
+                    background: colors.cardBg, 
                     borderRadius: '16px', 
                     width: '100%', 
                     maxWidth: '340px', 
-                    boxShadow: ? '0 20px 40px rgba(0,0,0,0.4)' 
+                    boxShadow: isDarkMode 
+                        ? '0 20px 40px rgba(0,0,0,0.4)' 
                         : '0 20px 40px rgba(0,0,0,0.12)',
-                    border: `1px solid var(--border-color)`,
-                    overflow: 'hidden' }}
+                    border: `1px solid ${colors.border}`,
+                    overflow: 'hidden',
+                }}
             >
                 {/* Header */}
                 <div style={{ 
@@ -270,34 +269,37 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                     alignItems: 'center', 
                     justifyContent: 'space-between',
                     padding: '14px 16px',
-                    borderBottom: `1px solid var(--border-color)` }}>
+                    borderBottom: `1px solid ${colors.border}`,
+                }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div style={{
                             width: 32,
                             height: 32,
                             borderRadius: '8px',
-                            background: 'rgba(59, 130, 246, 0.1)',
+                            background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center' }}>
+                            justifyContent: 'center',
+                        }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={accentColor} strokeWidth="2">
                                 <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
                                 <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" />
                             </svg>
                         </div>
-                        <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                        <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: colors.textPrimary }}>
                             Voice Note
                         </h3>
                     </div>
                     <motion.button
-                        whileHover={{ background: 'var(--bg-hover)' }}
+                        whileHover={{ background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}
                         whileTap={{ scale: 0.95 }}
                         onClick={onClose}
                         style={{
                             width: 28, height: 28, borderRadius: '8px', border: 'none',
                             background: 'transparent', cursor: 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: 'var(--text-muted)' }}
+                            color: colors.textMuted,
+                        }}
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -311,9 +313,10 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                     {permissionError && (
                         <div style={{
                             padding: '12px', borderRadius: '10px',
-                            background: 'rgba(239, 68, 68, 0.1)',
+                            background: isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.08)',
                             border: '1px solid rgba(239, 68, 68, 0.2)',
-                            marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px',
+                        }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="12" y1="8" x2="12" y2="12" />
@@ -328,15 +331,17 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                     <div style={{ textAlign: 'center', marginBottom: '16px' }}>
                         <p style={{ 
                             fontSize: '42px', fontWeight: 300, 
-                            color: recordingState === 'recording' ? accentColor : 'var(--text-primary)', 
-                            margin: '0', fontVariantNumeric: 'tabular-nums', letterSpacing: '-1px' }}>
+                            color: recordingState === 'recording' ? accentColor : colors.textPrimary, 
+                            margin: '0', fontVariantNumeric: 'tabular-nums', letterSpacing: '-1px',
+                        }}>
                             {recordingState === 'playing' ? formatDuration(playbackPosition) : formatDuration(duration)}
                         </p>
                     </div>
 
                     <div style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        gap: '2px', height: '56px', marginBottom: '12px', padding: '0 8px' }}>
+                        gap: '2px', height: '56px', marginBottom: '12px', padding: '0 8px',
+                    }}>
                         {waveformBars.map((height, i) => {
                             const isPlayed = recordingState === 'playing' && (i / waveformBars.length) <= (playbackPosition / duration);
                             return (
@@ -350,15 +355,16 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                                         borderRadius: '2px',
                                         background: recordingState === 'recording' ? accentColor
                                             : isPlayed ? accentColor
-                                            : 'var(--bg-hover)',
-                                        transition: recordingState === 'recording' ? 'none' : 'height 0.1s ease, background 0.15s ease' }}
+                                            : isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)',
+                                        transition: recordingState === 'recording' ? 'none' : 'height 0.1s ease, background 0.15s ease',
+                                    }}
                                 />
                             );
                         })}
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
-                        <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0, fontWeight: 500 }}>
+                        <p style={{ fontSize: '12px', color: colors.textMuted, margin: 0, fontWeight: 500 }}>
                             {recordingState === 'idle' && !permissionError && 'Tap to start recording'}
                             {recordingState === 'idle' && permissionError && 'Fix the error above to record'}
                             {recordingState === 'recording' && (
@@ -379,13 +385,14 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                         <motion.button
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            whileHover={{ background: 'rgba(239, 68, 68, 0.12)' }}
+                            whileHover={{ background: isDarkMode ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)' }}
                             whileTap={{ scale: 0.95 }}
                             onClick={resetRecording}
                             style={{
                                 width: 40, height: 40, borderRadius: '10px', border: 'none',
-                                background: 'var(--dashboard-surface)',
-                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}
+                                background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444',
+                            }}
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <polyline points="3 6 5 6 21 6" />
@@ -403,11 +410,12 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                             width: 56, height: 56, borderRadius: '50%', border: 'none',
                             background: recordingState === 'recording' ? '#ef4444'
                                 : recordingState === 'idle' ? accentColor
-                                : 'rgba(255,255,255,0.08)',
+                                : isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
                             cursor: recordingState === 'recorded' || recordingState === 'playing' ? 'default' : 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             boxShadow: recordingState === 'recording' ? '0 0 0 4px rgba(239, 68, 68, 0.2)' 
-                                : recordingState === 'idle' ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none' }}
+                                : recordingState === 'idle' ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none',
+                        }}
                     >
                         {recordingState === 'recording' ? (
                             <div style={{ width: 16, height: 16, borderRadius: '3px', background: '#fff' }} />
@@ -423,13 +431,14 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                         <motion.button
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            whileHover={{ background: 'var(--dashboard-surface)' }}
+                            whileHover={{ background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)' }}
                             whileTap={{ scale: 0.95 }}
                             onClick={recordingState === 'playing' ? pausePlayback : playRecording}
                             style={{
                                 width: 40, height: 40, borderRadius: '10px', border: 'none',
-                                background: 'rgba(59, 130, 246, 0.1)',
-                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: accentColor }}
+                                background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)',
+                                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: accentColor,
+                            }}
                         >
                             {recordingState === 'playing' ? (
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -446,36 +455,39 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                 </div>
 
                 {/* Transcript Input */}
-                <div style={{ padding: '0 16px 12px', borderTop: `1px solid var(--border-color)`, paddingTop: '12px' }}>
+                <div style={{ padding: '0 16px 12px', borderTop: `1px solid ${colors.border}`, paddingTop: '12px' }}>
                     <textarea
                         value={transcript}
                         onChange={(e) => setTranscript(e.target.value)}
                         placeholder="Add a note (optional)..."
                         style={{
                             width: '100%', padding: '10px 12px', borderRadius: '10px',
-                            border: `1px solid var(--border-color)`, 
-                            background: 'rgba(255,255,255,0.02)',
+                            border: `1px solid ${colors.border}`, 
+                            background: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)',
                             fontSize: '13px', resize: 'none', outline: 'none', 
                             minHeight: '44px', maxHeight: '80px',
-                            color: 'var(--text-primary)', fontFamily: 'inherit' }}
+                            color: colors.textPrimary, fontFamily: 'inherit',
+                        }}
                         onFocus={(e) => e.target.style.borderColor = accentColor}
-                        onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                        onBlur={(e) => e.target.style.borderColor = colors.border}
                     />
                 </div>
 
                 {/* Footer */}
                 <div style={{ 
                     display: 'flex', gap: '8px', padding: '12px 16px',
-                    borderTop: `1px solid var(--border-color)`,
-                    background: 'rgba(255,255,255,0.02)' }}>
+                    borderTop: `1px solid ${colors.border}`,
+                    background: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)',
+                }}>
                     <motion.button
-                        whileHover={{ background: 'var(--bg-hover)' }}
+                        whileHover={{ background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}
                         whileTap={{ scale: 0.98 }}
                         onClick={onClose}
                         style={{
                             flex: 1, padding: '10px 16px', borderRadius: '10px', border: 'none',
-                            background: 'var(--dashboard-surface)',
-                            cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)' }}
+                            background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                            cursor: 'pointer', fontSize: '13px', fontWeight: 500, color: colors.textSecondary,
+                        }}
                     >
                         Cancel
                     </motion.button>
@@ -494,11 +506,12 @@ export const VoiceNoteModal: React.FC<VoiceNoteModalProps> = ({ isOpen, onClose,
                         style={{
                             flex: 1, padding: '10px 16px', borderRadius: '10px', border: 'none',
                             background: duration > 0 && recordingState !== 'recording' ? accentColor
-                                : 'var(--dashboard-surface)',
+                                : isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
                             cursor: duration > 0 && recordingState !== 'recording' ? 'pointer' : 'not-allowed',
                             fontSize: '13px', fontWeight: 500,
-                            color: duration > 0 && recordingState !== 'recording' ? '#fff' : 'var(--text-muted)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                            color: duration > 0 && recordingState !== 'recording' ? '#fff' : colors.textMuted,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <line x1="22" y1="2" x2="11" y2="13" />

@@ -72,8 +72,15 @@ export const useDashboardState = (): UseDashboardStateReturn => {
         }
     }, [navigate]);
 
-    // Sidebar state
-    const [sidebarActive, setSidebarActive] = useState(false);
+    // Sidebar state — persisted to localStorage, defaults to collapsed
+    const [sidebarActive, setSidebarActiveRaw] = useState(() => {
+        const saved = localStorage.getItem('sidebar-expanded');
+        return saved !== null ? saved === 'true' : false;
+    });
+    const setSidebarActive = (active: boolean) => {
+        setSidebarActiveRaw(active);
+        localStorage.setItem('sidebar-expanded', String(active));
+    };
     const [widgetsSidebarActive, setWidgetsSidebarActive] = useState(false);
 
     // Modal state

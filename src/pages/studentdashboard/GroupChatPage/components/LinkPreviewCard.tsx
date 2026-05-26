@@ -189,8 +189,7 @@ export const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url, isOwn }) 
                 marginTop: '8px',
                 transition: 'box-shadow 0.2s ease, border-color 0.2s ease' }}
             onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = ? '0 4px 12px rgba(0,0,0,0.3)' 
-                    : '0 4px 12px rgba(0,0,0,0.1)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
                 e.currentTarget.style.borderColor = 'var(--accent-color)' + '40';
             }}
             onMouseLeave={(e) => {

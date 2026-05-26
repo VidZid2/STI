@@ -1,4 +1,4 @@
-﻿/**
+/**
  * GroupsSkeleton
  * Loading skeleton for GroupsContent.
  * Extracted from GroupsContent.tsx during Phase 8.2
@@ -7,12 +7,15 @@ import React from 'react';
 import { motion } from 'motion/react';
 
 // Skeleton Loading Component
-const GroupsSkeleton: React.FC<{ }> = ({ }) => {
-    const = {
-        cardBg: 'var(--text-muted)',
-        border: 'var(--bg-hover)',
-        skeleton: 'var(--bg-hover)',
-        shimmer: 'var(--shimmer-bg)' };
+const GroupsSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+    const colors = {
+        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
+        border: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        skeleton: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        shimmer: isDarkMode 
+            ? 'linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 100%)'
+            : 'linear-gradient(90deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.02) 100%)',
+    };
 
     const SkeletonBox: React.FC<{ width?: string; height?: string; borderRadius?: string; style?: React.CSSProperties }> = ({ 
         width = '100%', height = '16px', borderRadius = '6px', style 
@@ -23,10 +26,11 @@ const GroupsSkeleton: React.FC<{ }> = ({ }) => {
             transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
             style={{
                 width, height, borderRadius,
-                background: .skeleton,
-                backgroundImage: 'var(--shimmer-bg)',
+                background: colors.skeleton,
+                backgroundImage: colors.shimmer,
                 backgroundSize: '200% 100%',
-                ...style }}
+                ...style,
+            }}
         />
     );
 
@@ -36,7 +40,8 @@ const GroupsSkeleton: React.FC<{ }> = ({ }) => {
             <div style={{ marginBottom: '28px' }}>
                 <div style={{
                     display: 'flex', alignItems: 'center', gap: '16px', padding: '18px 22px',
-                    borderRadius: '14px', background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)` }}>
+                    borderRadius: '14px', background: colors.cardBg, border: `1px solid ${colors.border}`,
+                }}>
                     <SkeletonBox width="46px" height="46px" borderRadius="12px" />
                     <div style={{ flex: 1 }}>
                         <SkeletonBox width="140px" height="24px" style={{ marginBottom: '8px' }} />
@@ -54,8 +59,9 @@ const GroupsSkeleton: React.FC<{ }> = ({ }) => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.05 }}
                         style={{
-                            background: 'var(--dashboard-surface)', borderRadius: '16px',
-                            border: `1px solid var(--border-color)`, padding: '16px' }}
+                            background: colors.cardBg, borderRadius: '16px',
+                            border: `1px solid ${colors.border}`, padding: '16px',
+                        }}
                     >
                         <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
                             <SkeletonBox width="44px" height="44px" borderRadius="12px" />

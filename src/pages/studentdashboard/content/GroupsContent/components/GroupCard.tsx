@@ -10,7 +10,8 @@ import {
     groupCategoryConfig,
     getRoleInfo,
     formatLastActive,
-    type GroupWithMembers } from '../../../../../services/groupsService';
+    type GroupWithMembers,
+} from '../../../../../services/groupsService';
 import GroupIcon from './GroupIcon';
 
 // Simple Tooltip Portal Component
@@ -18,7 +19,8 @@ const TooltipPortal: React.FC<{
     text: string;
     buttonRect: DOMRect | null;
     iconColor: string;
-    }> = ({ text, buttonRect, iconColor }) => {
+    isDarkMode: boolean;
+}> = ({ text, buttonRect, iconColor, isDarkMode }) => {
     const tooltipRef = useRef<HTMLDivElement>(null);
     const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
 
@@ -34,7 +36,8 @@ const TooltipPortal: React.FC<{
                     const buttonCenterX = buttonRect.left + buttonRect.width / 2;
                     setPosition({
                         top: buttonRect.top - tooltipRect.height - 8,
-                        left: buttonCenterX - tooltipRect.width / 2 });
+                        left: buttonCenterX - tooltipRect.width / 2,
+                    });
                 }
             });
         }
@@ -51,16 +54,19 @@ const TooltipPortal: React.FC<{
                 left: position?.left ?? -9999,
                 padding: '4px 8px',
                 borderRadius: '5px',
-                background: 'var(--bg-secondary)',
+                background: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : '#ffffff',
                 color: iconColor,
                 fontSize: '10px',
                 fontWeight: 600,
                 whiteSpace: 'nowrap',
                 zIndex: 99999,
-                boxShadow: 'var(--shadow-lg)',
+                boxShadow: isDarkMode 
+                    ? '0 2px 8px rgba(0,0,0,0.3)' 
+                    : '0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05)',
                 pointerEvents: 'none',
                 opacity: position ? 1 : 0,
-                transition: 'opacity 0.1s ease' }}
+                transition: 'opacity 0.1s ease',
+            }}
         >
             {text}
             <div style={{
@@ -72,7 +78,8 @@ const TooltipPortal: React.FC<{
                 height: 0,
                 borderLeft: '4px solid transparent',
                 borderRight: '4px solid transparent',
-                borderTop: `4px solid ${'var(--bg-secondary)'}` }} />
+                borderTop: `4px solid ${isDarkMode ? 'rgba(30, 41, 59, 0.95)' : '#ffffff'}`,
+            }} />
         </div>,
         document.body
     );
@@ -85,8 +92,9 @@ const ActionButtonWithTooltip: React.FC<{
     onClick: (e: React.MouseEvent) => void;
     bgColor: string;
     iconColor: string;
+    isDarkMode: boolean;
     children: React.ReactNode;
-}> = ({ tooltip, onClick, bgColor, iconColor, children }) => {
+}> = ({ tooltip, onClick, bgColor, iconColor, isDarkMode, children }) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
 
@@ -108,7 +116,8 @@ const ActionButtonWithTooltip: React.FC<{
                     background: bgColor, border: 'none',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer', color: iconColor,
-                    transition: 'background 0.2s ease' }}
+                    transition: 'background 0.2s ease',
+                }}
             >
                 {children}
             </motion.button>
@@ -116,7 +125,9 @@ const ActionButtonWithTooltip: React.FC<{
                 <TooltipPortal
                     text={tooltip}
                     buttonRect={buttonRect}
-                    iconColor={iconColor} />
+                    iconColor={iconColor}
+                    isDarkMode={isDarkMode}
+                />
             )}
         </>
     );
@@ -127,7 +138,8 @@ const ActionButtonWithTooltip: React.FC<{
 const PinnedBadgeWithTooltip: React.FC<{
     group: GroupWithMembers;
     isHovered: boolean;
-    }> = ({ group, isHovered }) => {
+    isDarkMode: boolean;
+}> = ({ group, isHovered, isDarkMode }) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const [badgeRect, setBadgeRect] = useState<DOMRect | null>(null);
 
@@ -148,9 +160,10 @@ const PinnedBadgeWithTooltip: React.FC<{
                 style={{
                     position: 'absolute', top: '10px', right: '10px',
                     padding: '4px 8px', borderRadius: '6px',
-                    background: 'rgba(245, 158, 11, 0.1)',
+                    background: isDarkMode ? 'rgba(245, 158, 11, 0.2)' : 'rgba(245, 158, 11, 0.15)',
                     display: 'flex', alignItems: 'center', gap: '4px',
-                    cursor: 'default' }}
+                    cursor: 'default',
+                }}
             >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="2">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -161,7 +174,9 @@ const PinnedBadgeWithTooltip: React.FC<{
                 <TooltipPortal
                     text="Pinned to top"
                     buttonRect={badgeRect}
-                    iconColor="#f59e0b" />
+                    iconColor="#f59e0b"
+                    isDarkMode={isDarkMode}
+                />
             )}
         </>
     );
@@ -180,9 +195,9 @@ const MemberAvatarStack: React.FC<{
 
     // Generate consistent color from name
     const getAvatarColor = (name: string, baseColor: string) => {
-        const = [baseColor, '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+        const colors = [baseColor, '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
         const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        return [hash % .length];
+        return colors[hash % colors.length];
     };
 
     return (
@@ -198,7 +213,8 @@ const MemberAvatarStack: React.FC<{
                         style={{
                             position: 'relative',
                             marginLeft: index > 0 ? -8 : 0,
-                            zIndex: maxShow - index }}
+                            zIndex: maxShow - index,
+                        }}
                     >
                         <div style={{
                             width: size, height: size, borderRadius: '50%',
@@ -206,7 +222,8 @@ const MemberAvatarStack: React.FC<{
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: size * 0.4, fontWeight: 600, color: 'white',
                             border: '2px solid white',
-                            overflow: 'hidden' }}>
+                            overflow: 'hidden',
+                        }}>
                             {member.user_avatar ? (
                                 <img src={member.user_avatar} alt={member.user_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
@@ -217,7 +234,8 @@ const MemberAvatarStack: React.FC<{
                             <div style={{
                                 position: 'absolute', bottom: -2, right: -2, width: 10, height: 10,
                                 borderRadius: '50%', background: '#22c55e', border: '2px solid white',
-                                boxShadow: '0 0 4px rgba(34, 197, 94, 0.5)' }} />
+                                boxShadow: '0 0 4px rgba(34, 197, 94, 0.5)',
+                            }} />
                         )}
                     </motion.div>
                 );
@@ -231,7 +249,8 @@ const MemberAvatarStack: React.FC<{
                         background: `${color}15`, display: 'flex',
                         alignItems: 'center', justifyContent: 'center',
                         fontSize: 10, fontWeight: 600, color: color,
-                        border: '2px solid white', marginLeft: -8 }}
+                        border: '2px solid white', marginLeft: -8,
+                    }}
                 >
                     +{remaining}
                 </motion.div>
@@ -245,14 +264,15 @@ const MemberAvatarStack: React.FC<{
 const GroupCard: React.FC<{
     group: GroupWithMembers;
     index: number;
-    
+    colors: { cardBg: string; border: string; textPrimary: string; textSecondary: string; textMuted: string };
+    isDarkMode: boolean;
     onClick: (group: GroupWithMembers) => void;
     onJoin: (groupId: string) => void;
     onLeave: (groupId: string) => void;
     onPin: (groupId: string, isPinned: boolean) => void;
     onInvite: (group: GroupWithMembers) => void;
     reducedMotion: boolean;
-}> = ({ group, index,  onClick, onJoin, onLeave, onPin, onInvite, reducedMotion }) => {
+}> = ({ group, index, colors, isDarkMode, onClick, onJoin, onLeave, onPin, onInvite, reducedMotion }) => {
     const [isHovered, setIsHovered] = useState(false);
     const categoryConfig = groupCategoryConfig[group.category];
 
@@ -268,20 +288,15 @@ const GroupCard: React.FC<{
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
             onClick={() => onClick(group)}
-            className="dashboard-interactive-card"
-            tabIndex={0}
-            role="button"
-            aria-label={`${group.name} — ${group.member_count} members, ${categoryConfig.label}`}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(group); } }}
             style={{
-                background: 'var(--dashboard-surface)', borderRadius: '16px',
-                border: `1px solid ${isHovered ? `${group.color}40` : 'var(--border-color)'}`,
+                background: colors.cardBg, borderRadius: '16px',
+                border: `1px solid ${isHovered ? `${group.color}40` : colors.border}`,
                 padding: '16px', cursor: 'pointer', position: 'relative',
-                outline: 'none',
                 boxShadow: isHovered 
-                    ? `0 12px 32px ${group.color}15`
+                    ? (isDarkMode ? `0 12px 32px ${group.color}20` : `0 12px 32px ${group.color}15`)
                     : 'none',
-                transition: 'border-color 0.2s ease, box-shadow 0.2s ease' }}
+                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+            }}
         >
             {/* Quick Action Buttons on Hover */}
             <AnimatePresence>
@@ -293,14 +308,17 @@ const GroupCard: React.FC<{
                         transition={{ duration: 0.15 }}
                         style={{
                             position: 'absolute', top: '10px', right: '10px',
-                            display: 'flex', gap: '6px', zIndex: 10 }}
+                            display: 'flex', gap: '6px', zIndex: 10,
+                        }}
                     >
                         {/* Chat Button */}
                         <ActionButtonWithTooltip
                             tooltip="Open Chat"
                             onClick={(e) => { e.stopPropagation(); onClick(group); }}
-                            bgColor={'rgba(59, 130, 246, 0.1)'}
-                            iconColor="#3b82f6" >
+                            bgColor={isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.1)'}
+                            iconColor="#3b82f6"
+                            isDarkMode={isDarkMode}
+                        >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                             </svg>
@@ -310,8 +328,10 @@ const GroupCard: React.FC<{
                             <ActionButtonWithTooltip
                                 tooltip="Invite Members"
                                 onClick={(e) => { e.stopPropagation(); onInvite(group); }}
-                                bgColor={'rgba(16, 185, 129, 0.1)'}
-                                iconColor="#10b981" >
+                                bgColor={isDarkMode ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'}
+                                iconColor="#10b981"
+                                isDarkMode={isDarkMode}
+                            >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                                     <circle cx="9" cy="7" r="4" />
@@ -325,9 +345,11 @@ const GroupCard: React.FC<{
                             tooltip={group.is_pinned ? 'Unpin Group' : 'Pin Group'}
                             onClick={(e) => { e.stopPropagation(); onPin(group.id, !group.is_pinned); }}
                             bgColor={group.is_pinned 
-                                ? ('rgba(245, 158, 11, 0.1)')
-                                : ('var(--bg-hover)')}
-                            iconColor={group.is_pinned ? '#f59e0b' : 'var(--text-secondary)'} >
+                                ? (isDarkMode ? 'rgba(245, 158, 11, 0.2)' : 'rgba(245, 158, 11, 0.15)')
+                                : (isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)')}
+                            iconColor={group.is_pinned ? '#f59e0b' : colors.textSecondary}
+                            isDarkMode={isDarkMode}
+                        >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill={group.is_pinned ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>
@@ -339,7 +361,9 @@ const GroupCard: React.FC<{
             {/* Pinned Badge (shows when not hovered) */}
             <PinnedBadgeWithTooltip 
                 group={group} 
-                isHovered={isHovered} />
+                isHovered={isHovered} 
+                isDarkMode={isDarkMode}
+            />
 
             {/* Role Badge (shows when not hovered) */}
             {group.is_member && group.user_role && !isHovered && !group.is_pinned && (
@@ -351,7 +375,8 @@ const GroupCard: React.FC<{
                         padding: '3px 8px', borderRadius: '6px',
                         background: `${getRoleInfo(group.user_role).color}15`,
                         fontSize: '9px', fontWeight: 600, color: getRoleInfo(group.user_role).color,
-                        textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                        textTransform: 'uppercase', letterSpacing: '0.5px',
+                    }}
                 >
                     {getRoleInfo(group.user_role).label}
                 </motion.div>
@@ -364,7 +389,8 @@ const GroupCard: React.FC<{
                         width: 44, height: 44, borderRadius: '12px',
                         background: group.avatar ? 'transparent' : `linear-gradient(135deg, ${group.color}20 0%, ${group.color}10 100%)`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                        overflow: 'hidden' }}
+                        overflow: 'hidden',
+                    }}
                 >
                     {group.avatar ? (
                         <img 
@@ -379,8 +405,9 @@ const GroupCard: React.FC<{
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                         <h3 style={{
-                            margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)',
-                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            margin: 0, fontSize: '14px', fontWeight: 600, color: colors.textPrimary,
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
                             {group.name}
                         </h3>
                         {group.is_private && (
@@ -393,15 +420,17 @@ const GroupCard: React.FC<{
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                         <span style={{
                             fontSize: '10px', padding: '2px 6px', borderRadius: '4px',
-                            background: `${categoryConfig.color}15`, color: categoryConfig.color, fontWeight: 500 }}>
+                            background: `${categoryConfig.color}15`, color: categoryConfig.color, fontWeight: 500,
+                        }}>
                             {categoryConfig.label}
                         </span>
                         {group.course_name && (
                             <span style={{ 
                                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                                 fontSize: '10px', padding: '2px 8px', borderRadius: '4px',
-                                background: 'rgba(139, 92, 246, 0.1)', 
-                                color: '#8b5cf6', fontWeight: 500 }}>
+                                background: isDarkMode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(139, 92, 246, 0.1)', 
+                                color: '#8b5cf6', fontWeight: 500,
+                            }}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -415,22 +444,25 @@ const GroupCard: React.FC<{
 
             {/* Description */}
             <p style={{
-                margin: '0 0 8px 0', fontSize: '12px', color: 'var(--text-secondary)',
+                margin: '0 0 8px 0', fontSize: '12px', color: colors.textSecondary,
                 lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                WebkitBoxOrient: 'vertical', overflow: 'hidden',
+            }}>
                 {group.description}
             </p>
 
             {/* Activity Status Badges */}
             <div style={{ 
                 display: 'flex', alignItems: 'center', gap: '6px', 
-                marginBottom: '12px', flexWrap: 'wrap' }}>
+                marginBottom: '12px', flexWrap: 'wrap',
+            }}>
                 {group.unread_messages !== undefined && group.unread_messages > 0 && (
                     <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: '4px',
                         padding: '3px 8px', borderRadius: '6px',
                         background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', 
-                        fontSize: '10px', fontWeight: 600 }}>
+                        fontSize: '10px', fontWeight: 600,
+                    }}>
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                         </svg>
@@ -442,7 +474,8 @@ const GroupCard: React.FC<{
                         display: 'inline-flex', alignItems: 'center', gap: '4px',
                         padding: '3px 8px', borderRadius: '6px',
                         background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e',
-                        fontSize: '10px', fontWeight: 600 }}>
+                        fontSize: '10px', fontWeight: 600,
+                    }}>
                         <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
                         {group.online_count} active
                     </span>
@@ -451,9 +484,10 @@ const GroupCard: React.FC<{
                     <span style={{ 
                         display: 'inline-flex', alignItems: 'center', gap: '4px',
                         padding: '3px 8px', borderRadius: '6px',
-                        background: 'var(--bg-hover)', 
-                        color: 'var(--text-muted)',
-                        fontSize: '10px', fontWeight: 500 }}>
+                        background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)', 
+                        color: colors.textMuted,
+                        fontSize: '10px', fontWeight: 500,
+                    }}>
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
@@ -472,8 +506,9 @@ const GroupCard: React.FC<{
                     <span style={{ 
                         display: 'inline-flex', alignItems: 'center', gap: '4px',
                         padding: '3px 8px', borderRadius: '6px',
-                        background: 'var(--bg-hover)',
-                        fontSize: '10px', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                        background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                        fontSize: '10px', fontWeight: 600, color: colors.textSecondary,
+                    }}>
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                             <circle cx="9" cy="7" r="4" />
@@ -497,7 +532,8 @@ const GroupCard: React.FC<{
                                 padding: '6px 12px', borderRadius: '8px', border: 'none',
                                 background: 'rgba(16, 185, 129, 0.1)', color: '#10b981',
                                 fontSize: '11px', fontWeight: 600, cursor: 'pointer',
-                                display: 'flex', alignItems: 'center', gap: '4px' }}
+                                display: 'flex', alignItems: 'center', gap: '4px',
+                            }}
                         >
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -518,7 +554,8 @@ const GroupCard: React.FC<{
                                 padding: '6px 12px', borderRadius: '8px', border: 'none',
                                 background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6',
                                 fontSize: '11px', fontWeight: 600, cursor: 'pointer',
-                                display: 'flex', alignItems: 'center', gap: '4px' }}
+                                display: 'flex', alignItems: 'center', gap: '4px',
+                            }}
                         >
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <circle cx="12" cy="12" r="10" />

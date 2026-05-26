@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Users Content - User Account Management Page
  * Minimalistic professional design matching PathsContent/GoalsContent
  * Accessibility: prefers-reduced-motion support, keyboard navigation
@@ -16,7 +16,11 @@ import {
     type UserAccount,
     type UserStats,
     type UserFilter,
-    type UserSortOption } from '../../../../services/usersService';
+    type UserSortOption,
+} from '../../../../services/usersService';
+
+
+
 import { FilterTabs } from './components/FilterTabs';
 import { UserCard, UserListItem } from './components/UserCard';
 import { UserCardSkeleton } from './components/UsersSkeleton';
@@ -79,6 +83,7 @@ const getTimeAgo = (timestamp: number): string => {
 };
 
 
+
 // Pagination constants
 const USERS_PER_PAGE = 12;
 
@@ -110,7 +115,8 @@ const UsersContent: React.FC = () => {
         onlineUsers: 0,
         students: 0,
         teachers: 0,
-        admins: 0 });
+        admins: 0,
+    });
     const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(true);
@@ -193,6 +199,19 @@ const UsersContent: React.FC = () => {
     const handleModalClose = useCallback(() => {
         setIsModalOpen(false);
         setTimeout(() => setSelectedUser(null), 200); // Clear after animation
+    }, []);
+    
+    // Dark mode detection
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        return document.documentElement.classList.contains('dark') ||
+               document.body.classList.contains('dark-mode');
+    });
+
+    useEffect(() => {
+        const checkDarkMode = () => setIsDarkMode(document.body.classList.contains('dark-mode'));
+        const observer = new MutationObserver(checkDarkMode);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        return () => observer.disconnect();
     }, []);
 
     // Load users, stats, and classmates
@@ -374,14 +393,15 @@ const UsersContent: React.FC = () => {
     }, [activeFilter, sortOption]);
 
     // Colors based on theme (matching PathsContent)
-    const = {
-        bg: 'var(--bg-primary)',
-        cardBg: 'var(--bg-secondary)',
-        border: 'var(--border-light)',
-        textPrimary: 'var(--text-primary)',
-        textSecondary: 'var(--text-secondary)',
-        textMuted: 'var(--text-muted)',
-        accent: 'var(--brand-blue)' };
+    const colors = {
+        bg: isDarkMode ? '#0f172a' : '#f8fafc',
+        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
+        border: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
+        textSecondary: isDarkMode ? '#94a3b8' : '#64748b',
+        textMuted: isDarkMode ? '#94a3b8' : '#475569',
+        accent: '#3b82f6',
+    };
 
 
     return (
@@ -389,7 +409,8 @@ const UsersContent: React.FC = () => {
             padding: '24px', 
             maxWidth: '1200px', 
             margin: '0 auto',
-            minHeight: '100vh' }}>
+            minHeight: '100vh',
+        }}>
             {/* Header Section - Matching PathsContent style */}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -408,10 +429,13 @@ const UsersContent: React.FC = () => {
                         gap: '16px',
                         padding: '18px 22px',
                         borderRadius: '14px',
-                        background: 'var(--dashboard-surface)',
-                        border: `1px solid var(--border-color)`,
-                        boxShadow: 'var(--shadow-lg)',
-                        flexWrap: 'wrap' }}
+                        background: colors.cardBg,
+                        border: `1px solid ${colors.border}`,
+                        boxShadow: isDarkMode 
+                            ? '0 2px 12px rgba(0,0,0,0.15)' 
+                            : '0 2px 12px rgba(0,0,0,0.04)',
+                        flexWrap: 'wrap',
+                    }}
                 >
                     {/* Icon */}
                     <motion.div
@@ -423,11 +447,14 @@ const UsersContent: React.FC = () => {
                             width: '46px',
                             height: '46px',
                             borderRadius: '12px',
-                            background: 'rgba(59, 130, 246, 0.08)',
+                            background: isDarkMode 
+                                ? 'rgba(59, 130, 246, 0.12)'
+                                : 'rgba(59, 130, 246, 0.08)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            flexShrink: 0 }}
+                            flexShrink: 0,
+                        }}
                     >
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -449,8 +476,9 @@ const UsersContent: React.FC = () => {
                                 margin: 0, 
                                 fontSize: '20px', 
                                 fontWeight: 600, 
-                                color: 'var(--text-primary)',
-                                letterSpacing: '-0.3px' }}>
+                                color: colors.textPrimary,
+                                letterSpacing: '-0.3px',
+                            }}>
                                 Users
                             </h1>
                             <motion.span
@@ -461,11 +489,12 @@ const UsersContent: React.FC = () => {
                                     fontSize: '10px',
                                     fontWeight: 600,
                                     color: '#3b82f6',
-                                    background: 'rgba(59, 130, 246, 0.1)',
+                                    background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
                                     padding: '3px 8px',
                                     borderRadius: '6px',
                                     textTransform: 'uppercase',
-                                    letterSpacing: '0.4px' }}
+                                    letterSpacing: '0.4px',
+                                }}
                             >
                                 {stats.totalUsers} User{stats.totalUsers !== 1 ? 's' : ''}
                             </motion.span>
@@ -473,8 +502,9 @@ const UsersContent: React.FC = () => {
                         <p style={{ 
                             margin: 0, 
                             fontSize: '13px', 
-                            color: 'var(--text-secondary)',
-                            fontWeight: 400 }}>
+                            color: colors.textSecondary,
+                            fontWeight: 400,
+                        }}>
                             Manage user accounts and permissions
                         </p>
                     </motion.div>
@@ -488,7 +518,8 @@ const UsersContent: React.FC = () => {
                             display: 'flex',
                             alignItems: 'stretch',
                             gap: '10px',
-                            flexWrap: 'wrap' }}
+                            flexWrap: 'wrap',
+                        }}
                     >
                         {[
                             {
@@ -496,7 +527,7 @@ const UsersContent: React.FC = () => {
                                 value: stats.totalUsers,
                                 description: 'Users',
                                 color: '#3b82f6',
-                                bgColor: 'rgba(59, 130, 246, 0.06)',
+                                bgColor: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.06)',
                                 icon: (
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -504,37 +535,40 @@ const UsersContent: React.FC = () => {
                                         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                     </svg>
-                                ) },
+                                ),
+                            },
                             {
                                 label: 'Online',
                                 value: stats.onlineUsers,
                                 description: 'Online',
                                 color: '#10b981',
-                                bgColor: 'rgba(16, 185, 129, 0.06)',
+                                bgColor: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.06)',
                                 icon: (
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                                         <polyline points="22 4 12 14.01 9 11.01" />
                                     </svg>
-                                ) },
+                                ),
+                            },
                             {
                                 label: 'Students',
                                 value: stats.students,
                                 description: 'Enrolled',
                                 color: '#8b5cf6',
-                                bgColor: 'rgba(139, 92, 246, 0.06)',
+                                bgColor: isDarkMode ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.06)',
                                 icon: (
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                                         <path d="M6 12v5c3 3 9 3 12 0v-5" />
                                     </svg>
-                                ) },
+                                ),
+                            },
                             {
                                 label: 'Teachers',
                                 value: stats.teachers,
                                 description: 'Faculty',
                                 color: '#f59e0b',
-                                bgColor: 'rgba(245, 158, 11, 0.06)',
+                                bgColor: isDarkMode ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.06)',
                                 icon: (
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -542,7 +576,8 @@ const UsersContent: React.FC = () => {
                                         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                     </svg>
-                                ) },
+                                ),
+                            },
                         ].map((stat, i) => (
                             <motion.div
                                 key={stat.label}
@@ -562,7 +597,8 @@ const UsersContent: React.FC = () => {
                                     borderRadius: '10px',
                                     background: stat.bgColor,
                                     cursor: 'default',
-                                    minWidth: '72px' }}
+                                    minWidth: '72px',
+                                }}
                                 title={`${stat.label}: ${stat.value}`}
                             >
                                 <div style={{ 
@@ -570,7 +606,8 @@ const UsersContent: React.FC = () => {
                                     marginBottom: '4px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center' }}>
+                                    justifyContent: 'center',
+                                }}>
                                     {stat.icon}
                                 </div>
                                 <span style={{ 
@@ -578,15 +615,17 @@ const UsersContent: React.FC = () => {
                                     fontWeight: 700, 
                                     color: stat.color,
                                     lineHeight: 1,
-                                    marginBottom: '2px' }}>
+                                    marginBottom: '2px',
+                                }}>
                                     {stat.value}
                                 </span>
                                 <span style={{ 
                                     fontSize: '10px', 
                                     fontWeight: 500, 
-                                    color: 'var(--text-muted)',
+                                    color: colors.textMuted,
                                     textTransform: 'uppercase',
-                                    letterSpacing: '0.3px' }}>
+                                    letterSpacing: '0.3px',
+                                }}>
                                     {stat.description}
                                 </span>
                             </motion.div>
@@ -604,8 +643,9 @@ const UsersContent: React.FC = () => {
                     marginBottom: '24px',
                     padding: '18px',
                     borderRadius: '14px',
-                    background: 'var(--dashboard-surface)',
-                    border: `1px solid var(--border-color)` }}
+                    background: colors.cardBg,
+                    border: `1px solid ${colors.border}`,
+                }}
             >
                 {/* Section Header */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
@@ -618,10 +658,11 @@ const UsersContent: React.FC = () => {
                                 width: '38px',
                                 height: '38px',
                                 borderRadius: '10px',
-                                background: 'rgba(139, 92, 246, 0.08)',
+                                background: isDarkMode ? 'rgba(139, 92, 246, 0.12)' : 'rgba(139, 92, 246, 0.08)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center' }}
+                                justifyContent: 'center',
+                            }}
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -631,10 +672,10 @@ const UsersContent: React.FC = () => {
                             </svg>
                         </motion.div>
                         <div>
-                            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: colors.textPrimary }}>
                                 My Classmates
                             </h3>
-                            <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
+                            <p style={{ margin: 0, fontSize: '12px', color: colors.textSecondary }}>
                                 BSIT101A · {classmates.length} students
                             </p>
                         </div>
@@ -646,7 +687,8 @@ const UsersContent: React.FC = () => {
                             borderRadius: '8px',
                             background: 'rgba(16, 185, 129, 0.1)',
                             color: '#10b981',
-                            fontWeight: 500 }}>
+                            fontWeight: 500,
+                        }}>
                             {classmates.filter(c => c.is_online).length} Online
                         </span>
                         <motion.button
@@ -656,15 +698,16 @@ const UsersContent: React.FC = () => {
                             style={{
                                 padding: '6px 12px',
                                 borderRadius: '8px',
-                                border: `1px solid var(--border-color)`,
+                                border: `1px solid ${colors.border}`,
                                 background: 'transparent',
-                                color: 'var(--text-secondary)',
+                                color: colors.textSecondary,
                                 fontSize: '12px',
                                 fontWeight: 500,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '6px' }}
+                                gap: '6px',
+                            }}
                         >
                             {showAllClassmates ? 'Show Less' : 'View All'}
                             <motion.svg
@@ -695,7 +738,8 @@ const UsersContent: React.FC = () => {
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                        gap: '10px' }}>
+                        gap: '10px',
+                    }}>
                         {classmates.slice(0, showAllClassmates ? classmates.length : 8).map((classmate, index) => (
                             <motion.div
                                 key={classmate.id}
@@ -704,7 +748,8 @@ const UsersContent: React.FC = () => {
                                 transition={{ delay: index * 0.02, duration: 0.2 }}
                                 whileHover={{ 
                                     scale: 1.02,
-                                    background: 'var(--bg-hover)' }}
+                                    background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => handleUserClick(classmate)}
                                 style={{
@@ -713,9 +758,10 @@ const UsersContent: React.FC = () => {
                                     gap: '10px',
                                     padding: '10px 12px',
                                     borderRadius: '10px',
-                                    border: `1px solid var(--border-color)`,
+                                    border: `1px solid ${colors.border}`,
                                     cursor: 'pointer',
-                                    transition: 'all 0.15s ease' }}
+                                    transition: 'all 0.15s ease',
+                                }}
                             >
                                 <div style={{ position: 'relative', flexShrink: 0 }}>
                                     <div style={{
@@ -728,7 +774,8 @@ const UsersContent: React.FC = () => {
                                         justifyContent: 'center',
                                         fontSize: '13px',
                                         fontWeight: 600,
-                                        color: '#8b5cf6' }}>
+                                        color: '#8b5cf6',
+                                    }}>
                                         {classmate.profile_image ? (
                                             <img src={classmate.profile_image} alt={classmate.full_name} style={{ width: '100%', height: '100%', borderRadius: '10px', objectFit: 'cover' }} />
                                         ) : `${classmate.first_name?.[0] || ''}${classmate.last_name?.[0] || ''}`}
@@ -742,23 +789,26 @@ const UsersContent: React.FC = () => {
                                         borderRadius: '50%',
                                         background: classmate.is_online ? '#10b981' : '#94a3b8',
                                         border: '2px solid white',
-                                        boxShadow: classmate.is_online ? '0 0 6px rgba(16, 185, 129, 0.5)' : 'none' }} />
+                                        boxShadow: classmate.is_online ? '0 0 6px rgba(16, 185, 129, 0.5)' : 'none',
+                                    }} />
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <p style={{
                                         margin: 0,
                                         fontSize: '12px',
                                         fontWeight: 500,
-                                        color: 'var(--text-primary)',
+                                        color: colors.textPrimary,
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap' }}>
+                                        whiteSpace: 'nowrap',
+                                    }}>
                                         {classmate.full_name}
                                     </p>
                                     <p style={{
                                         margin: 0,
                                         fontSize: '10px',
-                                        color: classmate.is_online ? '#10b981' : 'var(--text-muted)' }}>
+                                        color: classmate.is_online ? '#10b981' : colors.textMuted,
+                                    }}>
                                         {classmate.is_online ? 'Online' : 'Offline'}
                                     </p>
                                 </div>
@@ -774,15 +824,15 @@ const UsersContent: React.FC = () => {
                             left: 0,
                             right: 0,
                             height: '40px',
-                            background: `linear-gradient(transparent, var(--dashboard-surface))`,
-                            pointerEvents: 'none' }} />
+                            background: `linear-gradient(transparent, ${colors.cardBg})`,
+                            pointerEvents: 'none',
+                        }} />
                     )}
                 </motion.div>
             </motion.div>
 
             {/* Teacher Spotlight Section */}
             <TeacherSpotlight 
-                 
                 onTeacherClick={handleUserClick}
             />
 
@@ -809,9 +859,10 @@ const UsersContent: React.FC = () => {
                             marginBottom: '24px',
                             padding: '16px 18px',
                             borderRadius: '14px',
-                            background: 'var(--dashboard-surface)',
-                            border: `1px solid var(--border-color)`,
-                            overflow: 'hidden' }}
+                            background: colors.cardBg,
+                            border: `1px solid ${colors.border}`,
+                            overflow: 'hidden',
+                        }}
                     >
                     {/* Section Header */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
@@ -824,10 +875,11 @@ const UsersContent: React.FC = () => {
                                     width: '34px',
                                     height: '34px',
                                     borderRadius: '9px',
-                                    background: 'rgba(59, 130, 246, 0.08)',
+                                    background: isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center' }}
+                                    justifyContent: 'center',
+                                }}
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <circle cx="12" cy="12" r="10" />
@@ -835,10 +887,10 @@ const UsersContent: React.FC = () => {
                                 </svg>
                             </motion.div>
                             <div>
-                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: colors.textPrimary }}>
                                     Recently Viewed
                                 </h3>
-                                <p style={{ margin: 0, fontSize: '11px', color: 'var(--text-secondary)' }}>
+                                <p style={{ margin: 0, fontSize: '11px', color: colors.textSecondary }}>
                                     {recentlyViewed.length} profile{recentlyViewed.length !== 1 ? 's' : ''} viewed
                                 </p>
                             </div>
@@ -851,14 +903,15 @@ const UsersContent: React.FC = () => {
                                 padding: '5px 10px',
                                 borderRadius: '6px',
                                 border: 'none',
-                                background: 'rgba(239, 68, 68, 0.08)',
+                                background: isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.08)',
                                 color: '#ef4444',
                                 fontSize: '11px',
                                 fontWeight: 500,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '4px' }}
+                                gap: '4px',
+                            }}
                         >
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="3 6 5 6 21 6" />
@@ -874,7 +927,8 @@ const UsersContent: React.FC = () => {
                         gap: '10px',
                         overflowX: 'auto',
                         paddingBottom: '4px',
-                        scrollbarWidth: 'thin' }}>
+                        scrollbarWidth: 'thin',
+                    }}>
                         <AnimatePresence mode="popLayout">
                             {recentlyViewed.map((item, index) => {
                                 const user = users.find(u => u.id === item.id) || classmates.find(u => u.id === item.id);
@@ -899,10 +953,11 @@ const UsersContent: React.FC = () => {
                                             width: '140px',
                                             padding: '12px',
                                             borderRadius: '10px',
-                                            border: `1px solid var(--border-color)`,
-                                            background: 'var(--bg-hover)',
+                                            border: `1px solid ${colors.border}`,
+                                            background: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
                                             cursor: 'pointer',
-                                            textAlign: 'center' }}
+                                            textAlign: 'center',
+                                        }}
                                     >
                                     {/* Avatar */}
                                     <div style={{
@@ -917,7 +972,8 @@ const UsersContent: React.FC = () => {
                                         fontWeight: 600,
                                         color: roleInfo.color,
                                         margin: '0 auto 8px',
-                                        position: 'relative' }}>
+                                        position: 'relative',
+                                    }}>
                                         {user.profile_image ? (
                                             <img 
                                                 src={user.profile_image} 
@@ -936,7 +992,8 @@ const UsersContent: React.FC = () => {
                                             height: '12px',
                                             borderRadius: '50%',
                                             background: user.is_online ? '#10b981' : '#94a3b8',
-                                            border: '2px solid white' }} />
+                                            border: '2px solid white',
+                                        }} />
                                     </div>
                                     
                                     {/* Name */}
@@ -944,10 +1001,11 @@ const UsersContent: React.FC = () => {
                                         margin: '0 0 2px',
                                         fontSize: '12px',
                                         fontWeight: 500,
-                                        color: 'var(--text-primary)',
+                                        color: colors.textPrimary,
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap' }}>
+                                        whiteSpace: 'nowrap',
+                                    }}>
                                         {user.full_name.split(' ')[0]}
                                     </p>
                                     
@@ -955,7 +1013,8 @@ const UsersContent: React.FC = () => {
                                     <p style={{
                                         margin: 0,
                                         fontSize: '10px',
-                                        color: 'var(--text-muted)' }}>
+                                        color: colors.textMuted,
+                                    }}>
                                         {timeAgo}
                                     </p>
                                     </motion.div>
@@ -984,7 +1043,8 @@ const UsersContent: React.FC = () => {
                     justifyContent: 'space-between',
                     gap: '16px',
                     marginBottom: '20px',
-                    flexWrap: 'wrap' }}
+                    flexWrap: 'wrap',
+                }}
             >
                 {/* Search Input */}
                 <motion.div
@@ -994,14 +1054,15 @@ const UsersContent: React.FC = () => {
                     style={{
                         position: 'relative',
                         flex: '1',
-                        minWidth: '200px' }}
+                        minWidth: '200px',
+                    }}
                 >
                     <svg
                         width="16"
                         height="16"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke={'var(--text-muted)'}
+                        stroke={isDarkMode ? '#64748b' : '#94a3b8'}
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -1010,7 +1071,8 @@ const UsersContent: React.FC = () => {
                             left: '14px',
                             top: '50%',
                             transform: 'translateY(-50%)',
-                            pointerEvents: 'none' }}
+                            pointerEvents: 'none',
+                        }}
                     >
                         <circle cx="11" cy="11" r="8" />
                         <path d="m21 21-4.35-4.35" />
@@ -1035,12 +1097,13 @@ const UsersContent: React.FC = () => {
                             width: '100%',
                             padding: '11px 42px 11px 42px',
                             borderRadius: '12px',
-                            border: `1px solid var(--border-color)`,
-                            background: 'var(--dashboard-surface)',
-                            color: 'var(--text-primary)',
+                            border: `1px solid ${colors.border}`,
+                            background: colors.cardBg,
+                            color: colors.textPrimary,
                             fontSize: '13px',
                             outline: 'none',
-                            transition: reducedMotion ? 'none' : 'all 0.2s ease' }}
+                            transition: reducedMotion ? 'none' : 'all 0.2s ease',
+                        }}
                     />
                     
                     {/* Search Suggestions Dropdown */}
@@ -1061,31 +1124,37 @@ const UsersContent: React.FC = () => {
                                     left: 0,
                                     right: 0,
                                     marginTop: '6px',
-                                    background: 'var(--dashboard-surface)',
-                                    border: `1px solid var(--border-color)`,
+                                    background: colors.cardBg,
+                                    border: `1px solid ${colors.border}`,
                                     borderRadius: '12px',
-                                    boxShadow: 'var(--shadow-lg)',
+                                    boxShadow: isDarkMode 
+                                        ? '0 8px 24px rgba(0,0,0,0.4)' 
+                                        : '0 8px 24px rgba(0,0,0,0.1)',
                                     zIndex: 50,
-                                    overflow: 'hidden' }}
+                                    overflow: 'hidden',
+                                }}
                             >
                                 {/* Suggestions Header */}
                                 <div style={{
                                     padding: '8px 12px',
-                                    borderBottom: `1px solid var(--border-color)`,
+                                    borderBottom: `1px solid ${colors.border}`,
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between' }}>
+                                    justifyContent: 'space-between',
+                                }}>
                                     <span style={{
                                         fontSize: '10px',
                                         fontWeight: 600,
-                                        color: 'var(--text-muted)',
+                                        color: colors.textMuted,
                                         textTransform: 'uppercase',
-                                        letterSpacing: '0.5px' }}>
+                                        letterSpacing: '0.5px',
+                                    }}>
                                         Suggestions
                                     </span>
                                     <span style={{
                                         fontSize: '10px',
-                                        color: 'var(--text-muted)' }}>
+                                        color: colors.textMuted,
+                                    }}>
                                         ↑↓ Navigate · Enter Select
                                     </span>
                                 </div>
@@ -1113,10 +1182,11 @@ const UsersContent: React.FC = () => {
                                                 padding: '10px 12px',
                                                 cursor: 'pointer',
                                                 background: isSelected 
-                                                    ? 'rgba(59, 130, 246, 0.05)'
+                                                    ? isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)'
                                                     : 'transparent',
                                                 borderLeft: isSelected ? '3px solid #3b82f6' : '3px solid transparent',
-                                                transition: reducedMotion ? 'none' : 'all 0.1s ease' }}
+                                                transition: reducedMotion ? 'none' : 'all 0.1s ease',
+                                            }}
                                         >
                                             {/* Avatar */}
                                             <div style={{
@@ -1131,7 +1201,8 @@ const UsersContent: React.FC = () => {
                                                 fontWeight: 600,
                                                 color: roleInfo.color,
                                                 flexShrink: 0,
-                                                position: 'relative' }}>
+                                                position: 'relative',
+                                            }}>
                                                 {user.profile_image ? (
                                                     <img 
                                                         src={user.profile_image} 
@@ -1150,7 +1221,8 @@ const UsersContent: React.FC = () => {
                                                     height: '10px',
                                                     borderRadius: '50%',
                                                     background: user.is_online ? '#10b981' : '#94a3b8',
-                                                    border: '2px solid white' }} />
+                                                    border: '2px solid white',
+                                                }} />
                                             </div>
                                             
                                             {/* User Info */}
@@ -1159,10 +1231,11 @@ const UsersContent: React.FC = () => {
                                                     <span style={{
                                                         fontSize: '13px',
                                                         fontWeight: 500,
-                                                        color: 'var(--text-primary)',
+                                                        color: colors.textPrimary,
                                                         overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
-                                                        whiteSpace: 'nowrap' }}>
+                                                        whiteSpace: 'nowrap',
+                                                    }}>
                                                         {user.full_name}
                                                     </span>
                                                     <span style={{
@@ -1172,17 +1245,19 @@ const UsersContent: React.FC = () => {
                                                         background: roleInfo.bgColor,
                                                         color: roleInfo.color,
                                                         fontWeight: 600,
-                                                        flexShrink: 0 }}>
+                                                        flexShrink: 0,
+                                                    }}>
                                                         {roleInfo.label}
                                                     </span>
                                                 </div>
                                                 <span style={{
                                                     fontSize: '11px',
-                                                    color: 'var(--text-muted)',
+                                                    color: colors.textMuted,
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
                                                     whiteSpace: 'nowrap',
-                                                    display: 'block' }}>
+                                                    display: 'block',
+                                                }}>
                                                     {user.email}
                                                 </span>
                                             </div>
@@ -1193,7 +1268,7 @@ const UsersContent: React.FC = () => {
                                                 height="14" 
                                                 viewBox="0 0 24 24" 
                                                 fill="none" 
-                                                stroke={isSelected ? '#3b82f6' : 'var(--text-muted)'}
+                                                stroke={isSelected ? '#3b82f6' : colors.textMuted}
                                                 strokeWidth="2" 
                                                 strokeLinecap="round" 
                                                 strokeLinejoin="round"
@@ -1208,15 +1283,17 @@ const UsersContent: React.FC = () => {
                                 {/* View All Results */}
                                 <div style={{
                                     padding: '8px 12px',
-                                    borderTop: `1px solid var(--border-color)`,
+                                    borderTop: `1px solid ${colors.border}`,
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    gap: '6px' }}>
+                                    gap: '6px',
+                                }}>
                                     <span style={{
                                         fontSize: '11px',
                                         color: '#3b82f6',
-                                        fontWeight: 500 }}>
+                                        fontWeight: 500,
+                                    }}>
                                         Press Enter to view all results
                                     </span>
                                 </div>
@@ -1239,7 +1316,8 @@ const UsersContent: React.FC = () => {
                                     pointerEvents: 'none',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center' }}
+                                    justifyContent: 'center',
+                                }}
                             >
                                 <motion.svg
                                     width="16"
@@ -1278,13 +1356,14 @@ const UsersContent: React.FC = () => {
                             gap: '8px',
                             padding: '10px 14px',
                             borderRadius: '10px',
-                            border: `1px solid var(--border-color)`,
-                            background: 'var(--dashboard-surface)',
-                            color: 'var(--text-secondary)',
+                            border: `1px solid ${colors.border}`,
+                            background: colors.cardBg,
+                            color: colors.textSecondary,
                             fontSize: '12px',
                             fontWeight: 500,
                             cursor: 'pointer',
-                            transition: 'all 0.2s ease' }}
+                            transition: 'all 0.2s ease',
+                        }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M11 5h10" />
@@ -1323,12 +1402,15 @@ const UsersContent: React.FC = () => {
                                     top: 'calc(100% + 6px)',
                                     right: 0,
                                     minWidth: '160px',
-                                    background: 'var(--dashboard-surface)',
+                                    background: colors.cardBg,
                                     borderRadius: '12px',
-                                    border: `1px solid var(--border-color)`,
-                                    boxShadow: 'var(--shadow-lg)',
+                                    border: `1px solid ${colors.border}`,
+                                    boxShadow: isDarkMode
+                                        ? '0 8px 24px rgba(0, 0, 0, 0.4)'
+                                        : '0 8px 24px rgba(0, 0, 0, 0.1)',
                                     padding: '6px',
-                                    zIndex: 100 }}
+                                    zIndex: 100,
+                                }}
                             >
                                 {[
                                     { id: 'name' as UserSortOption, label: 'Sort by Name', icon: (
@@ -1355,7 +1437,7 @@ const UsersContent: React.FC = () => {
                                 ].map((option) => (
                                     <motion.button
                                         key={option.id}
-                                        whileHover={{ background: 'var(--bg-hover)' }}
+                                        whileHover={{ background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => {
                                             setSortOption(option.id);
@@ -1370,13 +1452,14 @@ const UsersContent: React.FC = () => {
                                             borderRadius: '8px',
                                             border: 'none',
                                             background: sortOption === option.id
-                                                ? 'rgba(59, 130, 246, 0.1)'
+                                                ? isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
                                                 : 'transparent',
-                                            color: sortOption === option.id ? '#3b82f6' : 'var(--text-secondary)',
+                                            color: sortOption === option.id ? '#3b82f6' : colors.textSecondary,
                                             fontSize: '12px',
                                             fontWeight: 500,
                                             cursor: 'pointer',
-                                            textAlign: 'left' }}
+                                            textAlign: 'left',
+                                        }}
                                     >
                                         {option.icon}
                                         {option.label}
@@ -1414,7 +1497,8 @@ const UsersContent: React.FC = () => {
                         gap: '2px',
                         padding: '3px',
                         borderRadius: '10px',
-                        background: 'var(--bg-hover)' }}
+                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                    }}
                 >
                     <motion.button
                         aria-label="Grid view"
@@ -1428,14 +1512,15 @@ const UsersContent: React.FC = () => {
                             borderRadius: '8px',
                             border: 'none',
                             background: viewMode === 'grid'
-                                ? 'rgba(59, 130, 246, 0.1)'
+                                ? isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
                                 : 'transparent',
-                            color: viewMode === 'grid' ? '#3b82f6' : 'var(--text-muted)',
+                            color: viewMode === 'grid' ? '#3b82f6' : colors.textMuted,
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: reducedMotion ? 'none' : 'all 0.2s ease' }}
+                            transition: reducedMotion ? 'none' : 'all 0.2s ease',
+                        }}
                         title="Grid View"
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1457,14 +1542,15 @@ const UsersContent: React.FC = () => {
                             borderRadius: '8px',
                             border: 'none',
                             background: viewMode === 'list'
-                                ? 'rgba(59, 130, 246, 0.1)'
+                                ? isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
                                 : 'transparent',
-                            color: viewMode === 'list' ? '#3b82f6' : 'var(--text-muted)',
+                            color: viewMode === 'list' ? '#3b82f6' : colors.textMuted,
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: reducedMotion ? 'none' : 'all 0.2s ease' }}
+                            transition: reducedMotion ? 'none' : 'all 0.2s ease',
+                        }}
                         title="List View"
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -1483,7 +1569,6 @@ const UsersContent: React.FC = () => {
                     activeFilter={activeFilter}
                     setActiveFilter={setActiveFilter}
                     stats={stats}
-                    
                 />
             </motion.div>
 
@@ -1500,14 +1585,15 @@ const UsersContent: React.FC = () => {
                         style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                            gap: '14px' }}
+                            gap: '14px',
+                        }}
                     >
                         {[...Array(8)].map((_, i) => (
-                            <UserCardSkeleton key={i} index={i}  />
+                            <UserCardSkeleton key={i} index={i} />
                         ))}
                     </motion.div>
                 ) : users.length === 0 ? (
-                    <EmptyState searchQuery={searchQuery}  />
+                    <EmptyState searchQuery={searchQuery} />
                 ) : viewMode === 'grid' ? (
                     <motion.div
                         key="users-grid"
@@ -1519,7 +1605,8 @@ const UsersContent: React.FC = () => {
                         style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                            gap: '12px' }}
+                            gap: '12px',
+                        }}
                     >
                         <AnimatePresence>
                             {displayedUsers.map((user, index) => (
@@ -1527,7 +1614,6 @@ const UsersContent: React.FC = () => {
                                     key={user.id}
                                     user={user}
                                     index={index}
-                                    
                                     onClick={handleUserClick}
                                     favorites={favorites}
                                     onToggleFavorite={handleToggleFavorite}
@@ -1546,7 +1632,8 @@ const UsersContent: React.FC = () => {
                         style={{
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: '8px' }}
+                            gap: '8px',
+                        }}
                     >
                         {/* List Header - Hide on mobile for cleaner look */}
                         {!isMobile && (
@@ -1560,9 +1647,10 @@ const UsersContent: React.FC = () => {
                                     padding: '10px 18px 10px 76px',
                                     fontSize: '11px',
                                     fontWeight: 600,
-                                    color: 'var(--text-muted)',
+                                    color: colors.textMuted,
                                     textTransform: 'uppercase',
-                                    letterSpacing: '0.5px' }}
+                                    letterSpacing: '0.5px',
+                                }}
                             >
                                 <span style={{ flex: 2 }}>User</span>
                                 <span style={{ flex: 1, textAlign: 'center' }}>Role</span>
@@ -1577,7 +1665,6 @@ const UsersContent: React.FC = () => {
                                     key={user.id}
                                     user={user}
                                     index={index}
-                                    
                                     onClick={handleUserClick}
                                     favorites={favorites}
                                     onToggleFavorite={handleToggleFavorite}
@@ -1599,7 +1686,8 @@ const UsersContent: React.FC = () => {
                         flexDirection: 'column',
                         alignItems: 'center',
                         padding: '24px',
-                        gap: '12px' }}
+                        gap: '12px',
+                    }}
                 >
                     {isLoadingMore ? (
                         <motion.div
@@ -1609,8 +1697,9 @@ const UsersContent: React.FC = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                color: 'var(--text-muted)',
-                                fontSize: '13px' }}
+                                color: colors.textMuted,
+                                fontSize: '13px',
+                            }}
                         >
                             <motion.div
                                 animate={{ rotate: 360 }}
@@ -1619,8 +1708,9 @@ const UsersContent: React.FC = () => {
                                     width: '16px',
                                     height: '16px',
                                     border: '2px solid',
-                                    borderColor: `var(--accent-color) transparent transparent transparent`,
-                                    borderRadius: '50%' }}
+                                    borderColor: `${colors.accent} transparent transparent transparent`,
+                                    borderRadius: '50%',
+                                }}
                             />
                             Loading more...
                         </motion.div>
@@ -1632,15 +1722,16 @@ const UsersContent: React.FC = () => {
                             style={{
                                 padding: '10px 24px',
                                 borderRadius: '10px',
-                                border: `1px solid var(--border-color)`,
-                                background: 'var(--dashboard-surface)',
-                                color: 'var(--text-secondary)',
+                                border: `1px solid ${colors.border}`,
+                                background: colors.cardBg,
+                                color: colors.textSecondary,
                                 fontSize: '13px',
                                 fontWeight: 500,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px' }}
+                                gap: '8px',
+                            }}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="6 9 12 15 18 9" />
@@ -1657,7 +1748,8 @@ const UsersContent: React.FC = () => {
                     textAlign: 'center',
                     padding: '16px',
                     fontSize: '12px',
-                    color: 'var(--text-muted)' }}>
+                    color: colors.textMuted,
+                }}>
                     Showing {displayedUsers.length} of {users.length} users
                 </div>
             )}

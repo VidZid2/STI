@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import type { ChatColors } from '../types';
+import type {} from '../types';
 
 interface ThreadIndicatorProps {
     replyCount: number;

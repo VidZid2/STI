@@ -373,8 +373,8 @@ body.dark-mode .header-btn:hover {
 }
 
 /* Sidebar in Dark Mode */
-body.dark-mode .sidebar {
-    background: #1e293b;
+body.dark-mode .sidebar.persistent {
+    background: #0f172a;
 }
 
 body.dark-mode .nav-item {
@@ -382,16 +382,16 @@ body.dark-mode .nav-item {
 }
 
 body.dark-mode .nav-item:hover {
-    background: rgba(96, 165, 250, 0.1);
+    background: rgba(255, 255, 255, 0.04);
 }
 
 body.dark-mode .nav-item.active {
-    background: rgba(96, 165, 250, 0.15);
+    background: rgba(96, 165, 250, 0.1);
 }
 
 body.dark-mode .nav-icon {
-    background: #0f172a;
-    border-color: #334155;
+    background: none;
+    border-color: transparent;
 }
 
 body.dark-mode .nav-text {
@@ -403,7 +403,7 @@ body.dark-mode .nav-description {
 }
 
 body.dark-mode .sidebar-bottom {
-    border-top-color: #334155;
+    border-top-color: rgba(255, 255, 255, 0.06);
 }
 
 /* Main Content in Dark Mode */

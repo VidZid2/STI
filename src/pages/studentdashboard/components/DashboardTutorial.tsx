@@ -63,12 +63,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
         position: 'left',
         fixedTooltip: true, // Tooltip on far left
     },
-    {
-        id: 'dock',
-        target: '.floating-dock-container',
-        title: 'Quick Actions Dock',
-        description: 'Access frequently used features instantly from this dock. Hover over icons to see tooltips.',
-        position: 'top' },
+
     {
         id: 'finish',
         target: '.welcome-main-card',
@@ -222,8 +217,8 @@ const DashboardTutorial: React.FC<DashboardTutorialProps> = ({ isOpen, onClose, 
                 }
             }, 400);
             return () => clearTimeout(timer);
-        } else if (step?.id === 'dock' || step?.id === 'finish') {
-            // Close sidebar for dock and finish steps
+        } else if (step?.id === 'finish') {
+            // Close sidebar for finish step
             onToggleWidgetsSidebar(false);
         }
     }, [currentStep, step, isOpen, onToggleWidgetsSidebar]);

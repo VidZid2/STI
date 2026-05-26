@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CatalogFilterTabs
  * Filter tabs for CatalogContent.
  * Extracted from CatalogContent.tsx during Phase 8.7
@@ -12,8 +12,8 @@ const FilterTabs: React.FC<{
     activeFilter: CourseCategory | 'favorites';
     setActiveFilter: (filter: CourseCategory | 'favorites') => void;
     stats: CatalogStats;
-    
-}> = ({ activeFilter, setActiveFilter, stats,  favoritesCount }) => {
+    favoritesCount: number;
+}> = ({ activeFilter, setActiveFilter, stats, favoritesCount }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [indicatorStyle, setIndicatorStyle] = useState({ left: 5, width: 60 });
     
@@ -109,7 +109,5 @@ const FilterTabs: React.FC<{
         </motion.div>
     );
 };
-
-
 
 export { FilterTabs };

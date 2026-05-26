@@ -1,10 +1,10 @@
-﻿/**
+/**
  * CatalogShared - AnimatedNumber, CategoryIcon, CatalogSkeleton
  * Extracted from CatalogContent.tsx during Phase 8.7
  */
 import React, { useRef, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { useMotionValue, useSpring, useInView } from 'motion/react';
+import { motion, useInView } from 'motion/react';
+import { useMotionValue, useSpring } from 'motion/react';
 
 // Animated Number Component (inline to avoid import issues)
 const AnimatedNumber: React.FC<{ value: number; delay?: number; className?: string }> = ({ value, delay = 0, className }) => {
@@ -68,7 +68,8 @@ const CategoryIcon: React.FC<{ category: string; size?: number }> = ({ category,
                 <rect x="14" y="14" width="7" height="7" rx="1" />
                 <rect x="3" y="14" width="7" height="7" rx="1" />
             </svg>
-        ) };
+        ),
+    };
     return <>{icons[category] || icons.all}</>;
 };
 
@@ -77,16 +78,20 @@ const CategoryIcon: React.FC<{ category: string; size?: number }> = ({ category,
 // Skeleton Shimmer Animation
 const shimmerAnimation = {
     initial: { backgroundPosition: '-200% 0' },
-    animate: { backgroundPosition: '200% 0' } };
+    animate: { backgroundPosition: '200% 0' },
+};
 
 
 // Skeleton Loading Component
-const CatalogSkeleton: React.FC<{ }> = ({ }) => {
-    const = {
-        cardBg: 'var(--bg-secondary)',
-        border: 'var(--border-light)',
-        skeleton: 'var(--border-light)',
-        shimmer: 'var(--shimmer-bg)' };
+const CatalogSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+    const colors = {
+        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
+        border: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        skeleton: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        shimmer: isDarkMode 
+            ? 'linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 100%)'
+            : 'linear-gradient(90deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.02) 100%)',
+    };
 
     const SkeletonBox: React.FC<{ width?: string; height?: string; borderRadius?: string; style?: React.CSSProperties }> = ({ 
         width = '100%', height = '16px', borderRadius = '6px', style 
@@ -100,10 +105,11 @@ const CatalogSkeleton: React.FC<{ }> = ({ }) => {
                 width,
                 height,
                 borderRadius,
-                background: .skeleton,
-                backgroundImage: 'var(--shimmer-bg)',
+                background: colors.skeleton,
+                backgroundImage: colors.shimmer,
                 backgroundSize: '200% 100%',
-                ...style }}
+                ...style,
+            }}
         />
     );
 
@@ -122,8 +128,9 @@ const CatalogSkeleton: React.FC<{ }> = ({ }) => {
                     gap: '16px',
                     padding: '18px 22px',
                     borderRadius: '14px',
-                    background: 'var(--dashboard-surface)',
-                    border: `1px solid var(--border-color)` }}>
+                    background: colors.cardBg,
+                    border: `1px solid ${colors.border}`,
+                }}>
                     {/* Icon Skeleton */}
                     <SkeletonBox width="46px" height="46px" borderRadius="12px" />
                     
@@ -145,8 +152,9 @@ const CatalogSkeleton: React.FC<{ }> = ({ }) => {
                                 alignItems: 'center',
                                 padding: '10px 16px',
                                 borderRadius: '10px',
-                                background: 'var(--bg-hover)',
-                                minWidth: '72px' }}>
+                                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                minWidth: '72px',
+                            }}>
                                 <SkeletonBox width="16px" height="16px" borderRadius="4px" style={{ marginBottom: '6px' }} />
                                 <SkeletonBox width="24px" height="20px" borderRadius="4px" style={{ marginBottom: '4px' }} />
                                 <SkeletonBox width="40px" height="10px" borderRadius="3px" />
@@ -164,7 +172,7 @@ const CatalogSkeleton: React.FC<{ }> = ({ }) => {
                 style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}
             >
                 <SkeletonBox width="300px" height="44px" borderRadius="12px" style={{ flex: 1, minWidth: '220px' }} />
-                <div style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '12px', background: 'var(--bg-hover)' }}>
+                <div style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '12px', background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}>
                     {[1, 2, 3, 4, 5].map((i) => (
                         <SkeletonBox key={i} width="60px" height="32px" borderRadius="8px" />
                     ))}
@@ -186,10 +194,11 @@ const CatalogSkeleton: React.FC<{ }> = ({ }) => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: 0.1 + i * 0.05 }}
                         style={{
-                            background: 'var(--dashboard-surface)',
+                            background: colors.cardBg,
                             borderRadius: '16px',
-                            border: `1px solid var(--border-color)`,
-                            overflow: 'hidden' }}
+                            border: `1px solid ${colors.border}`,
+                            overflow: 'hidden',
+                        }}
                     >
                         {/* Image Skeleton */}
                         <SkeletonBox width="100%" height="140px" borderRadius="0" />
@@ -211,7 +220,8 @@ const CatalogSkeleton: React.FC<{ }> = ({ }) => {
                                 alignItems: 'center', 
                                 justifyContent: 'space-between',
                                 paddingTop: '12px',
-                                borderTop: `1px solid var(--border-color)` }}>
+                                borderTop: `1px solid ${colors.border}`,
+                            }}>
                                 <SkeletonBox width="80px" height="12px" borderRadius="3px" />
                                 <SkeletonBox width="40px" height="12px" borderRadius="3px" />
                             </div>

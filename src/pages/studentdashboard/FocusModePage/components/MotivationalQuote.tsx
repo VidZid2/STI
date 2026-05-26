@@ -6,7 +6,6 @@
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import type { FocusModeColors } from '../FocusModePage';
 
 // Motivational Quotes Data
 const STUDY_QUOTES = [
@@ -25,10 +24,7 @@ const STUDY_QUOTES = [
 ];
 
 // Motivational Quote Component
-const MotivationalQuote: React.FC<{
-    
-    
-}> = ({ isBreakMode }) => {
+const MotivationalQuote: React.FC<{ isBreakMode: boolean }> = ({ isBreakMode }) => {
     const [quote, setQuote] = useState(STUDY_QUOTES[0]);
     const [isChanging, setIsChanging] = useState(false);
 

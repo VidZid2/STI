@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UsersEmptyState
  * Empty state display for UsersContent.
  * Extracted from UsersContent.tsx during Phase 8.4
@@ -7,7 +7,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 
 // Empty State Component
-const EmptyState: React.FC<{ searchQuery: string;  textSecondary: string } }> = ({ searchQuery }) => {
+const EmptyState: React.FC<{ searchQuery: string; textSecondary?: string }> = ({ searchQuery }) => {
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}

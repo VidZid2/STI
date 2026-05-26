@@ -6,7 +6,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { ChatMessage } from '../../../../services/chatService';
-import type { ChatColors, MemberStats } from '../types';
+import type { MemberStats } from '../types';
 import { formatTime } from '../utils';
 
 interface PinnedMessagesPanelProps {

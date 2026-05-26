@@ -29,7 +29,7 @@ interface MentionAutocompleteProps {
     onSelect: (user: MentionUser) => void;
     onClose: () => void;
     inputRef: React.RefObject<HTMLTextAreaElement | null>;
-    
+    isDarkMode?: boolean;
     messageContext?: string; // Full message text for smart suggestions
 }
 
@@ -64,7 +64,8 @@ const CategoryIcons: Record<MentionCategory, React.ReactNode> = {
             <circle cx="9" cy="7" r="4" />
             <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
-    ) };
+    ),
+};
 
 const CATEGORIES: { id: MentionCategory; label: string }[] = [
     { id: 'buddies', label: 'Study Buddies' },
@@ -73,40 +74,49 @@ const CATEGORIES: { id: MentionCategory; label: string }[] = [
     { id: 'all', label: 'All Members' },
 ];
 
-// Expertise badge styles with and icons
+// Expertise badge styles with colors and icons
 const EXPERTISE_STYLES: Record<string, { color: string; bg: string; icon: React.ReactNode }> = {
     math: {
         color: '#7c3aed',
         bg: 'rgba(124, 58, 237, 0.1)',
-        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM17 14v6M14 17h6" /></svg> },
+        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM17 14v6M14 17h6" /></svg>,
+    },
     science: {
         color: '#0891b2',
         bg: 'rgba(8, 145, 178, 0.1)',
-        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 3h6v8l4 9H5l4-9V3z" /></svg> },
+        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 3h6v8l4 9H5l4-9V3z" /></svg>,
+    },
     programming: {
         color: '#059669',
         bg: 'rgba(5, 150, 105, 0.1)',
-        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6" /></svg> },
+        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6" /></svg>,
+    },
     writing: {
         color: '#dc2626',
         bg: 'rgba(220, 38, 38, 0.1)',
-        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 19l7-7 3 3-7 7-3-3zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" /></svg> },
+        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 19l7-7 3 3-7 7-3-3zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" /></svg>,
+    },
     language: {
         color: '#2563eb',
         bg: 'rgba(37, 99, 235, 0.1)',
-        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg> },
+        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>,
+    },
     history: {
         color: '#b45309',
         bg: 'rgba(180, 83, 9, 0.1)',
-        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg> },
+        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>,
+    },
     business: {
         color: '#0d9488',
         bg: 'rgba(13, 148, 136, 0.1)',
-        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 3v18h18" /><path d="M18 17V9M13 17V5M8 17v-3" /></svg> },
+        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 3v18h18" /><path d="M18 17V9M13 17V5M8 17v-3" /></svg>,
+    },
     art: {
         color: '#db2777',
         bg: 'rgba(219, 39, 119, 0.1)',
-        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="13.5" cy="6.5" r="2.5" /><circle cx="19" cy="17" r="2" /><circle cx="9" cy="18" r="2" /><path d="M12 12c-2-2.67-6-2.67-8 0 2-2.67 2-6.67 0-8 2.67 2 6.67 2 8 0-2 2.67-2 6.67 0 8z" /></svg> } };
+        icon: <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="13.5" cy="6.5" r="2.5" /><circle cx="19" cy="17" r="2" /><circle cx="9" cy="18" r="2" /><path d="M12 12c-2-2.67-6-2.67-8 0 2-2.67 2-6.67 0-8 2.67 2 6.67 2 8 0-2 2.67-2 6.67 0 8z" /></svg>,
+    },
+};
 
 export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
     users,
@@ -115,8 +125,9 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
     onSelect,
     onClose,
     inputRef,
-    = false,
-    messageContext = '' }) => {
+    isDarkMode = false,
+    messageContext = '',
+}) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [position, setPosition] = useState<{ bottom: number; left: number; width: number } | null>(null);
     const [smartUsers, setSmartUsers] = useState<MentionUser[]>([]);
@@ -132,16 +143,17 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
     const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
     // Colors matching the app's design system
-    const = {
-        bg: 'var(--bg-primary)',
-        border: 'var(--dashboard-surface)',
-        borderLight: 'rgba(255,255,255,0.06)',
-        textPrimary: 'var(--bg-hover)',
-        textSecondary: 'var(--bg-hover)',
-        textMuted: 'var(--bg-hover)',
+    const colors = {
+        bg: isDarkMode ? '#1e293b' : '#ffffff',
+        border: isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)',
+        borderLight: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        textPrimary: isDarkMode ? '#f1f5f9' : '#1e293b',
+        textSecondary: isDarkMode ? '#94a3b8' : '#64748b',
+        textMuted: isDarkMode ? '#64748b' : '#94a3b8',
         accent: '#3b82f6',
-        hoverBg: 'var(--bg-hover)',
-        selectedBg: 'rgba(59, 130, 246, 0.1)' };
+        hoverBg: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)',
+        selectedBg: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
+    };
 
     // Smart filtering with AI suggestions
     useEffect(() => {
@@ -277,7 +289,8 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
             setPosition({
                 bottom: viewportHeight - containerRect.top + 8,
                 left: containerRect.left,
-                width: containerRect.width });
+                width: containerRect.width,
+            });
         } else {
             // Fallback to textarea position
             const rect = textarea.getBoundingClientRect();
@@ -285,7 +298,8 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
             setPosition({
                 bottom: viewportHeight - rect.top + 8,
                 left: rect.left - 60,
-                width: Math.min(340, rect.width + 120) });
+                width: Math.min(340, rect.width + 120),
+            });
         }
     }, [isOpen, inputRef, query]);
 
@@ -294,7 +308,8 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
         if (itemRefs.current[selectedIndex]) {
             itemRefs.current[selectedIndex]?.scrollIntoView({
                 block: 'nearest',
-                behavior: 'smooth' });
+                behavior: 'smooth',
+            });
         }
     }, [selectedIndex]);
 
@@ -368,7 +383,8 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                             opacity: 1,
                             y: 0,
                             scale: 1,
-                            height: measuredHeight || 'auto' }}
+                            height: measuredHeight || 'auto',
+                        }}
                         exit={{
                             opacity: 0,
                             y: 15,
@@ -388,7 +404,8 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                             height: {
                                 type: 'spring',
                                 damping: 28,
-                                stiffness: 180 }
+                                stiffness: 180,
+                            }
                         }}
                         style={{
                             position: 'fixed',
@@ -397,13 +414,15 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                             width: position.width,
                             maxWidth: '380px',
                             minWidth: '280px',
-                            background: 'var(--bg-primary)',
+                            background: colors.bg,
                             borderRadius: '16px',
-                            border: `1.5px solid var(--accent-color)`,
-                            boxShadow: ? '0 -12px 40px rgba(0,0,0,0.35), 0 -4px 16px rgba(59, 130, 246, 0.15)'
+                            border: `1.5px solid ${colors.accent}`,
+                            boxShadow: isDarkMode
+                                ? '0 -12px 40px rgba(0,0,0,0.35), 0 -4px 16px rgba(59, 130, 246, 0.15)'
                                 : '0 -12px 40px rgba(0,0,0,0.1), 0 -4px 16px rgba(59, 130, 246, 0.1)',
                             overflow: 'hidden',
-                            zIndex: 9999 }}
+                            zIndex: 9999,
+                        }}
                     >
                         {/* Content wrapper for measurement */}
                         <div ref={contentRef}>
@@ -413,13 +432,15 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                 transition={{ layout: { type: 'spring', damping: 25, stiffness: 300 } }}
                                 style={{
                                     padding: '12px 16px',
-                                    borderBottom: `1px solid var(--border-color)`,
-                                    background: 'rgba(59, 130, 246, 0.05)' }}
+                                    borderBottom: `1px solid ${colors.borderLight}`,
+                                    background: isDarkMode ? 'rgba(59, 130, 246, 0.05)' : 'rgba(59, 130, 246, 0.03)',
+                                }}
                             >
                                 <div style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '10px' }}>
+                                    gap: '10px',
+                                }}>
                                     <motion.div
                                         initial={{ scale: 0.8, opacity: 0 }}
                                         animate={{ scale: 1, opacity: 1 }}
@@ -428,23 +449,24 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                             width: 28,
                                             height: 28,
                                             borderRadius: '8px',
-                                            background: 'var(--dashboard-surface)',
-                                            border: `1px solid ${'rgba(59, 130, 246, 0.25)'}`,
+                                            background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+                                            border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.15)'}`,
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'center' }}
+                                            justifyContent: 'center',
+                                        }}
                                     >
                                         {isAiLoading ? (
                                             <motion.div
                                                 animate={{ rotate: 360 }}
                                                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                                             >
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2">
                                                     <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                                                 </svg>
                                             </motion.div>
                                         ) : (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2">
                                                 <circle cx="12" cy="12" r="4" />
                                                 <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94" />
                                             </svg>
@@ -453,9 +475,10 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                     <span style={{
                                         fontSize: '12px',
                                         fontWeight: 600,
-                                        color: 'var(--accent-color)',
+                                        color: colors.accent,
                                         textTransform: 'uppercase',
-                                        letterSpacing: '0.3px' }}>
+                                        letterSpacing: '0.3px',
+                                    }}>
                                         {detectedSubjects.length > 0 ? 'Smart Suggestions' : 'Mention someone'}
                                     </span>
                                     <motion.span
@@ -465,10 +488,11 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                             marginLeft: 'auto',
                                             fontSize: '11px',
                                             fontWeight: 600,
-                                            color: 'var(--accent-color)',
+                                            color: colors.accent,
                                             padding: '3px 8px',
                                             borderRadius: '6px',
-                                            background: 'var(--dashboard-surface)' }}
+                                            background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+                                        }}
                                     >
                                         {filteredUsers.length}
                                     </motion.span>
@@ -484,9 +508,10 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                             alignItems: 'center',
                                             gap: '6px',
                                             marginTop: '8px',
-                                            flexWrap: 'wrap' }}
+                                            flexWrap: 'wrap',
+                                        }}
                                     >
-                                        <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+                                        <span style={{ fontSize: '10px', color: colors.textMuted }}>
                                             Looking for:
                                         </span>
                                         {detectedSubjects.map(subject => (
@@ -501,7 +526,8 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                                     borderRadius: '10px',
                                                     display: 'flex',
                                                     alignItems: 'center',
-                                                    gap: '4px' }}
+                                                    gap: '4px',
+                                                }}
                                             >
                                                 {getSubjectIcon(subject)} {subject}
                                             </span>
@@ -520,11 +546,12 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                     alignItems: 'center',
                                     gap: '6px',
                                     padding: '10px 14px',
-                                    borderBottom: `1px solid var(--border-color)`,
-                                    background: 'var(--dashboard-surface)',
+                                    borderBottom: `1px solid ${colors.borderLight}`,
+                                    background: isDarkMode ? 'rgba(0,0,0,0.15)' : '#f8fafc',
                                     overflowX: 'auto',
                                     scrollbarWidth: 'none',
-                                    msOverflowStyle: 'none' }}
+                                    msOverflowStyle: 'none',
+                                }}
                                 className="hide-scrollbar"
                             >
                                 {CATEGORIES.map((category, tabIndex) => {
@@ -537,11 +564,13 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                                 ? smartUsers.length
                                                 : users.length;
 
-                                    // Category-specific const categoryColors = {
+                                    // Category-specific colors
+                                    const categoryColors = {
                                         buddies: { active: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' },
                                         experts: { active: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
                                         online: { active: '#22c55e', bg: 'rgba(34, 197, 94, 0.1)' },
-                                        all: { active: 'var(--accent-color)', bg: 'rgba(59, 130, 246, 0.1)' } };
+                                        all: { active: colors.accent, bg: 'rgba(59, 130, 246, 0.1)' },
+                                    };
                                     const catColor = categoryColors[category.id];
 
                                     return (
@@ -561,12 +590,14 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                             }}
                                             whileHover={{
                                                 scale: 1.02,
-                                                boxShadow: `0 4px 12px ${catColor.active}30` }}
+                                                boxShadow: `0 4px 12px ${catColor.active}30`,
+                                            }}
                                             whileTap={{ scale: 0.98 }}
                                             transition={{
                                                 type: 'spring',
                                                 stiffness: 400,
-                                                damping: 25 }}
+                                                damping: 25,
+                                            }}
                                             style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
@@ -575,43 +606,47 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                                 borderRadius: '10px',
                                                 border: isActive
                                                     ? `2px solid ${catColor.active}`
-                                                    : `1.5px solid ${'var(--bg-hover)'}`,
+                                                    : `1.5px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
                                                 background: isActive
                                                     ? catColor.bg
-                                                    : 'var(--dashboard-surface)',
+                                                    : isDarkMode ? 'rgba(255,255,255,0.03)' : '#ffffff',
                                                 cursor: 'pointer',
                                                 transition: 'background 0.2s ease, border 0.2s ease',
                                                 flexShrink: 0,
                                                 boxShadow: isActive
                                                     ? `0 2px 8px ${catColor.active}25`
-                                                    : '0 1px 3px rgba(0,0,0,0.05)' }}
+                                                    : '0 1px 3px rgba(0,0,0,0.05)',
+                                            }}
                                         >
                                             {/* SVG Icon */}
                                             <span style={{
-                                                color: isActive ? catColor.active : 'var(--bg-hover)',
+                                                color: isActive ? catColor.active : isDarkMode ? '#94a3b8' : '#475569',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                transition: 'color 0.15s ease' }}>
+                                                transition: 'color 0.15s ease',
+                                            }}>
                                                 {CategoryIcons[category.id]}
                                             </span>
                                             <span style={{
                                                 fontSize: '12px',
                                                 fontWeight: isActive ? 700 : 600,
-                                                color: isActive ? catColor.active : 'var(--bg-hover)',
-                                                transition: 'color 0.15s ease' }}>
+                                                color: isActive ? catColor.active : isDarkMode ? '#e2e8f0' : '#1e293b',
+                                                transition: 'color 0.15s ease',
+                                            }}>
                                                 {category.label}
                                             </span>
                                             <span style={{
                                                 fontSize: '11px',
                                                 fontWeight: 700,
-                                                color: isActive ? '#ffffff' : 'var(--bg-hover)',
+                                                color: isActive ? '#ffffff' : isDarkMode ? '#cbd5e1' : '#475569',
                                                 background: isActive
                                                     ? catColor.active
-                                                    : 'var(--bg-hover)',
+                                                    : isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
                                                 padding: '2px 7px',
                                                 borderRadius: '6px',
                                                 minWidth: '22px',
-                                                textAlign: 'center' }}>
+                                                textAlign: 'center',
+                                            }}>
                                                 {count}
                                             </span>
                                         </motion.button>
@@ -628,7 +663,8 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                 style={{
                                     maxHeight: '220px',
                                     overflowY: 'auto',
-                                    padding: '8px' }}
+                                    padding: '8px',
+                                }}
                             >
                                 {/* Empty state */}
                                 {filteredUsers.length === 0 && (
@@ -638,17 +674,20 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                         animate={{ opacity: 1 }}
                                         style={{
                                             padding: '20px',
-                                            textAlign: 'center' }}
+                                            textAlign: 'center',
+                                        }}
                                     >
                                         <div style={{
                                             fontSize: '24px',
-                                            marginBottom: '8px' }}>
+                                            marginBottom: '8px',
+                                        }}>
                                             {activeCategory === 'online' ? '😴' : activeCategory === 'experts' ? '🎓' : '🔍'}
                                         </div>
                                         <p style={{
                                             fontSize: '12px',
-                                            color: 'var(--text-muted)',
-                                            margin: 0 }}>
+                                            color: colors.textMuted,
+                                            margin: 0,
+                                        }}>
                                             {activeCategory === 'online'
                                                 ? 'No members online right now'
                                                 : activeCategory === 'experts'
@@ -660,11 +699,12 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                             style={{
                                                 marginTop: '8px',
                                                 fontSize: '11px',
-                                                color: 'var(--accent-color)',
+                                                color: colors.accent,
                                                 background: 'transparent',
                                                 border: 'none',
                                                 cursor: 'pointer',
-                                                textDecoration: 'underline' }}
+                                                textDecoration: 'underline',
+                                            }}
                                         >
                                             View all members
                                         </button>
@@ -686,7 +726,8 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                             transition={{
                                                 delay: index * 0.02,
                                                 duration: 0.15,
-                                                layout: { type: 'spring', damping: 25, stiffness: 300 } }}
+                                                layout: { type: 'spring', damping: 25, stiffness: 300 },
+                                            }}
                                             onClick={() => onSelect(user)}
                                             onMouseEnter={() => setSelectedIndex(index)}
                                             whileTap={{ scale: 0.98 }}
@@ -703,10 +744,11 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                                 textAlign: 'left',
                                                 marginBottom: '1px',
                                                 background: isSelected
-                                                    ? 'var(--bg-hover)'
+                                                    ? isDarkMode ? 'rgba(59, 130, 246, 0.12)' : '#eff6ff'
                                                     : 'transparent',
                                                 transform: 'scale(1)',
-                                                transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease' }}
+                                                transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease',
+                                            }}
                                         >
                                             {/* Avatar with Level Badge and Online Status - matching chat bubble */}
                                             <div style={{ position: 'relative', flexShrink: 0, width: 36, height: 42 }}>
@@ -716,15 +758,16 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                                         width: 36,
                                                         height: 36,
                                                         borderRadius: '50%',
-                                                        background: `linear-gradient(135deg, var(--accent-color)30 0%, var(--accent-color)10 100%)`,
+                                                        background: `linear-gradient(135deg, ${colors.accent}30 0%, ${colors.accent}10 100%)`,
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
                                                         fontSize: '13px',
                                                         fontWeight: 600,
-                                                        color: 'var(--accent-color)',
+                                                        color: colors.accent,
                                                         overflow: 'hidden',
-                                                        border: `2px solid ${'var(--dashboard-surface)'}` }}
+                                                        border: `2px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                                                    }}
                                                 >
                                                     {user.avatar ? (
                                                         <img
@@ -748,9 +791,10 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                                     fontWeight: 700,
                                                     padding: '1px 5px',
                                                     borderRadius: '6px',
-                                                    border: `2px solid var(--bg-primary)`,
+                                                    border: `2px solid ${colors.bg}`,
                                                     lineHeight: 1.2,
-                                                    whiteSpace: 'nowrap' }}>
+                                                    whiteSpace: 'nowrap',
+                                                }}>
                                                     Lv.{user.level || 1}
                                                 </div>
                                                 {/* Online Status Dot */}
@@ -763,7 +807,8 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                                         height: 10,
                                                         borderRadius: '50%',
                                                         background: user.isOnline ? '#22c55e' : '#9ca3af',
-                                                        border: `2px solid var(--bg-primary)` }}
+                                                        border: `2px solid ${colors.bg}`,
+                                                    }}
                                                 />
                                             </div>
 
@@ -774,12 +819,14 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     gap: '8px',
-                                                    flexWrap: 'wrap' }}>
+                                                    flexWrap: 'wrap',
+                                                }}>
                                                     <span style={{
                                                         fontSize: '13px',
                                                         fontWeight: 600,
-                                                        color: isSelected ? 'var(--accent-color)' : 'var(--bg-hover)',
-                                                        whiteSpace: 'nowrap' }}>
+                                                        color: isSelected ? colors.accent : isDarkMode ? '#f1f5f9' : '#0f172a',
+                                                        whiteSpace: 'nowrap',
+                                                    }}>
                                                         {user.name}
                                                     </span>
                                                     {roleBadge && (
@@ -790,7 +837,8 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                                             background: roleBadge.color,
                                                             padding: '2px 6px',
                                                             borderRadius: '4px',
-                                                            textTransform: 'uppercase' }}>
+                                                            textTransform: 'uppercase',
+                                                        }}>
                                                             {roleBadge.label}
                                                         </span>
                                                     )}
@@ -817,7 +865,8 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                                                         padding: '2px 6px',
                                                                         borderRadius: '4px',
                                                                         textTransform: 'capitalize',
-                                                                        border: isMatch ? `1.5px solid ${style.color}` : `1px solid ${style.color}30` }}
+                                                                        border: isMatch ? `1.5px solid ${style.color}` : `1px solid ${style.color}30`,
+                                                                    }}
                                                                 >
                                                                     <span style={{ display: 'flex', width: 10, height: 10 }}>
                                                                         {style.icon}
@@ -835,18 +884,19 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                                 width: 24,
                                                 height: 24,
                                                 borderRadius: '8px',
-                                                background: isSelected ? 'var(--accent-color)' : 'transparent',
+                                                background: isSelected ? colors.accent : 'transparent',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 flexShrink: 0,
-                                                transition: 'background 0.15s ease' }}>
+                                                transition: 'background 0.15s ease',
+                                            }}>
                                                 <svg
                                                     width="14"
                                                     height="14"
                                                     viewBox="0 0 24 24"
                                                     fill="none"
-                                                    stroke={isSelected ? '#fff' : 'var(--bg-hover)'}
+                                                    stroke={isSelected ? '#fff' : isDarkMode ? '#475569' : '#94a3b8'}
                                                     strokeWidth="2.5"
                                                     strokeLinecap="round"
                                                     strokeLinejoin="round"
@@ -865,24 +915,27 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                 transition={{ layout: { type: 'spring', damping: 25, stiffness: 300 } }}
                                 style={{
                                     padding: '8px 14px',
-                                    borderTop: `1px solid var(--border-color)`,
+                                    borderTop: `1px solid ${colors.borderLight}`,
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    gap: '12px' }}
+                                    gap: '12px',
+                                }}
                             >
                                 <span style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '4px',
                                     fontSize: '10px',
-                                    color: 'var(--text-muted)' }}>
+                                    color: colors.textMuted,
+                                }}>
                                     <kbd style={{
                                         padding: '2px 5px',
                                         borderRadius: '4px',
-                                        background: 'var(--bg-hover)',
+                                        background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
                                         fontSize: '9px',
-                                        fontFamily: 'inherit' }}>↑↓</kbd>
+                                        fontFamily: 'inherit',
+                                    }}>↑↓</kbd>
                                     navigate
                                 </span>
                                 <span style={{
@@ -890,13 +943,15 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                     alignItems: 'center',
                                     gap: '4px',
                                     fontSize: '10px',
-                                    color: 'var(--text-muted)' }}>
+                                    color: colors.textMuted,
+                                }}>
                                     <kbd style={{
                                         padding: '2px 5px',
                                         borderRadius: '4px',
-                                        background: 'var(--bg-hover)',
+                                        background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
                                         fontSize: '9px',
-                                        fontFamily: 'inherit' }}>↵</kbd>
+                                        fontFamily: 'inherit',
+                                    }}>↵</kbd>
                                     select
                                 </span>
                                 <span style={{
@@ -904,13 +959,15 @@ export const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({
                                     alignItems: 'center',
                                     gap: '4px',
                                     fontSize: '10px',
-                                    color: 'var(--text-muted)' }}>
+                                    color: colors.textMuted,
+                                }}>
                                     <kbd style={{
                                         padding: '2px 5px',
                                         borderRadius: '4px',
-                                        background: 'var(--bg-hover)',
+                                        background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
                                         fontSize: '9px',
-                                        fontFamily: 'inherit' }}>esc</kbd>
+                                        fontFamily: 'inherit',
+                                    }}>esc</kbd>
                                     close
                                 </span>
                             </motion.div>

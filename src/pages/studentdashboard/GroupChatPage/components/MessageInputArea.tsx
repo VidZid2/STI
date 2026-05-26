@@ -7,7 +7,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { MentionAutocomplete, type MentionUser } from './MentionAutocomplete';
 import { InputToolbarLeft, InputToolbarRight } from './InputToolbar';
-import type { ChatColors, ReplyInfo } from '../types';
+import type { ReplyInfo } from '../types';
 
 interface MessageInputAreaProps {
     // Message state

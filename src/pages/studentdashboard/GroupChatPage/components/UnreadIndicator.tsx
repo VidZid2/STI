@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UnreadIndicator Component
  * Displays a separator showing the number of unread messages
  */
@@ -33,8 +33,7 @@ export const UnreadIndicator = React.memo<UnreadIndicatorProps>(({
             <div style={{
                 flex: 1,
                 height: '1px',
-                background: ? 'linear-gradient(to left, rgba(59, 130, 246, 0.4), transparent)'
-                    : 'linear-gradient(to left, rgba(59, 130, 246, 0.3), transparent)' }} />
+                background: 'linear-gradient(to left, rgba(59, 130, 246, 0.3), transparent)' }} />
             {/* Unread badge */}
             <div style={{
                 display: 'inline-flex',
@@ -59,8 +58,7 @@ export const UnreadIndicator = React.memo<UnreadIndicatorProps>(({
             <div style={{
                 flex: 1,
                 height: '1px',
-                background: ? 'linear-gradient(to right, rgba(59, 130, 246, 0.4), transparent)'
-                    : 'linear-gradient(to right, rgba(59, 130, 246, 0.3), transparent)' }} />
+                background: 'linear-gradient(to right, rgba(59, 130, 246, 0.3), transparent)' }} />
         </motion.div>
     );
 });

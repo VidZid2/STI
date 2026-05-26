@@ -5,7 +5,6 @@
  */
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import type { FocusModeColors } from '../FocusModePage';
 
 // Break Suggestions Data
 const BREAK_SUGGESTIONS = [
@@ -18,10 +17,7 @@ const BREAK_SUGGESTIONS = [
 ];
 
 // Break Suggestions Component
-const BreakSuggestions: React.FC<{
-    
-    
-}> = ({   isBreakMode }) => {
+const BreakSuggestions: React.FC<{ isBreakMode: boolean }> = ({   isBreakMode }) => {
     const [currentSuggestion, setCurrentSuggestion] = useState(0);
 
     // Rotate suggestions

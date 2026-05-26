@@ -142,7 +142,8 @@ const TeacherSpotlight: React.FC<{
 
     const currentTeacher = teachers[currentIndex];
 
-    // Category const getCategoryColor = (category: string) => {
+    // Category color helper
+    const getCategoryColor = (category: string) => {
         const categoryColors: Record<string, string> = {
             major: '#3b82f6',
             ge: '#10b981',

@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import type { ChatColors } from '../types';
+import type {} from '../types';
 
 interface MessageAvatarProps {
     userAvatar?: string;

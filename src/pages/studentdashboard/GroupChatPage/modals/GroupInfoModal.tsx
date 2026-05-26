@@ -90,7 +90,7 @@ const GroupInfoModal: React.FC<{
     onClose: () => void;
     groupInfo: GroupWithMembers | null;
     messageCount: number;
-     full_name?: string; email?: string } | null;
+    profile: { id?: string; full_name?: string; email?: string } | null;
     showReadReceipts?: boolean;
     onReadReceiptsChange?: (value: boolean) => void;
 }> = ({ isOpen, onClose, groupInfo, messageCount,  profile, showReadReceipts = true, onReadReceiptsChange }) => {
@@ -125,7 +125,7 @@ const GroupInfoModal: React.FC<{
 
     if (!isOpen || !groupInfo) return null;
 
-    const = 'var(--dashboard-surface)' !== '#ffffff';
+    const isDarkMode = 'var(--dashboard-surface)' !== '#ffffff';
     const categoryConfig: Record<string, { label: string; color: string }> = {
         study: { label: 'Study Group', color: '#3b82f6' },
         project: { label: 'Project Team', color: '#8b5cf6' },
@@ -935,7 +935,7 @@ const GroupInfoModal: React.FC<{
                                                         width: '100%',
                                                         maxWidth: '420px',
                                                         maxHeight: '85vh',
-                                                        boxShadow: ? '0 20px 40px rgba(0,0,0,0.4)'
+                                                        boxShadow: isDarkMode ? '0 20px 40px rgba(0,0,0,0.4)'
                                                             : '0 20px 40px rgba(0,0,0,0.15)',
                                                         border: `1px solid var(--border-color)`,
                                                         overflow: 'hidden',
@@ -1340,7 +1340,7 @@ const GroupInfoModal: React.FC<{
                                                         borderRadius: '16px',
                                                         width: '100%',
                                                         maxWidth: '360px',
-                                                        boxShadow: ? '0 20px 40px rgba(0,0,0,0.4)'
+                                                        boxShadow: isDarkMode ? '0 20px 40px rgba(0,0,0,0.4)'
                                                             : '0 20px 40px rgba(0,0,0,0.15)',
                                                         border: `1px solid var(--border-color)`,
                                                         overflow: 'hidden' }}

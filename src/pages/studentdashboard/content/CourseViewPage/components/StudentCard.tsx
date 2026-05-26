@@ -21,9 +21,9 @@ interface StudentCardProps {
 }
 
 const getAvatarColor = (name: string): string => {
-    const = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
     const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return [hash % .length];
+    return colors[hash % colors.length];
 };
 
 export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
@@ -63,7 +63,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                             onMouseLeave={() => { setShowTooltip(null); setTooltipRect(null); }}
                             onClick={(e) => e.stopPropagation()}
                             aria-label="Send message"
-                            className="w-7 h-7 rounded-lg bg-blue-50 hover:bg-blue-100 flex items-center justify-center text-blue-600 transition-"
+                            className="w-7 h-7 rounded-lg bg-blue-50 hover:bg-blue-100 flex items-center justify-center text-blue-600 transition-colors"
                         >
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -76,7 +76,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                             onMouseLeave={() => { setShowTooltip(null); setTooltipRect(null); }}
                             onClick={(e) => e.stopPropagation()}
                             aria-label="More options"
-                            className="w-7 h-7 rounded-lg bg-zinc-50 hover:bg-zinc-100 flex items-center justify-center text-zinc-500 transition-"
+                            className="w-7 h-7 rounded-lg bg-zinc-50 hover:bg-zinc-100 flex items-center justify-center text-zinc-500 transition-colors"
                         >
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
@@ -102,14 +102,16 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                         fontWeight: 500,
                         whiteSpace: 'nowrap',
                         zIndex: 99999,
-                        pointerEvents: 'none' }}
+                        pointerEvents: 'none',
+                    }}
                 >
                     {showTooltip === 'chat' ? 'Send Message' : 'More Options'}
                     <div style={{
                         position: 'absolute', bottom: -4, left: '50%', transform: 'translateX(-50%)',
                         width: 0, height: 0,
                         borderLeft: '4px solid transparent', borderRight: '4px solid transparent',
-                        borderTop: '4px solid #1e293b' }} />
+                        borderTop: '4px solid #1e293b',
+                    }} />
                 </div>,
                 document.body
             )}
@@ -121,7 +123,8 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                         className="w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-semibold shadow-md"
                         style={{
                             background: student.avatar ? 'transparent' : `linear-gradient(135deg, ${avatarColor} 0%, ${avatarColor}dd 100%)`,
-                            boxShadow: `0 4px 12px ${avatarColor}30` }}
+                            boxShadow: `0 4px 12px ${avatarColor}30`,
+                        }}
                     >
                         {student.avatar ? (
                             <img src={student.avatar} alt={student.name} className="w-full h-full rounded-full object-cover" />

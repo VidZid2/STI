@@ -107,7 +107,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                     <lord-icon
                                         src="https://cdn.lordicon.com/uvofdfal.json"
                                         trigger="hover"
-                                        ="primary:#10b981,secondary:#059669"
+                                        colors="primary:#10b981,secondary:#059669"
                                         style={{ width: '64px', height: '64px' }}
                                     ></lord-icon>
                                 </motion.div>

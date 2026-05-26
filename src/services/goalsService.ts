@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Goals Service - Manages learning goals and milestones
  * Connects to Supabase for persistent storage
  * Integrates with study time, courses, and streak data
@@ -9,6 +9,7 @@ import {
     getStudyTimeData, 
     getStreakData, 
     getCourseProgressData,
+    addXP,
     // getCompletedCoursesCount, // Available for future use
 } from './studyTimeService';
 import { getGradePredictionSync } from './gradePredictorService';
@@ -166,9 +167,10 @@ export const updateGoalProgress = async (goalId: string, currentValue: number): 
         localGoals[goalIndex].updated_at = new Date().toISOString();
         
         // Check if goal is completed
-        if (currentValue >= localGoals[goalIndex].target_value) {
+        if (localGoals[goalIndex].status !== 'completed' && currentValue >= localGoals[goalIndex].target_value) {
             localGoals[goalIndex].status = 'completed';
             localGoals[goalIndex].completed_at = new Date().toISOString();
+            addXP(50);
         }
         
         saveLocalGoals(localGoals);
@@ -184,13 +186,14 @@ export const updateGoalProgress = async (goalId: string, currentValue: number): 
         // Check if goal is completed
         const { data: existingGoal } = await supabase!
             .from('student_goals')
-            .select('target_value')
+            .select('target_value, status')
             .eq('id', goalId)
             .single();
 
-        if (existingGoal && currentValue >= existingGoal.target_value) {
+        if (existingGoal && existingGoal.status !== 'completed' && currentValue >= existingGoal.target_value) {
             updates.status = 'completed';
             updates.completed_at = new Date().toISOString();
+            addXP(50);
         }
 
         const { data, error } = await supabase!
@@ -221,8 +224,9 @@ export const updateGoalStatus = async (goalId: string, status: GoalStatus): Prom
         localGoals[goalIndex].status = status;
         localGoals[goalIndex].updated_at = new Date().toISOString();
         
-        if (status === 'completed') {
+        if (localGoals[goalIndex].status !== 'completed' && status === 'completed') {
             localGoals[goalIndex].completed_at = new Date().toISOString();
+            addXP(50);
         }
         
         saveLocalGoals(localGoals);
@@ -230,13 +234,19 @@ export const updateGoalStatus = async (goalId: string, status: GoalStatus): Prom
     }
     
     try {
+        const { data: existingGoal } = await supabase!
+            .from('student_goals')
+            .select('status')
+            .eq('id', goalId)
+            .single();
         const updates: Partial<Goal> = {
             status,
             updated_at: new Date().toISOString(),
         };
 
-        if (status === 'completed') {
+        if (existingGoal && existingGoal.status !== 'completed' && status === 'completed') {
             updates.completed_at = new Date().toISOString();
+            addXP(50);
         }
 
         const { data, error } = await supabase!

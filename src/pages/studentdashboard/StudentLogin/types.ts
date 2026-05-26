@@ -3,7 +3,7 @@
  * TypeScript type definitions for the login page
  */
 
-export type LoginStep = 'email' | 'pick-account' | 'password' | 'sign-in-options';
+export type LoginStep = 'pick' | 'email' | 'password' | 'options';
 
 export interface SavedAccount {
     email: string;

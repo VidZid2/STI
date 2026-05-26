@@ -39,6 +39,50 @@ export interface LoginResult {
 const USER_STORAGE_KEY = 'elms_current_user';
 
 // ============================================
+// EMAIL VALIDATION (check if email exists in users table)
+// ============================================
+
+export interface EmailCheckResult {
+    exists: boolean;
+    isPersonalAccount: boolean; // email exists but not in our system
+}
+
+export const checkEmailExists = async (email: string): Promise<EmailCheckResult> => {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    if (isSupabaseConfigured() && supabase) {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('email')
+                .eq('email', normalizedEmail)
+                .maybeSingle();
+
+            if (error) {
+                // On query error, fall through to demo check
+            } else {
+                return {
+                    exists: !!data,
+                    isPersonalAccount: !data,
+                };
+            }
+        } catch {
+            // Network error — fall through to demo check
+        }
+    }
+
+    // Demo fallback — check against known demo emails
+    const demoEmails = [
+        'deasis.student1@meycauayan.sti.edu.ph',
+        'deasis.462124@meycauayan.sti.edu.ph',
+        'teacher@meycauayan.sti.edu.ph',
+        'david.teacher1@meycauayan.sti.edu.ph',
+    ];
+    const exists = demoEmails.includes(normalizedEmail);
+    return { exists, isPersonalAccount: !exists };
+};
+
+// ============================================
 // LOGIN
 // ============================================
 

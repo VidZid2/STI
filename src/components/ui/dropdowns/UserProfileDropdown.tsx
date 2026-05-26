@@ -66,6 +66,7 @@ export default function UserProfileDropdown() {
     const [showLevelUp, setShowLevelUp] = useState(false);
     const [xpGain, setXpGain] = useState<number | null>(null);
     const [lastTotalXP, setLastTotalXP] = useState(() => getXPData().totalXP);
+    const [isAvatarHovered, setIsAvatarHovered] = useState(false);
     const coverInputRef = useRef<HTMLInputElement>(null);
     const profileInputRef = useRef<HTMLInputElement>(null);
     const ref = useRef<HTMLDivElement>(null!);
@@ -273,54 +274,72 @@ export default function UserProfileDropdown() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setIsOpen(!isOpen)}
-                className='flex items-center gap-3 px-3 py-1.5 rounded-xl hover:bg-zinc-100 transition-colors'
-            >
+                    onMouseEnter={() => setIsAvatarHovered(true)}
+                    onMouseLeave={() => setIsAvatarHovered(false)}
+                    className={cn(
+                        'flex items-center gap-2.5 px-2 py-1 rounded-xl transition-all duration-150',
+                        isDarkMode
+                            ? 'hover:bg-slate-700/50'
+                            : 'hover:bg-zinc-50'
+                    )}
+                >
                 <div className='text-right hidden sm:block'>
-                    <div className='text-sm font-medium text-zinc-800'>{profile.firstName} {profile.lastName}</div>
-                    <div className='text-[10px] text-zinc-500'>{profile.course}</div>
+                    <div className={cn(
+                        'text-[13px] font-semibold leading-tight',
+                        isDarkMode ? 'text-slate-100' : 'text-zinc-800'
+                    )}>{profile.firstName} {profile.lastName}</div>
+                    <div className={cn(
+                        'text-[10px] leading-tight mt-0.5',
+                        isDarkMode ? 'text-slate-400' : 'text-zinc-400'
+                    )}>{profile.course}</div>
                 </div>
                 <div className='relative'>
                     {/* XP Progress Ring */}
                     <svg 
-                        className='absolute -inset-1 w-12 h-12'
-                        viewBox='0 0 48 48'
+                        className='absolute -inset-0.5 w-[42px] h-[42px]'
+                        viewBox='0 0 42 42'
                         style={{ transform: 'rotate(-90deg)' }}
                     >
                         {/* Background ring */}
                         <circle
-                            cx='24'
-                            cy='24'
-                            r='22'
+                            cx='21'
+                            cy='21'
+                            r='19.5'
                             fill='none'
-                            stroke={isDarkMode ? '#1e3a5f' : '#dbeafe'}
-                            strokeWidth='2.5'
+                            stroke={isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'}
+                            strokeWidth='2'
                         />
                         {/* Progress ring */}
                         <motion.circle
-                            cx='24'
-                            cy='24'
-                            r='22'
+                            cx='21'
+                            cy='21'
+                            r='19.5'
                             fill='none'
-                            stroke={isDarkMode ? '#60a5fa' : '#3b82f6'}
-                            strokeWidth='2.5'
+                            stroke='var(--accent-primary, #3b82f6)'
+                            strokeWidth='2'
                             strokeLinecap='round'
-                            strokeDasharray={2 * Math.PI * 22}
-                            initial={{ strokeDashoffset: 2 * Math.PI * 22 }}
+                            strokeDasharray={2 * Math.PI * 19.5}
+                            initial={{ strokeDashoffset: 2 * Math.PI * 19.5 }}
                             animate={{ 
-                                strokeDashoffset: 2 * Math.PI * 22 * (1 - xpProgress / 100)
+                                strokeDashoffset: 2 * Math.PI * 19.5 * (1 - xpProgress / 100)
                             }}
                             transition={{ 
                                 duration: 1.2, 
-                                ease: [0.34, 1.56, 0.64, 1] // Smooth spring-like easing
+                                ease: [0.34, 1.56, 0.64, 1]
                             }}
                         />
                     </svg>
                     
                     {/* Profile Image */}
                     {profileImage ? (
-                        <img src={profileImage} alt="Profile" className='w-10 h-10 rounded-full object-cover shadow-md' />
+                        <img src={profileImage} alt="Profile" className='w-[38px] h-[38px] rounded-full object-cover' style={{ boxShadow: isDarkMode ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.08)' }} />
                     ) : (
-                        <div className='w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm shadow-md'>
+                        <div className={cn(
+                            'w-[38px] h-[38px] rounded-full flex items-center justify-center font-semibold text-sm',
+                            isDarkMode
+                                ? 'bg-gradient-to-br from-slate-600 to-slate-700 text-slate-200'
+                                : 'bg-gradient-to-br from-zinc-200 to-zinc-300 text-zinc-600'
+                        )} style={{ boxShadow: isDarkMode ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.08)' }}>
                             {getInitials(profile.firstName, profile.lastName)}
                         </div>
                     )}
@@ -328,28 +347,212 @@ export default function UserProfileDropdown() {
                     {/* Level Badge */}
                     <motion.div 
                         className={cn(
-                            'absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-sm',
+                            'absolute -bottom-1.5 left-1/2 -translate-x-1/2 min-w-[28px] h-[16px] px-1.5 rounded-md flex items-center justify-center text-[8px] font-bold leading-none tracking-wide',
                             isDarkMode 
-                                ? 'bg-blue-400 text-blue-950 border-2 border-slate-700' 
-                                : 'bg-blue-500 text-white border-2 border-white'
+                                ? 'bg-blue-500 text-white border-[1.5px] border-slate-800 shadow-[0_1px_3px_rgba(0,0,0,0.4)]' 
+                                : 'bg-blue-500 text-white border-[1.5px] border-white shadow-[0_1px_3px_rgba(59,130,246,0.3)]'
                         )}
                         animate={showLevelUp ? { scale: [1, 1.3, 1] } : {}}
                         transition={{ duration: 0.5 }}
                     >
-                        {level}
+                        Lv.{level}
                     </motion.div>
                     
-                    {/* Online Status (moved to top-right) */}
+                    {/* Online Status */}
                     {showOnlineStatus && (
                         <div className={cn(
-                            'absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2',
+                            'absolute -top-0 -right-0 w-2.5 h-2.5 rounded-full border-[1.5px]',
                             isDarkMode 
-                                ? 'bg-green-400 border-slate-700' 
-                                : 'bg-green-500 border-white'
+                                ? 'bg-emerald-400 border-slate-800' 
+                                : 'bg-emerald-500 border-white'
                         )}></div>
                     )}
+                    
                 </div>
             </motion.button>
+            
+            {/* XP Tooltip — Minimalist SaaS */}
+            <AnimatePresence>
+                {isAvatarHovered && !isOpen && (
+                    <div
+                        className="absolute top-full mt-2 z-50 pointer-events-none"
+                        style={{ right: '8px' }}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 4 }}
+                            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                        >
+                            <div
+                                className={cn(
+                                    "w-[200px] rounded-xl border overflow-hidden",
+                                    isDarkMode
+                                        ? "bg-slate-900 border-slate-700/60 shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
+                                        : "bg-white border-slate-200 shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
+                                )}
+                            >
+                                {/* Arrow */}
+                                <div
+                                    className={cn(
+                                        "absolute -top-[5px] w-[10px] h-[10px] rotate-45 border-l border-t",
+                                        isDarkMode
+                                            ? "bg-slate-900 border-slate-700/60"
+                                            : "bg-white border-slate-200"
+                                    )}
+                                    style={{ right: '16px' }}
+                                />
+
+                                {/* Content */}
+                                <div className="px-3.5 pt-3 pb-3 flex flex-col gap-3">
+                                    {/* Header row */}
+                                    <div className="flex items-center gap-2.5">
+                                        <div className={cn(
+                                            "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+                                            isDarkMode ? "bg-blue-500/15" : "bg-blue-50"
+                                        )}>
+                                            {/* Zap bolt icon — thin stroke */}
+                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#60a5fa' : '#3b82f6'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                                            </svg>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className={cn(
+                                                "text-[13px] font-bold leading-tight tracking-tight",
+                                                isDarkMode ? "text-white" : "text-slate-900"
+                                            )}>Level {level}</span>
+                                            <span className={cn(
+                                                "text-[11px] font-medium leading-none mt-0.5",
+                                                isDarkMode ? "text-slate-400" : "text-slate-500"
+                                            )}>Academic Level</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Divider */}
+                                    <div className={cn("h-px w-full", isDarkMode ? "bg-slate-700/60" : "bg-slate-100")} />
+
+                                    {/* Progress section */}
+                                    <div className="flex flex-col gap-1.5">
+                                        <div className="flex justify-between items-baseline">
+                                            <span className={cn(
+                                                "text-[11px] font-semibold",
+                                                isDarkMode ? "text-slate-300" : "text-slate-600"
+                                            )}>Progress</span>
+                                            <span className={cn(
+                                                "text-[11px] font-bold tabular-nums",
+                                                isDarkMode ? "text-white" : "text-slate-900"
+                                            )}>{getXPData().xpInCurrentLevel}<span className={cn("font-normal", isDarkMode ? "text-slate-500" : "text-slate-400")}>/100</span></span>
+                                        </div>
+                                        <div className={cn("h-1.5 w-full rounded-full overflow-hidden", isDarkMode ? "bg-slate-800" : "bg-slate-100")}>
+                                            <motion.div
+                                                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400"
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${xpProgress}%` }}
+                                                transition={{ duration: 0.6, ease: "easeOut" }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className="flex items-center gap-1.5">
+                                        <svg className="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#94a3b8' : '#94a3b8'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <polyline points="12 6 12 12 16 14" />
+                                        </svg>
+                                        <span className={cn(
+                                            "text-[10px] font-medium leading-none",
+                                            isDarkMode ? "text-slate-400" : "text-slate-500"
+                                        )}>{100 - getXPData().xpInCurrentLevel} XP until Level {level + 1}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Level Up Notification — Minimalist SaaS */}
+            <AnimatePresence>
+                {showLevelUp && (
+                    <div
+                        className="absolute top-full mt-2 z-50 pointer-events-none"
+                        style={{ right: '8px' }}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                        >
+                            <div
+                                className={cn(
+                                    "w-[200px] rounded-xl border overflow-hidden relative",
+                                    isDarkMode
+                                        ? "bg-slate-900 border-slate-700/60 shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
+                                        : "bg-white border-slate-200 shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
+                                )}
+                            >
+                                {/* Top accent line */}
+                                <div className="h-[2px] w-full bg-gradient-to-r from-emerald-400 via-blue-500 to-violet-500" />
+
+                                {/* Arrow */}
+                                <div
+                                    className={cn(
+                                        "absolute -top-[5px] w-[10px] h-[10px] rotate-45 border-l border-t z-10",
+                                        isDarkMode
+                                            ? "bg-slate-900 border-slate-700/60"
+                                            : "bg-white border-slate-200"
+                                    )}
+                                    style={{ right: '16px' }}
+                                />
+
+                                {/* Content */}
+                                <div className="px-3.5 pt-3.5 pb-3 flex flex-col items-center gap-2.5">
+                                    {/* Icon */}
+                                    <motion.div
+                                        initial={{ scale: 0.5, rotate: -20 }}
+                                        animate={{ scale: 1, rotate: 0 }}
+                                        transition={{ type: 'spring', stiffness: 300, damping: 15, delay: 0.1 }}
+                                        className={cn(
+                                            "w-9 h-9 rounded-xl flex items-center justify-center",
+                                            isDarkMode ? "bg-emerald-500/15" : "bg-emerald-50"
+                                        )}
+                                    >
+                                        {/* Rocket icon — thin stroke */}
+                                        <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#34d399' : '#10b981'} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+                                            <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+                                            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+                                            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+                                        </svg>
+                                    </motion.div>
+
+                                    {/* Text */}
+                                    <div className="flex flex-col items-center gap-0.5">
+                                        <span className={cn(
+                                            "text-[10px] font-bold tracking-widest uppercase",
+                                            isDarkMode ? "text-emerald-400" : "text-emerald-600"
+                                        )}>Level Up</span>
+                                        <span className={cn(
+                                            "text-[14px] font-extrabold tracking-tight",
+                                            isDarkMode ? "text-white" : "text-slate-900"
+                                        )}>Reached Level {level}</span>
+                                    </div>
+
+                                    {/* Divider */}
+                                    <div className={cn("h-px w-12", isDarkMode ? "bg-slate-700/60" : "bg-slate-100")} />
+
+                                    {/* Footer */}
+                                    <span className={cn(
+                                        "text-[10px] font-medium",
+                                        isDarkMode ? "text-slate-400" : "text-slate-500"
+                                    )}>Keep learning to level up!</span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
             
             {/* XP Gain Popup - minimalistic with smooth animation */}
             <AnimatePresence>
@@ -369,33 +572,22 @@ export default function UserProfileDropdown() {
                     </motion.div>
                 )}
             </AnimatePresence>
-            
-            {/* Level Up Tooltip */}
-            <AnimatePresence>
-                {showLevelUp && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -5, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -5, scale: 0.9 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                        className='absolute top-full right-0 mt-2 px-3 py-1.5 bg-blue-500 text-white text-xs font-semibold rounded-lg shadow-lg whitespace-nowrap z-50'
-                    >
-                        <span className='mr-1'>🎉</span>
-                        Level Up!
-                        <div className='absolute -top-1 right-5 w-2 h-2 bg-blue-500 rotate-45' />
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
             {/* Dropdown Panel */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                        className='absolute top-full mt-2 right-0 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-zinc-200 overflow-hidden z-50'
+                        exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                        transition={{ 
+                            type: 'spring', 
+                            stiffness: 500, 
+                            damping: 30,
+                            mass: 0.8
+                        }}
+                        style={{ transformOrigin: 'top right' }}
+                        className='absolute top-full mt-2.5 right-0 w-80 sm:w-96 bg-white/95 backdrop-blur-xl rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15),0_0_0_1px_rgba(0,0,0,0.05)] overflow-hidden z-50'
                     >
                         {/* Header with Cover Photo */}
                         <div className='relative'>
@@ -464,14 +656,38 @@ export default function UserProfileDropdown() {
                         </div>
 
                         {/* User Info */}
-                        <div className='pt-10 pb-3 px-4'>
-                            <div className='font-semibold text-lg text-zinc-800'>{profile.firstName} {profile.lastName}</div>
-                            <div className='text-sm text-zinc-500'>{profile.email}</div>
-                            <div className='text-xs text-zinc-400 mt-0.5'>ID: {profile.studentId}</div>
+                        <div className='pt-12 pb-4 px-5'>
+                            <div className='font-bold text-xl text-slate-900 tracking-tight'>{profile.firstName} {profile.lastName}</div>
+                            <div className='text-[13px] text-slate-500 mt-1 truncate'>{profile.email}</div>
+                            <div className='inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 bg-slate-100 rounded-lg border border-slate-200/60'>
+                                <svg className='w-3 h-3 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 20l4-16m2 16l4-16M6 9h14M4 15h14' />
+                                </svg>
+                                <span className='text-[11px] font-semibold text-slate-600 tracking-wide'>{profile.studentId}</span>
+                            </div>
+                        </div>
+
+                        {/* Level & XP Progress Section */}
+                        <div className='px-5 pb-4 border-b border-slate-100/60'>
+                            <div className='flex items-center justify-between text-xs font-semibold mb-1.5'>
+                                <span className='text-slate-500'>Level {level}</span>
+                                <span className='text-blue-600 font-bold'>{getXPData().xpInCurrentLevel} / 100 XP</span>
+                            </div>
+                            <div className='h-2 w-full bg-slate-100 rounded-full overflow-hidden relative'>
+                                <motion.div 
+                                    className='h-full bg-blue-500 rounded-full'
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${xpProgress}%` }}
+                                    transition={{ duration: 1.2, ease: 'easeOut' }}
+                                />
+                            </div>
+                            <div className='text-[10px] text-slate-400 mt-1 font-medium'>
+                                {100 - getXPData().xpInCurrentLevel} XP to Level {level + 1}
+                            </div>
                         </div>
 
                         {/* Tabs */}
-                        <div className='flex border-b border-zinc-100 px-2'>
+                        <div className='flex border-b border-slate-100 px-3 gap-1'>
                             {[
                                 { 
                                     id: 'profile' as ProfileTab, 
@@ -500,10 +716,10 @@ export default function UserProfileDropdown() {
                                     whileHover={{ y: -1 }}
                                     whileTap={{ scale: 0.98 }}
                                     className={cn(
-                                        'flex-1 py-3 text-xs font-medium transition-all relative flex items-center justify-center gap-1.5 rounded-t-lg mx-0.5',
+                                        'flex-1 py-3 text-[13px] font-semibold transition-all relative flex items-center justify-center gap-2 rounded-t-xl',
                                         activeTab === tab.id 
-                                            ? 'text-blue-600 bg-blue-50/50' 
-                                            : 'text-zinc-400 hover:text-zinc-600 hover:bg-zinc-50'
+                                            ? 'text-slate-900 bg-slate-50/80' 
+                                            : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50/50'
                                     )}
                                 >
                                     <motion.span
@@ -515,11 +731,11 @@ export default function UserProfileDropdown() {
                                     >
                                         {tab.icon}
                                     </motion.span>
-                                    <span className='hidden sm:inline'>{tab.label}</span>
+                                    <span>{tab.label}</span>
                                     {activeTab === tab.id && (
                                         <motion.div
                                             layoutId="profileTabIndicator"
-                                            className='absolute bottom-0 left-2 right-2 h-0.5 bg-blue-500 rounded-full'
+                                            className='absolute bottom-0 left-3 right-3 h-[2px] bg-blue-500 rounded-full'
                                             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                                         />
                                     )}
@@ -556,7 +772,7 @@ export default function UserProfileDropdown() {
                         </AnimatePresence>
 
                         {/* Content */}
-                        <div className='p-4 max-h-80 overflow-y-auto'>
+                        <div className='p-5 max-h-80 overflow-y-auto' style={{ scrollbarWidth: 'thin', scrollbarColor: '#cbd5e1 transparent' }}>
                             <AnimatePresence mode='wait'>
                                 {activeTab === 'profile' && (
                                     <ProfileContent
@@ -574,12 +790,12 @@ export default function UserProfileDropdown() {
                         </div>
 
                         {/* Footer */}
-                        <div className='border-t border-zinc-200 p-3 bg-zinc-50'>
+                        <div className='border-t border-slate-100 p-4 bg-white'>
                             <motion.button
-                                whileHover={{ scale: 1.02 }}
+                                whileHover={{ scale: 1.01 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={handleSignOut}
-                                className='w-full py-2 text-sm font-medium text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center gap-2'
+                                className='w-full py-2.5 text-[13px] font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all border border-red-100/50 flex items-center justify-center gap-2 shadow-sm'
                             >
                                 <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1' />
@@ -661,11 +877,14 @@ function ProfileContent({
     return (
         <motion.div
             key="profile"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className='space-y-4'
+            initial={{ opacity: 0, x: -12 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 12 }}
+            transition={{ 
+                duration: 0.3, 
+                ease: [0.25, 0.1, 0.25, 1.0]
+            }}
+            className='space-y-5'
         >
             {/* Edit Button */}
             {!isEditing && (
@@ -675,9 +894,9 @@ function ProfileContent({
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={onEdit}
-                    className='w-full py-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors flex items-center justify-center gap-1.5'
+                    className='w-full py-2.5 text-[13px] font-semibold text-blue-700 bg-blue-50/80 hover:bg-blue-100 rounded-xl transition-all flex items-center justify-center gap-1.5 border border-blue-100/50 shadow-sm'
                 >
-                    <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' />
                     </svg>
                     Edit Profile
@@ -691,25 +910,25 @@ function ProfileContent({
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: sectionIndex * 0.1 }}
-                    className='space-y-2'
+                    className='space-y-3'
                 >
                     {/* Section Header */}
-                    <div className='flex items-center gap-2 text-zinc-500'>
+                    <div className='flex items-center gap-2 text-slate-500'>
                         {section.icon}
-                        <span className='text-[10px] font-semibold uppercase tracking-wider'>{section.title}</span>
+                        <span className='text-xs font-bold text-slate-700 uppercase tracking-widest'>{section.title}</span>
                     </div>
 
                     {/* Section Fields */}
-                    <div className='bg-zinc-50 rounded-xl p-3 space-y-2.5'>
+                    <div className='bg-slate-50/80 border border-slate-100/60 rounded-2xl p-4 space-y-0 shadow-sm divide-y divide-slate-100/80'>
                         {section.fields.map((field, fieldIndex) => (
                             <motion.div
                                 key={field.key}
                                 initial={{ opacity: 0, x: -5 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: sectionIndex * 0.1 + fieldIndex * 0.05 }}
-                                className='flex items-center justify-between'
+                                className='flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0'
                             >
-                                <span className='text-xs text-zinc-500'>{field.label}</span>
+                                <span className='text-[13px] font-medium text-slate-400 shrink-0 min-w-[100px]'>{field.label}</span>
                                 {isEditing && field.editable ? (
                                     <motion.input
                                         initial={{ scale: 0.98 }}
@@ -717,13 +936,10 @@ function ProfileContent({
                                         type={'type' in field ? field.type : 'text'}
                                         value={profile[field.key]}
                                         onChange={(e) => onChange(field.key, e.target.value)}
-                                        className='w-1/2 px-2 py-1 text-xs text-right border border-zinc-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white'
+                                        className='flex-1 min-w-0 px-2.5 py-1.5 text-[13px] font-semibold text-slate-900 text-right border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-white'
                                     />
                                 ) : (
-                                    <span className={cn(
-                                        'text-xs font-medium',
-                                        field.editable ? 'text-zinc-800' : 'text-zinc-600'
-                                    )}>
+                                    <span className='text-[13px] font-semibold text-slate-900 text-right truncate min-w-0'>
                                         {profile[field.key]}
                                     </span>
                                 )}
@@ -740,27 +956,27 @@ function ProfileContent({
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className='flex gap-2 pt-1'
+                        className='flex gap-3 pt-2'
                     >
                         <motion.button
                             whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.99 }}
+                            whileTap={{ scale: 0.98 }}
                             onClick={onCancel}
                             disabled={isSaving}
-                            className='flex-1 py-2 text-xs font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors disabled:opacity-50'
+                            className='flex-1 py-2.5 text-[13px] font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all border border-slate-200/60 disabled:opacity-50'
                         >
                             Cancel
                         </motion.button>
                         <motion.button
                             whileHover={{ scale: isSaving ? 1 : 1.01 }}
-                            whileTap={{ scale: isSaving ? 1 : 0.99 }}
+                            whileTap={{ scale: isSaving ? 1 : 0.98 }}
                             onClick={onSave}
                             disabled={isSaving}
-                            className='flex-1 py-2 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-1 disabled:opacity-70 disabled:cursor-not-allowed'
+                            className='flex-1 py-2.5 text-[13px] font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-blue-500/20 disabled:opacity-70 disabled:cursor-not-allowed'
                         >
                             {isSaving ? (
                                 <>
-                                    <svg className='w-3.5 h-3.5 animate-spin' fill='none' viewBox='0 0 24 24'>
+                                    <svg className='w-4 h-4 animate-spin' fill='none' viewBox='0 0 24 24'>
                                         <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
                                         <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z' />
                                     </svg>
@@ -768,10 +984,10 @@ function ProfileContent({
                                 </>
                             ) : (
                                 <>
-                                    <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
                                     </svg>
-                                    Save
+                                    Save Changes
                                 </>
                             )}
                         </motion.button>
@@ -897,11 +1113,14 @@ function SettingsContent({ onShowOnlineStatusChange }: { onShowOnlineStatusChang
     return (
         <motion.div
             key="settings"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className='space-y-4'
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -12 }}
+            transition={{ 
+                duration: 0.3, 
+                ease: [0.25, 0.1, 0.25, 1.0]
+            }}
+            className='space-y-5'
         >
             {settingGroups.map((group, groupIndex) => (
                 <motion.div 
@@ -909,16 +1128,16 @@ function SettingsContent({ onShowOnlineStatusChange }: { onShowOnlineStatusChang
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: groupIndex * 0.1 }}
-                    className='space-y-2'
+                    className='space-y-3'
                 >
                     {/* Section Header */}
-                    <div className='flex items-center gap-2 text-zinc-500'>
+                    <div className='flex items-center gap-2 text-slate-500'>
                         {group.icon}
-                        <span className='text-[10px] font-semibold uppercase tracking-wider'>{group.title}</span>
+                        <span className='text-xs font-bold text-slate-700 uppercase tracking-widest'>{group.title}</span>
                     </div>
 
                     {/* Section Content */}
-                    <div className='bg-zinc-50 rounded-xl overflow-hidden'>
+                    <div className='bg-slate-50/80 border border-slate-100/60 rounded-2xl overflow-hidden shadow-sm'>
                         {group.items.map((item, itemIndex) => (
                             <motion.div 
                                 key={item.key}
@@ -926,13 +1145,13 @@ function SettingsContent({ onShowOnlineStatusChange }: { onShowOnlineStatusChang
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: groupIndex * 0.1 + itemIndex * 0.05 }}
                                 className={cn(
-                                    'flex items-center justify-between p-3 hover:bg-zinc-100/50 transition-colors',
-                                    itemIndex !== group.items.length - 1 && 'border-b border-zinc-100'
+                                    'flex items-center justify-between p-4 hover:bg-slate-100/80 transition-colors',
+                                    itemIndex !== group.items.length - 1 && 'border-b border-slate-200/60'
                                 )}
                             >
                                 <div className='flex-1 min-w-0'>
-                                    <div className='text-xs font-medium text-zinc-700'>{item.label}</div>
-                                    <div className='text-[10px] text-zinc-400 mt-0.5'>{item.desc}</div>
+                                    <div className='text-[13px] font-semibold text-slate-900'>{item.label}</div>
+                                    <div className='text-xs text-slate-500 mt-0.5'>{item.desc}</div>
                                 </div>
                                 {/* Toggle Switch - Same style as SettingsModal */}
                                 <label 

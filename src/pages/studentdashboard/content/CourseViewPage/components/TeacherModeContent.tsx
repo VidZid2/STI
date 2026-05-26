@@ -930,7 +930,7 @@ export const TeacherModeContent: React.FC<TeacherModeContentProps> = ({
                                                             <lord-icon
                                                                 src={iconSrc}
                                                                 trigger={stat.trigger}
-                                                                ,secondary:${iconSecondary}`}
+                                                                colors={`primary:${iconPrimary},secondary:${iconSecondary}`}
                                                                 style={{ width: '32px', height: '32px' }}
                                                             />
                                                         </div>
@@ -1100,7 +1100,7 @@ export const TeacherModeContent: React.FC<TeacherModeContentProps> = ({
                                                                 <lord-icon
                                                                     src={card.lordIcon}
                                                                     trigger="hover"
-                                                                    ,secondary:${card.secondaryColor}`}
+                                                                    colors={`primary:${card.primaryColor},secondary:${card.secondaryColor}`}
                                                                     style={{ width: '28px', height: '28px' }}
                                                                 />
                                                             </motion.div>

@@ -15,5 +15,4 @@ export type {
     MemberStats,
     ThreadReply,
     StudyReaction,
-    ToolColorConfig,
-    ChatColors } from './types';
+    ToolColorConfig } from './types';

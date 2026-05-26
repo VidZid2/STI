@@ -1298,7 +1298,7 @@ export default function ToolbarExpandable() {
     const unreadMailCount = mails.filter(m => !m.isRead).length;
 
     const getIconColor = (itemId: number) => {
-        return active === itemId ? '#3b82f6' : '#71717a'; // blue-500 : zinc-500
+        return active === itemId ? 'var(--accent-primary, #3b82f6)' : '#71717a'; // accent : zinc-500
     };
 
     const ITEMS = [
@@ -1451,18 +1451,18 @@ export default function ToolbarExpandable() {
                 <ViewerCounter />
                 
                 <div ref={ref} className='relative'>
-                    <div className='h-full w-full rounded-xl border border-blue-500 bg-white'>
+                    <div className='h-full w-full'>
                         {/* Buttons at the top */}
-                        <div className='flex space-x-2 p-2' ref={menuRef}>
+                        <div className='flex space-x-1' ref={menuRef}>
                             {ITEMS.map((item) => (
                                 <button
                                     key={item.id}
                                     aria-label={item.label}
                                     className={cn(
-                                        'relative flex h-9 w-9 shrink-0 scale-100 select-none appearance-none items-center justify-center rounded-lg transition-colors hover:bg-blue-50 focus-visible:ring-2 active:scale-[0.98]',
+                                        'relative flex h-9 w-9 shrink-0 scale-100 select-none appearance-none items-center justify-center rounded-lg transition-all duration-150 focus-visible:ring-2 active:scale-[0.96]',
                                         active === item.id
-                                            ? 'bg-blue-50'
-                                            : ''
+                                            ? isDarkMode ? 'bg-slate-700/80' : 'bg-zinc-100'
+                                            : isDarkMode ? 'hover:bg-slate-700/50' : 'hover:bg-zinc-50'
                                     )}
                                     type='button'
                                     onClick={() => {
@@ -1498,7 +1498,12 @@ export default function ToolbarExpandable() {
                                     width: Math.max(widthContainer || 150, 320)
                                 }}
                                 exit={{ height: 0, width: widthContainer || 150 }}
-                                className='absolute top-full mt-2 right-0 sm:left-0 sm:right-auto overflow-hidden rounded-xl border border-blue-500 bg-white shadow-lg max-w-[calc(100vw-2rem)] sm:max-w-none'
+                                className={cn(
+                                    'absolute top-full mt-2 right-0 sm:left-0 sm:right-auto overflow-hidden rounded-xl border max-w-[calc(100vw-2rem)] sm:max-w-none',
+                                    isDarkMode
+                                        ? 'border-slate-700/60 bg-slate-800 shadow-[0_12px_40px_rgba(0,0,0,0.4)]'
+                                        : 'border-black/[0.08] bg-white shadow-[0_12px_40px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.04)]'
+                                )}
                                 style={{
                                     originY: 0,
                                 }}

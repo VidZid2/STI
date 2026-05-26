@@ -5,14 +5,17 @@ import { motion, AnimatePresence } from 'motion/react';
 
 interface ToolsNavTooltipProps {
     children: React.ReactNode;
+    isExpanded?: boolean;
 }
 
-const ToolsNavTooltip: React.FC<ToolsNavTooltipProps> = ({ children }) => {
+const ToolsNavTooltip: React.FC<ToolsNavTooltipProps> = ({ children, isExpanded = true }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
     const containerRef = useRef<HTMLAnchorElement>(null);
 
     const handleMouseEnter = (e: React.MouseEvent) => {
+        // Don't show tooltip when sidebar is collapsed
+        if (!isExpanded) return;
         const target = e.currentTarget as HTMLElement;
         const rect = target.getBoundingClientRect();
         setTooltipPosition({

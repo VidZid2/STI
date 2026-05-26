@@ -22,6 +22,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
     const [showAutoTooltip, setShowAutoTooltip] = useState(false);
     const [tutorialsCompleted, setTutorialsCompleted] = useState(false);
     const [componentReady, setComponentReady] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -155,97 +156,149 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
 
     const calendarDays = generateCalendarDays();
 
-    // Get motivational message
-    const getMessage = () => {
-        if (streakData.currentStreak >= 30) return "Legendary! You're unstoppable! 🏆";
-        if (streakData.currentStreak >= 14) return "Two weeks strong! Amazing dedication! 💪";
-        if (streakData.currentStreak >= 7) return "One week streak! Keep it going! 🔥";
-        if (streakData.currentStreak >= 3) return "Great momentum! Don't break the chain!";
-        if (streakData.currentStreak === 2) return "Day 2! You're building a habit!";
-        return "Welcome back! Start your streak today!";
-    };
+    // Get motivational message — tier-specific daily rotation + 1/100 Easter egg
+    const getMessage = useCallback(() => {
+        // 🥉 Bronze (1-9 days) — Starter, encouraging, building habits
+        const BRONZE = [
+            "Every journey starts with a single step!",
+            "Day by day, you're building a habit!",
+            "Small steps lead to big results.",
+            "The expert was once a beginner.",
+            "You showed up — that's what matters!",
+            "Welcome back! Let's make today count.",
+            "Consistency starts right here, right now.",
+            "One day at a time. You got this!",
+            "Great things never come from comfort zones.",
+            "Your brain is a muscle — train it daily.",
+            "Progress, not perfection.",
+            "Future you will thank present you.",
+            "Loading... your best self.",
+            "First steps are the hardest — you're doing it!",
+            "Keep going — your future diploma agrees.",
+        ];
 
-    // Dark mode aware colors
-    const getDarkModeColors = () => {
-        if (isDarkMode) {
-            return {
-                buttonHover: 'rgba(255, 255, 255, 0.1)',
-                dropdownBg: '#1e293b',
-                dropdownBorder: 'rgba(71, 85, 105, 0.5)',
-                headerBorder: 'rgba(71, 85, 105, 0.5)',
-                textPrimary: '#f1f5f9',
-                textSecondary: '#94a3b8',
-                textMuted: '#64748b',
-                statsBg: 'rgba(51, 65, 85, 0.5)',
-                tipBg: 'linear-gradient(to right, rgba(30, 58, 138, 0.3), rgba(67, 56, 202, 0.3))',
-                tipBorder: 'rgba(59, 130, 246, 0.3)',
-                tipText: '#93c5fd',
-                calendarInactive: 'rgba(51, 65, 85, 0.8)',
-                calendarInactiveText: '#64748b',
-                ringOffset: '#1e293b',
-            };
+        // 🥈 Silver (10-29 days) — Momentum, discipline, growing confidence
+        const SILVER = [
+            "Double digits! You're on fire!",
+            "Consistency beats talent. Always.",
+            "The grind doesn't lie — keep pushing.",
+            "You didn't come this far to only come this far.",
+            "Discipline is the bridge between goals and results.",
+            "Your streak is proof you're serious.",
+            "The compound effect is real. Keep stacking.",
+            "Each login is a rep for your mind.",
+            "You're becoming unstoppable.",
+            "Respect the process. Trust the grind.",
+            "Be so good they can't ignore you.",
+            "Today's effort = tomorrow's advantage.",
+            "You + Consistency = Dangerous combo.",
+            "Not everyone shows up — but you do.",
+            "Your consistency is your superpower.",
+        ];
+
+        // 🥇 Gold (30-89 days) — Elite, champion, unstoppable
+        const GOLD = [
+            "30+ days?! You're in the elite now!",
+            "Champions are made in the daily grind.",
+            "Legends don't take days off!",
+            "You're writing your success story right now.",
+            "Winners train, losers complain.",
+            "You're in the top tier of dedication.",
+            "Look how far you've come!",
+            "Your dedication is inspiring others!",
+            "Plot twist: you're the main character.",
+            "Error 404: excuses not found.",
+            "Brain gains > gym gains (jk do both).",
+            "Gold tier unlocked. Now aim for Diamond!",
+            "This streak is a flex. Keep flexing.",
+            "You're living proof hard work pays off.",
+            "Your streak is looking *chef's kiss*!",
+        ];
+
+        // 💎 Diamond (90+ days) — Legendary, mythical, transcendent
+        const DIAMOND = [
+            "90+ DAYS. You're a living legend!",
+            "Diamond-tier dedication. Absolutely elite.",
+            "They'll write stories about this streak.",
+            "You've transcended normal. You're built different.",
+            "This is what mastery looks like.",
+            "Your willpower is made of diamonds.",
+            "The world bends to the disciplined mind.",
+            "90 days of pure, unstoppable focus.",
+            "There's no ceiling for someone like you.",
+            "Diamond hands? No — Diamond mind.",
+            "Your streak could outlast some careers.",
+            "At this point, the streak owns YOU. (jk)",
+            "Legendary status: confirmed.",
+            "Consistency is your middle name now.",
+            "If dedication had a face, it'd be yours.",
+        ];
+
+        const EASTER_EGG = "Kaya mo yan boss, kunting tae lang :D";
+
+        // Seed random from date so it changes daily
+        const today = new Date();
+        const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+        
+        // Simple hash for pseudo-random
+        const hash = ((seed * 2654435761) >>> 0) % 10000;
+
+        // 1 in 100 chance for easter egg
+        if (hash % 100 === 42) {
+            // Unlock the achievement!
+            try {
+                const key = 'achievement-unlocks';
+                const saved = JSON.parse(localStorage.getItem(key) || '{}');
+                if (!saved['easter-egg-tae']) {
+                    saved['easter-egg-tae'] = new Date().toISOString();
+                    localStorage.setItem(key, JSON.stringify(saved));
+                }
+            } catch { /* silent */ }
+            return EASTER_EGG;
         }
-        return {
-            buttonHover: 'rgba(244, 244, 245, 1)',
-            dropdownBg: '#ffffff',
-            dropdownBorder: 'rgba(228, 228, 231, 0.8)',
-            headerBorder: 'rgba(244, 244, 245, 1)',
-            textPrimary: '#18181b',
-            textSecondary: '#71717a',
-            textMuted: '#a1a1aa',
-            statsBg: 'rgba(244, 244, 245, 1)',
-            tipBg: 'linear-gradient(to right, rgba(239, 246, 255, 1), rgba(238, 242, 255, 1))',
-            tipBorder: 'rgba(191, 219, 254, 0.5)',
-            tipText: '#1d4ed8',
-            calendarInactive: 'rgba(244, 244, 245, 1)',
-            calendarInactiveText: '#a1a1aa',
-            ringOffset: '#ffffff',
-        };
-    };
 
-    const colors = getDarkModeColors();
+        // Pick tier-specific pool based on current streak
+        const s = streakData.currentStreak;
+        const pool = s >= 90 ? DIAMOND : s >= 30 ? GOLD : s >= 10 ? SILVER : BRONZE;
 
-    // Button background colors
-    const getButtonBg = () => {
-        if (isOpen) {
-            return isDarkMode 
-                ? 'rgba(59, 130, 246, 0.25)' 
-                : 'rgba(59, 130, 246, 0.12)';
-        }
-        return isDarkMode 
-            ? 'rgba(59, 130, 246, 0.15)' 
-            : 'rgba(59, 130, 246, 0.08)';
-    };
+        const index = hash % pool.length;
+        return pool[index];
+    }, [streakData.currentStreak]);
 
-    const getButtonHoverBg = () => {
-        return isDarkMode 
-            ? 'rgba(59, 130, 246, 0.3)' 
-            : 'rgba(59, 130, 246, 0.15)';
-    };
-
-    // Get streak label text - with milestone celebrations
+    // Get streak label text
     const getStreakLabel = () => {
-        if (streakData.currentStreak === 0) return "Start your streak!";
-        if (streakData.currentStreak === 1) return "Day 1 streak!";
-        if (streakData.currentStreak === 5) return "5 days! Halfway! 🎯";
-        if (streakData.currentStreak < 7) return `${streakData.currentStreak} day streak!`;
-        if (streakData.currentStreak === 7) return "1 week! 🔥";
-        if (streakData.currentStreak === 10) return "10 days! 🌟";
-        if (streakData.currentStreak < 14) return "On fire! 🔥";
-        if (streakData.currentStreak < 30) return "Unstoppable!";
-        return "Legendary! 🏆";
+        if (streakData.currentStreak === 0) return "Start streak";
+        return `${streakData.currentStreak}d streak`;
     };
 
-    // Get tooltip message - special messages for milestones
+    // Get tooltip message
     const getTooltipMessage = () => {
-        if (streakData.currentStreak === 0) return "Start your daily streak today!";
-        if (streakData.currentStreak === 1) return "Great start! Come back tomorrow";
-        if (streakData.currentStreak === 5) return "Halfway to weekly bonus! 🎯";
-        if (streakData.currentStreak < 7) return `${7 - streakData.currentStreak} days to weekly bonus!`;
-        if (streakData.currentStreak === 7) return "Weekly bonus unlocked! 🎉";
-        if (streakData.currentStreak === 10) return "10 day milestone! Amazing! 🌟";
-        if (streakData.currentStreak < 14) return `${14 - streakData.currentStreak} days to 2-week bonus!`;
-        return "Keep the momentum going!";
+        if (streakData.currentStreak === 0) return "Start your streak today";
+        if (streakData.currentStreak === 1) return "Day 1 · Come back tomorrow";
+        if (streakData.currentStreak < 7) return `${7 - streakData.currentStreak}d to weekly milestone`;
+        if (streakData.currentStreak === 7) return "Weekly milestone reached";
+        if (streakData.currentStreak < 10) return `${10 - streakData.currentStreak}d to Silver tier`;
+        if (streakData.currentStreak === 10) return "Silver tier unlocked";
+        if (streakData.currentStreak < 30) return `${30 - streakData.currentStreak}d to Gold tier`;
+        if (streakData.currentStreak < 90) return `${90 - streakData.currentStreak}d to Diamond`;
+        return "Diamond tier · Legendary";
+    };
+
+    // Compact progress bar (0-1 ratio toward next milestone)
+    const getProgress = () => {
+        const s = streakData.currentStreak;
+        if (s < 7) return s / 7;
+        if (s < 14) return (s - 7) / 7;
+        if (s < 30) return (s - 14) / 16;
+        return 1;
+    };
+
+    const getNextMilestone = () => {
+        const s = streakData.currentStreak;
+        if (s < 7) return 7;
+        if (s < 14) return 14;
+        if (s < 30) return 30;
+        return 30;
     };
 
     return (
@@ -257,528 +310,458 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                 streakData={streakData}
             />
 
-            {/* Auto-playing tooltip - only show after tutorials are completed */}
+            {/* Auto-playing & hover tooltip - beautiful premium SaaS design */}
             <AnimatePresence>
-                {showAutoTooltip && !isOpen && tutorialsCompleted && (
+                {((showAutoTooltip && tutorialsCompleted) || isHovered) && !isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                        transition={{ 
-                            type: 'spring', 
-                            stiffness: 400, 
-                            damping: 25 
-                        }}
-                        className="absolute right-0 top-full mt-2 z-50"
+                        initial={{ opacity: 0, y: 8, x: "-50%" }}
+                        animate={{ opacity: 1, y: 0, x: "-50%" }}
+                        exit={{ opacity: 0, y: 4, x: "-50%" }}
+                        transition={{ type: 'spring', stiffness: 450, damping: 26 }}
+                        className="absolute top-full mt-2.5 z-50"
+                        style={{ left: '50%', width: '250px' }}
                     >
-                        <div 
-                            className="relative px-3 py-2 rounded-lg shadow-lg"
+                        <div
+                            className="p-3 rounded-xl flex items-center gap-3 backdrop-blur-md"
                             style={{
-                                backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
-                                border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                                backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                                border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.12)'}`,
                                 boxShadow: isDarkMode 
-                                    ? '0 8px 24px -8px rgba(0, 0, 0, 0.4)'
-                                    : '0 8px 24px -8px rgba(59, 130, 246, 0.2)',
+                                    ? '0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 16px -6px rgba(0, 0, 0, 0.5)'
+                                    : '0 10px 25px -5px rgba(59, 130, 246, 0.08), 0 8px 16px -6px rgba(59, 130, 246, 0.04)',
+                                position: 'relative',
+                                overflow: 'hidden'
                             }}
                         >
-                            {/* Arrow */}
-                            <div 
-                                className="absolute -top-1.5 right-4 w-3 h-3 rotate-45"
-                                style={{
-                                    backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
-                                    borderLeft: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
-                                    borderTop: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
-                                }}
-                            />
-                            
-                            <div className="flex items-center gap-2">
-                                <motion.span 
-                                    className="text-base"
+                            {/* SVG Animated Fire Icon */}
+                            <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg"
+                                 style={{
+                                     background: isDarkMode ? 'rgba(251, 146, 60, 0.12)' : 'rgba(251, 146, 60, 0.06)',
+                                     border: `1px solid ${isDarkMode ? 'rgba(251, 146, 60, 0.2)' : 'rgba(251, 146, 60, 0.1)'}`,
+                                 }}
+                            >
+                                <motion.svg 
+                                    width="18" 
+                                    height="18" 
+                                    viewBox="0 0 24 24" 
+                                    fill="none"
                                     animate={{ 
-                                        scale: [1, 1.15, 1],
-                                        rotate: [0, -5, 5, 0]
+                                        scale: [1, 1.04, 0.97, 1.03, 1],
+                                        y: [0, -0.8, 0.4, -0.4, 0],
+                                        rotate: [0, 2, -2, 1, 0]
                                     }}
                                     transition={{ 
-                                        duration: 1.5, 
-                                        repeat: Infinity,
-                                        repeatDelay: 1
+                                        repeat: Infinity, 
+                                        duration: 1.8, 
+                                        ease: "easeInOut" 
                                     }}
                                 >
-                                    {tier.flameEmoji}
-                                </motion.span>
-                                <div className="flex flex-col">
-                                    <span 
-                                        className="text-[11px] font-semibold"
-                                        style={{ color: isDarkMode ? '#f1f5f9' : '#18181b' }}
-                                    >
-                                        {getTooltipMessage()}
-                                    </span>
-                                    <span 
-                                        className="text-[9px]"
-                                        style={{ color: isDarkMode ? '#94a3b8' : '#71717a' }}
-                                    >
-                                        Click to view your progress
-                                    </span>
-                                </div>
+                                    {/* Outer Flame (Orange-Red gradient) */}
+                                    <motion.path 
+                                        d="M12 2C10 6 7 9 7 13.5a5 5 0 0 0 10 0C17 9 14 6 12 2z" 
+                                        fill="url(#outerFlameGrad)" 
+                                        animate={{
+                                            scaleX: [1, 1.05, 0.95, 1.03, 1],
+                                            scaleY: [1, 0.96, 1.04, 0.97, 1],
+                                        }}
+                                        transition={{
+                                            repeat: Infinity,
+                                            duration: 1.2,
+                                            ease: "easeInOut"
+                                        }}
+                                        style={{ transformOrigin: "center bottom" }}
+                                    />
+                                    {/* Inner Flame (Yellow-Orange gradient) */}
+                                    <motion.path 
+                                        d="M12 7c-1 2.5-2.5 4-2.5 6.5a2.5 2.5 0 0 0 5 0c0-2.5-1.5-4-2.5-6.5z" 
+                                        fill="url(#innerFlameGrad)" 
+                                        animate={{
+                                            scaleX: [1, 0.9, 1.1, 0.95, 1],
+                                            scaleY: [1, 1.1, 0.9, 1.05, 1],
+                                        }}
+                                        transition={{
+                                            repeat: Infinity,
+                                            duration: 0.9,
+                                            ease: "easeInOut"
+                                        }}
+                                        style={{ transformOrigin: "center bottom" }}
+                                    />
+                                    <defs>
+                                        <linearGradient id="outerFlameGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" stopColor="#ff7a00" />
+                                            <stop offset="100%" stopColor="#ef4444" />
+                                        </linearGradient>
+                                        <linearGradient id="innerFlameGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                            <stop offset="0%" stopColor="#facc15" />
+                                            <stop offset="100%" stopColor="#ff7a00" />
+                                        </linearGradient>
+                                    </defs>
+                                </motion.svg>
                             </div>
-                            
-                            {/* Progress bar animation */}
-                            <motion.div 
-                                className="absolute bottom-0 left-0 h-0.5 rounded-b-lg"
-                                style={{ 
-                                    backgroundColor: isDarkMode ? '#3b82f6' : '#3b82f6',
-                                    opacity: 0.6
+
+                            {/* Text content */}
+                            <div className="flex-1 min-w-0 flex flex-col gap-0.5" style={{ textAlign: 'left' }}>
+                                <span 
+                                    className="text-[9px] font-bold uppercase tracking-wider leading-none"
+                                    style={{ color: '#3b82f6' }}
+                                >
+                                    Daily Streak
+                                </span>
+                                <span
+                                    className="text-[12px] font-medium leading-normal"
+                                    style={{ color: isDarkMode ? '#e2e8f0' : '#334155' }}
+                                >
+                                    {getTooltipMessage()}
+                                </span>
+                            </div>
+
+                            {/* Arrow Pointer */}
+                            <div 
+                                style={{
+                                    position: 'absolute',
+                                    top: -4,
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    width: 0,
+                                    height: 0,
+                                    borderLeft: '5px solid transparent',
+                                    borderRight: '5px solid transparent',
+                                    borderBottom: `5px solid ${isDarkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)'}`,
+                                    zIndex: 10
                                 }}
-                                initial={{ width: '100%' }}
-                                animate={{ width: '0%' }}
-                                transition={{ duration: 4, ease: 'linear' }}
                             />
+
+                            {/* Auto-dismiss progress timer bar */}
+                            {showAutoTooltip && !isHovered && (
+                                <motion.div
+                                    className="absolute bottom-0 left-0 h-[2px]"
+                                    style={{ backgroundColor: '#3b82f6', opacity: 0.8 }}
+                                    initial={{ width: '100%' }}
+                                    animate={{ width: '0%' }}
+                                    transition={{ duration: 4, ease: 'linear' }}
+                                />
+                            )}
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Streak Button - Enhanced minimalistic design */}
+            {/* ─── Streak Button — SaaS capsule ─── */}
             <motion.button
                 ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative flex items-center gap-2 px-3 py-2 rounded-xl overflow-hidden"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                className="relative flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-xl cursor-pointer"
                 style={{
-                    background: getButtonBg(),
-                    border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
+                    background: isDarkMode ? 'rgba(255,255,255,0.04)' : '#ffffff',
+                    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                    boxShadow: isDarkMode ? 'none' : '0 1px 2px rgba(0,0,0,0.04)',
+                    outline: 'none',
                 }}
-                onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = getButtonHoverBg();
-                    e.currentTarget.style.borderColor = isDarkMode ? 'rgba(59, 130, 246, 0.5)' : 'rgba(59, 130, 246, 0.3)';
+                whileHover={{
+                    borderColor: isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
+                    boxShadow: isDarkMode ? '0 1px 4px rgba(0,0,0,0.2)' : '0 2px 8px rgba(0,0,0,0.06)',
                 }}
-                onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = getButtonBg();
-                    e.currentTarget.style.borderColor = isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)';
-                }}
-                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                transition={{ duration: 0.15 }}
             >
-                {/* Subtle gradient overlay */}
-                <motion.div
-                    className="absolute inset-0 opacity-30"
+                {/* Fire icon in tinted circle */}
+                <div
+                    className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0"
                     style={{
-                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 197, 253, 0.05) 100%)',
-                    }}
-                    animate={{
-                        opacity: isOpen ? 0.5 : 0.3,
-                    }}
-                    transition={{ duration: 0.2 }}
-                />
-
-                {/* Droplet/Flame Icon with enhanced animation - only animate after tutorials */}
-                <motion.div
-                    className="relative z-10 flex items-center justify-center"
-                    animate={tutorialsCompleted && streakData.currentStreak >= 3 ? { 
-                        y: [0, -2, 0],
-                    } : {}}
-                    transition={{ 
-                        duration: 2, 
-                        repeat: Infinity, 
-                        ease: 'easeInOut'
+                        backgroundColor: isDarkMode ? 'rgba(251,146,60,0.12)' : 'rgba(251,146,60,0.08)',
                     }}
                 >
-                    <motion.span
-                        className="text-lg drop-shadow-sm"
-                        animate={tutorialsCompleted && streakData.currentStreak >= 7 ? {
-                            scale: [1, 1.1, 1],
-                            rotate: [0, -3, 3, 0],
-                        } : {}}
-                        transition={{ 
-                            duration: 3, 
-                            repeat: Infinity, 
-                            ease: 'easeInOut'
-                        }}
-                    >
-                        {tier.flameEmoji}
-                    </motion.span>
-                    
-                    {/* Glow effect behind icon for high streaks - only animate after tutorials */}
-                    {tutorialsCompleted && streakData.currentStreak >= 7 && (
-                        <motion.div
-                            className="absolute inset-0 rounded-full blur-md -z-10"
-                            style={{
-                                background: tier.tier === 'legendary' 
-                                    ? 'rgba(251, 191, 36, 0.4)' 
-                                    : tier.tier === 'warming'
-                                    ? 'rgba(249, 115, 22, 0.3)'
-                                    : 'rgba(59, 130, 246, 0.3)',
-                            }}
-                            animate={{
-                                scale: [1, 1.3, 1],
-                                opacity: [0.4, 0.7, 0.4],
-                            }}
-                            transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: 'easeInOut',
-                            }}
-                        />
-                    )}
-                </motion.div>
-                
-                {/* Streak Count with enhanced styling */}
-                <div className="relative z-10 flex flex-col items-start min-w-0">
-                    <div className="flex items-baseline gap-1">
-                        <motion.span 
-                            className="text-sm font-bold leading-none"
-                            style={{ 
-                                color: isDarkMode ? '#93c5fd' : '#3b82f6',
-                                textShadow: isDarkMode ? '0 1px 2px rgba(0,0,0,0.3)' : 'none',
-                            }}
-                            key={streakData.currentStreak}
-                            initial={{ scale: 1.2, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                        >
-                            {streakData.currentStreak}
-                        </motion.span>
-                        <span 
-                            className="text-[9px] font-medium uppercase tracking-wider opacity-70"
-                            style={{ color: isDarkMode ? '#93c5fd' : '#3b82f6' }}
-                        >
-                            {streakData.currentStreak === 1 ? 'day' : 'days'}
-                        </span>
-                    </div>
+                    <span className="text-xs leading-none">{tier.flameEmoji}</span>
                 </div>
 
-                {/* Right side: Progress dots + Streak label below */}
-                <div className="relative z-10 flex flex-col items-center gap-1 ml-1">
-                    {/* Mini progress indicator - show for streaks 1-10 */}
-                    {streakData.currentStreak > 0 && streakData.currentStreak <= 10 && (
-                        <div className="flex gap-0.5">
-                            {[...Array(Math.min(streakData.currentStreak <= 7 ? 7 : 10, 10))].map((_, i) => (
-                                <motion.div
-                                    key={i}
-                                    className="w-1.5 h-1.5 rounded-full"
-                                    style={{
-                                        backgroundColor: i < streakData.currentStreak 
-                                            ? (isDarkMode ? '#93c5fd' : '#3b82f6')
-                                            : (isDarkMode ? 'rgba(148, 163, 184, 0.3)' : 'rgba(59, 130, 246, 0.2)'),
-                                    }}
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ delay: i * 0.05, type: 'spring', stiffness: 300 }}
-                                />
-                            ))}
-                        </div>
-                    )}
-                    
-                    {/* Streak label text - below dots, bigger */}
-                    <motion.span 
-                        className="text-[10px] font-semibold whitespace-nowrap"
-                        style={{ 
-                            color: isDarkMode ? 'rgba(147, 197, 253, 0.85)' : 'rgba(59, 130, 246, 0.85)',
-                        }}
-                        initial={{ opacity: 0, y: -3 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3, duration: 0.3 }}
+                {/* Count + label */}
+                <div className="flex items-baseline gap-1">
+                    <span
+                        className="text-[13px] font-bold leading-none tabular-nums"
+                        style={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}
                     >
-                        {getStreakLabel()}
-                    </motion.span>
+                        {streakData.currentStreak}
+                    </span>
+                    <span
+                        className="text-[10px] font-medium leading-none"
+                        style={{ color: isDarkMode ? '#64748b' : '#94a3b8' }}
+                    >
+                        {streakData.currentStreak === 1 ? 'day' : 'days'}
+                    </span>
                 </div>
 
-                {/* XP badge for high streaks */}
-                {streakData.currentStreak >= 7 && (
-                    <motion.div
-                        className="relative z-10 px-1.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wide"
-                        style={{
-                            background: isDarkMode 
-                                ? 'rgba(59, 130, 246, 0.3)' 
-                                : 'rgba(59, 130, 246, 0.15)',
-                            color: isDarkMode ? '#93c5fd' : '#3b82f6',
-                        }}
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ type: 'spring', stiffness: 300, delay: 0.1 }}
-                    >
-                        +{tier.xpBonus}xp
-                    </motion.div>
-                )}
-
-                {/* Pulse indicator for active streak - only animate after tutorials */}
-                {tutorialsCompleted && streakData.currentStreak >= 3 && (
-                    <motion.div
-                        className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full"
-                        style={{ 
-                            backgroundColor: tier.tier === 'legendary' 
-                                ? '#fbbf24' 
-                                : tier.tier === 'warming' 
-                                ? '#f97316' 
-                                : '#3b82f6' 
-                        }}
-                        animate={{ 
-                            scale: [1, 1.5, 1], 
-                            opacity: [1, 0.5, 1] 
-                        }}
-                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                    />
-                )}
-
-                {/* Shimmer effect on hover */}
-                <motion.div
-                    className="absolute inset-0 -z-0"
+                {/* Chevron indicator */}
+                <svg
+                    width="10" height="10" viewBox="0 0 24 24"
+                    fill="none" stroke={isDarkMode ? '#475569' : '#cbd5e1'}
+                    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                     style={{
-                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
-                        transform: 'translateX(-100%)',
+                        transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s ease',
                     }}
-                    whileHover={{
-                        transform: 'translateX(100%)',
-                        transition: { duration: 0.6, ease: 'easeInOut' }
-                    }}
-                />
+                >
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
             </motion.button>
 
-            {/* Dropdown Menu */}
+            {/* ─── Dropdown Panel ─── */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
                         ref={dropdownRef}
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ 
-                            type: 'spring', 
-                            stiffness: 400, 
-                            damping: 25 
-                        }}
-                        className="absolute right-0 top-full mt-2 w-72 rounded-xl shadow-lg overflow-hidden z-50"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 4 }}
+                        transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+                        className="absolute top-full mt-2 w-[280px] rounded-xl overflow-hidden z-50"
                         style={{
-                            backgroundColor: colors.dropdownBg,
-                            border: `1px solid ${colors.dropdownBorder}`,
-                            boxShadow: isDarkMode 
-                                ? '0 10px 40px -10px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3)'
-                                : '0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                            left: '50%',
+                            marginLeft: '-140px',
+                            backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                            boxShadow: isDarkMode
+                                ? '0 16px 48px -12px rgba(0,0,0,0.5)'
+                                : '0 16px 48px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.02)',
                         }}
                     >
-                        {/* Header with streak info */}
-                        <div 
-                            className="p-4"
-                            style={{ 
-                                background: tier.bgGradient,
-                                borderBottom: `1px solid ${colors.headerBorder}`
-                            }}
-                        >
+                        {/* ── Header: Count + Message ── */}
+                        <div className="px-5 pt-5 pb-4">
                             <div className="flex items-center gap-3">
-                                <motion.div
-                                    className="text-3xl"
+                                <motion.span
+                                    className="text-2xl"
                                     animate={showWelcome ? {
-                                        scale: [1, 1.3, 1],
-                                        rotate: [0, -10, 10, -10, 0]
+                                        scale: [1, 1.2, 1],
+                                        rotate: [0, -8, 8, 0]
                                     } : {}}
-                                    transition={{ duration: 0.6 }}
+                                    transition={{ duration: 0.5 }}
                                 >
                                     {tier.flameEmoji}
-                                </motion.div>
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                        <motion.span
-                                            className="text-2xl font-bold"
-                                            style={{ color: isDarkMode ? '#f1f5f9' : tier.textColor }}
-                                            initial={showWelcome ? { scale: 0 } : { scale: 1 }}
-                                            animate={{ scale: 1 }}
-                                            transition={{ type: 'spring', delay: 0.2 }}
+                                </motion.span>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-baseline gap-1.5">
+                                        <span
+                                            className="text-2xl font-extrabold leading-none"
+                                            style={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}
                                         >
                                             {streakData.currentStreak}
-                                        </motion.span>
-                                        <span 
-                                            className="text-sm font-medium"
-                                            style={{ color: isDarkMode ? '#cbd5e1' : tier.textColor }}
+                                        </span>
+                                        <span
+                                            className="text-sm font-bold"
+                                            style={{
+                                                background: streakData.currentStreak >= 90
+                                                    ? 'linear-gradient(135deg, #b9f2ff, #e0f7ff, #7dd3fc, #bae6fd, #67e8f9, #e0f7ff)'
+                                                    : streakData.currentStreak >= 30
+                                                    ? 'linear-gradient(135deg, #d4a853, #f5e6a3, #b8902e, #f5e6a3, #d4a853)'
+                                                    : streakData.currentStreak >= 10
+                                                    ? 'linear-gradient(135deg, #8e9aaf, #cfd8e3, #a0aec0, #e2e8f0, #8e9aaf)'
+                                                    : streakData.currentStreak >= 1
+                                                    ? 'linear-gradient(135deg, #a0714f, #d4a574, #8b6339, #c9956b, #a0714f)'
+                                                    : 'none',
+                                                WebkitBackgroundClip: 'text',
+                                                WebkitTextFillColor: streakData.currentStreak >= 1 ? 'transparent' : undefined,
+                                                color: streakData.currentStreak >= 1
+                                                    ? 'transparent'
+                                                    : (isDarkMode ? '#94a3b8' : '#334155'),
+                                            } as React.CSSProperties}
                                         >
                                             day streak
                                         </span>
                                     </div>
-                                    <p 
-                                        className="text-xs mt-0.5"
-                                        style={{ color: isDarkMode ? '#94a3b8' : tier.subTextColor }}
+                                    <p
+                                        className="text-[11px] mt-1 leading-tight"
+                                        style={{ color: isDarkMode ? '#cbd5e1' : '#334155' }}
                                     >
                                         {getMessage()}
                                     </p>
                                 </div>
-                                {/* XP Badge */}
-                                <motion.div
-                                    className="px-2 py-1 rounded-full text-[10px] font-semibold"
+                                {/* XP badge */}
+                                <div
+                                    className="px-2 py-0.5 rounded-md text-[10px] font-semibold shrink-0"
                                     style={{
-                                        backgroundColor: isDarkMode ? 'rgba(59, 130, 246, 0.3)' : `${tier.borderColor}40`,
-                                        color: isDarkMode ? '#93c5fd' : tier.textColor
+                                        backgroundColor: isDarkMode ? 'rgba(59,130,246,0.15)' : 'rgba(59,130,246,0.08)',
+                                        color: isDarkMode ? '#93c5fd' : '#3b82f6',
                                     }}
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ type: 'spring', delay: 0.3 }}
                                 >
                                     +{tier.xpBonus} XP
-                                </motion.div>
+                                </div>
+                            </div>
+
+                            {/* Progress bar toward next milestone */}
+                            <div className="mt-3">
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <span
+                                        className="text-[10px] font-medium"
+                                        style={{ color: isDarkMode ? '#cbd5e1' : '#334155' }}
+                                    >
+                                        Progress
+                                    </span>
+                                    <span
+                                        className="text-[10px] font-medium"
+                                        style={{ color: isDarkMode ? '#94a3b8' : '#64748b' }}
+                                    >
+                                        {streakData.currentStreak}/{getNextMilestone()} days
+                                    </span>
+                                </div>
+                                <div
+                                    className="h-1 w-full rounded-full overflow-hidden"
+                                    style={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}
+                                >
+                                    <motion.div
+                                        className="h-full rounded-full"
+                                        style={{ backgroundColor: '#3b82f6' }}
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${getProgress() * 100}%` }}
+                                        transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1], delay: 0.15 }}
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        {/* Calendar Week View */}
-                        <div className="p-4">
+                        {/* ── Weekly Activity ── */}
+                        <div className="px-5 py-4">
                             <div className="flex items-center justify-between mb-3">
-                                <span 
-                                    className="text-xs font-medium uppercase tracking-wide"
-                                    style={{ color: colors.textSecondary }}
+                                <span
+                                    className="text-[10px] font-bold uppercase tracking-widest"
+                                    style={{ color: isDarkMode ? '#475569' : '#94a3b8' }}
                                 >
-                                    This Week
+                                    Activity
                                 </span>
-                                <span 
-                                    className="text-[10px]"
-                                    style={{ color: colors.textMuted }}
+                                <span
+                                    className="text-[10px] font-medium tabular-nums"
+                                    style={{ color: isDarkMode ? '#64748b' : '#94a3b8' }}
                                 >
-                                    Best: {streakData.bestStreak} days
+                                    Best {streakData.bestStreak}d
                                 </span>
                             </div>
-                            
-                            <div className="flex justify-between gap-1">
+
+                            <div className="flex justify-between items-end">
                                 {calendarDays.map((day, index) => (
                                     <motion.div
                                         key={day.date.toISOString()}
                                         className="flex flex-col items-center gap-1"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.05 }}
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: index * 0.04, duration: 0.2 }}
                                     >
-                                        <span 
-                                            className="text-[10px] font-medium"
-                                            style={{ 
-                                                color: day.isToday 
-                                                    ? '#3b82f6' 
-                                                    : colors.textMuted 
-                                            }}
+                                <span
+                                    className="text-[8px] font-semibold uppercase tracking-wider"
+                                    style={{
+                                        color: day.isToday
+                                            ? '#3b82f6'
+                                            : (isDarkMode ? '#94a3b8' : '#64748b')
+                                    }}
                                         >
-                                            {day.dayName}
+                                            {day.dayName.charAt(0)}
                                         </span>
-                                        <motion.div
-                                            className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium transition-all"
+                                        <div
+                                            className="relative flex items-center justify-center"
                                             style={{
-                                                backgroundColor: day.isActive 
-                                                    ? isDarkMode
-                                                        ? tier.tier === 'legendary' 
-                                                            ? 'rgba(251, 191, 36, 0.3)'
-                                                            : tier.tier === 'warming'
-                                                            ? 'rgba(249, 115, 22, 0.25)'
-                                                            : 'rgba(59, 130, 246, 0.25)'
-                                                        : tier.tier === 'legendary' 
-                                                            ? 'rgba(251, 191, 36, 0.2)'
-                                                            : tier.tier === 'warming'
-                                                            ? 'rgba(249, 115, 22, 0.15)'
-                                                            : 'rgba(59, 130, 246, 0.15)'
-                                                    : colors.calendarInactive,
-                                                color: day.isActive 
-                                                    ? isDarkMode ? '#f1f5f9' : tier.textColor 
-                                                    : colors.calendarInactiveText,
-                                                boxShadow: day.isToday 
-                                                    ? `0 0 0 2px #3b82f6, 0 0 0 4px ${colors.ringOffset}` 
-                                                    : 'none'
+                                                width: 30,
+                                                height: 30,
+                                                borderRadius: '50%',
+                                                backgroundColor: day.isActive
+                                                    ? '#3b82f6'
+                                                    : (isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)'),
+                                                color: day.isActive
+                                                    ? '#ffffff'
+                                                    : (isDarkMode ? '#475569' : '#cbd5e1'),
+                                                fontSize: 11,
+                                                fontWeight: day.isActive ? 700 : 500,
+                                                transition: 'all 0.2s ease',
                                             }}
-                                            whileHover={{ scale: 1.1 }}
                                         >
                                             {day.isActive ? (
-                                                <motion.span
+                                                <motion.svg
+                                                    width="12" height="12" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" strokeWidth="3"
+                                                    strokeLinecap="round" strokeLinejoin="round"
                                                     initial={{ scale: 0 }}
                                                     animate={{ scale: 1 }}
-                                                    transition={{ type: 'spring', delay: index * 0.05 + 0.2 }}
+                                                    transition={{ type: 'spring', delay: index * 0.04 + 0.1 }}
                                                 >
-                                                    {day.isToday ? '🔥' : '✓'}
-                                                </motion.span>
+                                                    <polyline points="20 6 9 17 4 12" />
+                                                </motion.svg>
                                             ) : (
-                                                <span>
-                                                    {day.date.getDate()}
-                                                </span>
+                                                <span>{day.date.getDate()}</span>
                                             )}
-                                        </motion.div>
+                                            {/* Today ring */}
+                                            {day.isToday && (
+                                                <motion.div
+                                                    className="absolute inset-0 rounded-full"
+                                                    style={{
+                                                        border: '2px solid #3b82f6',
+                                                        opacity: day.isActive ? 0 : 1,
+                                                    }}
+                                                    animate={!day.isActive ? { scale: [1, 1.15, 1], opacity: [0.8, 0.3, 0.8] } : {}}
+                                                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                                                />
+                                            )}
+                                        </div>
                                     </motion.div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Stats Footer */}
-                        <div className="px-4 pb-4">
-                            <div className="flex gap-2">
-                                <div 
-                                    className="flex-1 p-2.5 rounded-lg"
-                                    style={{ backgroundColor: colors.statsBg }}
+                        {/* ── Stats Cards ── */}
+                        <div className="px-5 pb-4 flex gap-2">
+                            {[
+                                { label: 'Current', value: `${streakData.currentStreak}`, unit: 'days', icon: '🔥' },
+                                { label: 'Best', value: `${streakData.bestStreak}`, unit: 'days', icon: '🏆' },
+                                { label: 'XP', value: `${streakData.currentStreak * tier.xpBonus}`, unit: 'earned', icon: '⚡' },
+                            ].map((stat) => (
+                                <div
+                                    key={stat.label}
+                                    className="flex-1 p-2.5 rounded-lg text-center"
+                                    style={{
+                                        backgroundColor: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                                        border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)'}`,
+                                    }}
                                 >
-                                    <div 
-                                        className="text-[10px] uppercase tracking-wide"
-                                        style={{ color: colors.textMuted }}
+                                    <div className="text-xs mb-1">{stat.icon}</div>
+                                    <div
+                                        className="text-sm font-bold tabular-nums leading-none"
+                                        style={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}
                                     >
-                                        Current
+                                        {stat.value}
                                     </div>
-                                    <div 
-                                        className="text-sm font-semibold mt-0.5"
-                                        style={{ color: colors.textPrimary }}
+                                    <div
+                                        className="text-[8px] font-semibold uppercase tracking-wider mt-1"
+                                        style={{ color: isDarkMode ? '#94a3b8' : '#64748b' }}
                                     >
-                                        {streakData.currentStreak} days
+                                        {stat.unit}
                                     </div>
                                 </div>
-                                <div 
-                                    className="flex-1 p-2.5 rounded-lg"
-                                    style={{ backgroundColor: colors.statsBg }}
-                                >
-                                    <div 
-                                        className="text-[10px] uppercase tracking-wide"
-                                        style={{ color: colors.textMuted }}
-                                    >
-                                        Best
-                                    </div>
-                                    <div 
-                                        className="text-sm font-semibold mt-0.5"
-                                        style={{ color: colors.textPrimary }}
-                                    >
-                                        {streakData.bestStreak} days
-                                    </div>
-                                </div>
-                                <div 
-                                    className="flex-1 p-2.5 rounded-lg"
-                                    style={{ backgroundColor: colors.statsBg }}
-                                >
-                                    <div 
-                                        className="text-[10px] uppercase tracking-wide"
-                                        style={{ color: colors.textMuted }}
-                                    >
-                                        Total XP
-                                    </div>
-                                    <div 
-                                        className="text-sm font-semibold mt-0.5"
-                                        style={{ color: colors.textPrimary }}
-                                    >
-                                        {streakData.currentStreak * tier.xpBonus}
-                                    </div>
-                                </div>
-                            </div>
+                            ))}
                         </div>
 
-                        {/* Motivational tip */}
-                        <div className="px-4 pb-4">
-                            <div 
-                                className="p-3 rounded-lg"
-                                style={{ 
-                                    background: colors.tipBg,
-                                    border: `1px solid ${colors.tipBorder}`
-                                }}
+                        {/* ── Tip footer ── */}
+                        <div
+                            className="px-5 py-3 flex items-center gap-2"
+                            style={{
+                                borderTop: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)'}`,
+                                backgroundColor: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
+                            }}
+                        >
+                            <svg
+                                width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                stroke={isDarkMode ? '#60a5fa' : '#3b82f6'}
+                                strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
                             >
-                                <div className="flex items-start gap-2">
-                                    <span className="text-sm">💡</span>
-                                    <p 
-                                        className="text-[11px] leading-relaxed"
-                                        style={{ color: colors.tipText }}
-                                    >
-                                        {streakData.currentStreak < 7 
-                                            ? "Log in daily to build your streak and earn bonus XP!"
-                                            : streakData.currentStreak < 14
-                                            ? "You're doing great! Keep the momentum going!"
-                                            : "You're a streak master! Inspire others with your dedication!"
-                                        }
-                                    </p>
-                                </div>
-                            </div>
+                                <path d="M12 2a7 7 0 0 1 4 12.75V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.25A7 7 0 0 1 12 2z" />
+                                <line x1="9" y1="21" x2="15" y2="21" />
+                            </svg>
+                            <span
+                                className="text-[11px] leading-tight font-medium"
+                                style={{ color: isDarkMode ? '#60a5fa' : '#3b82f6' }}
+                            >
+                                {streakData.currentStreak < 7
+                                    ? "Log in daily to build your streak"
+                                    : streakData.currentStreak < 14
+                                    ? "Keep the momentum going!"
+                                    : "You're a streak master!"}
+                            </span>
                         </div>
                     </motion.div>
                 )}

@@ -1,11 +1,11 @@
-﻿/**
+/**
  * ScrollToBottomButton Component
  * Floating button to scroll to the latest messages, shows new message count
  */
 
 import React from 'react';
 import { motion } from 'motion/react';
-import type { ChatColors } from '../types';
+import type {} from '../types';
 
 interface ScrollToBottomButtonProps {
     newMessageCount: number;
@@ -47,8 +47,7 @@ export const ScrollToBottomButton = React.memo<ScrollToBottomButtonProps>(({
                     WebkitBackdropFilter: 'blur(12px)',
                     borderRadius: '12px',
                     border: `1px solid ${'var(--bg-hover)'}`,
-                    boxShadow: ? '0 4px 16px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2)'
-                        : '0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04)',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04)',
                     cursor: 'pointer',
                     pointerEvents: 'auto',
                     transition: 'all 0.2s ease' }}

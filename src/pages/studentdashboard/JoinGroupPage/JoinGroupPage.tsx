@@ -92,7 +92,7 @@ const JoinGroupPage: React.FC = () => {
                                 trigger="in"
                                 delay="500"
                                 state="in-reveal"
-                                ="primary:#f59e0b,secondary:#f59e0b"
+                                colors="primary:#f59e0b,secondary:#f59e0b"
                                 style="width:80px;height:80px">
                             </lord-icon>`
                         }}

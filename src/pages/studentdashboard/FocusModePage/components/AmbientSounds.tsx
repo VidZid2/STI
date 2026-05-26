@@ -69,11 +69,11 @@ const SoundIcon: React.FC<{ id: string; color: string; size?: number }> = ({ id,
 
 // Ambient Sounds Component
 const AmbientSounds: React.FC<{
-    
-    
+    isDarkMode: boolean;
+    colors: FocusModeColors;
     activeSound?: string | null;
     onSoundChange?: (soundId: string | null) => void;
-}> = ({ : _isDarkMode, : _colors, activeSound: externalActiveSound, onSoundChange }) => {
+}> = ({ isDarkMode: _isDarkMode, colors: _colors, activeSound: externalActiveSound, onSoundChange }) => {
     const [internalActiveSound, setInternalActiveSound] = useState<string | null>(null);
     const [volume, setVolume] = useState(70);
     const audioRef = useRef<HTMLAudioElement | null>(null);

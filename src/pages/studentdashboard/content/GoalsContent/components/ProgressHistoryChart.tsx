@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ProgressHistoryChart
  * Visualizes goal progress over time.
  * Extracted from GoalsContent.tsx during Phase 8.3
@@ -6,12 +6,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { AnimatePresence } from 'motion/react';
-import { getAggregatedProgressHistory, getRealTimeProgress, type GoalWithProgress } from '../../../../../services/goalsService';
+import { getAggregatedProgressHistory, getRealTimeProgress } from '../../../../../services/goalsService';
 
 // Progress History Chart Component
-const ProgressHistoryChart: React.FC<{
-    
-}> = ({  goals }) => {
+const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({  goals = [] }) => {
     const [historyData, setHistoryData] = useState<{ date: string; completed: number; active: number; totalProgress: number }[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);

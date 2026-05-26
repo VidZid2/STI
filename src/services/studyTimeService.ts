@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Study Time Tracking Service
  * Tracks real-time study hours, course progress, and learning statistics
  * 
@@ -343,6 +343,9 @@ export const addStudyTime = (minutes: number, courseId?: string): void => {
 
     saveStudyTimeData(data);
     updateStreak();
+    if (minutes > 0) {
+        addXP(minutes * 5);
+    }
 };
 
 // Update streak based on activity - tracks daily logins and awards XP

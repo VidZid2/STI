@@ -16,7 +16,8 @@ const HomeContent = React.lazy(() => import('./content/HomeContent'));
 const PathsContent = React.lazy(() => import('./content/PathsContent'));
 import WidgetsToggleButton from '../../components/ui/misc/WidgetsToggleButton';
 
-import { Dock, DockIcon, DockAutoHide } from '../../components/ui/primitives/dock';
+
+
 
 // Heavy content tabs — lazy loaded to reduce initial bundle size
 const GroupsContent = React.lazy(() => import('./content/GroupsContent'));
@@ -108,6 +109,11 @@ const DashboardPage: React.FC = () => {
             const course = coursesWithProgress.find(c => c.id === courseId);
 
             if (course) {
+                // Save scroll position before navigating away from home
+                if (fromView === 'home' || activeView === 'home') {
+                    sessionStorage.setItem('dashboard-scroll-y', window.scrollY.toString());
+                }
+
                 // Save the previous view so back button returns to correct page
                 if (fromView === 'paths' || activeView === 'paths') {
                     setPreviousView('paths');
@@ -127,6 +133,18 @@ const DashboardPage: React.FC = () => {
             window.removeEventListener('navigate-to-course', handleNavigateToCourse as EventListener);
         };
     }, [activeView]);
+
+    // Listen for navigate-to-tab events from HomeContent quick actions
+    useEffect(() => {
+        const handleNavigateToTab = (event: CustomEvent<{ tab: string }>) => {
+            setActiveView(event.detail.tab);
+        };
+
+        window.addEventListener('navigate-to-tab', handleNavigateToTab as EventListener);
+        return () => {
+            window.removeEventListener('navigate-to-tab', handleNavigateToTab as EventListener);
+        };
+    }, []);
 
     // Notification System - using shared context (synced with ToolbarExpandable)
     const {
@@ -215,10 +233,7 @@ const DashboardPage: React.FC = () => {
             {/* Header */}
             {/* Header — extracted to ./components/DashboardHeader.tsx */}
             <DashboardHeader
-                sidebarActive={sidebarActive}
-                toggleSidebar={toggleSidebar}
                 setActiveView={setActiveView}
-                setSidebarActive={setSidebarActive}
                 isDemoMode={isDemoMode}
             />
 
@@ -233,7 +248,7 @@ const DashboardPage: React.FC = () => {
                 openSettingsModal={openSettingsModal}
             />
             {/* Main Content */}
-            <main className="main-content">
+            <main className={`main-content ${!sidebarActive ? 'sidebar-collapsed' : ''}`}>
                 <React.Suspense fallback={<DashboardSuspenseFallback />}>
                 <AnimatePresence mode="wait">
                     {activeView === 'home' && (
@@ -277,6 +292,20 @@ const DashboardPage: React.FC = () => {
                                     onBack={() => {
                                         setActiveView(previousView);
                                         setSelectedCourse(null);
+                                        
+                                        if (previousView === 'home') {
+                                            // Wait for HomeContent to render and animate before scrolling
+                                            setTimeout(() => {
+                                                const savedScrollY = sessionStorage.getItem('dashboard-scroll-y');
+                                                if (savedScrollY) {
+                                                    window.scrollTo({
+                                                        top: parseInt(savedScrollY),
+                                                        behavior: 'smooth'
+                                                    });
+                                                    sessionStorage.removeItem('dashboard-scroll-y');
+                                                }
+                                            }, 350);
+                                        }
                                     }}
                                 />
                             </ErrorBoundary>
@@ -477,62 +506,8 @@ const DashboardPage: React.FC = () => {
 
 
 
-            {/* Floating Dock - Hidden when in course view */}
-            <AnimatePresence>
-                {activeView !== 'course' && (
-                    <DockAutoHide>
-                        <Dock
-                            direction="bottom"
-                            iconSize={40}
-                            iconMagnification={70}
-                            iconDistance={150}
-                            className="mt-0 shadow-xl shadow-blue-900/20"
-                        >
-                            <DockIcon className="border border-blue-700" title="Continue Learning">
-                                <a href="#" className="flex items-center justify-center w-full h-full">
-                                    <lord-icon
-                                        src="https://cdn.lordicon.com/rrbmabsx.json"
-                                        trigger="hover"
-                                        ="primary:#1d4ed8,secondary:#eab308"
-                                        style={{ width: '24px', height: '24px' }}
-                                    />
-                                </a>
-                            </DockIcon>
-                            <DockIcon className="border border-blue-700" title="Assignments">
-                                <a href="#" className="flex items-center justify-center w-full h-full">
-                                    <lord-icon
-                                        src="https://cdn.lordicon.com/hmpomorl.json"
-                                        trigger="hover"
-                                        ="primary:#1d4ed8,secondary:#eab308"
-                                        style={{ width: '24px', height: '24px' }}
-                                    />
-                                </a>
-                            </DockIcon>
-                            <DockIcon className="border border-blue-700" title="Classes">
-                                <a href="#" className="flex items-center justify-center w-full h-full">
-                                    <lord-icon
-                                        src="https://cdn.lordicon.com/psyssele.json"
-                                        trigger="hover"
-                                        state="hover-snooze"
-                                        ="primary:#1d4ed8,secondary:#eab308"
-                                        style={{ width: '24px', height: '24px' }}
-                                    />
-                                </a>
-                            </DockIcon>
-                            <DockIcon className="border border-blue-700" title="Discussion">
-                                <a href="#" className="flex items-center justify-center w-full h-full">
-                                    <lord-icon
-                                        src="https://cdn.lordicon.com/jdgfsfzr.json"
-                                        trigger="hover"
-                                        ="primary:#1d4ed8,secondary:#eab308"
-                                        style={{ width: '24px', height: '24px' }}
-                                    />
-                                </a>
-                            </DockIcon>
-                        </Dock>
-                    </DockAutoHide>
-                )}
-            </AnimatePresence>
+
+
 
 
         </div >

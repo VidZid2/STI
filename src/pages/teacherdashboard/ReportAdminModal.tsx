@@ -79,42 +79,10 @@ const ReportAdminModal: React.FC<ReportAdminModalProps> = ({ isOpen, onClose, on
 
     // Accent color for this modal is red/pink — use CSS var
 
-    // Theme-aware style helpers
-    const inputBase: React.CSSProperties = {
-        width: '100%',
-        padding: '12px 16px',
-        borderRadius: '12px',
-        border: '1.5px solid var(--border-subtle)',
-        fontSize: '14px',
-        outline: 'none',
-        boxSizing: 'border-box',
-        background: 'var(--bg-canvas)',
-        fontFamily: 'inherit',
-        color: 'var(--text-primary)',
-        transition: 'border-color 0.2s, box-shadow 0.2s, background 0.2s',
-    };
+    // Theme-aware style helpers converted to Tailwind classes
+    const inputBaseClass = "w-full px-4 py-3 rounded-xl border-[1.5px] border-[var(--border-subtle)] text-sm outline-none box-border bg-[var(--bg-canvas)] text-[var(--text-primary)] transition-all duration-200 focus:border-[var(--accent-primary)] focus:ring-[3px] focus:ring-[var(--ring-focus)] focus:bg-[var(--bg-surface)]";
+    const labelStyleClass = "block text-[13px] font-semibold text-[var(--text-secondary)] mb-2 tracking-[0.01em]";
 
-    const labelStyle: React.CSSProperties = {
-        display: 'block',
-        fontSize: '13px',
-        fontWeight: 600,
-        color: 'var(--text-secondary)',
-        marginBottom: '8px',
-        letterSpacing: '0.01em',
-    };
-
-    const focusHandlers = {
-        onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-            e.target.style.borderColor = 'var(--accent-primary)';
-            e.target.style.boxShadow = '0 0 0 3px var(--ring-focus)';
-            e.target.style.background = 'var(--bg-surface)';
-        },
-        onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-            e.target.style.borderColor = 'var(--border-subtle)';
-            e.target.style.boxShadow = 'none';
-            e.target.style.background = 'var(--bg-canvas)';
-        },
-    };
     const [step, setStep] = useState<1 | 2>(1);
     const [category, setCategory] = useState('infrastructure');
     const [title, setTitle] = useState('');
@@ -268,7 +236,7 @@ const ReportAdminModal: React.FC<ReportAdminModalProps> = ({ isOpen, onClose, on
                                     >
                                         {/* Category */}
                                         <div>
-                                            <label style={labelStyle}>What type of issue are you reporting?</label>
+                                            <label className={labelStyleClass}>What type of issue are you reporting?</label>
                                             <div className={`grid gap-2.5 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
                                                 {REPORT_CATEGORIES.map(cat => (
                                                     <motion.button key={cat.id} type="button" onClick={() => setCategory(cat.id)}
@@ -307,29 +275,28 @@ const ReportAdminModal: React.FC<ReportAdminModalProps> = ({ isOpen, onClose, on
 
                                         {/* Subject */}
                                         <div className="flex flex-col gap-1.5">
-                                            <label style={labelStyle}>
-                                                Subject <span style={{ color: 'var(--accent-primary)' }}>*</span>
+                                            <label className={labelStyleClass}>
+                                                Subject <span className="text-[var(--accent-primary)]">*</span>
                                             </label>
                                             <input required type="text" placeholder="e.g. Broken projector in Room 204"
                                                 value={title} onChange={e => setTitle(e.target.value)}
-                                                style={inputBase} {...focusHandlers} />
+                                                className={inputBaseClass} />
                                         </div>
 
                                         {/* Description */}
                                         <div className="flex flex-col gap-1.5">
                                             <div className="flex justify-between items-center mb-2">
-                                                <label style={{ ...labelStyle, marginBottom: 0 }}>
-                                                    Detailed Description <span style={{ color: 'var(--accent-primary)' }}>*</span>
+                                                <label className={`${labelStyleClass} !mb-0`}>
+                                                    Detailed Description <span className="text-[var(--accent-primary)]">*</span>
                                                 </label>
-                                                <span style={{ fontSize: '11px', color: description.length > 450 ? 'var(--accent-primary)' : 'var(--text-secondary)' }}>
+                                                <span className="text-[11px]" style={{ color: description.length > 450 ? 'var(--accent-primary)' : 'var(--text-secondary)' }}>
                                                     {description.length}/500
                                                 </span>
                                             </div>
                                             <textarea required placeholder="Describe the issue clearly — what happened, when, and how it affects your class..."
                                                 value={description} onChange={e => setDescription(e.target.value.slice(0, 500))}
                                                 rows={isMobile ? 4 : 5}
-                                                style={{ ...inputBase, resize: 'none', lineHeight: 1.6 }}
-                                                {...focusHandlers} />
+                                                className={`${inputBaseClass} resize-none leading-[1.6]`} />
                                         </div>
 
                                         <motion.button type="button" onClick={() => setStep(2)}
@@ -375,50 +342,49 @@ const ReportAdminModal: React.FC<ReportAdminModalProps> = ({ isOpen, onClose, on
                                         {/* Two-column row */}
                                         <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
                                             <div className="flex flex-col gap-1.5">
-                                                <label style={labelStyle}>Affected Class / Section</label>
+                                                <label className={labelStyleClass}>Affected Class / Section</label>
                                                 <input type="text" placeholder="e.g. Grade 10 - Rizal"
                                                     value={affectedClass} onChange={e => setAffectedClass(e.target.value)}
-                                                    style={inputBase} {...focusHandlers} />
+                                                    className={inputBaseClass} />
                                             </div>
                                             <div className="flex flex-col gap-1.5">
-                                                <label style={labelStyle}>Location / Room</label>
+                                                <label className={labelStyleClass}>Location / Room</label>
                                                 <input type="text" placeholder="e.g. Room 204, Science Lab"
                                                     value={location} onChange={e => setLocation(e.target.value)}
-                                                    style={inputBase} {...focusHandlers} />
+                                                    className={inputBaseClass} />
                                             </div>
                                         </div>
 
                                         {/* Student name — only for behavioral */}
                                         {isStudentIssue && (
                                             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="flex flex-col gap-1.5">
-                                                <label style={labelStyle}>Student Name(s) Involved</label>
+                                                <label className={labelStyleClass}>Student Name(s) Involved</label>
                                                 <input type="text" placeholder="e.g. Juan Dela Cruz (or multiple names)"
                                                     value={studentName} onChange={e => setStudentName(e.target.value)}
-                                                    style={inputBase} {...focusHandlers} />
+                                                    className={inputBaseClass} />
                                             </motion.div>
                                         )}
 
                                         {/* Date occurred */}
                                         <div className="flex flex-col gap-1.5">
-                                            <label style={labelStyle}>Date / Time of Incident</label>
+                                            <label className={labelStyleClass}>Date / Time of Incident</label>
                                             <input type="datetime-local"
                                                 value={dateOccurred} onChange={e => setDateOccurred(e.target.value)}
-                                                style={{ ...inputBase, colorScheme: 'light dark' }} {...focusHandlers} />
+                                                className={inputBaseClass} style={{ colorScheme: 'light dark' }} />
                                         </div>
 
                                         {/* Action already taken */}
                                         <div className="flex flex-col gap-1.5">
-                                            <label style={labelStyle}>Action Already Taken (if any)</label>
+                                            <label className={labelStyleClass}>Action Already Taken (if any)</label>
                                             <textarea placeholder="e.g. Informed the class, sent student to guidance office..."
                                                 value={actionTaken} onChange={e => setActionTaken(e.target.value)}
                                                 rows={3}
-                                                style={{ ...inputBase, resize: 'none', lineHeight: 1.6 }}
-                                                {...focusHandlers} />
+                                                className={`${inputBaseClass} resize-none leading-[1.6]`} />
                                         </div>
 
                                         {/* Priority */}
                                         <div>
-                                            <label style={labelStyle}>Priority Level <span style={{ color: 'var(--accent-primary)' }}>*</span></label>
+                                            <label className={labelStyleClass}>Priority Level <span className="text-[var(--accent-primary)]">*</span></label>
                                             <div className={`grid gap-2.5 ${isMobile ? 'grid-cols-2' : 'grid-cols-4'}`}>
                                                 {PRIORITIES.map(p => (
                                                     <motion.button key={p.id} type="button" onClick={() => setPriority(p.id)}

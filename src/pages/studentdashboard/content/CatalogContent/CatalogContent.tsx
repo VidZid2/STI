@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
+import { motion, AnimatePresence, LayoutGroup, useMotionValue, useSpring, useInView } from 'motion/react';
 import {
     getCatalogCourses,
     getCatalogStats,
@@ -20,7 +20,8 @@ import {
     type CatalogCourse,
     type CatalogStats,
     type CourseCategory,
-    type SortOption } from '../../../../services/catalogService';
+    type SortOption,
+} from '../../../../services/catalogService';
 import { AnimatedNumber, CategoryIcon, CatalogSkeleton } from './components/CatalogShared';
 import { FilterTabs } from './components/CatalogFilterTabs';
 import { CourseCard, CourseListItem } from './components/CourseCard';
@@ -50,15 +51,25 @@ const CatalogContent: React.FC = () => {
     const searchInputRef = useRef<HTMLInputElement>(null);
     const suggestionsRef = useRef<HTMLDivElement>(null);
     const loadMoreRef = useRef<HTMLDivElement>(null);
+    
+    const [isDarkMode, setIsDarkMode] = useState(() => document.body.classList.contains('dark-mode'));
 
-    const = {
-        bg: 'var(--bg-primary)',
-        cardBg: 'var(--bg-secondary)',
-        border: 'var(--border-light)',
-        textPrimary: 'var(--text-primary)',
-        textSecondary: 'var(--text-secondary)',
-        textMuted: 'var(--text-muted)',
-        accent: 'var(--brand-blue)' };
+    useEffect(() => {
+        const checkDarkMode = () => setIsDarkMode(document.body.classList.contains('dark-mode'));
+        const observer = new MutationObserver(checkDarkMode);
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        return () => observer.disconnect();
+    }, []);
+
+    const colors = {
+        bg: isDarkMode ? '#0f172a' : '#f8fafc',
+        cardBg: isDarkMode ? '#1e293b' : '#ffffff',
+        border: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
+        textSecondary: isDarkMode ? '#94a3b8' : '#64748b',
+        textMuted: isDarkMode ? '#94a3b8' : '#475569',
+        accent: '#3b82f6',
+    };
 
     useEffect(() => {
         const loadData = async () => {
@@ -243,10 +254,10 @@ const CatalogContent: React.FC = () => {
             {/* Header Section - Matching PathsContent exactly */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} style={{ marginBottom: '28px' }}>
                 <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '18px 22px', borderRadius: '14px', background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`, boxShadow: 'var(--shadow-lg)' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '18px 22px', borderRadius: '14px', background: colors.cardBg, border: `1px solid ${colors.border}`, boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.15)' : '0 2px 12px rgba(0,0,0,0.04)' }}>
                     {/* Icon */}
                     <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }} whileHover={{ scale: 1.08, transition: { duration: 0.2 } }}
-                        style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        style={{ width: '46px', height: '46px', borderRadius: '12px', background: isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" />
                         </svg>
@@ -255,22 +266,22 @@ const CatalogContent: React.FC = () => {
                     {/* Title & Description */}
                     <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }} style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>Course Catalog</h1>
+                            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: colors.textPrimary, letterSpacing: '-0.3px' }}>Course Catalog</h1>
                             <motion.span initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.25, duration: 0.3 }}
-                                style={{ fontSize: '10px', fontWeight: 600, color: '#3b82f6', background: 'rgba(59, 130, 246, 0.1)', padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                                style={{ fontSize: '10px', fontWeight: 600, color: '#3b82f6', background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)', padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
                                 {stats.totalCourses} Course{stats.totalCourses !== 1 ? 's' : ''}
                             </motion.span>
                         </div>
-                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 400 }}>Explore and discover courses to enhance your learning journey</p>
+                        <p style={{ margin: 0, fontSize: '13px', color: colors.textSecondary, fontWeight: 400 }}>Explore and discover courses to enhance your learning journey</p>
                     </motion.div>
 
                     {/* Quick Stats Cards */}
                     <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }} style={{ display: 'flex', alignItems: 'stretch', gap: '10px' }}>
                         {[
-                            { label: 'Total', value: stats.totalCourses, description: 'Courses', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)', icon: 'all' },
-                            { label: 'Students', value: stats.totalStudents, description: 'Enrolled', color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.1)', icon: 'students' },
-                            { label: 'Major', value: stats.majorCourses, description: 'Subjects', color: '#8b5cf6', bgColor: 'rgba(139, 92, 246, 0.1)', icon: 'major' },
-                            { label: 'GE', value: stats.geCourses, description: 'General', color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.1)', icon: 'ge' },
+                            { label: 'Total', value: stats.totalCourses, description: 'Courses', color: '#3b82f6', bgColor: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.06)', icon: 'all' },
+                            { label: 'Students', value: stats.totalStudents, description: 'Enrolled', color: '#10b981', bgColor: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.06)', icon: 'students' },
+                            { label: 'Major', value: stats.majorCourses, description: 'Subjects', color: '#8b5cf6', bgColor: isDarkMode ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.06)', icon: 'major' },
+                            { label: 'GE', value: stats.geCourses, description: 'General', color: '#f59e0b', bgColor: isDarkMode ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.06)', icon: 'ge' },
                         ].map((stat, i) => (
                             <motion.div key={stat.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 + i * 0.05, duration: 0.3 }} whileHover={{ y: -2, scale: 1.02, transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] } }}
                                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 16px', borderRadius: '10px', background: stat.bgColor, cursor: 'default', minWidth: '72px' }} title={`${stat.label}: ${stat.value}`}>
@@ -286,7 +297,7 @@ const CatalogContent: React.FC = () => {
                                 <span style={{ fontSize: '18px', fontWeight: 700, color: stat.color, lineHeight: 1, marginBottom: '2px' }}>
                                     <AnimatedNumber value={stat.value} delay={0.3 + i * 0.1} />
                                 </span>
-                                <span style={{ fontSize: '10px', fontWeight: 500, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{stat.description}</span>
+                                <span style={{ fontSize: '10px', fontWeight: 500, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{stat.description}</span>
                             </motion.div>
                         ))}
                     </motion.div>
@@ -320,7 +331,7 @@ const CatalogContent: React.FC = () => {
                     style={{ flex: 1, minWidth: '220px', position: 'relative' }}
                 >
                     <div style={{ position: 'absolute', left: '14px', top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 1 }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
                             <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                         </svg>
                     </div>
@@ -340,7 +351,7 @@ const CatalogContent: React.FC = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleSearchKeyDown}
                         onFocus={() => { if (searchSuggestions.length > 0) setShowSuggestions(true); }}
-                        style={{ width: '100%', padding: '12px 40px 12px 42px', borderRadius: '12px', border: `1px solid var(--border-color)`, background: 'var(--dashboard-surface)', color: 'var(--text-primary)', fontSize: '13px', fontWeight: 400, outline: 'none', transition: 'all 0.25s cubic-bezier(0.22, 1, 0.36, 1)' }}
+                        style={{ width: '100%', padding: '12px 40px 12px 42px', borderRadius: '12px', border: `1px solid ${colors.border}`, background: colors.cardBg, color: colors.textPrimary, fontSize: '13px', fontWeight: 400, outline: 'none', transition: 'all 0.25s cubic-bezier(0.22, 1, 0.36, 1)' }}
                     />
                     <span id="search-instructions" className="sr-only" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>
                         Use arrow keys to navigate suggestions, Enter to select, Escape to close
@@ -350,8 +361,8 @@ const CatalogContent: React.FC = () => {
                             <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }} transition={{ duration: 0.2 }}
                                 style={{ position: 'absolute', right: '14px', top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '18px', height: '100%' }}>
                                 <motion.svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ display: 'block' }} animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}>
-                                    <circle cx="8" cy="8" r="6" stroke={'rgba(59, 130, 246, 0.1)'} strokeWidth="2" fill="none" />
-                                    <circle cx="8" cy="8" r="6" stroke={'var(--accent-color)'} strokeWidth="2" strokeLinecap="round" strokeDasharray="28" strokeDashoffset="21" fill="none" />
+                                    <circle cx="8" cy="8" r="6" stroke={isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)'} strokeWidth="2" fill="none" />
+                                    <circle cx="8" cy="8" r="6" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeDasharray="28" strokeDashoffset="21" fill="none" />
                                 </motion.svg>
                             </motion.div>
                         )}
@@ -370,11 +381,11 @@ const CatalogContent: React.FC = () => {
                                     onClick={() => setSearchQuery('')}
                                     aria-label="Clear search (Esc)"
                                     title="Clear search (Esc)"
-                                    style={{ background: 'var(--bg-hover)', border: 'none', borderRadius: '6px', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                                    style={{ background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)', border: 'none', borderRadius: '6px', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
                                     whileHover={{ scale: 1.1 }} 
                                     whileTap={{ scale: 0.9 }}
                                 >
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={'var(--text-muted)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }} aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }} aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
                                 </motion.button>
                             </motion.div>
                         )}
@@ -395,18 +406,20 @@ const CatalogContent: React.FC = () => {
                                     display: 'flex', 
                                     alignItems: 'center', 
                                     justifyContent: 'center',
-                                    pointerEvents: 'none' }}
+                                    pointerEvents: 'none',
+                                }}
                             >
                                 <div 
                                     style={{ 
                                         padding: '4px 8px', 
                                         borderRadius: '6px', 
-                                        background: 'var(--bg-hover)', 
-                                        border: `1px solid ${'var(--bg-hover)'}`,
+                                        background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', 
+                                        border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
                                         fontSize: '11px', 
                                         fontWeight: 500, 
-                                        color: 'var(--text-muted)',
-                                        fontFamily: 'monospace' }}
+                                        color: colors.textMuted,
+                                        fontFamily: 'monospace',
+                                    }}
                                     title="Press / to search"
                                 >
                                     /
@@ -432,24 +445,26 @@ const CatalogContent: React.FC = () => {
                                     left: 0,
                                     right: 0,
                                     marginTop: '4px',
-                                    background: 'var(--dashboard-surface)',
-                                    border: `1px solid var(--border-color)`,
+                                    background: colors.cardBg,
+                                    border: `1px solid ${colors.border}`,
                                     borderRadius: '10px',
-                                    boxShadow: 'var(--shadow-lg)',
+                                    boxShadow: isDarkMode ? '0 6px 20px rgba(0,0,0,0.4)' : '0 6px 20px rgba(0,0,0,0.1)',
                                     zIndex: 50,
-                                    overflow: 'hidden' }}
+                                    overflow: 'hidden',
+                                }}
                             >
                                 {/* Suggestions Header */}
                                 <div style={{
                                     padding: '6px 10px',
-                                    borderBottom: `1px solid var(--border-color)`,
+                                    borderBottom: `1px solid ${colors.border}`,
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between' }}>
-                                    <span style={{ fontSize: '9px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                    justifyContent: 'space-between',
+                                }}>
+                                    <span style={{ fontSize: '9px', fontWeight: 600, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                         Suggestions
                                     </span>
-                                    <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>
+                                    <span style={{ fontSize: '9px', color: colors.textMuted }}>
                                         ↑↓ · Enter
                                     </span>
                                 </div>
@@ -476,9 +491,10 @@ const CatalogContent: React.FC = () => {
                                                 gap: '10px',
                                                 padding: '6px 10px',
                                                 cursor: 'pointer',
-                                                background: isSelected ? ('rgba(59, 130, 246, 0.1)') : 'transparent',
+                                                background: isSelected ? (isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : 'transparent',
                                                 borderLeft: isSelected ? '2px solid #3b82f6' : '2px solid transparent',
-                                                transition: 'all 0.1s ease' }}
+                                                transition: 'all 0.1s ease',
+                                            }}
                                         >
                                             {/* Course Image */}
                                             <div style={{
@@ -486,14 +502,15 @@ const CatalogContent: React.FC = () => {
                                                 height: '32px',
                                                 borderRadius: '6px',
                                                 overflow: 'hidden',
-                                                flexShrink: 0 }}>
+                                                flexShrink: 0,
+                                            }}>
                                                 <img src={course.image} alt={course.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                             </div>
                                             
                                             {/* Course Info */}
                                             <div style={{ flex: 1, minWidth: 0 }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                                    <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    <span style={{ fontSize: '12px', fontWeight: 500, color: colors.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                         {course.title}
                                                     </span>
                                                     {course.enrolled && (
@@ -504,18 +521,18 @@ const CatalogContent: React.FC = () => {
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                     <span style={{ fontSize: '10px', color: '#3b82f6', fontWeight: 500 }}>{catInfo.label}</span>
-                                                    <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>•</span>
-                                                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.instructor}</span>
+                                                    <span style={{ fontSize: '10px', color: colors.textMuted }}>•</span>
+                                                    <span style={{ fontSize: '10px', color: colors.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.instructor}</span>
                                                 </div>
                                             </div>
                                             
                                             {/* Modules - Compact */}
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '3px', flexShrink: 0 }}>
-                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                                                 </svg>
-                                                <span style={{ fontSize: '10px', fontWeight: 500, color: 'var(--text-muted)' }}>{course.modules}</span>
+                                                <span style={{ fontSize: '10px', fontWeight: 500, color: colors.textMuted }}>{course.modules}</span>
                                             </div>
                                         </motion.div>
                                     );
@@ -527,7 +544,7 @@ const CatalogContent: React.FC = () => {
 
                 {/* Filter Tabs */}
                 <motion.div layout transition={{ type: 'spring', stiffness: 400, damping: 30 }}>
-                    <FilterTabs activeFilter={activeFilter} setActiveFilter={setActiveFilter} stats={stats}  favoritesCount={bookmarks.length} />
+                    <FilterTabs activeFilter={activeFilter} setActiveFilter={setActiveFilter} stats={stats} favoritesCount={bookmarks.length} />
                 </motion.div>
 
 
@@ -541,7 +558,8 @@ const CatalogContent: React.FC = () => {
                         gap: '2px',
                         padding: '3px',
                         borderRadius: '10px',
-                        background: 'var(--bg-hover)' }}
+                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                    }}
                 >
                     <motion.button
                         aria-label="Grid view"
@@ -555,14 +573,15 @@ const CatalogContent: React.FC = () => {
                             borderRadius: '8px',
                             border: 'none',
                             background: viewMode === 'grid'
-                                ? 'rgba(59, 130, 246, 0.1)'
+                                ? isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
                                 : 'transparent',
-                            color: viewMode === 'grid' ? '#3b82f6' : 'var(--text-muted)',
+                            color: viewMode === 'grid' ? '#3b82f6' : colors.textMuted,
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: 'all 0.2s ease' }}
+                            transition: 'all 0.2s ease',
+                        }}
                         title="Grid View"
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -584,14 +603,15 @@ const CatalogContent: React.FC = () => {
                             borderRadius: '8px',
                             border: 'none',
                             background: viewMode === 'list'
-                                ? 'rgba(59, 130, 246, 0.1)'
+                                ? isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
                                 : 'transparent',
-                            color: viewMode === 'list' ? '#3b82f6' : 'var(--text-muted)',
+                            color: viewMode === 'list' ? '#3b82f6' : colors.textMuted,
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: 'all 0.2s ease' }}
+                            transition: 'all 0.2s ease',
+                        }}
                         title="List View"
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -629,9 +649,9 @@ const CatalogContent: React.FC = () => {
                             gap: '6px', 
                             padding: '8px 12px', 
                             borderRadius: '10px', 
-                            border: `1px solid ${showSortDropdown ? 'var(--accent-color)' : ('var(--bg-hover)')}`,
-                            background: showSortDropdown ? ('rgba(59, 130, 246, 0.1)') : 'var(--dashboard-surface)',
-                            color: showSortDropdown ? 'var(--accent-color)' : 'var(--text-secondary)',
+                            border: `1px solid ${showSortDropdown ? colors.accent : (isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)')}`,
+                            background: showSortDropdown ? (isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : colors.cardBg,
+                            color: showSortDropdown ? colors.accent : colors.textSecondary,
                             fontSize: '12px', 
                             fontWeight: 500, 
                             cursor: 'pointer',
@@ -669,7 +689,7 @@ const CatalogContent: React.FC = () => {
                                     animate={{ opacity: 1, y: 0, scale: 1 }} 
                                     exit={{ opacity: 0, y: -8, scale: 0.95 }} 
                                     transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                                    style={{ position: 'absolute', top: '100%', right: 0, marginTop: '6px', padding: '6px', borderRadius: '12px', background: 'var(--dashboard-surface)', border: `1px solid var(--border-color)`, boxShadow: 'var(--shadow-lg)', zIndex: 50, minWidth: '160px' }}
+                                    style={{ position: 'absolute', top: '100%', right: 0, marginTop: '6px', padding: '6px', borderRadius: '12px', background: colors.cardBg, border: `1px solid ${colors.border}`, boxShadow: isDarkMode ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(0,0,0,0.1)', zIndex: 50, minWidth: '160px' }}
                                 >
                                     {(['recent', 'title'] as SortOption[]).map((option) => (
                                         <motion.button 
@@ -677,11 +697,11 @@ const CatalogContent: React.FC = () => {
                                             role="option"
                                             aria-selected={sortBy === option}
                                             onClick={() => { setSortBy(option); setShowSortDropdown(false); }} 
-                                            whileHover={{ backgroundColor: 'var(--bg-hover)' }}
-                                            style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: 'none', background: sortBy === option ? ('rgba(59, 130, 246, 0.1)') : 'transparent', color: sortBy === option ? 'var(--accent-color)' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 500, cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                                            whileHover={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
+                                            style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: 'none', background: sortBy === option ? (isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.06)') : 'transparent', color: sortBy === option ? colors.accent : colors.textSecondary, fontSize: '12px', fontWeight: 500, cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                                         >
                                             {option === 'recent' ? 'Recently Viewed' : 'Alphabetical'}
-                                            {sortBy === option && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>}
+                                            {sortBy === option && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>}
                                         </motion.button>
                                     ))}
                                 </motion.div>
@@ -706,19 +726,20 @@ const CatalogContent: React.FC = () => {
                             marginBottom: '16px',
                             padding: '10px 14px',
                             borderRadius: '10px',
-                            background: 'rgba(59, 130, 246, 0.1)',
-                            border: `1px solid ${'rgba(59, 130, 246, 0.1)'}` }}
+                            background: isDarkMode ? 'rgba(59, 130, 246, 0.08)' : 'rgba(59, 130, 246, 0.04)',
+                            border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'}`,
+                        }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="11" cy="11" r="8" />
                                 <path d="m21 21-4.35-4.35" />
                             </svg>
-                            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                                Showing <span style={{ fontWeight: 600, color: 'var(--accent-color)' }}>{filteredCourses.length}</span> of <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{stats.totalCourses}</span> courses
-                                {activeFilter === 'favorites' && <span style={{ color: 'var(--text-muted)' }}> in Favorites</span>}
-                                {activeFilter !== 'all' && activeFilter !== 'favorites' && <span style={{ color: 'var(--text-muted)' }}> in {categoryInfo[activeFilter].label}</span>}
-                                {searchQuery && <span style={{ color: 'var(--text-muted)' }}> matching "{searchQuery}"</span>}
+                            <span style={{ fontSize: '12px', color: colors.textSecondary }}>
+                                Showing <span style={{ fontWeight: 600, color: colors.accent }}>{filteredCourses.length}</span> of <span style={{ fontWeight: 600, color: colors.textPrimary }}>{stats.totalCourses}</span> courses
+                                {activeFilter === 'favorites' && <span style={{ color: colors.textMuted }}> in Favorites</span>}
+                                {activeFilter !== 'all' && activeFilter !== 'favorites' && <span style={{ color: colors.textMuted }}> in {categoryInfo[activeFilter].label}</span>}
+                                {searchQuery && <span style={{ color: colors.textMuted }}> matching "{searchQuery}"</span>}
                             </span>
                         </div>
                         <motion.button
@@ -732,11 +753,12 @@ const CatalogContent: React.FC = () => {
                                 padding: '5px 10px',
                                 borderRadius: '6px',
                                 border: 'none',
-                                background: 'var(--bg-hover)',
-                                color: 'var(--text-muted)',
+                                background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
+                                color: colors.textMuted,
                                 fontSize: '11px',
                                 fontWeight: 500,
-                                cursor: 'pointer' }}
+                                cursor: 'pointer',
+                            }}
                         >
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M18 6L6 18M6 6l12 12" />
@@ -780,9 +802,10 @@ const CatalogContent: React.FC = () => {
                             marginBottom: '24px',
                             padding: '16px 18px',
                             borderRadius: '14px',
-                            background: 'var(--dashboard-surface)',
-                            border: `1px solid var(--border-color)`,
-                            overflow: 'hidden' }}
+                            background: colors.cardBg,
+                            border: `1px solid ${colors.border}`,
+                            overflow: 'hidden',
+                        }}
                     >
                         {/* Section Header */}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
@@ -795,10 +818,11 @@ const CatalogContent: React.FC = () => {
                                         width: '34px',
                                         height: '34px',
                                         borderRadius: '9px',
-                                        background: 'rgba(59, 130, 246, 0.1)',
+                                        background: isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center' }}
+                                        justifyContent: 'center',
+                                    }}
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <circle cx="12" cy="12" r="10" />
@@ -806,10 +830,10 @@ const CatalogContent: React.FC = () => {
                                     </svg>
                                 </motion.div>
                                 <div>
-                                    <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                                    <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: colors.textPrimary }}>
                                         Recently Viewed
                                     </h3>
-                                    <p style={{ margin: 0, fontSize: '11px', color: 'var(--text-secondary)' }}>
+                                    <p style={{ margin: 0, fontSize: '11px', color: colors.textSecondary }}>
                                         {recentlyViewed.length} course{recentlyViewed.length !== 1 ? 's' : ''} viewed
                                     </p>
                                 </div>
@@ -824,14 +848,15 @@ const CatalogContent: React.FC = () => {
                                             padding: '5px 10px',
                                             borderRadius: '6px',
                                             border: 'none',
-                                            background: 'rgba(59, 130, 246, 0.1)',
+                                            background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)',
                                             color: '#3b82f6',
                                             fontSize: '11px',
                                             fontWeight: 500,
                                             cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '4px' }}
+                                            gap: '4px',
+                                        }}
                                     >
                                         {recentlyViewedExpanded ? (
                                             <>
@@ -861,14 +886,15 @@ const CatalogContent: React.FC = () => {
                                         padding: '5px 10px',
                                         borderRadius: '6px',
                                         border: 'none',
-                                        background: 'rgba(239, 68, 68, 0.1)',
+                                        background: isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.08)',
                                         color: '#ef4444',
                                         fontSize: '11px',
                                         fontWeight: 500,
                                         cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '4px' }}
+                                        gap: '4px',
+                                    }}
                                 >
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <polyline points="3 6 5 6 21 6" />
@@ -886,7 +912,8 @@ const CatalogContent: React.FC = () => {
                                 initial={false}
                                 animate={{ 
                                     opacity: 1,
-                                    height: 'auto' }}
+                                    height: 'auto',
+                                }}
                                 transition={{ 
                                     layout: { 
                                         type: 'spring', 
@@ -905,7 +932,8 @@ const CatalogContent: React.FC = () => {
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
                                     gap: '10px',
-                                    overflow: 'hidden' }}
+                                    overflow: 'hidden',
+                                }}
                             >
                                 <AnimatePresence mode="popLayout">
                                 {recentlyViewed.slice(0, recentlyViewedExpanded ? recentlyViewed.length : 4).map((courseId, index) => {
@@ -953,12 +981,13 @@ const CatalogContent: React.FC = () => {
                                             style={{
                                                 padding: '10px',
                                                 borderRadius: '12px',
-                                                border: `1px solid var(--border-color)`,
-                                                background: 'var(--bg-hover)',
+                                                border: `1px solid ${colors.border}`,
+                                                background: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
                                                 cursor: 'pointer',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                gap: '10px' }}
+                                                gap: '10px',
+                                            }}
                                         >
                                             {/* Course Image */}
                                             <div style={{
@@ -966,7 +995,8 @@ const CatalogContent: React.FC = () => {
                                                 height: '48px',
                                                 borderRadius: '10px',
                                                 overflow: 'hidden',
-                                                flexShrink: 0 }}>
+                                                flexShrink: 0,
+                                            }}>
                                                 <img 
                                                     src={course.image} 
                                                     alt={course.title}
@@ -980,11 +1010,12 @@ const CatalogContent: React.FC = () => {
                                                 <div style={{ 
                                                     fontSize: '12px', 
                                                     fontWeight: 600, 
-                                                    color: 'var(--text-primary)',
+                                                    color: colors.textPrimary,
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
                                                     whiteSpace: 'nowrap',
-                                                    marginBottom: '4px' }}>
+                                                    marginBottom: '4px',
+                                                }}>
                                                     {course.title}
                                                 </div>
                                                 
@@ -993,17 +1024,19 @@ const CatalogContent: React.FC = () => {
                                                     display: 'flex', 
                                                     alignItems: 'center', 
                                                     gap: '6px',
-                                                    marginBottom: '2px' }}>
+                                                    marginBottom: '2px',
+                                                }}>
                                                     <span style={{ 
                                                         fontSize: '9px', 
                                                         fontWeight: 600, 
                                                         color: '#3b82f6',
-                                                        background: 'rgba(59, 130, 246, 0.1)',
+                                                        background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
                                                         padding: '2px 6px',
-                                                        borderRadius: '4px' }}>
+                                                        borderRadius: '4px',
+                                                    }}>
                                                         {categoryInfo[course.category].label}
                                                     </span>
-                                                    <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+                                                    <span style={{ fontSize: '10px', color: colors.textMuted }}>
                                                         {course.modules} modules
                                                     </span>
                                                 </div>
@@ -1014,7 +1047,8 @@ const CatalogContent: React.FC = () => {
                                                     alignItems: 'center',
                                                     gap: '4px',
                                                     fontSize: '10px', 
-                                                    color: 'var(--text-muted)' }}>
+                                                    color: colors.textMuted,
+                                                }}>
                                                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                                         <circle cx="12" cy="7" r="4" />
@@ -1030,11 +1064,12 @@ const CatalogContent: React.FC = () => {
                                                 width: '24px',
                                                 height: '24px',
                                                 borderRadius: '6px',
-                                                background: 'rgba(59, 130, 246, 0.1)',
+                                                background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                flexShrink: 0 }}>
+                                                flexShrink: 0,
+                                            }}>
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
                                                     <path d="M9 18l6-6-6-6" />
                                                 </svg>
@@ -1071,8 +1106,9 @@ const CatalogContent: React.FC = () => {
                         justifyContent: 'center',
                         padding: '60px 24px',
                         borderRadius: '16px',
-                        background: 'var(--dashboard-surface)',
-                        border: `1px solid var(--border-color)` }}
+                        background: colors.cardBg,
+                        border: `1px solid ${colors.border}`,
+                    }}
                 >
                     {/* Empty State Icon */}
                     <motion.div
@@ -1083,18 +1119,19 @@ const CatalogContent: React.FC = () => {
                             width: '80px',
                             height: '80px',
                             borderRadius: '20px',
-                            background: 'rgba(59, 130, 246, 0.1)',
+                            background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.06)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            marginBottom: '20px' }}
+                            marginBottom: '20px',
+                        }}
                     >
                         {activeFilter === 'favorites' ? (
-                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                             </svg>
                         ) : (
-                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={'var(--accent-color)'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="11" cy="11" r="8" />
                                 <path d="m21 21-4.35-4.35" />
                                 <path d="M11 8v6M8 11h6" />
@@ -1111,8 +1148,9 @@ const CatalogContent: React.FC = () => {
                             margin: 0,
                             fontSize: '16px',
                             fontWeight: 600,
-                            color: 'var(--text-primary)',
-                            marginBottom: '8px' }}
+                            color: colors.textPrimary,
+                            marginBottom: '8px',
+                        }}
                     >
                         {activeFilter === 'favorites' ? 'No favorites yet' : 'No courses found'}
                     </motion.h3>
@@ -1125,11 +1163,12 @@ const CatalogContent: React.FC = () => {
                         style={{
                             margin: 0,
                             fontSize: '13px',
-                            color: 'var(--text-muted)',
+                            color: colors.textMuted,
                             textAlign: 'center',
                             maxWidth: '320px',
                             lineHeight: 1.5,
-                            marginBottom: '20px' }}
+                            marginBottom: '20px',
+                        }}
                     >
                         {activeFilter === 'favorites'
                             ? 'Bookmark courses to add them to your favorites for quick access.'
@@ -1157,11 +1196,12 @@ const CatalogContent: React.FC = () => {
                                     padding: '10px 16px',
                                     borderRadius: '10px',
                                     border: 'none',
-                                    background: 'var(--accent-color)',
+                                    background: colors.accent,
                                     color: 'white',
                                     fontSize: '13px',
                                     fontWeight: 500,
-                                    cursor: 'pointer' }}
+                                    cursor: 'pointer',
+                                }}
                             >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M18 6L6 18M6 6l12 12" />
@@ -1180,12 +1220,13 @@ const CatalogContent: React.FC = () => {
                                     gap: '6px',
                                     padding: '10px 16px',
                                     borderRadius: '10px',
-                                    border: `1px solid var(--border-color)`,
+                                    border: `1px solid ${colors.border}`,
                                     background: 'transparent',
-                                    color: 'var(--text-secondary)',
+                                    color: colors.textSecondary,
                                     fontSize: '13px',
                                     fontWeight: 500,
-                                    cursor: 'pointer' }}
+                                    cursor: 'pointer',
+                                }}
                             >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -1221,7 +1262,7 @@ const CatalogContent: React.FC = () => {
                             <CourseCard 
                                 key={course.id} 
                                 course={course} 
-                                index={index}  
+                                index={index} 
                                 onClick={handleCourseClick}
                                 isBookmarked={bookmarks.includes(course.id)}
                                 onToggleBookmark={handleToggleBookmark}
@@ -1252,7 +1293,7 @@ const CatalogContent: React.FC = () => {
                             <CourseListItem 
                                 key={course.id} 
                                 course={course} 
-                                index={index}  
+                                index={index} 
                                 onClick={handleCourseClick}
                                 isBookmarked={bookmarks.includes(course.id)}
                                 onToggleBookmark={handleToggleBookmark}
@@ -1270,7 +1311,8 @@ const CatalogContent: React.FC = () => {
                         display: 'flex',
                         justifyContent: 'center',
                         marginTop: '24px',
-                        paddingBottom: '16px' }}
+                        paddingBottom: '16px',
+                    }}
                 >
                     {isLoadingMore ? (
                         <motion.div
@@ -1279,7 +1321,8 @@ const CatalogContent: React.FC = () => {
                             style={{
                                 padding: '10px 24px',
                                 fontSize: '13px',
-                                color: 'var(--text-secondary)' }}
+                                color: colors.textSecondary,
+                            }}
                         >
                             Loading more...
                         </motion.div>
@@ -1291,15 +1334,16 @@ const CatalogContent: React.FC = () => {
                             style={{
                                 padding: '10px 24px',
                                 borderRadius: '10px',
-                                border: `1px solid var(--border-color)`,
-                                background: 'var(--dashboard-surface)',
-                                color: 'var(--text-secondary)',
+                                border: `1px solid ${colors.border}`,
+                                background: colors.cardBg,
+                                color: colors.textSecondary,
                                 fontSize: '13px',
                                 fontWeight: 500,
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px' }}
+                                gap: '8px',
+                            }}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="6 9 12 15 18 9" />
@@ -1316,7 +1360,8 @@ const CatalogContent: React.FC = () => {
                     textAlign: 'center',
                     padding: '16px',
                     fontSize: '12px',
-                    color: 'var(--text-muted)' }}>
+                    color: colors.textMuted,
+                }}>
                     Showing {paginatedCourses.length} of {filteredCourses.length} courses
                 </div>
             )}

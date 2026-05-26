@@ -1,0 +1,77 @@
+.uiverse-btn {
+  font-weight: 600;
+  font-size: 14px;
+  color: #eab308;
+  border-radius: 2rem;
+  cursor: pointer;
+  width: 140px;
+  height: 40px;
+  border: none;
+  background-color: #1e40af; /* STI Blue */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 14px 0 rgba(30, 64, 175, 0.39);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.uiverse-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.23);
+}
+
+.uiverse-btn:active {
+  transform: translateY(0);
+}
+
+.uiverse-btn .span-mother {
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+}
+
+.uiverse-btn:hover .span-mother {
+  /* keep it absolute but transform it out */
+}
+
+.uiverse-btn .span-mother span {
+  transform: translateY(0);
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.uiverse-btn:hover .span-mother span {
+  transform: translateY(1.5em);
+}
+
+.uiverse-btn .span-mother2 {
+  display: flex;
+  position: absolute;
+  overflow: hidden;
+}
+
+.uiverse-btn .span-mother2 span {
+  transform: translateY(-1.5em);
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.uiverse-btn:hover .span-mother2 span {
+  transform: translateY(0);
+}
+
+/* Secondary Outline style override */
+.uiverse-btn.btn-outline {
+  background-color: rgba(255, 255, 255, 0.5);
+  color: #eab308;
+  border: 1px solid rgba(30, 64, 175, 0.2);
+  backdrop-filter: blur(8px);
+  box-shadow: none;
+}
+
+.uiverse-btn.btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 14px rgba(30, 64, 175, 0.1);
+}

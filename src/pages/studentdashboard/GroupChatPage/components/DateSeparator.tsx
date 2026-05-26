@@ -1,4 +1,4 @@
-﻿/**
+/**
  * DateSeparator Component
  * Displays a minimalistic date separator line between messages from different days
  */
@@ -34,8 +34,7 @@ export const DateSeparator = React.memo<DateSeparatorProps>(({
             <div style={{
                 flex: 1,
                 height: '1px',
-                background: ? 'linear-gradient(to left, rgba(255,255,255,0.08), transparent)'
-                    : 'linear-gradient(to left, rgba(0,0,0,0.06), transparent)' }} />
+                background: 'linear-gradient(to left, rgba(0,0,0,0.06), transparent)' }} />
             {/* Date text */}
             <span style={{
                 fontSize: '11px',
@@ -50,8 +49,7 @@ export const DateSeparator = React.memo<DateSeparatorProps>(({
             <div style={{
                 flex: 1,
                 height: '1px',
-                background: ? 'linear-gradient(to right, rgba(255,255,255,0.08), transparent)'
-                    : 'linear-gradient(to right, rgba(0,0,0,0.06), transparent)' }} />
+                background: 'linear-gradient(to right, rgba(0,0,0,0.06), transparent)' }} />
         </motion.div>
     );
 });

@@ -60,7 +60,8 @@ const WhatsNewButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
             const rect = wrapperRef.current.getBoundingClientRect();
             setTooltipPos({
                 top: rect.bottom + 8,
-                left: rect.left + rect.width / 2 });
+                left: rect.left + rect.width / 2,
+            });
         }
         setIsHovered(true);
     };
@@ -81,7 +82,8 @@ const WhatsNewButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
                     fontWeight: 600,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px' }}
+                    gap: '8px',
+                }}
             >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -97,7 +99,8 @@ const WhatsNewButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
                                 top: tooltipPos.top,
                                 left: tooltipPos.left,
                                 transform: 'translateX(-50%)',
-                                zIndex: 9999 }}
+                                zIndex: 9999,
+                            }}
                         >
                             <motion.div
                                 className="whats-new-tooltip-portal"
@@ -108,7 +111,8 @@ const WhatsNewButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
                                 style={{
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    alignItems: 'center' }}
+                                    alignItems: 'center',
+                                }}
                             >
                                 <div className="whats-new-tooltip-arrow" />
                                 <div className="whats-new-tooltip-content">
@@ -133,7 +137,7 @@ const WhatsNewButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
 // Confetti Burst Component for Milestone Celebrations
 const ConfettiBurst: React.FC<{ color: string; isActive: boolean }> = ({ color, isActive }) => {
     const particles = Array.from({ length: 8 }, (_, i) => i);
-    const = [color, '#f59e0b', '#10b981', '#3b82f6', '#ec4899'];
+    const colors = [color, '#f59e0b', '#10b981', '#3b82f6', '#ec4899'];
     
     return (
         <AnimatePresence>
@@ -149,7 +153,7 @@ const ConfettiBurst: React.FC<{ color: string; isActive: boolean }> = ({ color, 
                         const angle = (i / particles.length) * 360;
                         const distance = 20 + Math.random() * 15;
                         const size = 4 + Math.random() * 3;
-                        const particleColor = [i % .length];
+                        const particleColor = colors[i % colors.length];
                         
                         return (
                             <motion.div
@@ -159,7 +163,8 @@ const ConfettiBurst: React.FC<{ color: string; isActive: boolean }> = ({ color, 
                                     width: size,
                                     height: size,
                                     backgroundColor: particleColor,
-                                    borderRadius: Math.random() > 0.5 ? '50%' : '2px' }}
+                                    borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+                                }}
                                 initial={{ 
                                     x: 0, 
                                     y: 0, 
@@ -198,51 +203,34 @@ const ROLES = [
 ] as const;
 
 const RoleBadge: React.FC = () => {
-    const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
-    
     return (
         <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.3 }}
-            style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}
+            className="hero-roles"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.45, duration: 0.3 }}
         >
             {ROLES.map((role, index) => (
                 <motion.span
                     key={role.name}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ 
-                        delay: 0.5 + index * 0.06, 
-                        duration: 0.25,
-                        ease: [0.25, 0.46, 0.45, 0.94]
+                    className="hero-role-pill"
+                    initial={{ opacity: 0, scale: 0.85, y: 4 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{
+                        delay: 0.5 + index * 0.07,
+                        duration: 0.3,
+                        type: 'spring',
+                        stiffness: 300,
+                        damping: 20
                     }}
-                    onHoverStart={() => setHoveredIndex(index)}
-                    onHoverEnd={() => setHoveredIndex(null)}
+                    whileHover={{ scale: 1.04, y: -1 }}
                     style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '5px',
-                        padding: '3px 10px',
-                        fontSize: '11px',
-                        fontWeight: 500,
-                        letterSpacing: '0.01em',
-                        borderRadius: '6px',
-                        backgroundColor: hoveredIndex === index ? `${role.color}15` : 'transparent',
-                        color: role.color,
-                        cursor: 'default',
-                        transition: 'background-color 0.2s ease, transform 0.2s ease',
-                        transform: hoveredIndex === index ? 'translateY(-1px)' : 'translateY(0)' }}
+                        '--role-color': role.color,
+                        '--role-bg': `${role.color}0a`,
+                        '--role-border': `${role.color}22`,
+                    } as React.CSSProperties}
                 >
-                    <span
-                        style={{
-                            width: '5px',
-                            height: '5px',
-                            borderRadius: '50%',
-                            backgroundColor: role.color,
-                            opacity: hoveredIndex === index ? 1 : 0.7,
-                            transition: 'opacity 0.2s ease' }}
-                    />
+                    <span className="hero-role-dot" style={{ backgroundColor: role.color }} />
                     {role.name}
                 </motion.span>
             ))}
@@ -265,7 +253,8 @@ const HomeSkeleton: React.FC = () => {
         return () => observer.disconnect();
     }, []);
     
-    // Dark mode aware const cardBg = isDark ? 'rgba(30, 41, 59, 0.8)' : '#f4f4f5';
+    // Dark mode aware colors
+    const cardBg = isDark ? 'rgba(30, 41, 59, 0.8)' : '#f4f4f5';
     const shimmerBg = isDark ? 'rgba(51, 65, 85, 0.6)' : undefined;
     const shimmerClass = isDark ? '' : 'bg-zinc-200';
     const containerClass = isDark ? '' : 'bg-zinc-100';
@@ -326,22 +315,6 @@ const HomeSkeleton: React.FC = () => {
                                 <motion.div className={`h-12 w-16 ${shimmerClass} rounded-lg`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
                             </div>
                             <motion.div className={`h-2 w-full ${shimmerClass} rounded-full`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
-                        </motion.div>
-                    ))}
-                </div>
-            </motion.section>
-            {/* Quick Access Skeleton */}
-            <motion.section className="quick-access-section" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
-                <div className="flex items-center gap-2 mb-4">
-                    <motion.div className={`h-5 w-28 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
-                    <motion.div className={`h-5 w-20 ${containerClass} rounded-full`} style={isDark ? { backgroundColor: cardBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
-                </div>
-                <div className="grid grid-cols-5 gap-3">
-                    {[...Array(10)].map((_, i) => (
-                        <motion.div key={i} className={`${containerClass} rounded-xl p-4 space-y-3`} style={isDark ? { backgroundColor: cardBg } : undefined} animate={{ opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05 }}>
-                            <motion.div className={`w-10 h-10 ${shimmerClass} rounded-xl`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
-                            <motion.div className={`h-3 w-20 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
-                            <motion.div className={`h-2 w-16 ${shimmerClass} rounded`} style={isDark ? { backgroundColor: shimmerBg } : undefined} />
                         </motion.div>
                     ))}
                 </div>

@@ -6,7 +6,7 @@
 import React from 'react';
 import { LinkPreviewCard, extractUrls } from './LinkPreviewCard';
 import { FilePreviewCard } from './FilePreviewCard';
-import type { ChatColors } from '../types';
+import type {} from '../types';
 import type { FileAttachment } from '../../../../services/chatService';
 
 interface MessageAttachmentsProps {

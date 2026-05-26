@@ -8,21 +8,24 @@ import SidebarHelpDropdown from '../../../components/ui/dropdowns/SidebarHelpDro
 
 interface HelpNavItemProps {
     onSidebarClose: () => void;
+    isExpanded?: boolean;
 }
 
-export const HelpNavItem: React.FC<HelpNavItemProps> = React.memo(({ onSidebarClose: _onSidebarClose }) => {
+export const HelpNavItem: React.FC<HelpNavItemProps> = React.memo(({ onSidebarClose: _onSidebarClose, isExpanded = true }) => {
     void _onSidebarClose; // Reserved for future use
     const [isOpen, setIsOpen] = useState(false);
     const anchorRef = useRef<HTMLDivElement>(null);
     const closeTimeoutRef = useRef<number | null>(null);
 
     const handleMouseEnter = useCallback(() => {
+        // Don't open dropdown when sidebar is collapsed
+        if (!isExpanded) return;
         if (closeTimeoutRef.current) {
             clearTimeout(closeTimeoutRef.current);
             closeTimeoutRef.current = null;
         }
         setIsOpen(true);
-    }, []);
+    }, [isExpanded]);
 
     const handleMouseLeave = useCallback(() => {
         closeTimeoutRef.current = window.setTimeout(() => {
@@ -33,6 +36,13 @@ export const HelpNavItem: React.FC<HelpNavItemProps> = React.memo(({ onSidebarCl
     const handleClose = useCallback(() => {
         setIsOpen(false);
     }, []);
+
+    // Close dropdown when sidebar collapses
+    useEffect(() => {
+        if (!isExpanded) {
+            setIsOpen(false);
+        }
+    }, [isExpanded]);
 
     useEffect(() => {
         return () => {
@@ -62,25 +72,28 @@ export const HelpNavItem: React.FC<HelpNavItemProps> = React.memo(({ onSidebarCl
                     <span className="nav-text">Help</span>
                     <span className="nav-description">Support center</span>
                 </div>
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    style={{
-                        marginLeft: 'auto',
-                        color: '#94a3b8',
-                        transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.12s ease'
-                    }}
-                >
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
+                {isExpanded && (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="nav-chevron"
+                        style={{
+                            marginLeft: 'auto',
+                            color: '#94a3b8',
+                            transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.12s ease'
+                        }}
+                    >
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                )}
             </a>
             {/* Invisible bridge to connect anchor to dropdown */}
             {isOpen && (

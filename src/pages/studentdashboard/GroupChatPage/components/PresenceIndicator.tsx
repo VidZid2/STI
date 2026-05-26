@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { PresenceUser } from '../../../../services/presenceService';
-import type { ChatColors } from '../types';
+import type {} from '../types';
 
 interface PresenceIndicatorProps {
     viewers: PresenceUser[];
@@ -225,8 +225,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                             background: 'var(--bg-primary)',
                             borderRadius: '12px',
                             border: `1px solid ${'rgba(255,255,255,0.08)'}`,
-                            boxShadow: ? '0 8px 32px rgba(0,0,0,0.4)'
-                                : '0 8px 32px rgba(0,0,0,0.12)',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
                             overflow: 'hidden',
                             zIndex: 100 }}
                     >
