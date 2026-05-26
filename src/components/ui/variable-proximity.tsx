@@ -1,11 +1,26 @@
-// @ts-nocheck
 import { forwardRef, useMemo, useRef, useEffect } from 'react';
+import type { RefObject } from 'react';
 import { motion } from 'motion/react';
 import './variable-proximity.css';
 
-function useAnimationFrame(callback) {
+interface VariableProximityProps {
+  label: string;
+  fromFontVariationSettings: string;
+  toFontVariationSettings: string;
+  containerRef: RefObject<HTMLElement | null>;
+  radius?: number;
+  falloff?: 'linear' | 'exponential' | 'gaussian';
+  className?: string;
+  wordColors?: Record<string, string>;
+  wordStyles?: Record<string, React.CSSProperties>;
+  onClick?: React.MouseEventHandler<HTMLSpanElement>;
+  style?: React.CSSProperties;
+  [key: string]: any;
+}
+
+function useAnimationFrame(callback: () => void) {
   useEffect(() => {
-    let frameId;
+    let frameId: number;
     const loop = () => {
       callback();
       frameId = requestAnimationFrame(loop);
@@ -15,11 +30,11 @@ function useAnimationFrame(callback) {
   }, [callback]);
 }
 
-function useMousePositionRef(containerRef) {
+function useMousePositionRef(containerRef: RefObject<HTMLElement | null>) {
   const positionRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    const updatePosition = (x, y) => {
+    const updatePosition = (x: number, y: number) => {
       if (containerRef?.current) {
         const rect = containerRef.current.getBoundingClientRect();
         positionRef.current = { x: x - rect.left, y: y - rect.top };
@@ -28,8 +43,8 @@ function useMousePositionRef(containerRef) {
       }
     };
 
-    const handleMouseMove = ev => updatePosition(ev.clientX, ev.clientY);
-    const handleTouchMove = ev => {
+    const handleMouseMove = (ev: MouseEvent) => updatePosition(ev.clientX, ev.clientY);
+    const handleTouchMove = (ev: TouchEvent) => {
       const touch = ev.touches[0];
       updatePosition(touch.clientX, touch.clientY);
     };
@@ -45,7 +60,7 @@ function useMousePositionRef(containerRef) {
   return positionRef;
 }
 
-export const VariableProximity = forwardRef((props, ref) => {
+export const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>((props, ref) => {
   const {
     label,
     fromFontVariationSettings,
@@ -61,14 +76,14 @@ export const VariableProximity = forwardRef((props, ref) => {
     ...restProps
   } = props;
 
-  const letterRefs = useRef([]);
-  const interpolatedSettingsRef = useRef([]);
+  const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const interpolatedSettingsRef = useRef<string[]>([]);
   const mousePositionRef = useMousePositionRef(containerRef);
-  const lastPositionRef = useRef({ x: null, y: null });
+  const lastPositionRef = useRef<{ x: number | null; y: number | null }>({ x: null, y: null });
 
   const parsedSettings = useMemo(() => {
-    const parseSettings = settingsStr =>
-      new Map(
+    const parseSettings = (settingsStr: string) =>
+      new Map<string, number>(
         settingsStr
           .split(',')
           .map(s => s.trim())
@@ -88,9 +103,9 @@ export const VariableProximity = forwardRef((props, ref) => {
     }));
   }, [fromFontVariationSettings, toFontVariationSettings]);
 
-  const calculateDistance = (x1, y1, x2, y2) => Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+  const calculateDistance = (x1: number, y1: number, x2: number, y2: number) => Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 
-  const calculateFalloff = distance => {
+  const calculateFalloff = (distance: number) => {
     const norm = Math.min(Math.max(1 - distance / radius, 0), 1);
     switch (falloff) {
       case 'exponential':
@@ -155,14 +170,14 @@ export const VariableProximity = forwardRef((props, ref) => {
       style={{ display: 'inline', ...style }}
       {...restProps}
     >
-      {words.map((word, wordIndex) => (
+      {words.map((word: string, wordIndex: number) => (
         <span key={wordIndex} style={{ display: 'inline-block', whiteSpace: 'nowrap', color: wordColors[word], ...wordStyles[word] }}>
-          {word.split('').map(letter => {
+          {word.split('').map((letter: string) => {
             const currentLetterIndex = letterIndex++;
             return (
               <motion.span
                 key={currentLetterIndex}
-                ref={el => {
+                ref={(el: HTMLSpanElement | null) => {
                   letterRefs.current[currentLetterIndex] = el;
                 }}
                 style={{

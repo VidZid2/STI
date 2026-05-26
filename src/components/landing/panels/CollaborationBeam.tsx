@@ -5,22 +5,7 @@ import React, { forwardRef, useRef } from "react"
 import { cn } from "@/lib/utils"
 import { AnimatedBeam } from "@/components/ui/animated-beam"
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "lord-icon": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement>,
-        HTMLElement
-      > & {
-        src?: string;
-        trigger?: string;
-        colors?: string;
-        state?: string;
-        style?: React.CSSProperties;
-      };
-    }
-  }
-}
+
 
 const Circle = forwardRef<
   HTMLDivElement,

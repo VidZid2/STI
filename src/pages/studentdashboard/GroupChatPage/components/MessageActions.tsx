@@ -13,8 +13,10 @@ interface MessageActionsProps {
     message: ChatMessage;
     isOwn: boolean;
     isHovered: boolean;
-    
-    
+    timestamp: string;
+    isEdited: boolean;
+    isBookmarked: boolean;
+    isPinned: boolean;
     helpfulData?: { count: number; voted: boolean };
     showReactionsFor: string | null;
     onToggleReactions: (messageId: string | null) => void;

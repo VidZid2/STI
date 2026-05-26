@@ -125,7 +125,7 @@ const GroupInfoModal: React.FC<{
 
     if (!isOpen || !groupInfo) return null;
 
-    const isDarkMode = 'var(--dashboard-surface)' !== '#ffffff';
+    const isDarkMode = document.body.classList.contains('dark-mode') || document.documentElement.classList.contains('dark');
     const categoryConfig: Record<string, { label: string; color: string }> = {
         study: { label: 'Study Group', color: '#3b82f6' },
         project: { label: 'Project Team', color: '#8b5cf6' },

@@ -40,7 +40,7 @@ import { NotificationItem, GroupedNotification, DashboardIntro, DashboardTutoria
 import { WidgetSidebar } from './components/WidgetSidebar';
 import { DashboardSuspenseFallback } from './components/DashboardSuspenseFallback';
 import { getSidebarCoursesWithProgress, getTodaysQuote } from './utils';
-// COURSE_NAMES available from './constants' if needed
+import { isDashboardView } from './types';
 
 // Custom hooks - extracted for cleaner code
 import {
@@ -100,6 +100,7 @@ const DashboardPage: React.FC = () => {
     // Suppress unused variable warnings - these are available for future use
     void _setTutorialActive;
     void _setShowConfetti;
+    void toggleSidebar;
 
     // Listen for navigate-to-course events from PathsContent
     useEffect(() => {
@@ -137,7 +138,10 @@ const DashboardPage: React.FC = () => {
     // Listen for navigate-to-tab events from HomeContent quick actions
     useEffect(() => {
         const handleNavigateToTab = (event: CustomEvent<{ tab: string }>) => {
-            setActiveView(event.detail.tab);
+            const tab = event.detail.tab;
+            if (isDashboardView(tab)) {
+                setActiveView(tab);
+            }
         };
 
         window.addEventListener('navigate-to-tab', handleNavigateToTab as EventListener);

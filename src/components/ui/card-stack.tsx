@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
-let interval: any;
-
 type Card = {
   id: number;
   name: string;

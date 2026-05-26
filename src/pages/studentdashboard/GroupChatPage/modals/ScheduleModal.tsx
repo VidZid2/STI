@@ -21,8 +21,9 @@ const CalendarPicker: React.FC<{
     selectedDate: Date | null;
     onSelect: (date: Date) => void;
     onClose: () => void;
+    isDarkMode: boolean;
     colors: { textPrimary: string; textSecondary: string; textMuted: string };
-}> = ({ selectedDate, onSelect, onClose, colors }) => {
+}> = ({ selectedDate, onSelect, onClose, isDarkMode, colors }) => {
     const [viewDate, setViewDate] = useState(selectedDate || new Date());
     const blueAccent = '#3b82f6';
     const blueBg = isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)';
@@ -209,9 +210,10 @@ const NumberStepper: React.FC<{
     min: number;
     max: number;
     label: string;
+    isDarkMode: boolean;
     format?: (value: number) => string;
     colors: { textPrimary: string; textSecondary: string; textMuted: string };
-}> = ({ value, onChange, min, max, label, format, colors }) => {
+}> = ({ value, onChange, min, max, label, isDarkMode, format, colors }) => {
     const subtleBg = isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)';
     const borderColor = isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
 

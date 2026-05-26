@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-    ArrowRight, ArrowLeft, X,
+    X,
     CheckCircle, XCircle, KeySquare, Contact
 } from 'lucide-react';
 
@@ -42,7 +42,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
     // 'roles' | 'student' | 'teacher' | 'admin'
     const [view, setView] = useState<'roles' | 'student' | 'teacher' | 'admin'>('roles');
-    const [isTeacherMode, setIsTeacherMode] = useState(false);
     const [toast, setToast] = useState<ToastType>(null);
 
     // Reset view when modal closes
@@ -62,7 +61,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             navigate('/admin-login');
             onClose();
         } else {
-            setIsTeacherMode(role === 'teacher');
             navigate('/student-login', { state: { isTeacherMode: role === 'teacher' } });
             onClose();
         }

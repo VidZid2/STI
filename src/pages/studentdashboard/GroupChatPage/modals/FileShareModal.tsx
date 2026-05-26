@@ -8,7 +8,7 @@ import React, { useState, useRef, useCallback, useEffect, useMemo, memo } from '
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
 import { useModalAccessibility } from '../../hooks/useModalAccessibility';
-import type { ModalColors, FileShareData } from './types';
+import type { FileShareData } from './types';
 
 interface FileShareModalProps {
     isOpen: boolean;

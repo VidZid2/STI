@@ -163,14 +163,12 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        onClick={onClose}
                         style={{
                             position: 'fixed',
                             inset: 0,
                             zIndex: 99998,
                             pointerEvents: 'none',
                         }}
-                        onClick={onClose}
                     />
 
                     {/* Modal — bottom-right toast */}

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * GIF Picker Component
  * Integrates with Tenor API for GIF search and selection
  * Clean, minimalistic design without tabs
@@ -43,7 +43,7 @@ interface GifPickerProps {
 }
 
 // Skeleton loader component
-const GifSkeleton: React.FC<{ isDarkMode: boolean; index: number }> = ({ index }) => (
+const GifSkeleton: React.FC<{ isDarkMode: boolean; index: number }> = ({ isDarkMode, index }) => (
     <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -63,7 +63,7 @@ const GifSkeleton: React.FC<{ isDarkMode: boolean; index: number }> = ({ index }
 export const GifPicker: React.FC<GifPickerProps> = ({
     isOpen,
     onClose,
-    onSelect = false,
+    onSelect = () => {},
 }) => {
     const isDarkMode = document.documentElement.classList.contains('dark');
     const [searchQuery, setSearchQuery] = useState('');

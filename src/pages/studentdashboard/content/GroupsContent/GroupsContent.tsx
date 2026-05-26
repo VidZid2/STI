@@ -6,7 +6,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
-import { createPortal } from 'react-dom';
 import {
     fetchGroups,
     getGroupStats,
@@ -18,15 +17,12 @@ import {
     createGroup,
     togglePinGroup,
     groupCategoryConfig,
-    getRoleInfo,
-    formatLastActive,
     updateOnlineStatus,
     subscribeToAllGroupMembers,
     type GroupWithMembers,
     type GroupStats,
     type GroupFilter,
     type GroupSortOption,
-    type GroupCategory,
 } from '../../../../services/groupsService';
 import GroupIcon from './components/GroupIcon';
 import GroupDetailModal from './modals/GroupDetailModal';
@@ -35,8 +31,7 @@ import CreateGroupModal from './modals/CreateGroupModal';
 import { GroupCard } from './components/GroupCard';
 import { GroupsSkeleton } from './components/GroupsSkeleton';
 import { FilterTabs } from './components/FilterTabs';
-import { supabase, isSupabaseConfigured } from '../../../../lib/supabase';
-import { getProfile, getSettings } from '../../../../services/profileService';
+import { getSettings } from '../../../../services/profileService';
 
 // Custom hook for detecting reduced motion preference
 const useReducedMotion = (): boolean => {

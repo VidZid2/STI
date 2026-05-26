@@ -221,7 +221,7 @@ function NotificationContent({
         ? notifications 
         : notifications.filter(n => n.category === activeCategory);
 
-    const dismissNotification = (id: number) => {
+    const dismissNotification = (id: number | string) => {
         contextDismiss(id);
     };
 

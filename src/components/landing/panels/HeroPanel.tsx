@@ -1,11 +1,9 @@
 import React, { useRef } from 'react';
-import { AuroraText } from '@/components/ui/aurora-text';
 import { AnimatedGradientText } from '@/components/ui/animated-gradient-text';
 import PixelBlast from '@/components/ui/pixel-blast';
 import VariableProximity from '@/components/ui/variable-proximity';
 import { UiverseButton } from '@/components/ui/uiverse-button';
 import { LinkPreview } from '@/components/ui/link-preview';
-import { Typography } from '@heroui/react';
 
 interface HeroPanelProps {
   isActive: boolean;
@@ -15,6 +13,7 @@ interface HeroPanelProps {
 }
 
 const HeroPanel: React.FC<HeroPanelProps> = ({ isActive, hasScrolled, onLearnMoreClick, onCTAClick }) => {
+  void hasScrolled;
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (

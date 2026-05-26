@@ -1,38 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 
 export const DashboardSuspenseFallback: React.FC = () => {
-    const [isDarkMode, setIsDarkMode] = useState(
-        () => localStorage.getItem('darkModeEnabled') === 'true' || document.body.classList.contains('dark-mode')
-    );
-
-    useEffect(() => {
-        const syncTheme = () => {
-            setIsDarkMode(
-                localStorage.getItem('darkModeEnabled') === 'true' ||
-                document.body.classList.contains('dark-mode')
-            );
-        };
-        window.addEventListener('storage', syncTheme);
-        window.addEventListener('themeChange', syncTheme);
-        
-        // Also watch body class mutations for in-tab theme changes
-        const observer = new MutationObserver(syncTheme);
-        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-        
-        return () => {
-            window.removeEventListener('storage', syncTheme);
-            window.removeEventListener('themeChange', syncTheme);
-            observer.disconnect();
-        };
-    }, []);
-
-    const _colors = {
-        bg: 'var(--bg-primary)',
-        cardBg: 'var(--bg-primary)',
-        border: 'rgba(255,255,255,0.08)',
-        shimmer: 'var(--bg-hover)' };
-
     return (
         <div style={{
             flex: 1,

@@ -44,6 +44,9 @@ const HorizontalHome: React.FC<HorizontalHomeProps> = ({ onLoginClick }) => {
         hasScrolled,
     } = useHorizontalScroll({ totalPanels: TOTAL_PANELS });
 
+    void progress;
+    void isMobile;
+
     const isDarkPanel = DARK_PANELS.has(currentPanel);
 
     const menuItems = [

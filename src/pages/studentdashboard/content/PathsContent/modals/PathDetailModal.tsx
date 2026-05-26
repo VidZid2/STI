@@ -395,7 +395,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                     {courses.map((course: any, index: number) => {
                                         const progress = courseProgress[course.id]?.progress || 0;
                                         const isCompleted = progress === 100;
-                                        const isUnlocked = isCourseUnlocked(course, index);
+                                        const isUnlocked = isCourseUnlocked(course.id, path);
                                         const isLocked = !isUnlocked;
                                         const isCurrent = course.id === currentCourse?.id && !isCompleted && isUnlocked;
                                         const isHovered = hoveredCourse === course.id;

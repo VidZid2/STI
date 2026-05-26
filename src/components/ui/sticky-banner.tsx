@@ -1,5 +1,6 @@
 "use client";
-import React, { SVGProps, useState } from "react";
+import React, { useState } from "react";
+import type { SVGProps } from "react";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { cn } from "@/lib/utils";
 

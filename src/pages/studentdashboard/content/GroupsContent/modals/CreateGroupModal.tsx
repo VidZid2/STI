@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import { supabase, isSupabaseConfigured } from '../../../../../lib/supabase';
+import { getProfile } from '../../../../../services/profileService';
 import { type GroupCategory } from '../../../../../services/groupsService';
 import GroupIcon from '../components/GroupIcon';
 
@@ -428,7 +429,7 @@ const CreateGroupModal: React.FC<{
         }
         
         const normalizedEmail = email.toLowerCase().trim();
-        const currentUserEmail = null.email.toLowerCase().trim();
+        const currentUserEmail = getProfile().email.toLowerCase().trim();
         
         // Show loading state immediately
         setIsCheckingEmail(true);
@@ -2405,7 +2406,7 @@ const CreateGroupModal: React.FC<{
                                                                 : 'No classmates found'}
                                                         </div>
                                                     ) : (() => {
-                                                        const currentUserEmail = null.email.toLowerCase().trim();
+                                                        const currentUserEmail = getProfile().email.toLowerCase().trim();
                                                         // Only filter out current user (search is done server-side)
                                                         const filteredClassmates = classmates.filter((c) => {
                                                             return c.email.toLowerCase().trim() !== currentUserEmail;

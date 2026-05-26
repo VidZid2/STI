@@ -1,9 +1,43 @@
-// @ts-nocheck
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import './staggered-menu.css';
 
-export const StaggeredMenu = ({
+export interface StaggeredMenuItem {
+  label: string;
+  ariaLabel?: string;
+  link?: string;
+  onClick?: () => void;
+}
+
+export interface StaggeredSocialItem {
+  label: string;
+  link: string;
+  icon?: string;
+  trigger?: string;
+  state?: string;
+  colors?: string;
+}
+
+export interface StaggeredMenuProps {
+  position?: 'left' | 'right';
+  colors?: string[];
+  items?: StaggeredMenuItem[];
+  socialItems?: StaggeredSocialItem[];
+  displaySocials?: boolean;
+  displayItemNumbering?: boolean;
+  className?: string;
+  logoUrl?: string;
+  menuButtonColor?: string;
+  openMenuButtonColor?: string;
+  accentColor?: string;
+  changeMenuColorOnOpen?: boolean;
+  isFixed?: boolean;
+  closeOnClickAway?: boolean;
+  onMenuOpen?: () => void;
+  onMenuClose?: () => void;
+}
+
+export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   position = 'left',
   colors = ['#1e40af', '#3b82f6'],
   items = [],
@@ -23,25 +57,25 @@ export const StaggeredMenu = ({
 }) => {
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
-  const panelRef = useRef(null);
-  const backdropRef = useRef(null);
-  const preLayersRef = useRef(null);
-  const preLayerElsRef = useRef([]);
-  const plusHRef = useRef(null);
-  const plusVRef = useRef(null);
-  const iconRef = useRef(null);
-  const textInnerRef = useRef(null);
-  const textWrapRef = useRef(null);
-  const [textLines, setTextLines] = useState(['Menu', 'Close']);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
+  const preLayersRef = useRef<HTMLDivElement>(null);
+  const preLayerElsRef = useRef<HTMLDivElement[]>([]);
+  const plusHRef = useRef<HTMLSpanElement>(null);
+  const plusVRef = useRef<HTMLSpanElement>(null);
+  const iconRef = useRef<HTMLSpanElement>(null);
+  const textInnerRef = useRef<HTMLSpanElement>(null);
+  const textWrapRef = useRef<HTMLSpanElement>(null);
+  const [textLines, setTextLines] = useState<string[]>(['Menu', 'Close']);
 
-  const openTlRef = useRef(null);
-  const closeTweenRef = useRef(null);
-  const spinTweenRef = useRef(null);
-  const textCycleAnimRef = useRef(null);
-  const colorTweenRef = useRef(null);
-  const toggleBtnRef = useRef(null);
+  const openTlRef = useRef<gsap.core.Timeline | null>(null);
+  const closeTweenRef = useRef<gsap.core.Tween | null>(null);
+  const spinTweenRef = useRef<gsap.core.Tween | null>(null);
+  const textCycleAnimRef = useRef<gsap.core.Tween | null>(null);
+  const colorTweenRef = useRef<gsap.core.Tween | null>(null);
+  const toggleBtnRef = useRef<HTMLButtonElement>(null);
   const busyRef = useRef(false);
-  const itemEntranceTweenRef = useRef(null);
+  const itemEntranceTweenRef = useRef<gsap.core.Tween | null>(null);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -53,9 +87,9 @@ export const StaggeredMenu = ({
       const textInner = textInnerRef.current;
       if (!panel || !plusH || !plusV || !icon || !textInner) return;
 
-      let preLayers = [];
+      let preLayers: HTMLDivElement[] = [];
       if (preContainer) {
-        preLayers = Array.from(preContainer.querySelectorAll('.sm-prelayer'));
+        preLayers = Array.from(preContainer.querySelectorAll<HTMLDivElement>('.sm-prelayer'));
       }
       preLayerElsRef.current = preLayers;
 
@@ -141,7 +175,7 @@ export const StaggeredMenu = ({
           rotate: 0,
           duration: 1,
           ease: 'power4.out',
-          stagger: { each: 0.1, from: 'start' }
+          stagger: { each: 0.1, from: 'start' } as any
         },
         itemsStart
       );
@@ -152,7 +186,7 @@ export const StaggeredMenu = ({
             duration: 0.6,
             ease: 'power2.out',
             '--sm-num-opacity': 1,
-            stagger: { each: 0.08, from: 'start' }
+            stagger: { each: 0.08, from: 'start' } as any
           },
           itemsStart + 0.1
         );
@@ -180,7 +214,7 @@ export const StaggeredMenu = ({
             opacity: 1,
             duration: 0.55,
             ease: 'power3.out',
-            stagger: { each: 0.08, from: 'start' },
+            stagger: { each: 0.08, from: 'start' } as any,
             onComplete: () => {
               gsap.set(socialLinks, { clearProps: 'opacity' });
             }
@@ -192,7 +226,7 @@ export const StaggeredMenu = ({
 
     openTlRef.current = tl;
     return tl;
-  }, []);
+  }, [position]);
 
   const playOpen = useCallback(() => {
     if (busyRef.current) return;
@@ -248,7 +282,7 @@ export const StaggeredMenu = ({
     });
   }, [position]);
 
-  const animateIcon = useCallback(opening => {
+  const animateIcon = useCallback((opening: boolean) => {
     const icon = iconRef.current;
     if (!icon) return;
     spinTweenRef.current?.kill();
@@ -260,7 +294,7 @@ export const StaggeredMenu = ({
   }, []);
 
   const animateColor = useCallback(
-    opening => {
+    (opening: boolean) => {
       const btn = toggleBtnRef.current;
       if (!btn) return;
       colorTweenRef.current?.kill();
@@ -290,7 +324,7 @@ export const StaggeredMenu = ({
     }
   }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]);
 
-  const animateText = useCallback(opening => {
+  const animateText = useCallback((opening: boolean) => {
     const inner = textInnerRef.current;
     if (!inner) return;
     textCycleAnimRef.current?.kill();
@@ -349,12 +383,12 @@ export const StaggeredMenu = ({
   React.useEffect(() => {
     if (!closeOnClickAway || !open) return;
 
-    const handleClickOutside = event => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         panelRef.current &&
-        !panelRef.current.contains(event.target) &&
+        !panelRef.current.contains(event.target as Node) &&
         toggleBtnRef.current &&
-        !toggleBtnRef.current.contains(event.target)
+        !toggleBtnRef.current.contains(event.target as Node)
       ) {
         closeMenu();
       }
@@ -369,7 +403,7 @@ export const StaggeredMenu = ({
   return (
     <div
       className={(className ? className + ' ' : '') + 'staggered-menu-wrapper' + (isFixed ? ' fixed-wrapper' : '')}
-      style={accentColor ? { ['--sm-accent']: accentColor } : undefined}
+      style={accentColor ? { ['--sm-accent' as any]: accentColor } : undefined}
       data-position={position}
       data-open={open || undefined}
     >

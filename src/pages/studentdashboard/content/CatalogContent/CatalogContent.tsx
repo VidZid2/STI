@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { motion, AnimatePresence, LayoutGroup, useMotionValue, useSpring, useInView } from 'motion/react';
+import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
 import {
     getCatalogCourses,
     getCatalogStats,
@@ -242,7 +242,7 @@ const CatalogContent: React.FC = () => {
 
     // Show skeleton while loading
     if (loading) {
-        return <CatalogSkeleton />;
+        return <CatalogSkeleton isDarkMode={isDarkMode} />;
     }
 
     return (

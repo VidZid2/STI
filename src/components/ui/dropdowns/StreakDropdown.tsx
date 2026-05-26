@@ -265,12 +265,6 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
         return pool[index];
     }, [streakData.currentStreak]);
 
-    // Get streak label text
-    const getStreakLabel = () => {
-        if (streakData.currentStreak === 0) return "Start streak";
-        return `${streakData.currentStreak}d streak`;
-    };
-
     // Get tooltip message
     const getTooltipMessage = () => {
         if (streakData.currentStreak === 0) return "Start your streak today";

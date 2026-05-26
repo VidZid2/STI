@@ -595,7 +595,7 @@ const FocusModePage: React.FC = () => {
     }, []);
 
     if (isLoading) {
-        return <FocusSkeleton />;
+        return <FocusSkeleton isDarkMode={isDarkMode} />;
     }
 
     return (
@@ -753,8 +753,10 @@ const FocusModePage: React.FC = () => {
                         <SessionStats totalFocusTime={totalFocusTime}
                             sessionsCompleted={sessionsCompleted}
                             currentStreak={currentStreak}
+                            isDarkMode={isDarkMode}
+                            colors={colors}
                         />
-                        <SessionHistory />
+                        <SessionHistory isDarkMode={isDarkMode} colors={colors} />
                         <SessionGoal sessionGoal={sessionGoal}
                             setSessionGoal={setSessionGoal}
                             currentProgress={Math.floor(totalFocusTime / 60)}
@@ -809,7 +811,10 @@ const FocusModePage: React.FC = () => {
                                 </div>
                                 <FilterTabs
                                     activeFilter={activeFilter}
-                                    setActiveFilter={setActiveFilter} resourceCounts={resourceCounts}
+                                    setActiveFilter={setActiveFilter}
+                                    resourceCounts={resourceCounts}
+                                    isDarkMode={isDarkMode}
+                                    colors={colors}
                                 />
                             </motion.div>
 
@@ -914,6 +919,8 @@ const FocusModePage: React.FC = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', overflow: 'auto' }}>
                         <AmbientSounds activeSound={activeSound}
                             onSoundChange={setActiveSound}
+                            isDarkMode={isDarkMode}
+                            colors={colors}
                         />
                         <AnimatePresence mode="wait">
                             {timerMode === 'break' ? (
