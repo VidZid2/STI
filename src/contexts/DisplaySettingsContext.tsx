@@ -50,7 +50,7 @@ const DEFAULT_SETTINGS: DisplaySettings = {
     hideCustomCursor: true,
 };
 
-const STORAGE_KEY = 'app_display_settings';
+const STORAGE_KEY = 'app_display_settings_v2';
 
 // ============================================
 // CONTEXT
