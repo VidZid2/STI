@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Wrench, FileBox, FileText, ShieldCheck } from 'lucide-react';
 
 import { convertImageToPDF, mergePDFs } from '../../../../lib/pdfUtils';
 
@@ -32,8 +33,8 @@ import TextSummarizer from '../../../../components/tools/TextSummarizer';
 import ReferenceManager from '../../../../components/tools/ReferenceManager';
 // Paraphraser - AI-powered text paraphrasing
 import Paraphraser from '../../../../components/tools/Paraphraser';
-// Plagiarism Checker - Reserved for Teacher Dashboard (hidden from students)
-// import PlagiarismChecker from '../../components/tools/PlagiarismChecker';
+// Plagiarism Checker
+import PlagiarismChecker from '../../../../components/tools/PlagiarismChecker';
 
 interface Tool {
     id: string;
@@ -43,6 +44,9 @@ interface Tool {
     icon: React.ReactNode;
     accept: string;
     multiple: boolean;
+    badges?: string[];
+    accent?: 'blue' | 'emerald' | 'violet' | 'amber' | 'rose' | 'cyan';
+    recommended?: boolean;
     linkTo?: string;
     onClick?: () => void; // Custom click handler for dedicated pages
     tutorial?: {
@@ -76,8 +80,10 @@ interface AnalysisResult {
 import { ToolItem, SuccessConfetti } from './components/ToolItem';
 import { ResultModal } from './modals/ResultModal';
 import { CategoryTabs, ToolsSkeleton } from './components/ToolsShared';
+import ToolsHeader from './components/ToolsHeader';
 
 const ToolsContent: React.FC = () => {
+    const recentStorageKey = 'elms_recent_tools';
     const [activeCategory, setActiveCategory] = useState('all');
     const [convertingFile, setConvertingFile] = useState<string | null>(null);
     const [conversionSuccess, setConversionSuccess] = useState<string | null>(null);
@@ -95,8 +101,16 @@ const ToolsContent: React.FC = () => {
     const [showReferenceManager, setShowReferenceManager] = useState(false);
     // Paraphraser dedicated page state
     const [showParaphraser, setShowParaphraser] = useState(false);
-    // Plagiarism Checker - Reserved for Teacher Dashboard (hidden from students)
-    // const [showPlagiarismChecker, setShowPlagiarismChecker] = useState(false);
+    // Plagiarism Checker dedicated page state
+    const [showPlagiarismChecker, setShowPlagiarismChecker] = useState(false);
+    const [recentToolIds, setRecentToolIds] = useState<string[]>([]);
+    const [isDarkMode, setIsDarkMode] = useState(() => (
+        typeof document !== 'undefined' && (
+            document.documentElement.classList.contains('dark') ||
+            document.body.classList.contains('dark-mode') ||
+            localStorage.getItem('darkModeEnabled') === 'true'
+        )
+    ));
 
     // Initial loading state
     useEffect(() => {
@@ -104,40 +118,100 @@ const ToolsContent: React.FC = () => {
         return () => clearTimeout(timer);
     }, []);
 
+    useEffect(() => {
+        const syncDarkMode = () => {
+            setIsDarkMode(
+                document.documentElement.classList.contains('dark') ||
+                document.body.classList.contains('dark-mode') ||
+                localStorage.getItem('darkModeEnabled') === 'true'
+            );
+        };
+
+        const observer = new MutationObserver(syncDarkMode);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        window.addEventListener('storage', syncDarkMode);
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener('storage', syncDarkMode);
+        };
+    }, []);
+
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem(recentStorageKey);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) {
+                    setRecentToolIds(parsed.filter((id): id is string => typeof id === 'string'));
+                }
+            }
+        } catch (error) {
+            console.warn('[ToolsContent] Unable to load recent tools', error);
+        }
+    }, []);
+
+    const isDedicatedToolOpen =
+        showGrammarChecker ||
+        showWordCounter ||
+        showCitationGenerator ||
+        showTextSummarizer ||
+        showReferenceManager ||
+        showParaphraser ||
+        showPlagiarismChecker;
+
+    useEffect(() => {
+        if (!isDedicatedToolOpen) return;
+
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, behavior: 'auto' });
+            document.querySelector('.main-content')?.scrollTo({ top: 0, behavior: 'auto' });
+        });
+    }, [isDedicatedToolOpen]);
+
+    const markToolUsed = (toolId: string) => {
+        setRecentToolIds((current) => {
+            const next = [toolId, ...current.filter((id) => id !== toolId)].slice(0, 4);
+            localStorage.setItem(recentStorageKey, JSON.stringify(next));
+            return next;
+        });
+    };
+
     // If Grammar Checker is active, show dedicated page
     if (showGrammarChecker) {
-        return <LanguageToolGrammarChecker onBack={() => setShowGrammarChecker(false)} />;
+        return <div className={isDarkMode ? 'dark' : ''}><LanguageToolGrammarChecker onBack={() => setShowGrammarChecker(false)} /></div>;
     }
 
     // If Word Counter is active, show dedicated page
     if (showWordCounter) {
-        return <WordCounter onBack={() => setShowWordCounter(false)} />;
+        return <div className={isDarkMode ? 'dark' : ''}><WordCounter onBack={() => setShowWordCounter(false)} /></div>;
     }
 
     // If Citation Generator is active, show dedicated page
     if (showCitationGenerator) {
-        return <CitationGenerator onBack={() => setShowCitationGenerator(false)} />;
+        return <div className={isDarkMode ? 'dark' : ''}><CitationGenerator onBack={() => setShowCitationGenerator(false)} /></div>;
     }
 
     // If Text Summarizer is active, show dedicated page
     if (showTextSummarizer) {
-        return <TextSummarizer onBack={() => setShowTextSummarizer(false)} />;
+        return <div className={isDarkMode ? 'dark' : ''}><TextSummarizer onBack={() => setShowTextSummarizer(false)} /></div>;
     }
 
     // If Reference Manager is active, show dedicated page
     if (showReferenceManager) {
-        return <ReferenceManager onBack={() => setShowReferenceManager(false)} />;
+        return <div className={isDarkMode ? 'dark' : ''}><ReferenceManager onBack={() => setShowReferenceManager(false)} /></div>;
     }
 
     // If Paraphraser is active, show dedicated page
     if (showParaphraser) {
-        return <Paraphraser onBack={() => setShowParaphraser(false)} />;
+        return <div className={isDarkMode ? 'dark' : ''}><Paraphraser onBack={() => setShowParaphraser(false)} /></div>;
     }
 
-    // Plagiarism Checker - Reserved for Teacher Dashboard (hidden from students)
-    // if (showPlagiarismChecker) {
-    //     return <PlagiarismChecker onBack={() => setShowPlagiarismChecker(false)} />;
-    // }
+    // If Plagiarism Checker is active, show dedicated page
+    if (showPlagiarismChecker) {
+        return <div className={isDarkMode ? 'dark' : ''}><PlagiarismChecker onBack={() => setShowPlagiarismChecker(false)} /></div>;
+    }
 
     const processFiles = async (files: FileList | File[], toolName: string) => {
         if (!files || files.length === 0) return;
@@ -333,9 +407,9 @@ const ToolsContent: React.FC = () => {
     };
 
     const categories = [
-        { id: 'all', name: 'All Tools', icon: '🔧' },
-        { id: 'convert', name: 'Converters', icon: '📄' },
-        { id: 'text', name: 'Text Tools', icon: '📝' },
+        { id: 'all', name: 'All Tools', icon: <Wrench className="w-5 h-5" /> },
+        { id: 'convert', name: 'Converters', icon: <FileBox className="w-5 h-5" /> },
+        { id: 'text', name: 'Text Tools', icon: <FileText className="w-5 h-5" /> },
     ];
 
     const tools: Tool[] = [
@@ -346,6 +420,8 @@ const ToolsContent: React.FC = () => {
             category: 'convert',
             accept: '.png,.jpg,.jpeg',
             multiple: true,
+            badges: ['Offline', 'Multi-image', 'PDF'],
+            accent: 'emerald',
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -358,6 +434,8 @@ const ToolsContent: React.FC = () => {
             category: 'convert',
             accept: '.pdf',
             multiple: true,
+            badges: ['Offline', 'Multi-file', 'PDF'],
+            accent: 'emerald',
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -370,6 +448,8 @@ const ToolsContent: React.FC = () => {
             category: 'convert',
             accept: '.doc,.docx',
             multiple: false,
+            badges: ['DOCX', 'Offline', 'Export'],
+            accent: 'blue',
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -382,6 +462,8 @@ const ToolsContent: React.FC = () => {
             category: 'convert',
             accept: '.pdf',
             multiple: false,
+            badges: ['Offline', 'Smaller files', 'Private'],
+            accent: 'cyan',
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -397,6 +479,8 @@ const ToolsContent: React.FC = () => {
             category: 'text',
             accept: '.txt,.md,.csv',
             multiple: false,
+            badges: ['Auto-save', 'Offline', 'Keywords'],
+            accent: 'cyan',
             onClick: () => setShowWordCounter(true), // Opens dedicated page
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -410,6 +494,8 @@ const ToolsContent: React.FC = () => {
             category: 'convert',
             accept: '.pdf',
             multiple: false,
+            badges: ['PDF', 'DOCX', 'Editable'],
+            accent: 'violet',
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -423,6 +509,9 @@ const ToolsContent: React.FC = () => {
             category: 'text',
             accept: '.txt,.md',
             multiple: false,
+            badges: ['Auto-save', 'LanguageTool', 'AI'],
+            accent: 'emerald',
+            recommended: true,
             onClick: () => setShowGrammarChecker(true), // Opens dedicated page
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -436,6 +525,8 @@ const ToolsContent: React.FC = () => {
             category: 'text',
             accept: '',
             multiple: false,
+            badges: ['Auto-save', 'APA/MLA', 'Export'],
+            accent: 'amber',
             onClick: () => setShowCitationGenerator(true), // Opens dedicated page
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -450,6 +541,9 @@ const ToolsContent: React.FC = () => {
             category: 'text',
             accept: '.txt,.md',
             multiple: false,
+            badges: ['Auto-save', 'Study notes', 'Copy'],
+            accent: 'blue',
+            recommended: true,
             onClick: () => setShowTextSummarizer(true), // Opens dedicated page
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -467,6 +561,8 @@ const ToolsContent: React.FC = () => {
             category: 'text',
             accept: '',
             multiple: false,
+            badges: ['Auto-save', 'Saved library', 'Export'],
+            accent: 'violet',
             onClick: () => setShowReferenceManager(true), // Opens dedicated page
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -476,351 +572,70 @@ const ToolsContent: React.FC = () => {
         {
             id: 'paraphraser',
             name: 'Paraphraser',
-            description: 'Rewrite text in different styles • Free',
+            description: 'Rewrite text in different styles',
             category: 'text',
             accept: '',
             multiple: false,
+            badges: ['Auto-save', 'Modes', 'Guardrails'],
+            accent: 'emerald',
+            recommended: true,
             onClick: () => setShowParaphraser(true), // Opens dedicated page
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                 </svg>
             ) },
-        // HIDDEN: Plagiarism Checker - Reserved for Teacher Dashboard
-        // Uncomment when building teacher side
-        // {
-        //     id: 'plagiarism-checker',
-        //     name: 'Plagiarism Checker',
-        //     description: 'Check text originality • Basic free tier',
-        //     category: 'text',
-        //     accept: '',
-        //     multiple: false,
-        //     onClick: () => setShowPlagiarismChecker(true),
-        //     icon: (
-        //         <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        //             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 9h6v6H9z" />
-        //             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
-        //         </svg>
-        //     ),
-        // },
+        {
+            id: 'plagiarism-checker',
+            name: 'Plagiarism Checker',
+            description: 'Check text originality • Basic free tier',
+            category: 'text',
+            accept: '',
+            multiple: false,
+            badges: ['Auto-save', 'Similarity', 'Sources'],
+            accent: 'rose',
+            onClick: () => setShowPlagiarismChecker(true),
+            icon: (
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 9h6v6H9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
+                </svg>
+            ),
+        },
     ];
 
     const allTools = [...tools, ...newTools];
 
-    const filteredTools = activeCategory === 'all' ? allTools : allTools.filter((tool) => tool.category === activeCategory);
+    const visibleTools = activeCategory === 'all'
+        ? allTools
+        : allTools.filter((tool) => tool.category === activeCategory);
+
+    const filteredTools = [...visibleTools].sort((a, b) => {
+        const aRecent = recentToolIds.indexOf(a.id);
+        const bRecent = recentToolIds.indexOf(b.id);
+
+        if (a.recommended !== b.recommended) {
+            return a.recommended ? -1 : 1;
+        }
+
+        if (aRecent !== -1 || bRecent !== -1) {
+            if (aRecent === -1) return 1;
+            if (bRecent === -1) return -1;
+            return aRecent - bRecent;
+        }
+
+        return 0;
+    });
 
     // Show skeleton while loading
     if (isToolsLoading) {
-        return <ToolsSkeleton />;
+        return <div className={`tools-content pb-24 ${isDarkMode ? 'dark' : ''}`}><ToolsSkeleton /></div>;
     }
 
     return (
-        <div className="tools-content">
-            {/* Modern Minimalistic Tools Header */}
-            <motion.section
-                className="tools-hero-section"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                style={{
-                    marginBottom: '2rem',
-                    display: 'flex',
-                    gap: '1rem',
-                    alignItems: 'stretch' }}
-            >
-                {/* Main Hero Card - Slide in from left */}
-                <motion.div
-                    className="tools-hero-card"
-                    initial={{ opacity: 0, x: -40, scale: 0.95 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    transition={{
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 25,
-                        delay: 0.1 }}
-                    whileHover={{
-                        borderColor: '#93c5fd',
-                        boxShadow: '0 20px 40px rgba(59, 130, 246, 0.1)' }}
-                    style={{
-                        flex: 1,
-                        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '20px',
-                        padding: '2rem 2.5rem',
-                        position: 'relative',
-                        overflow: 'hidden' }}
-                >
-                    {/* Decorative Background Elements */}
-                    <div style={{
-                        position: 'absolute',
-                        top: '-50px',
-                        right: '-50px',
-                        width: '200px',
-                        height: '200px',
-                        background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%)',
-                        borderRadius: '50%',
-                        pointerEvents: 'none' }} />
-                    <div style={{
-                        position: 'absolute',
-                        bottom: '-30px',
-                        right: '100px',
-                        width: '120px',
-                        height: '120px',
-                        background: 'radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 70%)',
-                        borderRadius: '50%',
-                        pointerEvents: 'none' }} />
-
-                    <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                        {/* Icon Container */}
-                        <motion.div
-                            initial={{ scale: 0, rotate: -180 }}
-                            animate={{ scale: 1, rotate: 0 }}
-                            transition={{ delay: 0.2, type: 'spring', stiffness: 200, damping: 15 }}
-                            style={{
-                                width: '72px',
-                                height: '72px',
-                                borderRadius: '20px',
-                                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0 8px 24px rgba(59, 130, 246, 0.25)',
-                                flexShrink: 0 }}
-                        >
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                            </svg>
-                        </motion.div>
-
-                        {/* Text Content */}
-                        <div style={{ flex: 1 }}>
-                            <motion.p
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.3 }}
-                                style={{
-                                    fontSize: '0.85rem',
-                                    color: '#64748b',
-                                    fontWeight: 500,
-                                    margin: 0,
-                                    marginBottom: '0.25rem' }}
-                            >
-                                Document Utilities
-                            </motion.p>
-                            <motion.h1
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.35 }}
-                                style={{
-                                    fontSize: '2rem',
-                                    fontWeight: 700,
-                                    color: '#0f172a',
-                                    margin: 0,
-                                    letterSpacing: '-0.03em',
-                                    lineHeight: 1.1 }}
-                            >
-                                Student <span style={{ color: '#3b82f6' }}>Tools</span>
-                            </motion.h1>
-                            <motion.p
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.4 }}
-                                style={{
-                                    fontSize: '0.9rem',
-                                    color: '#64748b',
-                                    margin: 0,
-                                    marginTop: '0.5rem' }}
-                            >
-                                Convert, merge, and analyze your documents with ease
-                            </motion.p>
-
-                            {/* Feature Pills */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5 }}
-                                style={{
-                                    display: 'flex',
-                                    gap: '0.5rem',
-                                    marginTop: '1rem',
-                                    flexWrap: 'wrap' }}
-                            >
-                                {[
-                                    { icon: '🔒', label: 'Privacy First', desc: 'Files stay local' },
-                                    { icon: '⚡', label: 'Instant', desc: 'No upload wait' },
-                                    { icon: '♾️', label: 'Unlimited', desc: 'No restrictions' },
-                                ].map((feature, idx) => (
-                                    <motion.div
-                                        key={feature.label}
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: 0.5 + idx * 0.1 }}
-                                        whileHover={{ scale: 1.02, y: -2 }}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '0.5rem',
-                                            padding: '0.5rem 0.875rem',
-                                            background: '#f8fafc',
-                                            border: '1px solid #e2e8f0',
-                                            borderRadius: '10px',
-                                            cursor: 'default' }}
-                                    >
-                                        <span style={{ fontSize: '1rem' }}>{feature.icon}</span>
-                                        <div>
-                                            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#374151' }}>{feature.label}</div>
-                                            <div style={{ fontSize: '0.65rem', color: '#9ca3af' }}>{feature.desc}</div>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </motion.div>
-                        </div>
-                    </div>
-                </motion.div>
-
-                {/* Stats Card - Slide in from right */}
-                <motion.div
-                    initial={{ opacity: 0, x: 40, scale: 0.95 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    transition={{
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 25,
-                        delay: 0.2 }}
-                    whileHover={{
-                        scale: 1.02,
-                        boxShadow: '0 25px 50px rgba(30, 64, 175, 0.3)' }}
-                    style={{
-                        width: '280px',
-                        background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-                        borderRadius: '20px',
-                        padding: '1.5rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        flexShrink: 0 }}
-                >
-                    {/* Decorative circles */}
-                    <div style={{
-                        position: 'absolute',
-                        top: '-20px',
-                        right: '-20px',
-                        width: '100px',
-                        height: '100px',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '50%' }} />
-                    <div style={{
-                        position: 'absolute',
-                        bottom: '-30px',
-                        left: '-30px',
-                        width: '80px',
-                        height: '80px',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        borderRadius: '50%' }} />
-
-                    <div style={{ position: 'relative', zIndex: 1 }}>
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.35, type: 'spring', stiffness: 300 }}
-                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}
-                        >
-                            <motion.svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="white"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                style={{ opacity: 0.8 }}
-                                initial={{ rotate: -20, scale: 0 }}
-                                animate={{ rotate: 0, scale: 1 }}
-                                transition={{ delay: 0.4, type: 'spring', stiffness: 400 }}
-                            >
-                                <path d="M3 3v18h18" />
-                                <path d="m19 9-5 5-4-4-3 3" />
-                            </motion.svg>
-                            <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>Quick Stats</span>
-                        </motion.div>
-
-                        {/* Stats Grid */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.5 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.45, type: 'spring', stiffness: 400, damping: 15 }}
-                                style={{ textAlign: 'center' }}
-                            >
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.5 }}
-                                    style={{ fontSize: '2rem', fontWeight: 700, color: 'white', lineHeight: 1 }}
-                                >
-                                    {allTools.length}
-                                </motion.div>
-                                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)', marginTop: '0.25rem' }}>Tools</div>
-                            </motion.div>
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.5 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.5, type: 'spring', stiffness: 400, damping: 15 }}
-                                style={{ textAlign: 'center' }}
-                            >
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.55 }}
-                                    style={{ fontSize: '2rem', fontWeight: 700, color: '#fbbf24', lineHeight: 1 }}
-                                >
-                                    Free
-                                </motion.div>
-                                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)', marginTop: '0.25rem' }}>Forever</div>
-                            </motion.div>
-                        </div>
-                    </div>
-
-                    {/* Bottom Badge */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6, type: 'spring', stiffness: 300 }}
-                        whileHover={{ scale: 1.02 }}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '0.5rem',
-                            padding: '0.625rem 1rem',
-                            background: 'rgba(255, 255, 255, 0.15)',
-                            borderRadius: '10px',
-                            marginTop: '1rem',
-                            backdropFilter: 'blur(10px)' }}
-                    >
-                        <motion.div
-                            animate={{
-                                scale: [1, 1.2, 1],
-                                boxShadow: [
-                                    '0 0 8px rgba(34, 197, 94, 0.6)',
-                                    '0 0 16px rgba(34, 197, 94, 0.8)',
-                                    '0 0 8px rgba(34, 197, 94, 0.6)',
-                                ]
-                            }}
-                            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                            style={{
-                                width: '8px',
-                                height: '8px',
-                                borderRadius: '50%',
-                                background: '#22c55e' }}
-                        />
-                        <span style={{ fontSize: '0.75rem', color: 'white', fontWeight: 500 }}>Available 24/7</span>
-                    </motion.div>
-                </motion.div>
-            </motion.section>
+        <div className={`tools-content pb-24 text-zinc-900 dark:text-zinc-100 ${isDarkMode ? 'dark' : ''}`}>
+            {/* Premium Minimalistic Tools Header */}
+            <ToolsHeader totalTools={allTools.length} />
 
             {/* Confetti for success celebration */}
             <SuccessConfetti isActive={!!conversionSuccess} />
@@ -837,12 +652,7 @@ const ToolsContent: React.FC = () => {
             {/* Tools Grid - Uniform Card Sizes */}
             <motion.div
                 layout
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                    gap: '1.25rem',
-                    gridAutoRows: '1fr', // Ensures all rows have same height
-                }}
+                className="grid auto-rows-[404px] grid-cols-1 gap-8 lg:grid-cols-2 2xl:grid-cols-3"
             >
                 <AnimatePresence mode="popLayout">
                     {filteredTools.map((tool, idx) => (
@@ -865,33 +675,39 @@ const ToolsContent: React.FC = () => {
                                 isProcessing={convertingFile === tool.name}
                                 isSuccess={conversionSuccess === tool.name}
                                 onSuccessClose={() => setConversionSuccess(null)}
+                                isRecent={recentToolIds.includes(tool.id)}
+                                onToolOpen={markToolUsed}
                             />
                         </motion.div>
                     ))}
                 </AnimatePresence>
             </motion.div>
 
-            {/* Footer Tip */}
+            {/* Animated SaaS Trust Banner */}
             <motion.div
-                className="tools-footer-tip"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                style={{
-                    marginTop: '2.5rem',
-                    padding: '1rem 1.5rem',
-                    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-                    borderRadius: '14px',
-                    border: '1px solid #e2e8f0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.75rem' }}
+                className="group relative flex items-center justify-center w-fit mx-auto mt-12"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, type: 'spring', stiffness: 300, damping: 25 }}
             >
-                <span style={{ fontSize: '1.25rem' }}>💡</span>
-                <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0, fontWeight: 500 }}>
-                    All tools are <span style={{ color: '#3b82f6', fontWeight: 600 }}>free</span> to use • Your files stay on your device
-                </p>
+                {/* Background ambient pulse on hover */}
+                <motion.div
+                    className="absolute inset-0 bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-xl transition-all duration-300 group-hover:bg-blue-500/30"
+                    aria-hidden="true"
+                />
+                
+                <div className="relative flex items-center gap-3 px-6 py-3 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 rounded-full shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
+                    <motion.div
+                        animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
+                        transition={{ duration: 1.5, ease: "easeInOut", repeat: Infinity, repeatDelay: 5 }}
+                        className="flex items-center justify-center p-1.5 bg-blue-50 dark:bg-blue-900/40 rounded-full text-blue-600 dark:text-blue-400"
+                    >
+                        <ShieldCheck className="w-4 h-4" />
+                    </motion.div>
+                    <p className="text-[13px] font-medium text-zinc-600 dark:text-zinc-300 m-0">
+                        Local-first file tools. Connected AI runs only when configured.
+                    </p>
+                </div>
             </motion.div>
 
             <style>{`
@@ -922,18 +738,6 @@ const ToolsContent: React.FC = () => {
                 }
                 body.dark-mode .category-tabs-container button span:last-child {
                     color: #94a3b8;
-                }
-                
-                /* Dark Mode - Category Tabs (legacy selector) */
-                body.dark-mode .tools-content > div:nth-child(3) {
-                    background: #1e293b !important;
-                    border-color: #334155 !important;
-                }
-                body.dark-mode .tools-content > div:nth-child(3) button:not([style*="linear-gradient"]) {
-                    color: #94a3b8 !important;
-                }
-                body.dark-mode .tools-content > div:nth-child(3) button:not([style*="linear-gradient"]):hover {
-                    color: #e2e8f0 !important;
                 }
                 
                 /* Dark Mode - Footer */

@@ -5825,3 +5825,86 @@ body.dark-mode .tools-content [style*="background: #f1f5f9"] {
 body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5e1"] {
     background: linear-gradient(135deg, #475569 0%, #334155 100%) !important;
 }
+
+/* Shared text-tool bottom sheets: keep desktop cards usable on phones. */
+@media (max-width: 1023px) {
+    .tool-mobile-sheet-content {
+        width: 100%;
+    }
+
+    .tool-mobile-sheet-content > * {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: auto !important;
+        max-height: none !important;
+        border-radius: 20px !important;
+    }
+
+    .tool-mobile-sheet-content > *:not([class*="p-0"]) {
+        padding: 1rem !important;
+    }
+
+    .tool-mobile-sheet-content * {
+        box-sizing: border-box;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .tool-mobile-sheet-content .grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .tool-mobile-sheet-content [class*="justify-between"] {
+        flex-wrap: wrap !important;
+        gap: 0.75rem !important;
+    }
+
+    .tool-mobile-sheet-content h2,
+    .tool-mobile-sheet-content h3,
+    .tool-mobile-sheet-content h4 {
+        overflow-wrap: anywhere;
+        line-height: 1.15 !important;
+    }
+
+    .tool-mobile-sheet-content p,
+    .tool-mobile-sheet-content span {
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+    }
+
+    .tool-mobile-sheet-content h3 {
+        font-size: 1rem !important;
+    }
+
+    .tool-mobile-sheet-content [class*="text-2xl"] {
+        font-size: 1.5rem !important;
+        line-height: 1.15 !important;
+    }
+
+    .tool-mobile-sheet-content [class*="text-xl"],
+    .tool-mobile-sheet-content [class*="text-lg"] {
+        font-size: 1rem !important;
+        line-height: 1.25 !important;
+    }
+
+    .tool-mobile-sheet-content [class*="p-6"],
+    .tool-mobile-sheet-content [class*="p-5"] {
+        padding: 1rem !important;
+    }
+
+    .tool-mobile-sheet-content [class*="gap-6"],
+    .tool-mobile-sheet-content [class*="gap-5"] {
+        gap: 0.875rem !important;
+    }
+
+    .tool-mobile-sheet-content [class*="w-32"][class*="h-32"],
+    .tool-mobile-sheet-content [class*="w-24"][class*="h-24"] {
+        width: 4.5rem !important;
+        height: 4.5rem !important;
+    }
+
+    .tool-mobile-sheet-content [class*="w-16"][class*="h-16"] {
+        width: 3.5rem !important;
+        height: 3.5rem !important;
+    }
+}

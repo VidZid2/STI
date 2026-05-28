@@ -3,9 +3,10 @@
  * Individual tool card with file processing.
  * Extracted from ToolsContent.tsx during Phase 8.7
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { ArrowRight, Clock3, Sparkles } from 'lucide-react';
 import { FileUpload } from '../../../../../components/ui/file-upload';
 import type { Tool } from '../types';
 
@@ -123,11 +124,19 @@ const ToolItem: React.FC<{
     isProcessing: boolean;
     isSuccess: boolean;
     onSuccessClose: () => void;
-}> = ({ tool, onProcessFiles, isProcessing, isSuccess, onSuccessClose }) => {
+    isRecent?: boolean;
+    onToolOpen?: (toolId: string) => void;
+}> = ({ tool, onProcessFiles, isProcessing, isSuccess, onSuccessClose, isRecent = false, onToolOpen }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [hasFiles, setHasFiles] = useState(false);
     const [showTutorial, setShowTutorial] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
+    const fileModalCloseRef = useRef<HTMLButtonElement>(null);
+    const tutorialCloseRef = useRef<HTMLButtonElement>(null);
+    const fileModalTitleId = React.useId();
+    const fileModalDescriptionId = React.useId();
+    const tutorialTitleId = React.useId();
+    const tutorialDescriptionId = React.useId();
 
     // Auto close modal after showing success
     useEffect(() => {
@@ -171,6 +180,18 @@ const ToolItem: React.FC<{
         };
     }, [isOpen, showTutorial]);
 
+    useEffect(() => {
+        if (!isOpen) return;
+        const timer = window.setTimeout(() => fileModalCloseRef.current?.focus(), 0);
+        return () => window.clearTimeout(timer);
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!showTutorial) return;
+        const timer = window.setTimeout(() => tutorialCloseRef.current?.focus(), 0);
+        return () => window.clearTimeout(timer);
+    }, [showTutorial]);
+
     // Reset hasFiles when modal closes
     useEffect(() => {
         if (!isOpen) {
@@ -180,6 +201,7 @@ const ToolItem: React.FC<{
 
     const handleFileChange = (files: File[]) => {
         if (files.length > 0) {
+            onToolOpen?.(tool.id);
             onProcessFiles(files, tool.name);
         }
     };
@@ -189,6 +211,7 @@ const ToolItem: React.FC<{
     };
 
     const handleCardClick = () => {
+        onToolOpen?.(tool.id);
         // If tool has custom onClick handler (e.g. Grammar Checker), use it
         if (tool.onClick) {
             tool.onClick();
@@ -241,204 +264,164 @@ const ToolItem: React.FC<{
 
     // Hover state for smooth Framer Motion animations
     const [isHovered, setIsHovered] = useState(false);
+    const accentStyles: Record<NonNullable<Tool['accent']>, {
+        glow: string;
+        iconIdle: string;
+        iconActive: string;
+        action: string;
+        shadow: string;
+    }> = {
+        blue: {
+            glow: 'bg-blue-500/15 dark:bg-blue-500/20',
+            iconIdle: 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800/50',
+            iconActive: 'bg-blue-600 text-white border-blue-600',
+            action: 'text-blue-600 dark:text-blue-400',
+            shadow: 'rgba(59, 130, 246, 0.18)',
+        },
+        emerald: {
+            glow: 'bg-emerald-500/15 dark:bg-emerald-500/20',
+            iconIdle: 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800/50',
+            iconActive: 'bg-emerald-600 text-white border-emerald-600',
+            action: 'text-emerald-600 dark:text-emerald-400',
+            shadow: 'rgba(16, 185, 129, 0.18)',
+        },
+        violet: {
+            glow: 'bg-violet-500/15 dark:bg-violet-500/20',
+            iconIdle: 'bg-violet-50 text-violet-600 border-violet-100 dark:bg-violet-900/30 dark:text-violet-400 dark:border-violet-800/50',
+            iconActive: 'bg-violet-600 text-white border-violet-600',
+            action: 'text-violet-600 dark:text-violet-400',
+            shadow: 'rgba(124, 58, 237, 0.18)',
+        },
+        amber: {
+            glow: 'bg-amber-500/15 dark:bg-amber-500/20',
+            iconIdle: 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800/50',
+            iconActive: 'bg-amber-500 text-white border-amber-500',
+            action: 'text-amber-600 dark:text-amber-400',
+            shadow: 'rgba(245, 158, 11, 0.18)',
+        },
+        rose: {
+            glow: 'bg-rose-500/15 dark:bg-rose-500/20',
+            iconIdle: 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-900/30 dark:text-rose-400 dark:border-rose-800/50',
+            iconActive: 'bg-rose-600 text-white border-rose-600',
+            action: 'text-rose-600 dark:text-rose-400',
+            shadow: 'rgba(225, 29, 72, 0.18)',
+        },
+        cyan: {
+            glow: 'bg-cyan-500/15 dark:bg-cyan-500/20',
+            iconIdle: 'bg-cyan-50 text-cyan-600 border-cyan-100 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-800/50',
+            iconActive: 'bg-cyan-600 text-white border-cyan-600',
+            action: 'text-cyan-600 dark:text-cyan-400',
+            shadow: 'rgba(6, 182, 212, 0.18)',
+        },
+    };
+    const accent = accentStyles[tool.accent || (tool.category === 'convert' ? 'emerald' : 'blue')];
+    const categoryLabel = tool.category === 'convert' ? 'Converter' : 'Text Tool';
+    const badges = tool.badges?.length ? tool.badges : [tool.category === 'convert' ? 'Local file flow' : 'Academic writing'];
+    const visibleBadges = badges.slice(0, 3);
+    const hiddenBadgeCount = Math.max(0, badges.length - visibleBadges.length);
+    const metaBadgeClass = 'inline-flex h-6 items-center gap-1 rounded-full border px-2.5 text-[10px] font-semibold uppercase leading-none tracking-normal shadow-[0_1px_2px_rgba(15,23,42,0.04)]';
+    const featureBadgeClass = 'inline-flex h-8 items-center rounded-full border border-zinc-200/80 bg-zinc-50/80 px-3 text-[12px] font-medium leading-none tracking-normal text-zinc-600 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors group-hover:border-zinc-300 group-hover:bg-white dark:border-zinc-800 dark:bg-zinc-900/70 dark:text-zinc-300 dark:group-hover:border-zinc-700 dark:group-hover:bg-zinc-900';
+    const cardActionLabel = `${tool.name}. ${tool.description}. ${tool.onClick ? 'Open workspace' : 'Choose file'}.`;
 
     return (
         <>
-            {/* Modern Minimalistic Card - Fixed Height */}
+            {/* Responsive academic workbench card */}
             <motion.button
-                className="tool-card-modern"
+                type="button"
+                className="group relative flex h-full w-full flex-col items-start overflow-hidden rounded-[26px] border border-zinc-200/80 bg-white p-8 text-left shadow-sm transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-800/80 dark:bg-zinc-900 dark:focus-visible:ring-offset-zinc-950 sm:p-9"
                 onClick={handleCardClick}
+                aria-label={cardActionLabel}
                 onHoverStart={() => setIsHovered(true)}
                 onHoverEnd={() => setIsHovered(false)}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{
                     opacity: 1,
-                    y: isHovered ? -8 : 0,
+                    y: isHovered ? -2 : 0,
                     boxShadow: isHovered
-                        ? '0 25px 50px rgba(59, 130, 246, 0.15)'
-                        : '0 4px 20px rgba(0, 0, 0, 0.04)',
+                        ? `0 18px 36px -16px ${accent.shadow}, 0 0 0 1px ${accent.shadow}`
+                        : '0 4px 10px rgba(0, 0, 0, 0.03), 0 0 0 1px transparent',
                 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{
-                    type: 'spring',
-                    stiffness: 400,
-                    damping: 25,
-                    mass: 0.8,
-                }}
-                style={{
-                    width: '100%',
-                    height: '220px', // Fixed height for uniform cards
-                    borderRadius: '20px',
-                    background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                    border: '1px solid #e2e8f0',
-                    overflow: 'hidden',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    position: 'relative',
-                    padding: 0,
-                }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             >
-                {/* Animated gradient overlay */}
+                {/* Background Ambient Glow */}
                 <motion.div
-                    className="tool-card-hover-gradient"
-                    animate={{
-                        opacity: isHovered ? 1 : 0,
-                        scale: isHovered ? 1.2 : 1,
-                    }}
-                    transition={{ duration: 0.4, ease: 'easeOut' }}
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        width: '180px',
-                        height: '180px',
-                        background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%)',
-                        borderRadius: '50%',
-                        transform: 'translate(30%, -30%)',
-                        pointerEvents: 'none',
-                    }}
+                    className={`absolute -right-20 -top-20 h-48 w-48 rounded-full blur-3xl pointer-events-none ${accent.glow}`}
+                    animate={{ scale: isHovered ? 1.35 : 0.95, opacity: isHovered ? 1 : 0.35 }}
+                    transition={{ duration: 0.4 }}
+                    aria-hidden="true"
                 />
 
-                <div
-                    className="tool-card"
-                    style={{
-                        position: 'relative',
-                        padding: '1.5rem',
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                    }}
-                >
-                    {/* Header with Icon and Arrow */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div className="relative z-10 flex w-full flex-1 flex-col">
+                    <div className="flex w-full items-start justify-between gap-4">
                         <motion.div
-                            className="tool-icon-modern"
-                            animate={{
-                                background: isHovered
-                                    ? 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
-                                    : '#f8fafc',
-                                color: isHovered ? '#ffffff' : '#3b82f6',
-                                borderColor: isHovered ? 'transparent' : '#e2e8f0',
-                                scale: isHovered ? 1.05 : 1,
-                                rotate: isHovered ? 3 : 0,
-                                boxShadow: isHovered
-                                    ? '0 10px 25px rgba(59, 130, 246, 0.3)'
-                                    : '0 0 0 rgba(0, 0, 0, 0)',
-                            }}
-                            transition={{
-                                type: 'spring',
-                                stiffness: 400,
-                                damping: 20,
-                            }}
-                            style={{
-                                width: '52px',
-                                height: '52px',
-                                borderRadius: '14px',
-                                border: '1px solid #e2e8f0',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                flexShrink: 0,
-                            }}
+                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] border transition-colors duration-300 ${isHovered ? accent.iconActive : accent.iconIdle}`}
+                            animate={{ scale: isHovered ? 1.06 : 1, rotate: isHovered ? 4 : 0 }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                            aria-hidden="true"
                         >
-                            {tool.icon}
+                            <div className="scale-110">
+                                {tool.icon}
+                            </div>
                         </motion.div>
 
-                        {/* Animated Arrow indicator */}
-                        <motion.div
-                            animate={{
-                                opacity: isHovered ? 1 : 0,
-                                x: isHovered ? 0 : -10,
-                            }}
-                            transition={{
-                                type: 'spring',
-                                stiffness: 400,
-                                damping: 25,
-                            }}
-                        >
-                            <svg
-                                style={{ width: '18px', height: '18px', color: '#3b82f6' }}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                        </motion.div>
+                        <div className="flex max-w-[240px] flex-wrap justify-end gap-1.5">
+                            {tool.recommended && (
+                                <span className={`${metaBadgeClass} border-amber-200/80 bg-amber-50/80 text-amber-700 dark:border-amber-800/60 dark:bg-amber-900/20 dark:text-amber-300`}>
+                                    <Sparkles className="h-3 w-3" aria-hidden="true" />
+                                    Rec.
+                                </span>
+                            )}
+                            {isRecent && (
+                                <span className={`${metaBadgeClass} border-zinc-200 bg-white/90 text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-300`}>
+                                    <Clock3 className="h-3 w-3" aria-hidden="true" />
+                                    Recent
+                                </span>
+                            )}
+                            <span className={`${metaBadgeClass} border-zinc-200 bg-zinc-50/90 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800/70 dark:text-zinc-300`}>
+                                {categoryLabel}
+                            </span>
+                        </div>
                     </div>
 
-                    {/* Content */}
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+                    <div className="mt-5 flex min-w-0 flex-col justify-center">
                         <motion.h3
-                            className="tool-title-modern"
-                            animate={{
-                                color: isHovered ? '#3b82f6' : '#0f172a',
-                            }}
+                            className="max-w-full whitespace-normal text-[16px] font-bold leading-tight tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-[17px]"
                             transition={{ duration: 0.2 }}
-                            style={{
-                                fontSize: '1rem',
-                                fontWeight: 600,
-                                margin: 0,
-                                letterSpacing: '-0.01em',
-                            }}
                         >
                             {tool.name}
                         </motion.h3>
-                        <p
-                            style={{
-                                fontSize: '0.8rem',
-                                color: '#64748b',
-                                lineHeight: 1.5,
-                                margin: 0,
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                            }}
-                        >
-                            {tool.description}
-                        </p>
                     </div>
 
-                    {/* Bottom Badge */}
-                    <motion.div
-                        className="tool-badge-modern"
-                        animate={{
-                            background: isHovered ? '#dbeafe' : '#f0fdf4',
-                        }}
-                        transition={{ duration: 0.2 }}
-                        style={{
-                            display: 'inline-flex',
-                            marginTop: 'auto',
-                            alignItems: 'center',
-                            gap: '0.375rem',
-                            padding: '0.375rem 0.625rem',
-                            background: '#f0fdf4',
-                            borderRadius: '8px',
-                            alignSelf: 'flex-start',
-                        }}
-                    >
-                        <motion.div
-                            animate={{
-                                background: isHovered ? '#3b82f6' : '#22c55e',
-                            }}
-                            transition={{ duration: 0.2 }}
-                            style={{
-                                width: '6px',
-                                height: '6px',
-                                borderRadius: '50%',
-                            }}
-                        />
-                        <motion.span
-                            animate={{
-                                color: isHovered ? '#1d4ed8' : '#15803d',
-                            }}
-                            transition={{ duration: 0.2 }}
-                            style={{ fontSize: '0.7rem', fontWeight: 500 }}
-                        >
-                            {tool.category === 'convert' ? 'Converter' : 'Text Tool'}
+                    {/* Middle Section: Content */}
+                    <div className="mt-7 min-h-[72px] w-full text-left">
+                        <p className="text-[13px] leading-7 text-zinc-600 dark:text-zinc-400 sm:text-[14px]">
+                        {tool.description}
+                    </p>
+                </div>
+
+                    <div className="mt-6 flex min-h-[40px] flex-wrap gap-2.5">
+                        {visibleBadges.map((badge) => (
+                            <span
+                                key={badge}
+                                className={featureBadgeClass}
+                            >
+                                {badge}
+                            </span>
+                        ))}
+                        {hiddenBadgeCount > 0 && (
+                            <span className={featureBadgeClass}>
+                                +{hiddenBadgeCount}
+                            </span>
+                        )}
+                    </div>
+
+                    <div className={`mt-auto flex w-full items-center justify-between pt-6 text-sm font-bold ${accent.action}`}>
+                        <span>{tool.onClick ? 'Open workspace' : 'Choose file'}</span>
+                        <motion.span animate={{ x: isHovered ? 3 : 0 }} transition={{ type: 'spring', stiffness: 450, damping: 20 }} aria-hidden="true">
+                            <ArrowRight className="h-4 w-4" />
                         </motion.span>
-                    </motion.div>
+                    </div>
                 </div>
             </motion.button>
 
@@ -454,13 +437,7 @@ const ToolItem: React.FC<{
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.25 }}
                                 onClick={() => setIsOpen(false)}
-                                style={{
-                                    position: 'fixed',
-                                    inset: 0,
-                                    background: 'rgba(15, 23, 42, 0.6)',
-                                    backdropFilter: 'blur(8px)',
-                                    zIndex: 9998,
-                                }}
+                                className="fixed inset-0 bg-zinc-900/60 dark:bg-black/60 backdrop-blur-md z-[9998]"
                             />
 
                             {/* Modal Container */}
@@ -487,38 +464,23 @@ const ToolItem: React.FC<{
                                         stiffness: 400,
                                         mass: 0.8,
                                     }}
-                                    className="tool-modal-container"
+                                    className="relative w-[90%] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-2xl overflow-hidden pointer-events-auto"
+                                    role="dialog"
+                                    aria-modal="true"
+                                    aria-labelledby={fileModalTitleId}
+                                    aria-describedby={fileModalDescriptionId}
                                     style={{
-                                        borderRadius: '24px',
-                                        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                                        width: '90%',
                                         maxWidth: hasFiles ? '560px' : '520px',
-                                        boxShadow: '0 25px 80px -15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.05)',
-                                        pointerEvents: 'auto',
-                                        position: 'relative',
-                                        overflow: 'hidden',
                                     }}
                                 >
-                                    {/* Decorative gradient accent */}
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: 0,
-                                        left: 0,
-                                        right: 0,
-                                        height: '4px',
-                                        background: 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 50%, #3b82f6 100%)',
-                                    }} />
+                                    {/* Ambient Glow */}
+                                    <div className="absolute -top-32 -right-32 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
 
                                     {/* Modal Content */}
-                                    <div style={{ padding: '2rem' }}>
+                                    <div className="p-8">
                                         {/* Header with Icon */}
                                         <motion.div
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'flex-start',
-                                                gap: '1rem',
-                                                marginBottom: '1.5rem',
-                                            }}
+                                            className="flex items-start gap-4 mb-6 relative z-10"
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.1, type: 'spring', stiffness: 300 }}
@@ -528,49 +490,30 @@ const ToolItem: React.FC<{
                                                 initial={{ scale: 0, rotate: -180 }}
                                                 animate={{ scale: 1, rotate: 0 }}
                                                 transition={{ delay: 0.15, type: 'spring', stiffness: 400, damping: 15 }}
-                                                style={{
-                                                    width: '56px',
-                                                    height: '56px',
-                                                    borderRadius: '16px',
-                                                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    color: 'white',
-                                                    boxShadow: '0 8px 24px rgba(59, 130, 246, 0.3)',
-                                                    flexShrink: 0,
-                                                }}
+                                                className="flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50 shrink-0"
                                             >
-                                                {tool.icon}
+                                                <div className="scale-125">
+                                                    {tool.icon}
+                                                </div>
                                             </motion.div>
 
                                             {/* Title and Description */}
-                                            <div style={{ flex: 1, paddingTop: '0.25rem' }}>
+                                            <div className="flex-1 pt-0.5">
                                                 <motion.h2
+                                                    id={fileModalTitleId}
                                                     initial={{ opacity: 0, y: 10 }}
                                                     animate={{ opacity: 1, y: 0 }}
                                                     transition={{ delay: 0.15 }}
-                                                    style={{
-                                                        fontSize: '1.375rem',
-                                                        fontWeight: 700,
-                                                        color: '#0f172a',
-                                                        margin: 0,
-                                                        marginBottom: '0.375rem',
-                                                        letterSpacing: '-0.02em',
-                                                    }}
+                                                    className="text-[22px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight"
                                                 >
                                                     {tool.name}
                                                 </motion.h2>
                                                 <motion.p
+                                                    id={fileModalDescriptionId}
                                                     initial={{ opacity: 0, y: 10 }}
                                                     animate={{ opacity: 1, y: 0 }}
                                                     transition={{ delay: 0.2 }}
-                                                    style={{
-                                                        fontSize: '0.9rem',
-                                                        color: '#64748b',
-                                                        margin: 0,
-                                                        lineHeight: 1.5,
-                                                    }}
+                                                    className="mt-1.5 text-[14px] text-zinc-500 dark:text-zinc-400 leading-relaxed"
                                                 >
                                                     {tool.description}
                                                 </motion.p>
@@ -766,28 +709,17 @@ const ToolItem: React.FC<{
 
                                     {/* Close Button */}
                                     <motion.button
+                                        ref={fileModalCloseRef}
+                                        type="button"
                                         onClick={() => setIsOpen(false)}
                                         initial={{ opacity: 0, scale: 0.5 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.5 }}
                                         transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
-                                        whileHover={{ scale: 1.1, backgroundColor: '#f1f5f9' }}
+                                        whileHover={{ scale: 1.1 }}
                                         whileTap={{ scale: 0.95 }}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '1.25rem',
-                                            right: '1.25rem',
-                                            background: 'white',
-                                            border: '1px solid #e2e8f0',
-                                            cursor: 'pointer',
-                                            padding: '0.5rem',
-                                            borderRadius: '10px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: '#64748b',
-                                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-                                        }}
+                                        className="absolute top-5 right-5 p-2 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm z-20 flex items-center justify-center transition-colors"
+                                        aria-label={`Close ${tool.name} dialog`}
                                     >
                                         <svg
                                             width="18"
@@ -864,6 +796,10 @@ const ToolItem: React.FC<{
                                         position: 'relative',
                                         overflow: 'hidden',
                                     }}
+                                    role="dialog"
+                                    aria-modal="true"
+                                    aria-labelledby={tutorialTitleId}
+                                    aria-describedby={tutorialDescriptionId}
                                 >
                                     {/* Progress Bar */}
                                     <div style={{
@@ -911,10 +847,10 @@ const ToolItem: React.FC<{
                                         >
                                             {tool.icon}
                                         </motion.div>
-                                        <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111827', marginBottom: '4px' }}>
+                                        <h2 id={tutorialTitleId} style={{ fontSize: '22px', fontWeight: 700, color: '#111827', marginBottom: '4px' }}>
                                             {tool.tutorial.title}
                                         </h2>
-                                        <p style={{ fontSize: '14px', color: '#6b7280' }}>
+                                        <p id={tutorialDescriptionId} style={{ fontSize: '14px', color: '#6b7280' }}>
                                             Quick guide to get you started
                                         </p>
                                     </motion.div>
@@ -993,7 +929,8 @@ const ToolItem: React.FC<{
                                     {/* Step Indicators */}
                                     <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '20px' }}>
                                         {tool.tutorial.steps.map((_, idx) => (
-                                            <motion.div
+                                            <motion.button
+                                                type="button"
                                                 key={idx}
                                                 initial={{ scale: 0.8 }}
                                                 animate={{
@@ -1006,8 +943,12 @@ const ToolItem: React.FC<{
                                                     height: '8px',
                                                     borderRadius: '50%',
                                                     cursor: 'pointer',
+                                                    border: 0,
+                                                    padding: 0,
                                                 }}
                                                 onClick={() => setCurrentStep(idx)}
+                                                aria-label={`Go to tutorial step ${idx + 1}`}
+                                                aria-current={idx === currentStep ? 'step' : undefined}
                                             />
                                         ))}
                                     </div>
@@ -1016,6 +957,7 @@ const ToolItem: React.FC<{
                                     <div style={{ display: 'flex', gap: '12px' }}>
                                         {currentStep > 0 && (
                                             <motion.button
+                                                type="button"
                                                 initial={{ opacity: 0, x: -10 }}
                                                 animate={{ opacity: 1, x: 0 }}
                                                 onClick={handleTutorialPrev}
@@ -1046,6 +988,7 @@ const ToolItem: React.FC<{
 
                                         {currentStep < tool.tutorial.steps.length - 1 ? (
                                             <motion.button
+                                                type="button"
                                                 onClick={handleTutorialNext}
                                                 whileHover={{ scale: 1.02 }}
                                                 whileTap={{ scale: 0.98 }}
@@ -1073,6 +1016,7 @@ const ToolItem: React.FC<{
                                             </motion.button>
                                         ) : (
                                             <motion.button
+                                                type="button"
                                                 onClick={handleTutorialComplete}
                                                 whileHover={{ scale: 1.02 }}
                                                 whileTap={{ scale: 0.98 }}
@@ -1103,6 +1047,7 @@ const ToolItem: React.FC<{
 
                                     {/* Skip Button */}
                                     <motion.button
+                                        type="button"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         transition={{ delay: 0.4 }}
@@ -1123,6 +1068,8 @@ const ToolItem: React.FC<{
 
                                     {/* Close Button */}
                                     <motion.button
+                                        ref={tutorialCloseRef}
+                                        type="button"
                                         onClick={() => { setShowTutorial(false); setCurrentStep(0); }}
                                         initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
                                         animate={{ opacity: 1, scale: 1, rotate: 0 }}
@@ -1144,6 +1091,7 @@ const ToolItem: React.FC<{
                                             transition: 'all 0.2s ease',
                                         }}
                                         whileHover={{ backgroundColor: '#f3f4f6', color: '#4b5563' }}
+                                        aria-label={`Close ${tool.name} tutorial`}
                                     >
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                             <line x1="18" y1="6" x2="6" y2="18"></line>
