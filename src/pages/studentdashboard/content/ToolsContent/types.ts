@@ -17,6 +17,9 @@ export interface Tool {
     icon: React.ReactNode;
     accept: string;
     multiple: boolean;
+    badges?: string[];
+    accent?: 'blue' | 'emerald' | 'violet' | 'amber' | 'rose' | 'cyan';
+    recommended?: boolean;
     linkTo?: string;
     onClick?: () => void;
     tutorial?: ToolTutorial;

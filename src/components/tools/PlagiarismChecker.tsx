@@ -3,16 +3,24 @@
  * Text similarity and originality checker
  * Uses Copyleaks API when configured (5 accounts × 10 scans = 50/month)
  * Falls back to local checking when API not available
+ * 
+ * Premium UI - Matches Grammar Checker glassmorphism design
+ * 70/30 split layout with Tailwind CSS
  */
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
+import { NumberTicker } from "@/components/ui/number-ticker";
+import { Save, Search, ShieldCheck } from "lucide-react";
 import { 
     scanForPlagiarism, 
     isCopyleaksConfigured, 
     getCopyleaksStatus 
 } from "../../lib/plagiarism/copyleaksService";
+import { formatToolSessionTime, useToolSession } from "./useToolSession";
+import { ToolHeaderBadge } from "./ToolHeaderBadges";
+import ToolMobileSheet from "./ToolMobileSheet";
 
 interface PlagiarismCheckerProps {
     onBack: () => void;
@@ -26,32 +34,70 @@ interface SimilarityResult {
     isApiResult?: boolean;
 }
 
+interface PlagiarismSession {
+    inputText: string;
+    result: SimilarityResult | null;
+}
+
+const EMPTY_PLAGIARISM_SESSION: PlagiarismSession = {
+    inputText: '',
+    result: null,
+};
+
+const shouldPersistPlagiarismSession = (session: PlagiarismSession) =>
+    Boolean(session.inputText.trim() || session.result);
+
 const PlagiarismChecker: React.FC<PlagiarismCheckerProps> = ({ onBack }) => {
     const [inputText, setInputText] = useState('');
     const [isChecking, setIsChecking] = useState(false);
     const [result, setResult] = useState<SimilarityResult | null>(null);
-    const [isTitleHovered, setIsTitleHovered] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        const saved = localStorage.getItem('darkModeEnabled');
-        return saved === 'true' || document.body.classList.contains('dark-mode');
+    const [restoredAt, setRestoredAt] = useState<string | null>(null);
+    const [apiStatus] = useState(() => getCopyleaksStatus());
+    const currentSession = useMemo<PlagiarismSession>(() => ({
+        inputText,
+        result,
+    }), [inputText, result]);
+    const {
+        initialData,
+        initialUpdatedAt,
+        hasSavedSession,
+        lastSavedAt,
+        clearSavedSession,
+        saveImmediately,
+    } = useToolSession('plagiarism-checker', currentSession, {
+        emptySession: EMPTY_PLAGIARISM_SESSION,
+        shouldPersist: shouldPersistPlagiarismSession,
     });
 
     useEffect(() => {
-        const checkDarkMode = () => {
-            const saved = localStorage.getItem('darkModeEnabled');
-            setIsDarkMode(saved === 'true' || document.body.classList.contains('dark-mode'));
-        };
-        window.addEventListener('storage', checkDarkMode);
-        const observer = new MutationObserver(checkDarkMode);
-        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-        return () => {
-            window.removeEventListener('storage', checkDarkMode);
-            observer.disconnect();
-        };
-    }, []);
+        if (!shouldPersistPlagiarismSession(initialData)) return;
 
+        setInputText(initialData.inputText);
+        setResult(initialData.result);
+        setRestoredAt(initialUpdatedAt);
+    }, [initialData, initialUpdatedAt]);
 
-    const [apiStatus] = useState(() => getCopyleaksStatus());
+    // Helper to calculate Jaccard similarity between two strings
+    const getJaccardSimilarity = (str1: string, str2: string): number => {
+        const stopWords = new Set([
+            'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+            'of', 'with', 'by', 'from', 'is', 'are', 'was', 'were', 'be', 'been',
+            'this', 'that', 'these', 'those', 'it', 'its', 'he', 'she', 'they', 'we'
+        ]);
+        
+        const words1 = str1.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
+        const words2 = str2.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
+        
+        if (words1.length === 0 || words2.length === 0) return 0;
+        
+        const set1 = new Set(words1);
+        const set2 = new Set(words2);
+        
+        const intersection = new Set([...set1].filter(x => set2.has(x)));
+        const union = new Set([...set1, ...set2]);
+        
+        return intersection.size / union.size;
+    };
 
     // Check plagiarism - uses Copyleaks API if configured, otherwise local
     const checkPlagiarism = async () => {
@@ -72,7 +118,7 @@ const PlagiarismChecker: React.FC<PlagiarismCheckerProps> = ({ onBack }) => {
                         uniqueScore: 100 - (apiResult.percentPlagiarized || 0),
                         sentences: sentences.map(s => ({
                             text: s.trim(),
-                            similarity: 0, // API doesn't give per-sentence
+                            similarity: 0,
                         })),
                         sources: apiResult.sources,
                         isApiResult: true,
@@ -80,328 +126,546 @@ const PlagiarismChecker: React.FC<PlagiarismCheckerProps> = ({ onBack }) => {
                     setIsChecking(false);
                     return;
                 }
-                // Fall through to local check if API fails
                 console.warn('Copyleaks API failed, using local check:', apiResult.error);
             } catch (error) {
                 console.warn('Copyleaks error, using local check:', error);
             }
         }
         
-        // Local fallback
+        // Local fallback (Deterministic bibliography + repetition overlap check)
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Split into sentences
+        // Load saved references from local storage
+        let savedRefs: any[] = [];
+        try {
+            const rawRefs = localStorage.getItem('references');
+            if (rawRefs) {
+                savedRefs = JSON.parse(rawRefs);
+            }
+        } catch (e) {
+            console.error('Failed to load references for plagiarism check:', e);
+        }
+
         const sentences = inputText.match(/[^.!?]+[.!?]+/g) || [inputText];
+        const matchedSources: { url: string; title: string; percentage: number }[] = [];
         
-        // Local similarity analysis (basic)
-        const analyzedSentences = sentences.map(sentence => {
-            // Random similarity for demo - real implementation would check against databases
-            const similarity = Math.random() * 30; // Most text will show as original
+        const analyzedSentences = sentences.map((sentence, index) => {
+            let maxSim = 0;
+            let matchSource = '';
+            let matchType: 'ref' | 'self' | 'none' = 'none';
+
+            // 1. Check against saved references in Reference Manager
+            for (const ref of savedRefs) {
+                const refTitle = ref.title || '';
+                const refAuthor = ref.authors || '';
+                const refPublisher = ref.publisher || '';
+                
+                const titleSim = getJaccardSimilarity(sentence, refTitle);
+                const descSim = getJaccardSimilarity(sentence, `${refAuthor} ${refTitle} ${refPublisher}`);
+                const finalRefSim = Math.max(titleSim, descSim);
+                
+                if (finalRefSim > maxSim) {
+                    maxSim = finalRefSim;
+                    matchSource = `Saved Reference: "${ref.title}" by ${ref.authors || 'Unknown'}`;
+                    matchType = 'ref';
+                }
+            }
+
+            // 2. Check for self-plagiarism / extreme repetition within the document itself
+            if (maxSim < 0.3) {
+                for (let otherIdx = 0; otherIdx < sentences.length; otherIdx++) {
+                    const otherSentence = sentences[otherIdx];
+                    if (otherIdx !== index && sentence.trim().length > 15) {
+                        const selfSim = getJaccardSimilarity(sentence, otherSentence);
+                        if (selfSim > 0.6 && selfSim > maxSim) {
+                            maxSim = selfSim;
+                            matchSource = 'Self-plagiarism (repetitive phrasing in document)';
+                            matchType = 'self';
+                        }
+                    }
+                }
+            }
+
+            // Calculate similarity score percentage (0-100)
+            const finalScore = maxSim > 0.15 ? Math.round(maxSim * 100) : 0;
+
+            // Track sources if matched
+            if (finalScore > 20 && matchType === 'ref' && matchSource) {
+                const refName = matchSource.replace('Saved Reference: ', '');
+                const existing = matchedSources.find(s => s.title === refName);
+                if (existing) {
+                    existing.percentage = Math.max(existing.percentage, finalScore);
+                } else {
+                    matchedSources.push({
+                        title: refName,
+                        url: '#',
+                        percentage: finalScore
+                    });
+                }
+            }
+
             return {
                 text: sentence.trim(),
-                similarity: Math.round(similarity),
-                source: similarity > 20 ? 'Potential match found' : undefined
+                similarity: finalScore,
+                source: finalScore > 20 ? matchSource : undefined
             };
         });
         
-        const avgSimilarity = analyzedSentences.reduce((acc, s) => acc + s.similarity, 0) / analyzedSentences.length;
-        
+        const avgSimilarity = analyzedSentences.reduce((acc, s) => acc + s.similarity, 0) / (analyzedSentences.length || 1);
+        const finalOverallScore = Math.min(Math.round(avgSimilarity), 100);
+
         setResult({
-            score: Math.round(avgSimilarity),
-            uniqueScore: Math.round(100 - avgSimilarity),
-            sentences: analyzedSentences
+            score: finalOverallScore,
+            uniqueScore: 100 - finalOverallScore,
+            sentences: analyzedSentences,
+            sources: matchedSources.length > 0 ? matchedSources : undefined
         });
         
         setIsChecking(false);
     };
 
     const getScoreColor = (score: number) => {
-        if (score >= 80) return '#22c55e';
-        if (score >= 60) return '#f59e0b';
-        return '#ef4444';
+        if (score >= 80) return 'text-emerald-500 stroke-emerald-500';
+        if (score >= 60) return 'text-amber-500 stroke-amber-500';
+        return 'text-red-500 stroke-red-500';
     };
 
     const wordCount = inputText.trim() ? inputText.trim().split(/\s+/).length : 0;
 
+    const handleClear = () => {
+        setInputText('');
+        setResult(null);
+        setRestoredAt(null);
+    };
+
+    const handleRestoreSaved = () => {
+        setInputText(initialData.inputText);
+        setResult(initialData.result);
+        setRestoredAt(initialUpdatedAt);
+        saveImmediately(initialData);
+    };
+
+    const handleClearSaved = () => {
+        clearSavedSession();
+        setRestoredAt(null);
+    };
+
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="plag-container">
-            {/* Header */}
-            <div className="plag-header-area">
-                <motion.div
-                    className="plag-title-card"
-                    onHoverStart={() => setIsTitleHovered(true)}
-                    onHoverEnd={() => setIsTitleHovered(false)}
-                    animate={{
-                        y: isTitleHovered ? -4 : 0,
-                        boxShadow: isTitleHovered ? '0 20px 40px rgba(239, 68, 68, 0.15)' : '0 4px 20px rgba(0, 0, 0, 0.04)',
-                        borderColor: isTitleHovered ? '#ef4444' : (isDarkMode ? '#334155' : 'rgba(226, 232, 240, 0.8)')
-                    }}
-                >
-                    <motion.div className="plag-title-gradient" animate={{ opacity: isTitleHovered ? 1 : 0 }} />
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 1 }}>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="w-full max-w-[1400px] mx-auto h-auto min-h-[calc(100vh-6rem)] flex flex-col lg:flex-row gap-8"
+        >
+            {/* Main Editor Column (70%) */}
+            <div className="flex-1 flex flex-col min-w-0">
+                
+                {/* Editor Header & Actions */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 p-5 px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm relative overflow-hidden group">
+                    <div className="absolute top-1/2 left-0 -translate-y-1/2 w-32 h-32 bg-red-500/5 dark:bg-red-500/10 rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
+                    
+                    {/* Title Area */}
+                    <motion.div
+                        className="flex items-center gap-4 relative z-10"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                    >
                         <motion.div
-                            className="plag-title-icon-wrapper"
-                            animate={{
-                                background: isTitleHovered ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : (isDarkMode ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2'),
-                                color: isTitleHovered ? '#ffffff' : (isDarkMode ? '#f87171' : '#ef4444'),
-                                scale: isTitleHovered ? 1.05 : 1
-                            }}
+                            className="flex items-center justify-center w-12 h-12 rounded-[16px] bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/50"
+                            whileHover={{ scale: 1.05, rotate: -5 }}
                         >
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M9 9h6v6H9z"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 14h3"/><path d="M1 9h3"/><path d="M1 14h3"/>
                             </svg>
                         </motion.div>
-                        <div className="plag-title-content">
-                            <motion.h1 animate={{ color: isTitleHovered ? '#ef4444' : (isDarkMode ? '#f1f5f9' : '#1e293b') }}>
-                                Plagiarism Checker
-                            </motion.h1>
-                            <div className="plag-badges">
-                                <motion.span className="plag-badge plag-badge-basic">Basic • Free</motion.span>
-                                <motion.span className="plag-badge plag-badge-pro">Pro API Available</motion.span>
+                        
+                        <div className="flex flex-col">
+                            <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Plagiarism Checker</h1>
+                            <div className="mt-1 flex flex-wrap items-center gap-2">
+                                <ToolHeaderBadge icon={Search} label="Similarity" tone="rose" />
+                                <ToolHeaderBadge icon={ShieldCheck} label="Basic Free" tone="emerald" />
+                                <ToolHeaderBadge label={apiStatus.configured ? 'API Connected' : 'Basic Mode'} tone="violet" />
+                                <ToolHeaderBadge
+                                    icon={Save}
+                                    label={lastSavedAt ? `Saved ${formatToolSessionTime(lastSavedAt)}` : 'Auto-save ready'}
+                                    tone="blue"
+                                    hideOnSmall
+                                />
                             </div>
+                            <div className="hidden">
+                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase rounded-md text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    Basic • Free
+                                </span>
+                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase rounded-md text-violet-600 bg-violet-50 dark:bg-violet-900/30 dark:text-violet-400">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                    </svg>
+                                    Pro API Available
+                                </span>
+                                <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase rounded-md text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400">
+                                    {lastSavedAt ? `Saved ${formatToolSessionTime(lastSavedAt)}` : 'Auto-save ready'}
+                                </span>
+                            </div>
+                            {restoredAt && (
+                                <p className="mt-1 text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
+                                    Restored your last scan from {formatToolSessionTime(restoredAt)}.
+                                </p>
+                            )}
                         </div>
-                    </div>
-                </motion.div>
+                    </motion.div>
 
+                    {/* Action Buttons */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex items-center gap-2 w-full sm:w-auto relative z-10"
+                    >
+                        <motion.button
+                            onClick={onBack}
+                            className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                            whileHover={{ y: -1 }}
+                            whileTap={{ scale: 0.97 }}
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M19 12H5" />
+                                <polyline points="12 19 5 12 12 5" />
+                            </svg>
+                            Back
+                        </motion.button>
 
-                <motion.div className="plag-actions-bar">
-                    <motion.button onClick={onBack} className="plag-btn plag-btn-ghost"
-                        whileHover={{ x: -2, backgroundColor: 'rgba(239, 68, 68, 0.08)', color: '#ef4444' }}
-                        whileTap={{ scale: 0.97 }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
-                        Back
-                    </motion.button>
-                    <div className="plag-actions-divider"></div>
-                    <LayoutGroup>
-                        <div className="plag-actions">
-                            <motion.button layout onClick={() => { setInputText(''); setResult(null); }} className="plag-btn plag-btn-secondary" disabled={!inputText}
-                                whileHover={{ scale: 1.02, backgroundColor: '#f1f5f9' }} whileTap={{ scale: 0.97 }}>
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
+                        <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block"></div>
+
+                        <LayoutGroup>
+                            {hasSavedSession && (
+                                <motion.button
+                                    layout
+                                    onClick={handleRestoreSaved}
+                                    className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                                    whileHover={{ y: -1 }}
+                                    whileTap={{ scale: 0.97 }}
+                                >
+                                    Restore
+                                </motion.button>
+                            )}
+
+                            <motion.button
+                                layout
+                                onClick={handleClear}
+                                disabled={!inputText}
+                                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                whileHover={{ y: -1 }}
+                                whileTap={{ scale: 0.97 }}
+                            >
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                </svg>
                                 Clear
                             </motion.button>
-                            <motion.button layout onClick={checkPlagiarism} disabled={!inputText.trim() || isChecking} className="plag-btn plag-btn-primary"
-                                whileHover={{ scale: 1.02, boxShadow: '0 8px 20px rgba(239, 68, 68, 0.35)' }} whileTap={{ scale: 0.97 }}>
+
+                            <motion.button
+                                layout
+                                onClick={checkPlagiarism}
+                                disabled={!inputText.trim() || isChecking}
+                                className="flex items-center gap-1.5 px-5 py-2 text-sm font-bold text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                whileHover={{ y: -1, boxShadow: '0 8px 20px rgba(239, 68, 68, 0.35)' }}
+                                whileTap={{ scale: 0.97 }}
+                            >
                                 {isChecking ? (
-                                    <><svg className="plag-spinner" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>Checking...</>
+                                    <>
+                                        <svg className="animate-spin" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                                        </svg>
+                                        Checking...
+                                    </>
                                 ) : (
-                                    <><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>Check Plagiarism</>
+                                    <>
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                                        </svg>
+                                        Check
+                                    </>
                                 )}
                             </motion.button>
+                        </LayoutGroup>
+                    </motion.div>
+                </div>
+
+                {/* API Status Banner */}
+                <motion.div 
+                    className={`mb-6 p-4 rounded-[20px] border flex items-start gap-3 ${
+                        apiStatus.configured 
+                            ? 'bg-emerald-50/50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/30' 
+                            : 'bg-violet-50/50 dark:bg-violet-900/20 border-violet-200 dark:border-violet-800/30'
+                    }`}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                >
+                    <div className={`mt-0.5 ${apiStatus.configured ? 'text-emerald-600 dark:text-emerald-400' : 'text-violet-600 dark:text-violet-400'}`}>
+                        {apiStatus.configured ? (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                        ) : (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>
+                        )}
+                    </div>
+                    <div>
+                        <p className={`text-sm font-bold ${apiStatus.configured ? 'text-emerald-800 dark:text-emerald-300' : 'text-violet-800 dark:text-violet-300'}`}>
+                            {apiStatus.configured ? 'Copyleaks API Connected' : 'Basic Mode (No API)'}
+                        </p>
+                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                            {apiStatus.configured 
+                                ? `${apiStatus.accountCount} account(s) configured • ${apiStatus.totalScansPerMonth} scans/month available` 
+                                : 'Using local similarity checking. Add API keys for professional-grade detection.'}
+                                    </p>
+                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
+                                        Use the score as a revision signal, not a final verdict. High similarity means cite, quote, or rewrite with clearer attribution.
+                                    </p>
+                                </div>
+                            </motion.div>
+
+                {/* Text Input Area (The "Paper") */}
+                <motion.div
+                    className="flex-1 relative bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm flex flex-col overflow-hidden min-h-[500px]"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.1 }}
+                >
+                    {/* Card Header */}
+                    <div className="flex items-center gap-3 px-6 py-4 border-b border-zinc-100 dark:border-zinc-800">
+                        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
                         </div>
-                    </LayoutGroup>
+                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Your Text</span>
+                        <span className="ml-auto text-xs text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-lg">
+                            {wordCount} words
+                        </span>
+                    </div>
+
+                    {/* Textarea */}
+                    <div className="relative flex-1 w-full h-full">
+                        <textarea
+                            value={inputText}
+                            onChange={(e) => setInputText(e.target.value)}
+                            className="absolute inset-0 w-full h-full m-0 p-8 lg:p-10 font-sans text-[17px] leading-[1.8] tracking-normal whitespace-pre-wrap break-words text-left bg-transparent border-none resize-none text-zinc-800 dark:text-zinc-200 focus:ring-0 focus:outline-none z-0 placeholder:text-zinc-300 dark:placeholder:text-zinc-700 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                            placeholder="Paste your text here to check for plagiarism..."
+                            spellCheck={false}
+                        />
+                    </div>
                 </motion.div>
             </div>
 
-            {/* Info Banner */}
-            <motion.div className={`plag-info-banner ${apiStatus.configured ? 'plag-info-success' : ''}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                {apiStatus.configured ? (
-                    <>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        <div className="plag-info-content">
-                            <strong>Copyleaks API Connected</strong>
-                            <p>{apiStatus.accountCount} account(s) configured • {apiStatus.totalScansPerMonth} scans/month available • Professional-grade plagiarism detection</p>
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                        <div className="plag-info-content">
-                            <strong>Basic Mode (No API)</strong>
-                            <p>Using local similarity checking. Add Copyleaks API keys to .env.local for professional-grade detection with source matching.</p>
-                        </div>
-                    </>
-                )}
-            </motion.div>
-
-            {/* Main Content */}
-            <div className="plag-content">
-                <motion.div className="plag-input-section" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-                    <div className="plag-card-header">
-                        <div className="plag-card-icon">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                        </div>
-                        <span className="plag-card-title">Your Text</span>
-                        <span className="plag-word-count">{wordCount} words</span>
-                    </div>
-                    <textarea
-                        className="plag-textarea"
-                        placeholder="Paste your text here to check for plagiarism..."
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                    />
-                </motion.div>
-
-
-                <motion.div className="plag-results-section" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            {/* Sidebar Column (30%) */}
+            <ToolMobileSheet
+                title="Originality Results"
+                summary={result ? `${result.uniqueScore}% unique, ${result.score}% similar` : `${wordCount} words ready`}
+                actionLabel="Open originality results"
+                className="w-full lg:w-[340px] xl:w-[380px] shrink-0 flex flex-col gap-6 lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)]"
+            >
+                {/* Results Card */}
+                <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 relative overflow-hidden flex-1">
                     <AnimatePresence mode="wait">
                         {isChecking ? (
-                            <motion.div key="loading" className="plag-loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                                <div className="plag-loading-spinner"></div>
-                                <span>Analyzing your text...</span>
-                                <p>Checking for similarities</p>
+                            <motion.div 
+                                key="loading"
+                                className="flex flex-col items-center justify-center h-full min-h-[300px] gap-4"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                            >
+                                <div className="relative w-16 h-16">
+                                    <div className="absolute inset-0 rounded-full border-4 border-zinc-100 dark:border-zinc-800"></div>
+                                    <div className="absolute inset-0 rounded-full border-4 border-t-red-500 animate-spin"></div>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Analyzing...</p>
+                                    <p className="text-xs text-zinc-400 mt-1">Checking for similarities</p>
+                                </div>
                             </motion.div>
                         ) : result ? (
-                            <motion.div key="results" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                                {/* Score Cards */}
-                                <div className="plag-score-grid">
-                                    <div className="plag-score-card plag-score-unique">
-                                        <div className="plag-score-ring" style={{ '--score-color': getScoreColor(result.uniqueScore) } as React.CSSProperties}>
-                                            <svg viewBox="0 0 36 36">
-                                                <path className="plag-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                                <path className="plag-ring-fill" strokeDasharray={`${result.uniqueScore}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <motion.div 
+                                key="results" 
+                                className="flex flex-col h-full"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                            >
+                                {/* Score Rings */}
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    {/* Unique Score */}
+                                    <div className="flex flex-col items-center p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl">
+                                        <div className="relative w-20 h-20 mb-3">
+                                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                                <circle cx="18" cy="18" r="16" fill="none" className="stroke-zinc-200 dark:stroke-zinc-700" strokeWidth="3" />
+                                                <motion.circle 
+                                                    cx="18" cy="18" r="16" fill="none" 
+                                                    className={result.uniqueScore >= 80 ? 'stroke-emerald-500' : result.uniqueScore >= 60 ? 'stroke-amber-500' : 'stroke-red-500'}
+                                                    strokeWidth="3" 
+                                                    strokeLinecap="round"
+                                                    strokeDasharray="100"
+                                                    initial={{ strokeDashoffset: 100 }}
+                                                    animate={{ strokeDashoffset: 100 - result.uniqueScore }}
+                                                    transition={{ duration: 1, type: "spring" }}
+                                                />
                                             </svg>
-                                            <span className="plag-score-value">{result.uniqueScore}%</span>
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <span className={`text-lg font-bold ${getScoreColor(result.uniqueScore).split(' ')[0]}`}>
+                                                    <NumberTicker value={result.uniqueScore} className="text-lg" />%
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="plag-score-label">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
-                                            Unique Content
+                                            <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <polyline points="20 6 9 17 4 12"/>
+                                            </svg>
+                                            Unique
+                                        </span>
+                                    </div>
+
+                                    {/* Similarity Score */}
+                                    <div className="flex flex-col items-center p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl">
+                                        <div className="relative w-20 h-20 mb-3">
+                                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                                <circle cx="18" cy="18" r="16" fill="none" className="stroke-zinc-200 dark:stroke-zinc-700" strokeWidth="3" />
+                                                <motion.circle 
+                                                    cx="18" cy="18" r="16" fill="none" 
+                                                    className="stroke-amber-500"
+                                                    strokeWidth="3" 
+                                                    strokeLinecap="round"
+                                                    strokeDasharray="100"
+                                                    initial={{ strokeDashoffset: 100 }}
+                                                    animate={{ strokeDashoffset: 100 - result.score }}
+                                                    transition={{ duration: 1, type: "spring" }}
+                                                />
+                                            </svg>
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <span className="text-lg font-bold text-amber-500">
+                                                    <NumberTicker value={result.score} className="text-lg" />%
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                                            </svg>
+                                            Similar
+                                            </span>
                                         </div>
                                     </div>
-                                    <div className="plag-score-card plag-score-similar">
-                                        <div className="plag-score-ring" style={{ '--score-color': '#f59e0b' } as React.CSSProperties}>
-                                            <svg viewBox="0 0 36 36">
-                                                <path className="plag-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                                <path className="plag-ring-fill" strokeDasharray={`${result.score}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                            </svg>
-                                            <span className="plag-score-value">{result.score}%</span>
-                                        </div>
-                                        <div className="plag-score-label">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                            Similarity Found
-                                        </div>
-                                    </div>
+
+                                <div className="mb-5 rounded-2xl border border-zinc-100 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-800/40">
+                                    <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Recommended next step</p>
+                                    <p className="mt-1 text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
+                                        {result.score > 25
+                                            ? 'Review highlighted sentences, add citations, and rewrite only after you understand the source idea.'
+                                            : 'Originality looks healthy. Still cite any borrowed facts, definitions, or source-specific ideas.'}
+                                    </p>
                                 </div>
 
                                 {/* Sentence Analysis */}
-                                <div className="plag-sentences-header">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                                    Sentence Analysis
+                                <div className="flex items-center gap-2 mb-3">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-400">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                    <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Sentence Analysis</span>
                                 </div>
-                                <div className="plag-sentences-list">
+
+                                <div className="flex-1 overflow-y-auto pr-2 [scrollbar-width:thin] space-y-2 max-h-[300px]">
                                     {result.sentences.map((s, i) => (
-                                        <motion.div key={i} className={`plag-sentence-item ${s.similarity > 20 ? 'flagged' : ''}`}
-                                            initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
-                                            <div className="plag-sentence-indicator" style={{ backgroundColor: s.similarity > 20 ? '#f59e0b' : '#22c55e' }}></div>
-                                            <div className="plag-sentence-content">
-                                                <p>{s.text}</p>
-                                                {s.source && <span className="plag-sentence-source">{s.source}</span>}
+                                        <motion.div 
+                                            key={i} 
+                                            className={`flex items-start gap-3 p-3 rounded-xl ${
+                                                s.similarity > 20 
+                                                    ? 'bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30' 
+                                                    : 'bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800'
+                                            }`}
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.05 }}
+                                        >
+                                            <div 
+                                                className={`w-1 h-full min-h-[24px] rounded-full shrink-0 ${
+                                                    s.similarity > 20 ? 'bg-amber-500' : 'bg-emerald-500'
+                                                }`}
+                                            />
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-xs text-zinc-600 dark:text-zinc-300 line-clamp-2">{s.text}</p>
+                                                {s.source && (
+                                                    <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-1">{s.source}</p>
+                                                )}
                                             </div>
-                                            <span className="plag-sentence-score" style={{ color: s.similarity > 20 ? '#f59e0b' : '#22c55e' }}>{s.similarity}%</span>
+                                            <span className={`text-xs font-bold shrink-0 ${
+                                                s.similarity > 20 ? 'text-amber-500' : 'text-emerald-500'
+                                            }`}>
+                                                {s.similarity}%
+                                            </span>
                                         </motion.div>
                                     ))}
                                 </div>
                             </motion.div>
                         ) : (
-                            <motion.div key="empty" className="plag-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                                <div className="plag-empty-icon">
-                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                            <motion.div 
+                                key="empty" 
+                                className="flex flex-col items-center justify-center h-full min-h-[300px] text-center"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                            >
+                                <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 rounded-2xl flex items-center justify-center mb-4">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                                    </svg>
                                 </div>
-                                <h3>Ready to Check</h3>
-                                <p>Paste your text and click "Check Plagiarism" to analyze</p>
+                                <p className="font-bold text-zinc-700 dark:text-zinc-300">Ready to Check</p>
+                                <p className="text-xs text-zinc-400 mt-1 px-4">Paste text and click Check to analyze. Drafts and scan results auto-save locally.</p>
+                                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                                    {['Cite sources', 'Review matches', 'Rewrite ethically'].map((hint) => (
+                                        <span key={hint} className="rounded-full border border-red-100 bg-red-50 px-3 py-1 text-[11px] font-bold text-red-600 dark:border-red-800/60 dark:bg-red-900/20 dark:text-red-300">
+                                            {hint}
+                                        </span>
+                                    ))}
+                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
-                </motion.div>
-            </div>
+                </div>
 
-
-            <style>{`
-                .plag-container { min-height: 100%; padding: 24px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); }
-                body.dark-mode .plag-container { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-                .plag-header-area { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 20px; flex-wrap: wrap; }
-                .plag-title-card { padding: 20px 24px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 20px; border: 1px solid rgba(226, 232, 240, 0.8); position: relative; overflow: hidden; cursor: pointer; min-width: 320px; }
-                body.dark-mode .plag-title-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-color: #334155; }
-                .plag-title-gradient { position: absolute; top: 0; right: 0; width: 160px; height: 160px; background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 70%); border-radius: 50%; transform: translate(30%, -30%); }
-                .plag-title-icon-wrapper { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
-                .plag-title-content { display: flex; flex-direction: column; gap: 4px; }
-                .plag-title-content h1 { font-size: 22px; font-weight: 700; margin: 0; }
-                .plag-badges { display: flex; gap: 8px; }
-                .plag-badge { padding: 5px 10px; font-size: 11px; font-weight: 600; border-radius: 20px; }
-                .plag-badge-basic { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
-                .plag-badge-pro { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
-                body.dark-mode .plag-badge-basic { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
-                body.dark-mode .plag-badge-pro { background: rgba(167, 139, 250, 0.15); color: #a78bfa; }
-                .plag-actions-bar { display: flex; gap: 12px; align-items: center; }
-                .plag-actions-divider { width: 1px; height: 24px; background: #e2e8f0; }
-                body.dark-mode .plag-actions-divider { background: #334155; }
-                .plag-actions { display: flex; gap: 8px; }
-                .plag-btn { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid transparent; background: transparent; }
-                .plag-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-                .plag-btn-ghost, .plag-btn-secondary { background: white; border: 1px solid #e2e8f0; color: #64748b; }
-                .plag-btn-primary { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
-                body.dark-mode .plag-btn-ghost, body.dark-mode .plag-btn-secondary { background: #1e293b; border-color: #334155; color: #94a3b8; }
-                .plag-spinner { animation: plag-spin 1s linear infinite; }
-                @keyframes plag-spin { to { transform: rotate(360deg); } }
-                .plag-info-banner { display: flex; gap: 14px; padding: 16px 20px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 14px; margin-bottom: 20px; }
-                .plag-info-banner svg { flex-shrink: 0; color: #8b5cf6; margin-top: 2px; }
-                .plag-info-banner.plag-info-success { background: linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%); border-color: rgba(34, 197, 94, 0.3); }
-                .plag-info-banner.plag-info-success svg { color: #22c55e; }
-                body.dark-mode .plag-info-banner.plag-info-success { background: linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, rgba(16, 185, 129, 0.12) 100%); border-color: rgba(74, 222, 128, 0.3); }
-                body.dark-mode .plag-info-banner.plag-info-success svg { color: #4ade80; }
-                .plag-info-content strong { display: block; font-size: 13px; color: #1e293b; margin-bottom: 4px; }
-                .plag-info-content p { font-size: 12px; color: #64748b; margin: 0; line-height: 1.5; }
-                body.dark-mode .plag-info-banner { background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(59, 130, 246, 0.12) 100%); border-color: rgba(167, 139, 250, 0.3); }
-                body.dark-mode .plag-info-content strong { color: #f1f5f9; }
-                body.dark-mode .plag-info-content p { color: #94a3b8; }
-
-                .plag-content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-                @media (max-width: 900px) { .plag-content { grid-template-columns: 1fr; } }
-                .plag-input-section { background: white; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; min-height: 400px; display: flex; flex-direction: column; }
-                body.dark-mode .plag-input-section { background: #1e293b; border-color: #334155; }
-                .plag-card-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
-                body.dark-mode .plag-card-header { background: rgba(15, 23, 42, 0.6); border-bottom-color: #334155; }
-                .plag-card-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-                body.dark-mode .plag-card-icon { background: rgba(248, 113, 113, 0.15); color: #f87171; }
-                .plag-card-title { font-size: 13px; font-weight: 700; color: #1e293b; flex: 1; }
-                body.dark-mode .plag-card-title { color: #f1f5f9; }
-                .plag-word-count { font-size: 11px; color: #94a3b8; background: #f1f5f9; padding: 4px 8px; border-radius: 6px; }
-                body.dark-mode .plag-word-count { background: #334155; }
-                .plag-textarea { flex: 1; width: 100%; padding: 16px 18px; border: none; resize: none; font-size: 14px; line-height: 1.7; background: transparent; color: #1e293b; }
-                .plag-textarea:focus { outline: none; }
-                .plag-textarea::placeholder { color: #94a3b8; }
-                body.dark-mode .plag-textarea { color: #e2e8f0; }
-                body.dark-mode .plag-textarea::placeholder { color: #64748b; }
-                .plag-results-section { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; min-height: 400px; }
-                body.dark-mode .plag-results-section { background: #1e293b; border-color: #334155; }
-                .plag-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 350px; gap: 12px; }
-                .plag-loading span { font-size: 14px; font-weight: 600; color: #1e293b; }
-                .plag-loading p { font-size: 12px; color: #94a3b8; margin: 0; }
-                body.dark-mode .plag-loading span { color: #f1f5f9; }
-                .plag-loading-spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #ef4444; border-radius: 50%; animation: plag-spin 0.8s linear infinite; }
-                body.dark-mode .plag-loading-spinner { border-color: #334155; border-top-color: #f87171; }
-                .plag-score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-                .plag-score-card { background: #f8fafc; border-radius: 14px; padding: 20px; text-align: center; }
-                body.dark-mode .plag-score-card { background: rgba(15, 23, 42, 0.6); }
-                .plag-score-ring { width: 80px; height: 80px; margin: 0 auto 12px; position: relative; }
-                .plag-score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-                .plag-ring-bg { fill: none; stroke: #e2e8f0; stroke-width: 3; }
-                body.dark-mode .plag-ring-bg { stroke: #334155; }
-                .plag-ring-fill { fill: none; stroke: var(--score-color); stroke-width: 3; stroke-linecap: round; transition: stroke-dasharray 0.5s ease; }
-                .plag-score-value { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; font-weight: 700; color: #1e293b; }
-                body.dark-mode .plag-score-value { color: #f1f5f9; }
-                .plag-score-label { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 600; color: #64748b; }
-                body.dark-mode .plag-score-label { color: #94a3b8; }
-                .plag-sentences-header { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 12px; }
-                body.dark-mode .plag-sentences-header { color: #f1f5f9; }
-                .plag-sentences-list { display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto; }
-                .plag-sentence-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: #f8fafc; border-radius: 10px; }
-                .plag-sentence-item.flagged { background: rgba(245, 158, 11, 0.08); }
-                body.dark-mode .plag-sentence-item { background: rgba(15, 23, 42, 0.6); }
-                body.dark-mode .plag-sentence-item.flagged { background: rgba(245, 158, 11, 0.12); }
-                .plag-sentence-indicator { width: 4px; height: 100%; min-height: 40px; border-radius: 2px; flex-shrink: 0; }
-                .plag-sentence-content { flex: 1; }
-                .plag-sentence-content p { font-size: 13px; color: #475569; margin: 0 0 4px 0; line-height: 1.5; }
-                body.dark-mode .plag-sentence-content p { color: #cbd5e1; }
-                .plag-sentence-source { font-size: 11px; color: #f59e0b; }
-                .plag-sentence-score { font-size: 12px; font-weight: 700; flex-shrink: 0; }
-                .plag-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 350px; text-align: center; }
-                .plag-empty-icon { width: 80px; height: 80px; border-radius: 20px; background: rgba(148, 163, 184, 0.1); display: flex; align-items: center; justify-content: center; color: #94a3b8; margin-bottom: 16px; }
-                body.dark-mode .plag-empty-icon { background: rgba(100, 116, 139, 0.15); color: #64748b; }
-                .plag-empty h3 { font-size: 16px; font-weight: 700; color: #1e293b; margin: 0 0 8px 0; }
-                body.dark-mode .plag-empty h3 { color: #f1f5f9; }
-                .plag-empty p { font-size: 13px; color: #64748b; margin: 0; }
-                body.dark-mode .plag-empty p { color: #94a3b8; }
-            `}</style>
+                {/* Quick Stats */}
+                <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-5">
+                    {hasSavedSession && (
+                        <button
+                            onClick={handleClearSaved}
+                            className="mb-4 w-full rounded-xl bg-zinc-50 px-3 py-2 text-xs font-bold text-zinc-400 ring-1 ring-zinc-200 hover:text-red-500 dark:bg-zinc-800/50 dark:ring-zinc-800 dark:hover:text-red-400"
+                        >
+                            Clear saved scan
+                        </button>
+                    )}
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="flex flex-col items-center justify-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl">
+                            <span className="text-lg font-bold text-zinc-700 dark:text-zinc-200">
+                                <NumberTicker value={wordCount} className="text-lg" />
+                            </span>
+                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Words</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl">
+                            <span className="text-lg font-bold text-zinc-700 dark:text-zinc-200">
+                                <NumberTicker value={inputText.length} className="text-lg" />
+                            </span>
+                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Characters</span>
+                        </div>
+                    </div>
+                </div>
+            </ToolMobileSheet>
         </motion.div>
     );
 };

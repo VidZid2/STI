@@ -3,131 +3,54 @@
  * Shared UI components for ToolsContent.
  * Extracted from ToolsContent.tsx during Phase 8.7
  */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 
 // Premium Category Tabs Component with Sliding Indicator
 interface CategoryTabsProps {
-    categories: { id: string; name: string; icon: string }[];
+    categories: { id: string; name: string; icon: React.ReactNode }[];
     activeCategory: string;
     onCategoryChange: (id: string) => void;
 }
 
 const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory, onCategoryChange }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [tabDimensions, setTabDimensions] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
-    const tabRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
-
-    // Update indicator position when active category changes
-    const updateIndicator = useCallback(() => {
-        const activeTab = tabRefs.current.get(activeCategory);
-        const container = containerRef.current;
-        if (activeTab && container) {
-            const containerRect = container.getBoundingClientRect();
-            const tabRect = activeTab.getBoundingClientRect();
-            setTabDimensions({
-                left: tabRect.left - containerRect.left,
-                width: tabRect.width });
-        }
-    }, [activeCategory]);
-
-    useEffect(() => {
-        updateIndicator();
-        // Also update on window resize
-        window.addEventListener('resize', updateIndicator);
-        return () => window.removeEventListener('resize', updateIndicator);
-    }, [updateIndicator]);
-
-    // Initial measurement after mount
-    useEffect(() => {
-        const timer = setTimeout(updateIndicator, 50);
-        return () => clearTimeout(timer);
-    }, [updateIndicator]);
-
     return (
         <motion.div
-            ref={containerRef}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 25 }}
-            style={{
-                position: 'relative',
-                display: 'flex',
-                gap: '0.25rem',
-                marginBottom: '2rem',
-                padding: '0.375rem',
-                background: '#f1f5f9',
-                borderRadius: '14px',
-                border: '1px solid #e2e8f0',
-                width: 'fit-content' }}
-            className="category-tabs-container"
+            className="mb-8 flex w-full gap-2 overflow-x-auto rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm backdrop-blur-md [scrollbar-width:none] dark:border-zinc-700/50 dark:bg-zinc-800/40 sm:w-fit sm:mx-auto"
+            role="group"
+            aria-label="Tool categories"
         >
-            {/* Sliding Background Indicator */}
-            <motion.div
-                style={{
-                    position: 'absolute',
-                    top: '0.375rem',
-                    bottom: '0.375rem',
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                    borderRadius: '10px',
-                    boxShadow: '0 4px 15px rgba(59, 130, 246, 0.35)',
-                    zIndex: 0 }}
-                initial={false}
-                animate={{
-                    left: tabDimensions.left,
-                    width: tabDimensions.width }}
-                transition={{
-                    type: 'spring',
-                    stiffness: 500,
-                    damping: 35,
-                    mass: 0.8 }}
-            />
-
-            {categories.map((category, idx) => (
-                <motion.button
-                    key={category.id}
-                    ref={(el) => {
-                        if (el) tabRefs.current.set(category.id, el);
-                    }}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.25 + idx * 0.05, type: 'spring', stiffness: 300 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => onCategoryChange(category.id)}
-                    style={{
-                        position: 'relative',
-                        zIndex: 1,
-                        padding: '0.625rem 1.25rem',
-                        borderRadius: '10px',
-                        border: 'none',
-                        background: 'transparent',
-                        fontWeight: 500,
-                        fontSize: '0.85rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        whiteSpace: 'nowrap' }}
-                >
-                    <motion.span
-                        style={{ fontSize: '1rem', display: 'flex' }}
-                        animate={{
-                            scale: activeCategory === category.id ? 1.15 : 1,
-                            filter: activeCategory === category.id ? 'brightness(1.2)' : 'brightness(1)' }}
-                        transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+            {categories.map((category) => {
+                const isActive = activeCategory === category.id;
+                
+                return (
+                    <button
+                        type="button"
+                        key={category.id}
+                        onClick={() => onCategoryChange(category.id)}
+                        aria-pressed={isActive}
+                        className={`relative flex shrink-0 items-center gap-2.5 rounded-xl px-5 py-3 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:px-6 sm:text-base ${isActive ? 'text-white' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700/30'}`}
                     >
-                        {category.icon}
-                    </motion.span>
-                    <motion.span
-                        animate={{
-                            color: activeCategory === category.id ? '#ffffff' : '#64748b',
-                            fontWeight: activeCategory === category.id ? 600 : 500 }}
-                        transition={{ duration: 0.2 }}
-                    >
-                        {category.name}
-                    </motion.span>
-                </motion.button>
-            ))}
+                        {isActive && (
+                            <motion.div
+                                layoutId="activeCategoryTab"
+                                className="absolute inset-0 bg-blue-600 dark:bg-blue-500 rounded-xl shadow-md"
+                                initial={false}
+                                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                            />
+                        )}
+                        <span className="relative z-10 flex items-center" aria-hidden="true">
+                            {category.icon}
+                        </span>
+                        <span className="relative z-10">
+                            {category.name}
+                        </span>
+                    </button>
+                );
+            })}
         </motion.div>
     );
 };
@@ -135,151 +58,47 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
 
 // Premium Skeleton Loading Component for Tools
 const ToolsSkeleton: React.FC = () => (
-    <div className="tools-content">
-        {/* Hero Section Skeleton - Two Cards Layout */}
+    <div className="tools-content" role="status" aria-label="Loading tools">
+        {/* SaaS Compact Hero Section Skeleton */}
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            style={{
-                display: 'flex',
-                gap: '1rem',
-                marginBottom: '2rem',
-                alignItems: 'stretch' }}
+            className="mb-8 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8"
+            aria-hidden="true"
         >
-            {/* Main Hero Card Skeleton */}
             <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1, type: 'spring', stiffness: 300 }}
-                style={{
-                    flex: 1,
-                    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '20px',
-                    padding: '2rem 2.5rem',
-                    position: 'relative',
-                    overflow: 'hidden' }}
-            >
-                {/* Shimmer overlay */}
-                <motion.div
-                    animate={{ x: ['-100%', '100%'] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
-                        pointerEvents: 'none' }}
-                />
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                    {/* Icon skeleton */}
-                    <motion.div
-                        animate={{ opacity: [0.4, 0.7, 0.4] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                        style={{
-                            width: '72px',
-                            height: '72px',
-                            borderRadius: '20px',
-                            background: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)' }}
-                    />
-                    <div style={{ flex: 1 }}>
-                        {/* Label skeleton */}
-                        <motion.div
-                            animate={{ opacity: [0.4, 0.7, 0.4] }}
-                            transition={{ duration: 1.5, repeat: Infinity, delay: 0.1 }}
-                            style={{ width: '100px', height: '14px', background: '#e2e8f0', borderRadius: '6px', marginBottom: '0.5rem' }}
-                        />
-                        {/* Title skeleton */}
-                        <motion.div
-                            animate={{ opacity: [0.4, 0.7, 0.4] }}
-                            transition={{ duration: 1.5, repeat: Infinity, delay: 0.15 }}
-                            style={{ width: '180px', height: '28px', background: '#cbd5e1', borderRadius: '8px', marginBottom: '0.5rem' }}
-                        />
-                        {/* Description skeleton */}
-                        <motion.div
-                            animate={{ opacity: [0.4, 0.7, 0.4] }}
-                            transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
-                            style={{ width: '280px', height: '16px', background: '#e2e8f0', borderRadius: '6px', marginBottom: '1rem' }}
-                        />
-                        {/* Feature pills skeleton */}
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            {[0, 1, 2].map(i => (
-                                <motion.div
-                                    key={i}
-                                    animate={{ opacity: [0.4, 0.7, 0.4] }}
-                                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.25 + i * 0.05 }}
-                                    style={{
-                                        width: '100px',
-                                        height: '48px',
-                                        background: '#f1f5f9',
-                                        border: '1px solid #e2e8f0',
-                                        borderRadius: '10px' }}
-                                />
-                            ))}
-                        </div>
+                animate={{ x: ['-100%', '100%'] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/5 to-transparent z-10"
+            />
+            
+            <div className="flex items-center gap-6 relative z-0 w-full md:w-auto">
+                <div className="w-16 h-16 rounded-2xl bg-zinc-200 dark:bg-zinc-800 flex-shrink-0 animate-pulse" />
+                <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1">
+                        <div className="w-48 h-8 bg-zinc-300 dark:bg-zinc-700 rounded-md animate-pulse" />
+                    </div>
+                    <div className="w-72 h-4 bg-zinc-200 dark:bg-zinc-800 rounded-sm mt-2 animate-pulse" />
+                    <div className="w-48 h-4 bg-zinc-200 dark:bg-zinc-800 rounded-sm mt-2 animate-pulse" />
+                </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 relative z-0 w-full md:w-auto">
+                <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 w-40 h-[68px] animate-pulse">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-200 dark:bg-zinc-700" />
+                    <div className="flex-1">
+                        <div className="w-16 h-3 bg-zinc-200 dark:bg-zinc-700 rounded mb-1" />
+                        <div className="w-20 h-5 bg-zinc-300 dark:bg-zinc-600 rounded" />
                     </div>
                 </div>
-            </motion.div>
-
-            {/* Stats Card Skeleton */}
-            <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2, type: 'spring', stiffness: 300 }}
-                style={{
-                    width: '280px',
-                    background: 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)',
-                    borderRadius: '20px',
-                    padding: '1.5rem',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    flexShrink: 0 }}
-            >
-                {/* Shimmer overlay */}
-                <motion.div
-                    animate={{ x: ['-100%', '100%'] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: 'linear', delay: 0.3 }}
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-                        pointerEvents: 'none' }}
-                />
-                {/* Header skeleton */}
-                <motion.div
-                    animate={{ opacity: [0.3, 0.5, 0.3] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    style={{ width: '80px', height: '14px', background: 'rgba(255,255,255,0.3)', borderRadius: '6px', marginBottom: '1rem' }}
-                />
-                {/* Stats grid skeleton */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                    {[0, 1].map(i => (
-                        <div key={i} style={{ textAlign: 'center' }}>
-                            <motion.div
-                                animate={{ opacity: [0.3, 0.5, 0.3] }}
-                                transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
-                                style={{ width: '50px', height: '32px', background: 'rgba(255,255,255,0.3)', borderRadius: '8px', margin: '0 auto 0.25rem' }}
-                            />
-                            <motion.div
-                                animate={{ opacity: [0.3, 0.5, 0.3] }}
-                                transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 + 0.05 }}
-                                style={{ width: '40px', height: '10px', background: 'rgba(255,255,255,0.2)', borderRadius: '4px', margin: '0 auto' }}
-                            />
-                        </div>
-                    ))}
+                <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 w-40 h-[68px] animate-pulse">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-200 dark:bg-zinc-700" />
+                    <div className="flex-1">
+                        <div className="w-16 h-3 bg-zinc-200 dark:bg-zinc-700 rounded mb-1" />
+                        <div className="w-20 h-5 bg-zinc-300 dark:bg-zinc-600 rounded" />
+                    </div>
                 </div>
-                {/* Badge skeleton */}
-                <motion.div
-                    animate={{ opacity: [0.3, 0.5, 0.3] }}
-                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
-                    style={{ width: '100%', height: '40px', background: 'rgba(255,255,255,0.15)', borderRadius: '10px' }}
-                />
-            </motion.div>
+            </div>
         </motion.div>
 
         {/* Category Tabs Skeleton */}
@@ -287,6 +106,7 @@ const ToolsSkeleton: React.FC = () => (
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
+            aria-hidden="true"
             style={{
                 display: 'flex',
                 gap: '0.25rem',
@@ -316,10 +136,11 @@ const ToolsSkeleton: React.FC = () => (
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
+            aria-hidden="true"
             style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                gap: '1.25rem' }}
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 360px), 1fr))',
+                gap: '2rem' }}
         >
             {[...Array(7)].map((_, i) => (
                 <motion.div
@@ -328,11 +149,11 @@ const ToolsSkeleton: React.FC = () => (
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 + i * 0.05, type: 'spring', stiffness: 300 }}
                     style={{
-                        height: '220px',
+                        height: '404px',
                         background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
                         border: '1px solid #e2e8f0',
                         borderRadius: '20px',
-                        padding: '1.5rem',
+                        padding: '2rem',
                         position: 'relative',
                         overflow: 'hidden' }}
                 >
