@@ -11,7 +11,6 @@ import {
     getPathStats, 
     getDifficultyInfo,
     getPathCourses,
-    getPathTotalModules,
     type PathWithProgress 
 } from '../../../services/pathsService';
 
@@ -253,8 +252,7 @@ PathItem.displayName = 'PathItem';
 const ContinuePathCard: React.FC<{
     path: PathWithProgress;
     onPathClick?: (id: string) => void;
-    isDark: boolean;
-}> = ({ path, onPathClick, isDark }) => {
+}> = ({ path, onPathClick }) => {
     const difficultyInfo = getDifficultyInfo(path.difficulty);
     const progress = path.progress?.progress_percentage || 0;
 
@@ -452,7 +450,6 @@ const SidebarPathsDropdown: React.FC<SidebarPathsDropdownProps> = ({
                         <ContinuePathCard 
                             path={activePath} 
                             onPathClick={onPathClick} 
-                            isDark={isDarkMode} 
                         />
                     )}
 

@@ -41,7 +41,7 @@ const SettingItem: React.FC<SettingItemProps> = ({ icon, title, description, ena
                         : (isDark ? 'bg-zinc-800 border-zinc-700/50 text-zinc-500' : 'bg-slate-50 border-slate-200 text-slate-400')
                 }`}
             >
-                {React.cloneElement(icon as React.ReactElement, { className: 'w-[18px] h-[18px]', strokeWidth: "2.5" })}
+                {React.cloneElement(icon as React.ReactElement<any>, { className: 'w-[18px] h-[18px]', strokeWidth: "2.5" })}
             </motion.div>
             
             <div className="flex-1 min-w-0 pr-2">

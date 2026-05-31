@@ -15,7 +15,7 @@
 import * as React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { ArrowLeft, BookMarked, BookOpen, Bookmark, CheckCircle2, ClipboardCheck, Globe2, Newspaper, RotateCcw, Save, Search, Sparkles, Trash2, Zap, Type, Layers, FileText } from "lucide-react";
+import { BookMarked, BookOpen, Bookmark, CheckCircle2, ClipboardCheck, Globe2, Newspaper, Save, Search, Sparkles, Zap, Type, Layers, FileText } from "lucide-react";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";

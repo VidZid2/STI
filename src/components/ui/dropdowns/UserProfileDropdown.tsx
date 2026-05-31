@@ -69,7 +69,6 @@ export default function UserProfileDropdown() {
     const [showLevelUp, setShowLevelUp] = useState(false);
     const shouldReduceMotion = useReducedMotion();
     const [lastTotalXP, setLastTotalXP] = useState(() => getXPData().totalXP);
-    const coverInputRef = useRef<HTMLInputElement>(null);
     const profileInputRef = useRef<HTMLInputElement>(null);
     const ref = useRef<HTMLDivElement>(null!);
     const modalRef = useRef<HTMLDivElement>(null);
@@ -85,7 +84,7 @@ export default function UserProfileDropdown() {
             // Check if XP increased
             if (currentData.totalXP > lastTotalXP) {
                 const gained = currentData.totalXP - lastTotalXP;
-                setXpGain(gained);
+                setXpGain({ amount: gained, id: Date.now() });
                 setLastTotalXP(currentData.totalXP); // Update the tracked XP
                 
                 // Hide the +XP popup after 6 seconds (as per requirement)
@@ -633,7 +632,7 @@ export default function UserProfileDropdown() {
                                         className="text-[10px] font-medium mt-0.5 leading-tight whitespace-nowrap truncate flex items-center gap-1"
                                         style={{ color: isDarkMode ? '#94a3b8' : '#64748b' }}
                                     >
-                                        <span style={{ color: isDarkMode ? '#60a5fa' : '#3b82f6', fontWeight: 700 }}>+{xpGain} XP</span> earned
+                                        <span style={{ color: isDarkMode ? '#60a5fa' : '#3b82f6', fontWeight: 700 }}>+{xpGain.amount} XP</span> earned
                                     </div>
                                 </div>
                             </div>
