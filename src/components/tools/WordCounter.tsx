@@ -13,7 +13,7 @@
 import * as React from "react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { FileText, Save, ShieldCheck } from "lucide-react";
+import { Save } from "lucide-react";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
@@ -77,9 +77,13 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
   const [copySuccess, setCopySuccess] = useState(false);
   const [showCliches, setShowCliches] = useState(false);
   const [showActiveVoiceTips, setShowActiveVoiceTips] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const [restoredAt, setRestoredAt] = useState<string | null>(null);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPageLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
 
   const currentSession = useMemo<WordCounterSession>(() => ({
     text,
@@ -87,7 +91,6 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
 
   const {
     initialData,
-    initialUpdatedAt,
     hasSavedSession,
     lastSavedAt,
     clearSavedSession,
@@ -101,18 +104,15 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
     if (!shouldPersistWordCounterSession(initialData)) return;
 
     setText(initialData.text);
-    setRestoredAt(initialUpdatedAt);
-  }, [initialData, initialText, initialUpdatedAt]);
+  }, [initialData, initialText]);
 
   const handleRestoreSaved = () => {
     if (!shouldPersistWordCounterSession(initialData)) return;
     setText(initialData.text);
-    setRestoredAt(initialUpdatedAt);
   };
 
   const handleClearSaved = () => {
     clearSavedSession();
-    setRestoredAt(null);
   };
 
   // Calculate comprehensive statistics
@@ -240,7 +240,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
       toneScore = Math.max(0, Math.min(100, rawScore));
       if (toneScore >= 85) {
         toneLevel = "Highly Academic / Formal";
-        toneColor = "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/20 border-emerald-200/50 dark:border-emerald-800/30";
+        toneColor = "text-cyan-600 bg-cyan-50 dark:text-cyan-400 dark:bg-cyan-950/20 border-cyan-200/50 dark:border-cyan-800/30";
       } else if (toneScore >= 70) {
         toneLevel = "Standard Academic";
         toneColor = "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-950/20 border-blue-200/50 dark:border-blue-800/30";
@@ -327,7 +327,6 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
 
   const handleClear = () => {
     setText("");
-    setRestoredAt(null);
     if (textareaRef.current) {
       textareaRef.current.focus();
     }
@@ -417,6 +416,101 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
     },
   ];
 
+  // Loading Skeleton
+  if (isPageLoading) {
+      return (
+          <div className="w-full max-w-[1400px] mx-auto h-auto min-h-[calc(100vh-6rem)] flex flex-col lg:flex-row gap-8 p-0 sm:p-0" role="status" aria-busy="true" aria-label="Loading Word Counter">
+              {/* Main Editor Column Skeleton */}
+              <div className="flex-1 flex flex-col min-w-0">
+                  {/* Header Skeleton */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 p-5 px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm relative overflow-hidden">
+                      <div className="flex items-center gap-4">
+                          <div className="skeleton-bone w-12 h-12 rounded-[16px] bg-zinc-200 dark:bg-zinc-800" />
+                          <div className="flex flex-col gap-2 skeleton-stagger">
+                              <div className="skeleton-bone w-32 h-6 rounded-md bg-zinc-200 dark:bg-zinc-800" />
+                              <div className="skeleton-bone w-48 h-4 rounded-md bg-zinc-100 dark:bg-zinc-800/50" />
+                          </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                          <div className="skeleton-bone w-20 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800/50 hidden sm:block" />
+                          <div className="skeleton-bone w-px h-6 bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block" />
+                          <div className="skeleton-bone w-20 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800/50 hidden sm:block" />
+                          <div className="skeleton-bone w-20 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800/50" />
+                      </div>
+                  </div>
+
+                  {/* Text Area Skeleton */}
+                  <div className="flex-1 relative bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm flex flex-col overflow-hidden min-h-[500px]">
+                      <div className="flex-1 p-8 lg:p-10 flex flex-col gap-4 skeleton-stagger">
+                          <div className="skeleton-bone w-full h-4 rounded bg-zinc-100 dark:bg-zinc-800/50" />
+                          <div className="skeleton-bone w-11/12 h-4 rounded bg-zinc-100 dark:bg-zinc-800/50" />
+                          <div className="skeleton-bone w-10/12 h-4 rounded bg-zinc-100 dark:bg-zinc-800/50" />
+                          <div className="skeleton-bone w-4/5 h-4 rounded bg-zinc-100 dark:bg-zinc-800/50" />
+                      </div>
+                  </div>
+              </div>
+
+              {/* Sidebar Column Skeleton */}
+              <div className="w-full lg:w-[340px] xl:w-[380px] shrink-0 flex flex-col gap-6 lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)]">
+                  {/* Document Stats Card Skeleton */}
+                  <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 relative overflow-hidden">
+                      <div className="flex items-center gap-3 mb-6">
+                          <div className="skeleton-bone w-10 h-10 rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+                          <div className="skeleton-bone w-32 h-5 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                          {[1, 2, 3, 4, 5, 6].map((i) => (
+                              <div key={i} className="flex flex-col items-start p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 skeleton-stagger">
+                                  <div className="skeleton-bone w-6 h-6 bg-zinc-200 dark:bg-zinc-800 rounded-md mb-2" />
+                                  <div className="skeleton-bone w-16 h-8 bg-zinc-200 dark:bg-zinc-800 rounded-md mb-1" />
+                                  <div className="skeleton-bone w-12 h-3 bg-zinc-100 dark:bg-zinc-800/50 rounded" />
+                              </div>
+                          ))}
+                      </div>
+                  </div>
+
+                  {/* Time Estimates Card Skeleton */}
+                  <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 relative overflow-hidden">
+                      <div className="flex items-center gap-3 mb-6">
+                          <div className="skeleton-bone w-10 h-10 rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+                          <div className="skeleton-bone w-32 h-5 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                      </div>
+                      <div className="flex flex-col gap-3">
+                          {[1, 2].map((i) => (
+                              <div key={i} className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                                  <div className="flex items-center gap-3">
+                                      <div className="skeleton-bone w-6 h-6 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                      <div className="skeleton-bone w-16 h-4 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                  </div>
+                                  <div className="skeleton-bone w-12 h-6 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                              </div>
+                          ))}
+                      </div>
+                  </div>
+
+                  {/* Style & Tone Card Skeleton */}
+                  <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 relative overflow-hidden">
+                      <div className="flex items-center gap-3 mb-6">
+                          <div className="skeleton-bone w-10 h-10 rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+                          <div className="skeleton-bone w-32 h-5 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                      </div>
+                      <div className="flex flex-col gap-4">
+                          {[1, 2, 3, 4].map((i) => (
+                              <div key={i} className="flex flex-col gap-2 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                                  <div className="flex justify-between items-center">
+                                      <div className="skeleton-bone w-24 h-4 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                      <div className="skeleton-bone w-12 h-6 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                  </div>
+                                  <div className="skeleton-bone w-full h-8 bg-zinc-100 dark:bg-zinc-800/50 rounded-md mt-2" />
+                              </div>
+                          ))}
+                      </div>
+                  </div>
+              </div>
+          </div>
+      );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -435,13 +529,14 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
           {/* Title Area */}
           <motion.div
             className="flex items-center gap-4 relative z-10"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
           >
             <motion.div
-              className="flex items-center justify-center w-12 h-12 rounded-[16px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50"
+              className="flex items-center justify-center w-12 h-12 rounded-[16px] bg-cyan-50 border border-cyan-200 dark:bg-cyan-900/30 dark:border-cyan-800/60 text-cyan-600 dark:text-cyan-400 shadow-sm ring-4 ring-white/50 dark:ring-zinc-900/50"
               whileHover={{ scale: 1.05, rotate: -5 }}
+              transition={{ type: 'spring', damping: 20, stiffness: 350 }}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -451,46 +546,40 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
             <div className="flex flex-col">
               <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Word Counter</h1>
               <div className="mt-1 flex flex-wrap items-center gap-2">
-                <ToolHeaderBadge icon={ShieldCheck} label="Works Offline" tone="blue" />
-                <ToolHeaderBadge icon={FileText} label="Text Analytics" tone="zinc" />
                 <ToolHeaderBadge
                   icon={Save}
                   label={lastSavedAt ? `Saved ${formatToolSessionTime(lastSavedAt)}` : 'Auto-save ready'}
-                  tone="emerald"
+                  tone="cyan"
                   hideOnSmall
                 />
               </div>
-              {restoredAt && (
-                <p className="mt-1 text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
-                  Restored your draft from {formatToolSessionTime(restoredAt)}.
-                </p>
-              )}
             </div>
           </motion.div>
 
           {/* Action Buttons */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
             className="flex items-center gap-2 w-full sm:w-auto relative z-10"
           >
-            <motion.button
-              onClick={onBack}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5" />
-                <polyline points="12 19 5 12 12 5" />
-              </svg>
-              Back
-            </motion.button>
-
-            <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block"></div>
-
             <LayoutGroup>
+              <motion.button
+                layout
+                onClick={onBack}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
+                Back
+              </motion.button>
+
+              <motion.div layout transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }} className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block"></motion.div>
               {hasSavedSession && (
                 <motion.button
                   layout
@@ -498,6 +587,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                   className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.97 }}
+                  transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
                 >
                   Restore
                 </motion.button>
@@ -510,6 +600,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                 className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.97 }}
+                transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
               >
                 Sample
               </motion.button>
@@ -525,11 +616,12 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                       onClick={handleCopy}
                       className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold rounded-xl transition-colors ${
                         copySuccess 
-                          ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
+                          ? 'bg-cyan-50 text-cyan-600 dark:bg-cyan-900/20 dark:text-cyan-400'
                           : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
                       }`}
                       whileHover={{ y: -1 }}
                       whileTap={{ scale: 0.97 }}
+                      transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
                     >
                       {copySuccess ? 'Copied!' : 'Copy'}
                     </motion.button>
@@ -543,6 +635,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                       className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
                       whileHover={{ y: -1 }}
                       whileTap={{ scale: 0.97 }}
+                      transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
                     >
                       Clear
                     </motion.button>
@@ -555,30 +648,57 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
 
         {/* Text Area (The "Paper") */}
         <motion.div
-          className="flex-1 relative bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm flex flex-col overflow-hidden min-h-[500px]"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+          className="flex-1 relative bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[24px] shadow-md hover:shadow-lg overflow-hidden min-h-[500px] focus-within:border-cyan-400 dark:focus-within:border-cyan-500 focus-within:ring-4 focus-within:ring-cyan-500/10 dark:focus-within:ring-cyan-500/10 transition-all duration-300 flex flex-col group"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
           {/* Subtle top indicator for typing */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500/0 via-blue-500 to-blue-500/0 opacity-0 transition-opacity duration-300" style={{ opacity: isTyping ? 1 : 0 }} />
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500/0 via-cyan-500 to-cyan-500/0 opacity-0 transition-opacity duration-300" style={{ opacity: isTyping ? 1 : 0 }} />
           
+          {/* Editor Header */}
+          <div className="border-b border-zinc-100 dark:border-zinc-800 overflow-x-auto [scrollbar-width:none]">
+              <div className="flex items-center justify-between min-w-full w-max px-6 py-4">
+                  {/* Title moved to left */}
+                  <div className="flex items-center gap-3 shrink-0 pr-6">
+                      <motion.div
+                          whileHover={{ scale: 1.05, rotate: -5 }}
+                          transition={{ type: 'spring', damping: 20, stiffness: 350 }}
+                          className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-cyan-50/80 dark:bg-cyan-900/30 border border-cyan-200 shadow-sm ring-4 ring-white/50 dark:border-cyan-800/60 dark:ring-zinc-900/50 text-cyan-600 dark:text-cyan-400"
+                      >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                          </svg>
+                      </motion.div>
+                      <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Text Editor</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 shrink-0">
+                      <span className="whitespace-nowrap text-[11px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
+                          {stats.words.toLocaleString()} words
+                      </span>
+
+                      {hasSavedSession && (
+                          <button
+                            onClick={handleClearSaved}
+                            className="whitespace-nowrap text-[11px] font-bold text-rose-500 hover:text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/20 px-3 py-1.5 rounded-lg border border-rose-200/50 dark:border-rose-800/50 transition-colors shrink-0"
+                          >
+                            Clear saved
+                          </button>
+                      )}
+                  </div>
+              </div>
+          </div>
+
           <textarea
             ref={textareaRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="flex-1 w-full p-8 lg:p-10 bg-transparent border-none resize-none text-zinc-800 dark:text-zinc-200 focus:ring-0 focus:outline-none text-lg leading-relaxed placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
+            className="flex-1 w-full p-6 lg:p-8 bg-transparent border-none resize-none text-zinc-800 dark:text-zinc-200 focus:ring-0 focus:outline-none text-lg leading-relaxed placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
             placeholder="Start typing, or paste your document here..."
             spellCheck="false"
           />
-          {hasSavedSession && (
-            <button
-              onClick={handleClearSaved}
-              className="absolute bottom-4 right-5 rounded-full bg-white/80 px-3 py-1.5 text-xs font-bold text-zinc-400 shadow-sm ring-1 ring-zinc-200 hover:text-red-500 dark:bg-zinc-900/80 dark:ring-zinc-800 dark:hover:text-red-400"
-            >
-              Clear saved draft
-            </button>
-          )}
         </motion.div>
       </div>
 
@@ -591,156 +711,254 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
       >
         
         {/* Statistics Grid */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-colors pointer-events-none" />
+        <motion.div 
+            className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 lg:p-7 flex flex-col relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-cyan-200/80 dark:hover:border-cyan-800/50"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+        >
+            {/* SaaS Background Accents (matches ToolsHeader) */}
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
             
-            <div className="flex items-center gap-3 mb-6 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="20" x2="18" y2="10" />
-                    <line x1="12" y1="20" x2="12" y2="4" />
-                    <line x1="6" y1="20" x2="6" y2="14" />
-                  </svg>
-              </div>
-              <h3 className="font-bold text-zinc-900 dark:text-zinc-100">Document Stats</h3>
+            <div className="flex items-center gap-5 mb-6 relative z-10 w-full">
+                <motion.div
+                    whileHover={{ scale: 1.05, rotate: -5 }}
+                    transition={{ type: 'spring', damping: 20, stiffness: 350 }}
+                    className="w-16 h-16 rounded-[20px] bg-cyan-50 border border-cyan-200 dark:bg-cyan-900/30 dark:border-cyan-800/60 flex items-center justify-center flex-shrink-0 shadow-sm ring-4 ring-white/50 dark:ring-zinc-900/50"
+                >
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-cyan-600 dark:text-cyan-400">
+                        <line x1="18" y1="20" x2="18" y2="10" />
+                        <line x1="12" y1="20" x2="12" y2="4" />
+                        <line x1="6" y1="20" x2="6" y2="14" />
+                    </svg>
+                </motion.div>
+                
+                <div>
+                    <h2 className="text-[22px] sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-1">
+                        Document Stats
+                    </h2>
+                    <p className="text-[13px] sm:text-[14px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                        Real-time quantitative analysis
+                    </p>
+                </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 relative z-10">
+            <div className="grid grid-cols-2 gap-3 relative z-10 mt-2">
               {statItems.map((stat) => (
                   <div
                       key={stat.label}
-                      className="flex flex-col items-start p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-blue-200 dark:hover:border-blue-800 group/stat"
+                      className="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-cyan-200 dark:hover:border-cyan-800/50 group/stat"
                   >
-                      <div className="text-zinc-400 dark:text-zinc-500 mb-2 group-hover/stat:text-blue-500 transition-colors">
-                          {stat.icon}
+                      <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                          <div className="text-blue-600 dark:text-blue-400">
+                             {stat.icon}
+                          </div>
                       </div>
-                      <span className="text-2xl font-black text-zinc-900 dark:text-zinc-100 mb-0.5">{stat.value.toLocaleString()}</span>
-                      <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">{stat.label}</span>
+                      <div className="flex flex-col overflow-hidden w-full">
+                          <span className="text-[10px] sm:text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 truncate">{stat.label}</span>
+                          <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none truncate">{stat.value.toLocaleString()}</span>
+                      </div>
                   </div>
               ))}
             </div>
-        </div>
+        </motion.div>
 
         {/* Time Estimates */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 relative overflow-hidden group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors pointer-events-none" />
+        <motion.div 
+            className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-cyan-200/80 dark:hover:border-cyan-800/50"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
+        >
+             {/* SaaS Background Accents (matches ToolsHeader) */}
+             <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+             <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
              
-             <div className="flex items-center gap-3 mb-6 relative z-10">
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:indigo-400">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+             <div className="flex items-center gap-5 mb-6 relative z-10 w-full">
+                <motion.div
+                    whileHover={{ scale: 1.05, rotate: -5 }}
+                    transition={{ type: 'spring', damping: 20, stiffness: 350 }}
+                    className="w-16 h-16 rounded-[20px] bg-cyan-50 border border-cyan-200 dark:bg-cyan-900/30 dark:border-cyan-800/60 flex items-center justify-center flex-shrink-0 shadow-sm ring-4 ring-white/50 dark:ring-zinc-900/50"
+                >
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-cyan-600 dark:text-cyan-400">
                       <circle cx="12" cy="12" r="10" />
                       <polyline points="12 6 12 12 16 14" />
                     </svg>
+                </motion.div>
+
+                <div>
+                    <h2 className="text-[22px] sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-1">
+                        Time Estimates
+                    </h2>
+                    <p className="text-[13px] sm:text-[14px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                        Expected reading duration
+                    </p>
                 </div>
-                <h3 className="font-bold text-zinc-900 dark:text-zinc-100">Time Estimates</h3>
              </div>
 
              <div className="flex flex-col gap-3 relative z-10">
                  {/* Reading */}
-                 <div className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-indigo-200 dark:hover:border-indigo-800">
-                    <div className="flex items-center gap-3">
-                      <div className="text-indigo-500 dark:text-indigo-400">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                          </svg>
-                      </div>
-                      <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400">Reading</span>
+                 <div className="flex flex-col gap-3 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-cyan-200 dark:hover:border-cyan-800/50 group/insight">
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600 dark:text-indigo-400">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                                </svg>
+                            </div>
+                            <div className="flex flex-col">
+                                <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Reading</p>
+                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">{stats.readingTime}</p>
+                            </div>
+                        </div>
                     </div>
-                    <span className="text-lg font-black text-zinc-900 dark:text-zinc-100">{stats.readingTime}</span>
                  </div>
 
                  {/* Speaking */}
-                 <div className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-indigo-200 dark:hover:border-indigo-800">
-                    <div className="flex items-center gap-3">
-                      <div className="text-indigo-500 dark:text-indigo-400">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-                              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                              <line x1="12" y1="19" x2="12" y2="23" />
-                              <line x1="8" y1="23" x2="16" y2="23" />
-                          </svg>
-                      </div>
-                      <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400">Speaking</span>
+                 <div className="flex flex-col gap-3 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-cyan-200 dark:hover:border-cyan-800/50 group/insight">
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600 dark:text-indigo-400">
+                                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                                    <line x1="12" y1="19" x2="12" y2="23" />
+                                    <line x1="8" y1="23" x2="16" y2="23" />
+                                </svg>
+                            </div>
+                            <div className="flex flex-col">
+                                <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Speaking</p>
+                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">{stats.speakingTime}</p>
+                            </div>
+                        </div>
                     </div>
-                    <span className="text-lg font-black text-zinc-900 dark:text-zinc-100">{stats.speakingTime}</span>
                  </div>
              </div>
-        </div>
+        </motion.div>
 
         {/* Style & Tone Insights Card */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 relative overflow-hidden group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-colors pointer-events-none" />
+        <motion.div 
+            className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-cyan-200/80 dark:hover:border-cyan-800/50"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.2 }}
+        >
+             {/* SaaS Background Accents (matches ToolsHeader) */}
+             <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+             <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
              
-             <div className="flex items-center gap-3 mb-6 relative z-10">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+             <div className="flex items-center gap-5 mb-6 relative z-10 w-full">
+                <motion.div
+                    whileHover={{ scale: 1.05, rotate: -5 }}
+                    transition={{ type: 'spring', damping: 20, stiffness: 350 }}
+                    className="w-16 h-16 rounded-[20px] bg-cyan-50 border border-cyan-200 dark:bg-cyan-900/30 dark:border-cyan-800/60 flex items-center justify-center flex-shrink-0 shadow-sm ring-4 ring-white/50 dark:ring-zinc-900/50"
+                >
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-cyan-600 dark:text-cyan-400">
                         <path d="M12 2L2 7l10 5 10-5-10-5z" />
                         <path d="M2 17l10 5 10-5" />
                         <path d="M2 12l10 5 10-5" />
                     </svg>
+                </motion.div>
+
+                <div>
+                    <h2 className="text-[22px] sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-1">
+                        Style & Tone
+                    </h2>
+                    <p className="text-[13px] sm:text-[14px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                        Advanced writing insights
+                    </p>
                 </div>
-                <h3 className="font-bold text-zinc-900 dark:text-zinc-100">Style & Tone</h3>
              </div>
 
              <div className="flex flex-col gap-4 relative z-10">
                  {/* Readability Score */}
-                 <div className="flex flex-col gap-2 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-blue-200 dark:hover:border-blue-800">
-                    <div className="flex justify-between items-center">
-                       <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400">Readability (ARI)</span>
-                       <span className="text-lg font-black text-zinc-900 dark:text-zinc-100">{stats.ariScore || "0"}</span>
+                 <div className="flex flex-col gap-3 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-cyan-200 dark:hover:border-cyan-800/50 group/insight">
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                                </svg>
+                            </div>
+                            <div className="flex flex-col">
+                                <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Readability (ARI)</p>
+                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">{stats.ariScore || "0"}</p>
+                            </div>
+                        </div>
+                        {stats.words > 0 ? (
+                           <div className={`inline-flex items-center justify-center px-2.5 py-1 text-[11px] font-bold rounded-lg whitespace-nowrap shrink-0 ${stats.ariColor}`}>
+                              {stats.ariGrade}
+                           </div>
+                        ) : (
+                           <div className="inline-flex items-center justify-center px-2.5 py-1 text-[11px] font-bold rounded-lg whitespace-nowrap shrink-0 text-zinc-400 dark:text-zinc-500 italic bg-zinc-100 dark:bg-zinc-800">
+                              Type text...
+                           </div>
+                        )}
                     </div>
-                    {stats.words > 0 ? (
-                       <div className={`wc-insight-badge ${stats.ariColor}`}>
-                          {stats.ariGrade}
-                       </div>
-                    ) : (
-                       <div className="text-xs text-zinc-400 dark:text-zinc-500 italic text-center">
-                          Type text to compute readability
-                       </div>
-                    )}
                  </div>
 
                  {/* Tone Strength Index */}
-                 <div className="flex flex-col gap-3 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-blue-200 dark:hover:border-blue-800">
-                    <div className="flex justify-between items-center">
-                       <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400">Formal Tone</span>
-                       <span className="text-lg font-black text-zinc-900 dark:text-zinc-100">{stats.toneScore}%</span>
+                 <div className="flex flex-col gap-3 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 shadow-sm transition-colors hover:border-purple-300 dark:hover:border-purple-700 group/insight">
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600 dark:text-purple-400">
+                                    <path d="M12 2v20" />
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                                </svg>
+                            </div>
+                            <div className="flex flex-col">
+                                <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Formal Tone</p>
+                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">{stats.toneScore}%</p>
+                            </div>
+                        </div>
+                        {stats.words > 0 ? (
+                           <div className={`inline-flex items-center justify-center px-2.5 py-1 text-[11px] font-bold rounded-lg whitespace-nowrap shrink-0 ${stats.toneColor}`}>
+                              {stats.toneLevel}
+                           </div>
+                        ) : (
+                           <div className="inline-flex items-center justify-center px-2.5 py-1 text-[11px] font-bold rounded-lg whitespace-nowrap shrink-0 text-zinc-400 dark:text-zinc-500 italic bg-zinc-100 dark:bg-zinc-800">
+                              Type text...
+                           </div>
+                        )}
                     </div>
-                    
                     {/* Progress Bar */}
-                    <div className="wc-insight-progress-bg">
+                    <div className="wc-insight-progress-bg mt-1">
                        <div 
-                          className="wc-insight-progress-bar" 
+                          className="wc-insight-progress-bar bg-purple-500" 
                           style={{ width: `${stats.toneScore}%` }}
                        />
                     </div>
-
-                    {stats.words > 0 ? (
-                       <div className={`wc-insight-badge ${stats.toneColor}`}>
-                          {stats.toneLevel}
-                       </div>
-                    ) : (
-                       <div className="text-xs text-zinc-400 dark:text-zinc-500 italic text-center">
-                          Type text to evaluate tone
-                       </div>
-                    )}
                  </div>
 
                  {/* Passive Voice */}
-                 <div className="flex flex-col gap-2 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-blue-200 dark:hover:border-blue-800">
-                    <div className="flex justify-between items-center">
-                       <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400">Passive Voice</span>
-                       <span className="text-sm font-black text-zinc-900 dark:text-zinc-100">
-                          {stats.passiveCount} ({stats.passiveDensity}%)
-                       </span>
+                 <div className="flex flex-col gap-3 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 shadow-sm transition-colors hover:border-amber-300 dark:hover:border-amber-700 group/insight">
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-600 dark:text-amber-400">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                    <line x1="12" y1="9" x2="12" y2="13" />
+                                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                                </svg>
+                            </div>
+                            <div className="flex flex-col">
+                                <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Passive Voice</p>
+                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">
+                                   {stats.passiveCount} <span className="text-sm font-medium text-zinc-500">({stats.passiveDensity}%)</span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                     
                     {stats.passiveCount > 0 && (
                        <>
                           <button 
                              onClick={() => setShowActiveVoiceTips(!showActiveVoiceTips)}
-                             className="wc-insight-toggle-btn"
+                             className="wc-insight-toggle-btn mt-1"
                           >
                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <circle cx="12" cy="12" r="10" />
@@ -762,7 +980,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                                    <div className="mt-1 font-semibold text-zinc-700 dark:text-zinc-300">
                                       ✗ Passive: <span className="italic font-normal">The paper was written by John.</span>
                                    </div>
-                                   <div className="font-semibold text-blue-600 dark:text-blue-400">
+                                   <div className="font-semibold text-amber-600 dark:text-amber-400">
                                       ✓ Active: <span className="italic font-normal">John wrote the paper.</span>
                                    </div>
                                 </motion.div>
@@ -773,19 +991,32 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                  </div>
 
                  {/* Cliches & Redundancies */}
-                 <div className="flex flex-col gap-2 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-blue-200 dark:hover:border-blue-800">
-                    <div className="flex justify-between items-center">
-                       <span className="text-sm font-bold text-zinc-600 dark:text-zinc-400">Academic Clichés</span>
-                       <span className="text-sm font-black text-zinc-900 dark:text-zinc-100">
-                          {stats.clicheCount} detected
-                       </span>
+                 <div className="flex flex-col gap-3 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 shadow-sm transition-colors hover:border-red-300 dark:hover:border-red-700 group/insight">
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-600 dark:text-red-400">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <path d="M14 2v6h6" />
+                                    <line x1="16" y1="13" x2="8" y2="13" />
+                                    <line x1="16" y1="17" x2="8" y2="17" />
+                                    <polyline points="10 9 9 9 8 9" />
+                                </svg>
+                            </div>
+                            <div className="flex flex-col">
+                                <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Academic Clichés</p>
+                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">
+                                   {stats.clicheCount} <span className="text-sm font-medium text-zinc-500">detected</span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                     
                     {stats.clicheCount > 0 && (
                        <>
                           <button 
                              onClick={() => setShowCliches(!showCliches)}
-                             className="wc-insight-toggle-btn"
+                             className="wc-insight-toggle-btn mt-1"
                           >
                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <circle cx="12" cy="12" r="10" />
@@ -810,7 +1041,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                                             <span className="text-red-500 dark:text-red-400">“{c.phrase}”</span>
                                             <span>x{c.count}</span>
                                          </div>
-                                         <div className="text-emerald-600 dark:text-emerald-400">
+                                         <div className="text-cyan-600 dark:text-cyan-400">
                                             ↳ Suggestion: <span className="font-bold">“{c.alternative}”</span>
                                          </div>
                                       </div>
@@ -822,32 +1053,62 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                     )}
                  </div>
              </div>
-        </div>
+        </motion.div>
 
         {/* Keywords Card */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 relative overflow-hidden group flex flex-col flex-1 max-h-[400px]">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors pointer-events-none" />
+        <motion.div 
+            className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col flex-1 max-h-[400px] relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-cyan-200/80 dark:hover:border-cyan-800/50"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.3 }}
+        >
+             {/* SaaS Background Accents (matches ToolsHeader) */}
+             <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+             <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
              
-             <div className="flex items-center gap-3 mb-6 relative z-10">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+             <div className="flex items-center gap-5 mb-6 relative z-10 w-full shrink-0">
+                <motion.div
+                    whileHover={{ scale: 1.05, rotate: -5 }}
+                    transition={{ type: 'spring', damping: 20, stiffness: 350 }}
+                    className="w-16 h-16 rounded-[20px] bg-cyan-50 border border-cyan-200 dark:bg-cyan-900/30 dark:border-cyan-800/60 flex items-center justify-center flex-shrink-0 shadow-sm ring-4 ring-white/50 dark:ring-zinc-900/50"
+                >
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-cyan-600 dark:text-cyan-400">
                         <line x1="4" y1="9" x2="20" y2="9" />
                         <line x1="4" y1="15" x2="20" y2="15" />
                         <line x1="10" y1="3" x2="8" y2="21" />
                         <line x1="16" y1="3" x2="14" y2="21" />
                     </svg>
+                </motion.div>
+
+                <div>
+                    <h2 className="text-[22px] sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-1">
+                        Top Keywords
+                    </h2>
+                    <p className="text-[13px] sm:text-[14px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                        Most frequent terms
+                    </p>
                 </div>
-                <h3 className="font-bold text-zinc-900 dark:text-zinc-100">Top Keywords</h3>
              </div>
 
              <div className="flex flex-col gap-2 relative z-10 overflow-y-auto pr-2 no-scrollbar">
                 {keywords.length > 0 ? (
                     keywords.map((k) => (
-                        <div key={k.word} className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                            <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 truncate mr-2">{k.word}</span>
-                            <span className="inline-flex items-center justify-center px-2.5 py-1 text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 rounded-lg shrink-0">
-                                {k.count}
-                            </span>
+                        <div key={k.word} className="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:border-cyan-200 dark:hover:border-cyan-800/50 group/stat">
+                            <div className="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center shrink-0">
+                                <span className="text-cyan-600 dark:text-cyan-400 font-bold text-lg">#</span>
+                            </div>
+                            <div className="flex flex-col overflow-hidden flex-1">
+                                <span className="text-[10px] sm:text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 truncate">
+                                    Keyword
+                                </span>
+                                <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none truncate">
+                                    {k.word}
+                                </span>
+                            </div>
+                            <div className="flex flex-col items-end justify-center px-2">
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-0.5">Count</span>
+                                <span className="text-lg font-black text-cyan-600 dark:text-cyan-400 leading-none">{k.count}</span>
+                            </div>
                         </div>
                     ))
                 ) : (
@@ -860,7 +1121,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                     </div>
                 )}
              </div>
-        </div>
+        </motion.div>
 
       </ToolMobileSheet>
 

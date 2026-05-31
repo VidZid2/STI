@@ -25,7 +25,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ user, isMobile, ge
             transition={{ duration: 0.4 }}
             className="welcome-header-greeting mb-6"
         >
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 p-4 md:px-[22px] md:py-[18px] pb-6 rounded-[14px] bg-surface border border-black/5 flex-wrap overflow-visible">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 p-4 md:px-[22px] md:py-[18px] pb-6 rounded-[14px] bg-surface/80 backdrop-blur-md border border-black/5 dark:border-white/10 flex-wrap overflow-visible">
                 
                 {/* Icon + Title Row */}
                 <div className="flex items-center gap-4 w-full md:w-auto md:flex-1">
@@ -44,7 +44,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ user, isMobile, ge
                             <path d="M8 7h8M8 11h8M8 15h5" />
                         </svg>
                     </motion.div>
-
+ 
                     {/* Title & Subtitle */}
                     <div className="flex-1 min-w-0">
                         <motion.div
@@ -53,7 +53,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ user, isMobile, ge
                             transition={{ delay: 0.1 }}
                             className="flex items-center gap-2 mb-1 flex-wrap"
                         >
-                            <h1 className="m-0 text-base md:text-xl font-semibold text-slate-900">
+                            <h1 className="m-0 text-base md:text-xl font-semibold text-slate-900 dark:text-white">
                                 {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}, {user?.first_name || 'Teacher'}!
                             </h1>
                             <span className="px-2 py-[3px] rounded-md bg-blue-500/10 text-[11px] font-semibold text-blue-500">
@@ -64,7 +64,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ user, isMobile, ge
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.15 }}
-                            className="m-0 text-xs md:text-[13px] text-slate-500"
+                            className="m-0 text-xs md:text-[13px] text-slate-500 dark:text-slate-400"
                         >
                             {new Date().toLocaleDateString('en-US', { weekday: isMobile ? 'short' : 'long', year: 'numeric', month: isMobile ? 'short' : 'long', day: 'numeric' })}
                         </motion.p>
@@ -148,7 +148,7 @@ export const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ user, isMobile, ge
                                             <div className="text-[13px] font-semibold mb-0.5" style={{ color: stat.color }}>
                                                 {stat.value} {stat.label.toLowerCase()}
                                             </div>
-                                            <div className="text-[11px] font-normal text-slate-500">
+                                            <div className="text-[11px] font-normal text-slate-500 dark:text-slate-400">
                                                 {stat.tooltip}
                                             </div>
                                         </div>

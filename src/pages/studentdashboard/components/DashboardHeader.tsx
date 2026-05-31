@@ -38,116 +38,55 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
     return (
     <header className="header">
-        <div className="header-content">
-            <div className="header-left">
+        <div className="header-content w-full flex items-center justify-between px-2 sm:px-4">
+            <div className="header-left flex items-center gap-1 sm:gap-2">
 
                 <motion.div
-                    className="logo flex items-center gap-2.5"
+                    className="logo flex items-center gap-1.5 sm:gap-2.5"
                     onClick={() => { setActiveView('home'); }}
                     style={{ cursor: 'pointer' }}
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ duration: 0.15 }}
                 >
-                    {/* Logo Icon */}
-                    <div
-                        className={cn(
-                            "w-[100px] h-10 flex items-center justify-center rounded-xl overflow-hidden border transition-all duration-200",
-                            isDarkMode 
-                                ? "border-white/[0.06] bg-slate-800" 
-                                : "border-black/[0.06] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
-                        )}
+                    {/* Premium SaaS Logo Container (Study Tools Style) */}
+                    <div 
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm overflow-hidden"
+                        style={{ border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}` }}
                     >
                         <img src="/file.svg" alt="STI Logo" className="w-full h-full object-cover" />
+                    </div>
+                    
+                    {/* Text Content matching Tools Page Cards */}
+                    <div className="flex-1 min-w-0 hidden sm:flex flex-col justify-center text-left">
+                        <div 
+                            className="text-[13px] font-bold leading-tight whitespace-nowrap"
+                            style={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}
+                        >
+                            STI eLMS
+                        </div>
+                        <div 
+                            className="text-[10.5px] font-medium mt-0.5 leading-tight whitespace-nowrap truncate"
+                            style={{ color: isDarkMode ? '#94a3b8' : '#64748b' }}
+                        >
+                            Student Dashboard
+                        </div>
                     </div>
                 </motion.div>
 
                 <div
-                    className="h-5 w-[1px] mx-2"
+                    className="h-5 w-[1px] mx-1 sm:mx-2 hidden sm:block"
                     style={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}
                 />
                 <StreakDropdown />
             </div>
 
-            <div className="header-center" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', maxWidth: '600px' }} />
+            <div className="header-center hidden md:flex items-center justify-center w-full max-w-[600px]" />
 
-            <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                {isDemoMode ? (
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            style={{
-                                display: 'flex', alignItems: 'center', gap: '6px',
-                                padding: '4px 10px', borderRadius: '6px',
-                                background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-                                border: '1px solid #f59e0b', fontSize: '11px', fontWeight: 600, color: '#b45309' }}
-                        >
-                            <motion.div
-                                animate={{ scale: [1, 1.2, 1] }}
-                                transition={{ duration: 1.5, repeat: Infinity }}
-                                style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#f59e0b' }}
-                            />
-                            DEMO MODE
-                        </motion.div>
-                        <motion.button
-                            onClick={() => {
-                                import('../../../services/studyTimeService').then(({ resetAllData }) => {
-                                    resetAllData();
-                                    window.location.reload();
-                                });
-                            }}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            style={{
-                                display: 'flex', alignItems: 'center', gap: '6px',
-                                padding: '6px 12px', borderRadius: '8px',
-                                border: '1px solid #fca5a5',
-                                background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
-                                color: '#dc2626', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
-                            title="Exit demo mode and reset all data"
-                        >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M18 6L6 18M6 6l12 12" />
-                            </svg>
-                            Exit Demo
-                        </motion.button>
-                    </>
-                ) : (
-                    <motion.button
-                        onClick={() => {
-                            import('../../../services/studyTimeService').then(({ loadDemoData }) => {
-                                loadDemoData();
-                                window.location.reload();
-                            });
-                        }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '6px',
-                            padding: '6px 12px', borderRadius: '8px',
-                            border: '1px solid #e5e7eb',
-                            background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
-                            color: '#0369a1', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
-                        title="Load demo data (temporary - clears on refresh)"
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polygon points="5 3 19 12 5 21 5 3" />
-                        </svg>
-                        Demo
-                    </motion.button>
-                )}
-                
-                {/* Unified Toolbar & Profile Container */}
-                <div className={`flex items-center gap-2 p-1.5 rounded-2xl border transition-all duration-200 ${
-                    isDarkMode 
-                        ? 'border-slate-700/60 bg-slate-800/90 shadow-[0_1px_3px_rgba(0,0,0,0.3)]' 
-                        : 'border-black/[0.08] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
-                }`}>
-                    <ToolbarExpandable />
-                    <div className={`w-[1px] h-8 mx-1 ${isDarkMode ? 'bg-slate-700' : 'bg-zinc-200'}`}></div>
-                    <UserProfileDropdown />
-                </div>
+            <div className="header-right flex items-center gap-1.5 sm:gap-3">
+                <ToolbarExpandable />
+                <div className={`w-[1px] h-8 mx-0.5 sm:mx-2 ${isDarkMode ? 'bg-slate-700/50' : 'bg-zinc-200'}`}></div>
+                <UserProfileDropdown />
             </div>
         </div>
     </header>

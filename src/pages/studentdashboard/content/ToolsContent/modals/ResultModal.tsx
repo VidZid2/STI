@@ -30,8 +30,6 @@ const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void
         createPortal(
             <AnimatePresence>
                 <motion.div
-                    ref={modalRef}
-                    {...modalProps}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -40,53 +38,51 @@ const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void
                         position: 'fixed',
                         inset: 0,
                         background: 'rgba(0, 0, 0, 0.4)',
-                        backdropFilter: 'blur(4px)',
-                        zIndex: 10000,
+                        zIndex: 99998,
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center' }}
+                        justifyContent: 'center',
+                        backdropFilter: 'blur(4px)',
+                    }}
                 >
                     <motion.div
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.9, opacity: 0 }}
+                        ref={modalRef}
+                        {...modalProps}
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         onClick={(e) => e.stopPropagation()}
                         style={{
-                            background: 'white',
-                            padding: '32px',
-                            borderRadius: '24px',
                             width: '90%',
-                            maxWidth: '550px',
-                            maxHeight: '80vh',
-                            overflowY: 'auto',
-                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
+                            maxWidth: '450px',
+                            background: '#ffffff',
+                            padding: '24px',
+                            borderRadius: '16px',
+                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                        }}
                     >
-                        <h3 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '20px', color: '#111827' }}>
-                            {getTitle()}
-                        </h3>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <h3 id="result-modal-title" style={{ fontSize: '18px', fontWeight: 700, margin: 0 }}>
+                                {getTitle()}
+                            </h3>
+                            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                            </button>
+                        </div>
 
                         {result.type === 'count' && (
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                                <div style={{ background: '#f3f4f6', padding: '16px', borderRadius: '12px' }}>
-                                    <div style={{ fontSize: '28px', fontWeight: 700, color: '#2563eb' }}>{result.data.words}</div>
-                                    <div style={{ fontSize: '13px', color: '#6b7280' }}>Words</div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                                <div style={{ background: '#dbeafe', padding: '16px', borderRadius: '12px' }}>
+                                    <div style={{ fontSize: '24px', fontWeight: 700, color: '#1e40af' }}>{result.data.words}</div>
+                                    <div style={{ fontSize: '13px', color: '#3b82f6' }}>Words</div>
                                 </div>
-                                <div style={{ background: '#f3f4f6', padding: '16px', borderRadius: '12px' }}>
-                                    <div style={{ fontSize: '28px', fontWeight: 700, color: '#2563eb' }}>{result.data.chars}</div>
-                                    <div style={{ fontSize: '13px', color: '#6b7280' }}>Characters</div>
+                                <div style={{ background: '#dbeafe', padding: '16px', borderRadius: '12px' }}>
+                                    <div style={{ fontSize: '24px', fontWeight: 700, color: '#1e40af' }}>{result.data.chars}</div>
+                                    <div style={{ fontSize: '13px', color: '#3b82f6' }}>Characters</div>
                                 </div>
-                                {result.data.textStats && (
-                                    <>
-                                        <div style={{ background: '#f3f4f6', padding: '16px', borderRadius: '12px' }}>
-                                            <div style={{ fontSize: '28px', fontWeight: 700, color: '#7c3aed' }}>{result.data.textStats.sentences}</div>
-                                            <div style={{ fontSize: '13px', color: '#6b7280' }}>Sentences</div>
-                                        </div>
-                                        <div style={{ background: '#f3f4f6', padding: '16px', borderRadius: '12px' }}>
-                                            <div style={{ fontSize: '28px', fontWeight: 700, color: '#7c3aed' }}>{result.data.textStats.paragraphs}</div>
-                                            <div style={{ fontSize: '13px', color: '#6b7280' }}>Paragraphs</div>
-                                        </div>
-                                    </>
-                                )}
                                 <div style={{ background: '#dbeafe', padding: '16px', borderRadius: '12px' }}>
                                     <div style={{ fontSize: '18px', fontWeight: 600, color: '#1e40af' }}>{result.data.readingTime}</div>
                                     <div style={{ fontSize: '13px', color: '#3b82f6' }}>Reading Time</div>
@@ -97,7 +93,7 @@ const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void
                                         <div style={{ fontSize: '13px', color: '#3b82f6' }}>Speaking Time</div>
                                     </div>
                                 )}
-                                {result.data.textStats && result.data.textStats.topWords.length > 0 && (
+                                {result.data.textStats && result.data.textStats.topWords && result.data.textStats.topWords.length > 0 && (
                                     <div style={{ gridColumn: 'span 2', background: '#f0fdf4', padding: '16px', borderRadius: '12px' }}>
                                         <div style={{ fontSize: '14px', fontWeight: 600, color: '#166534', marginBottom: '8px' }}>Top Keywords</div>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -191,7 +187,8 @@ const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void
                                 border: 'none',
                                 borderRadius: '12px',
                                 fontWeight: 600,
-                                cursor: 'pointer' }}
+                                cursor: 'pointer',
+                            }}
                         >
                             Close
                         </button>
@@ -202,6 +199,5 @@ const ResultModal: React.FC<{ result: AnalysisResult | null; onClose: () => void
         )
     );
 };
-
 
 export { ResultModal };

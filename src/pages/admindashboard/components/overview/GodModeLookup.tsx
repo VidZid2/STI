@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Search, ArrowRight, Shield } from 'lucide-react';
 import { supabase } from '../../../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 
 const GodModeLookup: React.FC = () => {
     const [searchQuery, setSearchQuery] = React.useState('');
@@ -22,9 +23,11 @@ const GodModeLookup: React.FC = () => {
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
+    const { showToast } = useToast();
+
     const handleImpersonate = () => {
         if (!selectedUser) return;
-        alert(`SESSION STARTED: Impersonating ${selectedUser.full_name} (${selectedUser.role.toUpperCase()})! Running in read-only mode.`);
+        showToast(`Session started: Impersonating ${selectedUser.full_name} (${selectedUser.role.toUpperCase()}) in read-only mode.`, 'warning');
         if (selectedUser.role === 'teacher') window.location.href = '/teacher-dashboard';
         else if (selectedUser.role === 'student') window.location.href = '/dashboard';
     };

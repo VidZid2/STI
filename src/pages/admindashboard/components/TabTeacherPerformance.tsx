@@ -11,6 +11,7 @@ import {
     type TeacherMetrics,
 } from '../../../services/teacherPerformanceService';
 import { Shimmer, ShimmerCircle } from './shared/Shimmer';
+import { Tooltip } from './shared/Tooltip';
 
 // ─── Band config ─────────────────────────────────────────────────────────────
 
@@ -100,37 +101,41 @@ const TeacherRow: React.FC<RowProps> = ({ teacher, rank, onEncourage, onFlag, ac
                 {/* Actions */}
                 <div className="flex items-center gap-2 shrink-0">
                     {teacher.performanceBand === 'excellent' && (
-                        <motion.button
-                            onClick={() => onEncourage(teacher.teacherId, teacher.teacherName)}
-                            disabled={busy}
-                            whileHover={{ scale: busy ? 1 : 1.05 }}
-                            whileTap={{ scale: busy ? 1 : 0.95 }}
-                            title="Send encouragement"
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors disabled:opacity-50 shadow-sm"
-                        >
-                            <Sparkles size={11} />
-                            <span className="hidden md:inline">Encourage</span>
-                        </motion.button>
+                        <Tooltip content="Send an encouraging message">
+                            <motion.button
+                                onClick={() => onEncourage(teacher.teacherId, teacher.teacherName)}
+                                disabled={busy}
+                                whileHover={{ scale: busy ? 1 : 1.05 }}
+                                whileTap={{ scale: busy ? 1 : 0.95 }}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors disabled:opacity-50 shadow-sm"
+                            >
+                                <Sparkles size={11} />
+                                <span className="hidden md:inline">Encourage</span>
+                            </motion.button>
+                        </Tooltip>
                     )}
                     {teacher.performanceBand === 'needs-support' && (
-                        <motion.button
-                            onClick={() => onFlag(teacher.teacherId, teacher.teacherName)}
-                            disabled={busy}
-                            whileHover={{ scale: busy ? 1 : 1.05 }}
-                            whileTap={{ scale: busy ? 1 : 0.95 }}
-                            title="Flag for review"
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors disabled:opacity-50 shadow-sm"
-                        >
-                            <Flag size={11} />
-                            <span className="hidden md:inline">Flag</span>
-                        </motion.button>
+                        <Tooltip content="Flag for admin review">
+                            <motion.button
+                                onClick={() => onFlag(teacher.teacherId, teacher.teacherName)}
+                                disabled={busy}
+                                whileHover={{ scale: busy ? 1 : 1.05 }}
+                                whileTap={{ scale: busy ? 1 : 0.95 }}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors disabled:opacity-50 shadow-sm"
+                            >
+                                <Flag size={11} />
+                                <span className="hidden md:inline">Flag</span>
+                            </motion.button>
+                        </Tooltip>
                     )}
-                    <button
-                        onClick={() => setExpanded(v => !v)}
-                        className="p-1.5 rounded-lg bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-700 transition-colors"
-                    >
-                        {expanded ? <ChevronUp size={14} color="#64748b" /> : <ChevronDown size={14} color="#64748b" />}
-                    </button>
+                    <Tooltip content={expanded ? "Collapse details" : "Expand details"}>
+                        <button
+                            onClick={() => setExpanded(v => !v)}
+                            className="p-1.5 rounded-lg bg-white/60 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-700 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-600 shadow-sm hover:shadow-md"
+                        >
+                            {expanded ? <ChevronUp size={14} className="text-slate-500 dark:text-slate-400" /> : <ChevronDown size={14} className="text-slate-500 dark:text-slate-400" />}
+                        </button>
+                    </Tooltip>
                 </div>
             </div>
 

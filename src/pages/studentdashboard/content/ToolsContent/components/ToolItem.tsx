@@ -212,28 +212,38 @@ const ToolItem: React.FC<{
 
     const handleCardClick = () => {
         onToolOpen?.(tool.id);
+        
+        const hasShown = localStorage.getItem(tutorialKey) === 'true';
+        if (!hasShown) {
+            setShowTutorial(true);
+            setCurrentStep(0);
+            return;
+        }
+        
         // If tool has custom onClick handler (e.g. Grammar Checker), use it
         if (tool.onClick) {
             tool.onClick();
             return;
         }
-        if (tool.linkTo && tool.tutorial) {
-            const hasSeenTutorial = localStorage.getItem(tutorialKey);
-            if (!hasSeenTutorial) {
-                setShowTutorial(true);
-                setCurrentStep(0);
-            } else {
-                window.open(tool.linkTo, '_blank', 'noopener,noreferrer');
-            }
-        } else if (tool.linkTo) {
+        if (tool.linkTo) {
             window.open(tool.linkTo, '_blank', 'noopener,noreferrer');
         } else {
             setIsOpen(true);
         }
     };
 
+    const resolvedTutorial = tool.tutorial ?? {
+        title: `How to use ${tool.name}`,
+        steps: [
+            `Start by opening ${tool.name} from the Tools grid.`,
+            `Paste/upload your content (or choose your files if this is a converter).`,
+            `Review the output, then copy/download it when it looks correct.`,
+        ],
+        tip: 'Tip: Keep your draft as original as possible, then iterate with the AI output for best academic results.',
+    };
+
     const handleTutorialNext = () => {
-        if (tool.tutorial && currentStep < tool.tutorial.steps.length - 1) {
+        if (currentStep < resolvedTutorial.steps.length - 1) {
             setCurrentStep(currentStep + 1);
         }
     };
@@ -248,8 +258,14 @@ const ToolItem: React.FC<{
         localStorage.setItem(tutorialKey, 'true');
         setShowTutorial(false);
         setCurrentStep(0);
+        if (tool.onClick) {
+            tool.onClick();
+            return;
+        }
         if (tool.linkTo) {
             window.open(tool.linkTo, '_blank', 'noopener,noreferrer');
+        } else {
+            setIsOpen(true);
         }
     };
 
@@ -257,8 +273,14 @@ const ToolItem: React.FC<{
         localStorage.setItem(tutorialKey, 'true');
         setShowTutorial(false);
         setCurrentStep(0);
+        if (tool.onClick) {
+            tool.onClick();
+            return;
+        }
         if (tool.linkTo) {
             window.open(tool.linkTo, '_blank', 'noopener,noreferrer');
+        } else {
+            setIsOpen(true);
         }
     };
 
@@ -316,11 +338,8 @@ const ToolItem: React.FC<{
     };
     const accent = accentStyles[tool.accent || (tool.category === 'convert' ? 'emerald' : 'blue')];
     const categoryLabel = tool.category === 'convert' ? 'Converter' : 'Text Tool';
-    const badges = tool.badges?.length ? tool.badges : [tool.category === 'convert' ? 'Local file flow' : 'Academic writing'];
-    const visibleBadges = badges.slice(0, 3);
-    const hiddenBadgeCount = Math.max(0, badges.length - visibleBadges.length);
-    const metaBadgeClass = 'inline-flex h-6 items-center gap-1 rounded-full border px-2.5 text-[10px] font-semibold uppercase leading-none tracking-normal shadow-[0_1px_2px_rgba(15,23,42,0.04)]';
-    const featureBadgeClass = 'inline-flex h-8 items-center rounded-full border border-zinc-200/80 bg-zinc-50/80 px-3 text-[12px] font-medium leading-none tracking-normal text-zinc-600 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors group-hover:border-zinc-300 group-hover:bg-white dark:border-zinc-800 dark:bg-zinc-900/70 dark:text-zinc-300 dark:group-hover:border-zinc-700 dark:group-hover:bg-zinc-900';
+    const statusBadgeClass = 'inline-flex h-[24px] items-center gap-1.5 rounded-full border px-2.5 text-[10.5px] font-extrabold uppercase leading-none tracking-wide shadow-sm';
+    const staticTagClass = 'inline-flex h-[24px] items-center gap-1.5 rounded-md px-2 text-[10.5px] font-bold uppercase leading-none tracking-wide';
     const cardActionLabel = `${tool.name}. ${tool.description}. ${tool.onClick ? 'Open workspace' : 'Choose file'}.`;
 
     return (
@@ -328,21 +347,22 @@ const ToolItem: React.FC<{
             {/* Responsive academic workbench card */}
             <motion.button
                 type="button"
-                className="group relative flex h-full w-full flex-col items-start overflow-hidden rounded-[26px] border border-zinc-200/80 bg-white p-8 text-left shadow-sm transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-800/80 dark:bg-zinc-900 dark:focus-visible:ring-offset-zinc-950 sm:p-9"
+                className="group relative flex h-full min-h-[280px] w-full flex-col items-start overflow-hidden rounded-[20px] border border-zinc-200/70 bg-white p-5 text-left shadow-sm transition-[border-color] duration-300 ease-out hover:border-blue-200/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-800/70 dark:bg-zinc-900 dark:hover:border-blue-800/50 dark:focus-visible:ring-offset-zinc-950 sm:min-h-[300px] sm:p-6 lg:p-7"
                 onClick={handleCardClick}
                 aria-label={cardActionLabel}
                 onHoverStart={() => setIsHovered(true)}
                 onHoverEnd={() => setIsHovered(false)}
-                initial={{ opacity: 0, y: 15 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{
                     opacity: 1,
                     y: isHovered ? -2 : 0,
+                    scale: isHovered ? 1.005 : 1,
                     boxShadow: isHovered
-                        ? `0 18px 36px -16px ${accent.shadow}, 0 0 0 1px ${accent.shadow}`
-                        : '0 4px 10px rgba(0, 0, 0, 0.03), 0 0 0 1px transparent',
+                        ? `0 20px 40px -12px ${accent.shadow}, 0 8px 16px -8px ${accent.shadow}, 0 0 0 1px ${accent.shadow}`
+                        : '0 8px 24px rgba(2, 6, 23, 0.04), 0 2px 8px rgba(2, 6, 23, 0.02), 0 0 0 1px transparent',
                 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                whileTap={{ scale: 0.985 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 28 }}
             >
                 {/* Background Ambient Glow */}
                 <motion.div
@@ -355,7 +375,7 @@ const ToolItem: React.FC<{
                 <div className="relative z-10 flex w-full flex-1 flex-col">
                     <div className="flex w-full items-start justify-between gap-4">
                         <motion.div
-                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] border transition-colors duration-300 ${isHovered ? accent.iconActive : accent.iconIdle}`}
+                            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 sm:h-12 sm:w-12 ${isHovered ? accent.iconActive : accent.iconIdle}`}
                             animate={{ scale: isHovered ? 1.06 : 1, rotate: isHovered ? 4 : 0 }}
                             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                             aria-hidden="true"
@@ -365,62 +385,91 @@ const ToolItem: React.FC<{
                             </div>
                         </motion.div>
 
-                        <div className="flex max-w-[240px] flex-wrap justify-end gap-1.5">
+                        <div className="flex flex-wrap items-center justify-end gap-2">
                             {tool.recommended && (
-                                <span className={`${metaBadgeClass} border-amber-200/80 bg-amber-50/80 text-amber-700 dark:border-amber-800/60 dark:bg-amber-900/20 dark:text-amber-300`}>
-                                    <Sparkles className="h-3 w-3" aria-hidden="true" />
-                                    Rec.
+                                <span className={`${statusBadgeClass} max-w-[120px] border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-800/60 dark:bg-orange-900/30 dark:text-orange-400`}>
+                                    <Sparkles className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                                    <span className="truncate" title="Rec.">Rec.</span>
                                 </span>
                             )}
                             {isRecent && (
-                                <span className={`${metaBadgeClass} border-zinc-200 bg-white/90 text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-300`}>
-                                    <Clock3 className="h-3 w-3" aria-hidden="true" />
-                                    Recent
+                                <span className={`${staticTagClass} max-w-[120px] bg-slate-100/80 text-slate-600 dark:bg-slate-800/60 dark:text-slate-300`}>
+                                    <Clock3 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                                    <span className="truncate" title="Recent">Recent</span>
                                 </span>
                             )}
-                            <span className={`${metaBadgeClass} border-zinc-200 bg-zinc-50/90 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800/70 dark:text-zinc-300`}>
-                                {categoryLabel}
+                            <span className={`${staticTagClass} max-w-[120px] bg-slate-100/80 text-slate-600 dark:bg-slate-800/60 dark:text-slate-300`}>
+                                {tool.category === 'convert' ? (
+                                    <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                                ) : (
+                                    <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                )}
+                                <span className="truncate" title={categoryLabel}>{categoryLabel}</span>
                             </span>
+                            <div className="relative group/tip">
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowTutorial(true);
+                                        setCurrentStep(0);
+                                    }}
+                                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-gradient-to-b from-blue-50 to-blue-100/50 text-blue-700 shadow-sm transition-all duration-200 hover:from-blue-100 hover:to-blue-200 hover:text-blue-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-blue-800/60 dark:from-blue-900/30 dark:to-blue-900/10 dark:text-blue-400 dark:hover:from-blue-800/50 dark:hover:to-blue-900/40"
+                                    aria-label={`View ${tool.name} tutorial`}
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                                        <path d="M12 17h.01" />
+                                    </svg>
+                                </button>
+                                {/* Tooltip */}
+                                <span className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-zinc-600 opacity-0 shadow-md transition-all duration-200 ease-out translate-y-1 group-hover/tip:opacity-100 group-hover/tip:translate-y-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 z-20">
+                                    Tutorial
+                                    <span className="absolute -top-1 left-1/2 -translate-x-1/2 h-2 w-2 rotate-45 border-l border-t border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900" />
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="mt-5 flex min-w-0 flex-col justify-center">
+                    {/* Title */}
+                    <div className="mt-6 flex min-w-0 flex-col justify-center">
                         <motion.h3
-                            className="max-w-full whitespace-normal text-[16px] font-bold leading-tight tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-[17px]"
+                            className="max-w-full whitespace-normal text-base font-bold leading-snug tracking-tighter text-zinc-900 dark:text-zinc-100 sm:text-lg"
                             transition={{ duration: 0.2 }}
                         >
                             {tool.name}
                         </motion.h3>
                     </div>
 
-                    {/* Middle Section: Content */}
-                    <div className="mt-7 min-h-[72px] w-full text-left">
-                        <p className="text-[13px] leading-7 text-zinc-600 dark:text-zinc-400 sm:text-[14px]">
-                        {tool.description}
-                    </p>
-                </div>
-
-                    <div className="mt-6 flex min-h-[40px] flex-wrap gap-2.5">
-                        {visibleBadges.map((badge) => (
-                            <span
-                                key={badge}
-                                className={featureBadgeClass}
-                            >
-                                {badge}
-                            </span>
-                        ))}
-                        {hiddenBadgeCount > 0 && (
-                            <span className={featureBadgeClass}>
-                                +{hiddenBadgeCount}
-                            </span>
-                        )}
+                    {/* Description */}
+                    <div className="mt-3 w-full text-left">
+                        <p className="text-[13.5px] leading-relaxed text-zinc-600 dark:text-zinc-300 sm:text-sm">
+                            {tool.description}
+                        </p>
                     </div>
 
-                    <div className={`mt-auto flex w-full items-center justify-between pt-6 text-sm font-bold ${accent.action}`}>
-                        <span>{tool.onClick ? 'Open workspace' : 'Choose file'}</span>
-                        <motion.span animate={{ x: isHovered ? 3 : 0 }} transition={{ type: 'spring', stiffness: 450, damping: 20 }} aria-hidden="true">
-                            <ArrowRight className="h-4 w-4" />
-                        </motion.span>
+                    {/* Bottom aligned content wrapper */}
+                    <div className="mt-auto flex w-full flex-col pt-4">
+                        {/* Best For */}
+                        {tool.bestFor && (
+                            <div className="mb-4 w-full rounded-[16px] bg-zinc-50/80 px-4 py-3.5 transition-colors duration-300 dark:bg-zinc-800/40">
+                                <span className={`mb-1 block text-[10px] font-bold uppercase tracking-[0.16em] ${accent.action}`}>
+                                    Best for
+                                </span>
+                                <span className="block text-[13px] font-medium leading-snug text-zinc-700 dark:text-zinc-300">
+                                    {tool.bestFor}
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Action footer */}
+                        <div className={`flex w-full items-center justify-start gap-1.5 border-t border-zinc-200 pt-4 text-[13.5px] font-bold transition-colors duration-300 dark:border-zinc-700/60 ${accent.action}`}>
+                            <span className="transition-opacity duration-200 group-hover:opacity-100 opacity-85">{tool.onClick ? 'Open workspace' : 'Choose file'}</span>
+                            <motion.span animate={{ x: isHovered ? 4 : 0 }} transition={{ type: 'tween', ease: [0.25, 0.46, 0.45, 0.94], duration: 0.25 }} aria-hidden="true">
+                                <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
+                            </motion.span>
+                        </div>
                     </div>
                 </div>
             </motion.button>
@@ -535,32 +584,17 @@ const ToolItem: React.FC<{
                                                         animate={{ opacity: 1, scale: 1 }}
                                                         exit={{ opacity: 0, scale: 0.95 }}
                                                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                                                        style={{
-                                                            border: '2px solid #22c55e',
-                                                            borderRadius: '16px',
-                                                            padding: '3rem 2rem',
-                                                            textAlign: 'center',
-                                                            background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-                                                            position: 'relative',
-                                                            overflow: 'hidden',
-                                                        }}
-                                                    >
+                                                    className="relative overflow-hidden rounded-4xl border border-emerald-400/60 px-8 py-14 text-center bg-gradient-to-b from-emerald-50/80 to-emerald-100/50"
+                                                    style={{
+                                                        borderWidth: 2,
+                                                    }}
+                                                >
                                                         {/* Success Icon */}
                                                         <motion.div
                                                             initial={{ scale: 0, rotate: -180 }}
                                                             animate={{ scale: 1, rotate: 0 }}
                                                             transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 15 }}
-                                                            style={{
-                                                                width: '64px',
-                                                                height: '64px',
-                                                                borderRadius: '50%',
-                                                                background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                margin: '0 auto 1rem',
-                                                                boxShadow: '0 8px 24px rgba(34, 197, 94, 0.3)',
-                                                            }}
+                                                            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-b from-emerald-500 to-emerald-600 shadow-[0_8px_24px_rgba(16,185,129,0.35)]"
                                                         >
                                                             <motion.svg
                                                                 width="32"
@@ -580,46 +614,47 @@ const ToolItem: React.FC<{
                                                                 />
                                                             </motion.svg>
                                                         </motion.div>
-                                                        <motion.p
-                                                            initial={{ opacity: 0, y: 10 }}
-                                                            animate={{ opacity: 1, y: 0 }}
-                                                            transition={{ delay: 0.2 }}
-                                                            style={{ fontSize: '1.125rem', fontWeight: 700, color: '#166534', margin: 0 }}
-                                                        >
-                                                            Conversion Successful!
-                                                        </motion.p>
-                                                        <motion.p
-                                                            initial={{ opacity: 0, y: 10 }}
-                                                            animate={{ opacity: 1, y: 0 }}
-                                                            transition={{ delay: 0.25 }}
-                                                            style={{ fontSize: '0.875rem', color: '#15803d', margin: '0.5rem 0 0' }}
-                                                        >
-                                                            Your file has been downloaded
-                                                        </motion.p>
+                                                            <motion.p
+                                                                initial={{ opacity: 0, y: 10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                transition={{ delay: 0.2 }}
+                                                                className="m-0 text-lg font-bold text-emerald-800"
+                                                            >
+                                                                Conversion Successful!
+                                                            </motion.p>
+                                                            <motion.p
+                                                                initial={{ opacity: 0, y: 10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                transition={{ delay: 0.25 }}
+                                                                className="mt-2 m-0 text-sm font-semibold text-emerald-700"
+                                                            >
+                                                                Your file has been downloaded
+                                                            </motion.p>
                                                         {/* Decorative sparkles */}
                                                         {[...Array(6)].map((_, i) => (
-                                                            <motion.div
-                                                                key={i}
-                                                                initial={{ opacity: 0, scale: 0 }}
-                                                                animate={{
-                                                                    opacity: [0, 1, 0],
-                                                                    scale: [0, 1, 0],
-                                                                }}
-                                                                transition={{
-                                                                    delay: 0.3 + i * 0.1,
-                                                                    duration: 0.6,
-                                                                    ease: 'easeOut',
-                                                                }}
-                                                                style={{
-                                                                    position: 'absolute',
-                                                                    width: '8px',
-                                                                    height: '8px',
-                                                                    borderRadius: '50%',
-                                                                    background: i % 2 === 0 ? '#22c55e' : '#fbbf24',
-                                                                    top: `${20 + Math.random() * 60}%`,
-                                                                    left: `${10 + Math.random() * 80}%`,
-                                                                }}
-                                                            />
+                                                                <motion.div
+                                                                    key={i}
+                                                                    initial={{ opacity: 0, scale: 0 }}
+                                                                    animate={{
+                                                                        opacity: [0, 1, 0],
+                                                                        scale: [0, 1, 0],
+                                                                    }}
+                                                                    transition={{
+                                                                        delay: 0.3 + i * 0.1,
+                                                                        duration: 0.6,
+                                                                        ease: 'easeOut',
+                                                                    }}
+                                                                    style={{
+                                                                        position: 'absolute',
+                                                                        width: '8px',
+                                                                        height: '8px',
+                                                                        borderRadius: '50%',
+                                                                        // Keep the same “sparkle” behavior but align palette with the tool system (emerald/blue/amber)
+                                                                        background: i % 3 === 0 ? '#10b981' : i % 3 === 1 ? '#2563eb' : '#f59e0b',
+                                                                        top: `${20 + Math.random() * 60}%`,
+                                                                        left: `${10 + Math.random() * 80}%`,
+                                                                    }}
+                                                                />
                                                         ))}
                                                     </motion.div>
                                                 ) : isProcessing ? (
@@ -629,13 +664,7 @@ const ToolItem: React.FC<{
                                                         initial={{ opacity: 0 }}
                                                         animate={{ opacity: 1 }}
                                                         exit={{ opacity: 0 }}
-                                                        style={{
-                                                            border: '2px dashed #93c5fd',
-                                                            borderRadius: '16px',
-                                                            padding: '3rem 2rem',
-                                                            textAlign: 'center',
-                                                            background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
-                                                        }}
+                                                        className="rounded-4xl border-2 border-dashed border-blue-300 bg-gradient-to-b from-blue-50 to-blue-100 px-8 py-14 text-center"
                                                     >
                                                         {/* Processing Spinner */}
                                                         <motion.div
@@ -645,15 +674,15 @@ const ToolItem: React.FC<{
                                                                 width: '48px',
                                                                 height: '48px',
                                                                 border: '3px solid #dbeafe',
-                                                                borderTopColor: '#3b82f6',
+                                                                borderTopColor: '#2563eb',
                                                                 borderRadius: '50%',
                                                                 margin: '0 auto 1rem',
                                                             }}
                                                         />
-                                                        <p style={{ fontSize: '1rem', fontWeight: 600, color: '#1d4ed8', margin: 0 }}>
+                                                        <p className="m-0 text-base font-semibold text-blue-700 dark:text-blue-300">
                                                             Processing your file...
                                                         </p>
-                                                        <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '0.5rem 0 0' }}>
+                                                        <p className="m-0 mt-2 text-xs font-medium text-zinc-500">
                                                             This may take a moment
                                                         </p>
                                                     </motion.div>
@@ -679,25 +708,9 @@ const ToolItem: React.FC<{
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ delay: 0.25 }}
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                gap: '0.5rem',
-                                                marginTop: '1rem',
-                                            }}
+                                            className="mt-4 flex items-center justify-center gap-2"
                                         >
-                                            <span style={{
-                                                display: 'inline-flex',
-                                                alignItems: 'center',
-                                                gap: '0.375rem',
-                                                padding: '0.375rem 0.75rem',
-                                                background: '#f1f5f9',
-                                                borderRadius: '8px',
-                                                fontSize: '0.75rem',
-                                                fontWeight: 500,
-                                                color: '#64748b',
-                                            }}>
+                                            <span className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-100 px-3 py-2 text-[12px] font-semibold text-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-300">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                                                     <polyline points="14 2 14 8 20 8" />
@@ -718,9 +731,9 @@ const ToolItem: React.FC<{
                                         transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
                                         whileHover={{ scale: 1.1 }}
                                         whileTap={{ scale: 0.95 }}
-                                        className="absolute top-5 right-5 p-2 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm z-20 flex items-center justify-center transition-colors"
-                                        aria-label={`Close ${tool.name} dialog`}
-                                    >
+                                    className="absolute right-5 top-5 z-20 flex items-center justify-center rounded-xl border border-zinc-200 bg-white p-2 text-zinc-500 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                                    aria-label={`Close ${tool.name} dialog`}
+                                >
                                         <svg
                                             width="18"
                                             height="18"
@@ -746,7 +759,7 @@ const ToolItem: React.FC<{
             {/* Tutorial Modal Portal */}
             {createPortal(
                 <AnimatePresence>
-                    {showTutorial && tool.tutorial && (
+                    {showTutorial && (
                         <>
                             {/* Backdrop */}
                             <motion.div
@@ -755,13 +768,8 @@ const ToolItem: React.FC<{
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.25 }}
                                 onClick={handleSkipTutorial}
-                                style={{
-                                    position: 'fixed',
-                                    inset: 0,
-                                    background: 'rgba(0, 0, 0, 0.5)',
-                                    backdropFilter: 'blur(8px)',
-                                    zIndex: 9998,
-                                }}
+                                className="fixed inset-0 bg-zinc-900/60 dark:bg-black/60 backdrop-blur-md"
+                                style={{ zIndex: 9998 }}
                             />
 
                             {/* Tutorial Modal */}
@@ -776,330 +784,230 @@ const ToolItem: React.FC<{
                                     pointerEvents: 'none',
                                 }}
                             >
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.85, y: 40 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.85, y: 40 }}
-                                    transition={{
-                                        type: 'spring',
-                                        damping: 28,
-                                        stiffness: 400,
-                                    }}
-                                    style={{
-                                        borderRadius: '24px',
-                                        backgroundColor: 'white',
-                                        padding: '32px',
-                                        width: '90%',
-                                        maxWidth: '480px',
-                                        boxShadow: '0 25px 80px -15px rgba(0, 0, 0, 0.3)',
-                                        pointerEvents: 'auto',
-                                        position: 'relative',
-                                        overflow: 'hidden',
-                                    }}
-                                    role="dialog"
-                                    aria-modal="true"
-                                    aria-labelledby={tutorialTitleId}
-                                    aria-describedby={tutorialDescriptionId}
-                                >
-                                    {/* Progress Bar */}
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: 0,
-                                        left: 0,
-                                        right: 0,
-                                        height: '4px',
-                                        background: '#e5e7eb'
-                                    }}>
                                         <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${((currentStep + 1) / tool.tutorial.steps.length) * 100}%` }}
-                                            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-                                            style={{
-                                                height: '100%',
-                                                background: 'linear-gradient(90deg, #3b82f6, #2563eb)',
-                                                borderRadius: '0 2px 2px 0',
+                                            initial={{ opacity: 0, scale: 0.85, y: 40 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.85, y: 40 }}
+                                            transition={{
+                                                type: 'spring',
+                                                damping: 28,
+                                                stiffness: 400,
                                             }}
-                                        />
-                                    </div>
-
-                                    {/* Header with Icon */}
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 15 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.1, duration: 0.4 }}
-                                        style={{ textAlign: 'center', marginBottom: '24px', marginTop: '8px' }}
-                                    >
-                                        <motion.div
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            transition={{ type: 'spring', damping: 15, stiffness: 400, delay: 0.15 }}
-                                            style={{
-                                                width: '72px',
-                                                height: '72px',
-                                                borderRadius: '20px',
-                                                background: 'linear-gradient(135deg, #dbeafe, #bfdbfe)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                margin: '0 auto 16px',
-                                                color: '#1d4ed8',
-                                            }}
+                                            className="relative overflow-hidden pointer-events-auto w-[90%] max-w-[480px] rounded-[24px] bg-white shadow-2xl border border-zinc-200/80 dark:bg-zinc-900 dark:border-zinc-800/80"
+                                            role="dialog"
+                                            aria-modal="true"
+                                                        aria-labelledby={tutorialTitleId}
+                                                        aria-describedby={tutorialDescriptionId}
                                         >
-                                            {tool.icon}
-                                        </motion.div>
-                                        <h2 id={tutorialTitleId} style={{ fontSize: '22px', fontWeight: 700, color: '#111827', marginBottom: '4px' }}>
-                                            {tool.tutorial.title}
-                                        </h2>
-                                        <p id={tutorialDescriptionId} style={{ fontSize: '14px', color: '#6b7280' }}>
-                                            Quick guide to get you started
-                                        </p>
-                                    </motion.div>
+                                            {/* Ambient Glow */}
+                                            <div className="pointer-events-none absolute -top-28 -right-28 h-64 w-64 rounded-full bg-blue-500/10 dark:bg-blue-500/20 blur-3xl" />
 
-                                    {/* Step Content */}
-                                    <AnimatePresence mode="wait">
-                                        <motion.div
-                                            key={currentStep}
-                                            initial={{ opacity: 0, x: 20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -20 }}
-                                            transition={{ duration: 0.25 }}
-                                            style={{
-                                                background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)',
-                                                borderRadius: '16px',
-                                                padding: '20px',
-                                                marginBottom: '20px',
-                                                minHeight: '100px',
-                                            }}
-                                        >
-                                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+                                            {/* Progress Bar */}
+                                            <div className="absolute left-0 right-0 top-0 h-1.5 bg-zinc-200/80 dark:bg-zinc-700/70 shadow-[0_1px_2px_rgba(0,0,0,0.05)] z-30">
                                                 <motion.div
-                                                    initial={{ scale: 0 }}
-                                                    animate={{ scale: 1 }}
-                                                    transition={{ type: 'spring', damping: 12, stiffness: 400 }}
-                                                    style={{
-                                                        width: '32px',
-                                                        height: '32px',
-                                                        borderRadius: '50%',
-                                                        background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                                                        color: 'white',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        fontWeight: 700,
-                                                        fontSize: '14px',
-                                                        flexShrink: 0,
-                                                    }}
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${((currentStep + 1) / resolvedTutorial.steps.length) * 100}%` }}
+                                                    transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                                                    className="h-full rounded-r-full bg-gradient-to-r from-blue-500 to-blue-600 shadow-[0_0_8px_rgba(59,130,246,0.4)]"
+                                                />
+                                            </div>
+
+                                            {/* Close Button */}
+                                            <motion.button
+                                                ref={tutorialCloseRef}
+                                                type="button"
+                                                onClick={() => { setShowTutorial(false); setCurrentStep(0); }}
+                                                initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
+                                                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                                exit={{ opacity: 0, scale: 0.5, rotate: 90 }}
+                                                transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+                                                className="absolute right-5 top-5 z-20 rounded-xl border border-zinc-200 bg-white/80 p-2 text-zinc-500 shadow-sm transition-colors hover:bg-white dark:border-zinc-700 dark:bg-zinc-800/70 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.97 }}
+                                                aria-label={`Close ${tool.name} tutorial`}
+                                            >
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                </svg>
+                                            </motion.button>
+
+                                            <div className="p-8 relative">
+                                                {/* Ambient Glowing Background */}
+                                                <motion.div
+                                                    className={`absolute -right-24 -top-24 h-56 w-56 rounded-full blur-3xl pointer-events-none ${accent.glow}`}
+                                                    initial={{ scale: 0.95, opacity: 0.35 }}
+                                                    animate={{ scale: 1.25, opacity: 0.65 }}
+                                                    transition={{ duration: 0.6 }}
+                                                    aria-hidden="true"
+                                                />
+
+                                                {/* Header with Icon */}
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 15 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: 0.1, duration: 0.4 }}
+                                                    className="text-left mb-6 mt-2 relative z-10"
                                                 >
-                                                    {currentStep + 1}
+                                                    {/* Custom Tool Icon Container aligned with Card Design */}
+                                                    <motion.div
+                                                        initial={{ scale: 0.8, opacity: 0 }}
+                                                        animate={{ scale: 1, opacity: 1 }}
+                                                        transition={{ type: 'spring', damping: 20, stiffness: 350, delay: 0.15 }}
+                                                        className={`mb-4 flex h-14 w-14 shrink-0 items-center justify-center rounded-[16px] border ${accent.iconIdle} shadow-sm ring-4 ring-white/50 dark:ring-zinc-900/50`}
+                                                    >
+                                                        <div className="scale-[1.15]">{tool.icon}</div>
+                                                    </motion.div>
+
+                                                    <h2 id={tutorialTitleId} className="text-[22px] font-bold text-zinc-900 dark:text-zinc-50 mb-1.5 tracking-tight leading-tight">
+                                                        {resolvedTutorial.title}
+                                                    </h2>
+                                                    <p id={tutorialDescriptionId} className="text-[14px] font-medium text-zinc-500 dark:text-zinc-400">
+                                                        Quick guide to get you started
+                                                    </p>
                                                 </motion.div>
-                                                <p style={{
-                                                    fontSize: '15px',
-                                                    color: '#374151',
-                                                    lineHeight: 1.6,
-                                                    margin: 0,
-                                                    paddingTop: '4px',
-                                                }}>
-                                                    {tool.tutorial.steps[currentStep]}
-                                                </p>
+
+                                                {/* Hidden ARIA Live Region for Screen Readers */}
+                                                <div aria-live="polite" className="sr-only">
+                                                    Step {currentStep + 1} of {resolvedTutorial.steps.length}: {resolvedTutorial.steps[currentStep]}
+                                                </div>
+
+                                                {/* Step Content */}
+                                                <AnimatePresence mode="wait">
+                                                    <motion.div
+                                                        key={currentStep}
+                                                        initial={{ opacity: 0, x: 20 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        exit={{ opacity: 0, x: -20 }}
+                                                        transition={{ duration: 0.25 }}
+                                                        className="mb-6 relative z-10 flex flex-col gap-2.5 overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl p-6 md:p-8"
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs font-bold uppercase tracking-wider text-blue-500 dark:text-blue-400">
+                                                                Step {currentStep + 1}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-[15px] font-medium text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                                                            {resolvedTutorial.steps[currentStep]}
+                                                        </p>
+                                                    </motion.div>
+                                                </AnimatePresence>
+
+                                                {/* Tip Box Styled as elegant Callout card */}
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: 0.3, duration: 0.3 }}
+                                                    className="mb-6 relative overflow-hidden bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/50 shadow-sm rounded-2xl px-4 py-3 flex items-center group z-10"
+                                                >
+                                                    <div className="flex items-center gap-3 relative z-10 w-full">
+                                                        <motion.div
+                                                            whileHover={{ scale: 1.05, rotate: -5 }}
+                                                            initial={{ scale: 0 }}
+                                                            animate={{ scale: 1 }}
+                                                            transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.35 }}
+                                                            className="w-9 h-9 rounded-xl bg-white dark:bg-yellow-500/10 border border-yellow-100 dark:border-yellow-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
+                                                        >
+                                                            <span className="text-base leading-none select-none" aria-hidden="true">💡</span>
+                                                        </motion.div>
+
+                                                        <p className="text-[13.5px] font-semibold text-black dark:text-zinc-100 leading-relaxed m-0 flex-1">
+                                                            {resolvedTutorial.tip}
+                                                        </p>
+                                                    </div>
+                                                </motion.div>
+
+                                                {/* Refined Glassmorphic Action Buttons */}
+                                                <div className="flex flex-row-reverse items-center justify-between mt-4 relative z-10 w-full">
+                                                    {currentStep < resolvedTutorial.steps.length - 1 ? (
+                                                        <motion.button
+                                                            type="button"
+                                                            onClick={handleTutorialNext}
+                                                            whileHover={{ y: -1 }}
+                                                            whileTap={{ scale: 0.97 }}
+                                                            className="flex-1 flex justify-center items-center gap-1.5 px-4 py-2.5 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors w-full whitespace-nowrap"
+                                                        >
+                                                            Next
+                                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M5 12h14" />
+                                                                <polyline points="12 5 19 12 12 19" />
+                                                            </svg>
+                                                        </motion.button>
+                                                    ) : (
+                                                        <motion.button
+                                                            type="button"
+                                                            onClick={handleTutorialComplete}
+                                                            whileHover={{ y: -1 }}
+                                                            whileTap={{ scale: 0.97 }}
+                                                            className="flex-1 flex justify-center items-center gap-1.5 px-4 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors w-full whitespace-nowrap"
+                                                        >
+                                                            Open {tool.name}
+                                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                                                <polyline points="15 3 21 3 21 9" />
+                                                                <line x1="10" y1="14" x2="21" y2="3" />
+                                                            </svg>
+                                                        </motion.button>
+                                                    )}
+
+                                                    <AnimatePresence>
+                                                        {currentStep > 0 && (
+                                                            <motion.div
+                                                                initial={{ width: 0, opacity: 0, marginRight: 0 }}
+                                                                animate={{
+                                                                    width: 96,
+                                                                    opacity: 1,
+                                                                    marginRight: 12,
+                                                                    transition: { type: 'tween', ease: 'easeOut', duration: 0.28 }
+                                                                }}
+                                                                exit={{
+                                                                    width: 0,
+                                                                    opacity: 0,
+                                                                    marginRight: 0,
+                                                                    transition: { type: 'tween', ease: 'easeIn', duration: 0.2 }
+                                                                }}
+                                                                className="overflow-hidden shrink-0"
+                                                            >
+                                                                <motion.button
+                                                                    type="button"
+                                                                    onClick={handleTutorialPrev}
+                                                                    whileHover={{ x: -2 }}
+                                                                    whileTap={{ scale: 0.97 }}
+                                                                    className="flex items-center justify-center gap-1.5 w-[96px] py-2.5 text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap shrink-0"
+                                                                >
+                                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                                                                        <path d="M19 12H5" />
+                                                                        <polyline points="12 19 5 12 12 5" />
+                                                                    </svg>
+                                                                    Back
+                                                                </motion.button>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
+
+                                                {/* Skip Button Container - Reserved Space to Prevent Jitter */}
+                                                <div className="mt-4 h-[36px] w-full relative z-10">
+                                                    <AnimatePresence>
+                                                        {currentStep < resolvedTutorial.steps.length - 1 && (
+                                                            <motion.button
+                                                                type="button"
+                                                                initial={{ opacity: 0, y: 10 }}
+                                                                animate={{ opacity: 1, y: 0, transition: { delay: 0.1, duration: 0.25 } }}
+                                                                exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }}
+                                                                onClick={handleSkipTutorial}
+                                                                whileHover={{ y: -1 }}
+                                                                whileTap={{ scale: 0.97 }}
+                                                                className="absolute inset-0 w-full flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                                                            >
+                                                                Skip tutorial & open directly
+                                                            </motion.button>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
                                             </div>
                                         </motion.div>
-                                    </AnimatePresence>
-
-                                    {/* Tip */}
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.3, duration: 0.3 }}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '10px',
-                                            padding: '12px 16px',
-                                            background: '#fef3c7',
-                                            borderRadius: '12px',
-                                            marginBottom: '24px',
-                                        }}
-                                    >
-                                        <span style={{ fontSize: '18px' }}>💡</span>
-                                        <p style={{ fontSize: '13px', color: '#92400e', margin: 0, lineHeight: 1.5 }}>
-                                            {tool.tutorial.tip}
-                                        </p>
-                                    </motion.div>
-
-                                    {/* Step Indicators */}
-                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '20px' }}>
-                                        {tool.tutorial.steps.map((_, idx) => (
-                                            <motion.button
-                                                type="button"
-                                                key={idx}
-                                                initial={{ scale: 0.8 }}
-                                                animate={{
-                                                    scale: idx === currentStep ? 1.2 : 1,
-                                                    backgroundColor: idx === currentStep ? '#3b82f6' : idx < currentStep ? '#93c5fd' : '#e5e7eb'
-                                                }}
-                                                transition={{ type: 'spring', damping: 15, stiffness: 400 }}
-                                                style={{
-                                                    width: '8px',
-                                                    height: '8px',
-                                                    borderRadius: '50%',
-                                                    cursor: 'pointer',
-                                                    border: 0,
-                                                    padding: 0,
-                                                }}
-                                                onClick={() => setCurrentStep(idx)}
-                                                aria-label={`Go to tutorial step ${idx + 1}`}
-                                                aria-current={idx === currentStep ? 'step' : undefined}
-                                            />
-                                        ))}
                                     </div>
-
-                                    {/* Action Buttons */}
-                                    <div style={{ display: 'flex', gap: '12px' }}>
-                                        {currentStep > 0 && (
-                                            <motion.button
-                                                type="button"
-                                                initial={{ opacity: 0, x: -10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                onClick={handleTutorialPrev}
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                style={{
-                                                    flex: 1,
-                                                    padding: '14px 20px',
-                                                    borderRadius: '12px',
-                                                    border: '2px solid #e5e7eb',
-                                                    background: 'white',
-                                                    color: '#374151',
-                                                    fontWeight: 600,
-                                                    fontSize: '14px',
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    gap: '6px',
-                                                }}
-                                            >
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M19 12H5M12 19l-7-7 7-7" />
-                                                </svg>
-                                                Back
-                                            </motion.button>
-                                        )}
-
-                                        {currentStep < tool.tutorial.steps.length - 1 ? (
-                                            <motion.button
-                                                type="button"
-                                                onClick={handleTutorialNext}
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                style={{
-                                                    flex: 1,
-                                                    padding: '14px 20px',
-                                                    borderRadius: '12px',
-                                                    border: 'none',
-                                                    background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                                                    color: 'white',
-                                                    fontWeight: 600,
-                                                    fontSize: '14px',
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    gap: '6px',
-                                                    boxShadow: '0 4px 14px rgba(59, 130, 246, 0.4)',
-                                                }}
-                                            >
-                                                Next
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                                </svg>
-                                            </motion.button>
-                                        ) : (
-                                            <motion.button
-                                                type="button"
-                                                onClick={handleTutorialComplete}
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                style={{
-                                                    flex: 1,
-                                                    padding: '14px 20px',
-                                                    borderRadius: '12px',
-                                                    border: 'none',
-                                                    background: 'linear-gradient(135deg, #10b981, #059669)',
-                                                    color: 'white',
-                                                    fontWeight: 600,
-                                                    fontSize: '14px',
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    gap: '8px',
-                                                    boxShadow: '0 4px 14px rgba(16, 185, 129, 0.4)',
-                                                }}
-                                            >
-                                                Open {tool.name}
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
-                                                </svg>
-                                            </motion.button>
-                                        )}
-                                    </div>
-
-                                    {/* Skip Button */}
-                                    <motion.button
-                                        type="button"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.4 }}
-                                        onClick={handleSkipTutorial}
-                                        style={{
-                                            width: '100%',
-                                            marginTop: '12px',
-                                            padding: '10px',
-                                            background: 'transparent',
-                                            border: 'none',
-                                            color: '#9ca3af',
-                                            fontSize: '13px',
-                                            cursor: 'pointer',
-                                        }}
-                                    >
-                                        Skip tutorial & open directly
-                                    </motion.button>
-
-                                    {/* Close Button */}
-                                    <motion.button
-                                        ref={tutorialCloseRef}
-                                        type="button"
-                                        onClick={() => { setShowTutorial(false); setCurrentStep(0); }}
-                                        initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
-                                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                                        exit={{ opacity: 0, scale: 0.5, rotate: 90 }}
-                                        transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '16px',
-                                            right: '16px',
-                                            background: 'transparent',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            padding: '8px',
-                                            borderRadius: '50%',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: '#9ca3af',
-                                            transition: 'all 0.2s ease',
-                                        }}
-                                        whileHover={{ backgroundColor: '#f3f4f6', color: '#4b5563' }}
-                                        aria-label={`Close ${tool.name} tutorial`}
-                                    >
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                                        </svg>
-                                    </motion.button>
-                                </motion.div>
-                            </div>
                         </>
                     )}
                 </AnimatePresence>,

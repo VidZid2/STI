@@ -1031,7 +1031,7 @@ const StudentLogin: React.FC = () => {
                 clickBubble: !svr.fEnableLivePreview,
                 enable: isPrimaryButtonEnabled,
                 visible: isPrimaryButtonVisible,
-                preventTabbing: primaryButtonPreventTabbing" value="Next" disabled="" data-report-attached="1" style={{display: 'none'}} />
+                preventTabbing: primaryButtonPreventTabbing" value="Next" data-report-attached="1" style={{display: 'none'}} />
         {/* /ko */}
         {/* ko if: svr.fConsentButtonIdViaName */}{/* /ko */}
     </div>

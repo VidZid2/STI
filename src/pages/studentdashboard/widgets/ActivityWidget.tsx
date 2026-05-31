@@ -3,64 +3,21 @@
  * Displays recent activity list
  */
 
-import React from 'react';
+import * as React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { ActivityItem } from '../../../services/activityService';
-import { formatRelativeTime } from '../../../services/activityService';
 
 interface ActivityWidgetProps {
-    activities: ActivityItem[];
-    compactMode?: boolean;
+    recentActivities: ActivityItem[];
+    formatRelativeTime: (date: string) => string;
+    compactMode: boolean;
     onClose: () => void;
 }
 
-const ActivityIcon: React.FC<{ type: ActivityItem['type']; compact: boolean }> = ({ type, compact }) => {
-    const iconSize = compact ? 'w-3 h-3' : 'w-3.5 h-3.5';
-    
-    switch (type) {
-        case 'course_access':
-            return (
-                <svg className={iconSize} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-            );
-        case 'material_view':
-            return (
-                <svg className={iconSize} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            );
-        case 'module_complete':
-            return (
-                <svg className={iconSize} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            );
-        default:
-            return (
-                <svg className={iconSize} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
-                </svg>
-            );
-    }
-};
-
-const getActivityColor = (type: ActivityItem['type']) => {
-    switch (type) {
-        case 'course_access':
-            return 'bg-blue-50 text-blue-500';
-        case 'material_view':
-            return 'bg-amber-50 text-amber-500';
-        case 'module_complete':
-            return 'bg-emerald-50 text-emerald-500';
-        default:
-            return 'bg-violet-50 text-violet-500';
-    }
-};
-
-export const ActivityWidget: React.FC<ActivityWidgetProps> = ({
-    activities,
-    compactMode = false,
+export const ActivityWidget = React.memo<ActivityWidgetProps>(({
+    recentActivities,
+    formatRelativeTime,
+    compactMode,
     onClose }) => {
     return (
         <motion.div
@@ -83,9 +40,9 @@ export const ActivityWidget: React.FC<ActivityWidgetProps> = ({
                         </svg>
                     </motion.div>
                     <span className={`font-medium text-zinc-700 ${compactMode ? 'text-xs' : 'text-sm'}`}>Recent Activity</span>
-                    {activities.length > 0 && (
+                    {recentActivities.length > 0 && (
                         <span className={`px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-600 ${compactMode ? 'text-[9px]' : 'text-[10px]'}`}>
-                            {activities.length}
+                            {recentActivities.length}
                         </span>
                     )}
                 </div>
@@ -102,8 +59,8 @@ export const ActivityWidget: React.FC<ActivityWidgetProps> = ({
             </div>
 
             {/* Activity List */}
-            <div className={compactMode ? 'px-3 pb-3' : 'px-4 pb-4'}>
-                {activities.length === 0 ? (
+            <div className={`${compactMode ? 'px-3 pb-3' : 'px-4 pb-4'}`}>
+                {recentActivities.length === 0 ? (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -139,7 +96,7 @@ export const ActivityWidget: React.FC<ActivityWidgetProps> = ({
                 ) : (
                     <div className="space-y-1">
                         <AnimatePresence mode="popLayout">
-                            {activities.slice(0, 5).map((activity, index) => (
+                            {recentActivities.slice(0, 5).map((activity, index) => (
                                 <motion.div
                                     key={activity.id}
                                     initial={{ opacity: 0, x: -10 }}
@@ -149,8 +106,31 @@ export const ActivityWidget: React.FC<ActivityWidgetProps> = ({
                                     whileHover={{ x: 4, backgroundColor: 'rgba(139, 92, 246, 0.05)' }}
                                     className={`flex items-center gap-2.5 rounded-lg cursor-pointer transition-${compactMode ? 'p-1.5' : 'p-2'}`}
                                 >
-                                    <div className={`flex-shrink-0 rounded-md flex items-center justify-center ${getActivityColor(activity.type)} ${compactMode ? 'w-6 h-6' : 'w-7 h-7'}`}>
-                                        <ActivityIcon type={activity.type} compact={compactMode} />
+                                    <div className={`flex-shrink-0 rounded-md flex items-center justify-center ${activity.type === 'course_access' ? 'bg-blue-50 text-blue-500' :
+                                            activity.type === 'material_view' ? 'bg-amber-50 text-amber-500' :
+                                                activity.type === 'module_complete' ? 'bg-emerald-50 text-emerald-500' :
+                                                    'bg-violet-50 text-violet-500'
+                                        } ${compactMode ? 'w-6 h-6' : 'w-7 h-7'}`}>
+                                        {activity.type === 'course_access' && (
+                                            <svg className={compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                            </svg>
+                                        )}
+                                        {activity.type === 'material_view' && (
+                                            <svg className={compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        )}
+                                        {activity.type === 'module_complete' && (
+                                            <svg className={compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        )}
+                                        {(activity.type === 'assignment_submit' || activity.type === 'quiz_complete') && (
+                                            <svg className={compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        )}
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className={`font-medium text-zinc-700 truncate ${compactMode ? 'text-[10px]' : 'text-xs'}`}>
@@ -173,6 +153,8 @@ export const ActivityWidget: React.FC<ActivityWidgetProps> = ({
             </div>
         </motion.div>
     );
-};
+});
+
+ActivityWidget.displayName = 'ActivityWidget';
 
 export default ActivityWidget;

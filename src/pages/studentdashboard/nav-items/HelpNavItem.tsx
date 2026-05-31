@@ -59,9 +59,15 @@ export const HelpNavItem: React.FC<HelpNavItemProps> = React.memo(({ onSidebarCl
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <a href="#" className="nav-item" onClick={(e) => e.preventDefault()}>
+            <button
+                type="button"
+                className="nav-item"
+                onClick={(e) => e.preventDefault()}
+                aria-haspopup="menu"
+                aria-expanded={isOpen}
+            >
                 <div className="nav-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -74,6 +80,7 @@ export const HelpNavItem: React.FC<HelpNavItemProps> = React.memo(({ onSidebarCl
                 </div>
                 {isExpanded && (
                     <svg
+                        aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         width="14"
                         height="14"
@@ -94,7 +101,7 @@ export const HelpNavItem: React.FC<HelpNavItemProps> = React.memo(({ onSidebarCl
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 )}
-            </a>
+            </button>
             {/* Invisible bridge to connect anchor to dropdown */}
             {isOpen && (
                 <div

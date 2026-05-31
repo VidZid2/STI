@@ -34,7 +34,7 @@ export const AtRiskPanel: React.FC<AtRiskPanelProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="at-risk-panel mb-8 p-6 rounded-[20px] bg-gradient-to-br from-red-500/[0.04] to-white border border-red-500/20"
+            className="at-risk-panel mb-8 p-6 rounded-[20px] bg-gradient-to-br from-red-500/[0.04] to-surface/80 dark:to-slate-900/80 backdrop-blur-md border border-red-500/20 dark:border-red-500/30"
         >
             <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-4">
@@ -42,10 +42,10 @@ export const AtRiskPanel: React.FC<AtRiskPanelProps> = ({
                         <UserAlertIcon size={20} />
                     </div>
                     <div>
-                        <h2 className="text-xl font-semibold text-slate-900 m-0">
+                        <h2 className="text-xl font-semibold text-slate-900 dark:text-white m-0">
                             Students Needing Attention
                         </h2>
-                        <p className="text-sm text-slate-500 m-0">
+                        <p className="text-sm text-slate-500 dark:text-slate-400 m-0">
                             {atRiskStudents.length} students may need intervention
                         </p>
                     </div>
@@ -73,7 +73,7 @@ export const AtRiskPanel: React.FC<AtRiskPanelProps> = ({
                         animate={{ opacity: 1, y: 0, transition: { delay: 0.3 + index * 0.05 } }}
                         transition={{ duration: 0.15, ease: 'easeOut' }}
                         whileHover={{ scale: 1.01, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
-                        className="flex items-center gap-4 p-4 rounded-xl bg-white border border-black/5 cursor-pointer"
+                        className="flex items-center gap-4 p-4 rounded-xl bg-surface/80 dark:bg-slate-900/60 border border-black/5 dark:border-white/10 cursor-pointer"
                     >
                         {/* Student Avatar */}
                         <div className="w-11 h-11 rounded-full flex items-center justify-center text-blue-500 text-lg font-semibold shrink-0"
@@ -83,12 +83,12 @@ export const AtRiskPanel: React.FC<AtRiskPanelProps> = ({
 
                         {/* Student Info */}
                         <div className="flex-1 min-w-0">
-                            <div className="text-[13px] font-semibold text-slate-900 truncate">
+                            <div className="text-[13px] font-semibold text-slate-900 dark:text-white truncate">
                                 {student.name}
                             </div>
-                            <div className="text-xs text-slate-500 flex items-center gap-2">
+                            <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
                                 <span>{student.section}</span>
-                                <span className="text-slate-400">•</span>
+                                <span className="text-slate-400 dark:text-slate-600">•</span>
                                 <span>{student.subject}</span>
                             </div>
                         </div>

@@ -3,18 +3,18 @@
  * Displays daily motivational quote with STI (Blue & Yellow)
  */
 
-import React from 'react';
+import * as React from 'react';
 import { motion } from 'motion/react';
 
 interface QuoteWidgetProps {
     quote: { text: string; author: string };
-    compactMode?: boolean;
+    compactMode: boolean;
     onClose: () => void;
 }
 
-export const QuoteWidget: React.FC<QuoteWidgetProps> = ({
+export const QuoteWidget = React.memo<QuoteWidgetProps>(({
     quote,
-    compactMode = false,
+    compactMode,
     onClose }) => {
     return (
         <motion.div
@@ -88,6 +88,8 @@ export const QuoteWidget: React.FC<QuoteWidgetProps> = ({
             </div>
         </motion.div>
     );
-};
+});
+
+QuoteWidget.displayName = 'QuoteWidget';
 
 export default QuoteWidget;

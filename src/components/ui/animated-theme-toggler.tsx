@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Moon, Sun } from "lucide-react"
 import { flushSync } from "react-dom"
+import { Moon, Sun } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -9,10 +9,10 @@ interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<"butt
 }
 
 /**
- * Get the current teacher's user ID for per-user theme storage.
+ * Get the current user ID for per-user theme storage.
  * Falls back to 'default' if no user is found.
  */
-const getTeacherUserId = (): string => {
+const getUserId = (): string => {
   try {
     const saved = sessionStorage.getItem('elms_current_user')
     if (saved) {
@@ -27,11 +27,12 @@ const getTeacherUserId = (): string => {
 
 export const AnimatedThemeToggler = ({
   className,
-  duration = 500,
+  duration = 400,
   ...props
 }: AnimatedThemeTogglerProps) => {
   const [isDark, setIsDark] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const isAnimating = useRef(false)
 
   useEffect(() => {
     const updateTheme = () => {
@@ -49,22 +50,30 @@ export const AnimatedThemeToggler = ({
     return () => observer.disconnect()
   }, [])
 
+  const applyTheme = useCallback((newDark: boolean) => {
+    const userId = getUserId()
+    if (newDark) {
+      document.documentElement.classList.add("dark")
+      document.body.classList.add("dark-mode")
+    } else {
+      document.documentElement.classList.remove("dark")
+      document.body.classList.remove("dark-mode")
+    }
+    setIsDark(newDark)
+    localStorage.setItem(`theme_${userId}`, newDark ? "dark" : "light")
+    localStorage.setItem("theme", newDark ? "dark" : "light")
+  }, [])
+
   const toggleTheme = useCallback(async () => {
-    if (!buttonRef.current) return
+    if (!buttonRef.current || isAnimating.current) return
+    isAnimating.current = true
 
     const newTheme = !isDark
-    const userId = getTeacherUserId()
 
     // Check if View Transitions API is supported
     if (!document.startViewTransition) {
-      // Fallback: just toggle without animation
-      setIsDark(newTheme)
-      document.documentElement.classList.toggle("dark")
-      document.body.classList.toggle("dark-mode")
-      // Store per-user preference
-      localStorage.setItem(`theme_${userId}`, newTheme ? "dark" : "light")
-      // Keep legacy key for backward compat
-      localStorage.setItem("theme", newTheme ? "dark" : "light")
+      applyTheme(newTheme)
+      isAnimating.current = false
       return
     }
 
@@ -80,17 +89,13 @@ export const AnimatedThemeToggler = ({
     try {
       const transition = document.startViewTransition(() => {
         flushSync(() => {
-          setIsDark(newTheme)
-          document.documentElement.classList.toggle("dark")
-          document.body.classList.toggle("dark-mode")
-          localStorage.setItem(`theme_${userId}`, newTheme ? "dark" : "light")
-          localStorage.setItem("theme", newTheme ? "dark" : "light")
+          applyTheme(newTheme)
         })
       })
 
       await transition.ready
 
-      // Animate the NEW view (the one we're transitioning TO)
+      // Animate the NEW view with a smooth circle clip
       document.documentElement.animate(
         {
           clipPath: [
@@ -100,34 +105,39 @@ export const AnimatedThemeToggler = ({
         },
         {
           duration,
-          easing: "ease-out",
+          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
           pseudoElement: "::view-transition-new(root)",
         }
       )
+
+      await transition.finished
     } catch (error) {
-      // If animation fails, still toggle the theme
       console.warn("View transition failed:", error)
-      setIsDark(newTheme)
-      if (newTheme) {
-        document.documentElement.classList.add("dark")
-        document.body.classList.add("dark-mode")
-      } else {
-        document.documentElement.classList.remove("dark")
-        document.body.classList.remove("dark-mode")
-      }
-      localStorage.setItem(`theme_${userId}`, newTheme ? "dark" : "light")
-      localStorage.setItem("theme", newTheme ? "dark" : "light")
+      flushSync(() => {
+        applyTheme(newTheme)
+      })
+    } finally {
+      isAnimating.current = false
     }
-  }, [isDark, duration])
+  }, [isDark, duration, applyTheme])
 
   return (
     <button
       ref={buttonRef}
       onClick={toggleTheme}
-      className={cn(className)}
+      className={cn(
+        "relative overflow-hidden",
+        className
+      )}
+      aria-label="Toggle theme"
       {...props}
     >
-      {isDark ? <Sun /> : <Moon />}
+      <div
+        className="transition-transform duration-300 ease-out"
+        style={{ transform: isDark ? 'rotate(0deg)' : 'rotate(-90deg)' }}
+      >
+        {isDark ? <Sun size={16} /> : <Moon size={16} />}
+      </div>
       <span className="sr-only">Toggle theme</span>
     </button>
   )

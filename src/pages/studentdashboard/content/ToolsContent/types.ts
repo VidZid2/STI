@@ -13,6 +13,7 @@ export interface Tool {
     id: string;
     name: string;
     description: string;
+    bestFor?: string;
     category: string;
     icon: React.ReactNode;
     accept: string;

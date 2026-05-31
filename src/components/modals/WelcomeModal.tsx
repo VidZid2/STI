@@ -75,7 +75,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        zIndex: 10,
+                        zIndex: 99998,
                     }}
                 >
                     <motion.svg 

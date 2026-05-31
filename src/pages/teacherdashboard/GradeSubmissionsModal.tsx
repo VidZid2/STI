@@ -365,6 +365,16 @@ const GradeSubmissionsModal: React.FC<GradeSubmissionsModalProps> = ({ isOpen, o
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen, onClose, selectedIndex, filteredSubmissions, previewFile, selectedSubmissionId]);
 
+    // Prevent body scroll when drawer is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => { document.body.style.overflow = ''; };
+    }, [isOpen]);
+
     // Handle grading — saves to Supabase with real teacher attribution (Phase 9.3)
     const handleGrade = useCallback(async (score: number, feedback: string) => {
         if (!selectedSubmissionId) return;
@@ -559,7 +569,7 @@ const GradeSubmissionsModal: React.FC<GradeSubmissionsModalProps> = ({ isOpen, o
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className={`fixed inset-0 bg-[rgba(15,23,42,0.6)] backdrop-blur-md flex justify-center z-[9999] ${isMobile ? 'items-stretch p-0' : 'items-center p-5'}`}
+                    className={`fixed inset-0 bg-[rgba(15,23,42,0.4)] backdrop-blur-md flex justify-end z-[9999]`}
                     onClick={(e) => e.target === e.currentTarget && onClose()}
                 >
                     <motion.div
@@ -567,7 +577,11 @@ const GradeSubmissionsModal: React.FC<GradeSubmissionsModalProps> = ({ isOpen, o
                         aria-modal="true"
                         aria-labelledby="grade-submissions-modal-title"
                         ref={focusTrapRef}
-                        className={`responsive-modal-container w-full bg-[var(--bg-surface)] flex flex-col overflow-hidden relative ${isMobile ? 'max-w-full h-full max-h-full rounded-none shadow-none' : 'max-w-[1400px] h-[90vh] max-h-[850px] rounded-[20px] shadow-[0_25px_80px_rgba(0,0,0,0.25)]'}`}
+                        initial={{ x: isMobile ? 0 : '100%', y: isMobile ? '100%' : 0 }}
+                        animate={{ x: 0, y: 0 }}
+                        exit={{ x: isMobile ? 0 : '100%', y: isMobile ? '100%' : 0 }}
+                        transition={{ type: 'spring', stiffness: 350, damping: 32 }}
+                        className={`responsive-modal-container w-full bg-[var(--bg-canvas)] flex flex-col overflow-hidden relative ${isMobile ? 'max-w-full h-full max-h-full rounded-none shadow-none' : 'max-w-[1250px] h-full rounded-l-[24px] border-l border-[var(--border-subtle)] shadow-[-8px_0_32px_rgba(0,0,0,0.12)]'}`}
                     >
                         {/* Header — extracted to GradingToolbar (Phase 12.1) */}
                         <GradingToolbar

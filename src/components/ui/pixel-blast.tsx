@@ -524,7 +524,9 @@ export const PixelBlast: React.FC<PixelBlastProps> = ({
         passive: true
       });
       let raf = 0;
+      let isActive = true;
       const animate = () => {
+        if (!isActive) return;
         if (autoPauseOffscreen && !visibilityRef.current.visible) {
           raf = requestAnimationFrame(animate);
           return;
@@ -560,7 +562,8 @@ export const PixelBlast: React.FC<PixelBlastProps> = ({
         timeOffset,
         composer,
         touch,
-        liquidEffect
+        liquidEffect,
+        isActive: true
       };
     } else {
       const t = threeRef.current;
@@ -590,6 +593,7 @@ export const PixelBlast: React.FC<PixelBlastProps> = ({
       if (threeRef.current && mustReinit) return;
       if (!threeRef.current) return;
       const t = threeRef.current;
+      t.isActive = false; // safely terminate the animation loop
       t.resizeObserver?.disconnect();
       cancelAnimationFrame(t.raf);
       t.quad?.geometry.dispose();

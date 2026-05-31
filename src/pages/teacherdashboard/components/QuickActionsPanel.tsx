@@ -49,10 +49,10 @@ export const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
                         <BoltIcon size={20} />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-semibold text-slate-900 m-0">
+                        <h2 className="text-2xl font-semibold text-slate-900 dark:text-white m-0">
                             Quick Actions
                         </h2>
-                        <p className="text-sm text-slate-500 m-0">
+                        <p className="text-sm text-slate-500 dark:text-slate-400 m-0">
                             Common tasks at your fingertips
                         </p>
                     </div>

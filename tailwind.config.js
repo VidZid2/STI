@@ -30,7 +30,16 @@ export default {
                     'text-secondary': 'var(--text-secondary)',
                     muted: 'var(--text-muted)'
                 }
-            }
+            },
+            keyframes: {
+                'skeleton-shimmer': {
+                    '0%': { transform: 'translateX(-100%)' },
+                    '100%': { transform: 'translateX(100%)' },
+                },
+            },
+            animation: {
+                'skeleton-shimmer': 'skeleton-shimmer 1.8s ease-in-out infinite',
+            },
         },
     },
     plugins: [],

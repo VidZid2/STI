@@ -5,6 +5,11 @@
 
 export { QuoteWidget } from './QuoteWidget';
 export { WeatherWidget } from './WeatherWidget';
-export { DeadlinesWidget } from './DeadlinesWidget';
 export { ActivityWidget } from './ActivityWidget';
-export { QuickStatsCard } from './QuickStatsCard';
+export { CourseProgressWidget } from './CourseProgressWidget';
+export { StudyInsightsWidget } from './StudyInsightsWidget';
+export { CalendarWidget } from './CalendarWidget';
+export { TodoWidget } from './TodoWidget';
+export { AnnouncementsWidget } from './AnnouncementsWidget';
+export { GradePredictorWidget } from './GradePredictorWidget';
+export { AchievementsWidget } from './AchievementsWidget';

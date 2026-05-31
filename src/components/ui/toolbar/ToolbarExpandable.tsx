@@ -197,6 +197,7 @@ interface Mail {
 }
 
 const INITIAL_MAILS: Mail[] = [
+    { id: 999, from: 'deasis', subject: 'Testing UI Components', preview: 'Just checking to see if everything is perfectly fitted inside this newly scaled inbox container...', time: 'Just now', isRead: false },
     { id: 1, from: 'David Clarence Del Mundo', subject: 'Programming Assignment 3 Reminder', preview: 'This is a reminder that your Programming Assignment 3 is due tomorrow. Please make sure to submit...', time: '10:30 AM', isRead: false },
     { id: 2, from: 'Claire Maurillo', subject: 'Euthenics 1 - Module 4 Available', preview: 'Good day! Module 4: Home Management is now available. Please review the materials before our next...', time: '9:15 AM', isRead: false },
     { id: 3, from: 'Psalmmiracle Mariano', subject: 'Quiz Results - Introduction to Computing', preview: 'Your quiz results for Chapter 5: Computer Networks are now available. You can view your score...', time: 'Yesterday', isRead: true },
@@ -213,6 +214,7 @@ function NotificationContent({
 }) {
     const [isClearing, setIsClearing] = useState(false);
     const [activeCategory, setActiveCategory] = useState<NotificationCategory>('all');
+    const isDarkMode = useDarkMode();
     
     // Use context functions for persistence
     const { dismissNotification: contextDismiss, markAllAsRead: contextMarkAllAsRead, clearAllNotifications: contextClearAll } = useNotifications();
@@ -243,23 +245,25 @@ function NotificationContent({
     };
 
     return (
-        <div className='flex flex-col space-y-3'>
-            <div className='flex items-center justify-between'>
-                <div className='text-xs font-semibold text-zinc-600 uppercase tracking-wide'>
+        <div className='flex flex-col gap-3 sm:gap-3.5 w-[288px]'>
+            <div className='flex items-center justify-between px-1'>
+                <div className={cn("text-[11px] sm:text-[12px] font-bold uppercase tracking-widest", isDarkMode ? "text-slate-400" : "text-slate-500")}>
                     Notifications
                 </div>
                 {notifications.some(n => !n.isRead) && (
-                    <button
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={markAllAsRead}
-                        className='text-[10px] text-blue-600 hover:text-blue-700 font-medium'
+                        className='text-[11px] text-blue-600 hover:text-blue-700 font-bold'
                     >
                         Mark all as read
-                    </button>
+                    </motion.button>
                 )}
             </div>
 
             {/* Category Filter Tabs */}
-            <div className='flex gap-1 p-0.5 bg-zinc-100 rounded-lg'>
+            <div className={cn('flex gap-1 p-1 rounded-xl shadow-sm border', isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200')}>
                 {NOTIFICATION_CATEGORIES.map((cat) => {
                     const count = cat.id === 'all' 
                         ? notifications.length 
@@ -271,23 +275,25 @@ function NotificationContent({
                             key={cat.id}
                             onClick={() => setActiveCategory(cat.id)}
                             className={cn(
-                                'relative flex-1 px-2 py-1 text-[10px] font-medium rounded-md transition-colors',
-                                isActive ? 'text-blue-600' : 'text-zinc-500 hover:text-zinc-700'
+                                'relative flex-1 flex items-center justify-center px-1.5 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-colors',
+                                isActive 
+                                    ? (isDarkMode ? 'text-slate-100' : 'text-blue-600') 
+                                    : (isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-700')
                             )}
                             whileTap={{ scale: 0.97 }}
                         >
                             {isActive && (
                                 <motion.div
                                     layoutId="activeTab"
-                                    className='absolute inset-0 bg-white rounded-md shadow-sm'
+                                    className={cn('absolute inset-0 rounded-lg shadow-sm border', isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-200')}
                                     transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                                 />
                             )}
                             <span className='relative z-10'>{cat.label}</span>
                             {count > 0 && (
                                 <span className={cn(
-                                    'relative z-10 ml-1 text-[9px]',
-                                    isActive ? 'text-blue-400' : 'text-zinc-400'
+                                    'relative z-10 ml-1.5 text-[10px]',
+                                    isActive ? (isDarkMode ? 'text-blue-400' : 'text-blue-500') : (isDarkMode ? 'text-slate-500' : 'text-slate-400')
                                 )}>
                                     {count}
                                 </span>
@@ -297,7 +303,7 @@ function NotificationContent({
                 })}
             </div>
 
-            <div className='space-y-2 max-h-64 overflow-y-auto'>
+            <div className='flex flex-col gap-3 sm:gap-4 max-h-[60vh] overflow-y-auto px-1 pb-1' style={{ scrollbarWidth: 'none' }}>
                 {isLoading ? (
                     <NotificationSkeleton />
                 ) : (
@@ -305,12 +311,26 @@ function NotificationContent({
                     {filteredNotifications.length === 0 ? (
                         <motion.div
                             key="empty-filter"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className='text-center py-6 text-zinc-400 text-xs'
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className={cn(
+                                'flex gap-3 items-center w-full text-left p-3 rounded-[14px] border shadow-sm', 
+                                isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50/50 border-slate-200'
+                            )}
                         >
-                            No {activeCategory === 'all' ? '' : activeCategory} notifications
+                            <div className={cn("relative w-10 h-10 rounded-[12px] flex items-center justify-center flex-shrink-0 shadow-sm border", isDarkMode ? "bg-slate-700 border-slate-600 text-blue-400" : "bg-white border-blue-100 text-blue-500")}>
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                            </div>
+                            <div className='flex-1 flex flex-col justify-center'>
+                                <h4 className={cn('text-[12px] sm:text-[13px] font-bold leading-tight capitalize', isDarkMode ? 'text-slate-100' : 'text-slate-900')}>
+                                    {activeCategory === 'all' ? 'No notifications' : `No ${activeCategory}s`}
+                                </h4>
+                                <p className={cn('text-[11px] font-medium leading-relaxed mt-0.5', isDarkMode ? 'text-slate-400' : 'text-slate-500')}>
+                                    You're all caught up!
+                                </p>
+                            </div>
                         </motion.div>
                     ) : filteredNotifications.map((notif, index) => (
                         <motion.div
@@ -332,18 +352,31 @@ function NotificationContent({
                                 duration: 0.25,
                                 delay: isClearing ? index * 0.03 : 0
                             }}
-                            className='flex gap-2 items-start hover:bg-zinc-50 p-1.5 rounded-lg transition-colors cursor-pointer group'
+                            className={cn(
+                                'flex gap-2.5 sm:gap-3 items-start p-2 sm:p-2.5 rounded-[14px] transition-all duration-300 border hover:shadow-md cursor-pointer group', 
+                                notif.isRead 
+                                    ? (isDarkMode ? 'bg-slate-800/40 border-slate-700/40 hover:border-slate-600' : 'bg-slate-50/50 border-slate-200/50 hover:bg-white hover:border-slate-300') 
+                                    : (isDarkMode ? 'bg-slate-800/80 border-slate-600 shadow-sm' : 'bg-white border-blue-200 shadow-sm')
+                            )}
                         >
-                            {/* Avatar or Icon */}
+                            {/* Avatar or Icon container - SaaS styled */}
                             {notif.teacher ? (
-                                <div className='flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center'>
-                                    <span className='text-[10px] font-semibold text-blue-700'>
+                                <motion.div
+                                    whileHover={{ scale: 1.05, rotate: -5 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                    className={cn("w-8 h-8 sm:w-9 sm:h-9 rounded-[10px] sm:rounded-[12px] flex items-center justify-center flex-shrink-0 shadow-sm border", isDarkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200")}
+                                >
+                                    <span className={cn('text-[11px] sm:text-[12px] font-bold', isDarkMode ? 'text-blue-400' : 'text-blue-600')}>
                                         {getInitials(notif.teacher)}
                                     </span>
-                                </div>
+                                </motion.div>
                             ) : (
-                                <div className='flex-shrink-0 w-7 h-7 flex items-center justify-center'>
-                                    <svg className='w-4 h-4 text-zinc-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <motion.div
+                                    whileHover={{ scale: 1.05, rotate: -5 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                    className={cn("w-8 h-8 sm:w-9 sm:h-9 rounded-[10px] sm:rounded-[12px] flex items-center justify-center flex-shrink-0 shadow-sm border", isDarkMode ? "bg-slate-800 border-slate-700 text-slate-400" : "bg-white border-slate-200 text-slate-500")}
+                                >
+                                    <svg className='w-4 h-4 sm:w-5 sm:h-5 text-current' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         {notif.title.includes('Assignment') && (
                                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
                                         )}
@@ -354,19 +387,19 @@ function NotificationContent({
                                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' />
                                         )}
                                     </svg>
-                                </div>
+                                </motion.div>
                             )}
 
                             {/* Content */}
-                            <div className='flex-1 min-w-0'>
-                                <div className='flex items-start gap-1'>
-                                    <h4 className='text-xs font-medium text-zinc-800 flex-1'>{notif.title}</h4>
+                            <div className='flex-1 min-w-0 flex flex-col justify-center h-full'>
+                                <div className='flex items-start gap-2'>
+                                    <h4 className={cn('text-[12px] sm:text-[13px] font-bold leading-tight flex-1', isDarkMode ? 'text-slate-100' : 'text-slate-900')}>{notif.title}</h4>
                                     {!notif.isRead && (
-                                        <span className='flex-shrink-0 w-1.5 h-1.5 rounded-full bg-blue-500 mt-1'></span>
+                                        <span className='flex-shrink-0 w-1.5 h-1.5 rounded-full bg-blue-500 mt-0.5 shadow-[0_0_8px_rgba(59,130,246,0.5)]'></span>
                                     )}
                                 </div>
-                                <p className='text-[11px] text-zinc-500 mt-0.5 leading-tight'>{notif.message}</p>
-                                <span className='text-[10px] text-zinc-400 mt-1 block'>{formatRelativeTime(notif.timestamp)}</span>
+                                <p className={cn('text-[11px] font-medium leading-relaxed mt-1', isDarkMode ? 'text-slate-400' : 'text-slate-500')}>{notif.message}</p>
+                                <span className={cn('text-[9px] font-bold mt-1 block', isDarkMode ? 'text-slate-500' : 'text-slate-400')}>{formatRelativeTime(notif.timestamp)}</span>
                             </div>
 
                             {/* Dismiss X Button */}
@@ -400,34 +433,23 @@ function NotificationContent({
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            className='flex-1 py-2 px-3 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors'
+                            className={cn('flex-1 py-1.5 px-2 text-[11px] sm:text-[12px] font-bold rounded-lg transition-all duration-300 border', isDarkMode ? 'text-blue-400 bg-blue-900/20 border-blue-800/30 hover:bg-blue-900/40' : 'text-blue-600 bg-blue-50/50 border-blue-100 hover:bg-blue-100')}
                             type='button'
                         >
-                            View All Notifications
+                            View All
                         </motion.button>
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={clearAllNotifications}
                             disabled={isClearing}
-                            className='flex-1 py-2 px-3 text-xs font-medium text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50'
+                            className={cn('flex-1 py-1.5 px-2 text-[11px] sm:text-[12px] font-bold rounded-lg transition-all duration-300 border disabled:opacity-50', isDarkMode ? 'text-red-400 bg-red-900/20 border-red-800/30 hover:bg-red-900/40' : 'text-red-500 bg-red-50/50 border-red-100 hover:bg-red-100')}
                             type='button'
                         >
                             {isClearing ? 'Clearing...' : 'Clear All'}
                         </motion.button>
                     </motion.div>
-                ) : (
-                    <motion.div
-                        key="empty"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.3 }}
-                        className='text-center py-8 text-zinc-500 text-xs'
-                    >
-                        No notifications
-                    </motion.div>
-                )}
+                ) : null}
             </AnimatePresence>
         </div>
     );
@@ -441,6 +463,7 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
     clearAllMails: () => void,
     isLoading?: boolean
 }) {
+    const isDarkMode = useDarkMode();
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
@@ -474,14 +497,19 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
     const showSearchResults = searchQuery.trim().length > 0;
 
     return (
-        <div className='flex flex-col space-y-3'>
+        <div className='flex flex-col gap-3 sm:gap-3.5 w-[288px]'>
             {/* Header */}
-            <div className='flex items-center justify-between'>
+            <div className='flex items-center justify-between px-1'>
                 <div className='flex items-center gap-2'>
-                    <div className='text-xs font-semibold text-zinc-600 uppercase tracking-wide'>
+                    <div className={cn(
+                        'text-[11px] sm:text-[12px] font-bold uppercase tracking-widest',
+                        isDarkMode ? 'text-slate-400' : 'text-slate-500'
+                    )}>
                         Inbox
                     </div>
-                    <span className='text-xs text-zinc-400'>({mails.length})</span>
+                    <span className={cn('text-[10px] font-bold', isDarkMode ? 'text-slate-500' : 'text-slate-400')}>
+                        ({mails.length})
+                    </span>
                 </div>
                 <div className='flex items-center gap-2'>
                     {hasUnreadMails && (
@@ -489,7 +517,7 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={markAllMailsAsRead}
-                            className='text-[10px] font-medium text-blue-600 hover:text-blue-700'
+                            className={cn('text-[10px] sm:text-[11px] font-bold transition-colors', isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-500 hover:text-blue-600')}
                         >
                             Mark all read
                         </motion.button>
@@ -497,7 +525,7 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
                     {mails.length > 0 && (
                         <button
                             onClick={clearAllMails}
-                            className='text-[10px] text-red-500 hover:text-red-600 font-medium'
+                            className={cn('text-[10px] sm:text-[11px] font-bold transition-colors hover:text-red-500', isDarkMode ? 'text-slate-500' : 'text-slate-400')}
                         >
                             Clear
                         </button>
@@ -506,8 +534,8 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
             </div>
 
             {/* Search Input */}
-            <div className='relative'>
-                <svg className='absolute left-2.5 top-0 bottom-0 my-auto w-3.5 h-3.5 text-zinc-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <div className='relative w-full'>
+                <svg className='absolute left-3 top-0 bottom-0 my-auto w-4 h-4 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                 </svg>
                 <input
@@ -515,7 +543,12 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
                     placeholder='Search messages...'
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className='w-full h-7 pl-8 pr-8 text-xs rounded-md border border-zinc-200 bg-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
+                    className={cn(
+                        'h-10 w-full rounded-[14px] border pl-9 pr-8 py-2 text-[12px] sm:text-[13px] font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all',
+                        isDarkMode 
+                            ? 'border-slate-600 bg-slate-800 text-slate-100 placeholder-slate-400 focus:bg-slate-700/50' 
+                            : 'border-blue-200/60 bg-white text-slate-900 placeholder-slate-400 focus:border-blue-400'
+                    )}
                 />
                 {/* Loading Spinner */}
                 <AnimatePresence>
@@ -544,11 +577,22 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
                     {filteredMails.length === 0 ? (
                         <motion.div
                             key="empty"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className='text-center py-6 text-zinc-500 text-xs'
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className={cn(
+                                'flex gap-3 items-center w-full text-left p-3 rounded-[14px] border shadow-sm', 
+                                isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50/50 border-slate-200'
+                            )}
                         >
-                            {showSearchResults ? 'No messages match your search' : 'No messages'}
+                            <div className={cn("relative w-10 h-10 rounded-[12px] flex items-center justify-center flex-shrink-0 shadow-sm border", isDarkMode ? "bg-slate-700 border-slate-600 text-blue-400" : "bg-white border-blue-100 text-blue-500")}>
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div className='flex-1 flex flex-col justify-center'>
+                                <h4 className={cn('text-[12px] sm:text-[13px] font-bold leading-tight', isDarkMode ? 'text-slate-100' : 'text-slate-900')}>{showSearchResults ? 'No Results' : 'Inbox Empty'}</h4>
+                                <p className={cn('text-[11px] font-medium leading-relaxed mt-0.5', isDarkMode ? 'text-slate-400' : 'text-slate-500')}>{showSearchResults ? 'No messages match your search' : 'You have no new messages'}</p>
+                            </div>
                         </motion.div>
                     ) : (
                         filteredMails.map((mail, index) => (
@@ -559,44 +603,46 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: 50, scale: 0.8 }}
                                 transition={{ duration: 0.25, delay: index * 0.03 }}
-                                className={`group p-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                                className={cn(
+                                    'flex gap-2.5 sm:gap-3 items-center w-full text-left p-2 sm:p-2.5 rounded-[14px] transition-all duration-300 border hover:shadow-md cursor-pointer group', 
                                     mail.isRead 
-                                        ? 'bg-zinc-50 hover:bg-zinc-100' 
-                                        : 'bg-blue-50 hover:bg-blue-100 border-l-2 border-blue-500'
-                                }`}
+                                        ? (isDarkMode ? 'bg-slate-800/80 border-slate-600 shadow-sm hover:border-slate-500' : 'bg-white border-blue-200 shadow-sm hover:bg-slate-50/50 hover:border-blue-300')
+                                        : (isDarkMode ? 'bg-blue-900/20 border-blue-500/50 shadow-sm' : 'bg-blue-50/50 border-blue-300 shadow-sm')
+                                )}
                             >
-                                <div className='flex items-start gap-2'>
-                                    <div 
-                                        className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-semibold ${
-                                            mail.isRead ? 'bg-zinc-200 text-zinc-600' : 'bg-blue-200 text-blue-700'
-                                        }`}
+                                <div className='flex items-start gap-2.5 sm:gap-3 w-full'>
+                                    <motion.div 
+                                        whileHover={{ scale: 1.05, rotate: -5 }}
+                                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                        className={cn(
+                                            'relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-[10px] sm:rounded-[12px] flex items-center justify-center border shadow-sm font-bold text-[11px] sm:text-[12px] transition-colors',
+                                            mail.isRead ? (isDarkMode ? 'bg-slate-700 border-slate-600 text-slate-400 group-hover:text-blue-400 group-hover:border-blue-500/50' : 'bg-slate-50 border-slate-200 text-slate-500 group-hover:text-blue-500 group-hover:border-blue-300') : (isDarkMode ? 'bg-blue-900/40 border-blue-700 text-blue-400' : 'bg-white border-blue-200 text-blue-600')
+                                        )}
                                         onClick={() => markMailAsRead(mail.id)}
                                     >
                                         {mail.from.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                                    </div>
-                                    <div className='flex-1 min-w-0' onClick={() => markMailAsRead(mail.id)}>
-                                        <div className='flex items-center justify-between gap-2'>
-                                            <h4 className={`text-xs font-semibold truncate ${
-                                                mail.isRead ? 'text-zinc-600' : 'text-zinc-800'
-                                            }`}>{mail.from}</h4>
-                                            <span className='text-[10px] text-zinc-400 flex-shrink-0'>{mail.time}</span>
+                                    </motion.div>
+                                    <div className='flex-1 min-w-0 flex flex-col' onClick={() => markMailAsRead(mail.id)}>
+                                        <div className='flex items-center justify-between gap-2 mb-0.5'>
+                                            <h4 className={cn('text-[12px] sm:text-[13px] font-bold truncate', mail.isRead ? (isDarkMode ? 'text-slate-300' : 'text-slate-700') : (isDarkMode ? 'text-slate-100' : 'text-slate-900'))}>{mail.from}</h4>
+                                            <span className={cn('text-[9.5px] font-bold uppercase tracking-wider', isDarkMode ? 'text-slate-500' : 'text-slate-400')}>{mail.time}</span>
                                         </div>
-                                        <p className={`text-[11px] mt-0.5 truncate ${mail.isRead ? 'text-zinc-500' : 'text-zinc-700 font-medium'}`}>{mail.subject}</p>
-                                        <p className='text-[10px] text-zinc-400 mt-0.5 truncate'>{mail.preview}</p>
+                                        <p className={cn('text-[11px] font-bold truncate', mail.isRead ? (isDarkMode ? 'text-slate-400' : 'text-slate-500') : (isDarkMode ? 'text-blue-300' : 'text-blue-700'))}>{mail.subject}</p>
+                                        <p className={cn('text-[10px] sm:text-[11px] font-medium truncate mt-0.5', isDarkMode ? 'text-slate-500' : 'text-slate-500')}>{mail.preview}</p>
                                     </div>
                                     {/* Action Buttons */}
-                                    <div className='flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity'>
+                                    <div className='flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity justify-center items-center h-full'>
                                         {!mail.isRead && (
-                                            <div className='w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0'></div>
+                                            <div className='w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)] flex-shrink-0'></div>
                                         )}
                                         <motion.button
                                             whileHover={{ scale: 1.1 }}
                                             whileTap={{ scale: 0.9 }}
                                             onClick={(e) => { e.stopPropagation(); deleteMail(mail.id); }}
-                                            className='p-0.5 text-zinc-400 hover:text-red-500 transition-colors'
+                                            className='p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/20 rounded-md transition-colors'
                                             title='Delete'
                                         >
-                                            <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                            <svg className='w-3.5 h-3.5 sm:w-4 sm:h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' />
                                             </svg>
                                         </motion.button>
@@ -613,7 +659,10 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
                 <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className='w-full py-2 px-3 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors'
+                    className={cn(
+                        'w-full py-1.5 px-2 text-[11px] sm:text-[12px] font-bold rounded-lg transition-all duration-300 border',
+                        isDarkMode ? 'text-blue-400 bg-blue-900/20 border-blue-800/30 hover:bg-blue-900/40' : 'text-blue-600 bg-blue-50/50 border-blue-100 hover:bg-blue-100'
+                    )}
                     type='button'
                 >
                     View All Messages
@@ -715,15 +764,18 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
     };
 
     return (
-        <div className='flex flex-col space-y-3'>
+        <div className='flex flex-col gap-3 sm:gap-3.5 w-[288px]'>
             {/* Search Input with Loading Indicator */}
             <div className='relative w-full'>
+                <svg className='absolute left-3 top-0 bottom-0 my-auto w-4 h-4 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
+                </svg>
                 <input
                     className={cn(
-                        'h-9 w-full rounded-lg border pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500',
+                        'h-10 w-full rounded-[14px] border pl-9 pr-8 py-2 text-[12px] sm:text-[13px] font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all',
                         isDarkMode 
-                            ? 'border-slate-600 bg-slate-700 text-slate-100 placeholder-slate-400' 
-                            : 'border-zinc-950/10 bg-transparent text-zinc-900 placeholder-zinc-500'
+                            ? 'border-slate-600 bg-slate-800 text-slate-100 placeholder-slate-400 focus:bg-slate-700/50' 
+                            : 'border-blue-200/60 bg-white text-slate-900 placeholder-slate-400 focus:border-blue-400'
                     )}
                     autoFocus
                     placeholder='Search courses, modules, assignments...'
@@ -757,8 +809,8 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.2 }}
                         className={cn(
-                            'flex gap-1 p-0.5 rounded-lg overflow-hidden',
-                            isDarkMode ? 'bg-slate-700' : 'bg-zinc-100'
+                            'flex gap-1 p-1 rounded-[12px] shadow-sm border',
+                            isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'
                         )}
                     >
                         {SEARCH_FILTERS.map((filter) => {
@@ -768,12 +820,10 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                     key={filter.id}
                                     onClick={() => setActiveFilter(filter.id)}
                                     className={cn(
-                                        'relative flex-1 px-2 py-1 text-[10px] font-medium rounded-md transition-colors',
+                                        'relative flex-1 flex items-center justify-center px-1.5 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-bold rounded-lg transition-colors',
                                         isActive 
-                                            ? 'text-blue-500' 
-                                            : isDarkMode 
-                                                ? 'text-slate-400 hover:text-slate-200' 
-                                                : 'text-zinc-500 hover:text-zinc-700'
+                                            ? (isDarkMode ? 'text-slate-100' : 'text-blue-600') 
+                                            : (isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-700')
                                     )}
                                     whileTap={{ scale: 0.97 }}
                                 >
@@ -781,8 +831,8 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                         <motion.div
                                             layoutId="searchFilterTab"
                                             className={cn(
-                                                'absolute inset-0 rounded-md shadow-sm',
-                                                isDarkMode ? 'bg-slate-600' : 'bg-white'
+                                                'absolute inset-0 rounded-lg shadow-sm border',
+                                                isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-200'
                                             )}
                                             transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                                         />
@@ -804,26 +854,26 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className='w-full'
+                        className='w-full px-1'
                     >
-                        <div className='flex items-center justify-between mb-2'>
+                        <div className='flex items-center justify-between mb-2.5'>
                             <span className={cn(
-                                'text-[10px] font-semibold uppercase tracking-wide',
-                                isDarkMode ? 'text-slate-400' : 'text-zinc-500'
+                                'text-[11px] sm:text-[12px] font-bold uppercase tracking-widest',
+                                isDarkMode ? 'text-slate-400' : 'text-slate-500'
                             )}>Recent Searches</span>
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={clearAllRecent}
                                 className={cn(
-                                    'text-[10px] hover:text-red-500 transition-colors',
-                                    isDarkMode ? 'text-slate-500' : 'text-zinc-400'
+                                    'text-[10px] sm:text-[11px] font-bold hover:text-red-500 transition-colors',
+                                    isDarkMode ? 'text-slate-500' : 'text-slate-400'
                                 )}
                             >
                                 Clear all
                             </motion.button>
                         </div>
-                        <div className='flex flex-wrap gap-1.5'>
+                        <div className='flex flex-wrap gap-2'>
                             {recentSearches.map((term, index) => (
                                 <motion.button
                                     key={term}
@@ -833,15 +883,15 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                     transition={{ delay: index * 0.05, type: 'spring', stiffness: 400, damping: 25 }}
                                     onClick={() => handleRecentClick(term)}
                                     className={cn(
-                                        'group flex items-center gap-1 px-2.5 py-1 rounded-full text-xs transition-all',
+                                        'group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] sm:text-[12px] font-bold transition-all border shadow-sm',
                                         isDarkMode 
-                                            ? 'bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-blue-400' 
-                                            : 'bg-zinc-100 hover:bg-blue-50 text-zinc-600 hover:text-blue-600'
+                                            ? 'bg-slate-800 border-slate-700 hover:bg-slate-700 text-slate-300 hover:text-blue-400' 
+                                            : 'bg-white border-slate-200 hover:bg-blue-50 hover:border-blue-200 text-slate-600 hover:text-blue-600'
                                     )}
                                 >
                                     <svg className={cn(
-                                        'w-3 h-3 group-hover:text-blue-500',
-                                        isDarkMode ? 'text-slate-500' : 'text-zinc-400'
+                                        'w-3.5 h-3.5 group-hover:text-blue-500 transition-colors',
+                                        isDarkMode ? 'text-slate-500' : 'text-slate-400'
                                     )} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
                                     </svg>
@@ -851,7 +901,7 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                         onClick={(e) => removeFromRecent(term, e)}
                                         className={cn(
                                             'ml-0.5 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity',
-                                            isDarkMode ? 'text-slate-500' : 'text-zinc-400'
+                                            isDarkMode ? 'text-slate-500' : 'text-slate-400'
                                         )}
                                     >
                                         ×
@@ -867,9 +917,20 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className={cn('text-xs', isDarkMode ? 'text-slate-400' : 'text-zinc-500')}
+                        className={cn(
+                            'flex gap-3 items-center w-full text-left p-3 rounded-[14px] border shadow-sm', 
+                            isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50/50 border-slate-200'
+                        )}
                     >
-                        Search your enrolled courses by name or code
+                        <div className={cn("relative w-10 h-10 rounded-[12px] flex items-center justify-center flex-shrink-0 shadow-sm border", isDarkMode ? "bg-slate-700 border-slate-600 text-blue-400" : "bg-white border-blue-100 text-blue-500")}>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <div className='flex-1 flex flex-col justify-center'>
+                            <h4 className={cn('text-[12px] sm:text-[13px] font-bold leading-tight', isDarkMode ? 'text-slate-100' : 'text-slate-900')}>Find Courses</h4>
+                            <p className={cn('text-[11px] font-medium leading-relaxed mt-0.5', isDarkMode ? 'text-slate-400' : 'text-slate-500')}>Search your enrolled courses by name or code...</p>
+                        </div>
                     </motion.div>
                 ) : null}
             </AnimatePresence>
@@ -899,26 +960,20 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                             ease: [0.4, 0, 0.2, 1],
                             height: { duration: 0.3 }
                         }}
-                        className={cn(
-                            'w-full rounded-xl overflow-hidden border',
-                            isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-zinc-50 border-zinc-200'
-                        )}
+                        className='flex flex-col'
                     >
-                        <div className={cn(
-                            'px-3 py-2 border-b flex items-center justify-between',
-                            isDarkMode ? 'border-slate-700 bg-slate-700' : 'border-zinc-200 bg-white'
-                        )}>
+                        <div className='flex items-center justify-between px-1 mb-2'>
                             <p className={cn(
-                                'text-xs font-semibold uppercase tracking-wide',
-                                isDarkMode ? 'text-slate-300' : 'text-zinc-500'
+                                'text-[11px] sm:text-[12px] font-bold uppercase tracking-widest',
+                                isDarkMode ? 'text-slate-400' : 'text-slate-500'
                             )}>
                                 Your Courses
                             </p>
-                            <span className={cn('text-[10px]', isDarkMode ? 'text-slate-400' : 'text-zinc-400')}>
+                            <span className={cn('text-[10px] font-bold', isDarkMode ? 'text-slate-500' : 'text-slate-400')}>
                                 {filteredItems.length} {filteredItems.length === 1 ? 'course' : 'courses'} found
                             </span>
                         </div>
-                        <div className='max-h-56 overflow-y-auto p-1'>
+                        <div className='max-h-56 overflow-y-auto p-1 -mx-1 flex flex-col gap-2'>
                             {filteredItems.map((item, index) => (
                                 <motion.button
                                     key={item.id}
@@ -931,21 +986,28 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                     }}
                                     onClick={() => handleSelectItem(item)}
                                     className={cn(
-                                        'w-full text-left px-2.5 py-2 rounded-lg transition-all duration-150 flex items-center gap-3 group',
-                                        isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-blue-50'
+                                        'flex gap-2.5 sm:gap-3 items-center w-full text-left p-2 sm:p-2.5 rounded-[14px] transition-all duration-300 border hover:shadow-md cursor-pointer group', 
+                                        isDarkMode ? 'bg-slate-800/80 border-slate-600 shadow-sm hover:border-slate-500' : 'bg-white border-blue-200 shadow-sm hover:bg-slate-50/50 hover:border-blue-300'
                                     )}
                                 >
                                     {/* Course Image */}
-                                    <div className='relative flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden'>
+                                    <motion.div 
+                                        whileHover={{ scale: 1.05, rotate: -5 }}
+                                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                        className={cn(
+                                            'relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-[10px] sm:rounded-[12px] overflow-hidden border shadow-sm',
+                                            isDarkMode ? 'border-slate-700' : 'border-slate-200'
+                                        )}
+                                    >
                                         <img 
                                             src={item.image} 
                                             alt={item.title}
-                                            className='w-full h-full object-cover'
+                                            className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-300'
                                         />
                                         {/* Progress bar overlay */}
-                                        <div className='absolute bottom-0 left-0 right-0 h-1 bg-black/20'>
+                                        <div className='absolute bottom-0 left-0 right-0 h-1 bg-black/40'>
                                             <motion.div 
-                                                className='h-full'
+                                                className='h-full shadow-[0_0_8px_rgba(59,130,246,0.5)]'
                                                 style={{ 
                                                     backgroundColor: item.progress === 100 ? '#10b981' : '#3b82f6',
                                                     width: `${item.progress}%`
@@ -955,30 +1017,30 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                                 transition={{ duration: 0.5, delay: index * 0.05 }}
                                             />
                                         </div>
-                                    </div>
-                                    <div className='flex-1 min-w-0'>
+                                    </motion.div>
+                                    <div className='flex-1 min-w-0 flex flex-col justify-center'>
                                         <div className={cn(
-                                            'text-sm font-medium truncate',
-                                            isDarkMode ? 'text-slate-100' : 'text-zinc-900'
+                                            'text-[12px] sm:text-[13px] font-bold leading-tight truncate',
+                                            isDarkMode ? 'text-slate-100' : 'text-slate-900'
                                         )}>{item.title}</div>
                                         <div className={cn(
-                                            'text-[10px]',
-                                            isDarkMode ? 'text-slate-400' : 'text-zinc-500'
+                                            'text-[11px] font-medium mt-0.5 truncate',
+                                            isDarkMode ? 'text-slate-400' : 'text-slate-500'
                                         )}>{item.subtitle}</div>
                                     </div>
                                     {/* Progress indicator */}
                                     <div className='flex-shrink-0 flex items-center gap-1.5'>
                                         {item.progress === 100 ? (
                                             <span className={cn(
-                                                'text-[10px] font-medium px-1.5 py-0.5 rounded',
-                                                isDarkMode ? 'text-emerald-400 bg-emerald-900/50' : 'text-emerald-600 bg-emerald-50'
+                                                'text-[10px] font-bold px-1.5 py-0.5 rounded-md border',
+                                                isDarkMode ? 'text-emerald-400 bg-emerald-900/20 border-emerald-800/30' : 'text-emerald-600 bg-emerald-50 border-emerald-200'
                                             )}>
                                                 ✓ Done
                                             </span>
                                         ) : (
                                             <span className={cn(
-                                                'text-[10px] font-medium',
-                                                isDarkMode ? 'text-blue-400' : 'text-blue-600'
+                                                'text-[10px] font-bold px-1.5 py-0.5 rounded-md border',
+                                                isDarkMode ? 'text-blue-400 bg-blue-900/20 border-blue-800/30' : 'text-blue-600 bg-blue-50 border-blue-200'
                                             )}>
                                                 {item.progress}%
                                             </span>
@@ -986,7 +1048,7 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                     </div>
                                     <motion.svg
                                         initial={{ opacity: 0, x: -5 }}
-                                        className='w-4 h-4 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity'
+                                        className='w-3.5 h-3.5 text-blue-500 opacity-0 group-hover:opacity-100 group-hover:x-0 transition-all duration-300 -ml-1'
                                         fill='none'
                                         stroke='currentColor'
                                         viewBox='0 0 24 24'
@@ -1051,41 +1113,46 @@ function CourseProgressContent({ isLoading }: { isLoading: boolean }) {
     const continueCourse = ENROLLED_COURSES.find(c => c.progress > 0 && c.progress < 100);
     
     return (
-        <div className='flex flex-col space-y-3'>
+        <div className='flex flex-col gap-3 sm:gap-3.5 w-[288px]'>
             {/* Continue Where You Left Off */}
             {continueCourse && (
                 <motion.div 
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     className={cn(
-                        'rounded-lg p-3 border',
+                        'rounded-[14px] p-3 shadow-sm border transition-all duration-300',
                         isDarkMode 
-                            ? 'bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border-blue-800/50' 
-                            : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100'
+                            ? 'bg-slate-800 border-slate-700' 
+                            : 'bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border-blue-200'
                     )}
                 >
-                    <div className='flex items-center gap-2 mb-1'>
-                        <svg className={cn('w-4 h-4', isDarkMode ? 'text-blue-400' : 'text-blue-500')} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z' />
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-                        </svg>
+                    <div className='flex items-center gap-2 mb-1.5'>
+                        <div className={cn(
+                            'w-6 h-6 rounded-lg flex items-center justify-center border shadow-sm',
+                            isDarkMode ? 'bg-slate-700 border-slate-600 text-blue-400' : 'bg-white border-blue-100 text-blue-500'
+                        )}>
+                            <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z' />
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
+                            </svg>
+                        </div>
                         <span className={cn(
-                            'text-[10px] font-semibold uppercase tracking-wide',
+                            'text-[10px] sm:text-[11px] font-bold uppercase tracking-widest',
                             isDarkMode ? 'text-blue-400' : 'text-blue-600'
                         )}>Continue Learning</span>
                     </div>
                     <div className={cn(
-                        'text-sm font-medium',
-                        isDarkMode ? 'text-slate-100' : 'text-zinc-800'
+                        'text-[12px] sm:text-[13px] font-bold leading-tight mt-1 truncate',
+                        isDarkMode ? 'text-slate-100' : 'text-slate-900'
                     )}>{continueCourse.title}</div>
                     <div className={cn(
-                        'text-[11px]',
-                        isDarkMode ? 'text-slate-400' : 'text-zinc-500'
+                        'text-[10px] sm:text-[11px] font-medium mt-0.5 truncate',
+                        isDarkMode ? 'text-slate-400' : 'text-slate-500'
                     )}>{continueCourse.subtitle}</div>
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className='mt-2 w-full py-1.5 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors flex items-center justify-center'
+                        className='mt-3 w-full py-1.5 text-[11px] sm:text-[12px] font-bold text-white bg-blue-500 hover:bg-blue-600 shadow-sm rounded-lg transition-colors flex items-center justify-center'
                     >
                         Resume
                     </motion.button>
@@ -1093,7 +1160,7 @@ function CourseProgressContent({ isLoading }: { isLoading: boolean }) {
             )}
 
             {/* Course List */}
-            <div className='space-y-2 max-h-48 overflow-y-auto'>
+            <div className='max-h-56 overflow-y-auto p-1 -mx-1 flex flex-col gap-2'>
                 {ENROLLED_COURSES.filter(c => c.progress < 100).slice(0, 5).map((course, index) => (
                     <motion.div
                         key={course.id}
@@ -1101,51 +1168,53 @@ function CourseProgressContent({ isLoading }: { isLoading: boolean }) {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 }}
                         className={cn(
-                            'group p-2 rounded-lg transition-colors cursor-pointer',
-                            isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-zinc-50'
+                            'flex gap-2.5 sm:gap-3 items-center w-full text-left p-2 sm:p-2.5 rounded-[14px] transition-all duration-300 border hover:shadow-md cursor-pointer group',
+                            isDarkMode ? 'bg-slate-800/80 border-slate-600 shadow-sm hover:border-slate-500' : 'bg-white border-transparent hover:bg-slate-50/50 hover:border-slate-200'
                         )}
                     >
-                        <div className='flex items-center justify-between mb-1'>
-                            <span className={cn(
-                                'text-sm font-medium truncate pr-2',
-                                isDarkMode ? 'text-slate-100' : 'text-zinc-800'
-                            )}>{course.title}</span>
-                            <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                className={cn(
-                                    'opacity-0 group-hover:opacity-100 p-1 text-blue-500 rounded transition-all flex-shrink-0',
-                                    isDarkMode ? 'hover:bg-blue-900/50' : 'hover:bg-blue-50'
-                                )}
-                                title='Go to course'
-                            >
-                                <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
-                                </svg>
-                            </motion.button>
-                        </div>
-                        <div className={cn(
-                            'w-full rounded-full h-1.5 mb-1',
-                            isDarkMode ? 'bg-blue-950' : 'bg-gray-200'
-                        )}>
-                            <motion.div 
-                                className={`h-1.5 rounded-full ${course.progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
-                                initial={{ width: 0 }}
-                                animate={{ width: `${course.progress}%` }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                        <motion.div 
+                            whileHover={{ scale: 1.1, rotate: -5 }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                            className={cn(
+                                'relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-[10px] sm:rounded-[12px] overflow-hidden border shadow-sm flex items-center justify-center',
+                                isDarkMode ? 'border-slate-700 bg-slate-800' : 'border-slate-200 bg-slate-100/50 group-hover:border-blue-200 group-hover:bg-blue-50/50'
+                            )}
+                        >
+                            <img 
+                                src={course.image} 
+                                alt={course.title}
+                                className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-300'
                             />
-                        </div>
-                        <div className={cn(
-                            'flex items-center justify-between text-[10px]',
-                            isDarkMode ? 'text-slate-400' : 'text-zinc-500'
-                        )}>
-                            <span>{course.progress}% • {course.subtitle.split(' · ')[0]}</span>
-                            <span className='flex items-center gap-0.5'>
-                                <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
-                                </svg>
-                                {Math.round((100 - course.progress) * 0.5)}h left
-                            </span>
+                            <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300"></div>
+                        </motion.div>
+
+                        <div className="flex-1 min-w-0 flex flex-col justify-center">
+                            <div className={cn(
+                                "text-[12px] sm:text-[13px] font-bold leading-tight truncate",
+                                isDarkMode ? 'text-slate-100' : 'text-zinc-900'
+                            )}>
+                                {course.title.replace(' - SY2526-1T', '')}
+                            </div>
+                            <div className="flex items-center gap-2 mt-0.5">
+                                <span className={cn(
+                                    "text-[11px] font-medium truncate",
+                                    isDarkMode ? 'text-slate-400' : 'text-zinc-500'
+                                )}>
+                                    {course.progress}% • {course.subtitle.split(' · ')[0]}
+                                </span>
+                                {course.progress < 100 && (
+                                    <span className={cn(
+                                        "flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-md",
+                                        isDarkMode ? 'text-blue-400 bg-blue-900/30' : 'text-blue-500 bg-blue-50'
+                                    )}>
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <polyline points="12 6 12 12 16 14" />
+                                        </svg>
+                                        {Math.round((100 - course.progress) * 0.5)}h left
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </motion.div>
                 ))}
@@ -1155,10 +1224,8 @@ function CourseProgressContent({ isLoading }: { isLoading: boolean }) {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className={cn(
-                    'w-full py-2 text-xs font-medium rounded-lg transition-colors',
-                    isDarkMode 
-                        ? 'text-blue-400 hover:text-blue-300 hover:bg-slate-700' 
-                        : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'
+                    'w-full py-1.5 px-2 text-[11px] sm:text-[12px] font-bold rounded-lg transition-all duration-300 border',
+                    isDarkMode ? 'text-blue-400 bg-blue-900/20 border-blue-800/30 hover:bg-blue-900/40' : 'text-blue-600 bg-blue-50/50 border-blue-100 hover:bg-blue-100'
                 )}
             >
                 View All Courses
@@ -1446,23 +1513,41 @@ export default function ToolbarExpandable() {
 
     return (
         <MotionConfig transition={transition}>
-            <div className='flex items-center gap-3'>
+            {/* Mobile/Tablet Backdrop Overlay */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={closePanel}
+                        className={cn(
+                            'fixed inset-0 z-40 block sm:hidden',
+                            isDarkMode ? 'bg-slate-900/60 backdrop-blur-[2px]' : 'bg-black/20 backdrop-blur-[2px]'
+                        )}
+                    />
+                )}
+            </AnimatePresence>
+
+            <div className='flex items-center gap-3 relative z-50'>
                 {/* Viewer Counter */}
                 <ViewerCounter />
                 
                 <div ref={ref} className='relative'>
                     <div className='h-full w-full'>
                         {/* Buttons at the top */}
-                        <div className='flex space-x-1' ref={menuRef}>
+                        <div className='flex items-center gap-0.5 sm:gap-2 lg:gap-3' ref={menuRef}>
                             {ITEMS.map((item) => (
-                                <button
+                                <motion.button
                                     key={item.id}
                                     aria-label={item.label}
+                                    whileHover={{ scale: 1.05, rotate: -5 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                                     className={cn(
-                                        'relative flex h-9 w-9 shrink-0 scale-100 select-none appearance-none items-center justify-center rounded-lg transition-all duration-150 focus-visible:ring-2 active:scale-[0.96]',
+                                        'relative flex shrink-0 select-none appearance-none items-center justify-center transition-all duration-300 focus-visible:ring-2 shadow-sm border w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-[10px] sm:rounded-[12px] lg:rounded-[14px]',
                                         active === item.id
-                                            ? isDarkMode ? 'bg-slate-700/80' : 'bg-zinc-100'
-                                            : isDarkMode ? 'hover:bg-slate-700/50' : 'hover:bg-zinc-50'
+                                            ? isDarkMode ? 'bg-slate-700 border-slate-600 text-slate-100 shadow-md' : 'bg-blue-50 border-blue-200 text-blue-600 shadow-md'
+                                            : isDarkMode ? 'bg-slate-800/80 border-slate-700/60 hover:border-slate-500 hover:text-slate-200 hover:bg-slate-700' : 'bg-slate-50/50 border-slate-200/60 hover:border-slate-300 hover:bg-white hover:text-slate-700'
                                     )}
                                     type='button'
                                     onClick={() => {
@@ -1482,7 +1567,7 @@ export default function ToolbarExpandable() {
                                     }}
                                 >
                                     {item.title}
-                                </button>
+                                </motion.button>
                             ))}
                         </div>
                     </div>

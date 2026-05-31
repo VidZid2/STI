@@ -11,7 +11,7 @@ import { WidgetContainer } from './WidgetContainer';
 import QuickSettingsDropdown from '../../../components/ui/dropdowns/QuickSettingsDropdown';
 import HelpDropdown from '../../../components/ui/dropdowns/HelpDropdown';
 
-import type { CalendarData, WeatherData, WidgetVisibility, AchievementStats, TodoItem } from '../types';
+import type { CalendarData, WeatherData, WidgetVisibility, AchievementStats, TodoItem, GradePrediction, StudyInsights } from '../types';
 import type { Deadline } from '../../../services/deadlinesService';
 import type { ActivityItem } from '../../../services/activityService';
 import type { CourseProgressData } from '../../../services/studyTimeService';
@@ -45,9 +45,9 @@ export interface WidgetSidebarProps {
     // Activity
     recentActivity: ActivityItem[];
     // Grade predictor
-    gradePredictor: any;
+    gradePredictor: GradePrediction;
     // Study insights
-    studyInsights: any;
+    studyInsights: StudyInsights;
     // Notifications
     notifications: any[];
     groupedNotifications: any[];

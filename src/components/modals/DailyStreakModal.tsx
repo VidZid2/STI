@@ -7,6 +7,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import { getStreakData, getStreakTier, type StreakData } from '../../services/studyTimeService';
+import { cn } from '../../lib/utils';
+import { Flame, Trophy, Clock, Target } from 'lucide-react';
 
 interface DailyStreakModalProps {
     isOpen: boolean;
@@ -14,28 +16,28 @@ interface DailyStreakModalProps {
     streakData?: StreakData;
 }
 
-// Minimal streak icon — clean circle with number
+// Student Tools Style Icon Container
 const StreakBadge: React.FC<{ streak: number }> = ({ streak }) => {
     const getTierStyle = () => {
         if (streak >= 90) return {
-            bg: 'linear-gradient(135deg, #e0f7ff, #b9f2ff)',
-            border: 'rgba(125, 211, 252, 0.3)',
-            emoji: '💎',
+            bg: 'bg-cyan-50 dark:bg-cyan-500/10',
+            border: 'border-cyan-100 dark:border-cyan-500/20',
+            iconColor: 'text-cyan-600 dark:text-cyan-400',
         };
         if (streak >= 30) return {
-            bg: 'linear-gradient(135deg, #fef3c7, #fde68a)',
-            border: 'rgba(251, 191, 36, 0.3)',
-            emoji: '👑',
+            bg: 'bg-amber-50 dark:bg-amber-500/10',
+            border: 'border-amber-100 dark:border-amber-500/20',
+            iconColor: 'text-amber-600 dark:text-amber-400',
         };
         if (streak >= 10) return {
-            bg: 'linear-gradient(135deg, #f1f5f9, #e2e8f0)',
-            border: 'rgba(148, 163, 184, 0.3)',
-            emoji: '⚡',
+            bg: 'bg-zinc-100 dark:bg-zinc-800',
+            border: 'border-zinc-200 dark:border-zinc-700',
+            iconColor: 'text-zinc-600 dark:text-zinc-400',
         };
         return {
-            bg: 'linear-gradient(135deg, #fed7aa, #fdba74)',
-            border: 'rgba(251, 146, 60, 0.3)',
-            emoji: '🔥',
+            bg: 'bg-orange-50 dark:bg-orange-500/10',
+            border: 'border-orange-100 dark:border-orange-500/20',
+            iconColor: 'text-orange-600 dark:text-orange-400',
         };
     };
 
@@ -43,22 +45,17 @@ const StreakBadge: React.FC<{ streak: number }> = ({ streak }) => {
 
     return (
         <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
+            initial={{ scale: 0, rotate: -15 }}
+            animate={{ scale: 1, rotate: 0 }}
+            whileHover={{ scale: 1.05, rotate: -5 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
-            style={{
-                width: 56,
-                height: 56,
-                borderRadius: '16px',
-                background: style.bg,
-                border: `1px solid ${style.border}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 26,
-            }}
+            className={cn(
+                'w-16 h-16 rounded-[20px] flex items-center justify-center flex-shrink-0 shadow-sm border transition-colors',
+                style.bg,
+                style.border
+            )}
         >
-            {style.emoji}
+            <Flame className={cn("w-8 h-8", style.iconColor)} strokeWidth={2} />
         </motion.div>
     );
 };
@@ -171,270 +168,171 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                         }}
                     />
 
-                    {/* Modal — bottom-right toast */}
-                    <div
-                        style={{
-                            position: 'fixed',
-                            bottom: '24px',
-                            right: '24px',
-                            zIndex: 99999,
-                        }}
-                    >
+                    {/* Modal Container */}
+                    <div className='fixed inset-0 z-[99999] flex items-end justify-center pb-4 px-4 sm:p-0 sm:items-end sm:justify-end sm:inset-auto sm:bottom-6 sm:right-6 pointer-events-none'>
                         <motion.div
-                            initial={{ y: '120%' }}
-                            animate={{ y: 0 }}
-                            exit={{ y: '120%' }}
+                            drag="y"
+                            dragConstraints={{ top: 0, bottom: 0 }}
+                            dragElastic={0.7}
+                            onDragEnd={(e, info) => {
+                                if (info.offset.y > 60 || info.velocity.y > 400) {
+                                    onClose();
+                                }
+                            }}
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             transition={{
-                                y: {
-                                    type: 'spring',
-                                    stiffness: 120,
-                                    damping: 18,
-                                    mass: 1.6,
-                                },
+                                type: 'spring',
+                                stiffness: 400,
+                                damping: 30,
+                                mass: 1,
                             }}
-                            style={{
-                                width: '320px',
-                                background: isDarkMode ? '#1e293b' : '#ffffff',
-                                borderRadius: '16px',
-                                border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
-                                boxShadow: isDarkMode
-                                    ? '0 16px 48px rgba(0, 0, 0, 0.5)'
-                                    : '0 16px 48px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,0.03)',
-                                overflow: 'hidden',
-                            }}
+                            className={cn(
+                                'w-full sm:w-[420px] max-w-[420px] rounded-[24px] overflow-hidden border pointer-events-auto shadow-2xl',
+                                isDarkMode 
+                                    ? 'bg-zinc-900 border-zinc-800/80 shadow-[0_16px_48px_rgba(0,0,0,0.5)]' 
+                                    : 'bg-white border-zinc-200/80 shadow-[0_16px_48px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.02)]'
+                            )}
                         >
+                            {/* Close button */}
+                            <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={onClose}
+                                className={cn(
+                                    'absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center transition-colors z-[60]',
+                                    isDarkMode ? 'text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300' : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600'
+                                )}
+                            >
+                                <svg className='w-4 h-4' viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                    <line x1="18" y1="6" x2="6" y2="18" />
+                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                            </motion.button>
+
                             {/* Content */}
-                            <div style={{ 
-                                position: 'relative', 
-                                padding: '28px 24px 20px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                gap: '12px',
-                            }}>
-                                {/* Close button */}
-                                <motion.button
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={onClose}
-                                    style={{
-                                        position: 'absolute',
-                                        top: '14px',
-                                        right: '14px',
-                                        width: '28px',
-                                        height: '28px',
-                                        borderRadius: '8px',
-                                        border: 'none',
-                                        background: 'transparent',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        color: isDarkMode ? '#475569' : '#cbd5e1',
-                                    }}
-                                >
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                                        <line x1="18" y1="6" x2="6" y2="18" />
-                                        <line x1="6" y1="6" x2="18" y2="18" />
-                                    </svg>
-                                </motion.button>
+                            <div className='relative pt-6 sm:pt-8 px-5 sm:px-7 pb-5 sm:pb-6 flex flex-col gap-5 sm:gap-6'>
+                                
+                                {/* Header Group: Student Tools Style (Horizontal) */}
+                                <div className="flex items-start gap-3 sm:gap-5 w-full pt-1 sm:pt-2">
+                                    {/* Icon Container */}
+                                    <StreakBadge streak={streakData.currentStreak} />
 
-                                {/* Tier Badge */}
-                                <StreakBadge streak={streakData.currentStreak} />
-
-                                {/* Streak Count */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 12 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.25 }}
-                                    style={{ textAlign: 'center' }}
-                                >
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'baseline',
-                                        justifyContent: 'center',
-                                        gap: '4px',
-                                    }}>
-                                        <span style={{
-                                            fontSize: '40px',
-                                            fontWeight: 800,
-                                            color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                                            letterSpacing: '-2px',
-                                            lineHeight: 1,
-                                        }}>
-                                            {streakData.currentStreak}
-                                        </span>
-                                        <span style={{
-                                            fontSize: '12px',
-                                            fontWeight: 700,
-                                            color: isDarkMode ? '#475569' : '#94a3b8',
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '1.5px',
-                                        }}>
-                                            {streakData.currentStreak === 1 ? 'day' : 'days'}
-                                        </span>
-                                    </div>
-
-                                    {/* Tier Label */}
+                                    {/* Title and Description */}
                                     <motion.div
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: 0.35 }}
-                                        style={{
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            gap: '4px',
-                                            marginTop: '6px',
-                                            padding: '3px 10px',
-                                            borderRadius: '6px',
-                                            background: isDarkMode
-                                                ? `${tierColor}18`
-                                                : `${tierColor}10`,
-                                            border: `1px solid ${tierColor}25`,
-                                        }}
+                                        initial={{ opacity: 0, x: 10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.25 }}
+                                        className="flex flex-col flex-1"
                                     >
-                                        <span style={{
-                                            fontSize: '9px',
-                                            fontWeight: 800,
-                                            letterSpacing: '2px',
-                                            color: tierColor,
-                                        }}>
-                                            {tierLabel} TIER
-                                        </span>
+                                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1 sm:mb-1.5">
+                                            <h1 className={cn(
+                                                'text-[18px] sm:text-[22px] font-bold tracking-tight leading-none',
+                                                isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
+                                            )}>
+                                                {streakData.currentStreak} Day Streak
+                                            </h1>
+                                            {/* Tier Badge styled like the "Local-first" badge */}
+                                            <div className={cn(
+                                                'px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border',
+                                                isDarkMode ? 'bg-zinc-800/50 border-zinc-700/50' : 'bg-zinc-50 border-zinc-200'
+                                            )}>
+                                                <span style={{ color: tierColor }}>{tierLabel}</span>
+                                            </div>
+                                        </div>
+                                        <p className={cn(
+                                            'text-[12px] sm:text-[13.5px] leading-relaxed font-medium',
+                                            isDarkMode ? 'text-zinc-400' : 'text-zinc-600'
+                                        )}>
+                                            {getMessage()}
+                                        </p>
                                     </motion.div>
-                                </motion.div>
+                                </div>
 
-                                {/* Stats Row */}
+                                {/* Student Tools Style List Cards (Vertical Stack) */}
                                 <motion.div
                                     initial={{ opacity: 0, y: 6 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.4 }}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        gap: '6px',
-                                    }}
+                                    className='w-full flex flex-col gap-2 sm:gap-2.5 mt-1 sm:mt-2'
                                 >
                                     {[
-                                        { label: 'XP Earned', value: `+${tier.xpBonus}`, color: '#3b82f6', icon: (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
-                                        )},
-                                        { label: 'Best', value: `${streakData.bestStreak}d`, color: '#f59e0b', icon: (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /></svg>
-                                        )},
-                                        ...(daysToNextMilestone > 0 ? [{ label: 'Next Tier', value: `${daysToNextMilestone}d`, color: '#10b981', icon: (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-                                        )}] : []),
-                                    ].map((stat) => (
+                                        { label: 'XP Earned', value: `+${tier.xpBonus}`, desc: 'For maintaining streak', colorClass: 'text-blue-600 dark:text-blue-400', bgClass: 'bg-blue-50 dark:bg-blue-900/20', borderClass: 'border-blue-100 dark:border-blue-800/50', icon: <Target className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2.5} /> },
+                                        { label: 'Best Streak', value: `${streakData.bestStreak} Days`, desc: 'Your all-time record', colorClass: 'text-amber-600 dark:text-amber-400', bgClass: 'bg-amber-50 dark:bg-amber-900/20', borderClass: 'border-amber-100 dark:border-amber-800/50', icon: <Trophy className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2.5} /> },
+                                        ...(daysToNextMilestone > 0 ? [{ label: 'Next Tier', value: `${daysToNextMilestone} Days`, desc: 'Until your next milestone', colorClass: 'text-emerald-600 dark:text-emerald-400', bgClass: 'bg-emerald-50 dark:bg-emerald-900/20', borderClass: 'border-emerald-100 dark:border-emerald-800/50', icon: <Clock className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2.5} /> }] : []),
+                                    ].map((stat, i) => (
                                         <div
                                             key={stat.label}
-                                            style={{
-                                                flex: 1,
-                                                padding: '10px 6px',
-                                                borderRadius: '10px',
-                                                background: `${stat.color}08`,
-                                                textAlign: 'center',
-                                            }}
+                                            className={cn(
+                                                'flex items-center gap-2.5 sm:gap-4 p-2.5 sm:p-4 rounded-[16px] sm:rounded-[20px] border transition-all duration-300 hover:shadow-sm group cursor-default',
+                                                isDarkMode 
+                                                    ? 'bg-zinc-800/40 border-zinc-700/80 hover:border-zinc-600' 
+                                                    : 'bg-white border-zinc-200/80 hover:border-blue-200/80 hover:shadow-md'
+                                            )}
                                         >
-                                            <div style={{ color: stat.color, marginBottom: '4px', display: 'flex', justifyContent: 'center' }}>{stat.icon}</div>
-                                            <div style={{
-                                                fontSize: '15px',
-                                                fontWeight: 700,
-                                                color: stat.color,
-                                                lineHeight: 1,
-                                            }}>
-                                                {stat.value}
+                                            {/* Study Tools style SVG Container with hover animation */}
+                                            <motion.div
+                                                whileHover={{ scale: 1.08, rotate: -5 }}
+                                                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                                className={cn('w-9 h-9 sm:w-12 sm:h-12 rounded-[12px] sm:rounded-[16px] flex items-center justify-center flex-shrink-0 border shadow-sm', stat.colorClass, stat.bgClass, stat.borderClass)}
+                                            >
+                                                {stat.icon}
+                                            </motion.div>
+                                            
+                                            <div className='flex flex-col flex-1 min-w-0'>
+                                                <div className={cn('text-[8.5px] sm:text-[10px] font-bold uppercase tracking-wider mb-0.5 truncate', stat.colorClass)}>
+                                                    STEP {i + 1} • {stat.label}
+                                                </div>
+                                                <div className={cn('text-[13.5px] sm:text-[16px] font-bold leading-tight tracking-tight truncate', isDarkMode ? 'text-zinc-100' : 'text-zinc-900')}>
+                                                    {stat.value}
+                                                </div>
+                                                <div className={cn('text-[10.5px] sm:text-[12.5px] mt-0.5 truncate', isDarkMode ? 'text-zinc-400' : 'text-zinc-500')}>
+                                                    {stat.desc}
+                                                </div>
                                             </div>
-                                            <div style={{
-                                                fontSize: '8px',
-                                                fontWeight: 600,
-                                                letterSpacing: '0.5px',
-                                                textTransform: 'uppercase' as const,
-                                                color: isDarkMode ? '#475569' : '#94a3b8',
-                                                marginTop: '3px',
-                                            }}>
-                                                {stat.label}
+
+                                            {/* Chevron matching the tools list (hidden on ultra-small mobile) */}
+                                            <div className={cn("hidden sm:block transition-colors", isDarkMode ? "text-zinc-600 group-hover:text-zinc-400" : "text-zinc-300 group-hover:text-blue-400")}>
+                                                <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <polyline points="9 18 15 12 9 6" />
+                                                </svg>
                                             </div>
                                         </div>
                                     ))}
                                 </motion.div>
 
-                                {/* Motivational Message */}
-                                <motion.p
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.5 }}
-                                    style={{
-                                        fontSize: '13px',
-                                        fontWeight: 500,
-                                        color: isDarkMode ? '#94a3b8' : '#64748b',
-                                        textAlign: 'center',
-                                        margin: 0,
-                                        lineHeight: 1.5,
-                                    }}
-                                >
-                                    {getMessage()}
-                                </motion.p>
-
-                                {/* CTA Button — matches Goals "New Goal" style */}
+                                {/* Solid Emerald CTA Button (Matches Paraphrase) */}
                                 <motion.button
                                     initial={{ opacity: 0, y: 6 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.55, duration: 0.3 }}
+                                    whileHover={{ y: -1, boxShadow: '0 8px 20px rgba(16, 185, 129, 0.35)' }}
+                                    whileTap={{ scale: 0.97 }}
                                     onClick={onClose}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '6px',
-                                        padding: '10px 20px',
-                                        borderRadius: '10px',
-                                        border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
-                                        background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
-                                        color: '#3b82f6',
-                                        fontSize: '12px',
-                                        fontWeight: 600,
-                                        cursor: 'pointer',
-                                        marginTop: '4px',
-                                        transition: 'all 0.15s ease',
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform = 'scale(1.02)';
-                                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.25)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform = 'scale(1)';
-                                        e.currentTarget.style.boxShadow = 'none';
-                                    }}
-                                    onMouseDown={(e) => {
-                                        e.currentTarget.style.transform = 'scale(0.98)';
-                                    }}
-                                    onMouseUp={(e) => {
-                                        e.currentTarget.style.transform = 'scale(1.02)';
-                                    }}
+                                    className={cn(
+                                        'w-full flex items-center justify-center gap-1.5 py-3 rounded-xl text-[14px] font-bold transition-all duration-300 shadow-md',
+                                        isDarkMode 
+                                            ? 'bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500/50' 
+                                            : 'bg-emerald-500 hover:bg-emerald-600 text-white border border-transparent'
+                                    )}
                                 >
                                     Continue
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg className='w-4 h-4' viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <polyline points="9 18 15 12 9 6" />
                                     </svg>
                                 </motion.button>
                             </div>
 
                             {/* Progress bar at bottom */}
-                            <div style={{
-                                height: '3px',
-                                background: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
-                            }}>
+                            <div className={cn('h-1.5 w-full', isDarkMode ? 'bg-zinc-800' : 'bg-zinc-100')}>
                                 <motion.div
                                     initial={{ width: '100%' }}
                                     animate={{ width: '0%' }}
                                     transition={{ duration: 5, ease: 'linear' }}
+                                    className='h-full'
                                     style={{
-                                        height: '100%',
                                         background: tierColor,
-                                        opacity: 0.6,
-                                        borderRadius: '0 2px 2px 0',
                                     }}
                                 />
                             </div>

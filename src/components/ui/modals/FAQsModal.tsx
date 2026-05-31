@@ -3,7 +3,7 @@
  * Accordion-style FAQ with search and category tabs
  */
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase, isSupabaseConfigured } from '../../../lib/supabase';
@@ -109,55 +109,10 @@ const SearchIcon = () => (
     </svg>
 );
 
-const CloseIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M18 6L6 18M6 6l12 12" />
-    </svg>
-);
+
 
 // Category Icons - Minimalistic SVG icons for each filter
-const CategoryIcons: Record<string, React.FC<{ size?: number }>> = {
-    All: ({ size = 14 }) => (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="7" height="7" rx="1" />
-            <rect x="14" y="3" width="7" height="7" rx="1" />
-            <rect x="3" y="14" width="7" height="7" rx="1" />
-            <rect x="14" y="14" width="7" height="7" rx="1" />
-        </svg>
-    ),
-    Account: ({ size = 14 }) => (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
-        </svg>
-    ),
-    Courses: ({ size = 14 }) => (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            <line x1="8" y1="7" x2="16" y2="7" />
-            <line x1="8" y1="11" x2="14" y2="11" />
-        </svg>
-    ),
-    Tools: ({ size = 14 }) => (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-        </svg>
-    ),
-    Progress: ({ size = 14 }) => (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="20" x2="12" y2="10" />
-            <line x1="18" y1="20" x2="18" y2="4" />
-            <line x1="6" y1="20" x2="6" y2="14" />
-        </svg>
-    ),
-    Technical: ({ size = 14 }) => (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-        </svg>
-    ),
-};
+
 
 const ChevronIcon: React.FC<{ isOpen: boolean }> = ({ isOpen }) => (
     <motion.svg 
@@ -177,13 +132,13 @@ const ChevronIcon: React.FC<{ isOpen: boolean }> = ({ isOpen }) => (
 );
 
 // Lord Icon Question Mark Component
-const QuestionLordIcon: React.FC<{ size?: number; isOpen?: boolean; isHeader?: boolean }> = ({ size = 20, isOpen = false, isHeader = false }) => (
+const QuestionLordIcon: React.FC<{ size?: number; isOpen?: boolean }> = ({ size = 20, isOpen = false }) => (
     // @ts-ignore
     <lord-icon
         src="https://cdn.lordicon.com/biqqsrac.json"
-        trigger={isHeader ? "hover" : "hover"}
+        trigger="hover"
         state="hover-help-center-2"
-        colors={isOpen || isHeader ? "primary:#ffffff,secondary:#ffffff" : `primary:${BLUE},secondary:${BLUE}`}
+        colors={isOpen ? "primary:#ffffff,secondary:#ffffff" : `primary:${BLUE},secondary:${BLUE}`}
         style={{ width: `${size}px`, height: `${size}px` }}
     />
 );
@@ -230,7 +185,7 @@ const SearchSpinner: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => (
     </motion.div>
 );
 
-// FAQ Skeleton Loading Component
+/// FAQ Skeleton Loading Component
 const FAQSkeleton: React.FC<{ isDarkMode: boolean; index: number }> = ({ isDarkMode, index }) => (
     <motion.div
         initial={{ opacity: 0, y: 15 }}
@@ -239,57 +194,61 @@ const FAQSkeleton: React.FC<{ isDarkMode: boolean; index: number }> = ({ isDarkM
         transition={{ delay: index * 0.05 }}
         style={{
             background: isDarkMode ? '#1e293b' : '#ffffff',
-            borderRadius: '14px',
-            padding: '14px 16px',
-            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
+            borderRadius: '20px',
+            padding: '20px',
+            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+            boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         }}
     >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             {/* Icon skeleton */}
             <motion.div
-                animate={{ opacity: [0.4, 0.7, 0.4] }}
+                animate={{ opacity: [0.6, 1, 0.6] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
                 style={{
-                    width: '34px',
-                    height: '34px',
-                    borderRadius: '10px',
-                    background: isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)',
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '16px',
+                    background: isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)',
+                    flexShrink: 0
                 }}
             />
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
                 {/* Category badge skeleton */}
                 <motion.div
-                    animate={{ opacity: [0.4, 0.7, 0.4] }}
+                    animate={{ opacity: [0.6, 1, 0.6] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.1 }}
                     style={{
-                        width: '60px',
-                        height: '14px',
-                        borderRadius: '4px',
-                        background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                        marginBottom: '8px',
+                        width: '70px',
+                        height: '20px',
+                        borderRadius: '6px',
+                        background: isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)',
+                        marginBottom: '6px',
                     }}
                 />
                 {/* Question text skeleton */}
                 <motion.div
-                    animate={{ opacity: [0.4, 0.7, 0.4] }}
+                    animate={{ opacity: [0.6, 1, 0.6] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
                     style={{
-                        width: `${70 + (index % 3) * 10}%`,
-                        height: '16px',
-                        borderRadius: '4px',
-                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                        width: `${60 + (index % 3) * 15}%`,
+                        height: '20px',
+                        borderRadius: '6px',
+                        background: isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
                     }}
                 />
             </div>
             {/* Chevron skeleton */}
             <motion.div
-                animate={{ opacity: [0.4, 0.7, 0.4] }}
+                animate={{ opacity: [0.6, 1, 0.6] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
                 style={{
                     width: '16px',
                     height: '16px',
                     borderRadius: '4px',
-                    background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                    background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                    flexShrink: 0,
+                    marginLeft: '8px'
                 }}
             />
         </div>
@@ -303,23 +262,7 @@ const UnreadBadge: React.FC<{ count: number }> = ({ count }) => (
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-        style={{
-            position: 'absolute',
-            top: '-4px',
-            right: '-4px',
-            minWidth: '18px',
-            height: '18px',
-            padding: '0 5px',
-            borderRadius: '9px',
-            background: '#ef4444',
-            color: '#ffffff',
-            fontSize: '10px',
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 2px 6px rgba(239, 68, 68, 0.4)',
-        }}
+        className="absolute -top-1.5 -right-1.5 min-w-[22px] h-[22px] px-1.5 rounded-full bg-red-500 border-[2.5px] border-white dark:border-zinc-900 text-white text-[11px] font-bold flex items-center justify-center shadow-md z-20"
     >
         {count > 9 ? '9+' : count}
     </motion.div>
@@ -353,68 +296,35 @@ const FAQItem: React.FC<{
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
         transition={{ delay: index * 0.03, type: 'spring', damping: 25, stiffness: 300 }}
-        style={{
-            background: isDarkMode ? '#1e293b' : '#ffffff',
-            borderRadius: '14px',
-            overflow: 'hidden',
-            border: `1px solid ${isOpen 
-                ? BLUE + '40' 
-                : isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
-            boxShadow: isOpen 
-                ? `0 4px 20px ${BLUE}15` 
-                : isDarkMode ? '0 2px 8px rgba(0,0,0,0.2)' : '0 2px 8px rgba(0,0,0,0.04)',
-        }}
+        className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[20px] transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 group"
     >
+        {/* SaaS Background Accents */}
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/[0.03] rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+
         {/* Question header */}
         <motion.button
             onClick={handleClick}
             whileHover={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)' }}
-            style={{
-                width: '100%',
-                padding: '14px 16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                textAlign: 'left',
-            }}
+            className="w-full flex items-center gap-5 p-5 bg-transparent border-none cursor-pointer text-left focus:outline-none relative z-10"
         >
             <motion.div 
-                animate={{ 
-                    background: isOpen ? BLUE : isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)',
+                whileHover={{ scale: 1.05, rotate: -5 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                className={`w-12 h-12 rounded-[16px] flex items-center justify-center flex-shrink-0 transition-all duration-300 relative z-10 ${isOpen ? 'shadow-md' : 'shadow-sm'}`}
+                style={{
+                    background: isOpen ? BLUE : isDarkMode ? 'rgba(59, 130, 246, 0.1)' : '#eff6ff',
+                    border: `1px solid ${isOpen ? BLUE : isDarkMode ? 'rgba(59, 130, 246, 0.2)' : '#dbeafe'}`,
                     color: isOpen ? '#ffffff' : BLUE,
                 }}
-                transition={{ duration: 0.2 }}
-                style={{
-                    position: 'relative',
-                    width: '34px',
-                    height: '34px',
-                    borderRadius: '10px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                }}>
+            >
                 <AnimatePresence>
                     {isNew && <UnreadBadge count={1} />}
                 </AnimatePresence>
-                <QuestionLordIcon size={20} isOpen={isOpen} />
+                <QuestionLordIcon size={22} isOpen={isOpen} />
             </motion.div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{
-                        display: 'inline-block',
-                        padding: '2px 7px',
-                        borderRadius: '4px',
-                        background: `${BLUE}12`,
-                        color: BLUE,
-                        fontSize: '9px',
-                        fontWeight: 600,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.04em',
-                    }}>
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                    <span className="inline-block px-2 py-0.5 rounded-[6px] bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 text-[10.5px] font-bold uppercase tracking-wider">
                         {faq.category}
                     </span>
                     <AnimatePresence>
@@ -424,33 +334,20 @@ const FAQItem: React.FC<{
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.8 }}
                                 transition={{ duration: 0.2 }}
-                                style={{
-                                    padding: '2px 6px',
-                                    borderRadius: '4px',
-                                    background: '#ef444420',
-                                    color: '#ef4444',
-                                    fontSize: '9px',
-                                    fontWeight: 600,
-                                }}
+                                className="inline-block px-2 py-0.5 rounded-[6px] bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400 text-[10.5px] font-bold uppercase tracking-wider"
                             >
                                 NEW
                             </motion.span>
                         )}
                     </AnimatePresence>
                 </div>
-                <h3 style={{
-                    margin: 0,
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                    lineHeight: 1.4,
-                }}>
+                <h3 className="m-0 text-[15px] font-bold text-zinc-900 dark:text-zinc-100 leading-snug tracking-tight">
                     {faq.question}
                 </h3>
             </div>
             <motion.div 
                 animate={{ color: isOpen ? BLUE : isDarkMode ? '#64748b' : '#94a3b8' }}
-                style={{ flexShrink: 0 }}
+                className="flex-shrink-0 ml-2"
             >
                 <ChevronIcon isOpen={isOpen} />
             </motion.div>
@@ -466,22 +363,17 @@ const FAQItem: React.FC<{
                     transition={{ duration: 0.25, ease: 'easeInOut' }}
                     style={{ overflow: 'hidden' }}
                 >
-                    <div style={{
-                        padding: '0 16px 16px 62px',
-                    }}>
-                        <motion.p
-                            initial={{ y: -10, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.1 }}
-                            style={{
-                                margin: 0,
-                                fontSize: '13px',
-                                lineHeight: 1.7,
-                                color: isDarkMode ? '#94a3b8' : '#64748b',
-                            }}
-                        >
-                            {faq.answer}
-                        </motion.p>
+                    <div className="px-5 pb-5 pl-[84px]">
+                        <div className="bg-zinc-50/80 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800/60 rounded-[14px] p-4">
+                            <motion.p
+                                initial={{ y: -10, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.1 }}
+                                className="m-0 text-[13.5px] leading-[1.75] text-zinc-600 dark:text-zinc-400"
+                            >
+                                {faq.answer}
+                            </motion.p>
+                        </div>
                     </div>
                 </motion.div>
             )}
@@ -551,6 +443,58 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
     const [openFAQ, setOpenFAQ] = useState<string | null>(null);
     const [isSearching, setIsSearching] = useState(false);
     const [readFAQs, setReadFAQs] = useState<string[]>(() => loadReadFAQsFromStorage());
+    
+    // Auto-minimizing footer state
+    const [isMinimized, setIsMinimized] = useState(false);
+    const lastScrollY = useRef(0);
+    const scrollDirection = useRef<'up' | 'down' | null>(null);
+    const anchorScrollY = useRef(0);
+
+    const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+        const currentScrollY = e.currentTarget.scrollTop;
+        const scrollHeight = e.currentTarget.scrollHeight;
+        const clientHeight = e.currentTarget.clientHeight;
+        
+        // Handle iOS rubber banding / top of scroll
+        if (currentScrollY <= 10) {
+            setIsMinimized(false);
+            lastScrollY.current = currentScrollY;
+            scrollDirection.current = null;
+            anchorScrollY.current = currentScrollY;
+            return;
+        }
+
+        // Determine current scrolling direction
+        const delta = currentScrollY - lastScrollY.current;
+        const isNearBottom = scrollHeight - currentScrollY - clientHeight < 50;
+        
+        if (delta > 0) {
+            // Scrolling down
+            if (scrollDirection.current !== 'down') {
+                scrollDirection.current = 'down';
+                anchorScrollY.current = lastScrollY.current;
+            }
+            
+            // If we have scrolled down by more than 30px from the anchor, minimize
+            if (currentScrollY - anchorScrollY.current > 30) {
+                setIsMinimized(true);
+            }
+        } else if (delta < 0) {
+            // Scrolling up
+            if (scrollDirection.current !== 'up') {
+                scrollDirection.current = 'up';
+                anchorScrollY.current = lastScrollY.current;
+            }
+            
+            // If we have scrolled up by more than 30px from the anchor, expand
+            // Protect against bottom bounce rubber-banding expanding the header
+            if (!isNearBottom && anchorScrollY.current - currentScrollY > 30) {
+                setIsMinimized(false);
+            }
+        }
+
+        lastScrollY.current = currentScrollY;
+    }, []);
 
     // Load read FAQs from Supabase on mount
     useEffect(() => {
@@ -610,18 +554,15 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
         return () => { document.body.style.overflow = ''; };
     }, [isOpen]);
 
-    // Debounced search with loading state
+    // Loading state for search and category switching
     useEffect(() => {
-        if (searchQuery) {
-            setIsSearching(true);
-            const timer = setTimeout(() => {
-                setIsSearching(false);
-            }, 400); // Short delay for smooth UX
-            return () => clearTimeout(timer);
-        } else {
+        if (!isOpen) return;
+        setIsSearching(true);
+        const timer = setTimeout(() => {
             setIsSearching(false);
-        }
-    }, [searchQuery]);
+        }, 350); // Short delay for smooth skeleton transition
+        return () => clearTimeout(timer);
+    }, [searchQuery, activeCategory, isOpen]);
 
     const filteredFAQs = useMemo(() => {
         return faqs.filter(f => {
@@ -674,7 +615,8 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
                             position: 'relative',
                             width: '100%',
                             maxWidth: '640px',
-                            maxHeight: '85vh',
+                            height: '85vh',
+                            maxHeight: '800px',
                             background: isDarkMode ? '#0f172a' : '#f8fafc',
                             borderRadius: '20px',
                             boxShadow: isDarkMode 
@@ -686,74 +628,96 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
                         }}
                     >
                         {/* Header */}
-                        <div style={{
-                            padding: '20px 24px 16px',
-                            borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
-                            background: isDarkMode ? '#1e293b' : '#ffffff',
-                        }}>
-                            {/* Title row */}
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <motion.div 
+                            animate={{
+                                padding: isMinimized ? '12px 16px' : '24px 24px 8px 24px'
+                            }}
+                            className="relative border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-t-[20px]"
+                        >
+                            <motion.div 
+                                animate={{ marginBottom: isMinimized ? '0px' : '24px' }}
+                                className="flex items-start gap-3 sm:gap-4"
+                            >
+                                {/* Student Tools Style Header Card */}
+                                <motion.div 
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ 
+                                        opacity: 1, 
+                                        y: 0,
+                                        padding: isMinimized ? '12px 16px' : '24px',
+                                        gap: isMinimized ? '16px' : '24px'
+                                    }}
+                                    transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
+                                    className="flex-1 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[20px] sm:rounded-[24px] flex items-center group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 text-left"
+                                >
+                                    {/* SaaS Background Accents */}
+                                    <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                    <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+
                                     <motion.div
-                                        initial={{ scale: 0, rotate: -180 }}
-                                        animate={{ scale: 1, rotate: 0 }}
-                                        transition={{ type: 'spring', delay: 0.1 }}
-                                        style={{
-                                            position: 'relative',
-                                            width: '42px',
-                                            height: '42px',
-                                            borderRadius: '12px',
-                                            background: BLUE,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: '#ffffff',
-                                            boxShadow: `0 4px 12px ${BLUE}40`,
+                                        animate={{
+                                            width: isMinimized ? 40 : 64,
+                                            height: isMinimized ? 40 : 64,
+                                            borderRadius: isMinimized ? 12 : 20
                                         }}
+                                        whileHover={{ scale: 1.05, rotate: -5 }}
+                                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                        className="bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600 dark:text-blue-400 relative z-10"
                                     >
-                                        <QuestionLordIcon size={24} isHeader={true} />
+                                        <div className="hidden sm:flex">
+                                            <QuestionLordIcon size={32} />
+                                        </div>
+                                        <div className="flex sm:hidden">
+                                            <QuestionLordIcon size={24} />
+                                        </div>
                                         <AnimatePresence>
-                                            {unreadCount > 0 && <UnreadBadge count={unreadCount} />}
+                                            {unreadCount > 0 && (
+                                                <UnreadBadge count={unreadCount} />
+                                            )}
                                         </AnimatePresence>
                                     </motion.div>
-                                    <div>
-                                        <h2 style={{
-                                            margin: 0,
-                                            fontSize: '18px',
-                                            fontWeight: 700,
-                                            color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                                        }}>
+                                    
+                                    <div className="relative z-10 flex-1 min-w-0 pr-2 sm:pr-4">
+                                        <motion.h2 
+                                            animate={{ fontSize: isMinimized ? '16px' : '26px' }}
+                                            className="font-bold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-0.5 sm:mb-1 truncate"
+                                        >
                                             Frequently Asked Questions
-                                        </h2>
-                                        <p style={{
-                                            margin: '2px 0 0',
-                                            fontSize: '12px',
-                                            color: isDarkMode ? '#64748b' : '#94a3b8',
-                                        }}>
+                                        </motion.h2>
+                                        <motion.p 
+                                            animate={{ fontSize: isMinimized ? '12px' : '14.5px' }}
+                                            className="text-zinc-600 dark:text-zinc-400 leading-relaxed m-0"
+                                        >
                                             {filteredFAQs.length} question{filteredFAQs.length !== 1 ? 's' : ''} found
-                                        </p>
+                                        </motion.p>
                                     </div>
-                                </div>
-                                <motion.button
-                                    onClick={onClose}
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    style={{
-                                        width: '36px',
-                                        height: '36px',
-                                        borderRadius: '10px',
-                                        border: 'none',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        color: isDarkMode ? '#94a3b8' : '#64748b',
-                                    }}
-                                >
-                                    <CloseIcon />
-                                </motion.button>
-                            </div>
+                                    <div className="relative z-20 self-start">
+                                        <motion.button
+                                            onClick={onClose}
+                                            whileHover={{ scale: 1.1 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            className="flex-shrink-0 flex items-center justify-center rounded-lg sm:rounded-xl border border-zinc-200/80 bg-white/80 backdrop-blur-md p-2 text-zinc-500 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700/80 dark:bg-zinc-800/80 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                                            aria-label="Close modal"
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
+                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                            </svg>
+                                        </motion.button>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+
+                            <AnimatePresence>
+                                {!isMinimized && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.2, ease: "easeInOut" }}
+                                        style={{ overflow: 'hidden' }}
+                                    >
+                                        <div style={{ paddingBottom: '4px' }}>
 
 
                             {/* Search bar */}
@@ -811,79 +775,55 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.15 }}
-                                style={{
-                                    display: 'flex',
-                                    gap: '8px',
-                                    overflowX: 'auto',
-                                    paddingBottom: '4px',
-                                }}
+                                className="flex items-center bg-[#f8fafc] dark:bg-zinc-800/40 rounded-[14px] p-[5px] gap-1 border border-[#e2e8f0] dark:border-zinc-700/60"
                             >
-                                {categories.map((cat, i) => {
-                                    const IconComponent = CategoryIcons[cat];
+                                {categories.map((cat) => {
                                     const isActive = activeCategory === cat;
                                     return (
-                                        <motion.button
+                                        <button
                                             key={cat}
                                             onClick={() => setActiveCategory(cat)}
-                                            initial={{ opacity: 0, scale: 0.9 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            transition={{ delay: 0.1 + i * 0.03 }}
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
+                                            className={`relative flex-1 py-2 px-3 rounded-[10px] text-[13px] font-bold whitespace-nowrap cursor-pointer transition-colors duration-200 z-10 ${
+                                                isActive
+                                                    ? 'text-[#2563eb] dark:text-blue-400'
+                                                    : 'text-[#64748b] dark:text-zinc-400 hover:text-[#475569] dark:hover:text-zinc-300'
+                                            }`}
                                             style={{
-                                                padding: '8px 14px',
-                                                borderRadius: '10px',
+                                                WebkitTapHighlightColor: 'transparent',
+                                                background: 'transparent',
                                                 border: 'none',
-                                                background: isActive 
-                                                    ? BLUE 
-                                                    : isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                                                color: isActive 
-                                                    ? '#ffffff' 
-                                                    : isDarkMode ? '#94a3b8' : '#64748b',
-                                                fontSize: '12px',
-                                                fontWeight: 500,
-                                                cursor: 'pointer',
-                                                whiteSpace: 'nowrap',
-                                                boxShadow: isActive ? `0 4px 12px ${BLUE}30` : 'none',
-                                                transition: 'background 0.2s, color 0.2s',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
+                                                outline: 'none',
                                             }}
                                         >
-                                            <motion.span
-                                                initial={false}
-                                                animate={{ 
-                                                    scale: isActive ? 1.1 : 1,
-                                                    rotate: isActive ? [0, -10, 10, 0] : 0,
-                                                }}
-                                                transition={{ 
-                                                    scale: { duration: 0.2 },
-                                                    rotate: { duration: 0.4, ease: 'easeInOut' }
-                                                }}
-                                                style={{ 
-                                                    display: 'flex', 
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                }}
-                                            >
-                                                {IconComponent && <IconComponent size={14} />}
-                                            </motion.span>
-                                            {cat}
-                                        </motion.button>
+                                            {isActive && (
+                                                <motion.div
+                                                    layoutId="activeTabIndicator"
+                                                    className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-[10px] border border-[#e2e8f0]/80 dark:border-zinc-600 shadow-[0_2px_4px_rgba(0,0,0,0.02)] -z-10"
+                                                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                                                />
+                                            )}
+                                            <span className="relative z-10">{cat}</span>
+                                        </button>
                                     );
                                 })}
-                            </motion.div>
-                        </div>
+                                        </motion.div>
+                                    </div>
+                                </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
 
 
                         {/* FAQ List */}
-                        <div style={{
-                            flex: 1,
-                            overflowY: 'auto',
-                            padding: '20px 24px',
-                        }}>
-                            <AnimatePresence mode="popLayout">
+                        <div 
+                            onScroll={handleScroll}
+                            style={{
+                                flex: 1,
+                                overflowY: 'auto',
+                                padding: '20px 24px',
+                            }}
+                        >
+                            <AnimatePresence mode="wait">
                                 {isSearching ? (
                                     /* Loading Skeletons */
                                     <motion.div
@@ -903,7 +843,6 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
                                     </motion.div>
                                 ) : filteredFAQs.length > 0 ? (
                                     <motion.div
-                                        layout
                                         style={{
                                             display: 'flex',
                                             flexDirection: 'column',
@@ -925,46 +864,36 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
                                     </motion.div>
                                 ) : (
                                     <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        style={{
-                                            textAlign: 'center',
-                                            padding: '60px 20px',
-                                        }}
+                                        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                                        className="relative overflow-hidden w-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-8 flex flex-col items-center justify-center text-center group transition-all duration-300 hover:shadow-md"
                                     >
+                                        {/* SaaS Accents */}
+                                        <div className="absolute top-0 right-0 -mr-12 -mt-12 w-28 h-28 bg-zinc-500/5 dark:bg-zinc-500/5 rounded-full blur-2xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                        
+                                        {/* Tinted Search Icon Box */}
                                         <motion.div
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            transition={{ type: 'spring', delay: 0.1 }}
-                                            style={{
-                                                width: '64px',
-                                                height: '64px',
-                                                margin: '0 auto 16px',
-                                                borderRadius: '16px',
-                                                background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                color: isDarkMode ? '#475569' : '#cbd5e1',
-                                            }}
+                                            whileHover={{ scale: 1.05, rotate: -5 }}
+                                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                            className="w-16 h-16 rounded-[20px] bg-zinc-50 border border-zinc-200/60 dark:bg-zinc-800/30 dark:border-zinc-850/50 flex items-center justify-center flex-shrink-0 shadow-sm text-zinc-400 dark:text-zinc-500 relative z-10 mb-4"
                                         >
-                                            <SearchIcon />
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <circle cx="11" cy="11" r="8" />
+                                                <path d="m21 21-4.35-4.35" />
+                                            </svg>
                                         </motion.div>
-                                        <h3 style={{
-                                            margin: '0 0 8px',
-                                            fontSize: '16px',
-                                            fontWeight: 600,
-                                            color: isDarkMode ? '#94a3b8' : '#64748b',
-                                        }}>
-                                            No questions found
-                                        </h3>
-                                        <p style={{
-                                            margin: 0,
-                                            fontSize: '13px',
-                                            color: isDarkMode ? '#64748b' : '#94a3b8',
-                                        }}>
-                                            Try adjusting your search or filter
-                                        </p>
+                                        
+                                        {/* Title & Description with premium typography */}
+                                        <div className="relative z-10">
+                                            <h3 className="text-[17px] font-extrabold text-zinc-800 dark:text-zinc-200 tracking-tight m-0 mb-1 leading-snug">
+                                                No Questions Found
+                                            </h3>
+                                            <p className="text-[13.5px] text-zinc-500 dark:text-zinc-400 font-normal leading-relaxed m-0 max-w-sm">
+                                                Try adjusting your search query or selecting a different category filter tab above.
+                                            </p>
+                                        </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -973,46 +902,92 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
                         {/* Footer */}
                         <motion.div
                             initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                            style={{
-                                padding: '16px 24px',
-                                borderTop: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
-                                background: isDarkMode ? '#1e293b' : '#ffffff',
-                                textAlign: 'center',
+                            animate={{ 
+                                opacity: 1,
+                                padding: isMinimized ? '8px' : '16px',
+                                paddingTop: isMinimized ? '4px' : '4px'
                             }}
+                            transition={{ delay: 0.3 }}
+                            className="border-t border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-b-[20px]"
                         >
-                            <p style={{
-                                margin: '0 0 10px',
-                                fontSize: '13px',
-                                color: isDarkMode ? '#64748b' : '#94a3b8',
-                            }}>
-                                Can't find what you're looking for?
-                            </p>
-                            <motion.button
-                                whileHover={{ scale: 1.02, boxShadow: `0 6px 20px ${BLUE}30` }}
-                                whileTap={{ scale: 0.98 }}
-                                style={{
-                                    padding: '10px 24px',
-                                    borderRadius: '10px',
-                                    border: 'none',
-                                    background: BLUE,
-                                    color: '#ffffff',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    boxShadow: `0 4px 12px ${BLUE}25`,
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
+                            <motion.div
+                                animate={{
+                                    padding: isMinimized ? '8px 12px' : '16px',
+                                    gap: isMinimized ? '10px' : '16px'
                                 }}
+                                whileHover={{ scale: 1.01 }}
+                                className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[20px] flex items-center group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 text-left"
                             >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                    <polyline points="22,6 12,13 2,6" />
-                                </svg>
-                                Contact Support
-                            </motion.button>
+                                {/* SaaS Background Accents */}
+                                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-24 h-24 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+
+                                {/* Icon Container */}
+                                <motion.div
+                                    animate={{
+                                        width: isMinimized ? 36 : 44,
+                                        height: isMinimized ? 36 : 44,
+                                        borderRadius: isMinimized ? 12 : 14
+                                    }}
+                                    whileHover={{ scale: 1.05, rotate: -5 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                    className="bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600 dark:text-blue-400 relative z-10"
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                        <polyline points="22,6 12,13 2,6" />
+                                    </svg>
+                                </motion.div>
+
+                                {/* Text Area */}
+                                <div className="relative z-10 flex-1">
+                                    <motion.h3 
+                                        animate={{ fontSize: isMinimized ? '14.5px' : '16px' }}
+                                        className="font-bold text-zinc-900 dark:text-zinc-100 tracking-tight m-0"
+                                        style={{ marginBottom: isMinimized ? '0px' : '2px' }}
+                                    >
+                                        Still need help?
+                                    </motion.h3>
+                                    <AnimatePresence>
+                                        {!isMinimized && (
+                                            <motion.p 
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: 'auto', opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                className="text-[13px] text-zinc-600 dark:text-zinc-400 leading-relaxed m-0 pr-2"
+                                            >
+                                                Can't find what you're looking for? Contact our support team.
+                                            </motion.p>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
+                                {/* Action Button */}
+                                <div className="relative z-10 flex-shrink-0">
+                                    <motion.button
+                                        animate={{
+                                            padding: isMinimized ? '6px 12px' : '8px 16px',
+                                            fontSize: isMinimized ? '12px' : '13px'
+                                        }}
+                                        whileHover={{ scale: 1.05, boxShadow: `0 6px 20px ${BLUE}30` }}
+                                        whileTap={{ scale: 0.95 }}
+                                        style={{
+                                            borderRadius: '10px',
+                                            border: 'none',
+                                            background: BLUE,
+                                            color: '#ffffff',
+                                            fontWeight: 600,
+                                            cursor: 'pointer',
+                                            boxShadow: `0 4px 12px ${BLUE}25`,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                        }}
+                                    >
+                                        Contact Support
+                                    </motion.button>
+                                </div>
+                            </motion.div>
                         </motion.div>
                     </motion.div>
                 </div>

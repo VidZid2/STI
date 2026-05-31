@@ -19,7 +19,7 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 25 }}
-            className="mb-8 flex w-full gap-2 overflow-x-auto rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm backdrop-blur-md [scrollbar-width:none] dark:border-zinc-700/50 dark:bg-zinc-800/40 sm:w-fit sm:mx-auto"
+            className="mb-0 flex w-full gap-2 overflow-x-auto rounded-2xl border border-zinc-200/80 bg-zinc-50/50 p-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.01)] backdrop-blur-md [scrollbar-width:none] dark:border-zinc-800/80 dark:bg-zinc-950/30"
             role="group"
             aria-label="Tool categories"
         >
@@ -32,7 +32,7 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
                         key={category.id}
                         onClick={() => onCategoryChange(category.id)}
                         aria-pressed={isActive}
-                        className={`relative flex shrink-0 items-center gap-2.5 rounded-xl px-5 py-3 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:px-6 sm:text-base ${isActive ? 'text-white' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700/30'}`}
+                        className={`relative flex flex-1 items-center justify-center gap-2.5 rounded-xl px-5 py-3 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:px-6 sm:text-base ${isActive ? 'text-white' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700/30'}`}
                     >
                         {isActive && (
                             <motion.div
@@ -55,10 +55,70 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
     );
 };
 
+interface ToolItemSkeletonProps {
+    delay?: number;
+}
+
+// Mathematically precise Skeleton for an individual ToolItem
+const ToolItemSkeleton: React.FC<ToolItemSkeletonProps> = ({ delay = 0 }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay, type: 'spring', stiffness: 300 }}
+        className="group relative flex h-full min-h-[280px] w-full flex-col items-start overflow-hidden rounded-[20px] border border-zinc-200/70 bg-white p-5 text-left shadow-sm sm:min-h-[300px] sm:p-6 lg:p-7 dark:border-zinc-800/70 dark:bg-zinc-900"
+    >
+        {/* Background Ambient Glow Placeholder */}
+        <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full blur-3xl pointer-events-none bg-zinc-100/50 dark:bg-zinc-800/20" />
+
+        <div className="relative z-10 flex w-full flex-1 flex-col">
+            <div className="flex w-full items-start justify-between gap-4">
+                {/* Icon skeleton */}
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-zinc-200 bg-zinc-100 sm:h-12 sm:w-12 animate-pulse dark:border-zinc-700 dark:bg-zinc-800" />
+
+                {/* Badges skeleton */}
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                    <div className="h-6 w-16 rounded-md bg-zinc-100 animate-pulse dark:bg-zinc-800" />
+                    <div className="h-6 w-20 rounded-md bg-zinc-100 animate-pulse dark:bg-zinc-800" />
+                    <div className="h-11 w-11 rounded-full bg-zinc-100 animate-pulse dark:bg-zinc-800" />
+                </div>
+            </div>
+
+            {/* Title */}
+            <div className="mt-6 flex min-w-0 flex-col justify-center">
+                <div className="h-6 w-32 rounded-md bg-zinc-200 animate-pulse dark:bg-zinc-700" />
+            </div>
+
+            {/* Description */}
+            <div className="mt-3 w-full text-left space-y-2">
+                <div className="h-3.5 w-full rounded bg-zinc-100 animate-pulse dark:bg-zinc-800" />
+                <div className="h-3.5 w-4/5 rounded bg-zinc-100 animate-pulse dark:bg-zinc-800" />
+            </div>
+
+            {/* Bottom aligned content wrapper */}
+            <div className="mt-auto flex w-full flex-col pt-4">
+                {/* Best For Module */}
+                <div className="mb-4 w-full rounded-[16px] bg-zinc-50/80 px-4 py-3.5 dark:bg-zinc-800/40">
+                    <div className="h-2.5 w-16 rounded bg-zinc-200 animate-pulse mb-2 dark:bg-zinc-700" />
+                    <div className="h-3.5 w-3/4 rounded bg-zinc-200 animate-pulse dark:bg-zinc-700" />
+                </div>
+
+                {/* Action footer */}
+                <div className="flex w-full items-center justify-start gap-1.5 border-t border-zinc-200 pt-4 dark:border-zinc-700/60">
+                    <div className="h-3.5 w-24 rounded bg-zinc-200 animate-pulse dark:bg-zinc-700" />
+                </div>
+            </div>
+        </div>
+    </motion.div>
+);
+
+interface ToolsSkeletonProps {
+    count?: number;
+    className?: string;
+}
 
 // Premium Skeleton Loading Component for Tools
-const ToolsSkeleton: React.FC = () => (
-    <div className="tools-content" role="status" aria-label="Loading tools">
+const ToolsSkeleton: React.FC<ToolsSkeletonProps> = ({ count = 7, className = '' }) => (
+    <div className={`tools-content ${className}`} role="status" aria-label="Loading tools">
         {/* SaaS Compact Hero Section Skeleton */}
         <motion.div
             initial={{ opacity: 0 }}
@@ -69,66 +129,81 @@ const ToolsSkeleton: React.FC = () => (
             <motion.div
                 animate={{ x: ['-100%', '100%'] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/5 to-transparent z-10"
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-zinc-200/40 dark:via-zinc-800/20 to-transparent z-10"
             />
             
             <div className="flex items-center gap-6 relative z-0 w-full md:w-auto">
-                <div className="w-16 h-16 rounded-2xl bg-zinc-200 dark:bg-zinc-800 flex-shrink-0 animate-pulse" />
+                <div className="w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 animate-pulse" />
                 <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
-                        <div className="w-48 h-8 bg-zinc-300 dark:bg-zinc-700 rounded-md animate-pulse" />
+                        <div className="w-48 h-8 bg-zinc-200 dark:bg-zinc-700 rounded-md animate-pulse" />
                     </div>
-                    <div className="w-72 h-4 bg-zinc-200 dark:bg-zinc-800 rounded-sm mt-2 animate-pulse" />
-                    <div className="w-48 h-4 bg-zinc-200 dark:bg-zinc-800 rounded-sm mt-2 animate-pulse" />
+                    <div className="w-72 h-4 bg-zinc-100 dark:bg-zinc-800 rounded-sm mt-2 animate-pulse" />
+                    <div className="w-48 h-4 bg-zinc-100 dark:bg-zinc-800 rounded-sm mt-2 animate-pulse" />
                 </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-4 relative z-0 w-full md:w-auto">
-                <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 w-40 h-[68px] animate-pulse">
-                    <div className="w-10 h-10 rounded-xl bg-zinc-200 dark:bg-zinc-700" />
+                <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 w-40 h-[68px]">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
                     <div className="flex-1">
-                        <div className="w-16 h-3 bg-zinc-200 dark:bg-zinc-700 rounded mb-1" />
-                        <div className="w-20 h-5 bg-zinc-300 dark:bg-zinc-600 rounded" />
+                        <div className="w-16 h-3 bg-zinc-200 dark:bg-zinc-700 rounded mb-1 animate-pulse" />
+                        <div className="w-20 h-5 bg-zinc-200 dark:bg-zinc-600 rounded animate-pulse" />
                     </div>
                 </div>
-                <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 w-40 h-[68px] animate-pulse">
-                    <div className="w-10 h-10 rounded-xl bg-zinc-200 dark:bg-zinc-700" />
+                <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 w-40 h-[68px]">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
                     <div className="flex-1">
-                        <div className="w-16 h-3 bg-zinc-200 dark:bg-zinc-700 rounded mb-1" />
-                        <div className="w-20 h-5 bg-zinc-300 dark:bg-zinc-600 rounded" />
+                        <div className="w-16 h-3 bg-zinc-200 dark:bg-zinc-700 rounded mb-1 animate-pulse" />
+                        <div className="w-20 h-5 bg-zinc-200 dark:bg-zinc-600 rounded animate-pulse" />
                     </div>
                 </div>
             </div>
         </motion.div>
 
-        {/* Category Tabs Skeleton */}
+        {/* Search and Steps Sidebar Skeleton */}
         <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.12 }}
             aria-hidden="true"
-            style={{
-                display: 'flex',
-                gap: '0.25rem',
-                marginBottom: '2rem',
-                padding: '0.375rem',
-                background: '#f1f5f9',
-                borderRadius: '14px',
-                border: '1px solid #e2e8f0',
-                width: 'fit-content' }}
+            className="mb-7 grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]"
         >
-            {[0, 1, 2].map(i => (
-                <motion.div
-                    key={i}
-                    animate={{ opacity: [0.4, 0.7, 0.4] }}
-                    transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
-                    style={{
-                        width: '120px',
-                        height: '40px',
-                        background: i === 0 ? 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)' : '#e2e8f0',
-                        borderRadius: '10px' }}
-                />
-            ))}
+            <div className="relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white p-5 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7">
+                <div className="relative z-10 flex flex-col gap-6">
+                    <div className="min-w-0">
+                        <div className="h-7 w-64 rounded bg-zinc-200 animate-pulse dark:bg-zinc-700" />
+                        <div className="mt-3 h-4 w-96 rounded bg-zinc-100 animate-pulse dark:bg-zinc-800" />
+                        <div className="mt-2 h-4 w-72 rounded bg-zinc-100 animate-pulse dark:bg-zinc-800" />
+                    </div>
+                    <div className="relative w-full">
+                        <div className="h-12 w-full rounded-2xl bg-zinc-100 animate-pulse dark:bg-zinc-800/50" />
+                    </div>
+
+                    {/* Category Tabs Skeleton */}
+                    <div className="flex w-fit gap-1 rounded-[14px] border border-zinc-200 bg-zinc-100/50 p-1.5 dark:border-zinc-800 dark:bg-zinc-900/50">
+                        {[0, 1, 2].map(i => (
+                            <div
+                                key={i}
+                                className={`h-10 w-[120px] rounded-[10px] animate-pulse ${i === 0 ? 'bg-zinc-300 dark:bg-zinc-700' : 'bg-zinc-200 dark:bg-zinc-800'}`}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+                {[0, 1, 2].map(i => (
+                    <div key={i} className="flex w-full items-center gap-4 rounded-[20px] border border-zinc-200/70 bg-white p-4 shadow-sm dark:border-zinc-800/70 dark:bg-zinc-900 sm:p-5">
+                        <div className="h-11 w-11 shrink-0 rounded-[14px] bg-zinc-100 animate-pulse dark:bg-zinc-800 sm:h-12 sm:w-12" />
+                        <div className="flex flex-1 flex-col gap-1.5">
+                            <div className="h-2.5 w-12 rounded bg-zinc-200 animate-pulse dark:bg-zinc-700" />
+                            <div className="h-4 w-24 rounded bg-zinc-200 animate-pulse dark:bg-zinc-700" />
+                            <div className="h-3 w-32 rounded bg-zinc-100 animate-pulse dark:bg-zinc-800" />
+                        </div>
+                    </div>
+                ))}
+            </div>
         </motion.div>
 
         {/* Tools Grid Skeleton */}
@@ -137,81 +212,10 @@ const ToolsSkeleton: React.FC = () => (
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
             aria-hidden="true"
-            style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 360px), 1fr))',
-                gap: '2rem' }}
+            className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2 2xl:grid-cols-3"
         >
-            {[...Array(7)].map((_, i) => (
-                <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 + i * 0.05, type: 'spring', stiffness: 300 }}
-                    style={{
-                        height: '404px',
-                        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '20px',
-                        padding: '2rem',
-                        position: 'relative',
-                        overflow: 'hidden' }}
-                >
-                    {/* Shimmer overlay */}
-                    <motion.div
-                        animate={{ x: ['-100%', '100%'] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: 'linear', delay: i * 0.1 }}
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
-                            pointerEvents: 'none' }}
-                    />
-                    {/* Icon skeleton */}
-                    <motion.div
-                        animate={{ opacity: [0.4, 0.7, 0.4] }}
-                        transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05 }}
-                        style={{
-                            width: '52px',
-                            height: '52px',
-                            background: '#e2e8f0',
-                            borderRadius: '14px',
-                            marginBottom: '1rem' }}
-                    />
-                    {/* Title skeleton */}
-                    <motion.div
-                        animate={{ opacity: [0.4, 0.7, 0.4] }}
-                        transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05 + 0.1 }}
-                        style={{ width: '120px', height: '18px', background: '#e2e8f0', borderRadius: '6px', marginBottom: '0.5rem' }}
-                    />
-                    {/* Description skeleton */}
-                    <motion.div
-                        animate={{ opacity: [0.4, 0.7, 0.4] }}
-                        transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05 + 0.15 }}
-                        style={{ width: '100%', height: '14px', background: '#f1f5f9', borderRadius: '4px', marginBottom: '0.375rem' }}
-                    />
-                    <motion.div
-                        animate={{ opacity: [0.4, 0.7, 0.4] }}
-                        transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05 + 0.2 }}
-                        style={{ width: '80%', height: '14px', background: '#f1f5f9', borderRadius: '4px', marginBottom: 'auto' }}
-                    />
-                    {/* Badge skeleton */}
-                    <motion.div
-                        animate={{ opacity: [0.4, 0.7, 0.4] }}
-                        transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05 + 0.25 }}
-                        style={{
-                            width: '80px',
-                            height: '26px',
-                            background: '#f0fdf4',
-                            borderRadius: '8px',
-                            position: 'absolute',
-                            bottom: '1.5rem',
-                            left: '1.5rem' }}
-                    />
-                </motion.div>
+            {[...Array(count)].map((_, i) => (
+                <ToolItemSkeleton key={i} delay={0.4 + i * 0.05} />
             ))}
         </motion.div>
     </div>
