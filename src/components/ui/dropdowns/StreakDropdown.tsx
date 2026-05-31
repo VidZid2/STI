@@ -7,8 +7,6 @@ import { getStreakData, getStreakTier, type StreakData } from '../../../services
 import { DailyStreakModal } from '../../modals/DailyStreakModal';
 import { Flame, Target } from 'lucide-react';
 
-// Session storage key to track if modal was shown this session
-const STREAK_MODAL_SHOWN_KEY = 'streak-modal-shown-session';
 
 interface StreakDropdownProps {
     className?: string;

@@ -341,7 +341,7 @@ const GettingStartedModal: React.FC<GettingStartedModalProps> = ({ isOpen, onClo
                                             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                                             className="w-16 h-16 rounded-[20px] bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600 dark:text-blue-400 relative z-10"
                                         >
-                                            {React.cloneElement(step.icon as React.ReactElement, { width: 32, height: 32, strokeWidth: 2 })}
+                                            {React.cloneElement(step.icon as React.ReactElement<any>, { width: 32, height: 32, strokeWidth: 2 })}
                                         </motion.div>
                                         <div className="relative z-10">
                                             <h2 className="text-[26px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-1">

@@ -174,7 +174,7 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                             drag="y"
                             dragConstraints={{ top: 0, bottom: 0 }}
                             dragElastic={0.7}
-                            onDragEnd={(e, info) => {
+                            onDragEnd={(_, info) => {
                                 if (info.offset.y > 60 || info.velocity.y > 400) {
                                     onClose();
                                 }

@@ -8,7 +8,7 @@ import { motion } from 'motion/react';
 import ToolbarExpandable from '../../../components/ui/toolbar/ToolbarExpandable';
 import UserProfileDropdown from '../../../components/ui/dropdowns/UserProfileDropdown';
 
-import { cn } from '../../../lib/utils';
+
 import StreakDropdown from '../../../components/ui/dropdowns/StreakDropdown';
 import type { DashboardView } from '../types';
 interface DashboardHeaderProps {
@@ -17,8 +17,7 @@ interface DashboardHeaderProps {
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
-    setActiveView,
-    isDemoMode 
+    setActiveView
 }) => {
     const [isDarkMode, setIsDarkMode] = useState(() => 
         typeof document !== 'undefined' && document.body.classList.contains('dark-mode')

@@ -20,8 +20,7 @@ import {
 } from "../../lib/plagiarism/copyleaksService";
 import {
     scanWithGoogleSearch,
-    isGoogleSearchConfigured,
-    getGoogleSearchStatus
+    isGoogleSearchConfigured
 } from "../../lib/plagiarism/googleSearchService";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
@@ -58,7 +57,6 @@ const PlagiarismChecker: React.FC<PlagiarismCheckerProps> = ({ onBack }) => {
     const [result, setResult] = useState<SimilarityResult | null>(null);
     const [restoredAt, setRestoredAt] = useState<string | null>(null);
     const [apiStatus] = useState(() => getCopyleaksStatus());
-    const [isRestoring, setIsRestoring] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const [isPageLoading, setIsPageLoading] = useState(true);
     const [aiModel, setAiModel] = useState('standard');

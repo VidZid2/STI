@@ -14,22 +14,7 @@ interface SidebarHelpDropdownProps {
     anchorRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-// Dark mode color palette - STI blue/yellow theme
-const getColors = (isDark: boolean) => ({
-    dropdownBg: isDark ? '#1e293b' : '#ffffff',
-    headerBorder: isDark ? 'rgba(71, 85, 105, 0.5)' : '#f4f4f5',
-    hoverBg: isDark ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
-    textPrimary: isDark ? '#f1f5f9' : '#18181b',
-    textSecondary: isDark ? '#94a3b8' : '#71717a',
-    textMuted: isDark ? '#64748b' : '#a1a1aa',
-    textAccent: isDark ? '#60a5fa' : '#3b82f6',
-    // STI colors for icons - Blue background, White SVG
-    iconBg: '#3b82f6', // Blue background
-    iconColor: '#ffffff', // White SVG color
-    boxShadow: isDark 
-        ? '0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(71, 85, 105, 0.3)' 
-        : '0 4px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05)',
-});
+
 
 const helpItems = [
     {
@@ -114,7 +99,7 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
         }
     }, [isOpen]);
 
-    const colors = getColors(isDarkMode);
+
 
     const cardRef = useCallback((node: HTMLDivElement | null) => {
         if (resizeObserverRef.current) {
