@@ -145,12 +145,11 @@ const HelpDropdown: React.FC = () => {
                             stiffness: 400,
                             damping: 25,
                         }}
-                        className={`absolute bottom-full right-0 mb-2 rounded-xl shadow-lg border overflow-hidden z-50 ${
+                        className={`absolute bottom-full right-0 mb-2 rounded-xl shadow-lg border overflow-hidden z-50 w-[calc(100vw-32px)] sm:w-[220px] max-w-[280px] sm:max-w-none ${
                             isDarkMode 
                                 ? 'bg-slate-800 border-slate-700' 
                                 : 'bg-white border-zinc-100'
                         }`}
-                        style={{ width: '220px' }}
                     >
                         {/* Header */}
                         <div className={`px-3 py-2.5 border-b ${isDarkMode ? 'border-slate-700 bg-gradient-to-r from-blue-900/30 to-indigo-900/30' : 'border-zinc-100 bg-gradient-to-r from-blue-50 to-indigo-50'}`}>
@@ -193,7 +192,7 @@ const HelpDropdown: React.FC = () => {
                                         setIsOpen(false);
                                         link.onClick?.();
                                     }}
-                                    className="w-full flex items-center gap-2.5 px-3 py-2 group"
+                                    className={`w-full items-center gap-2.5 px-3 py-2 group ${link.id === 'keyboard' ? 'hidden md:flex' : 'flex'}`}
                                     style={{ 
                                         transition: 'background-color 0.2s ease-out',
                                     }}

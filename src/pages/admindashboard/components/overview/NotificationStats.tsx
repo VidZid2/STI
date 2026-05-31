@@ -11,9 +11,9 @@ const NotificationStats: React.FC = () => {
     }, []);
 
     const items = [
-        { label: 'Sent (7d)', value: stats.total, icon: Send, color: '#3b82f6', bg: '#eff6ff' },
-        { label: 'Read',      value: stats.read,  icon: Eye,  color: '#10b981', bg: '#f0fdf4' },
-        { label: 'Read Rate', value: `${stats.deliveryRate}%`, icon: TrendingUp, color: '#8b5cf6', bg: '#f5f3ff' },
+        { label: 'Sent (7d)', value: stats.total, icon: Send, colorClass: 'text-blue-500 dark:text-blue-400', bgClass: 'bg-blue-50 dark:bg-blue-900/20' },
+        { label: 'Read',      value: stats.read,  icon: Eye,  colorClass: 'text-emerald-500 dark:text-emerald-400', bgClass: 'bg-emerald-50 dark:bg-emerald-900/20' },
+        { label: 'Read Rate', value: `${stats.deliveryRate}%`, icon: TrendingUp, colorClass: 'text-purple-500 dark:text-purple-400', bgClass: 'bg-purple-50 dark:bg-purple-900/20' },
     ];
 
     return (
@@ -29,13 +29,13 @@ const NotificationStats: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-                {items.map(({ label, value, icon: Icon, color, bg }) => (
-                    <div key={label} className="flex flex-col items-center p-3 rounded-xl" style={{ background: bg }}>
-                        <Icon size={14} color={color} className="mb-1.5" />
-                        <span className="text-lg font-black" style={{ color }}>
+                {items.map(({ label, value, icon: Icon, colorClass, bgClass }) => (
+                    <div key={label} className={`flex flex-col items-center p-3 rounded-xl ${bgClass}`}>
+                        <Icon size={14} className={`mb-1.5 ${colorClass}`} />
+                        <span className={`text-lg font-black ${colorClass}`}>
                             {loading ? '—' : value}
                         </span>
-                        <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mt-0.5 text-center">{label}</span>
+                        <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mt-0.5 text-center">{label}</span>
                     </div>
                 ))}
             </div>

@@ -3,9 +3,10 @@
  * Contact form with support options and FAQ quick links
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
+import { Send } from 'lucide-react';
 
 interface ContactSupportModalProps {
     isOpen: boolean;
@@ -15,38 +16,26 @@ interface ContactSupportModalProps {
 const BLUE = '#3b82f6';
 
 // SVG Icons
-const CloseIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M18 6L6 18M6 6l12 12" />
-    </svg>
-);
-
-const EmailIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+const EmailIcon: React.FC<{ size?: number }> = ({ size = 20 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="4" width="20" height="16" rx="2" />
         <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
     </svg>
 );
 
-const ChatIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+const ChatIcon: React.FC<{ size?: number }> = ({ size = 20 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
     </svg>
 );
 
-const PhoneIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+const PhoneIcon: React.FC<{ size?: number }> = ({ size = 20 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
     </svg>
 );
 
 
-const SendIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13" />
-        <polygon points="22 2 15 22 11 13 2 9 22 2" />
-    </svg>
-);
 
 const CheckIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -91,12 +80,6 @@ const supportOptions: SupportOption[] = [
 ];
 
 
-// Arrow Icon for cards
-const ArrowIcon = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M5 12h14M12 5l7 7-7 7" />
-    </svg>
-);
 
 // Support Option Card with enhanced animations
 const SupportOptionCard: React.FC<{
@@ -104,9 +87,77 @@ const SupportOptionCard: React.FC<{
     index: number;
     isDarkMode: boolean;
     onClick: () => void;
-}> = ({ option, index, isDarkMode, onClick }) => {
-    const [isHovered, setIsHovered] = React.useState(false);
+}> = ({ option, index, onClick }) => {
+    // Get corresponding badge content
+    const getBadgeContent = () => {
+        switch (option.id) {
+            case 'email':
+                return {
+                    label: 'RESPONSE',
+                    value: '< 24 Hours',
+                    icon: (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                    ),
+                    badgeBg: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100/50 dark:border-blue-500/20',
+                    labelColor: 'text-blue-500/80 dark:text-blue-400/80'
+                };
+            case 'chat':
+                return {
+                    label: 'STATUS',
+                    value: 'Online Now',
+                    icon: (
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    ),
+                    badgeBg: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-500/20 flex items-center justify-center',
+                    labelColor: 'text-emerald-500/80 dark:text-emerald-400/80'
+                };
+            case 'phone':
+            default:
+                return {
+                    label: 'HOURS',
+                    value: '8AM - 5PM',
+                    icon: (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                    ),
+                    badgeBg: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100/50 dark:border-purple-500/20',
+                    labelColor: 'text-purple-500/80 dark:text-purple-400/80'
+                };
+        }
+    };
+
+    const badge = getBadgeContent();
     
+    // Choose dynamic color schemes
+    const colors = {
+        email: {
+            hoverBorder: 'hover:border-blue-300/80 dark:hover:border-blue-800/60',
+            bg: 'bg-blue-50/80 border border-blue-100/50 dark:bg-blue-500/10 dark:border-blue-500/20 text-blue-600 dark:text-blue-400',
+            accent: 'bg-blue-500/5 dark:bg-blue-500/[0.03]'
+        },
+        chat: {
+            hoverBorder: 'hover:border-emerald-300/80 dark:hover:border-emerald-800/60',
+            bg: 'bg-emerald-50/80 border border-emerald-100/50 dark:bg-emerald-500/10 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400',
+            accent: 'bg-emerald-500/5 dark:bg-emerald-500/[0.03]'
+        },
+        phone: {
+            hoverBorder: 'hover:border-purple-300/80 dark:hover:border-purple-800/60',
+            bg: 'bg-purple-50/80 border border-purple-100/50 dark:bg-purple-500/10 dark:border-purple-500/20 text-purple-600 dark:text-purple-400',
+            accent: 'bg-purple-500/5 dark:bg-purple-500/[0.03]'
+        }
+    }[option.id as 'email' | 'chat' | 'phone'] || {
+        hoverBorder: 'hover:border-blue-300/80 dark:hover:border-blue-800/60',
+        bg: 'bg-blue-50/80 border border-blue-100/50 dark:bg-blue-500/10 dark:border-blue-500/20 text-blue-600 dark:text-blue-400',
+        accent: 'bg-blue-500/5 dark:bg-blue-500/[0.03]'
+    };
+
     return (
         <motion.button
             layout
@@ -114,90 +165,47 @@ const SupportOptionCard: React.FC<{
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ delay: index * 0.06, type: 'spring', damping: 25, stiffness: 300 }}
-            whileTap={{ scale: 0.98 }}
             onClick={onClick}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            style={{
-                width: '100%',
-                padding: '14px 16px',
-                borderRadius: '12px',
-                border: `1px solid ${isHovered ? `${option.color}40` : isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'}`,
-                background: isHovered 
-                    ? isDarkMode ? `${option.color}10` : `${option.color}05`
-                    : isDarkMode ? 'rgba(255,255,255,0.02)' : '#ffffff',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                textAlign: 'left',
-                boxShadow: isHovered 
-                    ? `0 4px 16px ${option.color}15` 
-                    : isDarkMode ? '0 1px 4px rgba(0,0,0,0.15)' : '0 1px 4px rgba(0,0,0,0.03)',
-                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
-            }}
+            className={`relative overflow-hidden w-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-5 group transition-all duration-300 hover:shadow-md text-center sm:text-left ${colors.hoverBorder}`}
         >
+            {/* SaaS Background Accents */}
+            <div className={`absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 ${colors.accent} rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150`} aria-hidden="true" />
+            <div className={`absolute bottom-0 left-0 -ml-16 -mb-16 w-24 h-24 ${colors.accent} rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150`} aria-hidden="true" />
+
+            {/* Custom Tinted SVG squircle container */}
             <motion.div
-                animate={{ 
-                    scale: isHovered ? 1.08 : 1,
-                    rotate: isHovered ? [0, -5, 5, 0] : 0,
-                }}
-                transition={{ duration: 0.3 }}
-                style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '10px',
-                    background: isHovered ? option.color : `${option.color}12`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: isHovered ? '#ffffff' : option.color,
-                    flexShrink: 0,
-                    transition: 'all 0.25s ease',
-                }}
+                whileHover={{ scale: 1.05, rotate: -5 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                className={`w-14 h-14 rounded-[20px] flex items-center justify-center flex-shrink-0 shadow-sm relative z-10 transition-all duration-300 ${colors.bg}`}
             >
-                {option.icon}
+                {/* Scale up option's main icon a bit for premium UX */}
+                {React.cloneElement(option.icon as React.ReactElement<any>, { size: 24 })}
             </motion.div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-                <h4 style={{
-                    margin: 0,
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                    transition: 'color 0.2s',
-                }}>
+
+            {/* Title & Description with premium typography */}
+            <div className="flex-1 min-w-0 pr-2">
+                <h3 className="text-[16px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-0.5 leading-snug">
                     {option.title}
-                </h4>
-                <p style={{
-                    margin: '3px 0 0',
-                    fontSize: '11px',
-                    color: isDarkMode ? '#64748b' : '#94a3b8',
-                }}>
+                </h3>
+                <p className="text-[12.5px] text-zinc-500 dark:text-zinc-400 font-normal leading-relaxed m-0">
                     {option.description}
                 </p>
             </div>
-            <motion.div
-                animate={{ x: isHovered ? 4 : 0, opacity: isHovered ? 1 : 0.6 }}
-                transition={{ duration: 0.2 }}
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    color: option.color,
-                }}
-            >
-                <span style={{
-                    fontSize: '10px',
-                    fontWeight: 500,
-                    opacity: isHovered ? 1 : 0,
-                    transform: isHovered ? 'translateX(0)' : 'translateX(-8px)',
-                    transition: 'all 0.2s ease',
-                }}>
-                    {option.id === 'chat' ? 'Start' : 'Contact'}
-                </span>
-                <ArrowIcon />
-            </motion.div>
+
+            {/* Premium status bar mirroring the right side of the Student Tools card */}
+            <div className="flex items-center gap-2.5 bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/60 dark:border-zinc-800/80 shadow-sm rounded-[14px] px-3.5 py-2.5 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-zinc-900">
+                <div className={`p-1.5 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm ${badge.badgeBg}`}>
+                    {badge.icon}
+                </div>
+                <div className="flex flex-col justify-center gap-0.5 min-w-0 text-left">
+                    <p className={`text-[8.5px] font-bold uppercase tracking-widest leading-none ${badge.labelColor}`}>
+                        {badge.label}
+                    </p>
+                    <p className="text-[11.5px] font-extrabold text-zinc-800 dark:text-zinc-200 leading-none">
+                        {badge.value}
+                    </p>
+                </div>
+            </div>
         </motion.button>
     );
 };
@@ -209,6 +217,58 @@ const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClo
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+
+    // Auto-minimizing scroll state
+    const [isMinimized, setIsMinimized] = useState(false);
+    const lastScrollY = useRef(0);
+    const scrollDirection = useRef<'up' | 'down' | null>(null);
+    const anchorScrollY = useRef(0);
+
+    const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+        const currentScrollY = e.currentTarget.scrollTop;
+        const scrollHeight = e.currentTarget.scrollHeight;
+        const clientHeight = e.currentTarget.clientHeight;
+        
+        // Handle iOS rubber banding / top of scroll
+        if (currentScrollY <= 10) {
+            setIsMinimized(false);
+            lastScrollY.current = currentScrollY;
+            scrollDirection.current = null;
+            anchorScrollY.current = currentScrollY;
+            return;
+        }
+
+        // Determine current scrolling direction
+        const delta = currentScrollY - lastScrollY.current;
+        const isNearBottom = scrollHeight - currentScrollY - clientHeight < 50;
+        
+        if (delta > 0) {
+            // Scrolling down
+            if (scrollDirection.current !== 'down') {
+                scrollDirection.current = 'down';
+                anchorScrollY.current = lastScrollY.current;
+            }
+            
+            // If we have scrolled down by more than 30px from the anchor, minimize
+            if (currentScrollY - anchorScrollY.current > 30) {
+                setIsMinimized(true);
+            }
+        } else if (delta < 0) {
+            // Scrolling up
+            if (scrollDirection.current !== 'up') {
+                scrollDirection.current = 'up';
+                anchorScrollY.current = lastScrollY.current;
+            }
+            
+            // If we have scrolled up by more than 30px from the anchor, expand
+            // Protect against bottom bounce rubber-banding expanding the header
+            if (!isNearBottom && anchorScrollY.current - currentScrollY > 30) {
+                setIsMinimized(false);
+            }
+        }
+
+        lastScrollY.current = currentScrollY;
+    }, []);
 
     useEffect(() => {
         const checkDarkMode = () => setIsDarkMode(document.body.classList.contains('dark-mode'));
@@ -222,6 +282,7 @@ const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClo
             setSubject('');
             setMessage('');
             setIsSubmitted(false);
+            setIsMinimized(false);
         }
     }, [isOpen]);
 
@@ -317,75 +378,86 @@ const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClo
                     >
 
                         {/* Header */}
-                        <div style={{
-                            padding: '20px 24px 16px',
-                            borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
-                            background: isDarkMode ? '#1e293b' : '#ffffff',
-                        }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <motion.div
-                                        initial={{ scale: 0, rotate: -180 }}
-                                        animate={{ scale: 1, rotate: 0 }}
-                                        transition={{ type: 'spring', delay: 0.1 }}
-                                        style={{
-                                            width: '42px',
-                                            height: '42px',
-                                            borderRadius: '12px',
-                                            background: BLUE,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: '#ffffff',
-                                            boxShadow: `0 4px 12px ${BLUE}40`,
-                                        }}
-                                    >
-                                        <ChatIcon />
-                                    </motion.div>
-                                    <div>
-                                        <h2 style={{
-                                            margin: 0,
-                                            fontSize: '18px',
-                                            fontWeight: 700,
-                                            color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                                        }}>
-                                            Contact Support
-                                        </h2>
-                                        <p style={{
-                                            margin: '2px 0 0',
-                                            fontSize: '12px',
-                                            color: isDarkMode ? '#64748b' : '#94a3b8',
-                                        }}>
-                                            We're here to help you
-                                        </p>
-                                    </div>
-                                </div>
-                                <motion.button
-                                    onClick={onClose}
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    style={{
-                                        width: '36px',
-                                        height: '36px',
-                                        borderRadius: '10px',
-                                        border: 'none',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        color: isDarkMode ? '#94a3b8' : '#64748b',
+                        <motion.div 
+                            animate={{
+                                padding: isMinimized ? '12px 16px' : '24px 24px 8px 24px'
+                            }}
+                            className="relative border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-t-[20px]"
+                        >
+                            <motion.div 
+                                animate={{ marginBottom: isMinimized ? '0px' : '8px' }}
+                                className="flex items-start gap-3 sm:gap-4"
+                            >
+                                {/* Student Tools Style Header Card */}
+                                <motion.div 
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ 
+                                        opacity: 1, 
+                                        y: 0,
+                                        padding: isMinimized ? '12px 16px' : '24px',
+                                        gap: isMinimized ? '16px' : '24px'
                                     }}
+                                    transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
+                                    className="flex-1 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[20px] sm:rounded-[24px] flex items-center group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 text-left"
                                 >
-                                    <CloseIcon />
-                                </motion.button>
-                            </div>
-                        </div>
+                                    {/* SaaS Background Accents */}
+                                    <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                    <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+
+                                    <motion.div
+                                        animate={{
+                                            width: isMinimized ? 40 : 64,
+                                            height: isMinimized ? 40 : 64,
+                                            borderRadius: isMinimized ? 12 : 20
+                                        }}
+                                        whileHover={{ scale: 1.05, rotate: -5 }}
+                                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                        className="bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600 dark:text-blue-400 relative z-10"
+                                    >
+                                        <div className="hidden sm:flex">
+                                            <ChatIcon size={isMinimized ? 20 : 32} />
+                                        </div>
+                                        <div className="flex sm:hidden">
+                                            <ChatIcon size={isMinimized ? 20 : 24} />
+                                        </div>
+                                    </motion.div>
+                                    
+                                    <div className="relative z-10 flex-1 min-w-0 pr-2 sm:pr-4">
+                                        <motion.h2 
+                                            animate={{ fontSize: isMinimized ? '16px' : '26px' }}
+                                            className="font-bold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-0.5 sm:mb-1 truncate"
+                                        >
+                                            Contact Support
+                                        </motion.h2>
+                                        <motion.p 
+                                            animate={{ fontSize: isMinimized ? '12px' : '14.5px' }}
+                                            className="text-zinc-600 dark:text-zinc-400 leading-relaxed m-0 truncate"
+                                        >
+                                            We're here to help you
+                                        </motion.p>
+                                    </div>
+                                    <div className="relative z-20 self-start">
+                                        <motion.button
+                                            onClick={onClose}
+                                            whileHover={{ scale: 1.1 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            className="flex-shrink-0 flex items-center justify-center rounded-lg sm:rounded-xl border border-zinc-200/80 bg-white/80 backdrop-blur-md p-2 text-zinc-500 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700/80 dark:bg-zinc-800/80 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                                            aria-label="Close modal"
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
+                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                            </svg>
+                                        </motion.button>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        </motion.div>
 
 
                         {/* Content */}
-                        <motion.div 
-                            layout
+                        <div 
+                            onScroll={handleScroll}
                             style={{
                                 flex: 1,
                                 overflowY: 'auto',
@@ -472,29 +544,64 @@ const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClo
                                                 animate={{ opacity: 1, y: 0 }}
                                                 style={{ marginBottom: '20px' }}
                                             >
-                                                <div style={{ 
-                                                    display: 'flex', 
-                                                    alignItems: 'center', 
-                                                    gap: '8px',
-                                                    marginBottom: '14px',
-                                                }}>
-                                                    <div style={{
-                                                        width: '4px',
-                                                        height: '16px',
-                                                        borderRadius: '2px',
-                                                        background: `linear-gradient(180deg, ${BLUE} 0%, #60a5fa 100%)`,
-                                                    }} />
-                                                    <h4 style={{
-                                                        margin: 0,
-                                                        fontSize: '11px',
-                                                        fontWeight: 600,
-                                                        color: isDarkMode ? '#94a3b8' : '#64748b',
-                                                        textTransform: 'uppercase',
-                                                        letterSpacing: '0.08em',
-                                                    }}>
-                                                        Quick Contact
-                                                    </h4>
-                                                </div>
+                                                <div style={{
+                                                     display: 'flex',
+                                                     alignItems: 'center',
+                                                     justifyContent: 'space-between',
+                                                     marginBottom: '16px',
+                                                     marginTop: '12px',
+                                                     width: '100%',
+                                                     padding: '0 4px',
+                                                 }}>
+                                                     <div style={{ flex: 1, minWidth: 0 }}>
+                                                         {/* Section Title */}
+                                                         <h3 style={{
+                                                             margin: '0 0 3px',
+                                                             fontSize: '17px',
+                                                             fontWeight: 800,
+                                                             color: isDarkMode ? '#f8fafc' : '#0f172a',
+                                                             letterSpacing: '-0.02em',
+                                                             display: 'flex',
+                                                             alignItems: 'center',
+                                                             gap: '8px'
+                                                         }}>
+                                                             {/* Small squircle accent block */}
+                                                             <div style={{
+                                                                 width: '6px',
+                                                                 height: '16px',
+                                                                 borderRadius: '3px',
+                                                                 backgroundColor: '#3b82f6',
+                                                             }} />
+                                                             Support Channels
+                                                         </h3>
+                                                         {/* Description */}
+                                                         <p style={{
+                                                             margin: 0,
+                                                             fontSize: '12.5px',
+                                                             color: isDarkMode ? '#94a3b8' : '#64748b',
+                                                             fontWeight: 400,
+                                                             paddingLeft: '14px', // aligned with the title text
+                                                         }}>
+                                                             Get in touch with our team via these channels
+                                                         </p>
+                                                     </div>
+
+                                                     <div style={{
+                                                         display: 'flex',
+                                                         alignItems: 'center',
+                                                         gap: '6px',
+                                                         padding: '5px 12px',
+                                                         borderRadius: '10px',
+                                                         background: isDarkMode ? `rgba(16, 185, 129, 0.15)` : `rgba(16, 185, 129, 0.1)`,
+                                                         border: `1px solid rgba(16, 185, 129, 0.2)`,
+                                                         color: '#10b981',
+                                                         fontSize: '11px',
+                                                         fontWeight: 600,
+                                                         flexShrink: 0,
+                                                     }}>
+                                                         Online Now
+                                                     </div>
+                                                 </div>
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                                     {supportOptions.map((option, index) => (
                                                         <SupportOptionCard
@@ -513,226 +620,136 @@ const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClo
                                                 initial={{ opacity: 0, scaleX: 0 }}
                                                 animate={{ opacity: 1, scaleX: 1 }}
                                                 transition={{ delay: 0.2, duration: 0.4 }}
-                                                style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '16px',
-                                                    margin: '24px 0',
-                                                }}
+                                                className="flex items-center gap-4 my-6 select-none"
                                             >
-                                                <div style={{ 
-                                                    flex: 1, 
-                                                    height: '1px', 
-                                                    background: `linear-gradient(90deg, transparent 0%, ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'} 50%, transparent 100%)`,
-                                                }} />
-                                                <span style={{ 
-                                                    fontSize: '10px', 
-                                                    color: isDarkMode ? '#64748b' : '#94a3b8', 
-                                                    fontWeight: 500,
-                                                    textTransform: 'uppercase',
-                                                    letterSpacing: '0.05em',
-                                                }}>
+                                                <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-zinc-200 to-transparent dark:via-zinc-800" />
+                                                <span className="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider whitespace-nowrap">
                                                     or send a message
                                                 </span>
-                                                <div style={{ 
-                                                    flex: 1, 
-                                                    height: '1px', 
-                                                    background: `linear-gradient(90deg, transparent 0%, ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'} 50%, transparent 100%)`,
-                                                }} />
+                                                <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-zinc-200 to-transparent dark:via-zinc-800" />
                                             </motion.div>
 
 
-                                            {/* Contact Form */}
-                                            <form onSubmit={handleSubmit}>
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ delay: 0.25 }}
-                                                    style={{ marginBottom: '12px' }}
-                                                >
-                                                    <label style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '6px',
-                                                        fontSize: '11px',
-                                                        fontWeight: 600,
-                                                        color: isDarkMode ? '#94a3b8' : '#64748b',
-                                                        marginBottom: '8px',
-                                                        textTransform: 'uppercase',
-                                                        letterSpacing: '0.05em',
-                                                    }}>
-                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                                            <polyline points="22,6 12,13 2,6" />
-                                                        </svg>
-                                                        Subject
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={subject}
-                                                        onChange={(e) => setSubject(e.target.value)}
-                                                        placeholder="What do you need help with?"
-                                                        style={{
-                                                            width: '100%',
-                                                            padding: '11px 14px',
-                                                            borderRadius: '10px',
-                                                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
-                                                            background: isDarkMode ? 'rgba(255,255,255,0.02)' : '#ffffff',
-                                                            color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                                                            fontSize: '13px',
-                                                            outline: 'none',
-                                                            transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                                                        }}
-                                                        onFocus={(e) => {
-                                                            e.target.style.borderColor = BLUE;
-                                                            e.target.style.boxShadow = `0 0 0 3px ${BLUE}15`;
-                                                            e.target.style.background = isDarkMode ? 'rgba(255,255,255,0.04)' : '#ffffff';
-                                                        }}
-                                                        onBlur={(e) => {
-                                                            e.target.style.borderColor = isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
-                                                            e.target.style.boxShadow = 'none';
-                                                            e.target.style.background = isDarkMode ? 'rgba(255,255,255,0.02)' : '#ffffff';
-                                                        }}
-                                                    />
-                                                </motion.div>
+                                             {/* Contact Form Container Card (Matches Student Tools Style) */}
+                                             <motion.div
+                                                 initial={{ opacity: 0, y: 15 }}
+                                                 animate={{ opacity: 1, y: 0 }}
+                                                 transition={{ delay: 0.2, type: 'spring', damping: 25, stiffness: 300 }}
+                                                 className="relative overflow-hidden w-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 text-left"
+                                             >
+                                                 {/* SaaS Background Accents */}
+                                                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                                 <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
 
+                                                 <div className="p-5 sm:p-6 lg:p-7 flex flex-col gap-6 sm:gap-8 relative z-10">
+                                                     {/* Header matching Student Tools precisely */}
+                                                     <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6 w-full text-center sm:text-left">
+                                                         <motion.div
+                                                             whileHover={{ scale: 1.05, rotate: -5 }}
+                                                             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                                             className="w-16 h-16 rounded-[20px] bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
+                                                         >
+                                                             <Send className="w-8 h-8 text-blue-600 dark:text-blue-400" strokeWidth={2} />
+                                                         </motion.div>
+                                                         <div>
+                                                             <div className="flex flex-col sm:flex-row items-center gap-3 mb-1">
+                                                                 <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+                                                                     Send a Message
+                                                                 </h1>
+                                                             </div>
+                                                             <p className="text-[14px] sm:text-base text-zinc-600 dark:text-zinc-400 max-w-lg leading-relaxed">
+                                                                 Describe your issue and we'll reply directly via email
+                                                             </p>
+                                                         </div>
+                                                     </div>
 
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ delay: 0.3 }}
-                                                    style={{ marginBottom: '16px' }}
-                                                >
-                                                    <label style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '6px',
-                                                        fontSize: '11px',
-                                                        fontWeight: 600,
-                                                        color: isDarkMode ? '#94a3b8' : '#64748b',
-                                                        marginBottom: '8px',
-                                                        textTransform: 'uppercase',
-                                                        letterSpacing: '0.05em',
-                                                    }}>
-                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                                        </svg>
-                                                        Message
-                                                    </label>
-                                                    <textarea
-                                                        value={message}
-                                                        onChange={(e) => setMessage(e.target.value)}
-                                                        placeholder="Describe your issue or question..."
-                                                        rows={3}
-                                                        style={{
-                                                            width: '100%',
-                                                            padding: '11px 14px',
-                                                            borderRadius: '10px',
-                                                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
-                                                            background: isDarkMode ? 'rgba(255,255,255,0.02)' : '#ffffff',
-                                                            color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                                                            fontSize: '13px',
-                                                            outline: 'none',
-                                                            resize: 'none',
-                                                            minHeight: '80px',
-                                                            transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                                                            fontFamily: 'inherit',
-                                                        }}
-                                                        onFocus={(e) => {
-                                                            e.target.style.borderColor = BLUE;
-                                                            e.target.style.boxShadow = `0 0 0 3px ${BLUE}15`;
-                                                            e.target.style.background = isDarkMode ? 'rgba(255,255,255,0.04)' : '#ffffff';
-                                                        }}
-                                                        onBlur={(e) => {
-                                                            e.target.style.borderColor = isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
-                                                            e.target.style.boxShadow = 'none';
-                                                            e.target.style.background = isDarkMode ? 'rgba(255,255,255,0.02)' : '#ffffff';
-                                                        }}
-                                                    />
-                                                </motion.div>
+                                                     {/* Subtle divider before form */}
+                                                     <div className="w-full h-px bg-zinc-100 dark:bg-zinc-800"></div>
 
-                                                {/* Character count */}
-                                                <motion.div
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    transition={{ delay: 0.35 }}
-                                                    style={{
-                                                        display: 'flex',
-                                                        justifyContent: 'flex-end',
-                                                        marginBottom: '16px',
-                                                    }}
-                                                >
-                                                    <span style={{
-                                                        fontSize: '10px',
-                                                        color: message.length > 500 
-                                                            ? '#ef4444' 
-                                                            : isDarkMode ? '#475569' : '#cbd5e1',
-                                                        fontWeight: 500,
-                                                    }}>
-                                                        {message.length}/500
-                                                    </span>
-                                                </motion.div>
+                                                     {/* Form section */}
+                                                     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                                                         <div>
+                                                             <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider uppercase flex items-center gap-1.5 mb-2 select-none">
+                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                                                     <polyline points="22,6 12,13 2,6" />
+                                                                 </svg>
+                                                                 Subject
+                                                             </label>
+                                                             <input
+                                                                 type="text"
+                                                                 value={subject}
+                                                                 onChange={(e) => setSubject(e.target.value)}
+                                                                 placeholder="What do you need help with?"
+                                                                 className="w-full px-4 py-3 rounded-[14px] border border-zinc-200/60 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-950/40 text-[13.5px] text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition-all duration-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:bg-white dark:focus:bg-zinc-900"
+                                                             />
+                                                         </div>
 
-                                                <motion.button
-                                                    type="submit"
-                                                    disabled={isSubmitting || !subject.trim() || !message.trim()}
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ delay: 0.4 }}
-                                                    whileHover={subject.trim() && message.trim() ? { scale: 1.01, y: -1 } : {}}
-                                                    whileTap={subject.trim() && message.trim() ? { scale: 0.99 } : {}}
-                                                    style={{
-                                                        width: '100%',
-                                                        padding: '12px 16px',
-                                                        borderRadius: '10px',
-                                                        border: 'none',
-                                                        background: (!subject.trim() || !message.trim()) 
-                                                            ? isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'
-                                                            : `linear-gradient(135deg, ${BLUE} 0%, #2563eb 100%)`,
-                                                        color: (!subject.trim() || !message.trim())
-                                                            ? isDarkMode ? '#475569' : '#94a3b8'
-                                                            : '#ffffff',
-                                                        fontSize: '13px',
-                                                        fontWeight: 600,
-                                                        cursor: (!subject.trim() || !message.trim()) ? 'not-allowed' : 'pointer',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        gap: '8px',
-                                                        boxShadow: (!subject.trim() || !message.trim()) 
-                                                            ? 'none' 
-                                                            : `0 4px 14px ${BLUE}35`,
-                                                        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                                                    }}
-                                                >
-                                                    {isSubmitting ? (
-                                                        <>
-                                                            <motion.div
-                                                                animate={{ rotate: 360 }}
-                                                                transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-                                                                style={{
-                                                                    width: '16px',
-                                                                    height: '16px',
-                                                                    border: '2px solid rgba(255,255,255,0.3)',
-                                                                    borderTopColor: '#ffffff',
-                                                                    borderRadius: '50%',
-                                                                }}
-                                                            />
-                                                            <span>Sending...</span>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <SendIcon />
-                                                            Send Message
-                                                        </>
-                                                    )}
-                                                </motion.button>
-                                            </form>
+                                                         <div>
+                                                             <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider uppercase flex items-center gap-1.5 mb-2 select-none">
+                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                                                 </svg>
+                                                                 Message
+                                                             </label>
+                                                             <textarea
+                                                                 value={message}
+                                                                 onChange={(e) => setMessage(e.target.value)}
+                                                                 placeholder="Describe your issue or question..."
+                                                                 rows={3}
+                                                                 className="w-full px-4 py-3 rounded-[14px] border border-zinc-200/60 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-950/40 text-[13.5px] text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-600 outline-none resize-none min-h-[90px] transition-all duration-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:bg-white dark:focus:bg-zinc-900 font-sans"
+                                                             />
+                                                         </div>
+
+                                                         {/* Character count & Submit Button Row */}
+                                                         <div className="flex items-center justify-between mt-1">
+                                                             <span className={`text-[11.5px] font-semibold tracking-tight transition-colors duration-200 ${
+                                                                 message.length > 500 
+                                                                     ? 'text-red-500' 
+                                                                     : 'text-zinc-400 dark:text-zinc-500'
+                                                             }`}>
+                                                                 {message.length} <span className="text-zinc-300 dark:text-zinc-700">/</span> 500 chars
+                                                             </span>
+                                                             
+                                                             <motion.button
+                                                                  type="submit"
+                                                                  disabled={isSubmitting || !subject.trim() || !message.trim()}
+                                                                  whileHover={subject.trim() && message.trim() ? { scale: 1.02, y: -1 } : {}}
+                                                             whileTap={subject.trim() && message.trim() ? { scale: 0.98 } : {}}
+                                                             className={`px-6 py-2.5 rounded-[14px] text-[13.5px] font-extrabold flex items-center gap-2 border shadow-sm transition-all duration-300 ${
+                                                                 (!subject.trim() || !message.trim())
+                                                                     ? 'bg-zinc-50 dark:bg-zinc-800/40 border-zinc-200/50 dark:border-zinc-850/50 text-zinc-400 dark:text-zinc-600 cursor-not-allowed shadow-none'
+                                                                     : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-blue-500/10 text-white shadow-[0_4px_14px_rgba(59,130,246,0.35)] cursor-pointer'
+                                                             }`}
+                                                         >
+                                                             {isSubmitting ? (
+                                                                 <>
+                                                                     <motion.div
+                                                                         animate={{ rotate: 360 }}
+                                                                         transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                                                                         className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full flex-shrink-0"
+                                                                     />
+                                                                     <span>Sending...</span>
+                                                                 </>
+                                                             ) : (
+                                                                 <>
+                                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                         <line x1="22" y1="2" x2="11" y2="13" />
+                                                                         <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                                                                     </svg>
+                                                                     <span>Send Message</span>
+                                                                 </>
+                                                             )}
+                                                         </motion.button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            </motion.div>
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
                             </LayoutGroup>
-                        </motion.div>
+                        </div>
                     </motion.div>
                 </div>
             )}

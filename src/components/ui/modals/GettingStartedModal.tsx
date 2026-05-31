@@ -259,26 +259,12 @@ const GettingStartedModal: React.FC<GettingStartedModalProps> = ({ isOpen, onClo
                         <motion.button
                             onClick={onClose}
                             whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            style={{
-                                position: 'absolute',
-                                top: '16px',
-                                right: '16px',
-                                width: '32px',
-                                height: '32px',
-                                borderRadius: '8px',
-                                border: 'none',
-                                background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: isDarkMode ? '#94a3b8' : '#64748b',
-                                zIndex: 10,
-                            }}
+                            whileTap={{ scale: 0.95 }}
+                            className="absolute right-5 top-5 z-20 flex items-center justify-center rounded-xl border border-zinc-200 bg-white p-2 text-zinc-500 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
                         >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M18 6L6 18M6 6l12 12" />
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>
                         </motion.button>
 
@@ -339,46 +325,33 @@ const GettingStartedModal: React.FC<GettingStartedModalProps> = ({ isOpen, onClo
                                         />
                                     </motion.div>
 
-                                    {/* Icon + Title row */}
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '12px' }}>
-                                        <motion.div
-                                            initial={{ scale: 0, rotate: -180 }}
-                                            animate={{ scale: 1, rotate: 0 }}
-                                            transition={{ type: 'spring', delay: 0.1 }}
-                                            style={{
-                                                width: '44px',
-                                                height: '44px',
-                                                borderRadius: '12px',
-                                                background: isDarkMode ? `${BLUE}15` : `${BLUE}10`,
-                                                border: `1px solid ${isDarkMode ? `${BLUE}30` : `${BLUE}20`}`,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                color: BLUE,
-                                                flexShrink: 0,
-                                            }}
-                                        >
-                                            {step.icon}
-                                        </motion.div>
-                                        <h2 style={{
-                                            margin: 0,
-                                            fontSize: '22px',
-                                            fontWeight: 700,
-                                            color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                                        }}>
-                                            {step.title}
-                                        </h2>
-                                    </div>
+                                    {/* Student Tools Style Header Card */}
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
+                                        className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 mb-6 flex items-center gap-6 group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 text-left"
+                                    >
+                                        {/* SaaS Background Accents */}
+                                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                        <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
 
-                                    {/* Description */}
-                                    <p style={{
-                                        margin: '0 0 16px',
-                                        fontSize: '14px',
-                                        lineHeight: 1.6,
-                                        color: isDarkMode ? '#94a3b8' : '#64748b',
-                                    }}>
-                                        {step.description}
-                                    </p>
+                                        <motion.div
+                                            whileHover={{ scale: 1.05, rotate: -5 }}
+                                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                            className="w-16 h-16 rounded-[20px] bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600 dark:text-blue-400 relative z-10"
+                                        >
+                                            {React.cloneElement(step.icon as React.ReactElement, { width: 32, height: 32, strokeWidth: 2 })}
+                                        </motion.div>
+                                        <div className="relative z-10">
+                                            <h2 className="text-[26px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-1">
+                                                {step.title}
+                                            </h2>
+                                            <p className="text-[14.5px] text-zinc-600 dark:text-zinc-400 leading-relaxed m-0">
+                                                {step.description}
+                                            </p>
+                                        </div>
+                                    </motion.div>
 
                                     {/* Tip with animated lightbulb */}
                                     <motion.div

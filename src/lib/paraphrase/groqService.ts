@@ -90,7 +90,7 @@ async function callGroqAPI(
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                model: 'llama-3.1-8b-instant',
+                model: 'llama-3.3-70b-versatile',
                 messages: [
                     {
                         role: 'system',
@@ -262,4 +262,134 @@ export function resetFailedAccounts(): void {
     failedAccounts.clear();
     currentAccountIndex = 0;
     saveCurrentAccount();
+}
+
+async function callGroqDetectorAPI(
+    apiKey: string,
+    text: string
+): Promise<{ success: boolean; probability: number; rateLimited?: boolean; error?: string }> {
+    try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: [
+                    {
+                        role: 'system',
+                        content: `You are an AI detection system. Analyze the following text for AI watermarks, perplexity, and burstiness. 
+Reply ONLY with an integer from 0 to 100 representing the probability that it was written by AI.
+Do NOT include a percent sign, text, explanation, or any other characters. JUST the number.`,
+                    },
+                    {
+                        role: 'user',
+                        content: text,
+                    },
+                ],
+                temperature: 0.1,
+                max_tokens: 10,
+            }),
+        });
+
+        if (response.status === 429) {
+            return { success: false, probability: 0, rateLimited: true, error: 'Rate limit exceeded' };
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const isRateLimit = errorData.error?.message?.toLowerCase().includes('rate') ||
+                               errorData.error?.message?.toLowerCase().includes('quota');
+            return {
+                success: false,
+                probability: 0,
+                rateLimited: isRateLimit,
+                error: errorData.error?.message || `API error: ${response.status}`,
+            };
+        }
+
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content?.trim();
+
+        if (!content) {
+            return { success: false, probability: 0, error: 'No response from API' };
+        }
+
+        const parsedNumber = parseInt(content.replace(/[^0-9]/g, ''), 10);
+        if (isNaN(parsedNumber)) {
+            return { success: false, probability: 35, error: 'Failed to parse probability' }; // Fallback
+        }
+
+        return { success: true, probability: Math.max(0, Math.min(100, parsedNumber)) };
+    } catch (error) {
+        return {
+            success: false,
+            probability: 0,
+            error: error instanceof Error ? error.message : 'Network error',
+        };
+    }
+}
+
+export async function detectAIProbabilityWithGroq(
+    text: string
+): Promise<{ success: boolean; probability: number; accountUsed?: number; error?: string }> {
+    const accounts = getGroqAccounts();
+    
+    if (accounts.length === 0) {
+        return {
+            success: false,
+            probability: 0,
+            error: 'No Groq API keys configured.',
+        };
+    }
+
+    if (failedAccounts.size >= accounts.length) {
+        failedAccounts.clear();
+        currentAccountIndex = 0;
+    }
+
+    let attempts = 0;
+    const maxAttempts = accounts.length;
+
+    while (attempts < maxAttempts) {
+        while (failedAccounts.has(currentAccountIndex) && attempts < maxAttempts) {
+            currentAccountIndex = (currentAccountIndex + 1) % accounts.length;
+            attempts++;
+        }
+
+        if (attempts >= maxAttempts) break;
+
+        const account = accounts[currentAccountIndex];
+        console.log(`[Groq Detector] Using account ${account.index}`);
+
+        const result = await callGroqDetectorAPI(account.apiKey, text);
+
+        if (result.success) {
+            saveCurrentAccount();
+            return {
+                success: true,
+                probability: result.probability,
+                accountUsed: account.index,
+            };
+        }
+
+        if (result.rateLimited) {
+            console.log(`[Groq Detector] Account ${account.index} rate limited, switching...`);
+            failedAccounts.add(currentAccountIndex);
+            currentAccountIndex = (currentAccountIndex + 1) % accounts.length;
+            saveCurrentAccount();
+            attempts++;
+            continue;
+        }
+
+        return { success: false, probability: 0, error: result.error };
+    }
+
+    return {
+        success: false,
+        probability: 0,
+        error: 'All Groq accounts have reached their rate limits.',
+    };
 }

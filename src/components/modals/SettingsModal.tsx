@@ -16,87 +16,50 @@ interface SettingItemProps {
     isDark: boolean;
 }
 
-// Dark mode color palette
-const getColors = (isDark: boolean) => ({
-    // Backgrounds
-    modalBg: isDark ? '#1e293b' : '#fff',
-    overlayBg: isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(15, 23, 42, 0.4)',
-    itemHoverBg: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-    iconBgEnabled: isDark ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.1)',
-    iconBgDisabled: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)',
-    closeHoverBg: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0,0,0,0.06)',
-    
-    // Text colors
-    titleText: isDark ? '#f1f5f9' : '#0f172a',
-    itemTitle: isDark ? '#e2e8f0' : '#1e293b',
-    descriptionText: isDark ? '#94a3b8' : '#64748b',
-    footerText: isDark ? '#64748b' : '#94a3b8',
-    accentText: isDark ? '#60a5fa' : '#3b82f6',
-    iconEnabled: isDark ? '#60a5fa' : '#3b82f6',
-    iconDisabled: isDark ? '#64748b' : '#94a3b8',
-    closeIcon: isDark ? '#64748b' : '#94a3b8',
-    
-    // Borders
-    footerBorder: isDark ? 'rgba(71, 85, 105, 0.5)' : '#f1f5f9',
-    
-    // Shadows
-    boxShadow: isDark 
-        ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' 
-        : '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-});
 
 const SettingItem: React.FC<SettingItemProps> = ({ icon, title, description, enabled, onToggle, delay = 0, isDark }) => {
-    const colors = getColors(isDark);
-    
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay, duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             onClick={onToggle}
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '16px',
-                padding: '16px 20px',
-                borderRadius: '12px',
-                cursor: 'pointer',
-                transition: 'background-color 0.15s ease',
-            }}
-            whileHover={{ backgroundColor: colors.itemHoverBg }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            className={`flex items-center gap-3.5 p-3.5 rounded-[14px] cursor-pointer transition-colors shadow-sm border ${
+                isDark 
+                    ? 'bg-zinc-900/50 border-zinc-800/80 hover:border-zinc-700/80' 
+                    : 'bg-white border-zinc-200/80 hover:border-zinc-300'
+            }`}
         >
             <motion.div
-                style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '10px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: enabled ? colors.iconBgEnabled : colors.iconBgDisabled,
-                    color: enabled ? colors.iconEnabled : colors.iconDisabled,
-                    flexShrink: 0,
-                }}
-                animate={{ 
-                    backgroundColor: enabled ? colors.iconBgEnabled : colors.iconBgDisabled,
-                    color: enabled ? colors.iconEnabled : colors.iconDisabled,
-                }}
-                transition={{ duration: 0.2 }}
+                whileHover={{ scale: 1.05, rotate: -5 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                className={`p-2 rounded-xl flex items-center justify-center flex-shrink-0 border ${
+                    enabled 
+                        ? (isDark ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-100 text-blue-600')
+                        : (isDark ? 'bg-zinc-800 border-zinc-700/50 text-zinc-500' : 'bg-slate-50 border-slate-200 text-slate-400')
+                }`}
             >
-                {icon}
+                {React.cloneElement(icon as React.ReactElement, { className: 'w-[18px] h-[18px]', strokeWidth: "2.5" })}
             </motion.div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: '14px', fontWeight: 600, color: colors.itemTitle, marginBottom: '2px' }}>
+            
+            <div className="flex-1 min-w-0 pr-2">
+                <div className={`text-[13px] font-extrabold tracking-tight leading-none mb-1 ${
+                    isDark ? 'text-zinc-100' : 'text-zinc-900'
+                }`}>
                     {title}
                 </div>
-                <div style={{ fontSize: '12px', color: colors.descriptionText, lineHeight: 1.4 }}>
+                <div className={`text-[11.5px] font-medium leading-[1.3] ${
+                    isDark ? 'text-zinc-400' : 'text-zinc-500'
+                }`}>
                     {description}
                 </div>
             </div>
 
             {/* Toggle Switch */}
             <label 
-                className="settings-switch" 
+                className="settings-switch scale-[0.85] origin-right" 
                 onClick={(e) => e.stopPropagation()}
                 style={{ flexShrink: 0 }}
             >
@@ -171,7 +134,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         }
     }, []);
 
-    const colors = getColors(darkModeEnabled);
+
 
     const playSound = () => {
         if (!soundEnabled) return;
@@ -225,7 +188,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     style={{
                         position: 'fixed',
                         inset: 0,
-                        backgroundColor: colors.overlayBg,
+                        backgroundColor: darkModeEnabled ? 'rgba(0, 0, 0, 0.6)' : 'rgba(15, 23, 42, 0.4)',
                         backdropFilter: 'blur(4px)',
                         display: 'flex',
                         alignItems: 'center',
@@ -240,67 +203,85 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
                         onClick={(e) => e.stopPropagation()}
-                        style={{
-                            width: '100%',
-                            maxWidth: '420px',
-                            backgroundColor: colors.modalBg,
-                            borderRadius: '20px',
-                            boxShadow: colors.boxShadow,
-                            overflow: 'hidden',
-                        }}
+                        className={`w-full max-w-[420px] rounded-[24px] overflow-hidden relative shadow-2xl border ${
+                            darkModeEnabled ? 'bg-zinc-950 border-zinc-800/80 shadow-zinc-900/50' : 'bg-white border-zinc-200/80'
+                        }`}
                     >
+                        {/* SaaS Background Accents */}
+                        <div className="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+                        
                         {/* Header */}
-                        <div style={{ padding: '24px 24px 0', position: 'relative' }}>
+                        <div className="p-6 pb-4 relative z-10">
                             <motion.button
                                 onClick={onClose}
-                                whileHover={{ scale: 1.1, backgroundColor: colors.closeHoverBg }}
+                                initial={{ opacity: 0, scale: 0.5 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.5 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
+                                whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.95 }}
-                                style={{
-                                    position: 'absolute',
-                                    top: '16px',
-                                    right: '16px',
-                                    width: '32px',
-                                    height: '32px',
-                                    borderRadius: '8px',
-                                    border: 'none',
-                                    backgroundColor: 'transparent',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: colors.closeIcon,
-                                }}
+                                className={`absolute right-5 top-5 z-20 flex items-center justify-center rounded-xl border p-2 shadow-sm transition-colors ${
+                                    darkModeEnabled 
+                                        ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700' 
+                                        : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-50'
+                                }`}
+                                aria-label="Close Settings"
                             >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                    <path d="M18 6L6 18M6 6l12 12" />
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
                                 </svg>
                             </motion.button>
+                            
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
+                                className="flex gap-4 pr-8"
                             >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={colors.accentText} strokeWidth="2" strokeLinecap="round">
+                                {/* Bouncy Wrench-style Settings Icon Container */}
+                                <motion.div
+                                    whileHover={{ scale: 1.05, rotate: -5 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                    className={`w-[52px] h-[52px] rounded-[16px] flex items-center justify-center flex-shrink-0 shadow-sm border ${
+                                        darkModeEnabled ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'
+                                    }`}
+                                >
+                                    <svg className={`w-6 h-6 ${darkModeEnabled ? 'text-blue-400' : 'text-blue-600'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                                         <circle cx="12" cy="12" r="3" />
                                         <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
                                     </svg>
-                                    <span style={{ fontSize: '11px', fontWeight: 600, color: colors.accentText, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                        Settings
-                                    </span>
+                                </motion.div>
+
+                                {/* Text Info */}
+                                <div className="flex-1 min-w-0 pt-0.5">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h2 className={`text-[20px] font-extrabold tracking-tight leading-none ${
+                                            darkModeEnabled ? 'text-zinc-100' : 'text-zinc-900'
+                                        }`}>
+                                            Preferences
+                                        </h2>
+                                    </div>
+                                    <p className={`text-[12.5px] font-medium leading-[1.4] ${
+                                        darkModeEnabled ? 'text-zinc-400' : 'text-zinc-500'
+                                    }`}>
+                                        Customize your learning experience
+                                    </p>
                                 </div>
-                                <h2 style={{ fontSize: '22px', fontWeight: 700, color: colors.titleText, margin: 0 }}>
-                                    Preferences
-                                </h2>
-                                <p style={{ fontSize: '13px', color: colors.descriptionText, margin: '6px 0 0', lineHeight: 1.5 }}>
-                                    Customize your learning experience
-                                </p>
                             </motion.div>
                         </div>
 
-
                         {/* Settings List */}
-                        <div style={{ padding: '20px 16px 24px' }}>
+                        <div className="p-4 flex flex-col gap-1 relative z-10">
                             <SettingItem
                                 icon={
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -349,16 +330,38 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.3 }}
-                            style={{
-                                padding: '12px 24px',
-                                borderTop: `1px solid ${colors.footerBorder}`,
-                                display: 'flex',
-                                justifyContent: 'center',
-                            }}
+                            className={`p-4 flex justify-center border-t relative z-10 ${
+                                darkModeEnabled ? 'border-zinc-800/80' : 'border-zinc-200/80'
+                            }`}
                         >
-                            <span style={{ fontSize: '11px', color: colors.footerText }}>
-                                Changes are saved automatically
-                            </span>
+                            <motion.div 
+                                whileHover={{ scale: 1.02 }}
+                                className={`flex w-full items-center justify-center gap-3 px-4 py-3 rounded-[14px] border shadow-sm transition-colors ${
+                                    darkModeEnabled ? 'bg-zinc-900/50 border-zinc-800/80' : 'bg-white border-zinc-200/80'
+                                }`}
+                            >
+                                <div className={`p-1.5 rounded-xl border flex-shrink-0 ${
+                                    darkModeEnabled 
+                                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                                        : 'bg-emerald-50 border-emerald-100 text-emerald-600'
+                                }`}>
+                                    <svg className="w-[16px] h-[16px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M20 6L9 17l-5-5" />
+                                    </svg>
+                                </div>
+                                <div className="flex flex-col justify-center gap-0.5">
+                                    <span className={`text-[9px] font-bold uppercase tracking-widest leading-none ${
+                                        darkModeEnabled ? 'text-zinc-500' : 'text-zinc-400'
+                                    }`}>
+                                        Status
+                                    </span>
+                                    <span className={`text-[12px] font-extrabold leading-none ${
+                                        darkModeEnabled ? 'text-zinc-100' : 'text-zinc-900'
+                                    }`}>
+                                        Saved automatically
+                                    </span>
+                                </div>
+                            </motion.div>
                         </motion.div>
                     </motion.div>
                 </motion.div>

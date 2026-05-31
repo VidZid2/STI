@@ -15,7 +15,7 @@
 import * as React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { BookOpen, FileText, Save } from "lucide-react";
+import { ArrowLeft, BookMarked, BookOpen, Bookmark, CheckCircle2, ClipboardCheck, Globe2, Newspaper, RotateCcw, Save, Search, Sparkles, Trash2, Zap, Type, Layers, FileText } from "lucide-react";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
@@ -94,7 +94,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
     const [generatedCitation, setGeneratedCitation] = useState<string>('');
     const [copied, setCopied] = useState(false);
     const [savedToReference, setSavedToReference] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isPageLoading, setIsPageLoading] = useState(true);
 
     // Auto-fill states
     const [autoFillInput, setAutoFillInput] = useState('');
@@ -115,7 +115,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
 
     const {
         initialData,
-        initialUpdatedAt,
         hasSavedSession,
         lastSavedAt,
         clearSavedSession,
@@ -140,8 +139,8 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
     // Simulate initial page load
     useEffect(() => {
         const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 500);
+            setIsPageLoading(false);
+        }, 400);
         return () => clearTimeout(timer);
     }, []);
 
@@ -528,11 +527,11 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     placeholder=" "
-                    className="peer w-full px-4 py-3.5 text-sm text-zinc-900 dark:text-zinc-50 bg-zinc-50/50 dark:bg-zinc-800/30 border border-zinc-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-900 focus:ring-1 focus:ring-blue-500/20 transition-all placeholder-transparent"
+                    className="peer h-14 w-full rounded-2xl border border-zinc-200 bg-zinc-50/70 px-4 pt-5 pb-2 text-[15px] font-semibold text-zinc-900 outline-none transition-all placeholder-transparent focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-50 dark:focus:bg-zinc-900"
                 />
                 <label
                     htmlFor={id}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-zinc-400 dark:text-zinc-500 pointer-events-none transition-all duration-200 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-[-50%] peer-focus:scale-75 peer-focus:translate-y-[-165%] peer-focus:px-1.5 peer-focus:bg-white dark:peer-focus:bg-zinc-900 peer-focus:text-blue-500 peer-[:not(:placeholder-shown)]:scale-75 peer-[:not(:placeholder-shown)]:translate-y-[-165%] peer-[:not(:placeholder-shown)]:px-1.5 peer-[:not(:placeholder-shown)]:bg-white dark:peer-[:not(:placeholder-shown)]:bg-zinc-900"
+                    className="pointer-events-none absolute left-4 top-1/2 origin-[0] -translate-y-1/2 text-sm font-bold text-zinc-400 transition-all duration-200 peer-focus:top-3 peer-focus:-translate-y-0 peer-focus:text-[11px] peer-focus:uppercase peer-focus:tracking-[0.14em] peer-focus:text-blue-600 peer-[:not(:placeholder-shown)]:top-3 peer-[:not(:placeholder-shown)]:-translate-y-0 peer-[:not(:placeholder-shown)]:text-[11px] peer-[:not(:placeholder-shown)]:uppercase peer-[:not(:placeholder-shown)]:tracking-[0.14em] dark:text-zinc-500 dark:peer-focus:text-blue-400"
                 >
                     {label}
                 </label>
@@ -540,19 +539,82 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
         );
     };
 
-    if (isLoading) {
+    if (isPageLoading) {
         return (
-            <div className="w-full max-w-[1400px] mx-auto h-auto min-h-[calc(100vh-6rem)] flex flex-col lg:flex-row gap-8 animate-pulse">
-                {/* Left Column (70%) */}
-                <div className="flex-1 flex flex-col gap-6">
-                    <div className="h-24 bg-zinc-200 dark:bg-zinc-800 rounded-[24px]"></div>
-                    <div className="flex-1 bg-zinc-200 dark:bg-zinc-800 rounded-[24px] min-h-[500px]"></div>
+            <div className="mx-auto flex h-auto min-h-[calc(100vh-6rem)] w-full max-w-[1500px] flex-col gap-6 p-0 sm:p-0" role="status" aria-busy="true" aria-label="Loading Citation Generator">
+                {/* Top Section */}
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px]">
+                    {/* Header Card */}
+                    <div className="relative overflow-hidden rounded-[28px] border border-zinc-200/80 bg-white p-6 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-8 flex flex-col gap-7 min-h-[250px]">
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                            <div className="skeleton-stagger">
+                                <div className="skeleton-bone w-32 h-6 bg-zinc-200 dark:bg-zinc-800 rounded-full mb-4" />
+                                <div className="skeleton-bone w-3/4 max-w-md h-8 bg-zinc-200 dark:bg-zinc-800 rounded-lg mb-3" />
+                                <div className="skeleton-bone w-full max-w-lg h-12 bg-zinc-100 dark:bg-zinc-800/50 rounded-lg" />
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                <div className="skeleton-bone w-24 h-11 bg-zinc-200 dark:bg-zinc-800 rounded-2xl" />
+                                <div className="skeleton-bone w-24 h-11 bg-zinc-200 dark:bg-zinc-800 rounded-2xl" />
+                            </div>
+                        </div>
+                    </div>
+                    {/* Step Cards */}
+                    <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="flex items-center gap-4 rounded-[22px] border border-zinc-200/80 bg-white p-5 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900">
+                                <div className="skeleton-bone h-12 w-12 shrink-0 rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
+                                <div className="min-w-0 flex flex-col gap-2 w-full skeleton-stagger">
+                                    <div className="skeleton-bone w-16 h-3 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                    <div className="skeleton-bone w-32 h-4 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                {/* Right Column (30%) */}
-                <div className="w-full lg:w-[340px] xl:w-[380px] shrink-0 flex flex-col gap-6">
-                    <div className="h-20 bg-zinc-200 dark:bg-zinc-800 rounded-[24px]"></div>
-                    <div className="h-48 bg-zinc-200 dark:bg-zinc-800 rounded-[24px]"></div>
-                    <div className="h-48 bg-zinc-200 dark:bg-zinc-800 rounded-[24px]"></div>
+
+                {/* Main Workspace */}
+                <div className="flex flex-col gap-6 lg:flex-row">
+                    {/* Input Form Column */}
+                    <div className="flex min-w-0 flex-1 flex-col">
+                        <div className="flex min-h-[540px] flex-1 flex-col gap-7 overflow-hidden rounded-[28px] border border-zinc-200/80 bg-white p-5 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7">
+                            <div className="skeleton-bone rounded-[24px] border border-zinc-200/70 bg-zinc-50/70 p-4 dark:border-zinc-800/70 dark:bg-zinc-950/40 h-28" />
+                            
+                            <div className="flex flex-col gap-2 skeleton-stagger">
+                                <div className="skeleton-bone w-24 h-4 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                <div className="skeleton-bone w-full sm:max-w-md h-12 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl" />
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                                <div className="skeleton-bone w-24 h-4 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
+                                    <div className="skeleton-bone h-20 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl" />
+                                    <div className="skeleton-bone h-20 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl" />
+                                    <div className="skeleton-bone h-20 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl" />
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col gap-4">
+                                <div className="skeleton-bone w-24 h-4 bg-zinc-200 dark:bg-zinc-800 rounded mb-2" />
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div className="skeleton-bone h-14 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl" />
+                                    <div className="skeleton-bone h-14 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl" />
+                                    <div className="skeleton-bone h-14 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl" />
+                                    <div className="skeleton-bone h-14 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Column (Preview) */}
+                    <div className="flex w-full flex-col gap-6 lg:w-[380px] xl:w-[420px] shrink-0">
+                        <div className="rounded-[28px] border border-zinc-200/80 bg-white p-6 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 flex flex-col gap-6 h-[400px]">
+                            <div className="flex items-center justify-between">
+                                <div className="skeleton-bone w-32 h-6 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                            </div>
+                            <div className="skeleton-bone w-full h-32 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl mt-4" />
+                            <div className="skeleton-bone w-full h-12 bg-zinc-200 dark:bg-zinc-800 rounded-xl mt-4" />
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -564,83 +626,91 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="w-full max-w-[1400px] mx-auto h-auto min-h-[calc(100vh-6rem)] flex flex-col lg:flex-row gap-8"
+            className="mx-auto flex h-auto min-h-[calc(100vh-6rem)] w-full max-w-[1500px] flex-col gap-6"
         >
-            {/* Main Workspace Column (70%) */}
-            <div className="flex-1 flex flex-col min-w-0">
-                {/* Editor Header & Actions */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 p-5 px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-1/2 left-0 -translate-y-1/2 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
+            <motion.section
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+                className="flex flex-col gap-6"
+                aria-label="Citation generator overview"
+            >
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-5 px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
+                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-yellow-500/5 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-yellow-500/5 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
                     
                     {/* Title Area */}
                     <motion.div
                         className="flex items-center gap-4 relative z-10"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                     >
                         <motion.div
-                            className="flex items-center justify-center w-12 h-12 rounded-[16px] bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50"
+                            className="flex items-center justify-center w-12 h-12 rounded-[16px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 border border-yellow-100 dark:border-yellow-800/50"
                             whileHover={{ scale: 1.05, rotate: -5 }}
                         >
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
                             </svg>
                         </motion.div>
                         
                         <div className="flex flex-col">
-                            <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Citation Generator</h1>
+                            <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Citation Manager</h1>
                             <div className="mt-1 flex flex-wrap items-center gap-2">
-                                <ToolHeaderBadge icon={BookOpen} label="Academic Tool" tone="blue" />
-                                <ToolHeaderBadge icon={FileText} label="APA MLA Chicago" tone="violet" />
+                                <ToolHeaderBadge icon={Sparkles} label="Citation workspace" tone="amber" />
                                 <ToolHeaderBadge
                                     icon={Save}
                                     label={hasSavedSession ? `Saved ${formatToolSessionTime(lastSavedAt)}` : 'Auto-save ready'}
                                     tone="emerald"
-                                    hideOnSmall
                                 />
-                                {initialUpdatedAt && (
-                                    <ToolHeaderBadge label={`Restored ${formatToolSessionTime(initialUpdatedAt)}`} tone="zinc" hideOnSmall />
-                                )}
                             </div>
                         </div>
                     </motion.div>
 
-                    {/* Action Buttons */}
+                    {/* Actions */}
                     <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="flex items-center gap-2 w-full sm:w-auto relative z-10"
+                        className="flex items-center gap-2 relative z-10 w-full sm:w-auto"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.1 }}
                     >
-                        <motion.button
-                            onClick={onBack}
-                            className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-                            whileHover={{ y: -1 }}
-                            whileTap={{ scale: 0.97 }}
-                        >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M19 12H5" />
-                                <polyline points="12 19 5 12 12 5" />
-                            </svg>
-                            Back
-                        </motion.button>
-
-                        {hasSavedSession && (
+                        <LayoutGroup>
                             <motion.button
-                                onClick={restoreSavedCitationSession}
-                                className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-700 bg-blue-50 dark:text-blue-300 dark:bg-blue-950/30 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                                layout
+                                onClick={onBack}
+                                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
                                 whileHover={{ y: -1 }}
                                 whileTap={{ scale: 0.97 }}
+                                transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
                             >
-                                Restore
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M19 12H5" />
+                                    <polyline points="12 19 5 12 12 5" />
+                                </svg>
+                                Back
                             </motion.button>
-                        )}
 
-                        <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block"></div>
+                            <motion.div layout transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }} className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block" />
 
-                        <LayoutGroup>
+                            <AnimatePresence mode="popLayout">
+                                {hasSavedSession && (
+                                    <motion.button
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                        onClick={restoreSavedCitationSession}
+                                        className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                                        whileHover={{ y: -1 }}
+                                        whileTap={{ scale: 0.97 }}
+                                        transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
+                                    >
+                                        Restore
+                                    </motion.button>
+                                )}
+                            </AnimatePresence>
+
                             <motion.button
                                 layout
                                 onClick={handleClear}
@@ -648,6 +718,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 whileHover={{ y: -1 }}
                                 whileTap={{ scale: 0.97 }}
+                                transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
                             >
                                 Clear
                             </motion.button>
@@ -655,38 +726,114 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     </motion.div>
                 </div>
 
+                <div className="grid gap-4 sm:grid-cols-3">
+                    {[
+                        { 
+                            label: 'Step 1', 
+                            title: 'Find metadata', 
+                            detail: 'URL, ISBN, or manual input', 
+                            icon: Search,
+                            borderHover: 'hover:border-yellow-300 dark:hover:border-yellow-700/50',
+                            textHover: 'group-hover/step:text-yellow-600 dark:group-hover/step:text-yellow-400',
+                            iconStyle: 'bg-yellow-50 border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+                        },
+                        { 
+                            label: 'Step 2', 
+                            title: `${citationStyle} + ${sourceType}`, 
+                            detail: 'Choose style and source', 
+                            icon: BookMarked,
+                            borderHover: 'hover:border-yellow-300 dark:hover:border-yellow-700/50',
+                            textHover: 'group-hover/step:text-yellow-600 dark:group-hover/step:text-yellow-400',
+                            iconStyle: 'bg-yellow-50 border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+                        },
+                        { 
+                            label: 'Step 3', 
+                            title: `${completenessScore}/100 complete`, 
+                            detail: generatedCitation ? 'Ready to copy or save' : 'Fill required fields', 
+                            icon: ClipboardCheck,
+                            borderHover: 'hover:border-yellow-300 dark:hover:border-yellow-700/50',
+                            textHover: 'group-hover/step:text-yellow-600 dark:group-hover/step:text-yellow-400',
+                            iconStyle: 'bg-yellow-50 border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+                        },
+                    ].map((item) => {
+                        const Icon = item.icon;
+                        return (
+                            <motion.div
+                                key={item.label}
+                                whileHover={{ scale: 1.02 }}
+                                className={`group/step flex items-center gap-4 rounded-[24px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-sm transition-all duration-300 hover:shadow-md relative overflow-hidden ${item.borderHover}`}
+                            >
+                                {/* SaaS Background Accents */}
+                                <div className="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-2xl pointer-events-none transition-transform duration-700 group-hover/step:scale-150" aria-hidden="true" />
+                                <div className="absolute bottom-0 left-0 -ml-12 -mb-12 w-24 h-24 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-2xl pointer-events-none transition-transform duration-700 group-hover/step:scale-150" aria-hidden="true" />
+                                
+                                <motion.div 
+                                    whileHover={{ scale: 1.1, rotate: -5 }}
+                                    className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] shadow-sm transition-colors border ${item.iconStyle}`}
+                                >
+                                    <Icon className="h-6 w-6" strokeWidth={2} aria-hidden="true" />
+                                </motion.div>
+                                <div className="min-w-0 flex flex-col">
+                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-400 mb-1">{item.label}</p>
+                                    <p className={`truncate text-[16px] font-black text-zinc-900 dark:text-zinc-100 leading-none transition-colors mb-1 ${item.textHover}`}>{item.title}</p>
+                                    <p className="truncate text-[13px] font-medium text-zinc-500 dark:text-zinc-400 leading-tight">{item.detail}</p>
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+            </motion.section>
+
+            <div className="flex flex-col gap-6 lg:flex-row">
+            {/* Main Workspace Column */}
+            <div className="flex min-w-0 flex-1 flex-col">
+
                 {/* Main Input Workspace Form */}
                 <motion.div
-                    className="flex-1 p-6 sm:p-8 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm flex flex-col gap-6 overflow-hidden min-h-[500px]"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    className="flex min-h-[540px] flex-1 flex-col gap-7 overflow-hidden rounded-[28px] border border-zinc-200/80 bg-white p-5 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{ duration: 0.4, delay: 0.1 }}
                 >
                     {/* Auto-Fill / Search Metadata Bar */}
-                    <div className="bg-zinc-50 dark:bg-zinc-800/30 p-4 rounded-[20px] border border-zinc-200/60 dark:border-zinc-800/50 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
+                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-56 h-56 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                        <div className="mb-6 flex items-center gap-5 relative z-10">
+                            <motion.div
+                                className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
+                                whileHover={{ scale: 1.05, rotate: -5 }}
+                            >
+                                <Zap className="w-8 h-8" strokeWidth={2} />
+                            </motion.div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Quick Capture</h2>
+                                <p className="text-[15px] text-zinc-500 dark:text-zinc-400 mt-1">Paste a source and let the form start for you.</p>
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center relative z-10">
                         <div className="flex-1 relative">
                             <input
                                 type="text"
                                 value={autoFillInput}
                                 onChange={(e) => setAutoFillInput(e.target.value)}
                                 placeholder="Paste website URL or book ISBN to auto-fill..."
-                                className="w-full px-4 py-2.5 pl-10 text-sm text-zinc-900 dark:text-zinc-50 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
+                                className="h-12 w-full rounded-2xl border border-zinc-200 bg-white px-4 pl-11 text-[15px] font-semibold text-zinc-900 outline-none transition-all placeholder:text-zinc-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-500"
                                 disabled={isAutoFilling}
                             />
-                            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
+                            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" aria-hidden="true" />
                         </div>
-                        <button
+                        <motion.button
+                            layout
                             onClick={handleAutoFill}
                             disabled={isAutoFilling || !autoFillInput.trim()}
-                            className="flex items-center justify-center gap-1.5 px-5 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                            className="flex h-12 shrink-0 items-center justify-center gap-1.5 px-5 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                            whileHover={{ y: -1, boxShadow: '0 8px 20px rgba(37, 99, 235, 0.35)' }}
+                            whileTap={{ scale: 0.97 }}
+                            transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
                         >
                             {isAutoFilling ? (
                                 <>
-                                    <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <circle cx="12" cy="12" r="10" opacity="0.25" stroke="currentColor" />
                                         <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor" />
                                     </svg>
@@ -694,37 +841,46 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 </>
                             ) : (
                                 <>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <polyline points="20 6 9 17 4 12" />
                                     </svg>
                                     Auto-Fill
                                 </>
                             )}
-                        </button>
+                        </motion.button>
+                        </div>
                     </div>
 
                     {/* Citation Style Selector */}
-                    <div>
-                        <div className="flex items-center gap-2 mb-3">
-                            <span className="block text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                                Citation Style
-                            </span>
+                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
+                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-56 h-56 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                        <div className="flex items-center gap-5 mb-6 relative z-10">
+                            <motion.div
+                                className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
+                                whileHover={{ scale: 1.05, rotate: -5 }}
+                            >
+                                <Type className="w-8 h-8" strokeWidth={2} />
+                            </motion.div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Citation Style</h2>
+                                <p className="text-[15px] text-zinc-500 dark:text-zinc-400 mt-1">Select your preferred academic formatting style.</p>
+                            </div>
                         </div>
-                        <div className="relative flex p-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl w-full max-w-md">
+                        <div className="relative flex w-full rounded-2xl bg-white p-1.5 shadow-sm border border-zinc-200/80 dark:border-zinc-800 dark:bg-zinc-900 relative z-10">
                             {(['APA', 'MLA', 'Chicago'] as CitationStyle[]).map((style) => (
                                 <button
                                     key={style}
                                     onClick={() => setCitationStyle(style)}
-                                    className={`relative flex-1 py-2 text-sm font-bold text-center rounded-lg transition-colors z-10 ${
+                                    className={`relative z-10 flex-1 rounded-xl py-3.5 text-center text-[15px] font-black transition-colors ${
                                         citationStyle === style 
-                                            ? 'text-blue-600 dark:text-blue-400' 
+                                            ? 'text-violet-700 dark:text-violet-300' 
                                             : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                                     }`}
                                 >
                                     {citationStyle === style && (
                                         <motion.div
                                             layoutId="activeStyleTab"
-                                            className="absolute inset-0 bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200/50 dark:border-zinc-700/50"
+                                            className="absolute inset-0 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-100/50 dark:border-violet-800/50 shadow-sm"
                                             transition={{ type: "spring", stiffness: 380, damping: 30 }}
                                             style={{ zIndex: -1 }}
                                         />
@@ -736,66 +892,67 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     </div>
 
                     {/* Source Type Selector */}
-                    <div>
-                        <div className="flex items-center gap-2 mb-3">
-                            <span className="block text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                                Source Type
-                            </span>
+                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
+                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-56 h-56 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                        <div className="flex items-center gap-5 mb-6 relative z-10">
+                            <motion.div
+                                className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
+                                whileHover={{ scale: 1.05, rotate: -5 }}
+                            >
+                                <Layers className="w-8 h-8" strokeWidth={2} />
+                            </motion.div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Source Type</h2>
+                                <p className="text-[15px] text-zinc-500 dark:text-zinc-400 mt-1">Choose the type of material you are citing.</p>
+                            </div>
                         </div>
-                        <div className="grid grid-cols-3 gap-3 w-full">
+                        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3 relative z-10">
                             {[
-                                { type: 'book' as SourceType, label: 'Book', icon: (
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                                    </svg>
-                                )},
-                                { type: 'website' as SourceType, label: 'Website', icon: (
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <line x1="2" y1="12" x2="22" y2="12" />
-                                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                                    </svg>
-                                )},
-                                { type: 'journal' as SourceType, label: 'Journal', icon: (
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                        <polyline points="14,2 14,8 20,8" />
-                                        <line x1="16" y1="13" x2="8" y2="13" />
-                                        <line x1="16" y1="17" x2="8" y2="17" />
-                                    </svg>
-                                )}
-                            ].map(({ type, label, icon }) => (
+                                { type: 'book' as SourceType, label: 'Book', helper: 'Books, ebooks, chapters', icon: BookOpen },
+                                { type: 'website' as SourceType, label: 'Website', helper: 'Pages, articles, online sources', icon: Globe2 },
+                                { type: 'journal' as SourceType, label: 'Journal', helper: 'Research papers and volumes', icon: Newspaper }
+                            ].map(({ type, label, helper, icon: Icon }) => (
                                 <button
                                     key={type}
                                     onClick={() => setSourceType(type)}
-                                    className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all ${
+                                    className={`flex items-center gap-3 rounded-2xl border p-4 text-left transition-all shadow-sm ${
                                         sourceType === type
-                                            ? 'border-blue-500 bg-blue-500/5 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 shadow-sm'
-                                            : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/30 text-zinc-500 dark:text-zinc-400'
+                                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'
+                                            : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700'
                                     }`}
                                 >
-                                    <div className={`p-2 rounded-xl mb-2 ${
+                                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
                                         sourceType === type
-                                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                                            : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500'
+                                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                            : 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500'
                                     }`}>
-                                        {icon}
+                                        <Icon className="h-5 w-5" aria-hidden="true" />
                                     </div>
-                                    <span className="text-sm font-bold">{label}</span>
+                                    <div className="min-w-0">
+                                        <span className="block text-[15px] font-black">{label}</span>
+                                        <span className="mt-0.5 block text-[13px] font-medium opacity-75">{helper}</span>
+                                    </div>
                                 </button>
                             ))}
                         </div>
                     </div>
 
                     {/* Source Details Form Fields */}
-                    <div>
-                        <div className="flex items-center gap-2 mb-4">
-                            <span className="block text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-                                Source Details
-                            </span>
+                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
+                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-56 h-56 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                        <div className="flex items-center gap-5 mb-6 relative z-10">
+                            <motion.div
+                                className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
+                                whileHover={{ scale: 1.05, rotate: -5 }}
+                            >
+                                <FileText className="w-8 h-8" strokeWidth={2} />
+                            </motion.div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Source Details</h2>
+                                <p className="text-[15px] text-zinc-500 dark:text-zinc-400 mt-1">Fill in the required information manually.</p>
+                            </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 relative z-10">
                             <FloatingInput 
                                 label="Author(s) (e.g. Smith, J.)" 
                                 value={citationData.authors} 
@@ -874,47 +1031,103 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                 className="w-full lg:w-[340px] xl:w-[380px] shrink-0 flex flex-col gap-6 lg:sticky lg:top-8"
             >
                 {/* Completeness Score Circular Indicator */}
-                <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 relative overflow-hidden flex items-center justify-between">
-                    <div className="flex flex-col">
-                        <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1">Completeness</h3>
-                        <div className="text-2xl font-black text-zinc-900 dark:text-zinc-100 flex items-baseline gap-0.5">
-                            <NumberTicker value={completenessScore} className="text-2xl tracking-tight" />
-                            <span className="text-sm font-semibold text-zinc-400">/ 100</span>
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+                    className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50"
+                >
+                    {/* SaaS Background Accents */}
+                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+
+                    {/* Left: Icon & Core Info */}
+                    <div className="flex items-center gap-5 relative z-10 w-full mb-6">
+                        <motion.div
+                            whileHover={{ scale: 1.05, rotate: -5 }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                            className="w-16 h-16 rounded-[20px] bg-yellow-50 border border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
+                        >
+                            <ClipboardCheck className="w-7 h-7 text-yellow-600 dark:text-yellow-400" strokeWidth={2.5} />
+                        </motion.div>
+
+                        <div>
+                            <h2 className="text-[22px] sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-1">
+                                Completeness
+                            </h2>
+                            <p className="text-[13px] sm:text-[14px] font-medium text-zinc-500 dark:text-zinc-400 leading-tight">
+                                Fill in all required fields to build a perfectly formatted citation.
+                            </p>
                         </div>
                     </div>
-                    <div className="relative hidden sm:flex w-16 h-16 items-center justify-center">
-                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                            <circle cx="18" cy="18" r="16" fill="none" className="stroke-zinc-100 dark:stroke-zinc-800" strokeWidth="4" />
-                            <motion.circle 
-                                cx="18" cy="18" r="16" fill="none" 
-                                className={`stroke-current ${
-                                    completenessScore === 100 
-                                        ? 'text-emerald-500' 
-                                        : completenessScore >= 50 
-                                            ? 'text-blue-500' 
-                                            : 'text-zinc-300 dark:text-zinc-700'
-                                }`}
-                                strokeWidth="4" 
-                                strokeDasharray="100" 
-                                initial={{ strokeDashoffset: 100 }}
-                                animate={{ strokeDashoffset: 100 - completenessScore }}
-                                transition={{ duration: 0.8, type: "spring" }}
-                                strokeLinecap={completenessScore > 0 ? "round" : undefined}
-                            />
-                        </svg>
+
+                    {/* Right: Modern Stat Cards */}
+                    <div className="flex items-center gap-4 relative z-10 w-full">
+                        {/* Score Card combining both text and ring */}
+                        <div className="flex flex-1 items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 shadow-sm transition-colors hover:border-blue-300 dark:hover:border-blue-700 group/card">
+                            {/* The Ring acts as the icon! */}
+                            <div className="w-10 h-10 flex-shrink-0 relative flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 shadow-sm border border-zinc-200/50 dark:border-zinc-700/50">
+                                <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 36 36">
+                                    <circle cx="18" cy="18" r="16" fill="none" className="stroke-zinc-100 dark:stroke-zinc-800" strokeWidth="4" />
+                                    <motion.circle 
+                                        cx="18" cy="18" r="16" fill="none" 
+                                        className={`stroke-current ${
+                                            completenessScore === 100 
+                                                ? 'text-emerald-500' 
+                                                : completenessScore >= 50 
+                                                    ? 'text-blue-500' 
+                                                    : 'text-zinc-300 dark:text-zinc-700'
+                                        }`}
+                                        strokeWidth="4" 
+                                        strokeDasharray="100" 
+                                        initial={{ strokeDashoffset: 100 }}
+                                        animate={{ strokeDashoffset: 100 - completenessScore }}
+                                        transition={{ duration: 0.8, type: "spring" }}
+                                        strokeLinecap={completenessScore > 0 ? "round" : undefined}
+                                    />
+                                </svg>
+                            </div>
+                            
+                            <div>
+                                <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 group-hover/card:text-blue-600 dark:group-hover/card:text-blue-400 transition-colors">Score</p>
+                                <div className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none flex items-baseline gap-1">
+                                    <NumberTicker value={completenessScore} className="tracking-tight" />
+                                    <span className="text-xs font-semibold text-zinc-500">/ 100</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Generated Citation Card */}
-                <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 relative overflow-hidden group flex flex-col gap-4">
-                    <div className="flex items-center gap-3 relative z-10">
-                        <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-                            </svg>
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
+                    className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50"
+                >
+                    {/* SaaS Background Accents */}
+                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+
+                    {/* Left: Icon & Core Info */}
+                    <div className="flex items-center gap-5 relative z-10 w-full mb-6">
+                        <motion.div
+                            whileHover={{ scale: 1.05, rotate: -5 }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                            className="w-16 h-16 rounded-[20px] bg-yellow-50 border border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
+                        >
+                            <ClipboardCheck className="w-7 h-7 text-yellow-600 dark:text-yellow-400" strokeWidth={2.5} />
+                        </motion.div>
+
+                        <div>
+                            <h2 className="text-[22px] sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-1">
+                                Generated Citation
+                            </h2>
+                            <p className="text-[13px] sm:text-[14px] font-medium text-zinc-500 dark:text-zinc-400 leading-tight">
+                                Preview your citation, copy it with rich formatting, or save it to your workspace.
+                            </p>
                         </div>
-                        <h3 className="font-bold text-zinc-900 dark:text-zinc-100">Generated Citation</h3>
                     </div>
 
                     <AnimatePresence mode="wait">
@@ -924,25 +1137,27 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
-                                className="flex flex-col gap-4"
+                                className="flex flex-col gap-4 relative z-10"
                             >
-                                <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 text-sm text-zinc-700 dark:text-zinc-300 font-serif leading-relaxed border-l-4 border-l-purple-500">
+                                <div className="rounded-2xl border border-zinc-200 border-l-4 border-l-violet-500 bg-zinc-50 p-4 font-serif text-[15px] leading-7 text-zinc-700 shadow-sm dark:border-zinc-700/80 dark:border-l-violet-500 dark:bg-zinc-800/50 dark:text-zinc-300">
                                     {formatCitation(generatedCitation)}
                                 </div>
                                 <div className="flex gap-2">
                                     <motion.button
+                                        layout
                                         onClick={handleCopy}
-                                        className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-xl transition-all ${
+                                        className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-bold rounded-xl transition-colors shadow-md ${
                                             copied 
-                                                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' 
-                                                : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/20'
+                                                ? 'bg-emerald-500 text-white' 
+                                                : 'bg-violet-600 hover:bg-violet-700 text-white'
                                         }`}
-                                        whileHover={{ y: -1 }}
-                                        whileTap={{ scale: 0.98 }}
+                                        whileHover={copied ? undefined : { y: -1, boxShadow: '0 8px 20px rgba(124, 58, 237, 0.35)' }}
+                                        whileTap={{ scale: 0.97 }}
+                                        transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
                                     >
                                         {copied ? (
                                             <>
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                     <polyline points="20 6 9 17 4 12" />
                                                 </svg>
                                                 Copied!
@@ -963,21 +1178,16 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                         className={`px-4 py-3 text-sm font-bold rounded-xl border transition-all ${
                                             savedToReference
                                                 ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-500 text-emerald-600 dark:text-emerald-400'
-                                                : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                                                : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                                         }`}
                                         whileHover={{ y: -1 }}
                                         whileTap={{ scale: 0.98 }}
                                         title="Save to Reference Manager"
                                     >
                                         {savedToReference ? (
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                                <polyline points="22 4 12 14.01 9 11.01" />
-                                            </svg>
+                                            <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                                         ) : (
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                                            </svg>
+                                            <Bookmark className="h-4 w-4" aria-hidden="true" />
                                         )}
                                     </motion.button>
                                 </div>
@@ -988,51 +1198,79 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="flex flex-col items-center justify-center py-8 text-zinc-400 dark:text-zinc-500"
+                                className="flex flex-col items-center justify-center py-6 text-zinc-400 dark:text-zinc-500 relative z-10"
                             >
-                                <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mb-3">
+                                <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mb-3 border border-zinc-100 dark:border-zinc-800 shadow-sm">
                                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="opacity-40">
                                         <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
                                         <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
                                     </svg>
                                 </div>
-                                <span className="text-sm font-semibold">Ready to Generate</span>
-                                <span className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 text-center">Fill out the source details. Your draft stays saved on this device.</span>
+                                <span className="text-sm font-bold text-zinc-500 dark:text-zinc-400">Ready to Generate</span>
+                                <span className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 text-center max-w-[200px] leading-relaxed">Fill out the source details to generate your citation here.</span>
                             </motion.div>
                         )}
                     </AnimatePresence>
-                </div>
+                </motion.div>
 
                 {/* Quick Tips */}
-                <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 relative overflow-hidden group">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.2 }}
+                    className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50"
+                >
+                    {/* SaaS Background Accents */}
+                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+
+                    {/* Left: Icon & Core Info */}
+                    <div className="flex items-center gap-5 relative z-10 w-full mb-6">
+                        <motion.div
+                            whileHover={{ scale: 1.05, rotate: -5 }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                            className="w-16 h-16 rounded-[20px] bg-yellow-50 border border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
+                        >
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-yellow-600 dark:text-yellow-400">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="12" y1="16" x2="12" y2="12" />
                                 <line x1="12" y1="8" x2="12.01" y2="8" />
                             </svg>
+                        </motion.div>
+
+                        <div>
+                            <h2 className="text-[22px] sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-1">
+                                Quick Tips
+                            </h2>
+                            <p className="text-[13px] sm:text-[14px] font-medium text-zinc-500 dark:text-zinc-400 leading-tight">
+                                Helpful reminders to keep your references accurate and perfectly formatted.
+                            </p>
                         </div>
-                        <h3 className="font-bold text-zinc-900 dark:text-zinc-100">Quick Tips</h3>
                     </div>
 
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3 relative z-10">
                         {[
                             {
+                                title: "Author Formatting",
                                 text: "Separate multiple authors with commas.",
-                                color: "amber",
+                                borderHover: "hover:border-amber-300 dark:hover:border-amber-700/50",
+                                textHover: "group-hover/tip:text-amber-600 dark:group-hover/tip:text-amber-400",
+                                iconStyle: "bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-600 dark:text-amber-400",
                                 icon: (
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                        <circle cx="9" cy="7" r="4" />
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
                                     </svg>
                                 )
                             },
                             {
+                                title: "Title Styling",
                                 text: "Use italics for book and journal titles.",
-                                color: "purple",
+                                borderHover: "hover:border-purple-300 dark:hover:border-purple-700/50",
+                                textHover: "group-hover/tip:text-purple-600 dark:group-hover/tip:text-purple-400",
+                                iconStyle: "bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 text-purple-600 dark:text-purple-400",
                                 icon: (
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <line x1="19" y1="4" x2="10" y2="4" />
                                         <line x1="14" y1="20" x2="5" y2="20" />
                                         <line x1="15" y1="4" x2="9" y2="20" />
@@ -1040,30 +1278,44 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 )
                             },
                             {
+                                title: "Accuracy Check",
                                 text: "Verify references against your university guide.",
-                                color: "emerald",
+                                borderHover: "hover:border-emerald-300 dark:hover:border-emerald-700/50",
+                                textHover: "group-hover/tip:text-emerald-600 dark:group-hover/tip:text-emerald-400",
+                                iconStyle: "bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400",
                                 icon: (
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                                         <polyline points="22 4 12 14.01 9 11.01" />
                                     </svg>
                                 )
                             }
                         ].map((tip, idx) => (
-                            <div key={idx} className="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                                <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${
-                                    tip.color === 'amber' ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400' :
-                                    tip.color === 'purple' ? 'bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400' :
-                                    'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400'
-                                }`}>
+                            <motion.div 
+                                key={idx} 
+                                whileHover={{ scale: 1.02 }}
+                                className={`group/tip flex items-center gap-4 px-4 py-3 rounded-[20px] bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700 shadow-sm transition-all ${tip.borderHover}`}
+                            >
+                                <motion.div 
+                                    whileHover={{ scale: 1.1, rotate: -5 }}
+                                    className={`w-12 h-12 rounded-[16px] flex items-center justify-center shrink-0 shadow-sm transition-colors ${tip.iconStyle}`}
+                                >
                                     {tip.icon}
+                                </motion.div>
+                                <div className="flex flex-col min-w-0">
+                                    <h4 className={`text-[14px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-none mb-1 transition-colors ${tip.textHover}`}>
+                                        {tip.title}
+                                    </h4>
+                                    <span className="text-[12.5px] text-zinc-600 dark:text-zinc-400 leading-snug">
+                                        {tip.text}
+                                    </span>
                                 </div>
-                                <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 leading-normal">{tip.text}</span>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
-                </div>
+                </motion.div>
             </ToolMobileSheet>
+            </div>
         </motion.div>
     );
 };

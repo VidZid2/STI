@@ -23,7 +23,7 @@ export const UrgentTasksPanel: React.FC<UrgentTasksPanelProps> = ({ isLoadingSch
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="tasks-panel bg-white rounded-[20px] p-6 border border-black/5"
+            className="tasks-panel bg-surface/60 dark:bg-slate-900/60 backdrop-blur-md rounded-[20px] p-6 border border-black/5 dark:border-white/10"
         >
             <div className="flex items-center gap-4 mb-5">
                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500"
@@ -31,10 +31,10 @@ export const UrgentTasksPanel: React.FC<UrgentTasksPanelProps> = ({ isLoadingSch
                     <BoltIcon size={20} />
                 </div>
                 <div>
-                    <h2 className="text-xl font-semibold text-slate-900 m-0">
+                    <h2 className="text-xl font-semibold text-slate-900 dark:text-white m-0">
                         Pending Tasks
                     </h2>
-                    <p className="text-sm text-slate-500 m-0">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 m-0">
                         {isLoadingSchedule ? 'Loading...' : `${urgentTasks.filter(t => t.priority === 'high').length} high priority items`}
                     </p>
                 </div>
@@ -45,12 +45,12 @@ export const UrgentTasksPanel: React.FC<UrgentTasksPanelProps> = ({ isLoadingSch
                     // Loading skeleton
                     [...Array(3)].map((_, i) => (
                         <div key={i} className="flex items-center gap-4 p-4 rounded-xl">
-                            <div className="w-10 h-10 rounded-lg bg-black/5" />
+                            <div className="w-10 h-10 rounded-lg bg-black/5 dark:bg-white/5 animate-pulse" />
                             <div className="flex-1">
-                                <div className="w-1/2 h-3.5 bg-black/5 rounded mb-1.5" />
-                                <div className="w-[70%] h-3 bg-black/5 rounded" />
+                                <div className="w-1/2 h-3.5 bg-black/5 dark:bg-white/5 rounded mb-1.5 animate-pulse" />
+                                <div className="w-[70%] h-3 bg-black/5 dark:bg-white/5 rounded animate-pulse" />
                             </div>
-                            <div className="w-[70px] h-6 bg-black/5 rounded-md" />
+                            <div className="w-[70px] h-6 bg-black/5 dark:bg-white/5 rounded-md animate-pulse" />
                         </div>
                     ))
                 ) : urgentTasks.length === 0 ? (
@@ -65,10 +65,10 @@ export const UrgentTasksPanel: React.FC<UrgentTasksPanelProps> = ({ isLoadingSch
                                 <path d="M7 25L7.4 26.6L9 27L7.4 27.4L7 29L6.6 27.4L5 27L6.6 26.6L7 25Z" fill="#10b981" opacity="0.4" />
                             </svg>
                         </div>
-                        <h3 className="text-lg font-semibold text-slate-900 mb-1">
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
                             All caught up!
                         </h3>
-                        <p className="text-sm text-slate-500 text-center">
+                        <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
                             No pending tasks at the moment
                         </p>
                     </div>
@@ -125,10 +125,10 @@ export const UrgentTasksPanel: React.FC<UrgentTasksPanelProps> = ({ isLoadingSch
 
                                 {/* Task Info */}
                                 <div className="flex-1">
-                                    <div className="text-[13px] font-semibold text-slate-900">
+                                    <div className="text-[13px] font-semibold text-slate-900 dark:text-white">
                                         {task.title}
                                     </div>
-                                    <div className="text-xs text-slate-500 mt-0.5">
+                                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                         {task.description}
                                     </div>
                                 </div>

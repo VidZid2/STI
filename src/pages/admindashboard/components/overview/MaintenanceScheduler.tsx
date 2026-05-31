@@ -4,6 +4,7 @@ import { CalendarClock, CheckCircle2, Trash2, AlertTriangle } from 'lucide-react
 import { supabase } from '../../../../lib/supabase';
 import { useSystemConfig, type MaintenanceWindow } from '../../../../contexts/SystemConfigContext';
 import { logAuditEvent, getActorInfo } from '../../../../services/adminService';
+import { useToast } from '../../contexts/ToastContext';
 
 const toLocalInput = (iso: string | null): string => {
     if (!iso) return '';
@@ -30,10 +31,12 @@ const MaintenanceScheduler: React.FC = () => {
 
     const hasScheduled = !!(maintenanceWindow.start_time && maintenanceWindow.end_time);
 
+    const { showToast } = useToast();
+
     const saveWindow = async () => {
         if (!supabase || !startTime || !endTime) return;
         if (new Date(startTime) >= new Date(endTime)) {
-            alert('End time must be after start time.');
+            showToast('End time must be after start time.', 'error');
             return;
         }
         setSaving(true);

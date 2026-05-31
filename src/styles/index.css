@@ -5750,6 +5750,10 @@ html.hide-avatars [class*="avatar-container"] {
 }
 
 @layer base {
+    button, input, textarea, a, select {
+        @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 dark:focus-visible:ring-blue-400/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 transition-shadow;
+    }
+
   .theme {
         --animate-aurora: aurora 8s ease-in-out infinite alternate;
         --animate-gradient: gradient 8s linear infinite;

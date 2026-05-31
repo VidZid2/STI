@@ -22,7 +22,7 @@ const DisasterRecovery: React.FC = () => {
         <div className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-red-100 dark:border-red-900/30 shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/diagonal-stripes.png')] opacity-[0.03] pointer-events-none" />
             <div className="flex items-start gap-4">
-                <div className="p-3 bg-red-50 text-red-600 rounded-xl mt-1 shrink-0">
+                <div className="p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl mt-1 shrink-0">
                     <AlertTriangle size={24} />
                 </div>
                 <div>
@@ -42,8 +42,8 @@ const DisasterRecovery: React.FC = () => {
                 disabled={isBackingUp || backupComplete}
                 className={`shrink-0 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all min-w-[200px] ${
                     backupComplete
-                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-200 cursor-not-allowed opacity-90'
-                        : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
+                        ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 cursor-not-allowed opacity-90'
+                        : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800/40'
                 }`}
             >
                 {isBackingUp ? (

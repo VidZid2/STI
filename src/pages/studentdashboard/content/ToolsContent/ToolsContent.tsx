@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Wrench, FileBox, FileText, ShieldCheck } from 'lucide-react';
+import { Wrench, FileBox, FileText, ShieldCheck, Search, X } from 'lucide-react';
 
 import { convertImageToPDF, mergePDFs } from '../../../../lib/pdfUtils';
 
@@ -40,6 +40,7 @@ interface Tool {
     id: string;
     name: string;
     description: string;
+    bestFor?: string;
     category: string;
     icon: React.ReactNode;
     accept: string;
@@ -79,16 +80,16 @@ interface AnalysisResult {
 // CategoryTabs + ToolsSkeleton — moved to ./components/ToolsShared.tsx
 import { ToolItem, SuccessConfetti } from './components/ToolItem';
 import { ResultModal } from './modals/ResultModal';
-import { CategoryTabs, ToolsSkeleton } from './components/ToolsShared';
+import { CategoryTabs } from './components/ToolsShared';
 import ToolsHeader from './components/ToolsHeader';
 
 const ToolsContent: React.FC = () => {
     const recentStorageKey = 'elms_recent_tools';
     const [activeCategory, setActiveCategory] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
     const [convertingFile, setConvertingFile] = useState<string | null>(null);
     const [conversionSuccess, setConversionSuccess] = useState<string | null>(null);
     const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-    const [isToolsLoading, setIsToolsLoading] = useState(true);
     // Grammar Checker dedicated page state
     const [showGrammarChecker, setShowGrammarChecker] = useState(false);
     // Word Counter dedicated page state
@@ -112,11 +113,7 @@ const ToolsContent: React.FC = () => {
         )
     ));
 
-    // Initial loading state
-    useEffect(() => {
-        const timer = setTimeout(() => setIsToolsLoading(false), 600);
-        return () => clearTimeout(timer);
-    }, []);
+    // State and lifecycle management handled by React Suspense boundaries
 
     useEffect(() => {
         const syncDarkMode = () => {
@@ -417,6 +414,7 @@ const ToolsContent: React.FC = () => {
             id: 'image-pdf',
             name: 'Image to PDF',
             description: 'Combine multiple images into a single PDF document (works offline)',
+            bestFor: 'Submitting photo-based assignments',
             category: 'convert',
             accept: '.png,.jpg,.jpeg',
             multiple: true,
@@ -431,6 +429,7 @@ const ToolsContent: React.FC = () => {
             id: 'merge-pdf',
             name: 'Merge PDFs',
             description: 'Combine multiple PDF files into one document (works offline)',
+            bestFor: 'Bundling handouts before upload',
             category: 'convert',
             accept: '.pdf',
             multiple: true,
@@ -445,6 +444,7 @@ const ToolsContent: React.FC = () => {
             id: 'word-pdf',
             name: 'Word to PDF',
             description: 'Convert Word documents to PDF (works offline)',
+            bestFor: 'Locking DOCX formatting',
             category: 'convert',
             accept: '.doc,.docx',
             multiple: false,
@@ -459,6 +459,7 @@ const ToolsContent: React.FC = () => {
             id: 'compress-pdf',
             name: 'Compress PDF',
             description: 'Reduce PDF file size by removing metadata (works offline)',
+            bestFor: 'Shrinking LMS uploads',
             category: 'convert',
             accept: '.pdf',
             multiple: false,
@@ -476,6 +477,7 @@ const ToolsContent: React.FC = () => {
             id: 'word-counter',
             name: 'Word Counter',
             description: 'Analyze text with word count, reading time & keywords (works offline)',
+            bestFor: 'Checking essay length',
             category: 'text',
             accept: '.txt,.md,.csv',
             multiple: false,
@@ -491,6 +493,7 @@ const ToolsContent: React.FC = () => {
             id: 'pdf-word',
             name: 'PDF to Word',
             description: 'Convert PDFs to editable Word documents',
+            bestFor: 'Recovering editable lecture files',
             category: 'convert',
             accept: '.pdf',
             multiple: false,
@@ -506,6 +509,7 @@ const ToolsContent: React.FC = () => {
             id: 'grammar-check',
             name: 'Grammar Checker',
             description: 'AI-powered grammar checking with LanguageTool • Free',
+            bestFor: 'Polishing final drafts',
             category: 'text',
             accept: '.txt,.md',
             multiple: false,
@@ -522,6 +526,7 @@ const ToolsContent: React.FC = () => {
             id: 'citation-generator',
             name: 'Citation Generator',
             description: 'Generate APA, MLA, and Chicago citations • Free',
+            bestFor: 'Building bibliography entries',
             category: 'text',
             accept: '',
             multiple: false,
@@ -538,6 +543,7 @@ const ToolsContent: React.FC = () => {
             id: 'text-summarizer',
             name: 'Text Summarizer',
             description: 'AI-powered text summarization • Free',
+            bestFor: 'Turning notes into reviewers',
             category: 'text',
             accept: '.txt,.md',
             multiple: false,
@@ -558,6 +564,7 @@ const ToolsContent: React.FC = () => {
             id: 'reference-manager',
             name: 'Reference Manager',
             description: 'Save & organize citations • Export bibliography',
+            bestFor: 'Keeping sources organized',
             category: 'text',
             accept: '',
             multiple: false,
@@ -573,6 +580,7 @@ const ToolsContent: React.FC = () => {
             id: 'paraphraser',
             name: 'Paraphraser',
             description: 'Rewrite text in different styles',
+            bestFor: 'Responsible rewriting practice',
             category: 'text',
             accept: '',
             multiple: false,
@@ -582,13 +590,15 @@ const ToolsContent: React.FC = () => {
             onClick: () => setShowParaphraser(true), // Opens dedicated page
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.25} d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                 </svg>
             ) },
+        /*
         {
             id: 'plagiarism-checker',
             name: 'Plagiarism Checker',
             description: 'Check text originality • Basic free tier',
+            bestFor: 'Pre-submission similarity review',
             category: 'text',
             accept: '',
             multiple: false,
@@ -602,6 +612,7 @@ const ToolsContent: React.FC = () => {
                 </svg>
             ),
         },
+        */
     ];
 
     const allTools = [...tools, ...newTools];
@@ -610,7 +621,20 @@ const ToolsContent: React.FC = () => {
         ? allTools
         : allTools.filter((tool) => tool.category === activeCategory);
 
-    const filteredTools = [...visibleTools].sort((a, b) => {
+    const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+    const searchFilteredTools = normalizedSearchQuery
+        ? visibleTools.filter((tool) => [
+            tool.name,
+            tool.description,
+            tool.bestFor,
+            tool.category,
+            ...(tool.badges || []),
+        ].filter(Boolean).some((value) => value!.toLowerCase().includes(normalizedSearchQuery)))
+        : visibleTools;
+
+    const recommendedTools = allTools.filter((tool) => tool.recommended).slice(0, 3);
+
+    const filteredTools = [...searchFilteredTools].sort((a, b) => {
         const aRecent = recentToolIds.indexOf(a.id);
         const bRecent = recentToolIds.indexOf(b.id);
 
@@ -627,10 +651,7 @@ const ToolsContent: React.FC = () => {
         return 0;
     });
 
-    // Show skeleton while loading
-    if (isToolsLoading) {
-        return <div className={`tools-content pb-24 ${isDarkMode ? 'dark' : ''}`}><ToolsSkeleton /></div>;
-    }
+    // Render main content (Skeleton is handled natively by Suspense in StudentDashboard)
 
     return (
         <div className={`tools-content pb-24 text-zinc-900 dark:text-zinc-100 ${isDarkMode ? 'dark' : ''}`}>
@@ -642,46 +663,206 @@ const ToolsContent: React.FC = () => {
 
             <ResultModal result={analysisResult} onClose={() => setAnalysisResult(null)} />
 
-            {/* Premium Category Filter Tabs with Sliding Indicator */}
-            <CategoryTabs
-                categories={categories}
-                activeCategory={activeCategory}
-                onCategoryChange={setActiveCategory}
-            />
+            <motion.section
+                className="mb-7 grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.12, type: 'spring', stiffness: 300, damping: 26 }}
+                aria-label="Tool search and recommended workflow"
+            >
+                <div className="relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white p-5 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7">
+                    <div className="absolute -right-20 -top-24 h-56 w-56 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/15" aria-hidden="true" />
+                    <div className="absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl dark:bg-violet-500/15" aria-hidden="true" />
+                    <div className="relative z-10 flex flex-col gap-6">
+                        <div className="min-w-0">
+                            <h2 className="text-xl font-black tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-2xl">
+                                Find the right tool before you lose momentum.
+                            </h2>
+                            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+                                Search by task, file type, or outcome. The page now behaves less like a directory and more like a student workspace.
+                            </p>
+                        </div>
+                        <div className="relative w-full">
+                            <label htmlFor="tools-search" className="sr-only">Search student tools</label>
+                            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" aria-hidden="true" />
+                            <input
+                                id="tools-search"
+                                type="search"
+                                value={searchQuery}
+                                onChange={(event) => setSearchQuery(event.target.value)}
+                                placeholder="Try “APA”, “compress”, “essay”..."
+                                className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/80 pl-11 pr-11 text-sm font-semibold text-zinc-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-zinc-800 dark:bg-zinc-950/70 dark:text-zinc-100 dark:focus:border-blue-500"
+                            />
+                            {searchQuery && (
+                                <button
+                                    type="button"
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-200 hover:text-zinc-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+                                    aria-label="Clear tool search"
+                                >
+                                    <X className="h-4 w-4" aria-hidden="true" />
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Premium Category Filter Tabs with Sliding Indicator */}
+                        <CategoryTabs
+                            categories={categories}
+                            activeCategory={activeCategory}
+                            onCategoryChange={setActiveCategory}
+                        />
+                    </div>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+                    {recommendedTools.map((tool, index) => (
+                        <motion.button
+                            key={tool.id}
+                            type="button"
+                            onClick={() => {
+                                markToolUsed(tool.id);
+                                if (tool.onClick) {
+                                    tool.onClick();
+                                } else {
+                                    setActiveCategory(tool.category);
+                                }
+                            }}
+                            className="group relative flex w-full items-center gap-4 overflow-hidden rounded-[20px] border border-zinc-200/70 bg-white p-4 text-left shadow-sm transition-[border-color] duration-300 ease-out hover:border-blue-200/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-800/70 dark:bg-zinc-900 dark:hover:border-blue-800/50 dark:focus-visible:ring-offset-zinc-950 sm:p-5"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            whileHover={{
+                                y: -2,
+                                boxShadow: '0 12px 28px -12px rgba(59,130,246,0.2), 0 0 0 1px rgba(59,130,246,0.06)',
+                            }}
+                            whileTap={{ scale: 0.985 }}
+                            transition={{ type: 'tween', ease: [0.25, 0.46, 0.45, 0.94], duration: 0.3, delay: index * 0.04 }}
+                        >
+                            {/* Background Ambient Glow */}
+                            <div
+                                className="pointer-events-none absolute -right-16 -top-16 h-36 w-36 rounded-full bg-blue-500/5 opacity-0 blur-2xl transition-opacity duration-500 ease-out group-hover:opacity-100 dark:bg-blue-500/10"
+                                aria-hidden="true"
+                            />
+
+                            {/* Icon container — matches ToolItem card style */}
+                            <motion.span
+                                className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] border border-blue-100 bg-blue-50 text-blue-600 transition-colors duration-300 dark:border-blue-800/50 dark:bg-blue-900/30 dark:text-blue-400 sm:h-12 sm:w-12"
+                                whileHover={{ scale: 1.05, rotate: 3 }}
+                                transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+                                aria-hidden="true"
+                            >
+                                <span className="scale-110">
+                                    {tool.icon}
+                                </span>
+                            </motion.span>
+
+                            {/* Text */}
+                            <span className="relative min-w-0 flex-1">
+                                <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-[0.16em] text-blue-500 dark:text-blue-400/70">
+                                    Step {index + 1}
+                                </span>
+                                <span className="block truncate text-[15px] font-bold leading-snug text-zinc-900 dark:text-zinc-100">
+                                    {tool.name}
+                                </span>
+                                <span className="block truncate text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+                                    {tool.bestFor}
+                                </span>
+                            </span>
+
+                            {/* Chevron arrow */}
+                            <svg
+                                className="relative ml-auto h-4 w-4 shrink-0 text-zinc-300 transition-all duration-300 ease-out group-hover:translate-x-0.5 group-hover:text-blue-400 dark:text-zinc-600 dark:group-hover:text-blue-500"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                aria-hidden="true"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </motion.button>
+                    ))}
+                </div>
+            </motion.section>
 
             {/* Tools Grid - Uniform Card Sizes */}
-            <motion.div
-                layout
-                className="grid auto-rows-[404px] grid-cols-1 gap-8 lg:grid-cols-2 2xl:grid-cols-3"
-            >
-                <AnimatePresence mode="popLayout">
-                    {filteredTools.map((tool, idx) => (
-                        <motion.div
-                            key={tool.id}
-                            layout
-                            initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                            transition={{
-                                type: 'spring',
-                                stiffness: 350,
-                                damping: 25,
-                                delay: idx * 0.04 }}
-                            style={{ height: '100%' }} // Ensure wrapper takes full height
+            {filteredTools.length > 0 ? (
+                <motion.div
+                    layout
+                    className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2 2xl:grid-cols-3"
+                >
+                    <AnimatePresence mode="popLayout">
+                        {filteredTools.map((tool, idx) => (
+                            <motion.div
+                                key={tool.id}
+                                layout
+                                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                                transition={{
+                                    type: 'spring',
+                                    stiffness: 350,
+                                    damping: 25,
+                                    delay: idx * 0.04 }}
+                                className="h-full"
+                            >
+                                <ToolItem
+                                    tool={tool}
+                                    onProcessFiles={processFiles}
+                                    isProcessing={convertingFile === tool.name}
+                                    isSuccess={conversionSuccess === tool.name}
+                                    onSuccessClose={() => setConversionSuccess(null)}
+                                    isRecent={recentToolIds.includes(tool.id)}
+                                    onToolOpen={markToolUsed}
+                                />
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </motion.div>
+            ) : (
+                <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="relative overflow-hidden rounded-[28px] border border-zinc-200/80 bg-white p-6 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-8"
+                >
+                    <div className="absolute -right-24 -top-24 h-56 w-56 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/15" aria-hidden="true" />
+                    <div className="absolute -bottom-28 left-1/3 h-52 w-52 rounded-full bg-violet-500/10 blur-3xl dark:bg-violet-500/15" aria-hidden="true" />
+                    <div className="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-start gap-5">
+                            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[24px] border border-blue-100 bg-blue-50 text-blue-600 shadow-sm dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-300">
+                                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <path d="m21 21-4.35-4.35" />
+                                    <circle cx="11" cy="11" r="7.5" />
+                                    <path d="M8.75 11h4.5" />
+                                </svg>
+                            </div>
+                            <div className="min-w-0">
+                                <h3 className="text-2xl font-black tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-3xl">
+                                    No matching tools found
+                                </h3>
+                                <p className="mt-2 max-w-2xl text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
+                                    Try a simpler search like “pdf”, “essay”, or “citation”, or reset your filters to browse all student tools.
+                                </p>
+                            </div>
+                        </div>
+                        <motion.button
+                            type="button"
+                            onClick={() => {
+                                setSearchQuery('');
+                                setActiveCategory('all');
+                            }}
+                            className="flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2 text-sm font-bold text-white shadow-md transition-colors hover:bg-emerald-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-zinc-950"
+                            whileHover={{ y: -1, boxShadow: '0 8px 20px rgba(16, 185, 129, 0.35)' }}
+                            whileTap={{ scale: 0.97 }}
                         >
-                            <ToolItem
-                                tool={tool}
-                                onProcessFiles={processFiles}
-                                isProcessing={convertingFile === tool.name}
-                                isSuccess={conversionSuccess === tool.name}
-                                onSuccessClose={() => setConversionSuccess(null)}
-                                isRecent={recentToolIds.includes(tool.id)}
-                                onToolOpen={markToolUsed}
-                            />
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
-            </motion.div>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M3 12a9 9 0 1 0 3-6.7" />
+                                <path d="M3 4v5h5" />
+                            </svg>
+                            Reset filters
+                        </motion.button>
+                    </div>
+                </motion.div>
+            )}
 
             {/* Animated SaaS Trust Banner */}
             <motion.div

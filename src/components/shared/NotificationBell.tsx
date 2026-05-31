@@ -198,10 +198,26 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ userId: propUserId 
                         {/* List */}
                         <div style={{ overflowY: 'auto', flex: 1 }}>
                             {notifications.length === 0 ? (
-                                <div style={{ padding: '40px 20px', textAlign: 'center' }}>
-                                    <Bell size={28} color="#cbd5e1" style={{ margin: '0 auto 10px' }} />
-                                    <p style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8', margin: 0 }}>No notifications yet</p>
-                                    <p style={{ fontSize: 12, color: '#cbd5e1', margin: '4px 0 0' }}>Admin messages will appear here</p>
+                                <div className="p-4">
+                                    <div className="flex items-center gap-4 p-4 bg-white rounded-[20px] border border-zinc-200/80 transition-all duration-300 hover:shadow-sm hover:border-blue-200/80 group cursor-default">
+                                        {/* Study Tools style SVG Container with hover animation */}
+                                        <motion.div
+                                            whileHover={{ scale: 1.08, rotate: -5 }}
+                                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                            className="w-12 h-12 rounded-[16px] bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 border border-blue-100 shadow-sm"
+                                        >
+                                            <Bell size={20} strokeWidth={2.5} />
+                                        </motion.div>
+                                        
+                                        <div className="flex flex-col flex-1">
+                                            <div className="text-[16px] font-bold text-zinc-900 leading-tight tracking-tight">
+                                                No Notifications
+                                            </div>
+                                            <div className="text-[12.5px] text-zinc-500 mt-0.5">
+                                                You have no new alerts.
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             ) : (
                                 notifications.map((n) => {

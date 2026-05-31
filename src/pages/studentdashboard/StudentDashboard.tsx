@@ -41,6 +41,7 @@ import { WidgetSidebar } from './components/WidgetSidebar';
 import { DashboardSuspenseFallback } from './components/DashboardSuspenseFallback';
 import { getSidebarCoursesWithProgress, getTodaysQuote } from './utils';
 import { isDashboardView } from './types';
+import { ToolsSkeleton } from './content/ToolsContent/components/ToolsShared';
 
 // Custom hooks - extracted for cleaner code
 import {
@@ -252,8 +253,8 @@ const DashboardPage: React.FC = () => {
                 openSettingsModal={openSettingsModal}
             />
             {/* Main Content */}
-            <main className={`main-content ${!sidebarActive ? 'sidebar-collapsed' : ''}`}>
-                <React.Suspense fallback={<DashboardSuspenseFallback />}>
+            <main className={`main-content ${!sidebarActive ? 'sidebar-collapsed' : ''} max-md:!mt-0 max-md:!ml-0 max-md:!p-4`}>
+                <React.Suspense fallback={activeView === 'tools' ? <div className="tools-content pb-24"><ToolsSkeleton /></div> : <DashboardSuspenseFallback />}>
                 <AnimatePresence mode="wait">
                     {activeView === 'home' && (
                         <motion.div

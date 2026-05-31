@@ -256,40 +256,40 @@ const StudentListModal: React.FC<StudentListModalProps> = ({ isOpen, onClose }) 
             {isOpen && (
                 <>
                     {/* Backdrop */}
-                    <ModalBackdrop onClose={onClose} zIndex={9998} />
+                    <ModalBackdrop onClose={onClose} zIndex={9998} blur="6px" background="rgba(15, 23, 42, 0.4)" />
 
-                    {/* Modal Container */}
+                    {/* Drawer Container */}
                     <div style={{
                         position: 'fixed',
                         inset: 0,
                         display: 'flex',
-                        alignItems: isMobile ? 'stretch' : 'center',
-                        justifyContent: 'center',
+                        alignItems: 'stretch',
+                        justifyContent: 'flex-end',
                         zIndex: 9999,
                         pointerEvents: 'none',
-                        padding: isMobile ? 0 : '20px',
                     }}>
                         <motion.div
                             role="dialog"
                             aria-modal="true"
                             aria-labelledby="student-list-modal-title"
                             ref={focusTrapRef}
-                            initial={{ opacity: 0, scale: isMobile ? 1 : 0.95, y: isMobile ? '100%' : 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: isMobile ? 1 : 0.95, y: isMobile ? '100%' : 20 }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                            initial={{ x: isMobile ? 0 : '100%', y: isMobile ? '100%' : 0 }}
+                            animate={{ x: 0, y: 0 }}
+                            exit={{ x: isMobile ? 0 : '100%', y: isMobile ? '100%' : 0 }}
+                            transition={{ type: 'spring', stiffness: 350, damping: 32 }}
                             style={{
                                 width: '100%',
-                                maxWidth: isMobile ? '100%' : (selectedStudent ? '1200px' : '900px'),
-                                height: isMobile ? '100%' : undefined,
-                                maxHeight: isMobile ? '100%' : '90vh',
+                                maxWidth: isMobile ? '100%' : (selectedStudent ? '1100px' : '650px'),
+                                height: '100%',
                                 background: 'var(--bg-canvas)',
-                                boxShadow: isMobile ? 'none' : '0 24px 48px rgba(0, 0, 0, 0.15)',
+                                borderLeft: isMobile ? 'none' : '1px solid var(--border-subtle)',
+                                borderRadius: isMobile ? '0' : '24px 0 0 24px',
+                                boxShadow: isMobile ? 'none' : '-8px 0 32px rgba(0, 0, 0, 0.12)',
                                 overflow: 'hidden',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 pointerEvents: 'auto',
-                                transition: 'max-width 0.3s ease',
+                                transition: 'max-width 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                             }}
                         >
                             {/* Header */}
@@ -380,12 +380,12 @@ const StudentListModal: React.FC<StudentListModalProps> = ({ isOpen, onClose }) 
                                                 justifyContent: 'center',
                                                 margin: '0 auto 16px',
                                             }}>
-                                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
+                                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" strokeWidth="2">
                                                     <circle cx="11" cy="11" r="8" />
                                                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                                                 </svg>
                                             </div>
-                                            <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 600, color: '#334155' }}>
+                                            <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                                 No students found
                                             </h3>
                                             <p style={{ margin: 0, fontSize: '13px' }}>

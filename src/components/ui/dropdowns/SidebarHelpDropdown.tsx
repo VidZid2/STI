@@ -77,11 +77,13 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
     onClose,
     anchorRef,
 }) => {
-    const [position, setPosition] = useState({ top: 0, left: 0 });
+    const [cardHeight, setCardHeight] = useState(484);
+    const [position, setPosition] = useState({ top: 0, left: 0, arrowTop: 30 });
     const [isDarkMode, setIsDarkMode] = useState(() => 
         typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
     );
     const closeTimeoutRef = useRef<number | null>(null);
+    const resizeObserverRef = useRef<ResizeObserver | null>(null);
     const [showGettingStarted, setShowGettingStarted] = useState(false);
     const [showVideoTutorials, setShowVideoTutorials] = useState(false);
     const [showFAQs, setShowFAQs] = useState(false);
@@ -98,7 +100,12 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
         const observer = new MutationObserver(checkDarkMode);
         observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         
-        return () => observer.disconnect();
+        return () => {
+            observer.disconnect();
+            if (resizeObserverRef.current) {
+                resizeObserverRef.current.disconnect();
+            }
+        };
     }, []);
 
     useEffect(() => {
@@ -109,17 +116,70 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
 
     const colors = getColors(isDarkMode);
 
-    useEffect(() => {
-        if (isOpen && anchorRef?.current) {
+    const cardRef = useCallback((node: HTMLDivElement | null) => {
+        if (resizeObserverRef.current) {
+            resizeObserverRef.current.disconnect();
+            resizeObserverRef.current = null;
+        }
+
+        if (node !== null) {
+            const updateHeight = () => {
+                const rect = node.getBoundingClientRect();
+                if (rect.height > 0) {
+                    setCardHeight(rect.height);
+                }
+            };
+            
+            updateHeight();
+            
+            if (typeof ResizeObserver !== 'undefined') {
+                const observer = new ResizeObserver(() => {
+                    updateHeight();
+                });
+                observer.observe(node);
+                resizeObserverRef.current = observer;
+            }
+        }
+    }, []);
+
+    const updatePosition = useCallback(() => {
+        if (anchorRef?.current) {
             const rect = anchorRef.current.getBoundingClientRect();
-            // Position dropdown so it doesn't go below viewport
-            // Move it up more since Help is near the bottom of sidebar
+            const anchorCenter = rect.top + rect.height / 2;
+            
+            // Set vertical center/bottom of the card relative to anchor center
+            // Arrow is designed to sit near the bottom of the card, say 30px offset.
+            const arrowOffsetFromBottom = 30;
+            let cardTop = anchorCenter + arrowOffsetFromBottom - cardHeight;
+            
+            // Clamp to viewport
+            if (cardTop < 16) cardTop = 16;
+            if (cardTop + cardHeight > window.innerHeight - 16) {
+                cardTop = window.innerHeight - cardHeight - 16;
+            }
+            
+            // Calculate where the arrow should be vertically relative to the card's top
+            let arrowTop = anchorCenter - cardTop;
+            
+            // Clamp arrow position safely inside the card bounds
+            if (arrowTop < 16) arrowTop = 16;
+            if (arrowTop > cardHeight - 16) arrowTop = cardHeight - 16;
+            
             setPosition({
-                top: rect.top - 320,
+                top: cardTop,
                 left: rect.right + 12,
+                arrowTop: arrowTop,
             });
         }
-    }, [isOpen, anchorRef]);
+    }, [anchorRef, cardHeight]);
+
+    useEffect(() => {
+        if (isOpen) {
+            updatePosition();
+            const id = requestAnimationFrame(updatePosition);
+            return () => cancelAnimationFrame(id);
+        }
+    }, [isOpen, updatePosition]);
 
     const scheduleClose = useCallback(() => {
         if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
@@ -147,201 +207,187 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
         <AnimatePresence>
             {shouldShowDropdown && (
                 <motion.div
-                    initial={{ opacity: 0, x: -8, scale: 0.96 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    exit={{ opacity: 0, x: -8, scale: 0.96 }}
-                    transition={{ type: 'spring', bounce: 0.15, duration: 0.3 }}
+                    className="flex relative"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
                     onMouseEnter={cancelClose}
                     onMouseLeave={scheduleClose}
                     style={{
                         position: 'fixed',
                         top: position.top,
                         left: position.left,
-                        width: '240px',
-                        background: colors.dropdownBg,
-                        borderRadius: '12px',
-                        boxShadow: colors.boxShadow,
-                        overflow: 'hidden',
-                        zIndex: 10000,
+                        zIndex: 99999,
                     }}
                 >
-                    {/* Header */}
-                    <div style={{ 
-                        padding: '12px 14px', 
-                        borderBottom: `1px solid ${colors.headerBorder}`,
-                        background: isDarkMode 
-                            ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%)'
-                            : 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%)',
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {/* Left Arrow — positioned to point at Help */}
+                    <div
+                        className={`w-0 h-0 border-t-[7px] border-t-transparent border-b-[7px] border-b-transparent border-r-[7px] relative z-20 -mr-[1px] ${isDarkMode ? 'border-r-zinc-950' : 'border-r-white'}`}
+                        style={{ position: 'absolute', left: 0, top: position.arrowTop - 7 }}
+                    />
+
+                    {/* Premium 350px Card (matching ToolsNavTooltip) */}
+                    <div ref={cardRef} className={`w-[calc(100vw-24px)] sm:w-[350px] max-w-[360px] sm:max-w-none ml-[6px] p-4 sm:p-5 shadow-2xl rounded-[20px] overflow-hidden relative flex flex-col gap-3.5 sm:gap-4 border ${
+                        isDarkMode ? 'bg-zinc-950 border-zinc-800/80' : 'bg-white border-zinc-200/80'
+                    }`}>
+                        {/* SaaS Background Accents */}
+                        <div className={`absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 rounded-full blur-3xl pointer-events-none ${
+                            isDarkMode ? 'bg-blue-500/5' : 'bg-blue-500/10'
+                        }`} aria-hidden="true" />
+                        <div className={`absolute bottom-0 left-0 -ml-12 -mb-12 w-24 h-24 rounded-full blur-3xl pointer-events-none ${
+                            isDarkMode ? 'bg-emerald-400/5' : 'bg-emerald-400/10'
+                        }`} aria-hidden="true" />
+
+                        {/* Upper Section: Hero Icon & Text */}
+                        <div className="flex gap-4 relative z-10">
+                            {/* Bouncy Help Icon */}
                             <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 400 }}
-                                style={{
-                                    width: '32px',
-                                    height: '32px',
-                                    borderRadius: '8px',
-                                    background: '#3b82f6',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#ffffff',
-                                }}
+                                whileHover={{ scale: 1.05, rotate: -5 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                className={`w-[52px] h-[52px] rounded-[16px] flex items-center justify-center flex-shrink-0 shadow-sm relative z-10 border ${
+                                    isDarkMode ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'
+                                }`}
                             >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <svg className={`w-6 h-6 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                                     <path d="M12 17h.01" />
                                 </svg>
                             </motion.div>
-                            <div>
-                                <p style={{ margin: 0, fontSize: '12px', fontWeight: 600, color: colors.textPrimary }}>
-                                    Help & Support
-                                </p>
-                                <p style={{ margin: 0, fontSize: '10px', color: colors.textSecondary }}>
-                                    We're here to help you
+
+                            {/* Text Info */}
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-0.5">
+                                    <h2 className={`text-[18px] font-extrabold tracking-tight leading-none ${
+                                        isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
+                                    }`}>
+                                        Help & Support
+                                    </h2>
+                                </div>
+                                <p className={`text-[12.5px] leading-[1.4] font-medium mt-1 ${
+                                    isDarkMode ? 'text-zinc-400' : 'text-zinc-500'
+                                }`}>
+                                    Get started quickly, learn with tutorials, and reach our support team anytime.
                                 </p>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Help Items */}
-                    <div style={{ padding: '6px' }}>
-                        {helpItems.map((item, index) => (
-                            <motion.a
-                                key={item.id}
-                                href="#"
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.02, duration: 0.15 }}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    if (item.id === 'getting-started') {
-                                        setShowGettingStarted(true);
-                                    } else if (item.id === 'tutorials') {
-                                        setShowVideoTutorials(true);
-                                    } else if (item.id === 'faq') {
-                                        setShowFAQs(true);
-                                    } else if (item.id === 'keyboard') {
-                                        setShowKeyboardShortcuts(true);
-                                    } else if (item.id === 'contact') {
-                                        setShowContactSupport(true);
-                                    }
-                                    onClose();
-                                }}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                    padding: '8px',
-                                    borderRadius: '8px',
-                                    textDecoration: 'none',
-                                    transition: 'background 0.15s ease',
-                                }}
-                                whileHover={{ backgroundColor: colors.hoverBg }}
-                            >
-                                <div style={{
-                                    width: '32px',
-                                    height: '32px',
-                                    borderRadius: '6px',
-                                    background: colors.iconBg,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    flexShrink: 0,
-                                    overflow: 'hidden',
-                                }}>
-                                    {/* @ts-ignore */}
-                                    <lord-icon
-                                        src={item.lordIconSrc}
-                                        trigger="hover"
-                                        colors="primary:#ffffff,secondary:#ffffff"
-                                        state={(item as any).lordIconState}
-                                        stroke={(item as any).lordIconStroke}
-                                        style={{ width: '22px', height: '22px' }}
-                                    />
-                                </div>
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                    <p style={{ 
-                                        margin: 0, 
-                                        fontSize: '11px', 
-                                        fontWeight: 500, 
-                                        color: colors.textPrimary,
-                                    }}>
-                                        {item.label}
-                                    </p>
-                                    <p style={{ 
-                                        margin: 0, 
-                                        fontSize: '9px', 
-                                        color: colors.textMuted,
-                                        whiteSpace: 'nowrap',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                    }}>
-                                        {item.description}
-                                    </p>
-                                </div>
-                                <svg 
-                                    width="12" 
-                                    height="12" 
-                                    viewBox="0 0 24 24" 
-                                    fill="none" 
-                                    stroke={colors.textMuted}
-                                    strokeWidth="2" 
-                                    strokeLinecap="round" 
-                                    strokeLinejoin="round"
+                        {/* Help Items as Delicate Card Rows */}
+                        <div className="flex flex-col gap-2 relative z-10">
+                            {helpItems.map((item, index) => (
+                                <motion.a
+                                    key={item.id}
+                                    href="#"
+                                    initial={{ opacity: 0, y: 6 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.04, duration: 0.2 }}
+                                    whileHover={{ scale: 1.015 }}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if (item.id === 'getting-started') {
+                                            setShowGettingStarted(true);
+                                        } else if (item.id === 'tutorials') {
+                                            setShowVideoTutorials(true);
+                                        } else if (item.id === 'faq') {
+                                            setShowFAQs(true);
+                                        } else if (item.id === 'keyboard') {
+                                            setShowKeyboardShortcuts(true);
+                                        } else if (item.id === 'contact') {
+                                            setShowContactSupport(true);
+                                        }
+                                        onClose();
+                                    }}
+                                    className={`items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-[14px] border shadow-sm transition-colors no-underline ${
+                                        item.id === 'keyboard' ? 'hidden md:flex' : 'flex'
+                                    } ${
+                                        isDarkMode
+                                            ? 'bg-zinc-900/50 border-zinc-800/80 hover:border-blue-800/60'
+                                            : 'bg-white border-zinc-200/80 hover:border-blue-200'
+                                    }`}
+                                    style={{ textDecoration: 'none' }}
                                 >
-                                    <polyline points="9 18 15 12 9 6" />
-                                </svg>
-                            </motion.a>
-                        ))}
-                    </div>
-                    
+                                    {/* Small Squircle Icon */}
+                                    <div className={`w-8 h-8 rounded-xl border flex-shrink-0 flex items-center justify-center ${
+                                        isDarkMode
+                                            ? 'bg-blue-500/10 border-blue-500/20'
+                                            : 'bg-blue-50 border-blue-100'
+                                    }`}>
+                                        {/* @ts-ignore */}
+                                        <lord-icon
+                                            src={item.lordIconSrc}
+                                            trigger="hover"
+                                            colors={isDarkMode ? 'primary:#60a5fa,secondary:#60a5fa' : 'primary:#2563eb,secondary:#2563eb'}
+                                            state={(item as any).lordIconState}
+                                            stroke={(item as any).lordIconStroke}
+                                            style={{ width: '18px', height: '18px' }}
+                                        />
+                                    </div>
+                                    {/* Text */}
+                                    <div className="flex-1 min-w-0">
+                                        <p className={`text-[13px] font-extrabold leading-none mb-0.5 ${
+                                            isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
+                                        }`} style={{ margin: 0 }}>
+                                            {item.label}
+                                        </p>
+                                        <p className={`text-[11.5px] font-medium leading-tight ${
+                                            isDarkMode ? 'text-zinc-400' : 'text-zinc-500'
+                                        }`} style={{ margin: 0 }}>
+                                            {item.description}
+                                        </p>
+                                    </div>
+                                    {/* Chevron */}
+                                    <svg className={`w-3.5 h-3.5 flex-shrink-0 ${
+                                        isDarkMode ? 'text-zinc-600' : 'text-zinc-300'
+                                    }`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="9 18 15 12 9 6" />
+                                    </svg>
+                                </motion.a>
+                            ))}
+                        </div>
 
-
-                    {/* Footer */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        style={{
-                            padding: '8px 14px 12px',
-                            borderTop: `1px solid ${colors.headerBorder}`,
-                        }}
-                    >
+                        {/* Footer: Help Center Stat Card */}
                         <motion.a
                             href="#"
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.99 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.25 }}
+                            whileHover={{ scale: 1.02 }}
                             onClick={(e) => {
                                 e.preventDefault();
                                 setShowHelpCenter(true);
                                 onClose();
                             }}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '6px',
-                                padding: '8px',
-                                borderRadius: '8px',
-                                background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
-                                color: colors.textAccent,
-                                fontSize: '11px',
-                                fontWeight: 500,
-                                textDecoration: 'none',
-                                transition: 'background 0.15s ease',
-                            }}
+                            className={`flex w-full items-center justify-center gap-3 px-4 py-3 rounded-[14px] border shadow-sm transition-colors relative z-10 no-underline ${
+                                isDarkMode ? 'bg-zinc-900/50 border-zinc-800/80' : 'bg-white border-zinc-200/80'
+                            }`}
+                            style={{ textDecoration: 'none' }}
                         >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                <polyline points="15 3 21 3 21 9" />
-                                <line x1="10" y1="14" x2="21" y2="3" />
-                            </svg>
-                            Visit Help Center
+                            <div className={`w-8 h-8 rounded-xl border flex-shrink-0 flex items-center justify-center ${
+                                isDarkMode
+                                    ? 'bg-blue-500/10 border-blue-500/20'
+                                    : 'bg-blue-50 border-blue-100'
+                            }`}>
+                                <svg className={`w-[16px] h-[16px] ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                    <polyline points="15 3 21 3 21 9" />
+                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                </svg>
+                            </div>
+                            <div className="flex flex-col justify-center gap-0.5">
+                                <span className={`text-[9px] font-bold uppercase tracking-widest leading-none ${
+                                    isDarkMode ? 'text-zinc-500' : 'text-zinc-400'
+                                }`}>
+                                    Explore
+                                </span>
+                                <span className={`text-[12px] font-extrabold leading-none ${
+                                    isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
+                                }`}>
+                                    Visit Help Center
+                                </span>
+                            </div>
                         </motion.a>
-                    </motion.div>
+                    </div>
                 </motion.div>
             )}
         </AnimatePresence>,

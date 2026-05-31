@@ -135,174 +135,178 @@ const PathItem = React.memo<{
         <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.05, duration: 0.2 }}
+            transition={{ delay: index * 0.03, duration: 0.2 }}
             onClick={() => onClick?.(path.id)}
-            style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '10px',
-                padding: '10px',
-                borderRadius: '10px',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-            }}
-            whileHover={{ backgroundColor: colors.hoverBg }}
+            className="flex flex-col gap-2.5 p-3 rounded-[18px] cursor-pointer transition-all duration-300 border bg-white dark:bg-zinc-900/40 border-zinc-150 dark:border-zinc-800/50 hover:border-blue-200/60 dark:hover:border-blue-800/50 hover:bg-slate-50/50 dark:hover:bg-zinc-800/40 hover:shadow-md group"
+            style={{ marginBottom: '8px' }}
         >
-            {/* Path Icon */}
-            <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: index * 0.05 + 0.1, type: 'spring' }}
-                style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '10px',
-                    background: `${path.color}15`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                }}
-            >
-                <PathIcon icon={path.icon} color={path.color} size={18} />
-            </motion.div>
+            {/* Upper Section: Icon & Info Column */}
+            <div className="flex items-center gap-3.5 w-full min-w-0">
+                {/* Wrench-Style Path Icon Container with Spring Hover */}
+                <motion.div
+                    whileHover={{ scale: 1.05, rotate: -3 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                    style={{ background: `${path.color}15`, border: `1px solid ${path.color}20` }}
+                    className="w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 shadow-sm relative overflow-hidden bg-white dark:bg-zinc-805"
+                >
+                    <PathIcon icon={path.icon} color={path.color} size={20} />
+                </motion.div>
 
-            {/* Path Info */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{
-                    margin: 0,
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: colors.textPrimary,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                }}>
-                    {path.title}
-                </p>
-                <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '6px', 
-                    marginTop: '3px',
-                    flexWrap: 'wrap',
-                }}>
-                    <span style={{ 
-                        fontSize: '9px', 
-                        fontWeight: 500,
-                        color: difficultyInfo.color,
-                        padding: '1px 5px',
-                        borderRadius: '4px',
-                        background: `${difficultyInfo.color}15`,
-                    }}>
-                        {difficultyInfo.label}
-                    </span>
-                    <span style={{ fontSize: '10px', color: colors.textMuted }}>
-                        {path.completed_courses_count}/{path.total_courses} courses • {getPathTotalModules(path)} modules
-                    </span>
+                {/* Path Info */}
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <div className="text-[13.5px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {path.title}
+                    </div>
+                    
+                    {/* Detail tags row */}
+                    <div className="flex items-center gap-1.5 mt-1 text-[10.5px] text-zinc-500 dark:text-zinc-400 leading-none flex-wrap font-medium">
+                        <span style={{ color: difficultyInfo.color, background: `${difficultyInfo.color}15` }} className="text-[8.5px] font-black px-1.5 py-0.5 rounded-[4px] leading-none uppercase">
+                            {difficultyInfo.label}
+                        </span>
+                        <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                        <span className="font-bold text-zinc-700 dark:text-zinc-350">
+                            {path.completed_courses_count}/{path.total_courses} courses
+                        </span>
+                    </div>
                 </div>
-                {/* Course thumbnails */}
-                <div style={{ 
-                    display: 'flex', 
-                    gap: '3px', 
-                    marginTop: '6px',
-                }}>
+
+                {/* Right Progress Badge in Student Tools Star card style */}
+                <div className="flex-shrink-0">
+                    <div className="flex items-center gap-1.5 p-1.5 px-2 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-150 dark:border-zinc-800/50 hover:border-blue-200 dark:hover:border-blue-800/60 transition-colors group-hover:border-blue-200">
+                        {progress === 100 ? (
+                            <div className="text-emerald-500 bg-emerald-100 dark:bg-emerald-950/40 p-1 rounded-lg border border-emerald-200/50 flex-shrink-0">
+                                <svg className="w-3 h-3 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                            </div>
+                        ) : (
+                            <div style={{ color: path.color, background: `${path.color}15`, borderColor: `${path.color}30` }} className="p-1 rounded-lg border flex-shrink-0">
+                                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                </svg>
+                            </div>
+                        )}
+                        <span className={`text-[11px] font-black leading-none ${
+                            progress === 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'
+                        }`}>
+                            {progress}%
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Lower Section: Thumbnails & Progress Bar */}
+            <div className="w-full flex items-center justify-between gap-3 mt-0.5">
+                {/* Course Thumbnails (standard stack row) */}
+                <div className="flex gap-1 flex-shrink-0">
                     {getPathCourses(path).slice(0, 4).map((course, i) => (
                         <img
                             key={course.id}
                             src={course.image}
                             alt={course.shortTitle}
                             title={course.title}
+                            className="w-6 h-6 rounded-[6px] object-cover border"
                             style={{
-                                width: '20px',
-                                height: '20px',
-                                borderRadius: '4px',
-                                objectFit: 'cover',
-                                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
-                                opacity: i < (path.progress?.completed_courses.length || 0) ? 1 : 0.5,
+                                borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                                opacity: i < (path.progress?.completed_courses.length || 0) ? 1 : 0.4,
                             }}
                         />
                     ))}
                     {path.courses.length > 4 && (
                         <div style={{
-                            width: '20px',
-                            height: '20px',
-                            borderRadius: '4px',
-                            background: `${path.color}20`,
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '6px',
+                            background: `${path.color}15`,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '8px',
-                            fontWeight: 600,
+                            fontSize: '9px',
+                            fontWeight: 700,
                             color: path.color,
                         }}>
                             +{path.courses.length - 4}
                         </div>
                     )}
                 </div>
-                
-                {/* Progress bar */}
-                <div style={{
-                    marginTop: '6px',
-                    height: '4px',
-                    borderRadius: '2px',
-                    background: colors.progressBarBg,
-                    overflow: 'hidden',
-                }}>
+
+                {/* Micro Progress Bar on the Right */}
+                <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: colors.progressBarBg }}>
                     <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${progress}%` }}
                         transition={{ duration: 0.5, delay: index * 0.05 + 0.2 }}
+                        className="h-full rounded-full"
                         style={{
-                            height: '100%',
-                            borderRadius: '2px',
                             background: progress === 100 ? '#10b981' : path.color,
                         }}
                     />
                 </div>
-            </div>
-
-            {/* Progress percentage */}
-            <div style={{ 
-                flexShrink: 0, 
-                display: 'flex', 
-                alignItems: 'center',
-                paddingTop: '2px',
-            }}>
-                {progress === 100 ? (
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: 'spring', stiffness: 400, delay: index * 0.05 }}
-                        style={{
-                            width: '20px',
-                            height: '20px',
-                            borderRadius: '50%',
-                            background: '#10b981',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                    </motion.div>
-                ) : (
-                    <span style={{
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        color: path.color,
-                    }}>
-                        {progress}%
-                    </span>
-                )}
             </div>
         </motion.div>
     );
 });
 
 PathItem.displayName = 'PathItem';
+
+// Continue Path Card Component (Re-engineered to exactly match Student Tools card layout)
+const ContinuePathCard: React.FC<{
+    path: PathWithProgress;
+    onPathClick?: (id: string) => void;
+    isDark: boolean;
+}> = ({ path, onPathClick, isDark }) => {
+    const difficultyInfo = getDifficultyInfo(path.difficulty);
+    const progress = path.progress?.progress_percentage || 0;
+
+    return (
+        <div
+            onClick={() => onPathClick?.(path.id)}
+            className="mx-4 my-3 p-4 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[20px] flex items-center gap-3.5 group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 relative overflow-hidden cursor-pointer"
+        >
+            {/* SaaS Background Accents */}
+            <div className="absolute top-0 right-0 -mr-12 -mt-12 w-24 h-24 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-2xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+            <div className="absolute bottom-0 left-0 -ml-12 -mb-12 w-20 h-20 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-2xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+            
+            {/* Path Icon Container with spring hover animation */}
+            <motion.div
+                whileHover={{ scale: 1.05, rotate: -5 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                style={{ background: `${path.color}15`, borderColor: `${path.color}20` }}
+                className="w-12 h-12 rounded-[14px] border flex items-center justify-center flex-shrink-0 shadow-sm relative z-10 bg-white dark:bg-zinc-850"
+            >
+                <PathIcon icon={path.icon} color={path.color} size={20} />
+            </motion.div>
+            
+            {/* Text Info */}
+            <div className="min-w-0 flex-1 relative z-10">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none">
+                        Continue Path
+                    </span>
+                    
+                    {/* Compact, elegant inline progress badge */}
+                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100/60 dark:border-blue-800/30 leading-none">
+                        {progress}% PROGRESS
+                    </span>
+                </div>
+                
+                <h3 className="text-[14px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+                    {path.title}
+                </h3>
+                
+                <p className="text-[10.5px] text-zinc-500 dark:text-zinc-400 leading-none font-medium mt-1.5 flex items-center gap-1.5 flex-wrap">
+                    <span style={{ color: difficultyInfo.color }} className="font-bold">
+                        {difficultyInfo.label}
+                    </span>
+                    <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                    <span className="font-bold text-zinc-700 dark:text-zinc-350">
+                        {path.completed_courses_count}/{path.total_courses} courses
+                    </span>
+                </p>
+            </div>
+        </div>
+    );
+};
 
 const SidebarPathsDropdown: React.FC<SidebarPathsDropdownProps> = ({
     isOpen,
@@ -343,7 +347,6 @@ const SidebarPathsDropdown: React.FC<SidebarPathsDropdownProps> = ({
         }
     }, [isOpen]);
 
-    const colors = getColors(isDarkMode);
     const stats = useMemo(() => getPathStats(paths), [paths]);
 
     // Get the most recent active path
@@ -383,99 +386,74 @@ const SidebarPathsDropdown: React.FC<SidebarPathsDropdownProps> = ({
         <AnimatePresence>
             {isOpen && (
                 <motion.div
-                    initial={{ opacity: 0, x: -8, scale: 0.96 }}
+                    initial={{ opacity: 0, x: -8, scale: 0.98 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
-                    exit={{ opacity: 0, x: -8, scale: 0.96 }}
-                    transition={{ type: 'spring', bounce: 0.1, duration: 0.25 }}
+                    exit={{ opacity: 0, x: -8, scale: 0.98 }}
+                    transition={{ duration: 0.15, ease: 'easeOut' }}
                     onMouseEnter={cancelClose}
                     onMouseLeave={scheduleClose}
+                    className="bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-900 dark:text-zinc-100 shadow-2xl rounded-[20px] overflow-hidden"
                     style={{
                         position: 'fixed',
                         top: position.top,
                         left: position.left,
-                        width: '280px',
-                        background: colors.dropdownBg,
-                        borderRadius: '12px',
-                        boxShadow: colors.boxShadow,
-                        overflow: 'hidden',
+                        width: '350px',
                         zIndex: 10000,
                     }}
                 >
-                    {/* Header */}
-                    <div style={{ padding: '12px 14px', borderBottom: `1px solid ${colors.headerBorder}` }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: '11px', fontWeight: 600, color: colors.headerText, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                Learning Paths
-                            </span>
-                            <span style={{ fontSize: '10px', color: colors.textMuted }}>
-                                {stats.inProgressPaths} active
-                            </span>
+                    {/* Header - Re-engineered for SaaS Professionalism (Student Tools Style) */}
+                    <div className="p-5 pb-4 border-b border-zinc-100 dark:border-zinc-800/80 relative overflow-hidden bg-white dark:bg-zinc-900">
+                        {/* Background subtle accents */}
+                        <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+                        
+                        <div className="flex items-center justify-between gap-4 relative z-10">
+                            {/* Left: Icon, Title & Description */}
+                            <div className="flex items-center gap-4 flex-1 min-w-0">
+                                <motion.div
+                                    whileHover={{ scale: 1.05, rotate: -5 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                    className="w-12 h-12 rounded-[14px] bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
+                                >
+                                    <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M3 3v18h18" />
+                                        <path d="m19 9-5 5-4-4-3 3" />
+                                    </svg>
+                                </motion.div>
+                                
+                                <div className="min-w-0">
+                                    <h2 className="text-[17px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight mb-0.5 truncate">
+                                        Learning Paths
+                                    </h2>
+                                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-snug truncate">
+                                        Track your skill tracks
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Right: Modern Stat Card */}
+                            <div className="flex-shrink-0">
+                                <div className="flex items-center gap-2.5 p-2.5 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-100 dark:border-zinc-800 hover:border-blue-200 dark:hover:border-blue-800/60 transition-colors">
+                                    <div className="text-blue-500 bg-blue-100 dark:bg-blue-900/30 p-1.5 rounded-lg flex-shrink-0 border border-blue-200/50 dark:border-blue-800/30">
+                                        <svg className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                        </svg>
+                                    </div>
+                                    <div className="leading-none">
+                                        <p className="text-[9px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Active</p>
+                                        <p className="text-[12px] font-black text-zinc-900 dark:text-zinc-100 leading-none">{stats.inProgressPaths}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Continue Learning Card */}
                     {activePath && !isLoading && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            style={{
-                                margin: '10px',
-                                padding: '12px',
-                                background: colors.cardBg,
-                                borderRadius: '10px',
-                                border: `1px solid ${colors.cardBorder}`,
-                            }}
-                        >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={colors.textAccent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polygon points="5 3 19 12 5 21 5 3" />
-                                </svg>
-                                <span style={{ fontSize: '9px', fontWeight: 600, color: colors.textAccent, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                    Continue Path
-                                </span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <div style={{
-                                    width: '32px',
-                                    height: '32px',
-                                    borderRadius: '8px',
-                                    background: `${activePath.color}20`,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
-                                    <PathIcon icon={activePath.icon} color={activePath.color} size={16} />
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <p style={{ margin: 0, fontSize: '12px', fontWeight: 600, color: colors.textPrimary }}>
-                                        {activePath.title}
-                                    </p>
-                                    <p style={{ margin: '2px 0 0', fontSize: '10px', color: colors.textSecondary }}>
-                                        {activePath.progress?.progress_percentage || 0}% complete
-                                    </p>
-                                </div>
-                            </div>
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => onPathClick?.(activePath.id)}
-                                style={{
-                                    marginTop: '10px',
-                                    width: '100%',
-                                    padding: '7px',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    background: activePath.color,
-                                    color: 'white',
-                                    fontSize: '11px',
-                                    fontWeight: 500,
-                                    cursor: 'pointer',
-                                }}
-                            >
-                                Resume Learning
-                            </motion.button>
-                        </motion.div>
+                        <ContinuePathCard 
+                            path={activePath} 
+                            onPathClick={onPathClick} 
+                            isDark={isDarkMode} 
+                        />
                     )}
 
                     {/* Empty state */}
@@ -483,30 +461,18 @@ const SidebarPathsDropdown: React.FC<SidebarPathsDropdownProps> = ({
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            style={{
-                                padding: '24px 16px',
-                                textAlign: 'center',
-                            }}
+                            className="p-6 text-center"
                         >
-                            <div style={{
-                                width: '48px',
-                                height: '48px',
-                                margin: '0 auto 12px',
-                                borderRadius: '12px',
-                                background: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.08)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.textAccent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <div className="w-12 h-12 mx-auto mb-3 rounded-[12px] bg-blue-500/10 dark:bg-blue-500/5 flex items-center justify-center">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M3 3v18h18" />
                                     <path d="m19 9-5 5-4-4-3 3" />
                                 </svg>
                             </div>
-                            <p style={{ margin: 0, fontSize: '12px', fontWeight: 500, color: colors.textPrimary }}>
+                            <p className="text-[12px] font-bold text-zinc-900 dark:text-zinc-100">
                                 No paths enrolled yet
                             </p>
-                            <p style={{ margin: '4px 0 0', fontSize: '11px', color: colors.textMuted }}>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
                                 Start a learning journey today
                             </p>
                         </motion.div>
@@ -514,7 +480,7 @@ const SidebarPathsDropdown: React.FC<SidebarPathsDropdownProps> = ({
 
                     {/* Path List */}
                     {paths.length > 0 && (
-                        <div style={{ maxHeight: '200px', overflowY: 'auto', padding: '4px 6px' }}>
+                        <div style={{ maxHeight: '200px', overflowY: 'auto' }} className="px-2.5 py-1">
                             {isLoading ? (
                                 <PathSkeleton isDark={isDarkMode} />
                             ) : (
@@ -532,45 +498,20 @@ const SidebarPathsDropdown: React.FC<SidebarPathsDropdownProps> = ({
                     )}
 
                     {/* Footer */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        style={{
-                            padding: '10px 14px',
-                            borderTop: `1px solid ${colors.headerBorder}`,
-                        }}
-                    >
+                    <div className="p-3 border-t border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-900/30">
                         <motion.button
                             whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.99 }}
                             onClick={onViewAllClick}
-                            style={{
-                                width: '100%',
-                                padding: '8px',
-                                border: 'none',
-                                borderRadius: '8px',
-                                background: 'transparent',
-                                color: colors.textAccent,
-                                fontSize: '12px',
-                                fontWeight: 500,
-                                cursor: 'pointer',
-                                transition: 'background 0.15s ease',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '6px',
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = colors.footerHoverBg)}
-                            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                            className="w-full py-2.5 px-4 rounded-[12px] bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/60 hover:border-blue-200 dark:hover:border-blue-800/50 hover:bg-blue-50/20 dark:hover:bg-blue-950/20 text-blue-600 dark:text-blue-400 text-[12px] font-semibold transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
                         >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <span>Explore All Paths</span>
+                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                                 <path d="M3 3v18h18" />
                                 <path d="m19 9-5 5-4-4-3 3" />
                             </svg>
-                            Explore All Paths
                         </motion.button>
-                    </motion.div>
+                    </div>
                 </motion.div>
             )}
         </AnimatePresence>,

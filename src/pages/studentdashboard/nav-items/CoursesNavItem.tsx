@@ -89,13 +89,15 @@ export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSid
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <a
-                href="#"
+            <button
+                type="button"
                 className={`nav-item ${isActive ? 'active' : ''}`}
                 onClick={(e) => e.preventDefault()}
+                aria-haspopup="menu"
+                aria-expanded={isOpen}
             >
                 <div className="nav-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
                         <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
                     </svg>
@@ -106,6 +108,7 @@ export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSid
                 </div>
                 {isExpanded && (
                     <svg
+                        aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         width="14"
                         height="14"
@@ -126,7 +129,7 @@ export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSid
                         <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                 )}
-            </a>
+            </button>
             {/* Invisible bridge to connect anchor to dropdown */}
             {isOpen && (
                 <div

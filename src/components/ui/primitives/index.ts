@@ -7,7 +7,7 @@
  */
 
 // Core primitives
-export { ContainerTextFlip } from './container-text-flip';
+export { ContainerTextFlip } from '../container-text-flip';
 export { Dock, DockIcon, DockAutoHide } from './dock';
 export { FileUpload } from './file-upload';
 export { FloatingDock } from './floating-dock';

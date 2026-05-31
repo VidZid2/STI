@@ -17,12 +17,12 @@ interface KpiProps {
     sub: string;
     icon: React.ElementType;
     color: string;
-    bg: string;
+    bgClass: string;
 }
 
-const KpiCard: React.FC<KpiProps> = ({ label, value, sub, icon: Icon, color, bg }) => (
+const KpiCard: React.FC<KpiProps> = ({ label, value, sub, icon: Icon, color, bgClass }) => (
     <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-black/5 dark:border-white/5 shadow-sm flex items-center gap-4">
-        <div className="p-2.5 rounded-xl shrink-0" style={{ background: bg }}>
+        <div className={`p-2.5 rounded-xl shrink-0 ${bgClass}`}>
             <Icon size={18} color={color} />
         </div>
         <div>
@@ -40,14 +40,14 @@ interface ChartCardProps {
     subtitle: string;
     icon: React.ElementType;
     iconColor: string;
-    iconBg: string;
+    iconBgClass: string;
     children: React.ReactNode;
 }
 
-const ChartCard: React.FC<ChartCardProps> = ({ title, subtitle, icon: Icon, iconColor, iconBg, children }) => (
+const ChartCard: React.FC<ChartCardProps> = ({ title, subtitle, icon: Icon, iconColor, iconBgClass, children }) => (
     <div className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-black/5 dark:border-white/5 shadow-sm">
         <div className="flex items-center gap-3 mb-5">
-            <div className="p-2 rounded-xl" style={{ background: iconBg }}>
+            <div className={`p-2 rounded-xl ${iconBgClass}`}>
                 <Icon size={16} color={iconColor} />
             </div>
             <div>
@@ -173,7 +173,7 @@ const TabAnalytics: React.FC = () => {
                                 sub="AI-graded submissions"
                                 icon={Award}
                                 color="#10b981"
-                                bg="#f0fdf4"
+                                bgClass="bg-emerald-50 dark:bg-emerald-900/20"
                             />
                             <KpiCard
                                 label="Graded Rate"
@@ -181,7 +181,7 @@ const TabAnalytics: React.FC = () => {
                                 sub="Submissions with scores"
                                 icon={CheckCircle}
                                 color="#3b82f6"
-                                bg="#eff6ff"
+                                bgClass="bg-blue-50 dark:bg-blue-900/20"
                             />
                             <KpiCard
                                 label="Active Users"
@@ -189,7 +189,7 @@ const TabAnalytics: React.FC = () => {
                                 sub="Logged in this week"
                                 icon={Zap}
                                 color="#f59e0b"
-                                bg="#fffbeb"
+                                bgClass="bg-amber-50 dark:bg-amber-900/20"
                             />
                             <KpiCard
                                 label="Submissions"
@@ -197,7 +197,7 @@ const TabAnalytics: React.FC = () => {
                                 sub={`In selected range`}
                                 icon={Activity}
                                 color="#8b5cf6"
-                                bg="#f5f3ff"
+                                bgClass="bg-violet-50 dark:bg-violet-900/20"
                             />
                         </div>
 
@@ -208,7 +208,7 @@ const TabAnalytics: React.FC = () => {
                                 subtitle="New students & teachers over time"
                                 icon={TrendingUp}
                                 iconColor="#3b82f6"
-                                iconBg="#eff6ff"
+                                iconBgClass="bg-blue-50 dark:bg-blue-900/20"
                             >
                                 <LineChart data={data.enrollmentTrend} />
                             </ChartCard>
@@ -218,7 +218,7 @@ const TabAnalytics: React.FC = () => {
                                 subtitle="Which days students submit most"
                                 icon={BarChart2}
                                 iconColor="#10b981"
-                                iconBg="#f0fdf4"
+                                iconBgClass="bg-emerald-50 dark:bg-emerald-900/20"
                             >
                                 <BarChart data={data.submissionsByDay} color="#10b981" />
                             </ChartCard>
@@ -231,7 +231,7 @@ const TabAnalytics: React.FC = () => {
                                 subtitle="AI score buckets across all submissions"
                                 icon={Award}
                                 iconColor="#f59e0b"
-                                iconBg="#fffbeb"
+                                iconBgClass="bg-amber-50 dark:bg-amber-900/20"
                             >
                                 <Histogram data={data.gradeDistribution} />
                             </ChartCard>
@@ -241,7 +241,7 @@ const TabAnalytics: React.FC = () => {
                                 subtitle="Assignments created vs. submissions graded"
                                 icon={Users}
                                 iconColor="#8b5cf6"
-                                iconBg="#f5f3ff"
+                                iconBgClass="bg-violet-50 dark:bg-violet-900/20"
                             >
                                 <WorkloadChart data={data.teacherWorkload} />
                             </ChartCard>
@@ -253,7 +253,7 @@ const TabAnalytics: React.FC = () => {
                             subtitle="Login frequency by hour and day of week"
                             icon={Clock}
                             iconColor="#ef4444"
-                            iconBg="#fef2f2"
+                            iconBgClass="bg-red-50 dark:bg-red-900/20"
                         >
                             <HeatmapGrid data={data.activityHeatmap} />
                         </ChartCard>
