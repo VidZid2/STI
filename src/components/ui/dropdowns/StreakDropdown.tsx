@@ -31,13 +31,19 @@ const DropdownWrapper: React.FC<DropdownWrapperProps> = ({ isMobile, isOpen, set
                 {isOpen && (
                     <motion.div
                         key="mobile-modal-wrapper"
-                        initial={{ opacity: 0 }}
+                        initial={{ opacity: 1 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
                         className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-auto"
                     >
                         <motion.div
-                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+                            className="absolute inset-0 backdrop-blur-md"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.12 }}
+                            style={{ backgroundColor: 'rgba(15, 23, 42, 0.6)' }}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 setIsOpen(false);
