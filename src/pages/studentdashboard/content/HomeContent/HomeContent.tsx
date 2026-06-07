@@ -845,18 +845,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                                 </div>
 
                                                 {/* Right: Actions */}
-                                                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                                                    {/* Pagination Controls */}
-                                                    <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800/80 p-1 rounded-[14px] border border-slate-200 dark:border-slate-700/50 shadow-sm">
-                                                        <button onClick={handlePrevCourse} className="w-8 h-8 sm:w-10 sm:h-10 rounded-[10px] flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-white dark:hover:text-indigo-400 dark:hover:bg-slate-700 transition-all cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
-                                                            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-                                                        </button>
-                                                        <span className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 text-center min-w-[2.5rem] sm:min-w-[3rem] select-none">{safeIndex + 1} <span className="text-slate-400 font-medium mx-0.5">/</span> {sortedCourses.length}</span>
-                                                        <button onClick={handleNextCourse} className="w-8 h-8 sm:w-10 sm:h-10 rounded-[10px] flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-white dark:hover:text-indigo-400 dark:hover:bg-slate-700 transition-all cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
-                                                            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-                                                        </button>
-                                                    </div>
-
+                                                <div className="flex items-center flex-shrink-0">
                                                     {/* Bookmark Button (Icon Only, Minimalist) */}
                                                     <motion.button 
                                                         whileHover={{ scale: 1.05 }}
@@ -909,6 +898,19 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                                         <span className="text-[10px] font-bold text-blue-600/70 dark:text-blue-400/70 uppercase tracking-wider mb-0.5 whitespace-nowrap">UP NEXT</span>
                                                         <span className="text-sm font-bold text-blue-800 dark:text-blue-200 leading-none truncate">{upNextTitle}</span>
                                                     </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Pagination Controls (Safely Below Badges) */}
+                                            <div className="w-full pt-1">
+                                                <div className="flex items-center justify-between w-full gap-2 bg-slate-50 dark:bg-slate-800/80 p-1.5 rounded-[14px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md">
+                                                    <button onClick={handlePrevCourse} className="w-10 h-10 rounded-[10px] flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-white dark:hover:text-indigo-400 dark:hover:bg-slate-700 transition-all shadow-sm cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                                    </button>
+                                                    <span className="text-sm font-bold text-slate-700 dark:text-slate-200 text-center tracking-wide flex-1">{safeIndex + 1} <span className="text-slate-400 font-medium mx-0.5">/</span> {sortedCourses.length}</span>
+                                                    <button onClick={handleNextCourse} className="w-10 h-10 rounded-[10px] flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-white dark:hover:text-indigo-400 dark:hover:bg-slate-700 transition-all shadow-sm cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
