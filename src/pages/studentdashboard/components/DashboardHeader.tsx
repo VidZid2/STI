@@ -23,6 +23,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const [isDarkMode, setIsDarkMode] = useState(() => 
         typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
     );
+    const [isScrolled, setIsScrolled] = useState(false);
     
     useEffect(() => {
         const checkDarkMode = () => {
@@ -33,11 +34,20 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         const observer = new MutationObserver(checkDarkMode);
         observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         
-        return () => observer.disconnect();
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 10);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll();
+        
+        return () => {
+            observer.disconnect();
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, []);
 
     return (
-    <header className="header">
+    <header className={`header ${isScrolled ? 'header-scrolled' : ''}`}>
         <div className="header-content w-full flex items-center justify-between px-1 sm:px-4">
             <div className="header-left flex items-center gap-1 sm:gap-2 shrink-0">
 

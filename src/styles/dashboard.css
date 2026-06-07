@@ -243,7 +243,6 @@ body.modal-open {
     overflow: hidden !important;
 }
 
-/* ===== HEADER ===== */
 .header {
     background: rgba(255, 255, 255, 0.98);
     /* Reduced backdrop-filter blur for better performance */
@@ -261,6 +260,27 @@ body.modal-open {
     z-index: 1000;
     box-shadow: var(--shadow-sm);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header.header-scrolled {
+    height: 56px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .header.header-scrolled {
+    background: rgba(15, 23, 42, 0.85);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 640px) {
+    .header {
+        padding: 0 0.25rem;
+        height: 64px;
+    }
+    .header.header-scrolled {
+        height: 50px;
+    }
 }
 
 .header-content {
