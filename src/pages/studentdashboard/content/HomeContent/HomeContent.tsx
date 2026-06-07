@@ -666,17 +666,6 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                             </div>
                         </div>
                         
-                        {/* Footer: Premium Carousel Controls (Moved to Bottom) */}
-                        <div className="w-full pt-2 mt-1 border-t border-slate-100 dark:border-slate-700/50">
-                            <div className="flex items-center justify-between w-full gap-2 bg-slate-50 dark:bg-slate-800/80 p-1.5 rounded-[14px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md">
-                                <button onClick={handlePrevCourse} className="w-10 h-10 rounded-[10px] flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-white dark:hover:text-indigo-400 dark:hover:bg-slate-700 transition-all shadow-sm cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-                                </button>
-                                <span className="text-sm font-bold text-slate-700 dark:text-slate-200 text-center tracking-wide flex-1">{safeIndex + 1} <span className="text-slate-400 font-medium mx-0.5">/</span> {sortedCourses.length}</span>
-                                <button onClick={handleNextCourse} className="w-10 h-10 rounded-[10px] flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-white dark:hover:text-indigo-400 dark:hover:bg-slate-700 transition-all shadow-sm cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-                                </button>
-                            </div>
                         </div>
                         </div>
 
@@ -763,7 +752,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                     </div>
 
                     {/* RIGHT COLUMN (Desktop): Carousel Container — Dynamic Course Card */}
-                    <div className="w-full flex-1 flex justify-center pb-2 min-w-0">
+                    <div className="w-full flex-1 flex flex-col items-center pb-2 min-w-0">
 
                         <AnimatePresence mode="wait">
                             <motion.div
@@ -1013,6 +1002,19 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                 </div>
                             </motion.div>
                         </AnimatePresence>
+
+                        {/* Footer: Premium Carousel Controls (Moved to Bottom of the Course Card) */}
+                        <div className="w-full max-w-4xl pt-4 mt-2">
+                            <div className="flex items-center justify-between w-full gap-2 bg-slate-50 dark:bg-slate-800/80 p-1.5 rounded-[14px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md">
+                                <button onClick={handlePrevCourse} className="w-10 h-10 rounded-[10px] flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-white dark:hover:text-indigo-400 dark:hover:bg-slate-700 transition-all shadow-sm cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                </button>
+                                <span className="text-sm font-bold text-slate-700 dark:text-slate-200 text-center tracking-wide flex-1">{safeIndex + 1} <span className="text-slate-400 font-medium mx-0.5">/</span> {sortedCourses.length}</span>
+                                <button onClick={handleNextCourse} className="w-10 h-10 rounded-[10px] flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-white dark:hover:text-indigo-400 dark:hover:bg-slate-700 transition-all shadow-sm cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </motion.div>
