@@ -300,10 +300,10 @@ export default function UserProfileDropdown() {
                     )}
                 >
                     {/* Premium SaaS Avatar Container */}
-                    <div className="relative shrink-0 w-8 h-8 sm:w-10 sm:h-10 mr-0.5 sm:mr-1.5">
+                    <div className="relative shrink-0 w-8 h-8 sm:w-10 sm:h-10 mr-0.5 sm:mr-1.5 flex items-center justify-center">
                         {/* Circular Level Gauge */}
                         <svg 
-                            className="absolute -inset-[3px] w-[46px] h-[46px] pointer-events-none z-0" 
+                            className="absolute -inset-[3px] pointer-events-none z-0" 
                             viewBox="0 0 46 46"
                             style={{ transform: 'rotate(-90deg)' }}
                         >
@@ -353,7 +353,7 @@ export default function UserProfileDropdown() {
                         </div>
                         
                         {/* Level Badge overlapping bottom center */}
-                        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-20">
+                        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-20 flex justify-center">
                             <motion.div 
                                 className={cn(
                                     'min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[8.5px] font-bold tracking-wider shadow-sm border-2 transition-colors duration-300 bg-blue-500 text-white',
