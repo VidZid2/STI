@@ -680,50 +680,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                         </div>
                         </div>
 
-                        {/* Continue Learning (Redesigned as Vertical Card) */}
-                        <motion.div 
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ type: 'spring' as const, stiffness: 300, damping: 24 }}
-                            className="order-2 lg:order-2 relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 shadow-sm rounded-[24px] p-5 flex flex-col items-start gap-5 group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 cursor-pointer w-full"
-                        >
-                            {/* SaaS Background Accents */}
-                            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
-                            
-                            {/* Top: Icon & Core Info */}
-                            <div className="flex items-center gap-4 relative z-10 w-full">
-                                <motion.div
-                                    whileHover={{ scale: 1.05, rotate: -5 }}
-                                    transition={{ type: 'spring' as const, stiffness: 400, damping: 15 }}
-                                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-[16px] sm:rounded-[20px] bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
-                                >
-                                    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                </motion.div>
 
-                                <div className="flex flex-col flex-1 min-w-0">
-                                    <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight mb-1 truncate">
-                                        Continue Learning
-                                    </h1>
-                                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium line-clamp-2">
-                                        CP1: Module 1: Introduction to Programming
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Divider / Separator */}
-                            <div className="w-full h-[1px] bg-slate-200/80 dark:bg-slate-800 relative z-10 my-0.5" />
-
-                            {/* Bottom: Action Button */}
-                            <div className="flex w-full mt-1 relative z-10">
-                                <motion.button 
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="w-full flex items-center justify-center bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 font-bold py-2.5 px-4 rounded-[14px] transition-colors shadow-sm"
-                                >
-                                    Continue
-                                </motion.button>
-                            </div>
-                        </motion.div>
 
                         {/* 4 Action Buttons (Redesigned as Control Center Tiles) */}
                         <div className="order-1 lg:order-3 hidden sm:grid grid-cols-2 gap-3 w-full">
