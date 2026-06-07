@@ -1586,7 +1586,7 @@ export default function ToolbarExpandable() {
                                 className={cn(
                                     'overflow-hidden rounded-xl border',
                                     // Mobile: fixed, centered horizontally
-                                    'fixed left-1/2 -translate-x-1/2 top-[80px] w-[calc(100vw-2rem)] max-w-[400px]',
+                                    'fixed left-1/2 -translate-x-1/2 top-[60px] w-[calc(100vw-2rem)] max-w-[400px]',
                                     // Desktop: absolute, left-aligned below buttons
                                     'sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:translate-x-0 sm:w-auto sm:max-w-none',
                                     isDarkMode
