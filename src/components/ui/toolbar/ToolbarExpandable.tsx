@@ -1544,7 +1544,7 @@ export default function ToolbarExpandable() {
                                     whileHover={{ scale: 1.05, rotate: -5 }}
                                     transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                                     className={cn(
-                                        'relative flex shrink-0 select-none appearance-none items-center justify-center transition-all duration-300 focus-visible:ring-2 shadow-sm border w-10 h-10 sm:w-12 sm:h-12 lg:w-12 lg:h-12 rounded-xl sm:rounded-2xl',
+                                        'relative flex shrink-0 select-none appearance-none items-center justify-center transition-all duration-300 focus-visible:ring-2 shadow-sm border w-[44px] h-[44px] sm:w-[52px] sm:h-[52px] lg:w-[56px] lg:h-[56px] rounded-xl sm:rounded-2xl',
                                         active === item.id
                                             ? isDarkMode ? 'bg-slate-700 border-slate-600 text-slate-100 shadow-md' : 'bg-blue-50 border-blue-200 text-blue-600 shadow-md'
                                             : isDarkMode ? 'bg-slate-800/80 border-slate-700/60 hover:border-slate-500 hover:text-slate-200 hover:bg-slate-700' : 'bg-slate-50/50 border-slate-200/60 hover:border-slate-300 hover:bg-white hover:text-slate-700'
