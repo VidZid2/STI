@@ -1433,7 +1433,7 @@ export default function ToolbarExpandable() {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 5, scale: 0.9 }}
                                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                                className='absolute top-full mt-3 px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-50 text-[11px] font-medium bg-white text-zinc-700 border border-zinc-200'
+                                className='hidden md:block absolute top-full mt-3 px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-50 text-[11px] font-medium bg-white text-zinc-700 border border-zinc-200'
                                 style={{ left: '-95px' }}
                             >
                                 <div className='flex items-center gap-2'>
