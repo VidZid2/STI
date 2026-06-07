@@ -6075,26 +6075,35 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
         display: none !important;
     }
 
-    /* Nav container allows horizontal scroll with proper spacing */
+    /* Nav container evenly distributes items */
     .sidebar-wrapper.mobile-dock .sidebar-nav {
         display: flex !important;
         flex-direction: row !important;
         width: 100% !important;
         height: 100% !important;
-        padding: 0 16px !important;
+        padding: 0 4px !important;
         margin: 0 !important;
-        gap: 16px !important;
-        overflow-x: auto !important;
+        gap: 0 !important;
+        overflow-x: visible !important;
         overflow-y: hidden !important; /* Strictly lock vertical overflow */
-        -webkit-overflow-scrolling: touch !important;
         align-items: center !important;
-        justify-content: flex-start !important;
+        justify-content: space-between !important;
         scrollbar-width: none !important; /* Firefox */
         -ms-overflow-style: none !important; /* IE and Edge */
         border: none !important;
         outline: none !important;
         box-shadow: none !important;
         background: transparent !important;
+    }
+    
+    /* Ensure all wrappers (divs and buttons) stretch equally */
+    .sidebar-wrapper.mobile-dock .sidebar-nav > * {
+        flex: 1 1 0 !important;
+        height: 100% !important;
+        min-width: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
     
     /* Cross-browser Webkit scrollbar hiding for dock elements */
@@ -6106,18 +6115,17 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
         height: 0 !important;
     }
 
-    /* Each nav item has fixed min width to prevent squishing */
+    /* Each nav item takes full width of its wrapper */
     .sidebar-wrapper.mobile-dock .nav-item {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
         gap: 4px !important; 
-        padding: 6px 4px !important;
+        padding: 6px 0 !important;
         margin: 0 !important;
+        width: 100% !important;
         height: 100% !important;
-        flex: 0 0 auto !important; /* Prevents squishing */
-        min-width: 64px !important;
         border-radius: 8px !important;
         background: transparent !important;
         transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
