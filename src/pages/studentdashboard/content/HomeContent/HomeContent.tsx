@@ -726,7 +726,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                         </motion.div>
 
                         {/* 4 Action Buttons (Redesigned as Control Center Tiles) */}
-                        <div className="order-1 lg:order-3 grid grid-cols-2 gap-3 w-full">
+                        <div className="order-1 lg:order-3 hidden sm:grid grid-cols-2 gap-3 w-full">
                             {/* Tools */}
                             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-[0_1px_2px_rgba(0,0,0,0.02)] rounded-[16px] p-3.5 flex items-center gap-3.5 group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer overflow-hidden">
                                 <motion.div
