@@ -1584,13 +1584,18 @@ export default function ToolbarExpandable() {
                                 }}
                                 exit={{ height: 0, width: widthContainer || 150 }}
                                 className={cn(
-                                    'absolute top-full mt-2 right-0 sm:left-0 sm:right-auto overflow-hidden rounded-xl border max-w-[calc(100vw-2rem)] sm:max-w-none',
+                                    'overflow-hidden rounded-xl border',
+                                    // Mobile: fixed, centered horizontally
+                                    'fixed left-1/2 -translate-x-1/2 top-[60px] w-[calc(100vw-2rem)] max-w-[400px]',
+                                    // Desktop: absolute, left-aligned below buttons
+                                    'sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:translate-x-0 sm:w-auto sm:max-w-none',
                                     isDarkMode
                                         ? 'border-slate-700/60 bg-slate-800 shadow-[0_12px_40px_rgba(0,0,0,0.4)]'
                                         : 'border-black/[0.08] bg-white shadow-[0_12px_40px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.04)]'
                                 )}
                                 style={{
                                     originY: 0,
+                                    zIndex: 9999,
                                 }}
                             >
                                 <div ref={contentRef} className='p-4'>
