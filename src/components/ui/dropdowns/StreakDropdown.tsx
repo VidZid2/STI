@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { getStreakData, getStreakTier, type StreakData } from '../../../services/studyTimeService';
 import { DailyStreakModal } from '../../modals/DailyStreakModal';
@@ -12,8 +13,74 @@ interface StreakDropdownProps {
     className?: string;
 }
 
+interface DropdownWrapperProps {
+    isMobile: boolean;
+    isOpen: boolean;
+    setIsOpen: (val: boolean) => void;
+    dropdownRef: React.RefObject<HTMLDivElement | null>;
+    isDarkMode: boolean;
+    children: React.ReactNode;
+}
+
+const DropdownWrapper: React.FC<DropdownWrapperProps> = ({ isMobile, isOpen, setIsOpen, dropdownRef, isDarkMode, children }) => {
+    const content = (
+        <div className={isMobile ? "fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-auto" : "absolute top-full mt-2 z-50 -left-6 sm:left-1/2 sm:-translate-x-1/2"}>
+            {isMobile && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsOpen(false);
+                    }}
+                />
+            )}
+            <motion.div
+                ref={dropdownRef}
+                initial={isMobile ? { opacity: 0, y: 15, scale: 0.95 } : { opacity: 0, y: 6 }}
+                animate={isMobile ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0 }}
+                exit={isMobile ? { opacity: 0, y: 15, scale: 0.95 } : { opacity: 0, y: 4 }}
+                transition={isMobile ? { duration: 0.2, type: 'spring', stiffness: 400, damping: 30 } : { duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+                className={isMobile ? "relative w-full max-w-[340px] rounded-[2rem] overflow-hidden z-10 shadow-2xl" : "w-[340px] max-w-[calc(100vw-16px)] rounded-2xl overflow-hidden origin-top"}
+                style={{
+                    backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc',
+                    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                    boxShadow: isDarkMode
+                        ? '0 16px 48px -12px rgba(0,0,0,0.5)'
+                        : '0 16px 48px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.02)',
+                }}
+                onClick={isMobile ? (e) => e.stopPropagation() : undefined}
+            >
+                {children}
+            </motion.div>
+        </div>
+    );
+
+    const portalTarget = typeof document !== 'undefined' ? document.body : null;
+    
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                isMobile && portalTarget 
+                    ? createPortal(content, portalTarget)
+                    : content
+            )}
+        </AnimatePresence>
+    );
+};
+
 const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 640 : false);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const [streakData, setStreakData] = useState<StreakData>(() => getStreakData());
     const [showWelcome, setShowWelcome] = useState(false);
     const [showStreakModal, setShowStreakModal] = useState(false);
@@ -448,36 +515,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
             </motion.button>
 
             {/* ─── Dropdown Panel ─── */}
-            <AnimatePresence>
-                {isOpen && (
-                    <div className="fixed inset-0 sm:absolute sm:inset-auto sm:top-full sm:mt-2 z-[9999] sm:z-50 sm:-left-6 md:left-1/2 md:-translate-x-1/2 flex items-center justify-center sm:block">
-                        {/* Mobile Backdrop */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm sm:hidden"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsOpen(false);
-                            }}
-                        />
-                        <motion.div
-                            ref={dropdownRef}
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-                            className="relative w-[340px] max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden origin-center sm:origin-top z-10"
-                            style={{
-                                backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc',
-                                border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-                                boxShadow: isDarkMode
-                                    ? '0 16px 48px -12px rgba(0,0,0,0.5)'
-                                    : '0 16px 48px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.02)',
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                        >
+            <DropdownWrapper isMobile={isMobile} isOpen={isOpen} setIsOpen={setIsOpen} dropdownRef={dropdownRef as any} isDarkMode={isDarkMode}>
                             {/* ─── PREMIUM STUDY TOOLS LAYOUT ─── */}
                             <div className="p-3.5 flex flex-col gap-3">
                             
@@ -779,10 +817,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                             </div>
 
                         </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+            </DropdownWrapper>
         </div>
     );
 };
