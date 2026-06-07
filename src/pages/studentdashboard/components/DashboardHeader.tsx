@@ -38,11 +38,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
     return (
     <header className="header">
-        <div className="header-content w-full flex items-center justify-between px-2 sm:px-4">
-            <div className="header-left flex items-center gap-1 sm:gap-2">
+        <div className="header-content w-full flex items-center justify-between px-1 sm:px-4">
+            <div className="header-left flex items-center gap-1 sm:gap-2 shrink-0">
 
                 <motion.div
-                    className="logo flex items-center gap-1.5 sm:gap-2.5"
+                    className="logo flex items-center gap-1 sm:gap-2.5 shrink-0"
                     onClick={() => { setActiveView('home'); }}
                     style={{ cursor: 'pointer' }}
                     whileHover={{ scale: 1.01 }}
@@ -97,9 +97,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
             <div className="header-center hidden md:flex items-center justify-center w-full max-w-[600px]" />
 
-            <div className="header-right flex items-center gap-1.5 sm:gap-3">
+            <div className="header-right flex items-center gap-0.5 sm:gap-3 shrink-0">
                 <ToolbarExpandable />
-                <div className={`w-[1px] h-8 mx-0.5 sm:mx-2 ${isDarkMode ? 'bg-slate-700/50' : 'bg-zinc-200'}`}></div>
+                <div className={`w-[1px] h-6 sm:h-8 mx-0.5 sm:mx-2 ${isDarkMode ? 'bg-slate-700/50' : 'bg-zinc-200'}`}></div>
                 <UserProfileDropdown />
             </div>
         </div>

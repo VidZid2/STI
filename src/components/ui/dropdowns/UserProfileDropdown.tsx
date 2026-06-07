@@ -300,7 +300,7 @@ export default function UserProfileDropdown() {
                     )}
                 >
                     {/* Premium SaaS Avatar Container */}
-                    <div className="relative shrink-0 w-10 h-10 mr-1.5">
+                    <div className="relative shrink-0 w-8 h-8 sm:w-10 sm:h-10 mr-0.5 sm:mr-1.5">
                         {/* Circular Level Gauge */}
                         <svg 
                             className="absolute -inset-[3px] w-[46px] h-[46px] pointer-events-none z-0" 

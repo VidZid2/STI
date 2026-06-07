@@ -139,13 +139,13 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
     };
 
     return (
-        <div className="w-full h-full p-4 pb-28 sm:p-6 sm:pb-8 lg:p-8 max-w-[1400px] mx-auto animate-in fade-in duration-500">
+        <div className="w-full h-full p-2 pb-28 sm:p-6 sm:pb-8 lg:p-8 max-w-[1400px] mx-auto animate-in fade-in duration-500">
             {/* Welcome Modal Card (SaaS Style) */}
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="relative overflow-hidden bg-white/60 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 shadow-sm hover:shadow-md transition-all duration-300 rounded-[28px] p-6 lg:p-8 flex flex-col gap-7 group"
+                className="relative overflow-hidden bg-white/60 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 shadow-sm hover:shadow-md transition-all duration-300 rounded-[24px] sm:rounded-[28px] p-3 sm:p-6 lg:p-8 flex flex-col gap-4 sm:gap-7 group"
             >
                 {/* Background ambient glow effect for SaaS feel */}
                 <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
@@ -154,7 +154,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                 {/* --- Top Section: Profile Card --- */}
                 <div className="flex flex-col relative w-full mb-0">
                     {/* Good Morning / User Profile Card (Study Tools UI/UX) */}
-                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 w-full overflow-hidden">
+                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-3 sm:p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 w-full overflow-hidden">
                         
                         {/* Header (Clickable for Dropdown) */}
                         <div 
@@ -495,7 +495,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                 {/* --- Middle Section: Continue Where You Left Off --- */}
                 <div className="flex flex-col gap-6 relative z-10 w-full">
                     {/* Top: STI Campus News Card */}
-                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-yellow-300 dark:hover:border-yellow-700 w-full overflow-hidden">
+                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-3 sm:p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-yellow-300 dark:hover:border-yellow-700 w-full overflow-hidden">
                         
                         {/* Header (Always Visible, Minimized State imitating Student Tools) */}
                         <div 
