@@ -1638,6 +1638,9 @@
         position: relative;
         height: auto;
         overflow: visible;
+        zoom: 0.85; /* Globally scale down mobile/tablet to avoid massive text/elements */
+        -moz-transform: scale(0.85); /* Firefox fallback if older than v126 */
+        -moz-transform-origin: top center;
     }
 
     .hz-track {
