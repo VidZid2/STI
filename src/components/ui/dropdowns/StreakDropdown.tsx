@@ -23,49 +23,76 @@ interface DropdownWrapperProps {
 }
 
 const DropdownWrapper: React.FC<DropdownWrapperProps> = ({ isMobile, isOpen, setIsOpen, dropdownRef, isDarkMode, children }) => {
-    const content = (
-        <div className={isMobile ? "fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-auto" : "absolute top-full mt-2 z-50 -left-6 sm:left-1/2 sm:-translate-x-1/2"}>
-            {isMobile && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setIsOpen(false);
-                    }}
-                />
-            )}
-            <motion.div
-                ref={dropdownRef}
-                initial={isMobile ? { opacity: 0, y: 15, scale: 0.95 } : { opacity: 0, y: 6 }}
-                animate={isMobile ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0 }}
-                exit={isMobile ? { opacity: 0, y: 15, scale: 0.95 } : { opacity: 0, y: 4 }}
-                transition={isMobile ? { duration: 0.2, type: 'spring', stiffness: 400, damping: 30 } : { duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-                className={isMobile ? "relative w-full max-w-[340px] rounded-[2rem] overflow-hidden z-10 shadow-2xl" : "w-[340px] max-w-[calc(100vw-16px)] rounded-2xl overflow-hidden origin-top"}
-                style={{
-                    backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc',
-                    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-                    boxShadow: isDarkMode
-                        ? '0 16px 48px -12px rgba(0,0,0,0.5)'
-                        : '0 16px 48px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.02)',
-                }}
-                onClick={isMobile ? (e) => e.stopPropagation() : undefined}
-            >
-                {children}
-            </motion.div>
-        </div>
-    );
-
     const portalTarget = typeof document !== 'undefined' ? document.body : null;
+
+    if (isMobile && portalTarget) {
+        return createPortal(
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        key="mobile-modal-wrapper"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-auto"
+                    >
+                        <motion.div
+                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsOpen(false);
+                            }}
+                        />
+                        <motion.div
+                            ref={dropdownRef}
+                            initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 15, scale: 0.95 }}
+                            transition={{ duration: 0.2, type: 'spring', stiffness: 400, damping: 30 }}
+                            className="relative w-full max-w-[340px] rounded-[2rem] overflow-hidden z-10 shadow-2xl"
+                            style={{
+                                backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc',
+                                border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                                boxShadow: isDarkMode
+                                    ? '0 25px 50px -12px rgba(0,0,0,0.7)'
+                                    : '0 25px 50px -12px rgba(0,0,0,0.15)',
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {children}
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>,
+            portalTarget
+        );
+    }
     
     return (
         <AnimatePresence>
             {isOpen && (
-                isMobile && portalTarget 
-                    ? createPortal(content, portalTarget)
-                    : content
+                <motion.div 
+                    key="desktop-dropdown-wrapper"
+                    className="absolute top-full mt-2 z-50 -left-6 sm:left-1/2 sm:-translate-x-1/2"
+                >
+                    <motion.div
+                        ref={dropdownRef}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 4 }}
+                        transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+                        className="w-[340px] max-w-[calc(100vw-16px)] rounded-2xl overflow-hidden origin-top"
+                        style={{
+                            backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc',
+                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
+                            boxShadow: isDarkMode
+                                ? '0 16px 48px -12px rgba(0,0,0,0.5)'
+                                : '0 16px 48px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.02)',
+                        }}
+                    >
+                        {children}
+                    </motion.div>
+                </motion.div>
             )}
         </AnimatePresence>
     );
