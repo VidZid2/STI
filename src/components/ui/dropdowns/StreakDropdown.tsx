@@ -450,14 +450,25 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
             {/* ─── Dropdown Panel ─── */}
             <AnimatePresence>
                 {isOpen && (
-                    <div className="absolute top-full mt-2 z-50 -left-6 sm:left-1/2 sm:-translate-x-1/2">
+                    <div className="fixed inset-0 sm:absolute sm:inset-auto sm:top-full sm:mt-2 z-[9999] sm:z-50 sm:-left-6 md:left-1/2 md:-translate-x-1/2 flex items-center justify-center sm:block">
+                        {/* Mobile Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm sm:hidden"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsOpen(false);
+                            }}
+                        />
                         <motion.div
                             ref={dropdownRef}
-                            initial={{ opacity: 0, y: 6 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 4 }}
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
                             transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-                            className="w-[340px] max-w-[calc(100vw-16px)] rounded-2xl overflow-hidden origin-top"
+                            className="relative w-[340px] max-w-[calc(100vw-32px)] rounded-3xl overflow-hidden origin-center sm:origin-top z-10"
                             style={{
                                 backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc',
                                 border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
@@ -465,6 +476,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                                     ? '0 16px 48px -12px rgba(0,0,0,0.5)'
                                     : '0 16px 48px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.02)',
                             }}
+                            onClick={(e) => e.stopPropagation()}
                         >
                             {/* ─── PREMIUM STUDY TOOLS LAYOUT ─── */}
                             <div className="p-3.5 flex flex-col gap-3">
