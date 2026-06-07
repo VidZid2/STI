@@ -875,23 +875,23 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                     <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-4 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 w-full overflow-hidden cursor-default">
                                         <div className="flex flex-col gap-4 sm:gap-5 w-full">
                                             {/* Top: Icon, Text & Actions */}
-                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 w-full">
-                                                <div className="flex items-center gap-5 w-full sm:w-auto">
+                                            <div className="flex flex-row items-center justify-between gap-3 sm:gap-5 w-full">
+                                                <div className="flex items-center gap-3 sm:gap-5 flex-1 min-w-0">
                                                     <motion.div
                                                         whileHover={{ scale: 1.05, rotate: -5 }}
                                                         transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                                        className="w-14 h-14 rounded-[20px] bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300"
+                                                        className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl sm:rounded-[20px] bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300"
                                                     >
-                                                        <svg className="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                                                        <svg className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
                                                     </motion.div>
-                                                    <div className="flex flex-col flex-1">
-                                                        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-1.5 transition-colors">
+                                                    <div className="flex flex-col flex-1 min-w-0">
+                                                        <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight sm:leading-none mb-1 sm:mb-1.5 transition-colors">
                                                             {currentCourse.title}
                                                         </h2>
-                                                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-none flex items-center gap-1.5 flex-wrap">
-                                                            <span>{currentCourse.subtitle?.replace('·', '-')}</span>
+                                                        <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-none flex items-center gap-1.5 flex-wrap">
+                                                            <span className="truncate">{currentCourse.subtitle?.replace('·', '-')}</span>
                                                             {isCurrentCourseBookmarked && (
-                                                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[6px] bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800/50 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold leading-none select-none">
+                                                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[6px] bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800/50 text-indigo-600 dark:text-indigo-400 text-[9px] sm:text-[10px] font-bold leading-none select-none flex-shrink-0">
                                                                     <svg className="w-2.5 h-2.5 fill-current flex-shrink-0" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                                                                     Pinned
                                                                 </span>
@@ -901,7 +901,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                                 </div>
 
                                                 {/* Right: Actions */}
-                                                <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                                                <div className="flex items-center flex-shrink-0">
                                                     {/* Bookmark Button (Icon Only, Minimalist) */}
                                                     <motion.button 
                                                         whileHover={{ scale: 1.05 }}
@@ -910,7 +910,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                                             e.preventDefault();
                                                             handleToggleBookmark(currentCourse.id);
                                                         }}
-                                                        className={`w-14 h-14 flex items-center justify-center rounded-[20px] cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md flex-shrink-0 border ${
+                                                        className={`w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-2xl sm:rounded-[20px] cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md flex-shrink-0 border ${
                                                             isCurrentCourseBookmarked 
                                                                 ? 'bg-indigo-50 border-indigo-200 text-indigo-600 dark:bg-indigo-900/30 dark:border-indigo-800/50 dark:text-indigo-400' 
                                                                 : 'bg-slate-50 border-slate-200/80 text-slate-400 hover:bg-slate-100 hover:text-indigo-600 dark:bg-slate-800/50 dark:border-slate-700/80 dark:text-slate-500 dark:hover:bg-slate-700/50 dark:hover:text-indigo-400'
@@ -918,7 +918,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                                         aria-label={isCurrentCourseBookmarked ? "Remove bookmark" : "Bookmark course"}
                                                     >
                                                         <svg 
-                                                            className={`w-6 h-6 transition-colors duration-300 ${isCurrentCourseBookmarked ? 'fill-indigo-600/20 dark:fill-indigo-400/20' : ''}`} 
+                                                            className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-300 ${isCurrentCourseBookmarked ? 'fill-indigo-600/20 dark:fill-indigo-400/20' : ''}`} 
                                                             fill="none" 
                                                             stroke="currentColor" 
                                                             strokeWidth="2.5" 
