@@ -82,13 +82,7 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
 }) => {
     const [streakData, setStreakData] = useState<StreakData | null>(propStreakData || null);
     const [isDarkMode, setIsDarkMode] = useState(false);
-    const [hasScrolled, setHasScrolled] = useState(false);
 
-    useEffect(() => {
-        if (sessionStorage.getItem('streak-modal-scrolled') === 'true') {
-            setHasScrolled(true);
-        }
-    }, []);
 
     useEffect(() => {
         if (isOpen && !propStreakData) {
@@ -236,12 +230,6 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
 
                             {/* Content */}
                             <div 
-                                onScroll={(e) => {
-                                    if (!hasScrolled && e.currentTarget.scrollTop > 10) {
-                                        setHasScrolled(true);
-                                        sessionStorage.setItem('streak-modal-scrolled', 'true');
-                                    }
-                                }}
                                 className='relative rounded-[24px] pt-5 sm:pt-8 px-4 sm:px-7 pb-4 sm:pb-6 flex flex-col gap-4 sm:gap-6 overflow-y-auto overflow-x-hidden max-h-[85vh] sm:max-h-[80vh] max-md:[&::-webkit-scrollbar]:hidden max-md:[-ms-overflow-style:none] max-md:[scrollbar-width:none] scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:mt-4 [&::-webkit-scrollbar-track]:mb-4'
                             >
                                 {/* Mobile Close button (Scrolls with content) */}
@@ -399,29 +387,7 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                                 />
                             </div>
 
-                            {/* Scroll Indicator */}
-                            <AnimatePresence>
-                                {!hasScrolled && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 15, scale: 0.8 }}
-                                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                                        className="md:hidden absolute bottom-8 left-0 right-0 mx-auto w-max flex flex-col items-center justify-center text-orange-500 dark:text-orange-400 z-[70] pointer-events-none drop-shadow-sm bg-white/95 dark:bg-zinc-800/95 px-5 py-2 rounded-full backdrop-blur-md border border-orange-200/60 dark:border-orange-500/30 shadow-lg"
-                                    >
-                                        <motion.div
-                                            animate={{ y: [0, 4, 0] }}
-                                            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                                            className="flex flex-col items-center justify-center"
-                                        >
-                                            <span className="text-[10px] font-bold uppercase tracking-widest pl-[0.1em] mb-0.5">Scroll</span>
-                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                <polyline points="6 9 12 15 18 9" />
-                                            </svg>
-                                        </motion.div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+
                         </motion.div>
                     </div>
                 </>
