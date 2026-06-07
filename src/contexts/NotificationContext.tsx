@@ -46,15 +46,7 @@ const saveStoredIds = (key: string, ids: Set<any>) => {
 };
 
 // Initial notifications data - single source of truth
-const BASE_NOTIFICATIONS: Notification[] = [
-    { id: 999, title: 'Testing from testing', message: 'Just checking to see if everything is perfectly fitted inside this newly scaled container.', isRead: false, timestamp: new Date(), category: 'announcement', type: 'system' },
-    { id: 1, title: 'Assignment Pending', message: 'Complete your Mathematics assignment before the deadline', isRead: false, timestamp: new Date(Date.now() - 5 * 60000), category: 'assignment', type: 'assignment' },
-    { id: 2, title: 'Quiz Pending', message: 'Computer Science quiz available - complete before Friday', isRead: false, timestamp: new Date(Date.now() - 30 * 60000), category: 'quiz', type: 'assignment' },
-    { id: 3, title: 'Performance Task Pending', message: 'Submit your English presentation by next week', isRead: false, timestamp: new Date(Date.now() - 2 * 3600000), category: 'assignment', type: 'assignment' },
-    { id: 4, teacher: 'Prof. Johnson', title: 'New Assignment Added', message: 'Added "Chapter 5 Review" assignment', isRead: true, timestamp: new Date(Date.now() - 24 * 3600000), category: 'assignment', type: 'assignment' },
-    { id: 5, teacher: 'Prof. Smith', title: 'New Quiz Added', message: 'Created "Physics Fundamentals" quiz', isRead: true, timestamp: new Date(Date.now() - 2 * 24 * 3600000), category: 'quiz', type: 'assignment' },
-    { id: 6, teacher: 'Prof. Williams', title: 'Campus Event Tomorrow', message: 'Don\'t forget the tech symposium at 2PM', isRead: true, timestamp: new Date(Date.now() - 5 * 24 * 3600000), category: 'announcement', type: 'announcement' },
-];
+const BASE_NOTIFICATIONS: Notification[] = [];
 
 // Get initial notifications with persisted read state
 const getInitialNotifications = (): Notification[] => {
