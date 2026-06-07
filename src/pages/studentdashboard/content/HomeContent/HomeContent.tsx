@@ -1009,39 +1009,40 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                         {/* Continue Action Card */}
                                         <div 
                                             className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 shadow-sm rounded-[24px] p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group/action transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer"
+                                            className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 shadow-sm rounded-[24px] p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 sm:gap-4 group/action transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer"
                                             onClick={handleContinueCourse}
                                         >
-                                            <div className="flex items-center gap-5 w-full sm:w-auto">
+                                            <div className="flex items-center gap-4 sm:gap-5 w-full sm:w-auto">
                                                 <motion.div
                                                     whileHover={{ scale: 1.05, rotate: -5 }}
                                                     transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                                    className="w-14 h-14 rounded-[20px] bg-blue-100 dark:bg-blue-900/50 border border-blue-200/60 dark:border-blue-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300"
+                                                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] bg-blue-100 dark:bg-blue-900/50 border border-blue-200/60 dark:border-blue-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300"
                                                 >
-                                                    <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                                    <svg className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                                                 </motion.div>
-                                                <div>
-                                                    <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-1.5 transition-colors">
+                                                <div className="flex-1 min-w-0">
+                                                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-1.5 transition-colors truncate">
                                                         Continue
                                                     </h2>
-                                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-none">
+                                                    <p className="text-sm sm:text-base font-medium text-slate-500 dark:text-slate-400 leading-tight truncate">
                                                         Resume where you left off
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-[12px] border border-blue-200/60 dark:border-blue-800/40">
-                                                    <div className="w-6 h-6 rounded-[8px] bg-blue-200 dark:bg-blue-800/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                            <div className="flex flex-row items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0 justify-between sm:justify-end">
+                                                <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-[14px] border border-blue-200/60 dark:border-blue-800/40 flex-1 sm:flex-none justify-center">
+                                                    <div className="w-7 h-7 rounded-[10px] bg-blue-200 dark:bg-blue-800/50 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                                     </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="text-[10px] font-bold text-blue-600/70 dark:text-blue-400/70 uppercase leading-none mb-0.5">EST. TIME</span>
-                                                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-none">{currentModulesRemaining > 0 ? '~25 min' : 'Completed'}</span>
+                                                    <div className="flex flex-col min-w-0">
+                                                        <span className="text-[10px] sm:text-[11px] font-bold text-blue-600/70 dark:text-blue-400/70 uppercase leading-none mb-0.5 truncate">EST. TIME</span>
+                                                        <span className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 leading-none truncate">{currentModulesRemaining > 0 ? '~25 min' : 'Completed'}</span>
                                                     </div>
                                                 </div>
                                                 <motion.button
                                                     whileHover={{ scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
-                                                    className="px-5 h-10 rounded-[14px] bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 flex items-center justify-center text-white font-bold shadow-sm cursor-pointer transition-colors"
+                                                    className="px-6 h-11 rounded-[14px] bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 flex items-center justify-center text-white font-bold shadow-sm cursor-pointer transition-colors flex-1 sm:flex-none text-sm sm:text-base"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         handleContinueCourse();
