@@ -60,8 +60,6 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
 
     const handleScroll = React.useCallback((e: React.UIEvent<HTMLDivElement>) => {
         const currentScrollY = e.currentTarget.scrollTop;
-        const scrollHeight = e.currentTarget.scrollHeight;
-        const clientHeight = e.currentTarget.clientHeight;
         
         // Handle top of scroll
         if (currentScrollY <= 10) {
@@ -73,7 +71,6 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
         }
 
         const delta = currentScrollY - lastScrollY.current;
-        const isNearBottom = scrollHeight - currentScrollY - clientHeight < 50;
         
         if (delta > 0) {
             if (scrollDirection.current !== 'down') {

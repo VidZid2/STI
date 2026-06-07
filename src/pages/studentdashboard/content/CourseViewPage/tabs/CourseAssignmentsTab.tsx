@@ -5,7 +5,6 @@
  */
 import * as React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { getCurrentUser } from '../../../../../services/authService';
 import { EmptyState } from '../components/SharedComponents';
 import type { CourseTask, TaskCategory } from '../data/demoCourses';
 import { TaskCard } from '../components/TaskCard';
@@ -305,8 +304,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                             transition={{ duration: 0.2, ease: "easeOut" }}
                                             className="flex flex-col gap-3"
                                         >
-                                            {paginatedTasks.map((task, index) => {
-                                        const globalIndex = startIndex + index;
+                                            {paginatedTasks.map((task, _index) => {
                                         const isSelected = task.id === selectedTaskId;
                                         
                                         const pointsScored = task.score !== null ? Number(task.score) : 0;

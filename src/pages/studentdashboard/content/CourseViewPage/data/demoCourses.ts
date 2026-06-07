@@ -43,7 +43,7 @@ export type CourseDataType = {
         semester?: 'first' | 'second';
         contents: { type: ContentType; title: string; completed: boolean }[];
     }[];
-    tasks: { id: number; title: string; due: string; status: string; score: string | null; category: TaskCategory }[];
+    tasks: { id: number; title: string; due: string; status: string; score: string | number | null; category: TaskCategory }[];
     instructor: { name: string; title: string; email: string };
 };
 
@@ -64,7 +64,7 @@ export const DEFAULT_TASKS = [
     { id: 203, title: 'Final Semester Reflection', due: 'Locked', status: 'locked', score: null, category: 'journal' as TaskCategory, semester: 'second' },
 ];
 
-export const DEFAULT_MODULES = [
+export const DEFAULT_MODULES: CourseDataType['modules'] = [
     {
         id: 1, title: 'Module 1: Introduction to Programming', status: 'in-progress', term: 'prelims', semester: 'first', contents: [
             { type: 'handout-a', title: 'Course Overview', completed: false },
@@ -301,15 +301,17 @@ export const getDemoCourseData = (courseId: string): CourseDataType => {
             const demoModulesData = localStorage.getItem('demo-course-modules');
             if (demoModulesData) {
                 const demoModules = JSON.parse(demoModulesData) as Record<string, {
-                    modules: { id: number; title: string; status: string; contents: { type: string; title: string; completed: boolean }[] }[];
+                    modules: { id: number; title: string; status: string; term?: string; semester?: string; contents: { type: string; title: string; completed: boolean }[] }[];
                     tasks?: { id: number; title: string; due: string; status: string; score: string | null; category: string }[];
                 }>;
                 if (demoModules[courseId]) {
                     const baseData = COURSE_DATA[courseId] || DEFAULT_FALLBACK;
                     const typedModules = demoModules[courseId].modules.map(m => ({
                         ...m,
+                        term: m.term as any,
+                        semester: m.semester as any,
                         contents: m.contents.map(c => ({ ...c, type: c.type as ContentType }))
-                    }));
+                    })) as CourseDataType["modules"];
                     const typedTasks = demoModules[courseId].tasks?.map(t => ({
                         ...t,
                         category: t.category as TaskCategory

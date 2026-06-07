@@ -7,8 +7,8 @@ import { useSystemConfig } from '../../../../contexts/SystemConfigContext';
 import { InstructionsModal, SubmitModal, AddTaskModal } from './modals';
 import { QuickStatsBar } from './components/QuickStatsBar';
 import { StudentCard } from './components/StudentCard';
-import { SearchBar, EmptyState, TeacherActionButton } from './components/SharedComponents';
-import { ModuleCard, getLockedReason } from './components/ModuleCard';
+import { SearchBar, EmptyState } from './components/SharedComponents';
+import { ModuleCard, getLockedReason, type ModuleData } from './components/ModuleCard';
 import { ActionsDropdown } from './components/ActionsDropdown';
 import { useCourseTasks } from './hooks/useCourseTasks';
 import { TeacherModeContent } from './components/TeacherModeContent';
@@ -1222,7 +1222,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                         {paginatedModules.map((m, index) => {
                                                             const globalIndex = startIndex + index;
                                                             const isSelected = m.id === selectedModuleId;
-                                                            const completedCount = m.contents.filter(c => c.completed).length;
+                                                            const completedCount = m.contents.filter((c: any) => c.completed).length;
                                                             const progress = m.contents.length > 0 ? Math.round((completedCount / m.contents.length) * 100) : 0;
                                                             
                                                             let statusIcon;

@@ -452,8 +452,6 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
 
     const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
         const currentScrollY = e.currentTarget.scrollTop;
-        const scrollHeight = e.currentTarget.scrollHeight;
-        const clientHeight = e.currentTarget.clientHeight;
         
         // Handle iOS rubber banding / top of scroll
         if (currentScrollY <= 10) {
@@ -464,9 +462,7 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
             return;
         }
 
-        // Determine current scrolling direction
         const delta = currentScrollY - lastScrollY.current;
-        const isNearBottom = scrollHeight - currentScrollY - clientHeight < 50;
         
         if (delta > 0) {
             // Scrolling down

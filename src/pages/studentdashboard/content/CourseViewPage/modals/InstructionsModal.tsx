@@ -17,7 +17,7 @@ interface InstructionsModalProps {
     onClose: () => void;
 }
 
-const BLUE = '#3b82f6';
+
 
 const TaskIcon = ({ size = 20 }: { size?: number }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -39,8 +39,6 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
 
     const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
         const currentScrollY = e.currentTarget.scrollTop;
-        const scrollHeight = e.currentTarget.scrollHeight;
-        const clientHeight = e.currentTarget.clientHeight;
         
         // Handle iOS rubber banding / top of scroll
         if (currentScrollY <= 10) {
@@ -51,9 +49,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
             return;
         }
 
-        // Determine current scrolling direction
         const delta = currentScrollY - lastScrollY.current;
-        const isNearBottom = scrollHeight - currentScrollY - clientHeight < 50;
         
         if (delta > 0) {
             if (scrollDirection.current !== 'down') {
