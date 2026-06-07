@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import { ErrorBoundary } from '../../components/shared';
 import { createPortal } from 'react-dom';
-import { getCatalogCourses, type CatalogCourse } from '../../services/catalogService';
+import { getTeacherCourses, type TeacherCourse } from '../../services/teacherService';
 import { useResponsive } from './hooks';
 import { useFocusTrap } from './hooks';
 import { useSystemConfig } from '../../contexts/SystemConfigContext';
@@ -160,9 +160,9 @@ const GradeSubmissionsModal: React.FC<GradeSubmissionsModalProps> = ({ isOpen, o
             setIsLoadingData(true);
             try {
                 // Fetch courses
-                const catalogCourses = await getCatalogCourses();
-                if (catalogCourses && catalogCourses.length > 0) {
-                    setCourses(catalogCourses.map((c: CatalogCourse) => ({
+                const teacherCourses = await getTeacherCourses(currentUserId);
+                if (teacherCourses && teacherCourses.length > 0) {
+                    setCourses(teacherCourses.map((c: TeacherCourse) => ({
                         id: c.id,
                         short_title: c.shortTitle,
                         title: c.title,
