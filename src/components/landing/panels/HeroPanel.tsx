@@ -95,7 +95,7 @@ const HeroPanel: React.FC<HeroPanelProps> = ({ isActive, hasScrolled, onLearnMor
 
 
         {/* Premium SaaS CTA Buttons */}
-        <div className="hero-ctas w-full px-4 md:px-0 flex flex-col md:flex-row items-center gap-3 md:gap-4 mt-4 md:mt-0">
+        <div className="hero-ctas w-full px-4 md:px-0 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 mt-4 md:mt-0">
           <LinkPreview url="https://www.sti.edu/admissions_registration25.asp" className="w-full md:w-auto inline-block">
             <UiverseButton 
               text="Get Started" 
