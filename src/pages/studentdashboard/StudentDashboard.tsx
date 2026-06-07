@@ -23,7 +23,7 @@ import WidgetsToggleButton from '../../components/ui/misc/WidgetsToggleButton';
 const GroupsContent = React.lazy(() => import('./content/GroupsContent'));
 const GoalsContent = React.lazy(() => import('./content/GoalsContent'));
 const UsersContent = React.lazy(() => import('./content/UsersContent'));
-const CatalogContent = React.lazy(() => import('./content/CatalogContent'));
+
 const CourseViewPage = React.lazy(() => import('./content/CourseViewPage'));
 
 // Context imports
@@ -368,19 +368,7 @@ const DashboardPage: React.FC = () => {
                             </ErrorBoundary>
                         </motion.div>
                     )}
-                    {activeView === 'catalog' && (
-                        <motion.div
-                            key="catalog"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            <ErrorBoundary name="Catalog">
-                                <CatalogContent />
-                            </ErrorBoundary>
-                        </motion.div>
-                    )}
+
                     {activeView === 'groups' && (
                         <motion.div
                             key="groups"

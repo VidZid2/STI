@@ -37,12 +37,7 @@ const Icons = {
             <path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
     ),
-    Catalog: () => (
-        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" />
-            <rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" />
-        </svg>
-    ),
+
     Users: () => (
         <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
@@ -172,7 +167,6 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
 
                     <NavItemButton id="goals" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Goals />} label="Goals" description="Track progress" />
                     <NavItemButton id="groups" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Groups />} label="Groups" description="Collaborate together" />
-                    <NavItemButton id="catalog" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Catalog />} label="Catalog" description="Browse all courses" />
                     <NavItemButton id="users" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Users />} label="Users" description="Manage accounts" />
 
                     <ToolsNavTooltip isExpanded={isExpanded}>
