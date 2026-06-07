@@ -393,7 +393,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                 onClick={() => setIsOpen(!isOpen)}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className={`relative flex items-center gap-1.5 sm:gap-3 p-1 sm:p-1.5 pr-1.5 sm:pr-4 rounded-2xl border cursor-pointer text-left transition-all duration-300 ${
+                className={`relative flex items-center gap-1 sm:gap-3 p-0.5 sm:p-1.5 pr-1 sm:pr-4 rounded-xl sm:rounded-2xl border cursor-pointer text-left transition-all duration-300 ${
                     isDarkMode 
                         ? 'border-slate-700/60 bg-slate-800/40 hover:bg-slate-800/80 shadow-[0_2px_8px_rgba(0,0,0,0.2)]' 
                         : 'border-zinc-200/80 bg-white/60 hover:bg-white hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)] backdrop-blur-md'
@@ -403,14 +403,14 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
             >
                 {/* Tools Page Style SVG Icon Container */}
                 <div 
-                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
+                    className="w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 shadow-sm"
                     style={{ background: isDarkMode ? 'rgba(249, 115, 22, 0.15)' : 'rgba(255, 237, 213, 0.6)' }}
                 >
                     <motion.div
                         animate={{ scale: isHovered ? 1.1 : 1, rotate: isHovered ? 5 : 0 }}
                         transition={{ duration: 0.2 }}
                     >
-                        <Flame className={`w-4 h-4 sm:w-5 sm:h-5 ${isDarkMode ? 'text-orange-400' : 'text-orange-500'}`} strokeWidth={2.5} />
+                        <Flame className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${isDarkMode ? 'text-orange-400' : 'text-orange-500'}`} strokeWidth={2.5} />
                     </motion.div>
                 </div>
 
@@ -432,9 +432,9 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                 </div>
 
                 {/* Chevron indicator */}
-                <div className="flex items-center justify-center w-5 h-5 ml-1">
+                <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 ml-0.5 sm:ml-1">
                     <svg
-                        width="14" height="14" viewBox="0 0 24 24"
+                        className="w-[10px] h-[10px] sm:w-[14px] sm:h-[14px]" viewBox="0 0 24 24"
                         fill="none" stroke={isDarkMode ? '#64748b' : '#94a3b8'}
                         strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
                         style={{

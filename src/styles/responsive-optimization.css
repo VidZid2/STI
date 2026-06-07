@@ -812,11 +812,19 @@ html {
     opacity: 0.85;
 }
 /* ===== MOBILE TOOLBAR ICON SCALING ===== */
-/* Scale down lord-icons inside toolbar buttons on mobile (they use inline 24px) */
+/* Scale down lord-icons AND their button containers on mobile */
 @media (max-width: 639px) {
     .header-right lord-icon {
         width: 18px !important;
         height: 18px !important;
+    }
+    /* Force the button containers smaller on mobile */
+    .header-right button[aria-label] {
+        width: 24px !important;
+        height: 24px !important;
+        min-width: 24px !important;
+        min-height: 24px !important;
+        border-radius: 6px !important;
     }
 }
 
