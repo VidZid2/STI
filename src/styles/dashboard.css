@@ -6015,36 +6015,38 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
    Transforms the sidebar into a glass bottom dock on mobile (<768px)
    ========================================================================== */
 @media (max-width: 768px) {
-    /* Main wrapper becomes the floating dock */
+    /* Main wrapper becomes the flat bottom navigation bar */
     .sidebar-wrapper.mobile-dock {
         position: fixed;
         top: auto !important;
-        bottom: 24px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: calc(100% - 32px) !important;
-        max-width: 400px !important;
-        height: 72px !important;
-        max-height: 72px !important;
-        border-radius: 24px;
+        bottom: 0;
+        left: 0;
+        transform: none;
+        width: 100% !important;
+        max-width: none !important;
+        height: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+        max-height: none !important;
+        border-radius: 0;
         z-index: 9000;
-        background: rgba(255, 255, 255, 0.85); /* Premium glass backdrop */
+        background: rgba(255, 255, 255, 0.95); /* Premium glass backdrop */
         backdrop-filter: blur(28px);
         -webkit-backdrop-filter: blur(28px);
-        border: 1px solid rgba(0, 0, 0, 0.05) !important; /* Subtle minimal border */
-        box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,0.02);
+        border: none !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 -8px 24px -4px rgba(0, 0, 0, 0.05);
         display: flex !important; /* Overrides hidden */
-        padding: 6px;
-        overflow: hidden !important; /* Mask inner elements perfectly within the rounded pill */
+        padding: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        overflow: hidden !important; 
         scrollbar-width: none !important; /* Firefox */
         -ms-overflow-style: none !important; /* IE and Edge */
     }
 
-    /* Dark Mode Support for Dock */
+    /* Dark Mode Support for Bottom Nav */
     body.dark-mode .sidebar-wrapper.mobile-dock {
-        background: rgba(15, 23, 42, 0.85); /* Slate 900 glass */
-        border: 1px solid rgba(255, 255, 255, 0.08) !important; /* Subtle light border in Dark Mode */
-        box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);
+        background: rgba(15, 23, 42, 0.95); /* Slate 900 glass */
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 -8px 24px -4px rgba(0, 0, 0, 0.4);
     }
 
     .sidebar-wrapper.mobile-dock .sidebar {
@@ -6073,20 +6075,19 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
         display: none !important;
     }
 
-    /* Nav container becomes horizontally scrollable but visually scrollbar-free */
+    /* Nav container evenly distributes items */
     .sidebar-wrapper.mobile-dock .sidebar-nav {
         display: flex !important;
         flex-direction: row !important;
         width: 100% !important;
         height: 100% !important;
-        padding: 0 16px !important;
+        padding: 0 8px !important;
         margin: 0 !important;
-        gap: 8px !important;
-        overflow-x: auto !important;
+        gap: 0 !important;
+        overflow-x: visible !important;
         overflow-y: hidden !important; /* Strictly lock vertical overflow */
-        -webkit-overflow-scrolling: touch !important;
         align-items: center !important;
-        justify-content: space-between !important;
+        justify-content: space-around !important;
         scrollbar-width: none !important; /* Firefox */
         -ms-overflow-style: none !important; /* IE and Edge */
         border: none !important;
@@ -6104,18 +6105,19 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
         height: 0 !important;
     }
 
-    /* Each nav item */
+    /* Each nav item stretches equally */
     .sidebar-wrapper.mobile-dock .nav-item {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 2px !important; /* Tighten gap to solve height density crowding */
-        padding: 6px 12px !important;
+        gap: 4px !important; 
+        padding: 6px 0 !important;
         margin: 0 !important;
-        height: max-content !important;
-        min-width: 64px !important;
-        border-radius: 16px !important;
+        height: 100% !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+        border-radius: 8px !important;
         background: transparent !important;
         transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
