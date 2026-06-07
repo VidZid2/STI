@@ -1670,7 +1670,8 @@
     .panel-hero .hz-panel-inner {
         padding-top: 60px;
         padding-bottom: 60px;
-        justify-content: flex-start;
+        min-height: 100vh;
+        justify-content: center;
     }
 
     .hero-headline {
@@ -1753,6 +1754,13 @@
     }
 
     /* Panel 5 CTA mobile */
+    .panel-cta .hz-panel-inner {
+        padding-top: 60px;
+        padding-bottom: 60px;
+        min-height: 100vh;
+        justify-content: center;
+    }
+
     .cta-headline {
         font-size: clamp(2rem, 5vw, 2.5rem);
     }

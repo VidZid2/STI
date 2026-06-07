@@ -15,9 +15,7 @@ const CTAPanel: React.FC<CTAPanelProps> = ({ isActive, onLoginClick }) => {
         <section className={`hz-panel panel-cta ${isActive ? 'panel-active' : ''}`}>
 
             <div className="hz-panel-inner relative z-10">
-                {/* Spacer for Mobile/Tablet */}
-                <div className="w-full h-16 sm:h-20 md:hidden flex-shrink-0" />
-                
+
                 <div ref={containerRef} style={{ position: 'relative' }} className="cta-headline w-full mb-6 flex flex-wrap justify-center gap-x-3 md:gap-x-4">
                     <VariableProximity
                         label="Are you ready"
