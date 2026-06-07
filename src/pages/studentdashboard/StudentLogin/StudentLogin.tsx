@@ -415,10 +415,10 @@ const StudentLogin: React.FC = () => {
 <div className="cb" style={{display: 'block'}}>
 
 <motion.div 
-    initial={{ y: 20, x: -20, opacity: 0, filter: 'blur(8px)' }}
-    animate={{ y: 0, x: 0, opacity: 1, filter: 'blur(0px)' }}
+    initial={{ y: 20, opacity: 0, filter: 'blur(8px)' }}
+    animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-    className="fixed bottom-6 left-6 max-w-sm z-[100] bg-[#fefce8]/95 backdrop-blur-sm border border-[#fde047] rounded-xl p-4 shadow-xl"
+    className="fixed bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-auto md:max-w-sm z-[100] bg-[#fefce8]/95 backdrop-blur-sm border border-[#fde047] rounded-xl p-4 shadow-xl"
 >
     <div className="leading-relaxed text-left text-[#a16207] text-sm tracking-wide">
         <strong className="font-extrabold block mb-1.5 text-base text-[#854d0e]">Development Showcase (eLMS Project)</strong> 

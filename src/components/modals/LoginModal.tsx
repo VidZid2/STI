@@ -92,8 +92,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         {/* Glow orbs */}
                         <div className="absolute w-96 h-96 rounded-full pointer-events-none"
                             style={{ background: 'radial-gradient(circle, rgba(30,64,175,0.28) 0%, transparent 70%)', filter: 'blur(60px)', top: '20%', left: '30%' }} />
-                        <div className="absolute w-64 h-64 rounded-full pointer-events-none"
-                            style={{ background: 'radial-gradient(circle, rgba(234,179,8,0.12) 0%, transparent 70%)', filter: 'blur(50px)', bottom: '20%', right: '30%' }} />
 
                         {/* ── Card ── */}
                         <motion.div
@@ -108,9 +106,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                             transition={{ type: 'spring', stiffness: 300, damping: 24, mass: 0.9 }}
                             onClick={e => e.stopPropagation()}
                         >
-                            {/* Decorative glows inside card */}
-                            <div className="absolute bottom-0 left-0 w-72 h-72 pointer-events-none"
-                                style={{ background: 'radial-gradient(circle, rgba(234,179,8,0.2) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+                            {/* Decorative glows inside card (removed yellow for dark mode compatibility) */}
 
                             {/* ── LEFT PANEL ── */}
                             <div className="relative hidden md:flex flex-col justify-between p-10 select-none overflow-hidden bg-[#ffffff]">
