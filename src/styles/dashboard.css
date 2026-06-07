@@ -262,24 +262,20 @@ body.modal-open {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.header.header-scrolled {
-    height: 56px;
-    background: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+.header.header-hidden {
+    transform: translateY(-100%);
+    box-shadow: none;
 }
 
-body.dark-mode .header.header-scrolled {
-    background: rgba(15, 23, 42, 0.85);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+body.dark-mode .header.header-hidden {
+    transform: translateY(-100%);
+    box-shadow: none;
 }
 
 @media (max-width: 640px) {
     .header {
         padding: 0 0.25rem;
         height: 64px;
-    }
-    .header.header-scrolled {
-        height: 50px;
     }
 }
 

@@ -3,7 +3,7 @@
  * Pure presentational component — receives all state via props.
  * Zero logic changes from the original.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import ToolbarExpandable from '../../../components/ui/toolbar/ToolbarExpandable';
 import UserProfileDropdown from '../../../components/ui/dropdowns/UserProfileDropdown';
@@ -23,7 +23,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const [isDarkMode, setIsDarkMode] = useState(() => 
         typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
     );
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [isHeaderHidden, setIsHeaderHidden] = useState(false);
+    const lastScrollY = useRef(0);
     
     useEffect(() => {
         const checkDarkMode = () => {
@@ -35,10 +36,24 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 10);
+            const currentY = window.scrollY;
+            const delta = currentY - lastScrollY.current;
+
+            // Dead-zone: ignore micro-scrolls smaller than 5px
+            if (Math.abs(delta) < 5) return;
+
+            if (delta > 0 && currentY > 60) {
+                // Scrolling DOWN past 60px → hide
+                setIsHeaderHidden(true);
+            } else if (delta < 0) {
+                // Scrolling UP even a little → show
+                setIsHeaderHidden(false);
+            }
+
+            lastScrollY.current = currentY;
         };
+
         window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll();
         
         return () => {
             observer.disconnect();
@@ -47,7 +62,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     }, []);
 
     return (
-    <header className={`header ${isScrolled ? 'header-scrolled' : ''}`}>
+    <header className={`header ${isHeaderHidden ? 'header-hidden' : ''}`}>
         <div className="header-content w-full flex items-center justify-between px-1 sm:px-4">
             <div className="header-left flex items-center gap-1 sm:gap-2 shrink-0">
 
