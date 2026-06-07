@@ -1393,7 +1393,7 @@ export default function ToolbarExpandable() {
                                     damping: 25 
                                 }}
                                 className={cn(
-                                    'absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-semibold rounded-full',
+                                    'absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 flex items-center justify-center min-w-[15px] h-[15px] sm:min-w-[18px] sm:h-[18px] px-0.5 sm:px-1 text-[8px] sm:text-[10px] font-semibold rounded-full',
                                     isDarkMode 
                                         ? 'bg-red-400 text-red-950' 
                                         : 'bg-red-500 text-white'
@@ -1488,7 +1488,7 @@ export default function ToolbarExpandable() {
                                     damping: 25 
                                 }}
                                 className={cn(
-                                    'absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-semibold rounded-full',
+                                    'absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 flex items-center justify-center min-w-[15px] h-[15px] sm:min-w-[18px] sm:h-[18px] px-0.5 sm:px-1 text-[8px] sm:text-[10px] font-semibold rounded-full',
                                     isDarkMode 
                                         ? 'bg-blue-400 text-blue-950' 
                                         : 'bg-blue-500 text-white'
@@ -1544,7 +1544,7 @@ export default function ToolbarExpandable() {
                                     whileHover={{ scale: 1.05, rotate: -5 }}
                                     transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                                     className={cn(
-                                        'relative flex shrink-0 select-none appearance-none items-center justify-center transition-all duration-300 focus-visible:ring-2 shadow-sm border w-[30px] h-[30px] sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-[8px] sm:rounded-[12px] lg:rounded-[14px]',
+                                        'relative flex shrink-0 select-none appearance-none items-center justify-center transition-all duration-300 focus-visible:ring-2 shadow-sm border w-[26px] h-[26px] sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-[7px] sm:rounded-[12px] lg:rounded-[14px]',
                                         active === item.id
                                             ? isDarkMode ? 'bg-slate-700 border-slate-600 text-slate-100 shadow-md' : 'bg-blue-50 border-blue-200 text-blue-600 shadow-md'
                                             : isDarkMode ? 'bg-slate-800/80 border-slate-700/60 hover:border-slate-500 hover:text-slate-200 hover:bg-slate-700' : 'bg-slate-50/50 border-slate-200/60 hover:border-slate-300 hover:bg-white hover:text-slate-700'

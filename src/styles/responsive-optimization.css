@@ -811,6 +811,14 @@ html {
     /* Reduce confetti particle count via JavaScript */
     opacity: 0.85;
 }
+/* ===== MOBILE TOOLBAR ICON SCALING ===== */
+/* Scale down lord-icons inside toolbar buttons on mobile (they use inline 24px) */
+@media (max-width: 639px) {
+    .header-right lord-icon {
+        width: 18px !important;
+        height: 18px !important;
+    }
+}
 
 /* ===== SCROLLBAR STYLING (OPTIONAL) ===== */
 /* Modern browsers */
