@@ -4,8 +4,9 @@
   color: #eab308;
   border-radius: 2rem;
   cursor: pointer;
-  width: 140px;
-  height: 40px;
+  min-width: 140px;
+  height: 44px;
+  padding: 0 24px;
   border: none;
   background-color: #1e40af; /* STI Blue */
   display: flex;
@@ -15,6 +16,14 @@
   overflow: hidden;
   box-shadow: 0 4px 14px 0 rgba(30, 64, 175, 0.39);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (max-width: 768px) {
+  .uiverse-btn {
+    width: 100%;
+    height: 56px;
+    font-size: 16px;
+  }
 }
 
 .uiverse-btn:hover {

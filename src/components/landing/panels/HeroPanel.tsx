@@ -61,41 +61,52 @@ const HeroPanel: React.FC<HeroPanelProps> = ({ isActive, hasScrolled, onLearnMor
 
 
         <div ref={containerRef} style={{ position: 'relative' }} className="hero-headline w-full max-w-[100vw] px-2 md:px-4 mb-6 flex flex-col md:flex-row flex-wrap justify-center items-center md:gap-x-3 gap-y-0.5 md:gap-y-0">
-          <VariableProximity
-            label="Where learning meets the future of"
-            className="variable-proximity-demo text-[clamp(16px,5.5vw,40px)] md:text-[clamp(2.5rem,5vw,4.5rem)] font-bold text-[#1e40af] leading-tight text-center whitespace-nowrap md:whitespace-normal"
-            fromFontVariationSettings="'wght' 400, 'opsz' 9"
-            toFontVariationSettings="'wght' 1000, 'opsz' 40"
-            containerRef={containerRef}
-            radius={100}
-            falloff="linear"
-          />
-          <VariableProximity
-            label="education"
-            className="variable-proximity-demo text-[clamp(24px,8vw,48px)] md:text-[clamp(2.5rem,5vw,4.5rem)] font-bold text-[#1e40af] leading-tight text-center"
-            fromFontVariationSettings="'wght' 700, 'opsz' 9"
-            toFontVariationSettings="'wght' 1000, 'opsz' 40"
-            containerRef={containerRef}
-            radius={100}
-            falloff="linear"
-            wordColors={{ 'education': '#eab308' }}
-          />
+          {/* Desktop Version: Variable Proximity */}
+          <div className="hidden md:flex flex-wrap justify-center items-center md:gap-x-3">
+            <VariableProximity
+              label="Where learning meets the future of"
+              className="variable-proximity-demo text-[clamp(16px,5.5vw,40px)] md:text-[clamp(2.5rem,5vw,4.5rem)] font-bold text-[#1e40af] leading-tight text-center whitespace-nowrap md:whitespace-normal"
+              fromFontVariationSettings="'wght' 400, 'opsz' 9"
+              toFontVariationSettings="'wght' 1000, 'opsz' 40"
+              containerRef={containerRef}
+              radius={100}
+              falloff="linear"
+            />
+            <VariableProximity
+              label="education"
+              className="variable-proximity-demo text-[clamp(24px,8vw,48px)] md:text-[clamp(2.5rem,5vw,4.5rem)] font-bold text-[#1e40af] leading-tight text-center"
+              fromFontVariationSettings="'wght' 700, 'opsz' 9"
+              toFontVariationSettings="'wght' 1000, 'opsz' 40"
+              containerRef={containerRef}
+              radius={100}
+              falloff="linear"
+              wordColors={{ 'education': '#eab308' }}
+            />
+          </div>
+          
+          {/* Mobile Version: Static Impactful Headline */}
+          <div className="flex md:hidden flex-col items-center justify-center text-center w-full px-4 mb-2">
+            <h1 className="text-[2.6rem] sm:text-[3rem] font-[850] leading-[1.05] tracking-tight text-[#1e40af] m-0">
+              Where learning meets the future of <span className="text-[#eab308]">education</span>
+            </h1>
+          </div>
         </div>
 
 
 
         {/* Premium SaaS CTA Buttons */}
-        <div className="hero-ctas">
-          <LinkPreview url="https://www.sti.edu/admissions_registration25.asp" className="inline-block">
+        <div className="hero-ctas w-full px-4 md:px-0 flex flex-col md:flex-row items-center gap-3 md:gap-4 mt-4 md:mt-0">
+          <LinkPreview url="https://www.sti.edu/admissions_registration25.asp" className="w-full md:w-auto inline-block">
             <UiverseButton 
               text="Get Started" 
+              className="w-full md:w-auto"
               onClick={() => window.open('https://www.sti.edu/admissions_registration25.asp', '_blank')}
               style={{ pointerEvents: 'none' }}
             />
           </LinkPreview>
           <UiverseButton 
             text="Learn More" 
-            className="btn-outline"
+            className="btn-outline w-full md:w-auto"
             onClick={onLearnMoreClick}
           />
         </div>
