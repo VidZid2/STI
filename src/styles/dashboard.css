@@ -6012,11 +6012,11 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
         max-height: 72px !important;
         border-radius: 24px;
         z-index: 9000;
-        background: rgba(255, 255, 255, 0.94); /* High contrast glass backdrop */
-        backdrop-filter: blur(28px); /* Deeper blur for perfect readability over page banners */
+        background: rgba(255, 255, 255, 0.85); /* Premium glass backdrop */
+        backdrop-filter: blur(28px);
         -webkit-backdrop-filter: blur(28px);
-        border: 2px solid var(--primary-blue) !important; /* Blue Brand Outline */
-        box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0,0,0,0.02);
+        border: 1px solid rgba(0, 0, 0, 0.05) !important; /* Subtle minimal border */
+        box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,0.02);
         display: flex !important; /* Overrides hidden */
         padding: 6px;
         overflow: hidden !important; /* Mask inner elements perfectly within the rounded pill */
@@ -6026,9 +6026,9 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
 
     /* Dark Mode Support for Dock */
     body.dark-mode .sidebar-wrapper.mobile-dock {
-        background: rgba(15, 23, 42, 0.96); /* Slate 900 high contrast dark background */
-        border: 2px solid var(--primary-blue) !important; /* Blue Brand Outline in Dark Mode */
-        box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);
+        background: rgba(15, 23, 42, 0.85); /* Slate 900 glass */
+        border: 1px solid rgba(255, 255, 255, 0.08) !important; /* Subtle light border in Dark Mode */
+        box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);
     }
 
     .sidebar-wrapper.mobile-dock .sidebar {
@@ -6077,10 +6077,6 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
         outline: none !important;
         box-shadow: none !important;
         background: transparent !important;
-        
-        /* Premium Fade Edge Masks: visually fades items scrolling near the borders */
-        mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent) !important;
-        -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent) !important;
     }
     
     /* Cross-browser Webkit scrollbar hiding for dock elements */

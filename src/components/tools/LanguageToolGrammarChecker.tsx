@@ -13,7 +13,7 @@
 import * as React from "react";
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { Save } from "lucide-react";
+import { Save, FileSpreadsheet } from "lucide-react";
 import {
     checkGrammar,
     getLanguageToolStatus,
@@ -24,6 +24,7 @@ import { NumberTicker } from "@/components/ui/number-ticker";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge, ToolHeaderLiveBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
+import { exportToDocx, downloadBlob } from "../../lib/export/docxExport";
 
 interface LanguageToolGrammarCheckerProps {
     onBack: () => void;
@@ -137,6 +138,24 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
         setIssues([]);
         setError(null);
     }, []);
+
+    // Export corrected text to DOCX
+    const handleExportDocx = useCallback(async () => {
+        if (!text.trim()) return;
+        try {
+            const blob = await exportToDocx({
+                title: 'Grammar Check Results',
+                content: text,
+                metadata: {
+                    author: 'STI eLMS Grammar Checker',
+                    createdAt: new Date(),
+                },
+            });
+            downloadBlob(blob, `grammar_check_${new Date().toISOString().split('T')[0]}.docx`);
+        } catch (err) {
+            console.error('DOCX export failed:', err);
+        }
+    }, [text]);
 
     const handleRestoreSaved = useCallback(() => {
         setText(initialData.text);
@@ -429,12 +448,27 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                 layout
                 onClick={handleClear}
                 disabled={!text}
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
               >
                 Clear
+              </motion.button>
+
+              {/* Export DOCX Button */}
+              <motion.button
+                layout
+                onClick={handleExportDocx}
+                disabled={!text.trim()}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
+                title="Export as Word document"
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                .docx
               </motion.button>
 
               <AnimatePresence mode="popLayout">

@@ -203,8 +203,9 @@ html {
     }
     
     .cta-buttons {
-        flex-direction: column !important;
-        gap: 1rem !important;
+        flex-direction: row !important;
+        gap: 12px !important;
+        flex-wrap: nowrap !important;
     }
 }
 

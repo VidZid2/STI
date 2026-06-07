@@ -6,6 +6,11 @@
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { COURSES_DATA, type CourseInfo } from './pathsService';
+import {
+    getBookmarksSync,
+    toggleBookmarkSync,
+    isBookmarked as _isBookmarkedAsync,
+} from './bookmarkService';
 
 // Types
 export interface CatalogCourse extends CourseInfo {
@@ -366,42 +371,22 @@ export const getCourseById = async (courseId: string): Promise<CatalogCourse | n
     return courses.find(c => c.id === courseId) || null;
 };
 
-// Bookmarks/Favorites storage key
-const BOOKMARKS_KEY = 'catalog-bookmarks';
+// ---------------------------------------------------------------------------
+// Bookmark helpers — delegates to bookmarkService (Supabase + localStorage)
+// These are kept synchronous for backwards compatibility with CatalogContent.
+// ---------------------------------------------------------------------------
 
-// Get bookmarked course IDs
-export const getBookmarkedCourses = (): string[] => {
-    try {
-        const stored = localStorage.getItem(BOOKMARKS_KEY);
-        return stored ? JSON.parse(stored) : [];
-    } catch {
-        return [];
-    }
-};
+/** Get all bookmarked course IDs (sync, from localStorage cache). */
+export const getBookmarkedCourses = (): string[] => getBookmarksSync();
 
-// Check if a course is bookmarked
-export const isBookmarked = (courseId: string): boolean => {
-    return getBookmarkedCourses().includes(courseId);
-};
+/** Check if a course is bookmarked (sync). */
+export const isBookmarked = (courseId: string): boolean =>
+    getBookmarksSync().includes(courseId);
 
-// Toggle bookmark for a course
-export const toggleBookmark = (courseId: string): boolean => {
-    try {
-        const bookmarks = getBookmarkedCourses();
-        const isCurrentlyBookmarked = bookmarks.includes(courseId);
-        
-        if (isCurrentlyBookmarked) {
-            // Remove from bookmarks
-            const updated = bookmarks.filter(id => id !== courseId);
-            localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(updated));
-            return false; // Now not bookmarked
-        } else {
-            // Add to bookmarks
-            const updated = [courseId, ...bookmarks];
-            localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(updated));
-            return true; // Now bookmarked
-        }
-    } catch {
-        return false;
-    }
-};
+/**
+ * Toggle a bookmark. Instantly updates localStorage (optimistic) and
+ * fire-and-forgets the Supabase write in the background.
+ * Returns new bookmarked state (true = now bookmarked).
+ */
+export const toggleBookmark = (courseId: string): boolean =>
+    toggleBookmarkSync(courseId);

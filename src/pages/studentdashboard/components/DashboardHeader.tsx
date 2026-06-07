@@ -17,7 +17,8 @@ interface DashboardHeaderProps {
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
-    setActiveView
+    setActiveView,
+    isDemoMode
 }) => {
     const [isDarkMode, setIsDarkMode] = useState(() => 
         typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
@@ -78,6 +79,20 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     style={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}
                 />
                 <StreakDropdown />
+                
+                {/* Demo Mode Indicator */}
+                {isDemoMode && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800/50 rounded-lg"
+                    >
+                        <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                        <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+                            Demo
+                        </span>
+                    </motion.div>
+                )}
             </div>
 
             <div className="header-center hidden md:flex items-center justify-center w-full max-w-[600px]" />

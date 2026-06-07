@@ -18,6 +18,7 @@
     "@emotion/styled": "^11.14.1",
     "@google/genai": "^1.30.0",
     "@google/generative-ai": "^0.24.1",
+    "@headlessui/react": "^2.2.10",
     "@heroui/react": "^3.0.5",
     "@lobehub/icons": "^5.8.0",
     "@mui/material": "^9.0.1",

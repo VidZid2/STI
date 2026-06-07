@@ -13,7 +13,7 @@
 import * as React from "react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { Save } from "lucide-react";
+import { Save, BarChart3 } from "lucide-react";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
@@ -597,7 +597,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                 layout
                 onClick={handleLoadSample}
                 disabled={!!text}
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
@@ -614,7 +614,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
                       onClick={handleCopy}
-                      className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold rounded-xl transition-colors ${
+                      className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 ${
                         copySuccess 
                           ? 'bg-cyan-50 text-cyan-600 dark:bg-cyan-900/20 dark:text-cyan-400'
                           : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
@@ -626,13 +626,54 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                       {copySuccess ? 'Copied!' : 'Copy'}
                     </motion.button>
 
+                    {/* Export Stats Button */}
+                    <motion.button
+                      layout
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      onClick={async () => {
+                        const statsText = `Word Count Analysis
+Generated: ${new Date().toLocaleString()}
+
+Words: ${stats.words}
+Characters: ${stats.characters}
+Characters (no spaces): ${stats.charactersNoSpaces}
+Sentences: ${stats.sentences}
+Paragraphs: ${stats.paragraphs}
+Lines: ${stats.lines}
+Average Word Length: ${stats.avgWordLength.toFixed(1)}
+Average Sentence Length: ${stats.avgSentenceLength.toFixed(1)}
+Reading Time: ${stats.readingTime}
+Speaking Time: ${stats.speakingTime}
+ARI Grade Level: ${stats.ariGrade}
+
+Text:
+${text}`;
+                        const blob = new Blob([statsText], { type: 'text/plain;charset=utf-8' });
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = `word_count_${new Date().toISOString().split('T')[0]}.txt`;
+                        a.click();
+                        URL.revokeObjectURL(a.href);
+                      }}
+                      className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 rounded-xl hover:bg-cyan-100 dark:hover:bg-cyan-900/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2"
+                      whileHover={{ y: -1 }}
+                      whileTap={{ scale: 0.97 }}
+                      transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
+                      title="Export analysis stats"
+                    >
+                      <BarChart3 className="w-4 h-4" />
+                      Export
+                    </motion.button>
+
                     <motion.button
                       layout
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
                       onClick={handleClear}
-                      className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                      className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
                       whileHover={{ y: -1 }}
                       whileTap={{ scale: 0.97 }}
                       transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}

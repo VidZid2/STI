@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import type { SVGProps } from "react";
-import { motion, useMotionValueEvent, useScroll } from "motion/react";
+import { motion, useMotionValueEvent, useScroll, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 
 export const StickyBanner = ({
@@ -60,41 +60,55 @@ export const StickyBanner = ({
   }
 
   return (
-    <motion.div
-      className={cn(
-        "sticky inset-x-0 top-0 z-40 flex min-h-14 w-full items-center justify-center bg-transparent px-4 py-1",
-        className,
-      )}
-      initial={{
-        y: -100,
-        opacity: 0,
-      }}
-      animate={{
-        y: open ? 0 : -100,
-        opacity: open ? 1 : 0,
-      }}
-      transition={{
-        duration: 0.3,
-        ease: "easeInOut",
-      }}
-    >
-      {children}
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className={cn(
+            "sticky inset-x-0 top-0 z-40 flex w-full items-center justify-center bg-transparent px-4",
+            className,
+          )}
+          initial={{
+            height: 0,
+            opacity: 0,
+            paddingTop: 0,
+            paddingBottom: 0,
+          }}
+          animate={{
+            height: "auto",
+            opacity: 1,
+            paddingTop: "0.25rem",
+            paddingBottom: "0.25rem",
+          }}
+          exit={{
+            height: 0,
+            opacity: 0,
+            paddingTop: 0,
+            paddingBottom: 0,
+          }}
+          transition={{
+            duration: 0.3,
+            ease: "easeInOut",
+          }}
+        >
+          {children}
 
-      <motion.button
-        initial={{
-          scale: 0,
-          y: "-50%",
-        }}
-        animate={{
-          scale: 1,
-          y: "-50%",
-        }}
-        className="absolute top-1/2 right-4 cursor-pointer"
-        onClick={handleClose}
-      >
-        <CloseIcon className="h-5 w-5 text-[#0a0a0a]" />
-      </motion.button>
-    </motion.div>
+          <motion.button
+            initial={{
+              scale: 0,
+              y: "-50%",
+            }}
+            animate={{
+              scale: 1,
+              y: "-50%",
+            }}
+            className="absolute top-1/2 right-4 cursor-pointer"
+            onClick={handleClose}
+          >
+            <CloseIcon className="h-5 w-5 text-[#0a0a0a]" />
+          </motion.button>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

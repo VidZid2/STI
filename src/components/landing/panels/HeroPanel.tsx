@@ -60,10 +60,10 @@ const HeroPanel: React.FC<HeroPanelProps> = ({ isActive, hasScrolled, onLearnMor
         </div>
 
 
-        <div ref={containerRef} style={{ position: 'relative' }} className="hero-headline w-full mb-6 flex flex-wrap justify-center gap-x-3">
+        <div ref={containerRef} style={{ position: 'relative' }} className="hero-headline w-full max-w-[100vw] px-2 md:px-4 mb-6 flex flex-col md:flex-row flex-wrap justify-center items-center md:gap-x-3 gap-y-0.5 md:gap-y-0">
           <VariableProximity
             label="Where learning meets the future of"
-            className="variable-proximity-demo text-[clamp(2.5rem,5vw,4.5rem)] font-bold text-[#1e40af] leading-tight"
+            className="variable-proximity-demo text-[clamp(16px,5.5vw,40px)] md:text-[clamp(2.5rem,5vw,4.5rem)] font-bold text-[#1e40af] leading-tight text-center whitespace-nowrap md:whitespace-normal"
             fromFontVariationSettings="'wght' 400, 'opsz' 9"
             toFontVariationSettings="'wght' 1000, 'opsz' 40"
             containerRef={containerRef}
@@ -72,7 +72,7 @@ const HeroPanel: React.FC<HeroPanelProps> = ({ isActive, hasScrolled, onLearnMor
           />
           <VariableProximity
             label="education"
-            className="variable-proximity-demo text-[clamp(2.5rem,5vw,4.5rem)] font-bold text-[#1e40af] leading-tight"
+            className="variable-proximity-demo text-[clamp(24px,8vw,48px)] md:text-[clamp(2.5rem,5vw,4.5rem)] font-bold text-[#1e40af] leading-tight text-center"
             fromFontVariationSettings="'wght' 700, 'opsz' 9"
             toFontVariationSettings="'wght' 1000, 'opsz' 40"
             containerRef={containerRef}

@@ -485,12 +485,7 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
                 scrollDirection.current = 'up';
                 anchorScrollY.current = lastScrollY.current;
             }
-            
-            // If we have scrolled up by more than 30px from the anchor, expand
-            // Protect against bottom bounce rubber-banding expanding the header
-            if (!isNearBottom && anchorScrollY.current - currentScrollY > 30) {
-                setIsMinimized(false);
-            }
+            // Do not expand just by scrolling up. Only expand at the very top.
         }
 
         lastScrollY.current = currentScrollY;

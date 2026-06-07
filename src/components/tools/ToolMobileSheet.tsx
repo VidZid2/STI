@@ -1,6 +1,6 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode, useCallback } from "react";
 import { ChevronUp, PanelBottomOpen, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useMotionValue } from "motion/react";
 
 interface ToolMobileSheetProps {
     title: string;
@@ -22,6 +22,22 @@ const ToolMobileSheet: React.FC<ToolMobileSheetProps> = ({
     const summaryId = useId();
     const closeButtonRef = useRef<HTMLButtonElement>(null);
     const previousActiveElementRef = useRef<HTMLElement | null>(null);
+    const sheetRef = useRef<HTMLElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+    
+    // Swipe gesture state
+    const [isDragging, setIsDragging] = useState(false);
+    const dragY = useMotionValue(0);
+    const sheetHeight = useRef<number>(0);
+    const startY = useRef<number>(0);
+    const currentY = useRef<number>(0);
+    
+    // Update sheet height on resize
+    useEffect(() => {
+        if (isOpen && sheetRef.current) {
+            sheetHeight.current = sheetRef.current.getBoundingClientRect().height;
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -47,6 +63,39 @@ const ToolMobileSheet: React.FC<ToolMobileSheetProps> = ({
             previousActiveElementRef.current?.focus();
         };
     }, [isOpen]);
+    
+    // Swipe gesture handlers
+    const handleTouchStart = useCallback((e: React.TouchEvent | React.MouseEvent) => {
+        const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+        startY.current = clientY;
+        currentY.current = clientY;
+        setIsDragging(true);
+    }, []);
+    
+    const handleTouchMove = useCallback((e: React.TouchEvent | React.MouseEvent) => {
+        if (!isDragging) return;
+        const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+        currentY.current = clientY;
+        const deltaY = Math.max(0, currentY.current - startY.current);
+        dragY.set(deltaY);
+    }, [isDragging, dragY]);
+    
+    const handleTouchEnd = useCallback(() => {
+        if (!isDragging) return;
+        setIsDragging(false);
+        
+        const deltaY = currentY.current - startY.current;
+        const threshold = sheetHeight.current * 0.3; // Close if swiped 30% down
+        
+        if (deltaY > threshold) {
+            // Close sheet
+            dragY.set(sheetHeight.current);
+            setTimeout(() => setIsOpen(false), 100);
+        } else {
+            // Snap back
+            dragY.set(0);
+        }
+    }, [isDragging, dragY]);
 
     return (
         <>
@@ -101,18 +150,32 @@ const ToolMobileSheet: React.FC<ToolMobileSheetProps> = ({
                         />
 
                         <motion.section
+                            ref={sheetRef}
                             role="dialog"
                             aria-modal="true"
                             aria-labelledby={titleId}
                             aria-describedby={summary ? summaryId : undefined}
                             tabIndex={-1}
-                            className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-hidden rounded-t-[28px] border border-zinc-200/80 bg-white p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950 dark:shadow-black/50"
+                            className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-hidden rounded-t-[28px] border border-zinc-200/80 bg-white p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-2xl shadow-zinc-950/20 dark:border-zinc-800 dark:bg-zinc-950 dark:shadow-black/50 touch-pan-y"
+                            style={{ y: dragY }}
                             initial={{ y: "100%" }}
-                            animate={{ y: 0 }}
+                            animate={{ y: isDragging ? undefined : 0 }}
                             exit={{ y: "100%" }}
                             transition={{ type: "spring", stiffness: 360, damping: 34 }}
+                            onTouchStart={handleTouchStart}
+                            onTouchMove={handleTouchMove}
+                            onTouchEnd={handleTouchEnd}
+                            onMouseDown={handleTouchStart}
+                            onMouseMove={handleTouchMove}
+                            onMouseUp={handleTouchEnd}
+                            onMouseLeave={handleTouchEnd}
                         >
-                            <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                            {/* Swipe Handle Indicator */}
+                            <div 
+                                className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-zinc-300 dark:bg-zinc-700 cursor-grab active:cursor-grabbing touch-pan-y"
+                                onTouchStart={handleTouchStart}
+                                onMouseDown={handleTouchStart}
+                            />
                             <div className="flex items-start justify-between gap-4 px-1">
                                 <div className="min-w-0">
                                     <p className="text-[11px] font-black uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Tool Panel</p>
@@ -132,7 +195,10 @@ const ToolMobileSheet: React.FC<ToolMobileSheetProps> = ({
                                 </button>
                             </div>
 
-                            <div className="tool-mobile-sheet-content mt-4 flex max-h-[70vh] min-w-0 flex-col gap-3 overflow-x-hidden overflow-y-auto overscroll-contain px-1 pb-2 pr-2 [scrollbar-width:thin]">
+                            <div 
+                                ref={contentRef}
+                                className="tool-mobile-sheet-content mt-4 flex max-h-[70vh] min-w-0 flex-col gap-3 overflow-x-hidden overflow-y-auto overscroll-contain px-1 pb-2 pr-2 [scrollbar-width:thin]"
+                            >
                                 {children}
                             </div>
                         </motion.section>

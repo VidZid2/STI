@@ -570,30 +570,13 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                                     </div>
                                 </div>
                                 
-                                <div
-                                    className="h-2 w-full rounded-full overflow-hidden"
-                                    style={{ 
-                                        backgroundColor: isDarkMode ? 'rgba(255,255,255,0.08)' : '#f1f5f9',
-                                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)'
-                                    }}
-                                >
+                                <div className="h-2 w-full rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.15)] border border-black/5 dark:border-white/5">
                                     <motion.div
-                                        className="h-full rounded-full relative overflow-hidden"
-                                        style={{ 
-                                            background: 'linear-gradient(90deg, #f59e0b 0%, #f97316 100%)',
-                                            boxShadow: '0 0 10px rgba(249, 115, 22, 0.4)'
-                                        }}
+                                        className="h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-500 relative"
                                         initial={{ width: 0 }}
                                         animate={{ width: `${getProgress() * 100}%` }}
                                         transition={{ duration: 1, ease: [0.34, 1.56, 0.64, 1], delay: 0.15 }}
-                                    >
-                                        <motion.div
-                                            className="absolute inset-0 bg-white dark:bg-white"
-                                            initial={{ opacity: 0 }}
-                                            animate={shouldReduceMotion ? { opacity: 0 } : { opacity: [0, 0.1, 0] }}
-                                            transition={shouldReduceMotion ? { duration: 0 } : { repeat: Infinity, duration: 2, ease: "linear", delay: 1 }}
-                                        />
-                                    </motion.div>
+                                    />
                                 </div>
                             </div>
 

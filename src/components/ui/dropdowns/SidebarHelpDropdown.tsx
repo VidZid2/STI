@@ -162,7 +162,19 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
         if (isOpen) {
             updatePosition();
             const id = requestAnimationFrame(updatePosition);
-            return () => cancelAnimationFrame(id);
+            
+            // Add window resize handler
+            const handleResize = () => {
+                updatePosition();
+            };
+            window.addEventListener('resize', handleResize);
+            window.addEventListener('scroll', handleResize, true);
+            
+            return () => {
+                cancelAnimationFrame(id);
+                window.removeEventListener('resize', handleResize);
+                window.removeEventListener('scroll', handleResize, true);
+            };
         }
     }, [isOpen, updatePosition]);
 
@@ -283,9 +295,7 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
                                         }
                                         onClose();
                                     }}
-                                    className={`items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-[14px] border shadow-sm transition-colors no-underline ${
-                                        item.id === 'keyboard' ? 'hidden md:flex' : 'flex'
-                                    } ${
+                                    className={`flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-[14px] border shadow-sm transition-colors no-underline ${
                                         isDarkMode
                                             ? 'bg-zinc-900/50 border-zinc-800/80 hover:border-blue-800/60'
                                             : 'bg-white border-zinc-200/80 hover:border-blue-200'
@@ -298,15 +308,45 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
                                             ? 'bg-blue-500/10 border-blue-500/20'
                                             : 'bg-blue-50 border-blue-100'
                                     }`}>
-                                        {/* @ts-ignore */}
+                                        {/* LordIcon with error handling and fallback */}
                                         <lord-icon
                                             src={item.lordIconSrc}
                                             trigger="hover"
                                             colors={isDarkMode ? 'primary:#60a5fa,secondary:#60a5fa' : 'primary:#2563eb,secondary:#2563eb'}
                                             state={(item as any).lordIconState}
                                             stroke={(item as any).lordIconStroke}
-                                            style={{ width: '18px', height: '18px' }}
+                                            style={{ width: '18px', height: '18px', display: 'block' }}
+                                            onError={(e: Event) => {
+                                                // Hide the failed lord-icon and show fallback
+                                                const target = e.target as HTMLElement;
+                                                if (target) {
+                                                    target.style.display = 'none';
+                                                    const parent = target.parentElement;
+                                                    if (parent) {
+                                                        const fallback = parent.querySelector('.lord-icon-fallback');
+                                                        if (fallback) fallback.classList.remove('hidden');
+                                                    }
+                                                }
+                                            }}
                                         />
+                                        {/* SVG Fallback icons */}
+                                        <div className={`lord-icon-fallback hidden ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                            {item.id === 'getting-started' && (
+                                                <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                                            )}
+                                            {item.id === 'tutorials' && (
+                                                <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12l-4-4M2 12l4-4m14 4l-4 4M6 12l4 4m0-8v8m4-4h.01M12 17h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                            )}
+                                            {item.id === 'faq' && (
+                                                <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                                            )}
+                                            {item.id === 'keyboard' && (
+                                                <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg>
+                                            )}
+                                            {item.id === 'contact' && (
+                                                <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                            )}
+                                        </div>
                                     </div>
                                     {/* Text */}
                                     <div className="flex-1 min-w-0">

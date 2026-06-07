@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useRef } from 'react';
+import { motion, AnimatePresence, useInView } from 'motion/react';
 import { BentoGrid, BentoGridItem } from '../../ui/bento-grid';
 import { CardStack } from '../../ui/card-stack';
 import { CollaborationBeam } from './CollaborationBeam';
@@ -60,6 +60,10 @@ const LESSONS = [
 
 
 const FeaturesPanel: React.FC<FeaturesPanelProps> = ({ isActive }) => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: false, amount: 0.2 });
+    const active = isActive || isInView;
+
     const items = [
         {
           title: "Interactive Learning Modules",
@@ -69,7 +73,7 @@ const FeaturesPanel: React.FC<FeaturesPanelProps> = ({ isActive }) => {
                 items={LESSONS} 
                 offset={8} 
                 scaleFactor={0.04} 
-                isActive={isActive}
+                isActive={active}
                 className="h-28 w-64 md:h-32 md:w-72 mx-auto mt-2"
                 cardClassName="h-28 w-64 md:h-32 md:w-72 shadow-lg p-3 md:p-4 rounded-xl border border-neutral-100 dark:border-white/[0.05] flex flex-col justify-center"
               />
@@ -80,21 +84,21 @@ const FeaturesPanel: React.FC<FeaturesPanelProps> = ({ isActive }) => {
         {
           title: "Real-time Collaboration",
           description: "Connect seamlessly with peers and instructors via live chat and whiteboards.",
-          header: <CollaborationBeam isActive={isActive} />,
+          header: <CollaborationBeam isActive={active} />,
           icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
           className: "md:col-span-2",
         },
         {
           title: "Smart Assessments",
           description: "Automated grading and personalized feedback to accelerate learning.",
-          header: <SmartAssessmentsList isActive={isActive} />,
+          header: <SmartAssessmentsList isActive={active} />,
           icon: <IconSignature className="h-4 w-4 text-neutral-500" />,
           className: "md:col-span-2",
         },
         {
           title: "Comprehensive Progress Tracking",
           description: "Monitor your academic journey with intuitive dashboards, analytics, and milestone tracking.",
-          header: <ProgressTrackingCard isActive={isActive} />,
+          header: <ProgressTrackingCard isActive={active} />,
           icon: <IconTableColumn className="h-4 w-4 text-neutral-500" />,
           className: "md:col-span-1",
         },
@@ -102,7 +106,7 @@ const FeaturesPanel: React.FC<FeaturesPanelProps> = ({ isActive }) => {
 
     return (
         <section className={`hz-panel panel-features ${isActive ? 'panel-active' : ''}`}>
-            <div className="hz-panel-inner w-full h-full flex flex-col justify-center gap-4 md:gap-6 items-center py-6 md:py-8 px-4 sm:px-6 lg:px-8">
+            <div className="hz-panel-inner w-full h-full flex flex-col justify-center gap-4 md:gap-6 items-center py-6 md:py-8 px-4 sm:px-6 lg:px-8" ref={ref}>
                 <div className="text-center max-w-2xl mx-auto flex-shrink-0 mt-12 md:mt-16">
                     <h2 className="text-2xl md:text-4xl font-bold text-[#eab308] mb-2 tracking-tight">
                         <TextAnimate
@@ -128,29 +132,27 @@ const FeaturesPanel: React.FC<FeaturesPanelProps> = ({ isActive }) => {
                     <BentoGrid className="h-auto md:h-full grid-rows-none md:grid-rows-2 md:auto-rows-fr gap-4 md:gap-5">
                         {items.map((item, i) => (
                             <AnimatePresence key={i} mode="wait">
-                                {isActive && (
-                                    <motion.div
-                                        className={`${item.className} h-auto md:h-full`}
-                                        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 40, scale: 0.95 }}
-                                        transition={{
-                                            type: "spring",
-                                            stiffness: 260,
-                                            damping: 20,
-                                            mass: 0.8,
-                                            delay: i * 0.08,
-                                        }}
-                                    >
-                                        <BentoGridItem
-                                            title={item.title}
-                                            description={item.description}
-                                            header={item.header}
-                                            icon={item.icon}
-                                            className="h-full"
-                                        />
-                                    </motion.div>
-                                )}
+                                <motion.div
+                                    className={`${item.className} h-auto md:h-full`}
+                                    initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                                    viewport={{ once: true, margin: "-100px" }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 260,
+                                        damping: 20,
+                                        mass: 0.8,
+                                        delay: i * 0.08,
+                                    }}
+                                >
+                                    <BentoGridItem
+                                        title={item.title}
+                                        description={item.description}
+                                        header={item.header}
+                                        icon={item.icon}
+                                        className="h-full"
+                                    />
+                                </motion.div>
                             </AnimatePresence>
                         ))}
                     </BentoGrid>

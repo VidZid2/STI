@@ -39,7 +39,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ delay: index * 0.02, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            whileHover={{ y: -3, scale: 1.01 }}
+            
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
             className={`relative p-4 rounded-xl bg-white border cursor-pointer transition-all duration-200 ${
@@ -57,8 +57,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                         className="absolute top-2 right-2 flex gap-1 z-10"
                     >
                         <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
+                            
                             onMouseEnter={(e) => { setTooltipRect(e.currentTarget.getBoundingClientRect()); setShowTooltip('chat'); }}
                             onMouseLeave={() => { setShowTooltip(null); setTooltipRect(null); }}
                             onClick={(e) => e.stopPropagation()}
@@ -70,8 +69,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                             </svg>
                         </motion.button>
                         <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
+                            
                             onMouseEnter={(e) => { setTooltipRect(e.currentTarget.getBoundingClientRect()); setShowTooltip('more'); }}
                             onMouseLeave={() => { setShowTooltip(null); setTooltipRect(null); }}
                             onClick={(e) => e.stopPropagation()}
@@ -118,7 +116,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
 
             {/* Avatar */}
             <div className="flex flex-col items-center">
-                <motion.div className="relative mb-3" whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 400, damping: 15 }}>
+                <motion.div className="relative mb-3 transition-transform duration-200 hover:scale-105" >
                     <div
                         className="w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-semibold shadow-md"
                         style={{
@@ -146,7 +144,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                     className={`inline-flex items-center gap-1 mt-2 px-2 py-0.5 text-[9px] font-medium rounded-full ${
                         student.status === 'online' ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-50 text-zinc-500'
                     }`}
-                    whileHover={{ scale: 1.05 }}
+                    
                 >
                     <span className={`w-1.5 h-1.5 rounded-full ${student.status === 'online' ? 'bg-emerald-500' : 'bg-zinc-400'}`} />
                     {student.status === 'online' ? 'Online' : 'Offline'}

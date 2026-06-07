@@ -82,6 +82,13 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
 }) => {
     const [streakData, setStreakData] = useState<StreakData | null>(propStreakData || null);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [hasScrolled, setHasScrolled] = useState(false);
+
+    useEffect(() => {
+        if (sessionStorage.getItem('streak-modal-scrolled') === 'true') {
+            setHasScrolled(true);
+        }
+    }, []);
 
     useEffect(() => {
         if (isOpen && !propStreakData) {
@@ -189,33 +196,88 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                                 mass: 1,
                             }}
                             className={cn(
-                                'w-full sm:w-[420px] max-w-[420px] rounded-[24px] overflow-hidden border pointer-events-auto shadow-2xl',
+                                'relative w-full sm:w-[420px] max-w-[420px] rounded-[24px] overflow-hidden border pointer-events-auto shadow-2xl flex flex-col',
                                 isDarkMode 
                                     ? 'bg-zinc-900 border-zinc-800/80 shadow-[0_16px_48px_rgba(0,0,0,0.5)]' 
                                     : 'bg-white border-zinc-200/80 shadow-[0_16px_48px_rgba(0,0,0,0.08),0_0_0_1px_rgba(0,0,0,0.02)]'
                             )}
                         >
-                            {/* Close button */}
+                            {/* Desktop Close button (Fixed) */}
                             <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
                                 onClick={onClose}
+                                initial={{ opacity: 0, scale: 0.5 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.5 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
                                 className={cn(
-                                    'absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center transition-colors z-[60]',
-                                    isDarkMode ? 'text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300' : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600'
+                                    'hidden sm:flex absolute top-5 sm:top-8 right-4 sm:right-7 z-[60] items-center justify-center rounded-xl border p-2 shadow-sm transition-colors',
+                                    isDarkMode 
+                                        ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700' 
+                                        : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-50'
                                 )}
+                                aria-label="Close Modal"
                             >
-                                <svg className='w-4 h-4' viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                                    <line x1="18" y1="6" x2="6" y2="18" />
-                                    <line x1="6" y1="6" x2="18" y2="18" />
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
                                 </svg>
                             </motion.button>
 
                             {/* Content */}
-                            <div className='relative pt-6 sm:pt-8 px-5 sm:px-7 pb-5 sm:pb-6 flex flex-col gap-5 sm:gap-6'>
+                            <div 
+                                onScroll={(e) => {
+                                    if (!hasScrolled && e.currentTarget.scrollTop > 10) {
+                                        setHasScrolled(true);
+                                        sessionStorage.setItem('streak-modal-scrolled', 'true');
+                                    }
+                                }}
+                                className='relative rounded-[24px] pt-5 sm:pt-8 px-4 sm:px-7 pb-4 sm:pb-6 flex flex-col gap-4 sm:gap-6 overflow-y-auto overflow-x-hidden max-h-[85vh] sm:max-h-[80vh] max-md:[&::-webkit-scrollbar]:hidden max-md:[-ms-overflow-style:none] max-md:[scrollbar-width:none] scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:mt-4 [&::-webkit-scrollbar-track]:mb-4'
+                            >
+                                {/* Mobile Close button (Scrolls with content) */}
+                                <motion.button
+                                    onClick={onClose}
+                                    initial={{ opacity: 0, scale: 0.5 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.5 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className={cn(
+                                        'sm:hidden absolute top-5 right-4 z-[60] flex items-center justify-center rounded-xl border p-2 shadow-sm transition-colors',
+                                        isDarkMode 
+                                            ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700' 
+                                            : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-50'
+                                    )}
+                                    aria-label="Close Modal"
+                                >
+                                    <svg
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </motion.button>
                                 
                                 {/* Header Group: Student Tools Style (Horizontal) */}
-                                <div className="flex items-start gap-3 sm:gap-5 w-full pt-1 sm:pt-2">
+                                <div className="flex items-start gap-3 sm:gap-5 w-full pt-1 sm:pt-2 shrink-0">
                                     {/* Icon Container */}
                                     <StreakBadge streak={streakData.currentStreak} />
 
@@ -255,7 +317,7 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                                     initial={{ opacity: 0, y: 6 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.4 }}
-                                    className='w-full flex flex-col gap-2 sm:gap-2.5 mt-1 sm:mt-2'
+                                    className='w-full flex flex-col gap-2 sm:gap-2.5 mt-1 sm:mt-2 shrink-0'
                                 >
                                     {[
                                         { label: 'XP Earned', value: `+${tier.xpBonus}`, desc: 'For maintaining streak', colorClass: 'text-blue-600 dark:text-blue-400', bgClass: 'bg-blue-50 dark:bg-blue-900/20', borderClass: 'border-blue-100 dark:border-blue-800/50', icon: <Target className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2.5} /> },
@@ -311,7 +373,7 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                                     whileTap={{ scale: 0.97 }}
                                     onClick={onClose}
                                     className={cn(
-                                        'w-full flex items-center justify-center gap-1.5 py-3 rounded-xl text-[14px] font-bold transition-all duration-300 shadow-md',
+                                        'w-full flex items-center justify-center gap-1.5 py-2.5 sm:py-3 rounded-xl text-[13px] sm:text-[14px] font-bold transition-all duration-300 shadow-md shrink-0',
                                         isDarkMode 
                                             ? 'bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500/50' 
                                             : 'bg-emerald-500 hover:bg-emerald-600 text-white border border-transparent'
@@ -325,7 +387,7 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                             </div>
 
                             {/* Progress bar at bottom */}
-                            <div className={cn('h-1.5 w-full', isDarkMode ? 'bg-zinc-800' : 'bg-zinc-100')}>
+                            <div className={cn('h-1.5 w-full shrink-0', isDarkMode ? 'bg-zinc-800' : 'bg-zinc-100')}>
                                 <motion.div
                                     initial={{ width: '100%' }}
                                     animate={{ width: '0%' }}
@@ -336,6 +398,30 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                                     }}
                                 />
                             </div>
+
+                            {/* Scroll Indicator */}
+                            <AnimatePresence>
+                                {!hasScrolled && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 15, scale: 0.8 }}
+                                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                        className="md:hidden absolute bottom-8 left-0 right-0 mx-auto w-max flex flex-col items-center justify-center text-orange-500 dark:text-orange-400 z-[70] pointer-events-none drop-shadow-sm bg-white/95 dark:bg-zinc-800/95 px-5 py-2 rounded-full backdrop-blur-md border border-orange-200/60 dark:border-orange-500/30 shadow-lg"
+                                    >
+                                        <motion.div
+                                            animate={{ y: [0, 4, 0] }}
+                                            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                                            className="flex flex-col items-center justify-center"
+                                        >
+                                            <span className="text-[10px] font-bold uppercase tracking-widest pl-[0.1em] mb-0.5">Scroll</span>
+                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <polyline points="6 9 12 15 18 9" />
+                                            </svg>
+                                        </motion.div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </motion.div>
                     </div>
                 </>

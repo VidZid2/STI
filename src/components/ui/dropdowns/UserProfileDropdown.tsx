@@ -44,6 +44,7 @@ import {
     checkRecentLevelUp,
     clearLevelUpNotification,
     getXPData,
+    getXPNeededForLevel,
 } from '@/services/studyTimeService';
 
 type ProfileTab = 'profile' | 'settings';
@@ -107,6 +108,15 @@ export default function UserProfileDropdown() {
         const interval = setInterval(checkXP, 5000);
         return () => clearInterval(interval);
     }, [lastTotalXP]); // Add lastTotalXP to dependency array to fix the bug
+
+    // Listen for settings changes across components
+    useEffect(() => {
+        const handleSettingsUpdated = () => {
+            setShowOnlineStatus(getSettings().showOnlineStatus);
+        };
+        window.addEventListener('settingsUpdated', handleSettingsUpdated);
+        return () => window.removeEventListener('settingsUpdated', handleSettingsUpdated);
+    }, []);
 
     // Handle sign out with fade transition
     const handleSignOut = () => {
@@ -291,33 +301,29 @@ export default function UserProfileDropdown() {
                 >
                     {/* Premium SaaS Avatar Container */}
                     <div className="relative shrink-0 w-10 h-10 mr-1.5">
-                        {/* Rounded Rectangle Level Gauge */}
+                        {/* Circular Level Gauge */}
                         <svg 
                             className="absolute -inset-[3px] w-[46px] h-[46px] pointer-events-none z-0" 
                             viewBox="0 0 46 46"
                             style={{ transform: 'rotate(-90deg)' }}
                         >
                             {/* Background track */}
-                            <rect
-                                x="3"
-                                y="3"
-                                width="40"
-                                height="40"
-                                rx="12"
+                            <circle
+                                cx="23"
+                                cy="23"
+                                r="21"
                                 fill="none"
                                 stroke={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
-                                strokeWidth="2"
+                                strokeWidth="4"
                             />
                             {/* Progress track */}
-                            <motion.rect
-                                x="3"
-                                y="3"
-                                width="40"
-                                height="40"
-                                rx="12"
+                            <motion.circle
+                                cx="23"
+                                cy="23"
+                                r="21"
                                 fill="none"
                                 stroke="#3b82f6"
-                                strokeWidth="2"
+                                strokeWidth="4"
                                 strokeLinecap="round"
                                 pathLength="100"
                                 strokeDasharray="100"
@@ -329,7 +335,7 @@ export default function UserProfileDropdown() {
 
                         {/* The Avatar Box */}
                         <div 
-                            className="w-full h-full rounded-xl flex items-center justify-center shadow-sm overflow-hidden relative z-10"
+                            className="w-full h-full rounded-full flex items-center justify-center shadow-sm overflow-hidden relative z-10"
                             style={{ 
                                 background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'
                             }}
@@ -347,28 +353,20 @@ export default function UserProfileDropdown() {
                         </div>
                         
                         {/* Level Badge overlapping bottom center */}
-                        <motion.div 
-                            className={cn(
-                                'absolute -bottom-1.5 left-1/2 -translate-x-1/2 min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[8.5px] font-bold tracking-wider shadow-sm border-2 z-20',
-                                isDarkMode 
-                                    ? 'bg-blue-500 text-white border-slate-800' 
-                                    : 'bg-blue-500 text-white border-white'
-                            )}
-                            animate={showLevelUp ? { scale: [1, 1.3, 1] } : {}}
-                            transition={{ duration: 0.5 }}
-                        >
-                            LV.{level}
-                        </motion.div>
-
-                        {/* Online Status dot overlapping top right */}
-                        {showOnlineStatus && (
-                            <div className={cn(
-                                'absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 z-20',
-                                isDarkMode 
-                                    ? 'bg-emerald-400 border-slate-800' 
-                                    : 'bg-emerald-500 border-white'
-                            )}></div>
-                        )}
+                        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-20">
+                            <motion.div 
+                                className={cn(
+                                    'min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[8.5px] font-bold tracking-wider shadow-sm border-2 transition-colors duration-300 bg-blue-500 text-white',
+                                    isDarkMode 
+                                        ? (showOnlineStatus ? 'border-emerald-400' : 'border-slate-800') 
+                                        : (showOnlineStatus ? 'border-emerald-500' : 'border-white')
+                                )}
+                                animate={showLevelUp ? { scale: [1, 1.3, 1] } : {}}
+                                transition={{ duration: 0.5 }}
+                            >
+                                LV.{level}
+                            </motion.div>
+                        </div>
                     </div>
 
                     {/* Text Content matching Tools Page Cards */}
@@ -392,7 +390,7 @@ export default function UserProfileDropdown() {
             <AnimatePresence>
                 {isAvatarHovered && !isOpen && (
                     <div
-                        className="absolute top-full mt-2 right-0 sm:right-auto sm:left-0 z-50 pointer-events-none"
+                        className="absolute top-full mt-2 right-[-22px] z-50 pointer-events-none"
                     >
                         <motion.div
                             initial={{ opacity: 0, y: 6 }}
@@ -402,96 +400,134 @@ export default function UserProfileDropdown() {
                         >
                             <div
                                 className={cn(
-                                    "w-[200px] rounded-xl border overflow-hidden",
+                                    "w-[250px] sm:w-[260px] rounded-[20px] border p-4 flex flex-col gap-3.5 relative transition-all duration-300",
                                     isDarkMode
-                                        ? "bg-slate-900 border-slate-700/60 shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
-                                        : "bg-white border-slate-200 shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
+                                        ? "bg-slate-900 border-slate-800/80 shadow-[0_12px_30px_rgba(0,0,0,0.5)]"
+                                        : "bg-white border-slate-200/80 shadow-[0_12px_30px_rgba(0,0,0,0.06)]"
                                 )}
                             >
-                                {/* Arrow aligned to Avatar Center */}
+                                {/* SaaS Background Accents Container (Clipped exactly to card borders, while letting arrow escape) */}
+                                <div className="absolute inset-0 rounded-[20px] overflow-hidden pointer-events-none z-0">
+                                    <div className="absolute top-0 right-0 -mr-12 -mt-12 w-28 h-28 rounded-full blur-2xl opacity-20 dark:opacity-10 bg-blue-500" aria-hidden="true" />
+                                    <div className="absolute bottom-0 left-0 -ml-12 -mb-12 w-20 h-28 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-2xl" aria-hidden="true" />
+                                </div>
+
+                                {/* Arrow aligned to Avatar Center (Responsive: right-[74px] on mobile, left-[54px] on desktop) */}
                                 <div
                                     className={cn(
-                                        "absolute -top-[5px] right-[24px] sm:right-auto sm:left-[26px] translate-x-1/2 sm:-translate-x-1/2 w-[10px] h-[10px] rotate-45 border-l border-t",
+                                        "absolute -top-[5px] right-[74px] sm:right-auto sm:left-[54px] w-[10px] h-[10px] rotate-45 border-l border-t z-10",
                                         isDarkMode
-                                            ? "bg-slate-900 border-slate-700/60"
-                                            : "bg-white border-slate-200"
+                                            ? "bg-slate-900 border-slate-800/80"
+                                            : "bg-white border-slate-200/80"
                                     )}
                                 />
 
-                                {/* Content */}
-                                <div className="px-3.5 pt-3 pb-3 flex flex-col gap-3">
-                                    {/* Header row */}
-                                    <div className="flex items-center gap-3">
-                                        <div className={cn(
-                                            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
-                                            isDarkMode ? "bg-blue-500/15" : "bg-blue-50"
+                                {/* Left: Icon & Core Info (Matches Student Tools Header Layout) */}
+                                <div className="flex items-center gap-3 relative z-10">
+                                    <motion.div
+                                        whileHover={{ scale: 1.05, rotate: -5 }}
+                                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                        className={cn(
+                                            "w-11 h-11 rounded-[14px] flex items-center justify-center shrink-0 shadow-sm border",
+                                            isDarkMode ? "bg-blue-500/10 border-blue-500/20" : "bg-blue-50 border-blue-100"
+                                        )}
+                                    >
+                                        {/* Level-themed icon (Unified to premium Blue) */}
+                                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#60a5fa' : '#3b82f6'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            {level >= 100 ? (
+                                                <><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></>
+                                            ) : level >= 75 ? (
+                                                <><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></>
+                                            ) : level >= 50 ? (
+                                                <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>
+                                            ) : level >= 25 ? (
+                                                <><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></>
+                                            ) : (
+                                                <><path d="M12 2a10 10 0 1 0 10 10H12V2z" /></>
+                                            )}
+                                        </svg>
+                                    </motion.div>
+                                    <div className="flex flex-col text-left">
+                                        <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">
+                                            Level {level}
+                                        </h1>
+                                        <span className={cn(
+                                            "text-[11px] font-bold leading-none mt-0.5",
+                                            isDarkMode ? "text-blue-400" : "text-blue-600"
                                         )}>
-                                            {/* Zap bolt icon */}
-                                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#60a5fa' : '#3b82f6'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                                            </svg>
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className={cn(
-                                                "text-[13px] font-bold leading-tight tracking-tight",
-                                                isDarkMode ? "text-white" : "text-slate-900"
-                                            )}>Level {level}</span>
-                                            <span className={cn(
-                                                "text-[10.5px] font-medium leading-none mt-0.5",
-                                                isDarkMode ? "text-slate-400" : "text-slate-500"
-                                            )}>Academic Level</span>
-                                        </div>
+                                            {level >= 100 ? 'Master Scholar' : level >= 75 ? 'Senior Scholar' : level >= 50 ? 'Knowledge Keeper' : level >= 25 ? 'Adept Learner' : 'Rising Student'}
+                                        </span>
                                     </div>
+                                </div>
 
-                                    {/* Divider */}
-                                    <div className={cn("h-px w-full", isDarkMode ? "bg-slate-700/60" : "bg-slate-100")} />
-
-                                    {/* Progress section */}
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex justify-between items-end">
-                                            <span className={cn(
-                                                "text-[9.5px] font-bold tracking-widest uppercase",
-                                                isDarkMode ? "text-slate-400" : "text-slate-500"
-                                            )}>Progress</span>
-                                            <div className="flex items-baseline gap-0.5">
-                                                <span className={cn(
-                                                    "text-[13px] font-extrabold tabular-nums leading-none",
-                                                    isDarkMode ? "text-white" : "text-slate-900"
-                                                )}>{getXPData().xpInCurrentLevel}</span>
-                                                <span className={cn(
-                                                    "text-[10px] font-semibold",
-                                                    isDarkMode ? "text-slate-500" : "text-slate-400"
-                                                )}>/100</span>
-                                            </div>
-                                        </div>
-                                        <div className={cn("h-2 w-full rounded-full overflow-hidden shadow-inner", isDarkMode ? "bg-slate-800" : "bg-slate-100")}>
-                                            <motion.div
-                                                className="h-full rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 relative"
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${xpProgress}%` }}
-                                                transition={{ duration: 0.8, ease: "easeOut" }}
-                                            >
-                                                {/* Premium Shine Effect */}
-                                                <div className="absolute top-0 right-0 bottom-0 w-6 bg-gradient-to-r from-transparent to-white/30 rounded-full" />
-                                            </motion.div>
-                                        </div>
-                                    </div>
-
-                                    {/* Footer */}
+                                {/* XP to next level status block (Available Tools Card style - Unified to Blue) */}
+                                <div className={cn(
+                                    "flex items-center gap-3 p-3 rounded-[16px] border transition-colors relative z-10",
+                                    isDarkMode 
+                                        ? "bg-slate-800/40 border-slate-800/80 hover:border-blue-800/50" 
+                                        : "bg-slate-50/50 border-slate-100 hover:border-blue-200/80"
+                                )}>
                                     <div className={cn(
-                                        "flex items-center gap-2 py-1.5 px-2.5 rounded-lg mt-0.5 border",
-                                        isDarkMode ? "bg-slate-800/60 border-slate-700/50" : "bg-slate-50 border-slate-200/60"
+                                        "p-2 rounded-xl flex-shrink-0 border",
+                                        isDarkMode 
+                                            ? "bg-blue-950/40 border-blue-800/50 text-blue-400" 
+                                            : "bg-blue-100 border-blue-200/60 text-blue-600"
                                     )}>
-                                        <svg className="w-3.5 h-3.5 shrink-0 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                                             <circle cx="12" cy="12" r="10" />
                                             <polyline points="12 6 12 12 16 14" />
                                         </svg>
-                                        <span className={cn(
-                                            "text-[10px] font-medium leading-tight",
-                                            isDarkMode ? "text-slate-300" : "text-slate-600"
-                                        )}>
-                                            <span className={cn("font-bold", isDarkMode ? "text-white" : "text-slate-900")}>{100 - getXPData().xpInCurrentLevel} XP</span> to Level {level + 1}
-                                        </span>
+                                    </div>
+                                    <div className="flex flex-col text-left">
+                                        <p className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-0.5">Almost There!</p>
+                                        <p className="text-[12.5px] font-black text-slate-900 dark:text-slate-100 leading-none">
+                                            {getXPNeededForLevel(level) - getXPData().xpInCurrentLevel} <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">XP to Lv.{level + 1}</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Progress Section (Matching Student Tools typography & alignments) */}
+                                <div className="flex flex-col gap-1.5 relative z-10">
+                                    <div className="flex justify-between items-end">
+                                        <span className="text-[8.5px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Current Progress</span>
+                                        <div className="flex items-baseline gap-0.5">
+                                            <span className="text-[12px] font-black text-slate-900 dark:text-slate-100 leading-none">{Math.round(xpProgress)}%</span>
+                                            <span className="text-[9.5px] font-bold text-slate-400 dark:text-slate-500 ml-0.5">complete</span>
+                                        </div>
+                                    </div>
+                                    <div className="h-2.5 w-full rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.15)] border border-black/5 dark:border-white/5">
+                                        <motion.div
+                                            className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400 relative"
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${xpProgress}%` }}
+                                            transition={{ duration: 0.8, ease: "easeOut" }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Next Level Perks block (Privacy Card style) */}
+                                <div className={cn(
+                                    "flex items-center gap-3 p-3 rounded-[16px] border transition-colors relative z-10",
+                                    isDarkMode 
+                                        ? "bg-slate-800/40 border-slate-800/80 hover:border-blue-800/50" 
+                                        : "bg-slate-50/50 border-slate-100 hover:border-blue-200/80"
+                                )}>
+                                    <div className={cn(
+                                        "p-2 rounded-xl flex-shrink-0 border",
+                                        isDarkMode 
+                                            ? "bg-blue-950/40 border-blue-800/50 text-blue-400" 
+                                            : "bg-blue-100 border-blue-200/60 text-blue-600"
+                                    )}>
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex flex-col text-left min-w-0">
+                                        <p className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-0.5">Level {level + 1} Unlocks</p>
+                                        <p className="text-[12.5px] font-black text-slate-800 dark:text-slate-100 leading-none truncate max-w-[130px]">
+                                            {level + 1 === 98 ? 'Advanced AI Tools' : level + 1 === 99 ? 'Premium Themes' : level + 1 >= 100 ? 'Master Scholar' : 'New Study Tools'}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -503,7 +539,7 @@ export default function UserProfileDropdown() {
             {/* Unified SaaS Notification Stack (Prevents Overlap) */}
             <div className="absolute top-full mt-2 right-0 sm:right-auto sm:left-0 z-50 flex flex-col gap-2 pointer-events-none items-end sm:items-start">
                 
-                {/* Level Up Notification */}
+                {/* Enhanced Level Up Notification */}
                 <AnimatePresence>
                     {showLevelUp && (
                         <motion.div
@@ -513,15 +549,39 @@ export default function UserProfileDropdown() {
                             transition={{ type: "spring", stiffness: 500, damping: 25, mass: 0.8 }}
                         >
                             <div
-                                className="p-2.5 rounded-[14px] flex items-center gap-3 relative overflow-hidden w-auto min-w-[200px] backdrop-blur-xl shadow-lg"
+                                className="p-3 rounded-[16px] flex items-center gap-3 relative overflow-hidden w-auto min-w-[220px] backdrop-blur-xl shadow-xl"
                                 style={{
-                                    backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
-                                    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'}`,
+                                    background: isDarkMode 
+                                        ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)' 
+                                        : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                                    border: `2px solid ${isDarkMode ? 'rgba(234, 179, 8, 0.3)' : 'rgba(234, 179, 8, 0.4)'}`,
                                     boxShadow: isDarkMode 
-                                        ? '0 10px 40px -10px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0,0,0,0.2)'
-                                        : '0 10px 40px -10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.02)',
+                                        ? '0 20px 60px -15px rgba(234, 179, 8, 0.3), 0 10px 30px -10px rgba(0, 0, 0, 0.5)'
+                                        : '0 20px 60px -15px rgba(234, 179, 8, 0.2), 0 10px 30px -10px rgba(0, 0, 0, 0.1)',
                                 }}
                             >
+                                {/* Animated background particles */}
+                                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                                    <motion.div
+                                        className="absolute w-2 h-2 rounded-full bg-yellow-400/30"
+                                        animate={{ y: [-20, 40], x: [-10, 10], opacity: [0, 1, 0] }}
+                                        transition={{ duration: 2, repeat: Infinity, delay: 0 }}
+                                        style={{ left: '20%', top: '20%' }}
+                                    />
+                                    <motion.div
+                                        className="absolute w-1.5 h-1.5 rounded-full bg-yellow-400/30"
+                                        animate={{ y: [-20, 40], x: [10, -10], opacity: [0, 1, 0] }}
+                                        transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                                        style={{ left: '60%', top: '30%' }}
+                                    />
+                                    <motion.div
+                                        className="absolute w-2 h-2 rounded-full bg-yellow-400/30"
+                                        animate={{ y: [-20, 40], x: [-5, 15], opacity: [0, 1, 0] }}
+                                        transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                                        style={{ left: '80%', top: '40%' }}
+                                    />
+                                </div>
+
                                 {/* Arrow aligned to Avatar Center */}
                                 <div
                                     className="absolute -top-[5px] right-[24px] sm:right-auto sm:left-[26px] translate-x-1/2 sm:-translate-x-1/2 z-10"
@@ -534,37 +594,47 @@ export default function UserProfileDropdown() {
                                     }}
                                 />
 
-                                {/* Icon Container - Study Tools style */}
+                                {/* Icon Container - Star/Trophy themed */}
                                 <div 
-                                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
-                                    style={{ background: isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(209, 250, 229, 0.6)' }}
+                                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg relative"
+                                    style={{ 
+                                        background: 'linear-gradient(135deg, #eab308 0%, #f59e0b 100%)',
+                                        boxShadow: '0 4px 15px rgba(234, 179, 8, 0.4)'
+                                    }}
                                 >
                                     <motion.div
-                                        animate={shouldReduceMotion ? { scale: 1, rotate: 0 } : { scale: [1, 1.05, 0.98, 1.02, 1], rotate: [0, 3, -2, 1, 0] }}
-                                        transition={shouldReduceMotion ? { duration: 0 } : { repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+                                        animate={shouldReduceMotion ? { scale: 1, rotate: 0 } : { scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+                                        transition={shouldReduceMotion ? { duration: 0 } : { repeat: 2, duration: 0.6, ease: "easeOut" }}
                                     >
-                                        <svg className={`w-4 h-4 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-500'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
-                                            <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-                                            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
-                                            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+                                        <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                                         </svg>
                                     </motion.div>
                                 </div>
 
-                                {/* Text Layout matching Tools Page Cards */}
+                                {/* Text Layout */}
                                 <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
                                     <div 
-                                        className="text-[12px] font-bold leading-tight whitespace-nowrap"
-                                        style={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}
+                                        className="text-[13px] font-black leading-tight whitespace-nowrap"
+                                        style={{ 
+                                            background: 'linear-gradient(90deg, #eab308, #f59e0b)',
+                                            WebkitBackgroundClip: 'text',
+                                            WebkitTextFillColor: 'transparent'
+                                        }}
                                     >
-                                        Level Up!
+                                        LEVEL UP! 🎉
                                     </div>
                                     <div 
-                                        className="text-[10px] font-medium mt-0.5 leading-tight whitespace-nowrap truncate"
+                                        className="text-[11px] font-semibold mt-0.5 leading-tight whitespace-nowrap"
                                         style={{ color: isDarkMode ? '#94a3b8' : '#64748b' }}
                                     >
-                                        Reached Level {level}
+                                        You're now Level {level}!
+                                    </div>
+                                    <div 
+                                        className="text-[9px] font-medium mt-0.5 leading-tight"
+                                        style={{ color: isDarkMode ? '#64748b' : '#94a3b8' }}
+                                    >
+                                        New perks unlocked
                                     </div>
                                 </div>
                             </div>
@@ -680,20 +750,20 @@ export default function UserProfileDropdown() {
                                 )}
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                {/* Study Tools Style Close Button */}
+                                {/* Study Tools Style Close Button (Matches FAQ modal close icon) */}
                                 <motion.button
-                                    whileHover={{ scale: 1.05, backgroundColor: isDarkMode ? 'rgba(239, 68, 68, 0.15)' : '#fee2e2' }}
+                                    whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => setIsOpen(false)}
                                     className={cn(
-                                        "absolute top-4 right-4 sm:top-6 sm:right-6 w-8 h-8 rounded-[10px] flex items-center justify-center transition-colors z-50 shadow-sm border",
+                                        "absolute top-6 right-6 sm:top-10 sm:right-10 w-10 h-10 rounded-[12px] flex items-center justify-center transition-colors z-50 shadow-sm border",
                                         isDarkMode 
-                                            ? "bg-slate-800 border-slate-700/60 text-slate-400 hover:text-red-400 hover:border-red-500/30" 
-                                            : "bg-white border-slate-200 text-slate-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
+                                            ? "bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-100 hover:bg-slate-700" 
+                                            : "bg-slate-50 border-slate-200/80 text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                                     )}
                                 >
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M18 6L6 18M6 6l12 12" />
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </motion.button>
 
@@ -748,18 +818,17 @@ export default function UserProfileDropdown() {
                                         <input ref={profileInputRef} type='file' accept='image/*,.gif' onChange={handleProfileUpload} className='hidden' />
 
                                         {/* Title & Email */}
-                                        <div className="min-w-0 flex-1">
-                                            <div className="flex items-center gap-3 mb-1.5">
+                                        <div className="min-w-0 flex-1 text-left">
+                                            <div className="flex items-center gap-3 mb-1">
                                                 <h1 className={cn("font-black tracking-tight leading-none break-words transition-all duration-300", 
                                                     isDarkMode ? "text-slate-100" : "text-slate-900",
-                                                    isScrolled ? "text-[18px] lg:text-3xl" : "text-[24px] lg:text-3xl"
+                                                    isScrolled ? "text-[18px] lg:text-[24px]" : "text-[24px]"
                                                 )}>
                                                     {profile.firstName} {profile.lastName}
                                                 </h1>
                                             </div>
-                                            <p className={cn("font-medium leading-relaxed break-all transition-all duration-300", 
-                                                isDarkMode ? "text-slate-400" : "text-slate-500",
-                                                isScrolled ? "hidden lg:block text-[14px] lg:text-[15px]" : "text-[14px] lg:text-[15px]"
+                                            <p className={cn("font-medium leading-relaxed break-all transition-all duration-300 text-sm", 
+                                                isDarkMode ? "text-slate-400" : "text-slate-500"
                                             )}>
                                                 {profile.email}
                                             </p>
@@ -767,40 +836,48 @@ export default function UserProfileDropdown() {
                                     </div>
 
                                     {/* Right Side: Modern Stat Cards */}
-                                    <div className={cn("flex-col sm:flex-row items-stretch sm:items-center gap-3 lg:gap-4 relative z-10 w-full xl:w-auto min-w-0 transition-all duration-300",
+                                    <div className={cn("flex-col sm:flex-row items-stretch sm:items-center gap-3 lg:gap-4 relative z-10 w-full xl:w-auto xl:mr-[50px] min-w-0 transition-all duration-300",
                                         isScrolled ? "hidden lg:flex" : "flex"
                                     )}>
-                                        {/* Student ID Card */}
-                                        <div className={cn("flex items-center gap-3 lg:gap-4 p-3 lg:p-4 rounded-[20px] lg:rounded-[24px] border transition-all duration-300 hover:shadow-md flex-1 xl:flex-none min-w-0", isDarkMode ? "bg-slate-800/50 border-slate-700/60 hover:border-slate-600" : "bg-slate-50/50 border-slate-200/60 hover:border-slate-300 hover:bg-white")}>
+                                        {/* Student ID Card (Matches Wrench/Tools style EXACTLY) */}
+                                        <div className={cn("flex items-center gap-3.5 p-3.5 pl-4 pr-5 rounded-[20px] border transition-all duration-300 hover:shadow-md hover:bg-white dark:hover:bg-slate-900 flex-1 xl:flex-none min-w-0 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.03)] dark:shadow-[0_2px_12px_-3px_rgba(0,0,0,0.15)]", 
+                                            isDarkMode ? "bg-slate-900/60 border-slate-800/80 hover:border-slate-700/80" : "bg-slate-50/50 border-slate-100 hover:border-slate-200/80"
+                                        )}>
                                             <motion.div
                                                 whileHover={{ scale: 1.05, rotate: -5 }}
                                                 transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                                                className={cn("w-10 h-10 lg:w-12 lg:h-12 rounded-[12px] lg:rounded-[14px] flex items-center justify-center flex-shrink-0 shadow-sm border", isDarkMode ? "bg-slate-800 border-slate-700 text-slate-400" : "bg-white border-slate-200 text-slate-500")}
+                                                className={cn("w-11 h-11 rounded-[14px] flex items-center justify-center flex-shrink-0 shadow-sm border", 
+                                                    isDarkMode ? "bg-slate-800 border-slate-700 text-slate-400" : "bg-white border-slate-200 text-slate-500"
+                                                )}
                                             >
-                                                <svg className='w-5 h-5 lg:w-6 lg:h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M7 20l4-16m2 16l4-16M6 9h14M4 15h14' />
+                                                <svg className='w-5 h-5' fill='none' stroke='currentColor' strokeWidth={2.5} viewBox='0 0 24 24'>
+                                                    <path strokeLinecap='round' strokeLinejoin='round' d='M7 20l4-16m2 16l4-16M6 9h14M4 15h14' />
                                                 </svg>
                                             </motion.div>
-                                            <div className="flex flex-col min-w-0 pr-2">
-                                                <p className={cn("text-[10px] lg:text-[12px] font-bold uppercase tracking-widest mb-0.5 truncate", isDarkMode ? "text-slate-500" : "text-slate-400")}>Student ID</p>
-                                                <p className={cn("text-[15px] lg:text-[19px] font-black leading-none truncate", isDarkMode ? "text-slate-100" : "text-slate-900")}>{profile.studentId}</p>
+                                            <div className="flex flex-col text-left min-w-0 pr-2">
+                                                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1 leading-none">Student ID</p>
+                                                <p className={cn("text-sm sm:text-[15px] font-bold leading-tight truncate", isDarkMode ? "text-slate-100" : "text-slate-800")}>{profile.studentId}</p>
                                             </div>
                                         </div>
 
-                                        {/* Level Card */}
-                                        <div className={cn("flex items-center gap-3 lg:gap-4 p-3 lg:p-4 rounded-[20px] lg:rounded-[24px] border transition-all duration-300 hover:shadow-md flex-1 xl:flex-none min-w-0", isDarkMode ? "bg-slate-800/50 border-slate-700/60 hover:border-blue-800/50" : "bg-slate-50/50 border-slate-200/60 hover:border-blue-200 hover:bg-white")}>
+                                        {/* Level Card (Matches available Tools style EXACTLY) */}
+                                        <div className={cn("flex items-center gap-3.5 p-3.5 pl-4 pr-5 rounded-[20px] border transition-all duration-300 hover:shadow-md hover:bg-white dark:hover:bg-slate-900 flex-1 xl:flex-none min-w-0 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.03)] dark:shadow-[0_2px_12px_-3px_rgba(0,0,0,0.15)]", 
+                                            isDarkMode ? "bg-slate-900/60 border-slate-800/80 hover:border-blue-800/50" : "bg-slate-50/50 border-slate-100 hover:border-blue-200/80"
+                                        )}>
                                             <motion.div
                                                 whileHover={{ scale: 1.05, rotate: -5 }}
                                                 transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                                                className={cn("w-10 h-10 lg:w-12 lg:h-12 rounded-[12px] lg:rounded-[14px] flex items-center justify-center flex-shrink-0 shadow-sm border", isDarkMode ? "text-blue-400 bg-blue-900/30 border-blue-800/50" : "text-blue-600 bg-blue-100/50 border-blue-200/60")}
+                                                className={cn("w-11 h-11 rounded-[14px] flex items-center justify-center flex-shrink-0 shadow-sm border", 
+                                                    isDarkMode ? "text-blue-400 bg-blue-500/10 border-blue-500/20" : "text-blue-600 bg-blue-50 border-blue-100"
+                                                )}
                                             >
-                                                <svg className='w-5 h-5 lg:w-6 lg:h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M13 10V3L4 14h7v7l9-11h-7z' />
+                                                <svg className='w-5 h-5' fill='none' stroke='currentColor' strokeWidth={2.5} viewBox='0 0 24 24'>
+                                                    <path strokeLinecap='round' strokeLinejoin='round' d='M13 10V3L4 14h7v7l9-11h-7z' />
                                                 </svg>
                                             </motion.div>
-                                            <div className="flex flex-col min-w-0 pr-2">
-                                                <p className={cn("text-[10px] lg:text-[12px] font-bold uppercase tracking-widest mb-0.5 truncate", isDarkMode ? "text-slate-500" : "text-slate-400")}>Level</p>
-                                                <p className={cn("text-[15px] lg:text-[19px] font-black leading-none truncate", isDarkMode ? "text-slate-100" : "text-slate-900")}>{level}</p>
+                                            <div className="flex flex-col text-left min-w-0 pr-2">
+                                                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1 leading-none">Level</p>
+                                                <p className={cn("text-sm sm:text-[15px] font-bold leading-tight truncate", isDarkMode ? "text-slate-100" : "text-slate-800")}>{level}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -918,7 +995,7 @@ export default function UserProfileDropdown() {
                                                     <div>
                                                         <p className={cn("text-[12px] font-bold uppercase tracking-wider mb-0.5", isDarkMode ? "text-slate-500" : "text-slate-400")}>Earned</p>
                                                         <p className={cn("text-lg font-black leading-none", isDarkMode ? "text-slate-100" : "text-slate-900")}>
-                                                            {getXPData().xpInCurrentLevel} <span className={cn("text-sm font-semibold", isDarkMode ? "text-slate-400" : "text-slate-500")}>/ 100 XP</span>
+                                                            {getXPData().xpInCurrentLevel} <span className={cn("text-sm font-semibold", isDarkMode ? "text-slate-400" : "text-slate-500")}>/ {getXPNeededForLevel(level)} XP</span>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -933,7 +1010,7 @@ export default function UserProfileDropdown() {
                                                     <div>
                                                         <p className={cn("text-[12px] font-bold uppercase tracking-wider mb-0.5", isDarkMode ? "text-slate-500" : "text-slate-400")}>To Level {level + 1}</p>
                                                         <p className={cn("text-lg font-black leading-none", isDarkMode ? "text-slate-100" : "text-slate-900")}>
-                                                            {100 - getXPData().xpInCurrentLevel} XP
+                                                            {getXPNeededForLevel(level) - getXPData().xpInCurrentLevel} XP
                                                         </p>
                                                     </div>
                                                 </div>
@@ -941,15 +1018,104 @@ export default function UserProfileDropdown() {
                                         </div>
 
                                         {/* Progress Bar (Full Width Below) */}
-                                        <div className={cn("h-4 w-full rounded-full overflow-hidden shadow-inner relative z-10", isDarkMode ? "bg-slate-900/80 border border-slate-700/50" : "bg-slate-100/80 border border-slate-200/50")}>
+                                        <div className="relative z-10 h-4 w-full rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.15)] border border-black/5 dark:border-white/5">
                                             <motion.div
-                                                className="h-full rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 relative"
+                                                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400 relative"
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${xpProgress}%` }}
                                                 transition={{ duration: 1.2, ease: "easeOut" }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Earn XP Guide */}
+                                    <div className={cn(
+                                        "relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col xl:flex-row items-center justify-between gap-8 group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 shrink-0"
+                                    )}>
+                                        {/* SaaS Background Accents */}
+                                        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+
+                                        {/* Left: Icon & Core Info */}
+                                        <div className="flex items-center gap-6 relative z-10 w-full xl:w-auto">
+                                            <motion.div
+                                                whileHover={{ scale: 1.05, rotate: -5 }}
+                                                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                                className="w-16 h-16 rounded-[20px] bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
                                             >
-                                                <div className="absolute top-0 right-0 bottom-0 w-10 bg-gradient-to-r from-transparent to-white/30 rounded-full" />
+                                                <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                                </svg>
                                             </motion.div>
+
+                                            <div className="text-left">
+                                                <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-1">
+                                                    How to Earn XP
+                                                </h1>
+                                                <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-lg leading-relaxed">
+                                                    Complete activities to level up faster and unlock premium student tools and badges.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Right: Modern Stat Cards Grid */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10 w-full xl:w-auto shrink-0">
+                                            {[
+                                                { 
+                                                    icon: (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                        </svg>
+                                                    ), 
+                                                    label: 'Assignments', 
+                                                    text: 'Complete assignments', 
+                                                    xp: '+50 XP',
+                                                    themeClass: "text-blue-500 bg-blue-50 border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 hover:border-blue-200 dark:hover:border-blue-800/50"
+                                                },
+                                                { 
+                                                    icon: (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    ), 
+                                                    label: 'Study Tools', 
+                                                    text: 'Use study tools', 
+                                                    xp: '+10 XP each',
+                                                    themeClass: "text-purple-500 bg-purple-50 border-purple-100 dark:bg-purple-500/10 dark:border-purple-500/20 hover:border-purple-200 dark:hover:border-purple-800/50"
+                                                },
+                                                { 
+                                                    icon: (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                                                        </svg>
+                                                    ), 
+                                                    label: 'Daily Streak', 
+                                                    text: 'Daily login streak', 
+                                                    xp: '+20 XP',
+                                                    themeClass: "text-orange-500 bg-orange-50 border-orange-100 dark:bg-orange-500/10 dark:border-orange-500/20 hover:border-orange-200 dark:hover:border-orange-800/50"
+                                                },
+                                                { 
+                                                    icon: (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                                        </svg>
+                                                    ), 
+                                                    label: 'Course Reading', 
+                                                    text: 'Read course material', 
+                                                    xp: '+5 XP/min',
+                                                    themeClass: "text-emerald-500 bg-emerald-50 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20 hover:border-emerald-200 dark:hover:border-emerald-800/50"
+                                                },
+                                            ].map((item, idx) => (
+                                                <div key={idx} className="flex items-center gap-4 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-all hover:shadow-sm hover:border-zinc-200 dark:hover:border-zinc-700 min-w-[200px]">
+                                                    <div className={cn("p-2.5 rounded-xl flex-shrink-0 border", item.themeClass.split(' ').slice(0, 4).join(' '))}>
+                                                        {item.icon}
+                                                    </div>
+                                                    <div className="text-left">
+                                                        <p className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-0.5">{item.label}</p>
+                                                        <p className="text-base font-black text-zinc-900 dark:text-zinc-100 leading-none">{item.xp}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
 

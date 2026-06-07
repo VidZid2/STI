@@ -1,11 +1,14 @@
 import * as React from "react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { Save } from "lucide-react";
+import { Save, FileText, FileSpreadsheet } from "lucide-react";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
 import { summarizeWithGroq, isSummarizerGroqConfigured } from "../../lib/summarizer/groqSummarizerService";
+import { TextSummarizerEmpty } from "./empty-states";
+import { exportSummaryToDocx } from "../../lib/export/docxExport";
+import { exportSummaryToTxt } from "../../lib/export/txtExport";
 
 interface TextSummarizerProps {
   onBack: () => void;
@@ -41,7 +44,8 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
   const [summary, setSummary] = useState('');
   const [summaryLength, setSummaryLength] = useState<SummaryLength>('medium');
   const [copied, setCopied] = useState(false);
-  const [downloaded, setDownloaded] = useState(false);
+  const downloaded = false;
+
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   
@@ -199,22 +203,7 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
     }
   };
 
-  const handleDownload = () => {
-    if (!summary) return;
 
-    const blob = new Blob([summary], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'summary.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    setDownloaded(true);
-    setTimeout(() => setDownloaded(false), 2000);
-  };
 
   const handleClear = () => {
     setInputText('');
@@ -688,61 +677,44 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
                                   </AnimatePresence>
                               </motion.button>
 
+                              {/* Export Buttons */}
                               <motion.button
-                                onClick={handleDownload}
-                                className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all ${
+                                onClick={() => exportSummaryToDocx(inputText, summary, summaryLength)}
+                                className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
                                     downloaded
                                         ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                        : 'bg-blue-500 text-white hover:bg-blue-600 shadow-md shadow-blue-500/20'
+                                }`}
+                                whileHover={{ y: -1 }}
+                                whileTap={{ scale: 0.98 }}
+                                title="Export as Word document"
+                              >
+                                <FileSpreadsheet className="w-4 h-4" />
+                                {downloaded ? 'Saved!' : '.docx'}
+                              </motion.button>
+                              <motion.button
+                                onClick={() => exportSummaryToTxt(inputText, summary, summaryLength)}
+                                className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 ${
+                                    downloaded
+                                        ? 'bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300'
                                         : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700'
                                 }`}
                                 whileHover={{ y: -1 }}
                                 whileTap={{ scale: 0.98 }}
+                                title="Export as plain text"
                               >
-                                {downloaded ? 'Downloaded!' : 'Download .txt'}
+                                <FileText className="w-4 h-4" />
+                                .txt
                               </motion.button>
                               </div>
                           </motion.div>
                       ) : (
-                         <motion.div
-                            key="empty-state"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="group relative flex flex-col items-center justify-center h-full p-6 sm:p-8"
-                         >
-                            {/* Background Ambient Glow (matches ToolItem) */}
-                            <motion.div
-                                className="absolute -right-20 -top-20 h-48 w-48 rounded-full blur-3xl pointer-events-none bg-blue-500/15 dark:bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                aria-hidden="true"
-                            />
-
-                            <div className="relative z-10 flex w-full flex-1 flex-col items-center justify-center">
-                                {/* Title (matches ToolItem but centered) */}
-                                <div className="flex min-w-0 flex-col justify-center text-center">
-                                    <h3 className="max-w-full whitespace-normal text-base font-bold leading-snug tracking-tighter text-zinc-900 dark:text-zinc-100 sm:text-lg">
-                                        Ready to build study notes
-                                    </h3>
-                                </div>
-
-                                {/* Description (matches ToolItem but centered) */}
-                                <div className="mt-3 w-full text-center">
-                                    <p className="text-[13.5px] leading-relaxed text-zinc-600 dark:text-zinc-300 sm:text-sm">
-                                        Paste lecture notes, an article, or a module section. Your draft auto-saves while you work.
-                                    </p>
-                                </div>
-
-                                {/* Bottom aligned content wrapper */}
-                                <div className="mt-6 flex w-full flex-col items-center">
-                                    <div className="flex flex-wrap justify-center gap-2">
-                                        {['Key points', 'Reviewer format', 'Quick recap'].map((hint) => (
-                                            <span key={hint} className="inline-flex h-[24px] items-center rounded-md px-2.5 text-[10.5px] font-bold uppercase leading-none tracking-wide bg-blue-50/80 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 border border-blue-100/50 dark:border-blue-800/30">
-                                                {hint}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                          </motion.div>
+                         <TextSummarizerEmpty 
+                            onAction={() => {
+                                // Sample lecture notes
+                                setInputText(`Introduction to Computer Science\n\nComputer science is the study of computation, information, and automation. It spans theoretical disciplines (like algorithms and computational theory) to practical disciplines (like hardware and software design).\n\nKey concepts include:\n- Algorithms: Step-by-step procedures for solving problems\n- Data structures: Ways to organize and store data\n- Programming: Writing instructions for computers\n\nThis field has revolutionized modern life, from smartphones to medical diagnostics.`);
+                            }}
+                         />
                      )}
                  </AnimatePresence>
              </div>

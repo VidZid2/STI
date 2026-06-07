@@ -1631,9 +1631,9 @@
 }
 
 /* ============================================================
-   12. MOBILE FALLBACK (@media max-width: 768px)
+   12. MOBILE & TABLET FALLBACK (@media max-width: 1024px)
    ============================================================ */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .hz-viewport {
         position: relative;
         height: auto;
@@ -1651,6 +1651,7 @@
         width: 100%;
         height: auto;
         min-height: 100vh;
+        align-items: flex-start;
     }
 
     .hz-panel-inner {
@@ -1667,12 +1668,13 @@
 
     /* Panel 1 Hero mobile */
     .panel-hero .hz-panel-inner {
-        padding-top: 100px;
+        padding-top: 60px;
         padding-bottom: 60px;
+        justify-content: flex-start;
     }
 
     .hero-headline {
-        font-size: 2.8rem;
+        font-size: clamp(2.5rem, 6vw, 3.5rem);
     }
 
     .hero-tagline {
@@ -1719,7 +1721,7 @@
 
     /* Panel 3 Features mobile */
     .features-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 16px;
     }
 
@@ -1752,14 +1754,15 @@
 
     /* Panel 5 CTA mobile */
     .cta-headline {
-        font-size: 2rem;
+        font-size: clamp(2rem, 5vw, 2.5rem);
     }
 
     .cta-buttons {
         flex-direction: row;
         width: 100%;
         justify-content: center;
-        gap: 16px;
+        gap: 12px;
+        flex-wrap: nowrap;
     }
 
     .cta-btn-primary,
@@ -1774,7 +1777,7 @@
         text-align: center;
     }
 
-    /* Mobile entrance animations — trigger via IntersectionObserver */
+    /* Mobile entrance animations — Force visible so IntersectionObserver delays don't cause blank screens */
     .panel-hero .hero-badge,
     .panel-hero .hero-headline,
     .panel-hero .hero-tagline,
@@ -1790,25 +1793,9 @@
     .cta-headline,
     .cta-subtext,
     .cta-buttons {
-        opacity: 0;
+        opacity: 1 !important;
+        transform: none !important;
     }
-
-    /* On mobile, panel-active is set by IntersectionObserver */
-}
-
-/* Tablet adjustments */
-@media (max-width: 1024px) and (min-width: 769px) {
-    .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .hz-panel-inner {
-        padding: 0 40px;
-    }
-
-    .preview-badge--1 { right: -20px; }
-    .preview-badge--2 { left: -25px; }
-    .preview-badge--3 { left: -30px; }
 }
 
 /* Reduced motion preference */

@@ -590,7 +590,10 @@ export const initializeTracking = async (): Promise<void> => {
 // XP & Level System
 // ============================================
 
-const XP_PER_LEVEL = 100; // XP needed to level up
+export const getXPNeededForLevel = (level: number): number => {
+	return 100 + (level - 1) * 25;
+};
+
 const XP_STORAGE_KEY = 'user-xp-data';
 const XP_MIGRATED_KEY = 'xp-migrated-v2'; // Fresh start flag
 const STREAK_XP_AWARDED_KEY = 'streak-xp-awarded-v1'; // Track if we've awarded XP for existing streak
@@ -604,9 +607,17 @@ export interface XPData {
 
 // Calculate level from total XP
 const calculateLevel = (totalXP: number): { level: number; xpInLevel: number } => {
-    const level = Math.floor(totalXP / XP_PER_LEVEL) + 1;
-    const xpInLevel = totalXP % XP_PER_LEVEL;
-    return { level, xpInLevel };
+    let remainingXP = totalXP;
+    let currentLevel = 1;
+    while (true) {
+        const xpNeeded = getXPNeededForLevel(currentLevel);
+        if (remainingXP < xpNeeded) {
+            break;
+        }
+        remainingXP -= xpNeeded;
+        currentLevel++;
+    }
+    return { level: currentLevel, xpInLevel: remainingXP };
 };
 
 // Save XP to database
@@ -725,7 +736,8 @@ export const addXP = (amount: number): { leveledUp: boolean; newLevel: number } 
 // Get XP progress percentage (0-100)
 export const getXPProgress = (): number => {
     const data = getXPData();
-    return Math.round((data.xpInCurrentLevel / XP_PER_LEVEL) * 100);
+    const xpNeeded = getXPNeededForLevel(data.currentLevel);
+    return Math.round((data.xpInCurrentLevel / xpNeeded) * 100);
 };
 
 // Get current level

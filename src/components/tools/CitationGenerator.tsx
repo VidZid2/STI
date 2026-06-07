@@ -15,11 +15,13 @@
 import * as React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { BookMarked, BookOpen, Bookmark, CheckCircle2, ClipboardCheck, Globe2, Newspaper, Save, Search, Sparkles, Zap, Type, Layers, FileText } from "lucide-react";
+import { BookMarked, BookOpen, Bookmark, CheckCircle2, ClipboardCheck, Globe2, Newspaper, Save, Search, Sparkles, Zap, Type, Layers, FileText, FileSpreadsheet } from "lucide-react";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
+import { exportBibliographyToDocx } from "../../lib/export/docxExport";
+import { CitationGeneratorEmpty } from "./empty-states";
 
 interface CitationGeneratorProps {
     onBack: () => void;
@@ -1146,7 +1148,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                     <motion.button
                                         layout
                                         onClick={handleCopy}
-                                        className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-bold rounded-xl transition-colors shadow-md ${
+                                        className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-bold rounded-xl transition-colors shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 ${
                                             copied 
                                                 ? 'bg-emerald-500 text-white' 
                                                 : 'bg-violet-600 hover:bg-violet-700 text-white'
@@ -1168,14 +1170,26 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                                                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                                                 </svg>
-                                                Copy Citation
+                                                Copy
                                             </>
                                         )}
                                     </motion.button>
 
+                                    {/* Export DOCX Button */}
+                                    <motion.button
+                                        onClick={() => exportBibliographyToDocx([{ citation: generatedCitation, format: citationStyle }], { title: 'Citation', style: citationStyle })}
+                                        className="flex items-center justify-center gap-1.5 px-4 py-3 text-sm font-bold rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
+                                        whileHover={{ y: -1 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        title="Export as Word document"
+                                    >
+                                        <FileSpreadsheet className="h-4 w-4" />
+                                        .docx
+                                    </motion.button>
+
                                     <motion.button
                                         onClick={handleSaveReference}
-                                        className={`px-4 py-3 text-sm font-bold rounded-xl border transition-all ${
+                                        className={`px-4 py-3 text-sm font-bold rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 ${
                                             savedToReference
                                                 ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-500 text-emerald-600 dark:text-emerald-400'
                                                 : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
@@ -1193,22 +1207,19 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 </div>
                             </motion.div>
                         ) : (
-                            <motion.div
-                                key="empty"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="flex flex-col items-center justify-center py-6 text-zinc-400 dark:text-zinc-500 relative z-10"
-                            >
-                                <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mb-3 border border-zinc-100 dark:border-zinc-800 shadow-sm">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="opacity-40">
-                                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-                                    </svg>
-                                </div>
-                                <span className="text-sm font-bold text-zinc-500 dark:text-zinc-400">Ready to Generate</span>
-                                <span className="text-xs text-zinc-400 dark:text-zinc-500 mt-1 text-center max-w-[200px] leading-relaxed">Fill out the source details to generate your citation here.</span>
-                            </motion.div>
+                            <CitationGeneratorEmpty 
+                                onAction={() => {
+                                    // Pre-fill with sample book data
+                                    setCitationData({
+                                        sourceType: 'book',
+                                        authors: 'Smith, J. D.',
+                                        title: 'The Art of Academic Writing',
+                                        publicationYear: '2023',
+                                        publisher: 'University Press',
+                                    });
+                                    setSourceType('book');
+                                }}
+                            />
                         )}
                     </AnimatePresence>
                 </motion.div>

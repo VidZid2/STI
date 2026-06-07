@@ -12,6 +12,13 @@ import { createSubmission } from '../../../../../services/submissionService';
 import { getCurrentUser } from '../../../../../services/authService';
 import { FileUpload } from '../../../../../components/ui/file-upload';
 
+const SubmitIcon = ({ size = 20 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 2L11 13" />
+        <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+    </svg>
+);
+
 interface SubmitModalTask {
     id: string | number;
     title: string;
@@ -35,6 +42,57 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
     const [submitSuccess, setSubmitSuccess] = useState(false);
 
     const isDark = document.documentElement.classList.contains('dark');
+
+    // Screen size detection for responsive shrinking
+    const [isMobile, setIsMobile] = useState(false);
+    React.useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Auto-minimizing header state
+    const [isMinimized, setIsMinimized] = useState(false);
+    const lastScrollY = React.useRef(0);
+    const scrollDirection = React.useRef<'up' | 'down' | null>(null);
+    const anchorScrollY = React.useRef(0);
+
+    const handleScroll = React.useCallback((e: React.UIEvent<HTMLDivElement>) => {
+        const currentScrollY = e.currentTarget.scrollTop;
+        const scrollHeight = e.currentTarget.scrollHeight;
+        const clientHeight = e.currentTarget.clientHeight;
+        
+        // Handle top of scroll
+        if (currentScrollY <= 10) {
+            setIsMinimized(false);
+            lastScrollY.current = currentScrollY;
+            scrollDirection.current = null;
+            anchorScrollY.current = currentScrollY;
+            return;
+        }
+
+        const delta = currentScrollY - lastScrollY.current;
+        const isNearBottom = scrollHeight - currentScrollY - clientHeight < 50;
+        
+        if (delta > 0) {
+            if (scrollDirection.current !== 'down') {
+                scrollDirection.current = 'down';
+                anchorScrollY.current = lastScrollY.current;
+            }
+            if (currentScrollY - anchorScrollY.current > 30) {
+                setIsMinimized(true);
+            }
+        } else if (delta < 0) {
+            if (scrollDirection.current !== 'up') {
+                scrollDirection.current = 'up';
+                anchorScrollY.current = lastScrollY.current;
+            }
+            // Do not expand just by scrolling up. Only expand at the very top.
+        }
+
+        lastScrollY.current = currentScrollY;
+    }, []);
 
     const handleClose = () => {
         if (!isSubmitting) {
@@ -79,6 +137,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                         onClick={(e) => e.stopPropagation()}
                         style={{
                             width: '100%', maxWidth: '520px',
+                            maxHeight: '85vh',
                             background: isDark ? '#1e293b' : '#ffffff',
                             borderRadius: '20px',
                             boxShadow: '0 25px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.05)',
@@ -140,90 +199,120 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                         ) : (
                             <>
                                 {/* Header */}
-                                <div style={{
-                                    padding: '24px 28px 0',
-                                    display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1 }}>
-                                        <div style={{
-                                            width: '48px', height: '48px', borderRadius: '14px',
-                                            background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)', flexShrink: 0 }}>
-                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M22 2L11 13" />
-                                                <path d="M22 2l-7 20-4-9-9-4 20-7z" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h2 id="submit-modal-title" style={{
-                                                fontSize: '17px', fontWeight: 700, margin: 0, lineHeight: 1.3,
-                                                color: isDark ? '#f1f5f9' : '#0f172a' }}>Submit Assignment</h2>
-                                            <p style={{
-                                                fontSize: '12px', margin: 0, marginTop: '2px',
-                                                color: isDark ? '#94a3b8' : '#64748b' }}>{task.title}</p>
-                                        </div>
+                                <motion.div 
+                                    animate={{
+                                        padding: isMinimized 
+                                            ? (isMobile ? '8px 12px' : '12px 16px') 
+                                            : (isMobile ? '16px' : '24px')
+                                    }}
+                                    className="relative border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-t-[20px]"
+                                >
+                                    <div className="flex items-start gap-3 sm:gap-4">
+                                        {/* Header Card */}
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ 
+                                                opacity: 1, 
+                                                y: 0,
+                                                padding: isMinimized 
+                                                    ? (isMobile ? '8px 12px' : '12px 16px') 
+                                                    : (isMobile ? '16px' : '24px'),
+                                                gap: isMinimized 
+                                                    ? (isMobile ? '12px' : '16px') 
+                                                    : (isMobile ? '16px' : '24px')
+                                            }}
+                                            transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
+                                            className="flex-1 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[20px] sm:rounded-[24px] flex items-center group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 text-left"
+                                        >
+                                            {/* SaaS Background Accents */}
+                                            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                            <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+
+                                            <motion.div
+                                                animate={{
+                                                    width: isMinimized ? (isMobile ? 32 : 40) : (isMobile ? 48 : 64),
+                                                    height: isMinimized ? (isMobile ? 32 : 40) : (isMobile ? 48 : 64),
+                                                    borderRadius: isMinimized ? (isMobile ? 10 : 12) : (isMobile ? 16 : 20)
+                                                }}
+                                                whileHover={{ scale: 1.05, rotate: -5 }}
+                                                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                                className="bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600 dark:text-blue-400 relative z-10"
+                                            >
+                                                <div className="hidden sm:flex">
+                                                    <SubmitIcon size={32} />
+                                                </div>
+                                                <div className="flex sm:hidden">
+                                                    <SubmitIcon size={24} />
+                                                </div>
+                                            </motion.div>
+                                            
+                                            <div className="relative z-10 flex-1 min-w-0 pr-2 sm:pr-4">
+                                                <motion.h2 
+                                                    id="submit-modal-title"
+                                                    animate={{ fontSize: isMinimized ? (isMobile ? '15px' : '16px') : (isMobile ? '20px' : '26px') }}
+                                                    className="font-bold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-0.5 sm:mb-1 truncate"
+                                                >
+                                                    Submit Assignment
+                                                </motion.h2>
+                                                <motion.p 
+                                                    animate={{ fontSize: isMinimized ? (isMobile ? '11px' : '12px') : (isMobile ? '13px' : '14.5px') }}
+                                                    className="text-zinc-600 dark:text-zinc-400 leading-relaxed m-0 truncate"
+                                                >
+                                                    {task.title}
+                                                </motion.p>
+                                            </div>
+                                            <div className="relative z-20 self-start">
+                                                <motion.button
+                                                    onClick={handleClose}
+                                                    whileHover={{ scale: 1.1 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    className="flex-shrink-0 flex items-center justify-center rounded-lg sm:rounded-xl border border-zinc-200/80 bg-white/80 backdrop-blur-md p-2 text-zinc-500 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700/80 dark:bg-zinc-800/80 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                                                    aria-label="Close modal"
+                                                >
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
+                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                    </svg>
+                                                </motion.button>
+                                            </div>
+                                        </motion.div>
                                     </div>
-                                    <motion.button
-                                        whileHover={{ scale: 1.1, backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)' }}
-                                        whileTap={{ scale: 0.9 }}
-                                        onClick={handleClose}
-                                        style={{
-                                            width: '32px', height: '32px', borderRadius: '10px',
-                                            border: 'none', background: 'transparent',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            cursor: 'pointer', flexShrink: 0,
-                                            color: isDark ? '#94a3b8' : '#94a3b8' }}
-                                    >
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                                            <line x1="18" y1="6" x2="6" y2="18" />
-                                            <line x1="6" y1="6" x2="18" y2="18" />
-                                        </svg>
-                                    </motion.button>
-                                </div>
-
-                                {/* Task Info Badges */}
-                                <div style={{ padding: '16px 28px', display: 'flex', gap: '8px', flexWrap: 'wrap' as const }}>
-                                    <span style={{
-                                        display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                        padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
-                                        background: isDark ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
-                                        color: '#3b82f6' }}>
-                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                            <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
-                                        </svg>
-                                        {task.due}
-                                    </span>
-                                    <span style={{
-                                        display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                        padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
-                                        background: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.08)',
-                                        color: '#10b981' }}>
-                                        {task.points || 100} pts
-                                    </span>
-                                    {(task.maxAttempts || 1) > 1 && (
-                                        <span style={{
-                                            display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                            padding: '4px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
-                                            background: isDark ? 'rgba(0, 61, 165, 0.15)' : 'rgba(0, 61, 165, 0.08)',
-                                            color: '#003DA5' }}>
-                                            {(task.maxAttempts || 1) - (task.submissionCount || 0)} attempt{(task.maxAttempts || 1) - (task.submissionCount || 0) !== 1 ? 's' : ''} left
-                                        </span>
-                                    )}
-                                </div>
-
-                                {/* Divider */}
-                                <div style={{
-                                    height: '1px', margin: '0 28px',
-                                    background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }} />
+                                </motion.div>
 
                                 {/* Submission Content */}
-                                <div style={{ padding: '20px 28px', flex: 1 }}>
-                                    <label style={{
-                                        display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '8px',
-                                        color: isDark ? '#94a3b8' : '#64748b',
-                                        textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>
-                                        Your Answer / Comments
-                                    </label>
+                                <div 
+                                    onScroll={handleScroll}
+                                    style={{ padding: '20px 24px', flex: 1, overflowY: 'auto' }}
+                                >
+                                    <div style={{ marginBottom: '16px', marginTop: '4px' }}>
+                                        <h3 style={{
+                                            margin: '0 0 3px',
+                                            fontSize: '17px',
+                                            fontWeight: 800,
+                                            color: isDark ? '#f8fafc' : '#0f172a',
+                                            letterSpacing: '-0.02em',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px'
+                                        }}>
+                                            <div style={{
+                                                width: '6px',
+                                                height: '16px',
+                                                borderRadius: '3px',
+                                                backgroundColor: '#3b82f6',
+                                            }} />
+                                            Your Answer / Comments
+                                        </h3>
+                                        <p style={{
+                                            margin: 0,
+                                            fontSize: '12.5px',
+                                            color: isDark ? '#94a3b8' : '#64748b',
+                                            fontWeight: 400,
+                                            paddingLeft: '14px',
+                                        }}>
+                                            Write your answer, solution, or any additional context
+                                        </p>
+                                    </div>
                                     <textarea
                                         value={submissionText}
                                         onChange={(e) => setSubmissionText(e.target.value)}
@@ -248,13 +337,36 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                     />
 
                                     {/* File Attachments */}
-                                    <div style={{ marginTop: '16px' }}>
-                                        <label style={{
-                                            display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '8px',
-                                            color: isDark ? '#94a3b8' : '#64748b',
-                                            textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>
-                                            Attachments
-                                        </label>
+                                    <div style={{ marginTop: '24px' }}>
+                                        <div style={{ marginBottom: '16px' }}>
+                                            <h3 style={{
+                                                margin: '0 0 3px',
+                                                fontSize: '17px',
+                                                fontWeight: 800,
+                                                color: isDark ? '#f8fafc' : '#0f172a',
+                                                letterSpacing: '-0.02em',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px'
+                                            }}>
+                                                <div style={{
+                                                    width: '6px',
+                                                    height: '16px',
+                                                    borderRadius: '3px',
+                                                    backgroundColor: '#10b981', // green for attachments accent
+                                                }} />
+                                                Attachments
+                                            </h3>
+                                            <p style={{
+                                                margin: 0,
+                                                fontSize: '12.5px',
+                                                color: isDark ? '#94a3b8' : '#64748b',
+                                                fontWeight: 400,
+                                                paddingLeft: '14px',
+                                            }}>
+                                                Upload any required files or documents for this assignment
+                                            </p>
+                                        </div>
                                         <FileUpload
                                             files={submissionFiles}
                                             onChange={setSubmissionFiles}
@@ -263,20 +375,33 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                 </div>
 
                                 {/* Footer */}
-                                <div style={{
-                                    padding: '16px 28px 24px',
-                                    display: 'flex', gap: '10px', justifyContent: 'flex-end',
+                                <motion.div 
+                                    animate={{
+                                        padding: isMinimized 
+                                            ? (isMobile ? '8px 12px 12px' : '12px 16px 16px') 
+                                            : (isMobile ? '12px 16px 16px' : '16px 24px 24px'),
+                                        gap: isMinimized
+                                            ? (isMobile ? '12px' : '16px')
+                                            : (isMobile ? '16px' : '20px')
+                                    }}
+                                    style={{
+                                    display: 'flex', width: '100%', gap: '16px',
                                     borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'}` }}>
                                     <motion.button
+                                        animate={{
+                                            padding: isMinimized 
+                                                ? (isMobile ? '8px 12px' : '10px 16px') 
+                                                : (isMobile ? '10px 16px' : '12px 16px'),
+                                            fontSize: isMinimized 
+                                                ? (isMobile ? '12px' : '13px') 
+                                                : (isMobile ? '13px' : '14px')
+                                        }}
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
                                         onClick={handleClose}
                                         disabled={isSubmitting}
+                                        className="flex-1 flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-[14px] transition-colors shadow-sm"
                                         style={{
-                                            padding: '10px 22px', borderRadius: '12px', fontSize: '13px', fontWeight: 600,
-                                            border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)'}`,
-                                            background: isDark ? 'rgba(255,255,255,0.05)' : '#f8fafc',
-                                            color: isDark ? '#94a3b8' : '#64748b',
                                             cursor: isSubmitting ? 'not-allowed' : 'pointer',
                                             opacity: isSubmitting ? 0.5 : 1 }}
                                     >
@@ -284,8 +409,16 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                     </motion.button>
 
                                     <motion.button
+                                        animate={{
+                                            padding: isMinimized 
+                                                ? (isMobile ? '8px 12px' : '10px 16px') 
+                                                : (isMobile ? '10px 16px' : '12px 16px'),
+                                            fontSize: isMinimized 
+                                                ? (isMobile ? '12px' : '13px') 
+                                                : (isMobile ? '13px' : '14px')
+                                        }}
                                         whileHover={!isSubmitting && (submissionText.trim() || submissionFiles.length > 0)
-                                            ? { scale: 1.02, boxShadow: '0 8px 24px rgba(59, 130, 246, 0.3)' } : {}}
+                                            ? { scale: 1.02 } : {}}
                                         whileTap={!isSubmitting && (submissionText.trim() || submissionFiles.length > 0)
                                             ? { scale: 0.98 } : {}}
                                         disabled={isSubmitting || (!submissionText.trim() && submissionFiles.length === 0)}
@@ -310,22 +443,16 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                                 setIsSubmitting(false);
                                             }
                                         }}
-                                        style={{
-                                            padding: '10px 28px', borderRadius: '12px', fontSize: '13px', fontWeight: 700,
-                                            border: 'none',
-                                            background: isSubmitting || (!submissionText.trim() && submissionFiles.length === 0)
-                                                ? (isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)')
-                                                : 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                                            color: '#fff',
-                                            cursor: isSubmitting || (!submissionText.trim() && submissionFiles.length === 0) ? 'not-allowed' : 'pointer',
-                                            display: 'flex', alignItems: 'center', gap: '8px',
-                                            boxShadow: isSubmitting || (!submissionText.trim() && submissionFiles.length === 0)
-                                                ? 'none' : '0 4px 14px rgba(59, 130, 246, 0.25)' }}
+                                        className={`flex-[1.5] sm:flex-1 flex items-center justify-center gap-2 font-bold rounded-[14px] transition-colors shadow-sm ${
+                                            isSubmitting || (!submissionText.trim() && submissionFiles.length === 0)
+                                                ? 'bg-blue-50 dark:bg-blue-900/10 text-blue-300 dark:text-blue-800 cursor-not-allowed'
+                                                : 'bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 cursor-pointer'
+                                        }`}
                                     >
                                         {isSubmitting ? (
                                             <>
                                                 <motion.svg
-                                                    width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                                                    width={isMinimized ? (isMobile ? "14" : "16") : "18"} height={isMinimized ? (isMobile ? "14" : "16") : "18"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
                                                     animate={{ rotate: 360 }}
                                                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                                                 >
@@ -335,15 +462,21 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                             </>
                                         ) : (
                                             <>
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <motion.svg 
+                                                    animate={{ 
+                                                        width: isMinimized ? (isMobile ? 14 : 16) : 18, 
+                                                        height: isMinimized ? (isMobile ? 14 : 16) : 18 
+                                                    }} 
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                                                >
                                                     <path d="M22 2L11 13" />
                                                     <path d="M22 2l-7 20-4-9-9-4 20-7z" />
-                                                </svg>
+                                                </motion.svg>
                                                 Submit Assignment
                                             </>
                                         )}
                                     </motion.button>
-                                </div>
+                                </motion.div>
                             </>
                         )}
                     </motion.div>

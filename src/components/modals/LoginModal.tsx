@@ -97,7 +97,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
                         {/* ── Card ── */}
                         <motion.div
-                            className="relative w-full max-w-[960px] rounded-[28px] overflow-hidden grid grid-cols-1 md:grid-cols-2 min-h-[540px]"
+                            className="relative w-full max-w-[960px] rounded-[28px] overflow-hidden grid grid-cols-1 md:grid-cols-2 min-h-fit md:min-h-[540px] max-h-[90vh] md:max-h-none overflow-y-auto"
                             style={{
                                 background: '#ffffff',
                                 boxShadow: '0 40px 100px rgba(0,0,10,0.1), 0 0 0 1px rgba(0,0,0,0.05)',
@@ -212,7 +212,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                                             exit={{ opacity: 0, x: -20 }}
                                             transition={{ type: 'spring', stiffness: 300, damping: 26 }}
                                         >
-                                            <div>
+                                            <div className="flex flex-col">
+                                                {/* Mobile Logo */}
+                                                <div className="flex md:hidden mb-6">
+                                                    <img src="/file.svg" alt="STI Logo" className="h-14 w-14 object-cover rounded-2xl shadow-xl border border-zinc-100" />
+                                                </div>
                                                 <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Welcome back</h1>
                                                 <p className="text-zinc-500 mt-1 text-sm">Choose your account type to continue</p>
                                             </div>

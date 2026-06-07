@@ -8,14 +8,13 @@ import { InstructionsModal, SubmitModal, AddTaskModal } from './modals';
 import { QuickStatsBar } from './components/QuickStatsBar';
 import { StudentCard } from './components/StudentCard';
 import { SearchBar, EmptyState, TeacherActionButton } from './components/SharedComponents';
-import { ModuleCard } from './components/ModuleCard';
+import { ModuleCard, getLockedReason } from './components/ModuleCard';
 import { ActionsDropdown } from './components/ActionsDropdown';
-import { PaginationButton, PageNumberButton } from './components/PaginationControls';
 import { useCourseTasks } from './hooks/useCourseTasks';
 import { TeacherModeContent } from './components/TeacherModeContent';
 import { CourseAssignmentsTab } from './tabs/CourseAssignmentsTab';
 import {
-    type TaskCategory } from './data/demoCourses';
+    type TaskCategory, getDemoCourseData } from './data/demoCourses';
 
 interface CourseViewPageProps {
     course: {
@@ -118,7 +117,7 @@ const _TASK_CATEGORIES: { id: TaskCategory; label: string; icon: React.ReactNode
 
 // Demo helpers removed
 
-// Fresh start - no news announcements yet
+// Sample announcements for the News tab
 const SAMPLE_NEWS: { id: number; title: string; date: string; preview: string; unread: boolean }[] = [];
 
 // QuickStatsBar — moved to ./components/QuickStatsBar.tsx
@@ -230,9 +229,9 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [termFilter, setTermFilter] = useState<'all' | 'prelims' | 'midterm' | 'prefinals' | 'finals'>('all');
     const [semesterFilter, setSemesterFilter] = useState<'first' | 'second'>('first');
     const [studentFilter, setStudentFilter] = useState<'all' | 'online' | 'offline'>('all');
-    const [modulesPage, setModulesPage] = useState(1);
-    const MODULES_PER_PAGE = 6;
+    const [selectedModuleId, setSelectedModuleId] = useState<number | null>(null);
     const [tabIndicatorStyle, setTabIndicatorStyle] = useState({ left: 4, width: 80 });
+    const [modulesPage, setModulesPage] = useState(1);
 
     // Supabase students data
     const [supabaseStudents, setSupabaseStudents] = useState<UserAccount[]>([]);
@@ -277,10 +276,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         }
     }, [searchQuery]);
 
-    // Reset pagination when filters change
-    useEffect(() => {
-        setModulesPage(1);
-    }, [termFilter, semesterFilter, searchQuery]);
 
     const [submissions, setSubmissions] = useState(() => {
         // Fallback or empty state
@@ -327,11 +322,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         const activeButton = Array.from(buttons).find(btn => btn.dataset.tabId === currentTab);
 
         if (activeButton) {
-            const containerRect = tabsContainerRef.current.getBoundingClientRect();
-            const buttonRect = activeButton.getBoundingClientRect();
             setTabIndicatorStyle({
-                left: buttonRect.left - containerRect.left,
-                width: buttonRect.width });
+                left: activeButton.offsetLeft,
+                width: activeButton.offsetWidth
+            });
+            // Auto-scroll the active tab into view on mobile/tablet
+            activeButton.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
         }
     }, [activeTab, teacherTab, isTeacherMode]);
 
@@ -344,11 +340,11 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             const activeButton = Array.from(buttons).find(btn => btn.dataset.tabId === currentTab);
 
             if (activeButton) {
-                const containerRect = tabsContainerRef.current.getBoundingClientRect();
-                const buttonRect = activeButton.getBoundingClientRect();
                 setTabIndicatorStyle({
-                    left: buttonRect.left - containerRect.left,
-                    width: buttonRect.width });
+                    left: activeButton.offsetLeft,
+                    width: activeButton.offsetWidth
+                });
+                activeButton.scrollIntoView({ block: 'nearest', inline: 'nearest' });
             }
         }, 100);
         return () => clearTimeout(timer);
@@ -688,12 +684,18 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const instructor = getInstructor();
 
     // Get course-specific data
-    const courseModules: any[] = [];
+    const initialModules = useMemo(() => getDemoCourseData(course.id).modules, [course.id]);
+    const [courseModules, setCourseModules] = useState<ModuleData[]>(initialModules);
+    
+    useEffect(() => {
+        setCourseModules(initialModules);
+    }, [initialModules]);
     
     // Merge demo tasks with real Supabase tasks
+    const demoTasks = useMemo(() => getDemoCourseData(course.id).tasks, [course.id]);
     const courseTasks = useMemo(() => {
-        return [...supabaseTasks];
-    }, [supabaseTasks]);
+        return [...supabaseTasks, ...demoTasks];
+    }, [supabaseTasks, demoTasks]);
 
     // Filtered data based on search and filters
     const filteredModules = useMemo(() =>
@@ -705,6 +707,23 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         }),
         [searchQuery, courseModules, termFilter, semesterFilter]
     );
+
+    // Automatically select the first module if none is selected or if the selected one is filtered out
+    useEffect(() => {
+        if (filteredModules.length > 0) {
+            const isSelectedValid = selectedModuleId !== null && filteredModules.some(m => m.id === selectedModuleId);
+            if (!isSelectedValid) {
+                setSelectedModuleId(filteredModules[0].id);
+            }
+        } else {
+            setSelectedModuleId(null);
+        }
+    }, [filteredModules, selectedModuleId]);
+
+    // Reset modules pagination page when the list of modules changes
+    useEffect(() => {
+        setModulesPage(1);
+    }, [filteredModules]);
 
     // Filtered tasks based on search and category
     const filteredTasks = useMemo(() =>
@@ -738,9 +757,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 matchesCategory = t.category === taskFilter;
             }
 
-            return matchesSearch && matchesCategory;
+            const taskAny = t as any;
+            const matchesSemester = (taskAny.semester || 'first') === semesterFilter;
+
+            return matchesSearch && matchesCategory && matchesSemester;
         }),
-        [searchQuery, taskFilter, courseTasks]
+        [searchQuery, taskFilter, semesterFilter, courseTasks]
     );
 
     const filteredNews = useMemo(() =>
@@ -1067,223 +1089,367 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 return (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
                         {/* Container with Semester Switch on left and Term Filter on right */}
-                        <div className="p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm">
-                            <div className="flex items-center justify-between">
-                                {/* Semester Switch - Far Left */}
-                                <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-zinc-50 border border-zinc-100">
-                                    <motion.button
-                                        onClick={() => setSemesterFilter('first')}
-                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${semesterFilter === 'first'
-                                            ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
-                                            : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
-                                            }`}
-                                        whileTap={{ scale: 0.97 }}
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={semesterFilter === 'first' ? 'text-blue-500' : 'text-zinc-400'}>
-                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                            <line x1="16" y1="2" x2="16" y2="6" />
-                                            <line x1="8" y1="2" x2="8" y2="6" />
-                                            <line x1="3" y1="10" x2="21" y2="10" />
-                                            <text x="12" y="17" textAnchor="middle" fontSize="6" fill="currentColor" stroke="none">1</text>
-                                        </svg>
-                                        1st Semester
-                                    </motion.button>
-                                    <motion.button
-                                        onClick={() => setSemesterFilter('second')}
-                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${semesterFilter === 'second'
-                                            ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
-                                            : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
-                                            }`}
-                                        whileTap={{ scale: 0.97 }}
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={semesterFilter === 'second' ? 'text-blue-500' : 'text-zinc-400'}>
-                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                            <line x1="16" y1="2" x2="16" y2="6" />
-                                            <line x1="8" y1="2" x2="8" y2="6" />
-                                            <line x1="3" y1="10" x2="21" y2="10" />
-                                            <text x="12" y="17" textAnchor="middle" fontSize="6" fill="currentColor" stroke="none">2</text>
-                                        </svg>
-                                        2nd Semester
-                                    </motion.button>
+                        {/* Filter Sections - Modular Floating Panels */}
+                        <div className="flex flex-col lg:flex-row items-stretch gap-6 w-full max-w-7xl mx-auto">
+                            
+                            {/* Academic Semester Panel */}
+                            <div className="w-full lg:w-[320px] xl:w-[380px] relative p-4 rounded-[20px] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm flex-shrink-0">
+                                {/* SaaS Background Accents */}
+                                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/5 rounded-full blur-2xl pointer-events-none" aria-hidden="true" />
+                                
+                                <div className="relative z-10">
+                                    <h4 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">Academic Semester</h4>
+                                    <div className="flex p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-[12px] border border-slate-100 dark:border-zinc-800 w-full">
+                                        {[
+                                            { id: 'first' as const, label: '1st Semester' },
+                                            { id: 'second' as const, label: '2nd Semester' }
+                                        ].map((sem) => {
+                                            const isActive = semesterFilter === sem.id;
+                                            return (
+                                                <button
+                                                    key={sem.id}
+                                                    onClick={() => setSemesterFilter(sem.id)}
+                                                    className={`relative flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-[10px] text-sm font-bold transition-colors duration-200 ${
+                                                        isActive 
+                                                            ? 'text-blue-700 dark:text-blue-400' 
+                                                            : 'text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-300'
+                                                    }`}
+                                                >
+                                                    {isActive && (
+                                                        <motion.div
+                                                            layoutId="activeSemesterTab"
+                                                            className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-zinc-600/50 z-0"
+                                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                        />
+                                                    )}
+                                                    <span className="relative z-10 whitespace-nowrap">{sem.label}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
+                            </div>
 
-                                {/* Term Filter - Far Right */}
-                                <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-zinc-50 border border-zinc-100">
-                                    {[
-                                        {
-                                            id: 'all' as const, label: 'All', icon: (
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                    <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
-                                                    <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-                                                </svg>
-                                            )
-                                        },
-                                        {
-                                            id: 'prelims' as const, label: 'Preliminaries', icon: (
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                    <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" />
-                                                </svg>
-                                            )
-                                        },
-                                        {
-                                            id: 'midterm' as const, label: 'Midterm', icon: (
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                    <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
-                                                </svg>
-                                            )
-                                        },
-                                        {
-                                            id: 'prefinals' as const, label: 'Pre-Finals', icon: (
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-                                                </svg>
-                                            )
-                                        },
-                                        {
-                                            id: 'finals' as const, label: 'Finals', icon: (
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                                </svg>
-                                            )
-                                        },
-                                    ].map((term) => (
-                                        <motion.button
-                                            key={term.id}
-                                            onClick={() => setTermFilter(term.id)}
-                                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${termFilter === term.id
-                                                ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
-                                                : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
-                                                }`}
-                                            whileTap={{ scale: 0.97 }}
-                                        >
-                                            <span className={termFilter === term.id ? 'text-blue-500' : 'text-zinc-400'}>{term.icon}</span>
-                                            {term.label}
-                                        </motion.button>
-                                    ))}
+                            {/* Grading Period Panel */}
+                            <div className="flex-1 min-w-0 relative p-4 rounded-[20px] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm overflow-hidden">
+                                {/* SaaS Background Accents */}
+                                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-blue-500/5 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+                                
+                                <div className="relative z-10">
+                                    <h4 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">Grading Period</h4>
+                                    <div className="flex flex-wrap p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-[12px] border border-slate-100 dark:border-zinc-800 w-full">
+                                        {[
+                                            { id: 'all' as const, label: 'All' },
+                                            { id: 'prelims' as const, label: 'Prelims' },
+                                            { id: 'midterm' as const, label: 'Midterm' },
+                                            { id: 'prefinals' as const, label: 'Pre-Finals' },
+                                            { id: 'finals' as const, label: 'Finals' },
+                                        ].map((term) => {
+                                            const isActive = termFilter === term.id;
+                                            return (
+                                                <button
+                                                    key={term.id}
+                                                    onClick={() => setTermFilter(term.id)}
+                                                    className={`relative flex-auto flex items-center justify-center gap-2 py-2 px-3 rounded-[10px] text-sm font-bold transition-colors duration-200 ${
+                                                        isActive 
+                                                            ? 'text-blue-700 dark:text-blue-400' 
+                                                            : 'text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-300'
+                                                    }`}
+                                                >
+                                                    {isActive && (
+                                                        <motion.div
+                                                            layoutId="activeTermTab"
+                                                            className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-zinc-600/50 z-0"
+                                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                        />
+                                                    )}
+                                                    <span className="relative z-10 whitespace-nowrap">{term.label}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        {filteredModules.length === 0 ? (
-                            <EmptyState
-                                icon={
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                                        <path d="M8 7h8M8 11h6M8 15h4" />
-                                    </svg>
-                                }
-                                title="No modules found"
-                                description={searchQuery ? `No modules match "${searchQuery}"` : termFilter !== 'all' ? `No modules in ${termFilter === 'prelims' ? 'Preliminaries' : termFilter === 'midterm' ? 'Midterm' : termFilter === 'prefinals' ? 'Pre-Finals' : 'Finals'}` : "This course doesn't have any modules yet"}
-                                action={(searchQuery || termFilter !== 'all') ? { label: searchQuery ? 'Clear search' : 'Show all', onClick: () => { setSearchQuery(''); setTermFilter('all'); } } : undefined}
-                            />
-                        ) : (
-                            <>
-                                {/* Pagination calculation */}
-                                {(() => {
-                                    const totalPages = Math.ceil(filteredModules.length / MODULES_PER_PAGE);
-                                    const startIndex = (modulesPage - 1) * MODULES_PER_PAGE;
-                                    const paginatedModules = filteredModules.slice(startIndex, startIndex + MODULES_PER_PAGE);
-
-                                    return (
-                                        <>
-                                            <div
-                                                ref={modulesScrollRef}
-                                                className="flex flex-wrap justify-center gap-4"
-                                            >
-                                                {paginatedModules.map((module, index) => (
-                                                    <div key={module.id} className="w-full max-w-[320px]">
-                                                        <ModuleCard module={module} index={index} />
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            {/* Pagination Controls - Minimalistic Design */}
-                                            {totalPages > 1 && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ delay: 0.15 }}
-                                                    style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        gap: '8px',
-                                                        marginTop: '24px',
-                                                        paddingTop: '20px',
-                                                        borderTop: '1px solid rgba(0, 0, 0, 0.06)' }}
-                                                >
-                                                    {/* Previous Button */}
-                                                    <PaginationButton
-                                                        onClick={() => setModulesPage(Math.max(1, modulesPage - 1))}
-                                                        disabled={modulesPage === 1}
-                                                        direction="prev"
-                                                    />
-
-                                                    {/* Page Numbers */}
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                                                            // Show first, last, current, and adjacent pages
-                                                            const showPage = page === 1 ||
-                                                                page === totalPages ||
-                                                                Math.abs(page - modulesPage) <= 1;
-                                                            const showEllipsis = (page === 2 && modulesPage > 3) ||
-                                                                (page === totalPages - 1 && modulesPage < totalPages - 2);
-
-                                                            if (!showPage && !showEllipsis) return null;
-                                                            if (showEllipsis && !showPage) {
-                                                                return (
-                                                                    <span
-                                                                        key={`ellipsis-${page}`}
-                                                                        style={{
-                                                                            padding: '0 4px',
-                                                                            color: '#94a3b8',
-                                                                            fontSize: '12px' }}
-                                                                    >
-                                                                        ...
-                                                                    </span>
+                        {/* Sidebar-Detail Navigation Layout */}
+                        {(() => {
+                            const selectedModule = filteredModules.find(m => m.id === selectedModuleId) || filteredModules[0];
+                            const itemsPerPage = 3;
+                            const totalPages = Math.ceil(filteredModules.length / itemsPerPage);
+                            const currentPage = Math.min(modulesPage, totalPages || 1);
+                            const startIndex = (currentPage - 1) * itemsPerPage;
+                            const paginatedModules = filteredModules.slice(startIndex, startIndex + itemsPerPage);
+                            
+                            return (
+                                <div className="flex flex-col lg:flex-row items-stretch lg:items-stretch gap-6 w-full max-w-7xl mx-auto mt-2">
+                                    {/* Sidebar Navigation */}
+                                    <div className="w-full lg:w-[320px] xl:w-[380px] shrink-0 flex flex-col justify-between p-4 rounded-[20px] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm relative min-h-[380px]">
+                                        <div className="flex flex-col gap-3 flex-1 py-1">
+                                            <AnimatePresence mode="wait">
+                                                {filteredModules.length === 0 ? (
+                                                    <motion.div 
+                                                        key="empty-sidebar-modules"
+                                                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                        transition={{ duration: 0.2, ease: "easeOut" }}
+                                                        className="flex flex-col items-center justify-center h-full text-center py-10 px-4"
+                                                    >
+                                                        <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-zinc-800/50 flex items-center justify-center text-slate-400 dark:text-zinc-500 mb-3 border border-slate-100 dark:border-zinc-800 shadow-sm">
+                                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                                                <path d="M8 7h8M8 11h6M8 15h4" />
+                                                            </svg>
+                                                        </div>
+                                                        <h3 className="text-[13px] font-bold text-slate-700 dark:text-zinc-300 mb-1">
+                                                            {searchQuery ? `No modules match "${searchQuery}"` : termFilter !== 'all' ? `No modules in ${termFilter === 'prelims' ? 'Preliminaries' : termFilter === 'midterm' ? 'Midterm' : termFilter === 'prefinals' ? 'Pre-Finals' : 'Finals'}` : "No modules found"}
+                                                        </h3>
+                                                        <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-500 tracking-wide">
+                                                            Nothing yet, so be ready!
+                                                        </p>
+                                                    </motion.div>
+                                                ) : (
+                                                    <motion.div
+                                                        key={paginatedModules.map(m => m.id).join('-')}
+                                                        initial={{ opacity: 0, x: -10 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        exit={{ opacity: 0, x: 10 }}
+                                                        transition={{ duration: 0.2, ease: "easeOut" }}
+                                                        className="flex flex-col gap-3"
+                                                    >
+                                                        {paginatedModules.map((m, index) => {
+                                                            const globalIndex = startIndex + index;
+                                                            const isSelected = m.id === selectedModuleId;
+                                                            const completedCount = m.contents.filter(c => c.completed).length;
+                                                            const progress = m.contents.length > 0 ? Math.round((completedCount / m.contents.length) * 100) : 0;
+                                                            
+                                                            let statusIcon;
+                                                            if (m.status === 'locked') {
+                                                                statusIcon = (
+                                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-80">
+                                                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                                    </svg>
+                                                                );
+                                                            } else if (progress === 100) {
+                                                                statusIcon = (
+                                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                                                    </svg>
+                                                                );
+                                                            } else {
+                                                                statusIcon = (
+                                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                        <circle cx="12" cy="12" r="10"></circle>
+                                                                        <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                                                    </svg>
                                                                 );
                                                             }
 
                                                             return (
-                                                                <PageNumberButton
-                                                                    key={page}
-                                                                    page={page}
-                                                                    isActive={modulesPage === page}
-                                                                    onClick={() => setModulesPage(page)}
-                                                                />
+                                                                <motion.button
+                                                                    key={m.id}
+                                                                    onClick={() => setSelectedModuleId(m.id)}
+                                                                    whileHover={m.status !== 'locked' ? { scale: 1.02, y: -2 } : {}}
+                                                                    whileTap={m.status !== 'locked' ? { scale: 0.98 } : {}}
+                                                                    className={`relative overflow-hidden flex items-center justify-between p-4 rounded-2xl border transition-colors duration-200 min-w-[250px] lg:min-w-0 w-full ${
+                                                                        isSelected 
+                                                                            ? 'bg-white border-blue-200/80 shadow-sm dark:bg-zinc-900 dark:border-blue-800/50 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 group' 
+                                                                            : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/60 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.04)] hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 group'
+                                                                    } ${m.status === 'locked' ? 'opacity-70 grayscale-[0.2]' : ''}`}
+                                                                >
+                                                                    {/* SaaS Background Accents */}
+                                                                    {isSelected && (
+                                                                        <>
+                                                                            <div className="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-300 group-hover:scale-150" aria-hidden="true" />
+                                                                            <div className="absolute bottom-0 left-0 -ml-12 -mb-12 w-24 h-24 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-300 group-hover:scale-150" aria-hidden="true" />
+                                                                        </>
+                                                                    )}
+
+                                                                    <div className="flex items-center gap-3.5 min-w-0 flex-1 relative z-10">
+                                                                        {/* Custom Icon Container */}
+                                                                        <motion.div
+                                                                            whileHover={m.status !== 'locked' ? { scale: 1.05, rotate: -5 } : {}}
+                                                                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                                                            className={`w-11 h-11 rounded-[12px] flex items-center justify-center border shrink-0 shadow-sm relative transition-colors duration-200 ${
+                                                                                m.status === 'locked'
+                                                                                    ? 'border-zinc-200/40 dark:border-zinc-800/40 bg-zinc-50/50 dark:bg-zinc-900/30 text-zinc-400 dark:text-zinc-500'
+                                                                                    : isSelected
+                                                                                        ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-950/30 dark:border-blue-800 dark:text-blue-400'
+                                                                                        : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/20 group-hover:border-blue-200 dark:group-hover:border-blue-800/50 group-hover:text-blue-500 dark:group-hover:text-blue-400'
+                                                                            }`}
+                                                                        >
+                                                                            {statusIcon}
+                                                                        </motion.div>
+
+                                                                        {/* Title text & Material description */}
+                                                                        <div className="min-w-0 flex-1 text-left flex flex-col items-start justify-center">
+                                                                            <p className={`text-[14px] font-bold leading-snug tracking-tight transition-colors truncate pr-1 w-full ${isSelected ? 'text-blue-700 dark:text-blue-400' : 'text-slate-800 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400'}`} title={m.title}>
+                                                                                {m.title.replace(/^Module \d+:\s*/i, '').replace(/^Chapter \d+:\s*/i, '').replace(/^Unit \d+:\s*/i, '')}
+                                                                            </p>
+                                                                            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-normal mt-0.5 mb-2 truncate w-full">
+                                                                                {progress === 100 ? 'All contents completed.' : m.status === 'locked' ? getLockedReason(m).short : 'Continue your progress.'}
+                                                                            </p>
+                                                                            <motion.div 
+                                                                                whileHover={{ scale: 1.03 }}
+                                                                                whileTap={{ scale: 0.97 }}
+                                                                                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border shadow-sm transition-colors duration-150 ${
+                                                                                    isSelected
+                                                                                        ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200/80 dark:border-blue-800/50 text-blue-600 dark:text-blue-400'
+                                                                                        : 'bg-white dark:bg-zinc-900 border-zinc-200/80 dark:border-zinc-800/80 text-zinc-500 dark:text-zinc-400 group-hover:border-blue-200/80 dark:group-hover:border-blue-800/50 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                                                                                }`}
+                                                                            >
+                                                                                <span className="shrink-0 flex items-center justify-center w-3.5 h-3.5 transition-colors">
+                                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+                                                                                </span>
+                                                                                <span>MODULE {globalIndex + 1}</span>
+                                                                            </motion.div>
+                                                                        </div>
+                                                                    </div>
+                                                                    {/* Action / Percentage Badge Redesign */}
+                                                                    {(() => {
+                                                                        const radius = 10;
+                                                                        const circumference = 2 * Math.PI * radius;
+                                                                        const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+                                                                        return (
+                                                                            <div className="relative w-auto h-10 px-3 flex items-center justify-center shrink-0 ml-3 z-10 bg-zinc-50 dark:bg-zinc-800/50 rounded-[12px] border border-zinc-200/80 dark:border-zinc-700 shadow-sm transition-all duration-300 group-hover:border-blue-200 dark:group-hover:border-blue-700/50 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-900/20">
+                                                                                {progress === 100 ? (
+                                                                                    <div className="flex items-center gap-1.5">
+                                                                                        <svg className="w-4 h-4 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                                                                                            <polyline points="20 6 9 17 4 12" />
+                                                                                        </svg>
+                                                                                        <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">DONE</span>
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <div className="flex items-center gap-1.5">
+                                                                                        <div className="relative w-4 h-4 flex items-center justify-center">
+                                                                                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 24 24">
+                                                                                                <circle cx="12" cy="12" r={radius} fill="transparent" stroke="currentColor" strokeWidth="4" className="text-zinc-200 dark:text-zinc-700" />
+                                                                                                <motion.circle
+                                                                                                    cx="12" cy="12" r={radius} fill="transparent" stroke="currentColor" strokeWidth="4" strokeLinecap="round"
+                                                                                                    strokeDasharray={circumference}
+                                                                                                    initial={{ strokeDashoffset: circumference }}
+                                                                                                    animate={{ strokeDashoffset }}
+                                                                                                    transition={{ duration: 0.8, ease: "easeOut" }}
+                                                                                                    className={isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-blue-600 dark:text-blue-400'}
+                                                                                                />
+                                                                                            </svg>
+                                                                                        </div>
+                                                                                        <span className={`text-[11px] font-bold tracking-tight ${
+                                                                                            isSelected
+                                                                                                ? 'text-blue-700 dark:text-blue-400'
+                                                                                                : 'text-blue-700 dark:text-blue-400 transition-colors duration-200'
+                                                                                        }`}>
+                                                                                            {progress}%
+                                                                                        </span>
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                        );
+                                                                    })()}
+                                                                </motion.button>
                                                             );
                                                         })}
-                                                    </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
 
-                                                    {/* Next Button */}
-                                                    <PaginationButton
-                                                        onClick={() => setModulesPage(Math.min(totalPages, modulesPage + 1))}
-                                                        disabled={modulesPage === totalPages}
-                                                        direction="next"
+                                        {/* Pagination Controls */}
+                                        {filteredModules.length > 3 && (
+                                            <div className="w-full pt-2.5 mt-2.5 border-t border-zinc-100 dark:border-zinc-800/80">
+                                                <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-zinc-900 p-1.5 rounded-[14px] border border-zinc-200/60 dark:border-zinc-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+                                                    <motion.button 
+                                                        type="button"
+                                                        onClick={() => setModulesPage(prev => Math.max(prev - 1, 1))}
+                                                        disabled={currentPage === 1}
+                                                        whileHover={currentPage > 1 ? { scale: 1.05 } : {}}
+                                                        whileTap={currentPage > 1 ? { scale: 0.95 } : {}}
+                                                        className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors duration-150 shadow-sm cursor-pointer border ${
+                                                            currentPage === 1
+                                                                ? 'bg-zinc-50/50 dark:bg-zinc-900/20 border-zinc-100 dark:border-zinc-800/40 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
+                                                                : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                                        }`}
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                                    </motion.button>
+                                                    <span className="text-[13px] font-bold text-zinc-700 dark:text-zinc-300 text-center tracking-wide flex-1">
+                                                        Page {currentPage} <span className="text-zinc-400 dark:text-zinc-500 font-medium mx-0.5">/</span> {totalPages}
+                                                    </span>
+                                                    <motion.button 
+                                                        type="button"
+                                                        onClick={() => setModulesPage(prev => Math.min(prev + 1, totalPages))}
+                                                        disabled={currentPage === totalPages}
+                                                        whileHover={currentPage < totalPages ? { scale: 1.05 } : {}}
+                                                        whileTap={currentPage < totalPages ? { scale: 0.95 } : {}}
+                                                        className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors duration-150 shadow-sm cursor-pointer border ${
+                                                            currentPage === totalPages
+                                                                ? 'bg-zinc-50/50 dark:bg-zinc-900/20 border-zinc-100 dark:border-zinc-800/40 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
+                                                                : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                                        }`}
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                    </motion.button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Detail Panel */}
+                                    <div className="flex-1 min-w-0" ref={modulesScrollRef}>
+                                        <AnimatePresence mode="wait">
+                                            {filteredModules.length === 0 ? (
+                                                <motion.div
+                                                    key="empty-detail-modules"
+                                                    initial={{ opacity: 0, x: 20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    exit={{ opacity: 0, x: -20 }}
+                                                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                                                    className="h-full"
+                                                >
+                                                    <EmptyState
+                                                        icon={
+                                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                                                <path d="M8 7h8M8 11h6M8 15h4" />
+                                                            </svg>
+                                                        }
+                                                        title={searchQuery ? `No modules match "${searchQuery}"` : termFilter !== 'all' ? `No modules in ${termFilter === 'prelims' ? 'Preliminaries' : termFilter === 'midterm' ? 'Midterm' : termFilter === 'prefinals' ? 'Pre-Finals' : 'Finals'}` : "No modules found"}
+                                                        description="Nothing yet, so be ready!"
+                                                        className="h-full min-h-[380px]"
+                                                        action={(searchQuery || termFilter !== 'all') ? {
+                                                            label: searchQuery ? 'Clear search' : 'Show all',
+                                                            onClick: () => { setSearchQuery(''); setTermFilter('all'); }
+                                                        } : undefined}
+                                                    />
+                                                </motion.div>
+                                            ) : selectedModule && (
+                                                <motion.div
+                                                    key={selectedModule.id}
+                                                    initial={{ opacity: 0, x: 20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    exit={{ opacity: 0, x: -20 }}
+                                                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                                                >
+                                                    <ModuleCard 
+                                                        module={selectedModule} 
+                                                        index={filteredModules.findIndex(m => m.id === selectedModule.id)} 
+                                                        onUpdate={(updatedModule) => {
+                                                            setCourseModules(prev => prev.map(m => m.id === updatedModule.id ? updatedModule : m));
+                                                        }}
                                                     />
                                                 </motion.div>
                                             )}
-
-                                            {/* Results Info */}
-                                            {filteredModules.length > MODULES_PER_PAGE && (
-                                                <motion.p
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    style={{
-                                                        textAlign: 'center',
-                                                        marginTop: '12px',
-                                                        fontSize: '11px',
-                                                        color: '#94a3b8' }}
-                                                >
-                                                    Showing {startIndex + 1}-{Math.min(startIndex + MODULES_PER_PAGE, filteredModules.length)} of {filteredModules.length} modules
-                                                </motion.p>
-                                            )}
-                                        </>
-                                    );
-                                })()}
-                            </>
-                        )}
+                                        </AnimatePresence>
+                                    </div>
+                                </div>
+                            );
+                        })()}
                     </motion.div>
                 );
 
@@ -1303,6 +1469,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         showAddTaskModal={showAddTaskModal}
                         setShowAddTaskModal={setShowAddTaskModal}
                         refetchTasks={fetchSupabaseTasks}
+                        setSubmitModalTask={setSubmitModalTask}
+                        setInstructionsModalTask={setInstructionsModalTask}
                     />
                 );
             case 'news':
@@ -1327,72 +1495,93 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         {filteredNews.length === 0 ? (
                             <EmptyState
                                 icon={
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                                    <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                                         <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                                         <line x1="12" y1="2" x2="12" y2="4" />
                                     </svg>
                                 }
-                                title="No announcements"
-                                description={searchQuery ? `No news match "${searchQuery}"` : "No announcements from your instructor yet"}
-                                action={searchQuery ? { label: 'Clear search', onClick: () => setSearchQuery('') } : undefined}
+                                title="No Announcements"
+                                description={searchQuery ? `No news match "${searchQuery}"` : "There are currently no announcements from your instructor. Check back later for updates!"}
+                                action={searchQuery ? { label: "Clear Search", onClick: () => setSearchQuery('') } : undefined}
                             />
                         ) : (
-                            <div className="flex gap-3 overflow-x-auto pt-1 pb-4 -mx-1 px-1 snap-x snap-mandatory">
+                            <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[22px] p-3.5 shadow-sm flex flex-col gap-2.5">
                                 {filteredNews.map((news, index) => (
                                     <motion.div
                                         key={news.id}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 25 }}
-                                        whileHover={{ y: -4, transition: { duration: 0.15 } }}
-                                        className={`group flex-shrink-0 w-64 p-4 rounded-xl border bg-white hover:shadow-lg cursor-pointer transition-all snap-start ${news.unread ? 'border-blue-200 bg-gradient-to-br from-blue-50/50 to-white' : 'border-zinc-100 hover:border-blue-200'
-                                            }`}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.05, duration: 0.2 }}
+                                        whileHover={{ y: -2, scale: 1.01, transition: { duration: 0.12, ease: 'easeOut' } }}
+                                        whileTap={{ scale: 0.99, transition: { duration: 0.08 } }}
+                                        className={`relative flex items-center justify-between p-4 rounded-2xl border transition-colors duration-200 ${
+                                            news.unread 
+                                                ? 'bg-gradient-to-br from-blue-50/30 to-white dark:from-blue-900/10 dark:to-slate-800/80 border-blue-200 dark:border-blue-800/50' 
+                                                : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/60'
+                                        } shadow-[0_2px_8px_-3px_rgba(0,0,0,0.04)] hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer group/row`}
                                     >
-                                        <div className="flex flex-col h-full">
-                                            {/* Header with unread indicator */}
-                                            <div className="flex items-start justify-between mb-2">
-                                                <div className="flex items-center gap-2">
-                                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${news.unread ? 'bg-blue-100 text-blue-600' : 'bg-zinc-100 text-zinc-500'
-                                                        }`}>
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                                                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                                                        </svg>
-                                                    </div>
-                                                    <span className="text-[10px] text-zinc-500">{news.date}</span>
-                                                </div>
-                                                {news.unread && (
-                                                    <motion.div
-                                                        className="w-2 h-2 rounded-full bg-blue-500"
-                                                        animate={{ scale: [1, 1.2, 1] }}
-                                                        transition={{ duration: 2, repeat: Infinity }}
-                                                    />
-                                                )}
-                                            </div>
-
-                                            {/* Title */}
-                                            <p className={`text-sm font-semibold line-clamp-2 mb-2 ${news.unread ? 'text-zinc-900' : 'text-zinc-700'}`}>
-                                                {news.title}
-                                            </p>
-
-                                            {/* Preview */}
-                                            <p className="text-xs text-zinc-500 line-clamp-3 leading-relaxed flex-1">
-                                                {news.preview}
-                                            </p>
-
-                                            {/* Read More */}
-                                            <motion.button
-                                                whileHover={{ x: 3 }}
-                                                className="mt-3 flex items-center gap-1 text-[10px] font-medium text-blue-600"
-                                                onClick={(e) => e.stopPropagation()}
+                                        <div className="flex items-start gap-4 min-w-0 flex-1">
+                                            {/* Icon Container */}
+                                            <motion.div
+                                                whileHover={{ scale: 1.05, rotate: -5 }}
+                                                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                                className={`w-12 h-12 rounded-[14px] flex items-center justify-center border shrink-0 shadow-sm relative transition-colors duration-200 ${
+                                                    news.unread
+                                                        ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-400 group-hover/row:border-blue-300 dark:group-hover/row:border-blue-700'
+                                                        : 'bg-zinc-50 border-zinc-200 text-zinc-500 dark:bg-zinc-800/50 dark:border-zinc-700 dark:text-zinc-400 group-hover/row:bg-blue-50 dark:group-hover/row:border-blue-200 dark:group-hover/row:text-blue-500 dark:group-hover/row:bg-blue-950/20'
+                                                }`}
                                             >
-                                                Read more
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                    <polyline points="9 18 15 12 9 6" />
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                                                 </svg>
-                                            </motion.button>
+                                                {news.unread && (
+                                                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-blue-500 border-2 border-white dark:border-slate-800" />
+                                                )}
+                                            </motion.div>
+
+                                            {/* Text Content */}
+                                            <div className="min-w-0 flex-1 text-left flex flex-col items-start justify-center">
+                                                <p className={`text-[15px] font-bold leading-snug tracking-tight transition-colors truncate pr-1 w-full ${news.unread ? 'text-slate-900 dark:text-slate-100 group-hover/row:text-blue-700 dark:group-hover/row:text-blue-400' : 'text-slate-800 dark:text-slate-200 group-hover/row:text-blue-700 dark:group-hover/row:text-blue-400'}`}>
+                                                    {news.title}
+                                                </p>
+                                                <p className="text-[12px] font-medium text-slate-500 dark:text-slate-400 leading-relaxed mt-1 mb-2.5 line-clamp-2 w-full pr-4">
+                                                    {news.preview}
+                                                </p>
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <motion.div 
+                                                        whileHover={{ scale: 1.03 }}
+                                                        whileTap={{ scale: 0.97 }}
+                                                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-500 dark:text-zinc-400 shadow-sm cursor-pointer group-hover/row:border-blue-200/80 dark:group-hover/row:border-blue-800/50 group-hover/row:text-blue-600 dark:group-hover/row:text-blue-400 transition-colors duration-150"
+                                                    >
+                                                        <span className="text-zinc-400 dark:text-zinc-500 group-hover/row:text-blue-500 dark:group-hover/row:text-blue-400 shrink-0 flex items-center justify-center w-3.5 h-3.5 [&>svg]:w-full [&>svg]:h-full transition-colors">
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                                            </svg>
+                                                        </span>
+                                                        <span>{news.date}</span>
+                                                    </motion.div>
+                                                    {news.unread && (
+                                                        <div className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400 shadow-sm">
+                                                            New
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
+
+                                        {/* Read More Action Button */}
+                                        <motion.div
+                                            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-colors duration-200 shrink-0 bg-zinc-50 border-zinc-200 text-zinc-500 group-hover/row:bg-blue-50 group-hover/row:border-blue-200 group-hover/row:text-blue-600 dark:bg-zinc-800/40 dark:border-zinc-700 dark:text-zinc-400 dark:group-hover/row:bg-blue-950/30 dark:group-hover/row:border-blue-900/40 dark:group-hover/row:text-blue-400 ml-2 hidden sm:flex"
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <polyline points="9 18 15 12 9 6" />
+                                            </svg>
+                                        </motion.div>
                                     </motion.div>
                                 ))}
                             </div>
@@ -1478,50 +1667,62 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
                 return (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                        {/* Container matching modules/tasks section design */}
-                        <div className="mb-4 p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm">
-                            <div className="flex items-center justify-between">
-                                {/* Section Info - Left */}
-                                <div className="flex items-center gap-3">
-                                    <motion.div
-                                        className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20"
-                                        whileHover={{ scale: 1.05, rotate: 3 }}
-                                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                                    >
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                        {/* Split Cards matching the Academic Semester / Grading Period layout */}
+                        <div className="mb-4 flex flex-col md:flex-row gap-4">
+                            {/* Section Info Card */}
+                            <div className="flex-1 p-5 rounded-[20px] bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-sm flex flex-col justify-center transition-all duration-300 hover:shadow-md">
+                                <span className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">CURRENT SECTION</span>
+                                <div className="flex items-center gap-3.5">
+                                    <div className="w-12 h-12 rounded-[14px] bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0 shadow-sm border border-blue-100/50 dark:border-blue-800/30">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                             <circle cx="9" cy="7" r="4" />
                                             <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                                             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                         </svg>
-                                    </motion.div>
+                                    </div>
                                     <div>
-                                        <p className="text-sm font-semibold text-zinc-800">Section BSIT101-A</p>
-                                        <p className="text-xs text-zinc-500">
+                                        <h3 className="text-[16px] font-extrabold text-slate-800 dark:text-slate-200 leading-tight">BSIT101-A</h3>
+                                        <p className="text-[13px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">
                                             {filteredStudents.length} {filteredStudents.length === 1 ? 'student' : 'students'} {searchQuery || studentFilter !== 'all' ? 'found' : 'enrolled'}
                                         </p>
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* Filter Tabs - Right - Matching modules/tasks design */}
-                                <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-zinc-50 border border-zinc-100">
+                            {/* Status Filter Card */}
+                            <div className="flex-[2] p-5 rounded-[20px] bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-sm flex flex-col justify-center transition-all duration-300 hover:shadow-md">
+                                <span className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">STUDENT STATUS</span>
+                                <div className="inline-flex items-center p-1.5 rounded-[16px] bg-slate-50/80 dark:bg-zinc-800/50 border border-slate-200/60 dark:border-zinc-700/50 w-full sm:w-auto overflow-x-auto">
                                     {studentFilterTabs.map((tab) => (
-                                        <motion.button
+                                        <button
                                             key={tab.id}
                                             onClick={() => setStudentFilter(tab.id)}
-                                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${studentFilter === tab.id
-                                                ? 'bg-white text-blue-600 shadow-sm border border-blue-100'
-                                                : 'text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100'
-                                                }`}
-                                            whileTap={{ scale: 0.97 }}
+                                            className={`relative flex items-center justify-center gap-2 px-5 py-2.5 rounded-[12px] text-[13px] font-bold transition-colors duration-200 outline-none flex-1 sm:flex-none whitespace-nowrap ${
+                                                studentFilter === tab.id
+                                                    ? 'text-blue-700 dark:text-blue-400'
+                                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                            }`}
                                         >
-                                            <span className={studentFilter === tab.id ? 'text-blue-500' : 'text-zinc-400'}>{tab.icon}</span>
-                                            {tab.label}
-                                            <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${studentFilter === tab.id ? 'bg-blue-50 text-blue-600' : 'bg-zinc-100 text-zinc-500'
+                                            {studentFilter === tab.id && (
+                                                <motion.div
+                                                    layoutId="studentFilterTabIndicator"
+                                                    className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-[12px] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.08)] border border-slate-200/60 dark:border-zinc-600/50"
+                                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                />
+                                            )}
+                                            <span className="relative z-10 flex items-center gap-1.5">
+                                                <span className={studentFilter === tab.id ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}>{tab.icon}</span>
+                                                {tab.label}
+                                                <span className={`ml-1 px-2 py-0.5 rounded-[8px] text-[11px] font-extrabold leading-none ${
+                                                    studentFilter === tab.id 
+                                                        ? 'bg-blue-100/70 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400' 
+                                                        : 'bg-slate-200/60 text-slate-500 dark:bg-zinc-800 dark:text-slate-400'
                                                 }`}>
-                                                {tab.count}
+                                                    {tab.count}
+                                                </span>
                                             </span>
-                                        </motion.button>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
@@ -1615,90 +1816,108 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 }
                 return (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                        {/* Teacher Card - Professional Minimalistic Design */}
-                        <div className="p-5 rounded-2xl bg-white border border-zinc-100 shadow-sm">
-                            <div className="flex items-start gap-4">
-                                {/* Avatar - Circular */}
-                                <div className="relative flex-shrink-0">
-                                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-blue-500/20">
-                                        {instructor.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                                    </div>
-                                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white" />
+                        {/* Teacher Card - Profile Layout Redesign */}
+                        <div className="group relative overflow-hidden flex flex-col md:flex-row items-center md:items-center gap-6 lg:gap-8 rounded-[20px] border p-6 lg:p-7 bg-white md:bg-gradient-to-r md:from-white md:to-slate-50/50 dark:bg-zinc-900 dark:md:from-zinc-900 dark:md:to-zinc-800/20 border-zinc-200/80 dark:border-zinc-800/80 shadow-sm hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 transition-all duration-300 md:max-w-5xl md:mx-auto">
+                            
+                            {/* Profile Avatar */}
+                            <div className="flex-shrink-0 pt-1 md:pt-0">
+                                <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/10 border-4 border-white dark:border-zinc-800 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.1)] flex items-center justify-center relative"
+                                >
+                                    <span className="text-3xl font-black md:text-4xl md:font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
+                                        {instructor.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
+                                    </span>
+                                    <div className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-emerald-500 border-[3px] border-white dark:border-zinc-900 shadow-sm" />
+                                </motion.div>
+                            </div>
+
+                            {/* Profile Details & Tags */}
+                            <div className="flex flex-col flex-1 text-center md:text-left min-w-0 w-full">
+                                {/* Type badge */}
+                                <div className="mb-3 flex justify-center md:justify-start">
+                                    <span style={{
+                                        padding: '4px 10px',
+                                        borderRadius: '8px',
+                                        background: 'rgba(59, 130, 246, 0.1)',
+                                        border: '1px solid rgba(59, 130, 246, 0.2)',
+                                        color: '#2563eb',
+                                        fontSize: '10px',
+                                        fontWeight: 700,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.5px'
+                                    }} className="inline-flex items-center gap-1.5 shadow-sm dark:text-blue-400">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                            <circle cx="9" cy="7" r="4" />
+                                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                        </svg>
+                                        INSTRUCTOR
+                                    </span>
                                 </div>
 
-                                {/* Info */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 mb-0.5">
-                                        <p className="text-sm font-semibold text-zinc-800">{instructor.name}</p>
-                                        <span className="px-1.5 py-0.5 text-[9px] font-semibold bg-blue-50 text-blue-600 rounded border border-blue-100">
-                                            INSTRUCTOR
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-zinc-500">{instructor.title} · Computer Science Department</p>
-                                    <a
-                                        href={`mailto:${instructor.email}`}
-                                        className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium transition-mt-1"
-                                    >
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                            <rect x="2" y="4" width="20" height="16" rx="2" />
-                                            <path d="M22 6l-10 7L2 6" />
-                                        </svg>
-                                        {instructor.email}
-                                    </a>
+                                <h3 className="text-[20px] sm:text-[22px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug truncate">
+                                    {instructor.name}
+                                </h3>
+                                <p className="text-[11px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider mt-1 truncate">
+                                    {instructor.title} · Computer Science Department
+                                </p>
+                                
+                                <div className="mt-2.5 mb-1 hidden md:block">
+                                    <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                                        Connect with your instructor for questions, office hours, or extra help regarding the course material.
+                                    </p>
+                                </div>
 
-                                    {/* Quick Info */}
-                                    <div className="flex items-center gap-4 mt-2">
-                                        <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <circle cx="12" cy="12" r="10" />
-                                                <polyline points="12 6 12 12 16 14" />
-                                            </svg>
-                                            Office: MWF 2-4PM
+                                {/* Meta Tag Rows */}
+                                <div className="flex flex-row items-center gap-2 w-full mt-4 justify-center md:justify-start">
+                                    {/* Office Hours Tag */}
+                                    <div className="flex items-center gap-2.5 px-3 py-2.5 bg-white dark:bg-slate-800 rounded-[12px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default group/tag flex-1 min-w-0 md:flex-none md:w-[200px] lg:w-[220px]">
+                                        <div className="w-7 h-7 rounded-[8px] bg-blue-50 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover/tag:scale-110 transition-transform duration-300 flex-shrink-0">
+                                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
                                         </div>
-                                        <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                                <circle cx="12" cy="10" r="3" />
-                                            </svg>
-                                            Room 301
+                                        <div className="flex flex-col flex-1 min-w-0 justify-center text-left">
+                                            <span className="text-[9px] font-bold text-blue-600/70 dark:text-blue-400/70 uppercase tracking-wider mb-0.5 leading-none truncate">OFFICE HOURS</span>
+                                            <span className="text-[12px] font-bold text-slate-800 dark:text-slate-200 leading-none truncate">MWF 2-4PM</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Location Tag */}
+                                    <div className="flex items-center gap-2.5 px-3 py-2.5 bg-white dark:bg-slate-800 rounded-[12px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default group/tag flex-1 min-w-0 md:flex-none md:w-[200px] lg:w-[220px]">
+                                        <div className="w-7 h-7 rounded-[8px] bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover/tag:scale-110 transition-transform duration-300 flex-shrink-0">
+                                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                                        </div>
+                                        <div className="flex flex-col flex-1 min-w-0 justify-center text-left">
+                                            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5 leading-none truncate">LOCATION</span>
+                                            <span className="text-[12px] font-bold text-slate-800 dark:text-slate-200 leading-none truncate">Room 301</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Action Buttons - Professional Style */}
-                            <div className="mt-4 pt-4 border-t border-zinc-100 flex gap-2">
-                                <TeacherActionButton
-                                    variant="primary"
-                                    icon={
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                        </svg>
-                                    }
-                                    label="Send Message"
-                                />
-                                <TeacherActionButton
-                                    variant="secondary"
-                                    icon={
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                            <line x1="16" y1="2" x2="16" y2="6" />
-                                            <line x1="8" y1="2" x2="8" y2="6" />
-                                            <line x1="3" y1="10" x2="21" y2="10" />
-                                        </svg>
-                                    }
-                                    label="Schedule Meeting"
-                                />
-                                <TeacherActionButton
-                                    variant="icon"
-                                    icon={
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                            <circle cx="12" cy="7" r="4" />
-                                        </svg>
-                                    }
-                                />
+                            {/* Actions Panel */}
+                            <div className="flex flex-col gap-2.5 w-full md:w-56 shrink-0 mt-2 md:mt-0 pt-5 md:pt-0 border-t md:border-t-0 md:border-l border-zinc-150 dark:border-zinc-800/60 md:pl-6 justify-center">
+                                <motion.a
+                                    href={`mailto:${instructor.email}`}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="w-full flex items-center justify-center gap-1.5 font-bold py-3 md:py-2.5 px-4 rounded-[14px] transition-colors shadow-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus:outline-none"
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                                    Send Message
+                                </motion.a>
+
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="w-full flex items-center justify-center gap-1.5 font-bold py-3 md:py-2.5 px-4 rounded-[14px] transition-colors shadow-sm bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none"
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+                                    Schedule Meeting
+                                </motion.button>
                             </div>
+
                         </div>
                     </motion.div>
                 );
@@ -1708,40 +1927,45 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col bg-zinc-50">
-            {/* Header - Clean minimalistic design */}
+            {/* Back Navigation — SaaS breadcrumb style, above the card */}
+            <motion.button
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.05 }}
+                whileHover={{ x: -3 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={onBack}
+                className="mx-6 mt-4 mb-2 flex items-center gap-2 text-sm font-medium text-zinc-400 dark:text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer w-fit group/back"
+            >
+                <svg className="w-4 h-4 transition-transform duration-200 group-hover/back:-translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Back to Dashboard
+            </motion.button>
+
+            {/* Header - SaaS Study Tools Style */}
             <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="px-6 py-4"
+                transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+                className="mx-6 mb-6 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50"
             >
-                <div className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm">
-                    {/* Back Button */}
-                    <motion.button
-                        whileHover={{ scale: 1.05, backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={onBack}
-                        className="w-10 h-10 rounded-xl bg-zinc-50 hover:bg-blue-50 flex items-center justify-center transition-flex-shrink-0"
-                    >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M19 12H5M12 19l-7-7 7-7" />
-                        </svg>
-                    </motion.button>
+                {/* SaaS Background Accents */}
+                <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-indigo-400/10 dark:bg-indigo-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
 
-                    {/* Course Icon */}
+                {/* Left: Icon & Core Info */}
+                <div className="flex items-center gap-6 relative z-10 w-full md:w-auto">
+                    {/* Course Icon Container */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                        whileHover={{ scale: 1.08, rotate: 5, transition: { duration: 0.2 } }}
-                        className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden"
-                        style={{
-                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)' }}
+                        whileHover={{ scale: 1.05, rotate: -5 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                        className="w-16 h-16 rounded-[20px] bg-indigo-50 border border-indigo-100 dark:bg-indigo-500/10 dark:border-indigo-500/20 flex items-center justify-center flex-shrink-0 shadow-sm overflow-hidden"
                     >
                         {course.image ? (
                             <img src={course.image} alt="" className="w-full h-full object-cover" />
                         ) : (
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg className="w-8 h-8 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                             </svg>
@@ -1749,29 +1973,43 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                     </motion.div>
 
                     {/* Title & Description */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                        className="flex-1 min-w-0"
-                    >
-                        <div className="flex items-center gap-2.5 mb-1">
-                            <h1 className="text-lg font-semibold text-zinc-800 truncate" style={{ letterSpacing: '-0.3px' }}>
-                                {displayTitle}
-                            </h1>
-                            <motion.span
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.25, duration: 0.3 }}
-                                className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wide flex-shrink-0"
-                            >
-                                {courseCode}
-                            </motion.span>
-                        </div>
-                        <p className="text-xs text-zinc-500 font-normal">
-                            {course.instructor || 'Instructor'} · BSIT101-A
+                    <div className="min-w-0">
+                        <h1 className="text-2xl lg:text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-1">
+                            {displayTitle}
+                        </h1>
+                        <p className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            {instructor.title} · {instructor.name} · Section BSIT101-A
                         </p>
-                    </motion.div>
+                    </div>
+                </div>
+
+                {/* Right: Modern Stat Cards */}
+                <div className="flex flex-wrap items-center gap-4 relative z-10 w-full md:w-auto">
+                    {/* Course Code Card */}
+                    <div className="flex items-center gap-4 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:shadow-sm hover:border-blue-200 dark:hover:border-blue-800/50">
+                        <div className="text-blue-500 bg-blue-100 dark:bg-blue-900/30 p-2.5 rounded-xl flex-shrink-0 border border-blue-200/60 dark:border-blue-800/50">
+                            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                <path d="M16 18l6-6-6-6" /><path d="M8 6l-6 6 6 6" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-[12px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-0.5">Code</p>
+                            <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">{courseCode}</p>
+                        </div>
+                    </div>
+
+                    {/* Instructor Card */}
+                    <div className="flex items-center gap-4 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:shadow-sm hover:border-emerald-200 dark:hover:border-emerald-800/50">
+                        <div className="text-emerald-500 bg-emerald-100 dark:bg-emerald-900/30 p-2.5 rounded-xl flex-shrink-0 border border-emerald-200/60 dark:border-emerald-800/50">
+                            <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-[12px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-0.5">Instructor</p>
+                            <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">{instructor.name.split(' ')[0]}</p>
+                        </div>
+                    </div>
                 </div>
             </motion.div>
 
@@ -1954,85 +2192,174 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
             {/* Tabs - Different for Teacher Mode */}
             <div className="px-6 pt-2 pb-4">
-                <div className="p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm">
-                    <div className="flex items-center justify-center">
-                        <div
-                            ref={tabsContainerRef}
-                            className="relative flex gap-1 p-1 rounded-xl bg-zinc-50"
-                        >
-                            {/* Sliding Indicator */}
-                            <motion.div
-                                className="absolute top-1 bottom-1 rounded-lg bg-white border border-blue-100 shadow-sm"
-                                style={{ zIndex: 0 }}
-                                initial={false}
-                                animate={{
-                                    left: tabIndicatorStyle.left,
-                                    width: tabIndicatorStyle.width
-                                }}
-                                transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                            />
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+                    className="relative z-40 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-6 group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50"
+                >
+                    {/* SaaS Background Accents */}
+                    <div className="absolute inset-0 overflow-hidden rounded-[24px] pointer-events-none">
+                        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                    </div>
 
-                            {isTeacherMode ? (
-                                // Teacher Mode Tabs
-                                <>
-                                    {[
-                                        {
-                                            id: 'manage-tasks' as TeacherTabType, label: 'Manage Tasks', icon: (
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                                    <path d="M14 2v6h6" /><path d="M12 18v-6" /><path d="M9 15h6" />
-                                                </svg>
-                                            )
-                                        },
-                                        {
-                                            id: 'grade-students' as TeacherTabType, label: 'Grade Students', icon: (
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                    <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                                                </svg>
-                                            )
-                                        },
-                                        {
-                                            id: 'analytics' as TeacherTabType, label: 'Analytics', icon: (
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                                    <path d="M3 3v18h18" /><path d="M7 16l4-4 4 4 5-6" />
-                                                </svg>
-                                            )
-                                        },
-                                    ].map((tab) => (
+                    {/* Top Row: Info */}
+                    <div className="flex items-start justify-between w-full relative z-10">
+                        {/* Left: Icon & Core Info */}
+                        <div className="flex items-center gap-6 w-full">
+                            <motion.div
+                                whileHover={{ scale: 1.05, rotate: -5 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                className="w-16 h-16 rounded-[20px] bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
+                            >
+                                {isTeacherMode ? (
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                                    </svg>
+                                ) : (
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                                    </svg>
+                                )}
+                            </motion.div>
+
+                            <div>
+                                <div className="flex items-center gap-3 mb-1">
+                                    <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+                                        {isTeacherMode ? "Course Console" : "Information Base"}
+                                    </h1>
+                                </div>
+                                <p className="text-base text-zinc-600 dark:text-zinc-400 max-w-md leading-relaxed">
+                                    {isTeacherMode 
+                                        ? "Manage tasks, grade students, and view analytics for this course."
+                                        : "Access modules, tasks, news, and class participants below."}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bottom Row: Tabs, Search Bar & Actions */}
+                    <div className={`flex flex-col lg:flex-row items-start lg:items-center w-full relative z-10 pt-4 border-t border-slate-100 dark:border-zinc-800 gap-4 ${!isTeacherMode && activeTab === 'teachers' ? 'lg:justify-center' : 'lg:justify-between'}`}>
+                        {/* Tabs Pill Container */}
+                        <motion.div layout transition={{ type: 'spring', stiffness: 400, damping: 30 }} className="flex items-center gap-4 relative z-10 w-full lg:w-auto min-w-0 flex-shrink-0">
+                            <div
+                                ref={tabsContainerRef}
+                                className="flex gap-1 p-1 rounded-xl shadow-sm border bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700 relative w-full overflow-x-auto hide-scrollbar"
+                                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                            >
+                                {/* Sliding Indicator */}
+                                <motion.div
+                                    className="absolute top-1 bottom-1 rounded-lg bg-white border border-slate-200 shadow-sm dark:bg-slate-700 dark:border-slate-600"
+                                    style={{ zIndex: 0 }}
+                                    initial={false}
+                                    animate={{
+                                        left: tabIndicatorStyle.left,
+                                        width: tabIndicatorStyle.width
+                                    }}
+                                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                                />
+
+                                {isTeacherMode ? (
+                                    // Teacher Mode Tabs
+                                    <>
+                                        {[
+                                            {
+                                                id: 'manage-tasks' as TeacherTabType, label: 'Tasks', icon: (
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                        <path d="M14 2v6h6" /><path d="M12 18v-6" /><path d="M9 15h6" />
+                                                    </svg>
+                                                )
+                                            },
+                                            {
+                                                id: 'grade-students' as TeacherTabType, label: 'Grades', icon: (
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                        <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                                                    </svg>
+                                                )
+                                            },
+                                            {
+                                                id: 'analytics' as TeacherTabType, label: 'Analytics', icon: (
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                                        <path d="M3 3v18h18" /><path d="M7 16l4-4 4 4 5-6" />
+                                                    </svg>
+                                                )
+                                            },
+                                        ].map((tab) => (
+                                            <motion.button
+                                                key={tab.id}
+                                                data-tab-id={tab.id}
+                                                onClick={() => setTeacherTab(tab.id)}
+                                                whileTap={{ scale: 0.97 }}
+                                                className={`relative z-10 flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap flex-shrink-0 ${teacherTab === tab.id
+                                                    ? 'text-blue-600 dark:text-slate-100'
+                                                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                                                    }`}
+                                            >
+                                                {tab.icon}
+                                                {tab.label}
+                                            </motion.button>
+                                        ))}
+                                    </>
+                                ) : (
+                                    // Student Mode Tabs
+                                    TABS.map((tab) => (
                                         <motion.button
                                             key={tab.id}
                                             data-tab-id={tab.id}
-                                            onClick={() => setTeacherTab(tab.id)}
-                                            className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-duration-100 whitespace-nowrap ${teacherTab === tab.id
-                                                ? 'text-blue-600'
-                                                : 'text-zinc-500 hover:text-zinc-700'
+                                            onClick={() => { setActiveTab(tab.id); setSearchQuery(''); }}
+                                            whileTap={{ scale: 0.97 }}
+                                            className={`relative z-10 flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg text-xs font-bold transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
+                                                ? 'text-blue-600 dark:text-slate-100'
+                                                : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
                                                 }`}
                                         >
                                             {tab.icon}
                                             {tab.label}
                                         </motion.button>
-                                    ))}
-                                </>
-                            ) : (
-                                // Student Mode Tabs
-                                TABS.map((tab) => (
-                                    <motion.button
-                                        key={tab.id}
-                                        data-tab-id={tab.id}
-                                        onClick={() => { setActiveTab(tab.id); setSearchQuery(''); }}
-                                        className={`relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-duration-100 whitespace-nowrap ${activeTab === tab.id
-                                            ? 'text-blue-600'
-                                            : 'text-zinc-500 hover:text-zinc-700'
-                                            }`}
-                                    >
-                                        {tab.icon}
-                                        {tab.label}
-                                    </motion.button>
-                                ))
+                                    ))
+                                )}
+                            </div>
+                        </motion.div>
+
+                        {/* Search Bar & Actions */}
+                        <AnimatePresence mode="popLayout">
+                            {!isTeacherMode && activeTab !== 'teachers' && (
+                                <motion.div 
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.95, filter: 'blur(4px)' }}
+                                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                                    exit={{ opacity: 0, scale: 0.95, filter: 'blur(4px)' }}
+                                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                                    className="flex items-center gap-3 w-full lg:flex-1 min-w-0 justify-end origin-right"
+                                >
+                                    <div className="flex-1">
+                                        <SearchBar
+                                            value={searchQuery}
+                                            onChange={setSearchQuery}
+                                            placeholder={getSearchPlaceholder()}
+                                            isSearching={isSearching}
+                                            resultCount={
+                                                activeTab === 'modules' ? filteredModules.length :
+                                                    activeTab === 'assignments' ? filteredTasks.length :
+                                                        activeTab === 'news' ? filteredNews.length :
+                                                            activeTab === 'students' ? filteredStudents.length : undefined
+                                            }
+                                            totalCount={
+                                                activeTab === 'modules' ? courseModules.length :
+                                                    activeTab === 'assignments' ? courseTasks.length :
+                                                        activeTab === 'news' ? SAMPLE_NEWS.length :
+                                                            activeTab === 'students' ? studentsData.length : undefined
+                                            }
+                                        />
+                                    </div>
+                                    <ActionsDropdown activeTab={activeTab} />
+                                </motion.div>
                             )}
-                        </div>
+                        </AnimatePresence>
                     </div>
-                </div>
+                </motion.div>
             </div>
 
             {/* Content */}
@@ -2068,33 +2395,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                     ) : (
                         // Student Mode Content
                         <>
-                            {/* Search Bar with Action Buttons - show for all tabs except teachers */}
-                            {activeTab !== 'teachers' && (
-                                <div className="flex items-start gap-3 mb-4">
-                                    <div className="flex-1">
-                                        <SearchBar
-                                            value={searchQuery}
-                                            onChange={setSearchQuery}
-                                            placeholder={getSearchPlaceholder()}
-                                            isSearching={isSearching}
-                                            resultCount={
-                                                activeTab === 'modules' ? filteredModules.length :
-                                                    activeTab === 'assignments' ? filteredTasks.length :
-                                                        activeTab === 'news' ? filteredNews.length :
-                                                            activeTab === 'students' ? filteredStudents.length : undefined
-                                            }
-                                            totalCount={
-                                                activeTab === 'modules' ? courseModules.length :
-                                                    activeTab === 'assignments' ? courseTasks.length :
-                                                        activeTab === 'news' ? SAMPLE_NEWS.length :
-                                                            activeTab === 'students' ? studentsData.length : undefined
-                                            }
-                                        />
-                                    </div>
-                                    {/* Action Button with Dropdown - shows for all tabs with actions */}
-                                    <ActionsDropdown activeTab={activeTab} />
-                                </div>
-                            )}
+                            {/* Search Bar and Actions moved to Information Base Header */}
                             {renderContent()}
                         </>
                     )}

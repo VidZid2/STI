@@ -37,10 +37,10 @@ export function useHorizontalScroll({
     const targetScrollRef = useRef<number | null>(null);
     const rafRef = useRef<number | null>(null);
 
-    // Detect mobile viewport
+    // Detect mobile/tablet viewport
     useEffect(() => {
         const checkMobile = () => {
-            setIsMobile(window.innerWidth <= 768);
+            setIsMobile(window.innerWidth <= 1024);
         };
         checkMobile();
         window.addEventListener('resize', checkMobile);
@@ -54,16 +54,26 @@ export function useHorizontalScroll({
 
         const container = containerRef.current;
         if (container) {
-            container.classList.add('snapping');
-            container.style.transform = `translateX(-${clamped * 100}vw)`;
-
-            // Remove snapping class after transition completes
-            setTimeout(() => {
-                if (container) {
-                    container.classList.remove('snapping');
+            if (window.innerWidth <= 1024) {
+                const targetPanel = container.children[clamped] as HTMLElement;
+                if (targetPanel) {
+                    targetPanel.scrollIntoView({ behavior: 'smooth' });
                 }
-                isSnappingRef.current = false;
-            }, snapDuration);
+                setTimeout(() => {
+                    isSnappingRef.current = false;
+                }, snapDuration);
+            } else {
+                container.classList.add('snapping');
+                container.style.transform = `translateX(-${clamped * 100}vw)`;
+
+                // Remove snapping class after transition completes
+                setTimeout(() => {
+                    if (container) {
+                        container.classList.remove('snapping');
+                    }
+                    isSnappingRef.current = false;
+                }, snapDuration);
+            }
         }
 
         setProgress(clamped);

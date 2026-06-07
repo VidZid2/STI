@@ -53,7 +53,8 @@ import {
     useAchievements,
     useGradePredictor,
     useStudyInsights,
-    useCalendar } from './hooks';
+    useCalendar,
+    useKeyboardNavigation } from './hooks';
 
 // Widget components - available for future refactoring
 // import { QuoteWidget, WeatherWidget, ActivityWidget, QuickStatsCard } from './widgets';
@@ -101,7 +102,15 @@ const DashboardPage: React.FC = () => {
     // Suppress unused variable warnings - these are available for future use
     void _setTutorialActive;
     void _setShowConfetti;
-    void toggleSidebar;
+
+    // Keyboard navigation for main nav items (Alt+1-7, Cmd/Ctrl+, for settings, Cmd/Ctrl+B for sidebar)
+    useKeyboardNavigation({
+        activeView,
+        setActiveView,
+        openSettingsModal,
+        toggleSidebar,
+        isModalOpen: settingsModalActive || welcomeModalActive,
+    });
 
     // Listen for navigate-to-course events from PathsContent
     useEffect(() => {

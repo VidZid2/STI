@@ -11,11 +11,14 @@ import * as React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
 import { NumberTicker } from "@/components/ui/number-ticker";
-import { Save, Sparkles, AlertCircle, BookOpen, CheckCircle, Info, ChevronDown } from "lucide-react";
+import { Save, Sparkles, AlertCircle, BookOpen, CheckCircle, Info, ChevronDown, FileText, FileSpreadsheet } from "lucide-react";
 import { paraphraseWithGroq, getParaphraseStats, isGroqConfigured, detectAIProbabilityWithGroq, type ParaphraseMode } from "../../lib/paraphrase/groqService";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge, ToolHeaderLiveBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
+import { ParaphraserEmpty } from "./empty-states";
+import { exportParaphraseToDocx } from "../../lib/export/docxExport";
+import { exportParaphraseToTxt } from "../../lib/export/txtExport";
 
 interface ParaphraserProps {
     onBack: () => void;
@@ -282,21 +285,24 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const handleDownload = () => {
+    const handleDownloadTxt = () => {
         if (!outputText) return;
-
-        const blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `paraphrase-${mode}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-
+        exportParaphraseToTxt(inputText, outputText, mode);
         setDownloaded(true);
         setTimeout(() => setDownloaded(false), 2000);
+    };
+
+    const handleDownloadDocx = async () => {
+        if (!outputText) return;
+        try {
+            await exportParaphraseToDocx(inputText, outputText, mode);
+            setDownloaded(true);
+            setTimeout(() => setDownloaded(false), 2000);
+        } catch (err) {
+            console.error('DOCX export failed:', err);
+            // Fallback to TXT
+            handleDownloadTxt();
+        }
     };
 
     const handleClear = () => {
@@ -823,18 +829,30 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                         </svg>
                                         <span>{showDiff ? 'Final' : 'Changes'}</span>
                                     </button>
+                                    {/* Export Buttons */}
                                     <button
-                                        onClick={handleDownload}
-                                        className={`whitespace-nowrap shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg border transition-colors shadow-sm ${
+                                        onClick={handleDownloadDocx}
+                                        className={`whitespace-nowrap shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg border transition-colors shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 ${
                                             downloaded
-                                                ? 'bg-blue-50 border-blue-200/60 text-blue-700 dark:bg-blue-900/20 dark:border-blue-800/50 dark:text-blue-400'
+                                                ? 'bg-violet-50 border-violet-200/60 text-violet-700 dark:bg-violet-900/20 dark:border-violet-800/50 dark:text-violet-400'
+                                                : 'bg-white border-zinc-200/80 text-zinc-700 dark:bg-zinc-900 dark:border-zinc-700 dark:text-zinc-300 hover:bg-violet-50 dark:hover:bg-violet-900/20'
+                                        }`}
+                                        title="Export as Word document"
+                                    >
+                                        <FileSpreadsheet className="w-3.5 h-3.5" />
+                                        <span>.docx</span>
+                                    </button>
+                                    <button
+                                        onClick={handleDownloadTxt}
+                                        className={`whitespace-nowrap shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] sm:text-xs font-bold rounded-lg border transition-colors shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 ${
+                                            downloaded
+                                                ? 'bg-zinc-100 border-zinc-200/60 text-zinc-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300'
                                                 : 'bg-white border-zinc-200/80 text-zinc-700 dark:bg-zinc-900 dark:border-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/80'
                                         }`}
+                                        title="Export as plain text"
                                     >
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                                        </svg>
-                                        <span>{downloaded ? 'Saved' : 'Download'}</span>
+                                        <FileText className="w-3.5 h-3.5" />
+                                        <span>.txt</span>
                                     </button>
                                     <button
                                         onClick={handleCopy}
@@ -940,29 +958,12 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                     )}
                                 </motion.div>
                             ) : (
-                                <motion.div
-                                    key="empty"
-                                    className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-zinc-400"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                >
-                                    <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-500 dark:bg-emerald-900/20 dark:text-emerald-300">
-                                        <div className="absolute -right-2 -top-2 h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/40" />
-                                        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="relative z-10">
-                                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
-                                        </svg>
-                                    </div>
-                                    <p className="text-sm font-bold text-zinc-600 dark:text-zinc-300">Choose a mode and rewrite responsibly</p>
-                                    <p className="max-w-xs text-center text-xs leading-relaxed text-zinc-400 dark:text-zinc-500">The result auto-saves locally and includes word-change stats so you can review before submitting.</p>
-                                    <div className="mt-2 flex flex-wrap justify-center gap-2">
-                                        {['Preserve meaning', 'Cite sources', 'Review tone'].map((hint) => (
-                                            <span key={hint} className="rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-600 dark:border-emerald-800/60 dark:bg-emerald-900/20 dark:text-emerald-300">
-                                                {hint}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </motion.div>
+                                <ParaphraserEmpty 
+                                    onAction={() => {
+                                        // Sample text to get started
+                                        setInputText('The quick brown fox jumps over the lazy dog. This is a sample sentence that demonstrates how the paraphraser can rewrite text in different styles while preserving the original meaning.');
+                                    }}
+                                />
                             )}
                         </AnimatePresence>
                     </div>

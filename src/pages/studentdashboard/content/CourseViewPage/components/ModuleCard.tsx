@@ -1,10 +1,9 @@
 /**
  * ModuleCard
  * Individual module card in the Modules tab of CourseViewPage.
- * Extracted from CourseViewPage.tsx during Phase 8.1
+ * Refactored in Phase 8.4 to use squircle image placeholders and topic descriptions.
  */
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import type { ContentType } from '../data/demoCourses';
 
@@ -13,108 +12,81 @@ const CONTENT_TYPE_CONFIG: Record<ContentType, { label: string; icon: React.Reac
     'handout-a': {
         label: 'Handout A',
         icon: (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
             </svg>
         ),
-        color: 'blue' },
+        color: 'blue'
+    },
     'handout-b': {
         label: 'Handout B',
         icon: (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
             </svg>
         ),
-        color: 'indigo' },
+        color: 'indigo'
+    },
     'slideshow': {
         label: 'Slideshow',
         icon: (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" />
             </svg>
         ),
-        color: 'amber' },
+        color: 'amber'
+    },
     'video': {
         label: 'Video',
         icon: (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="5 3 19 12 5 21 5 3" />
             </svg>
         ),
-        color: 'rose' } };
-
-const COLOR_CLASSES: Record<string, { base: string; hover: string }> = {
-    blue: { base: 'bg-blue-50 text-blue-500 border-blue-100', hover: 'hover:bg-blue-100' },
-    indigo: { base: 'bg-indigo-50 text-indigo-500 border-indigo-100', hover: 'hover:bg-indigo-100' },
-    amber: { base: 'bg-amber-50 text-amber-500 border-amber-100', hover: 'hover:bg-amber-100' },
-    rose: { base: 'bg-rose-50 text-rose-500 border-rose-100', hover: 'hover:bg-rose-100' } };
-
-const MUTED_COLOR_CLASSES: Record<string, { base: string; hover: string }> = {
-    blue: { base: 'bg-zinc-50 text-zinc-400 border-zinc-100', hover: 'hover:bg-zinc-100' },
-    indigo: { base: 'bg-zinc-50 text-zinc-400 border-zinc-100', hover: 'hover:bg-zinc-100' },
-    amber: { base: 'bg-zinc-50 text-zinc-400 border-zinc-100', hover: 'hover:bg-zinc-100' },
-    rose: { base: 'bg-zinc-50 text-zinc-400 border-zinc-100', hover: 'hover:bg-zinc-100' } };
-
-// ─── ContentIconWithTooltip ───────────────────────────────────────────────────
-interface ContentIconProps {
-    content: { type: ContentType; title: string; completed: boolean };
-    config: { label: string; icon: React.ReactNode; color: string };
-    colorClasses: Record<string, { base: string; hover: string }>;
-    isLocked: boolean;
-    index: number;
-    cIndex: number;
-}
-
-const ContentIconWithTooltip: React.FC<ContentIconProps> = ({
-    content, config, colorClasses, isLocked, index, cIndex }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-        <div className="group relative">
-            <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: (index * 0.05) + (cIndex * 0.03), duration: 0.1 }}
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onMouseEnter={() => !isLocked && setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                onClick={(e) => e.stopPropagation()}
-                disabled={isLocked}
-                aria-label={config.label}
-                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-cursor-pointer border ${colorClasses[config.color].base} ${!isLocked ? colorClasses[config.color].hover : ''}`}
-            >
-                {config.icon}
-            </motion.button>
-
-            {!isLocked && (
-                <div
-                    className={`absolute z-50 pointer-events-none transition-all duration-150 ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}`}
-                    style={{ bottom: 'calc(100% + 12px)', left: '50%', transform: 'translateX(-50%)' }}
-                >
-                    <div className="relative bg-white border border-blue-200 rounded-lg px-3 py-2 shadow-lg shadow-blue-500/10 whitespace-nowrap">
-                        <p className="text-xs font-semibold text-blue-600">{config.label}</p>
-                        <p className="text-[10px] text-blue-500/80 mt-0.5 max-w-[140px] truncate">{content.title}</p>
-                        {content.completed && (
-                            <span className="inline-flex items-center gap-1 mt-1 text-[9px] text-emerald-600 font-medium">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                                    <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                                Completed
-                            </span>
-                        )}
-                        <div className="absolute w-2.5 h-2.5 bg-white border-r border-b border-blue-200"
-                            style={{ bottom: '-5px', left: '50%', marginLeft: '-5px', transform: 'rotate(45deg)' }} />
-                    </div>
-                </div>
-            )}
-        </div>
-    );
+        color: 'rose'
+    }
 };
 
-// ─── ModuleCard ───────────────────────────────────────────────────────────────
+const COLOR_CLASSES: Record<string, { base: string; hover: string }> = {
+    blue: { 
+        base: 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-900/30', 
+        hover: 'hover:bg-blue-100 dark:hover:bg-blue-900/40' 
+    },
+    indigo: { 
+        base: 'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-950/30 dark:text-indigo-400 dark:border-indigo-900/30', 
+        hover: 'hover:bg-indigo-100 dark:hover:bg-indigo-900/40' 
+    },
+    amber: { 
+        base: 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/30', 
+        hover: 'hover:bg-amber-100 dark:hover:bg-amber-900/40' 
+    },
+    rose: { 
+        base: 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/30', 
+        hover: 'hover:bg-rose-100 dark:hover:bg-rose-900/40' 
+    } 
+};
+
+const MUTED_COLOR_CLASSES: Record<string, { base: string; hover: string }> = {
+    blue: { 
+        base: 'bg-zinc-50/50 text-zinc-400 border-zinc-100 dark:bg-zinc-900/40 dark:text-zinc-500 dark:border-zinc-800/60', 
+        hover: 'hover:bg-zinc-100 dark:hover:bg-zinc-800/60' 
+    },
+    indigo: { 
+        base: 'bg-zinc-50/50 text-zinc-400 border-zinc-100 dark:bg-zinc-900/40 dark:text-zinc-500 dark:border-zinc-800/60', 
+        hover: 'hover:bg-zinc-100 dark:hover:bg-zinc-800/60' 
+    },
+    amber: { 
+        base: 'bg-zinc-50/50 text-zinc-400 border-zinc-100 dark:bg-zinc-900/40 dark:text-zinc-500 dark:border-zinc-800/60', 
+        hover: 'hover:bg-zinc-100 dark:hover:bg-zinc-800/60' 
+    },
+    rose: { 
+        base: 'bg-zinc-50/50 text-zinc-400 border-zinc-100 dark:bg-zinc-900/40 dark:text-zinc-500 dark:border-zinc-800/60', 
+        hover: 'hover:bg-zinc-100 dark:hover:bg-zinc-800/60' 
+    } 
+};
+
 export interface ModuleData {
     id: number;
     title: string;
@@ -127,154 +99,616 @@ export interface ModuleData {
 interface ModuleCardProps {
     module: ModuleData;
     index: number;
+    onUpdate?: (updatedModule: ModuleData) => void;
 }
 
-const TERM_BADGE: Record<string, { label: string; bg: string; border: string; text: string }> = {
-    prelims:  { label: 'Prelim',      bg: 'rgba(59, 130, 246, 0.08)',  border: 'rgba(59, 130, 246, 0.2)',  text: '#3b82f6' },
-    midterm:  { label: 'Midterm',     bg: 'rgba(6, 182, 212, 0.08)',   border: 'rgba(6, 182, 212, 0.2)',   text: '#06b6d4' },
-    prefinals:{ label: 'Pre-Finals',  bg: 'rgba(249, 115, 22, 0.08)',  border: 'rgba(249, 115, 22, 0.2)',  text: '#f97316' },
-    finals:   { label: 'Finals',      bg: 'rgba(16, 185, 129, 0.08)',  border: 'rgba(16, 185, 129, 0.2)',  text: '#10b981' } };
+export const getLockedReason = (module: ModuleData) => {
+    if (module.semester === 'second') {
+        return {
+            title: "Your first semester is still active",
+            description: "The admin will activate this once the 1st semester is done.",
+            short: "First semester is still active."
+        };
+    }
+    
+    switch (module.term) {
+        case 'midterm':
+            return {
+                title: "Preliminaries is not yet done",
+                description: "Please wait until the preliminary period concludes. The admin will activate these materials once midterms begin.",
+                short: "Preliminaries is not yet done."
+            };
+        case 'prefinals':
+            return {
+                title: "Midterms is not yet done",
+                description: "Please wait until the midterm period concludes. The admin will activate these materials once pre-finals begin.",
+                short: "Midterms is not yet done."
+            };
+        case 'finals':
+            return {
+                title: "Pre-finals is not yet done",
+                description: "Please wait until the pre-finals period concludes. The admin will activate these materials once finals begin.",
+                short: "Pre-finals is not yet done."
+            };
+        default:
+            return {
+                title: "This module is locked",
+                description: "Please complete the previous modules and requirements before accessing these learning materials.",
+                short: "Complete previous to unlock."
+            };
+    }
+};
 
-const SEMESTER_BADGE: Record<string, { label: string; bg: string; border: string; text: string }> = {
-    first:  { label: '1st Sem', bg: 'rgba(139, 92, 246, 0.08)', border: 'rgba(139, 92, 246, 0.2)', text: '#8b5cf6' },
-    second: { label: '2nd Sem', bg: 'rgba(99, 102, 241, 0.08)', border: 'rgba(99, 102, 241, 0.2)', text: '#6366f1' } };
+// Topic descriptions helper mapping to visually populate empty card layout
+const getModuleDescription = (title: string): string => {
+    const t = title.toLowerCase();
+    if (t.includes('programming')) {
+        return 'Explore the fundamental building blocks of software design, syntax structures, variables, control flow, and basic problem-solving algorithms.';
+    }
+    if (t.includes('euthenics')) {
+        return 'Understand the core principles of euthenics, behavioral development, and personal efficiency for academic success.';
+    }
+    if (t.includes('fundamentals') || t.includes('computer')) {
+        return 'Delve into computer architecture, hardware components, peripheral systems, and the history of modern information technology.';
+    }
+    if (t.includes('nstp')) {
+        return 'An overview of the National Service Training Program (NSTP) law, national security guidelines, and community service frameworks.';
+    }
+    if (t.includes('fitness') || t.includes('assessment')) {
+        return 'Analyze personal fitness metrics, learn proper exercise forms, safety protocols, and health assessment indicators.';
+    }
+    if (t.includes('culture') || t.includes('understanding')) {
+        return 'Examine the sociological aspects of culture, community behaviors, cultural integration, and identity development.';
+    }
+    if (t.includes('communication') || t.includes('purcom')) {
+        return 'Enhance verbal and written communication competencies, understanding process elements, and active audience listening styles.';
+    }
+    if (t.includes('globalization')) {
+        return 'Investigate the modern globalized economy, cultural connections, international relations, and global developments.';
+    }
+    if (t.includes('self')) {
+        return 'Analyze the philosophical, sociological, and psychological perspectives of self-understanding and emotional intelligence.';
+    }
+    return 'Access learning materials, handouts, slide decks, and lecture recordings for this topic to review at your own pace.';
+};
 
-export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const completedContents = module.contents.filter(c => c.completed).length;
-    const progressPercent = module.contents.length > 0
-        ? Math.round((completedContents / module.contents.length) * 100)
+const getContentDescription = (type: ContentType): string => {
+    switch (type) {
+        case 'handout-a':
+            return 'Read handout guidelines.';
+        case 'handout-b':
+            return 'Read supplementary reading.';
+        case 'slideshow':
+            return 'Review presentation slides.';
+        case 'video':
+            return 'Watch video lecture.';
+        default:
+            return 'Access learning resource.';
+    }
+};
+
+export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate }) => {
+    const [contents, setContents] = useState(module.contents);
+    const [downloadingIdx, setDownloadingIdx] = useState<number | null>(null);
+    const [currentPage, setCurrentPage] = useState(0);
+
+    const itemsPerPage = 2;
+    const totalPages = Math.ceil(contents.length / itemsPerPage);
+    const paginatedContents = contents.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
+    // Keep state in sync if data changes
+    useEffect(() => {
+        setContents(module.contents);
+        setCurrentPage(0);
+    }, [module.contents]);
+
+    const completedContents = contents.filter(c => c.completed).length;
+    const progressPercent = contents.length > 0
+        ? Math.round((completedContents / contents.length) * 100)
         : 0;
 
-    const term = module.term || 'prelims';
-    const semester = module.semester || 'first';
+
+    
+    // Dynamic status determination based on completion state
+    const currentStatus = contents.length > 0 && completedContents === contents.length 
+        ? 'completed' 
+        : module.status === 'locked' 
+            ? 'locked' 
+            : 'in-progress';
+
+    const lockedReason = currentStatus === 'locked' ? getLockedReason(module) : null;
+
+    const toggleContentCompleted = (cIndex: number) => {
+        if (currentStatus === 'locked') return;
+        setContents(prev => {
+            const next = prev.map((item, idx) => 
+                idx === cIndex ? { ...item, completed: !item.completed } : item
+            );
+            if (onUpdate) onUpdate({ ...module, contents: next });
+            return next;
+        });
+    };
+
+    const handleDownloadContent = (e: React.MouseEvent, cIndex: number) => {
+        e.stopPropagation();
+        if (currentStatus === 'locked' || downloadingIdx !== null) return;
+        
+        setDownloadingIdx(cIndex);
+        
+        // Simulates realistic network download delay
+        setTimeout(() => {
+            setContents(prev => {
+                const next = prev.map((item, idx) => 
+                    idx === cIndex ? { ...item, completed: true } : item
+                );
+                if (onUpdate) onUpdate({ ...module, contents: next });
+                return next;
+            });
+            setDownloadingIdx(null);
+        }, 1000);
+    };
+
+    const handleMainAction = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (currentStatus === 'locked') return;
+
+        if (currentStatus === 'completed') {
+            // Reset checklist to demo review experience
+            setContents(prev => {
+                const next = prev.map(item => ({ ...item, completed: false }));
+                if (onUpdate) onUpdate({ ...module, contents: next });
+                return next;
+            });
+            return;
+        }
+
+        // Auto download the next incomplete material in the queue
+        const firstIncompleteIdx = contents.findIndex(item => !item.completed);
+        if (firstIncompleteIdx !== -1) {
+            handleDownloadContent(e, firstIncompleteIdx);
+        }
+    };
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: isHovered ? -4 : 0, scale: isHovered ? 1.01 : 1 }}
-            transition={{
-                opacity: { delay: index * 0.05, duration: 0.4 },
-                y: isHovered ? { duration: 0.1 } : { delay: index * 0.05, duration: 0.4 },
-                scale: { duration: 0.1 } }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            className={`group rounded-2xl border cursor-pointer relative ${
-                module.status === 'locked' ? 'bg-zinc-50/50 border-zinc-100 opacity-60' : 'bg-white border-zinc-100'
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={currentStatus !== 'locked' ? {
+                y: -2,
+            } : undefined}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className={`group relative overflow-hidden rounded-[24px] border p-5 text-left transition-colors duration-200 sm:p-6 lg:p-7 ${
+                currentStatus === 'locked' 
+                    ? 'bg-zinc-50/80 border-zinc-200/70 dark:bg-zinc-900/60 dark:border-zinc-800/70 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.03)]' 
+                    : 'bg-white border-zinc-200/80 dark:bg-zinc-900 dark:border-zinc-800/80 shadow-sm hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 hover:z-10'
             }`}
-            style={{
-                boxShadow: isHovered && module.status !== 'locked' ? '0 12px 32px rgba(59, 130, 246, 0.12)' : 'none',
-                borderColor: isHovered && module.status !== 'locked' ? 'rgba(59, 130, 246, 0.3)' : undefined }}
         >
-            {/* Term + Semester Badges */}
-            <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
-                <motion.div
-                    initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 + 0.15, duration: 0.3 }}
-                    className="px-2 py-0.5 text-[10px] font-semibold rounded-md cursor-default"
-                    style={{ background: TERM_BADGE[term].bg, border: `1px solid ${TERM_BADGE[term].border}`, color: TERM_BADGE[term].text }}
-                >
-                    {TERM_BADGE[term].label}
-                </motion.div>
-                <motion.div
-                    initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 + 0.2, duration: 0.3 }}
-                    className="px-2 py-0.5 text-[10px] font-semibold rounded-md cursor-default"
-                    style={{ background: SEMESTER_BADGE[semester].bg, border: `1px solid ${SEMESTER_BADGE[semester].border}`, color: SEMESTER_BADGE[semester].text }}
-                >
-                    {SEMESTER_BADGE[semester].label}
-                </motion.div>
+
+            {/* Locked Overlay with Premium White Pill Container imitating Study Tools */}
+            {currentStatus === 'locked' && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-[6px] rounded-[24px]">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl rounded-[24px] p-5 sm:p-6 lg:p-7 w-full flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 group/locked transition-all duration-300 hover:shadow-2xl hover:border-blue-200/80 dark:hover:border-blue-800/50 relative overflow-hidden">
+                        
+                        {/* SaaS Background Accents */}
+                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-blue-500/5 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover/locked:scale-150" aria-hidden="true" />
+                        <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 bg-blue-400/5 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover/locked:scale-150" aria-hidden="true" />
+
+                        {/* Left: Icon & Text */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6 relative z-10 w-full xl:w-auto">
+                            <motion.div 
+                                whileHover={{ scale: 1.05, rotate: -5 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                className="w-14 h-14 sm:w-16 sm:h-16 rounded-[20px] bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300"
+                            >
+                                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </motion.div>
+                            <div>
+                                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-1 sm:mb-1.5 transition-colors">
+                                    {lockedReason?.title}
+                                </h2>
+                                <p className="text-xs sm:text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-lg">
+                                    {lockedReason?.description}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Right: Tag Badge (imitating 'Available 11 Tools' layout) */}
+                        <div className="flex items-center gap-3 w-full sm:w-auto sm:justify-end relative z-10">
+                            <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-slate-50 dark:bg-slate-800/50 rounded-[14px] sm:rounded-[16px] border border-slate-200 dark:border-slate-700/50 hover:border-blue-200 dark:hover:border-blue-800/50 transition-colors shadow-sm">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-[10px] sm:rounded-[12px] bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="12" y1="8" x2="12" y2="12"/>
+                                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                    </svg>
+                                </div>
+                                <div className="flex flex-col justify-center">
+                                    <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-0.5 sm:mb-1">STATUS</span>
+                                    <span className="text-[13px] sm:text-[15px] font-extrabold text-slate-700 dark:text-slate-200 leading-none tracking-wide">Locked</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Inner Content Wrapper (Blurred if locked) */}
+            <div className={`flex w-full flex-col lg:flex-row items-stretch gap-6 lg:gap-8 ${currentStatus === 'locked' ? 'blur-[8px] opacity-40 pointer-events-none select-none transition-all duration-500' : ''}`}>
+
+            {/* Left Section: Module details & Main Action Button (~40% width on desktop) */}
+            <div className="flex flex-col lg:w-[40%] shrink-0 justify-start gap-6 border-b lg:border-b-0 lg:border-r border-zinc-150 dark:border-zinc-800/60 pb-6 lg:pb-0 lg:pr-6">
+                <div className="flex flex-col gap-4">
+                    <div className="text-left">
+                        {/* Flat and horizontal premium placeholder picture */}
+                        <div className="w-full h-24 sm:h-28 rounded-2xl mb-4 overflow-hidden relative border border-zinc-200/80 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-950/20 shadow-sm flex items-center justify-center group/placeholder">
+                            {/* Dynamic generated placeholder image based on index */}
+                            {(() => {
+                                const banners = ['/images/module_banner.png', '/images/carousel-1.png', '/images/carousel-2.png', '/images/carousel-3.png', '/images/carousel-4.png'];
+                                const src = banners[index % banners.length];
+                                return (
+                                    <img 
+                                        src={src} 
+                                        alt={`Module ${index + 1} Banner`} 
+                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                                    />
+                                );
+                            })()}
+                        </div>
+
+                        <h3 className="text-[18px] sm:text-[20px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug">
+                            {module.title}
+                        </h3>
+                        {/* Plain text description directly below the title on desktop */}
+                        <div className="hidden lg:block mt-2">
+                            <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                                {getModuleDescription(module.title)}
+                            </p>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                {/* Progress bar & Continue learning button grouped together */}
+                <div className="flex flex-col gap-4">
+                    {/* Progress Bar */}
+                    <div className="w-full">
+                        <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Progress</span>
+                            <span className={`text-[13px] font-extrabold ${currentStatus === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400'}`}>
+                                {progressPercent}%
+                            </span>
+                        </div>
+                        <div className="w-full h-3 rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.15)] border border-black/5 dark:border-white/5">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progressPercent}%` }}
+                                transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                                className={`h-full rounded-full transition-all duration-1000 ease-out relative ${
+                                    currentStatus === 'completed' 
+                                        ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' 
+                                        : 'bg-gradient-to-r from-blue-500 to-blue-400'
+                                }`}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Continue learning CTA button */}
+                    <motion.button
+                        whileHover={currentStatus !== 'locked' ? { scale: 1.02 } : {}}
+                        whileTap={currentStatus !== 'locked' ? { scale: 0.98 } : {}}
+                        className={`w-full py-2.5 px-4 text-[13px] font-bold rounded-[14px] transition-colors shadow-sm flex items-center justify-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                            currentStatus === 'locked'
+                                ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed dark:bg-zinc-800/40 dark:text-zinc-600'
+                                : currentStatus === 'completed'
+                                    ? 'bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:hover:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300 focus-visible:ring-emerald-500'
+                                    : 'bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus-visible:ring-blue-500'
+                        }`}
+                        disabled={currentStatus === 'locked'}
+                        onClick={handleMainAction}
+                    >
+                        {currentStatus === 'completed' ? (
+                            <>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                                Reset & Review Module
+                            </>
+                        ) : currentStatus === 'in-progress' ? (
+                            <>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                                Continue Learning
+                            </>
+                        ) : (
+                            <>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                Locked
+                            </>
+                        )}
+                    </motion.button>
+                </div>
             </div>
 
-            <div className="p-5 pt-6 flex flex-col items-center text-center overflow-hidden rounded-2xl">
-                {/* Status Icon */}
-                <div
-                    className={`w-14 h-14 rounded-xl flex items-center justify-center mb-3 ${
-                        module.status === 'completed'
-                            ? 'bg-gradient-to-br from-emerald-400 to-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-                            : module.status === 'in-progress'
-                                ? 'bg-gradient-to-br from-blue-400 to-blue-500 text-white shadow-lg shadow-blue-500/20'
-                                : 'bg-zinc-200 text-zinc-400'
+            {/* Right Column: Learning Materials Checklist & Overview (~56% width on desktop) */}
+            <div className="flex flex-col lg:flex-1 gap-2.5 justify-center lg:justify-start mt-5 lg:mt-0">
+                {/* Module Overview Card (Moved here for better layout balance - Mobile/Tablet only) */}
+                <motion.div 
+                    className={`lg:hidden relative overflow-hidden border shadow-sm rounded-[20px] p-5 mb-3 flex flex-col sm:flex-row items-start gap-4 group/desc transition-all duration-300 ${
+                        currentStatus === 'locked'
+                            ? 'bg-zinc-50/50 dark:bg-zinc-900/30 border-zinc-200/50 dark:border-zinc-800/50 opacity-80'
+                            : 'bg-white dark:bg-zinc-900 border-zinc-200/80 dark:border-zinc-800/80 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50'
                     }`}
-                    style={{ transform: isHovered ? 'scale(1.05) rotate(3deg)' : 'scale(1) rotate(0deg)', transition: 'transform 0.1s' }}
                 >
-                    {module.status === 'completed' ? (
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
-                    ) : module.status === 'in-progress' ? (
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-                    ) : (
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                    <div
+                        className={`w-12 h-12 transition-transform duration-200 ${currentStatus !== 'locked' ? 'hover:scale-105 hover:-rotate-3' : ''} rounded-[16px] flex items-center justify-center flex-shrink-0 shadow-sm border ${
+                            currentStatus === 'completed'
+                                ? 'bg-emerald-50 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20'
+                                : currentStatus === 'locked'
+                                    ? 'bg-zinc-100 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700'
+                                    : 'bg-blue-50 border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20'
+                        }`}
+                    >
+                        {currentStatus === 'completed' ? (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-emerald-600 dark:text-emerald-400" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
+                        ) : currentStatus === 'locked' ? (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-zinc-400 dark:text-zinc-500" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                        ) : (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="16" x2="12" y2="12" />
+                                <line x1="12" y1="8" x2="12.01" y2="8" />
+                            </svg>
+                        )}
+                    </div>
+
+                    <div className="flex-1 relative z-10 text-left">
+                        <p className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1.5">Module Overview</p>
+                        <p className="text-[13.5px] text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium">
+                            {getModuleDescription(module.title)}
+                        </p>
+                    </div>
+                </motion.div>
+
+                <div className="flex items-center justify-between mb-2.5 gap-2">
+                    {/* Learning Materials Badge */}
+                    <motion.div 
+                        
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-500 dark:text-zinc-400 shadow-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all duration-150"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                            <path d="M2 17l10 5 10-5" />
+                            <path d="M2 12l10 5 10-5" />
+                        </svg>
+                        <span>Learning Materials</span>
+                    </motion.div>
+
+                    {/* Progress Badge */}
+                    <motion.div 
+                        
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-bold bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-slate-700 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all duration-150"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                        <span>{completedContents} of {contents.length} Completed</span>
+                    </motion.div>
+                </div>
+                <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[22px] p-3.5 shadow-sm flex flex-col lg:flex-1 lg:justify-between gap-3">
+                    <div className="flex flex-col gap-2.5 flex-1 justify-start">
+                        {paginatedContents.map((content, pageIndex) => {
+                            const cIndex = currentPage * itemsPerPage + pageIndex;
+                            const config = CONTENT_TYPE_CONFIG[content.type];
+                            const isCompleted = content.completed;
+                            const isDownloading = downloadingIdx === cIndex;
+                            const itemColor = config.color;
+                            const colorClasses = isCompleted ? COLOR_CLASSES : MUTED_COLOR_CLASSES;
+                            return (
+                                <motion.div
+                                    key={cIndex}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: pageIndex * 0.05, duration: 0.2 }}
+                                    
+                                    
+                                    className={`relative flex items-center justify-between p-4 rounded-2xl border transition-colors duration-200 ${
+                                        currentStatus === 'locked' 
+                                            ? 'bg-zinc-50/50 border-zinc-200/50 opacity-60 dark:bg-zinc-900/40 dark:border-zinc-800/50' 
+                                            : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/60 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.04)] hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer group/row'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                                        {/* Status Checkbox */}
+                                        <motion.button
+                                            type="button"
+                                            disabled={currentStatus === 'locked' || isDownloading}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                toggleContentCompleted(cIndex);
+                                            }}
+                                            
+                                            
+                                            className={`relative flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full transition-all duration-300 overflow-hidden ${
+                                                isCompleted 
+                                                    ? 'bg-gradient-to-tr from-emerald-500 to-emerald-400 border-none shadow-[0_2px_8px_-2px_rgba(16,185,129,0.5)] ring-2 ring-emerald-500/20 ring-offset-1 dark:ring-offset-slate-900' 
+                                                    : 'bg-zinc-50 dark:bg-zinc-800/80 border-2 border-zinc-200 dark:border-zinc-700 hover:border-emerald-400 hover:bg-emerald-50/50 dark:hover:border-emerald-500/50 dark:hover:bg-emerald-500/10 group-hover/row:border-zinc-300 dark:group-hover/row:border-zinc-600'
+                                            } ${currentStatus === 'locked' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        >
+                                            <motion.div
+                                                initial={false}
+                                                animate={{ 
+                                                    scale: isCompleted ? 1 : 0,
+                                                    opacity: isCompleted ? 1 : 0
+                                                }}
+                                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                                className="absolute inset-0 flex items-center justify-center text-white"
+                                            >
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                                    <polyline points="20 6 9 17 4 12" />
+                                                </svg>
+                                            </motion.div>
+                                            
+                                            {/* Hover preview for uncompleted state */}
+                                            {!isCompleted && currentStatus !== 'locked' && (
+                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400/50 dark:text-emerald-500/50">
+                                                        <polyline points="20 6 9 17 4 12" />
+                                                    </svg>
+                                                </div>
+                                            )}
+                                        </motion.button>
+
+                                        {/* Custom File Type Icon Container */}
+                                        <motion.div
+                                            whileHover={currentStatus !== 'locked' ? { scale: 1.05, rotate: -5 } : {}}
+                                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                            className={`w-11 h-11 rounded-[12px] flex items-center justify-center border shrink-0 shadow-sm relative transition-colors duration-200 ${
+                                                currentStatus === 'locked'
+                                                    ? 'border-zinc-200/40 dark:border-zinc-800/40 bg-zinc-50/50 dark:bg-zinc-900/30 text-zinc-400 dark:text-zinc-500'
+                                                    : isCompleted
+                                                        ? `${colorClasses[itemColor].base} group-hover/row:border-blue-300 dark:group-hover/row:border-blue-700`
+                                                        : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 group-hover/row:bg-blue-50 dark:group-hover/row:bg-blue-950/20 group-hover/row:border-blue-200 dark:group-hover/row:border-blue-800/50 group-hover/row:text-blue-500 dark:group-hover/row:text-blue-400'
+                                            }`}
+                                        >
+                                            {config.icon}
+                                        </motion.div>
+
+                                        {/* Title text & Material description */}
+                                        <div className="min-w-0 flex-1 text-left flex flex-col items-start justify-center">
+                                            <p className="text-[14px] font-bold text-slate-800 dark:text-slate-200 leading-snug tracking-tight transition-colors group-hover/row:text-blue-700 dark:group-hover/row:text-blue-400 truncate pr-1 w-full" title={content.title}>
+                                                {content.title}
+                                            </p>
+                                            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-normal mt-0.5 mb-2 truncate w-full">
+                                                {getContentDescription(content.type)}
+                                            </p>
+                                            <motion.div 
+                                                whileHover={{ scale: 1.03 }}
+                                                whileTap={{ scale: 0.97 }}
+                                                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-500 dark:text-zinc-400 shadow-sm cursor-pointer group-hover/row:border-blue-200/80 dark:group-hover/row:border-blue-800/50 group-hover/row:text-blue-600 dark:group-hover/row:text-blue-400 transition-colors duration-150"
+                                            >
+                                                <span className="text-zinc-400 dark:text-zinc-500 group-hover/row:text-blue-500 dark:group-hover/row:text-blue-400 shrink-0 flex items-center justify-center w-3.5 h-3.5 [&>svg]:w-full [&>svg]:h-full transition-colors">
+                                                    {config.icon}
+                                                </span>
+                                                <span>{config.label}</span>
+                                            </motion.div>
+                                        </div>
+                                    </div>
+
+                                    {/* Download/View Action Button */}
+                                    <button
+                                        type="button"
+                                        disabled={currentStatus === 'locked' || isDownloading}
+                                        onClick={(e) => handleDownloadContent(e, cIndex)}
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-colors duration-200 shrink-0 ${
+                                            isDownloading 
+                                                ? 'bg-blue-500/10 border-blue-500/30 text-blue-500 dark:bg-blue-950/20 dark:border-blue-900/30' 
+                                                : isCompleted 
+                                                    ? 'bg-emerald-50/60 border-emerald-100/50 text-emerald-600 dark:bg-emerald-950/20 dark:border-emerald-900/30 dark:text-emerald-400'
+                                                    : 'bg-zinc-50 border-zinc-200 text-zinc-500 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 dark:bg-zinc-800/40 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-blue-950/30 dark:hover:border-blue-900/40 dark:hover:text-blue-400'
+                                        }`}
+                                        aria-label={`Download ${content.title}`}
+                                    >
+                                        {isDownloading ? (
+                                            <motion.svg
+                                                className="h-4 w-4"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                animate={{ rotate: 360 }}
+                                                transition={{
+                                                    repeat: Infinity,
+                                                    ease: "linear",
+                                                    duration: 1
+                                                }}
+                                            >
+                                                <circle
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="9"
+                                                    stroke="currentColor"
+                                                    strokeWidth="3.5"
+                                                    className="opacity-20"
+                                                />
+                                                <motion.circle
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="9"
+                                                    stroke="currentColor"
+                                                    strokeWidth="3.5"
+                                                    strokeLinecap="round"
+                                                    strokeDasharray="56"
+                                                    initial={{ strokeDashoffset: 42 }}
+                                                    animate={{
+                                                        strokeDashoffset: [42, 14, 42],
+                                                    }}
+                                                    transition={{
+                                                        duration: 1.5,
+                                                        ease: "easeInOut",
+                                                        repeat: Infinity,
+                                                    }}
+                                                />
+                                            </motion.svg>
+                                        ) : isCompleted ? (
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <polyline points="20 6 9 17 4 12" />
+                                            </svg>
+                                        ) : (
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                                <polyline points="7 10 12 15 17 10" />
+                                                <line x1="12" y1="15" x2="12" y2="3" />
+                                            </svg>
+                                        )}
+                                    </button>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className="w-full pt-2.5 mt-2.5 border-t border-zinc-150 dark:border-zinc-800/80">
+                            <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-zinc-900 p-1.5 rounded-[14px] border border-zinc-200/60 dark:border-zinc-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+                                <button 
+                                    type="button"
+                                    onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))} 
+                                    disabled={currentPage === 0}
+                                    className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border ${
+                                        currentPage === 0
+                                            ? 'bg-zinc-50/50 dark:bg-zinc-900/20 border-zinc-100 dark:border-zinc-800/40 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
+                                            : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                    }`}
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                </button>
+                                <span className="text-[13px] font-bold text-zinc-700 dark:text-zinc-300 text-center tracking-wide flex-1">
+                                    Page {currentPage + 1} <span className="text-zinc-400 dark:text-zinc-500 font-medium mx-0.5">/</span> {totalPages}
+                                </span>
+                                <button 
+                                    type="button"
+                                    onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))} 
+                                    disabled={currentPage === totalPages - 1}
+                                    className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border ${
+                                        currentPage === totalPages - 1
+                                            ? 'bg-zinc-50/50 dark:bg-zinc-900/20 border-zinc-100 dark:border-zinc-800/40 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
+                                            : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                    }`}
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                </button>
+                            </div>
+                        </div>
                     )}
                 </div>
-
-                {/* Status Badge */}
-                {module.status !== 'locked' && (
-                    <span className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg mb-3 ${
-                        module.status === 'completed'
-                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                            : 'bg-blue-50 text-blue-600 border border-blue-100'
-                    }`}>
-                        {module.status === 'completed' ? 'Completed' : 'In Progress'}
-                    </span>
-                )}
-
-                <h3 className="text-sm font-semibold text-zinc-800 mb-1 line-clamp-2">{module.title}</h3>
-                <p className="text-xs text-zinc-500 mb-4">{completedContents}/{module.contents.length} items completed</p>
-
-                {/* Progress Bar */}
-                <div className="mb-4 w-full">
-                    <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide">Progress</span>
-                        <span className={`text-xs font-bold ${progressPercent === 100 ? 'text-emerald-600' : 'text-blue-600'}`}>{progressPercent}%</span>
-                    </div>
-                    <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${progressPercent}%` }}
-                            transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                            className={`h-full rounded-full ${progressPercent === 100 ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-gradient-to-r from-blue-400 to-blue-500'}`}
-                        />
-                    </div>
-                </div>
-
-                {/* Content Type Icons */}
-                <div className="flex items-center justify-center gap-2 mb-4">
-                    {module.contents.slice(0, 4).map((content, cIndex) => {
-                        const config = CONTENT_TYPE_CONFIG[content.type];
-                        const colorClasses = content.completed ? COLOR_CLASSES : MUTED_COLOR_CLASSES;
-                        return (
-                            <ContentIconWithTooltip
-                                key={cIndex}
-                                content={content}
-                                config={config}
-                                colorClasses={colorClasses}
-                                isLocked={module.status === 'locked'}
-                                index={index}
-                                cIndex={cIndex}
-                            />
-                        );
-                    })}
-                    {module.contents.length > 4 && (
-                        <span className="text-[10px] text-zinc-400 font-medium px-2 py-1 bg-zinc-50 rounded-lg border border-zinc-100">
-                            +{module.contents.length - 4}
-                        </span>
-                    )}
-                </div>
-
-                {/* Action Button */}
-                <button
-                    className={`w-full py-2.5 text-xs font-semibold rounded-xl transition-all duration-100 ${
-                        module.status === 'locked'
-                            ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed'
-                            : module.status === 'completed'
-                                ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100'
-                                : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-100'
-                    }`}
-                    disabled={module.status === 'locked'}
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    {module.status === 'locked' ? 'Locked' : module.status === 'completed' ? 'Review Module' : 'Continue Learning'}
-                </button>
+            </div>
+            
             </div>
         </motion.div>
     );
