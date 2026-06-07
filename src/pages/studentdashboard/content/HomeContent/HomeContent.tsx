@@ -139,7 +139,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
     };
 
     return (
-        <div className="w-full h-full p-2 pt-20 pb-28 sm:p-6 sm:pb-8 lg:p-8 max-w-[1400px] mx-auto animate-in fade-in duration-500">
+        <div className="w-full h-full px-0 pt-20 pb-28 sm:p-6 sm:pb-8 lg:p-8 max-w-[1400px] mx-auto animate-in fade-in duration-500">
             {/* Welcome Modal Card (SaaS Style) */}
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
