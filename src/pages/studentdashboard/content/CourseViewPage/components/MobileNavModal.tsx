@@ -93,10 +93,6 @@ interface MobileNavModalProps {
     onClose: () => void;
     activeTab: TabType;
     onTabChange: (tab: TabType) => void;
-    semesterFilter: 'first' | 'second';
-    onSemesterChange: (val: 'first' | 'second') => void;
-    termFilter: 'all' | 'prelims' | 'midterm' | 'prefinals' | 'finals';
-    onTermChange: (val: 'all' | 'prelims' | 'midterm' | 'prefinals' | 'finals') => void;
     isTeacherMode: boolean;
     teacherTab: TeacherTabType;
     onTeacherTabChange: (tab: TeacherTabType) => void;
@@ -107,10 +103,6 @@ const MobileNavModal: React.FC<MobileNavModalProps> = ({
     onClose,
     activeTab,
     onTabChange,
-    semesterFilter,
-    onSemesterChange,
-    termFilter,
-    onTermChange,
     isTeacherMode,
     teacherTab,
     onTeacherTabChange,

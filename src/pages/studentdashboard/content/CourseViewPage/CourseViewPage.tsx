@@ -673,7 +673,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     };
 
     const displayTitle = course.title.replace(' - SY2526-1T', '');
-    const courseCode = course.subtitle.split(' · ')[0];
 
     // Get instructor based on course
     const getInstructor = () => {
@@ -2511,10 +2510,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 onClose={() => setIsMobileNavOpen(false)}
                 activeTab={activeTab}
                 onTabChange={(tab) => { setActiveTab(tab); setSearchQuery(''); }}
-                semesterFilter={semesterFilter}
-                onSemesterChange={setSemesterFilter}
-                termFilter={termFilter}
-                onTermChange={setTermFilter}
                 isTeacherMode={isTeacherMode}
                 teacherTab={teacherTab}
                 onTeacherTabChange={setTeacherTab}

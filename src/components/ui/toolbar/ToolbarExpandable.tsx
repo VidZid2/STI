@@ -1252,10 +1252,8 @@ export default function ToolbarExpandable() {
             query.addEventListener('change', sync as EventListener);
             return () => query.removeEventListener('change', sync as EventListener);
         } else {
-            // @ts-expect-error - Deprecated but necessary for Safari < 14
-            query.addListener(sync);
-            // @ts-expect-error
-            return () => query.removeListener(sync);
+            query.addListener(sync as any);
+            return () => query.removeListener(sync as any);
         }
     }, []);
     
