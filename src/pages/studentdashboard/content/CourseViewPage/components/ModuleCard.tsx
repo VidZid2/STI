@@ -218,17 +218,6 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
 
     const lockedReason = currentStatus === 'locked' ? getLockedReason(module) : null;
 
-    const toggleContentCompleted = (cIndex: number) => {
-        if (currentStatus === 'locked') return;
-        setContents(prev => {
-            const next = prev.map((item, idx) => 
-                idx === cIndex ? { ...item, completed: !item.completed } : item
-            );
-            if (onUpdate) onUpdate({ ...module, contents: next });
-            return next;
-        });
-    };
-
     const handleDownloadContent = (e: React.MouseEvent, cIndex: number) => {
         e.stopPropagation();
         if (currentStatus === 'locked' || downloadingIdx !== null) return;
