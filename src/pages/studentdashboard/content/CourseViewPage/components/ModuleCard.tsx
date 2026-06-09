@@ -4,7 +4,7 @@
  * Refactored in Phase 8.4 to use squircle image placeholders and topic descriptions.
  */
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import type { ContentType } from '../data/demoCourses';
 
 // Content type icon config — kept local to avoid circular imports
@@ -342,38 +342,60 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
             <div className="flex flex-col lg:w-[40%] shrink-0 justify-start gap-6 border-b lg:border-b-0 lg:border-r border-zinc-150 dark:border-zinc-800/60 pb-6 lg:pb-0 lg:pr-6">
                 <div className="flex flex-col gap-4">
                     <div className="text-left">
-                        {/* Flat and horizontal premium placeholder picture */}
-                        <div className="w-full h-24 sm:h-28 rounded-2xl mb-4 overflow-hidden relative border border-zinc-200/80 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-950/20 shadow-sm flex items-center justify-center group/placeholder">
-                            {/* Dynamic generated placeholder image based on index */}
-                            {(() => {
-                                const banners = ['/images/module_banner.png', '/images/carousel-1.png', '/images/carousel-2.png', '/images/carousel-3.png', '/images/carousel-4.png'];
-                                const src = banners[index % banners.length];
-                                return (
-                                    <img 
-                                        src={src} 
-                                        alt={`Module ${index + 1} Banner`} 
-                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                                    />
-                                );
-                            })()}
-                        </div>
-
                         <h3 className="text-[18px] sm:text-[20px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug">
                             {module.title}
                         </h3>
-                        {/* Plain text description directly below the title on desktop */}
-                        <div className="hidden lg:block mt-2">
-                            <p className="text-[13px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                    </div>
+
+                    {/* Module Overview Card */}
+                    <motion.div 
+                        whileHover={currentStatus !== 'locked' ? { y: -1 } : {}}
+                        className={`relative overflow-hidden border rounded-[14px] p-4 flex flex-col sm:flex-row items-start gap-3 group/overview transition-all duration-300 ${
+                            currentStatus === 'locked'
+                                ? 'bg-slate-50 dark:bg-slate-800/40 border-slate-200/60 dark:border-slate-700/40 opacity-70'
+                                : 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-sm hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/40'
+                        }`}
+                    >
+                        <div
+                            className={`w-10 h-10 transition-all duration-300 rounded-[12px] flex items-center justify-center flex-shrink-0 group-hover/overview:scale-105 ${
+                                currentStatus === 'completed'
+                                    ? 'bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border border-emerald-100/80 dark:border-emerald-800/30'
+                                    : currentStatus === 'locked'
+                                        ? 'bg-slate-100 dark:bg-slate-700/50 border border-slate-200/60 dark:border-slate-600/30'
+                                        : 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100/80 dark:border-blue-800/30'
+                            }`}
+                        >
+                            {currentStatus === 'completed' ? (
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-emerald-600 dark:text-emerald-400" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                </svg>
+                            ) : currentStatus === 'locked' ? (
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-slate-400 dark:text-slate-500" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            ) : (
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="16" x2="12" y2="12" />
+                                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                                </svg>
+                            )}
+                        </div>
+
+                        <div className="flex-1 relative z-10 text-left min-w-0">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">Module Overview</p>
+                            <p className="text-[13px] sm:text-[13.5px] text-slate-600 dark:text-slate-300 leading-relaxed">
                                 {getModuleDescription(module.title)}
                             </p>
                         </div>
-                    </div>
-
+                    </motion.div>
 
                 </div>
 
                 {/* Progress bar & Continue learning button grouped together */}
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3 sm:gap-4">
                     {/* Progress Bar */}
                     <div className="w-full">
                         <div className="flex items-center justify-between mb-1.5">
@@ -400,7 +422,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
                     <motion.button
                         whileHover={currentStatus !== 'locked' ? { scale: 1.02 } : {}}
                         whileTap={currentStatus !== 'locked' ? { scale: 0.98 } : {}}
-                        className={`w-full py-2.5 px-4 text-[13px] font-bold rounded-[14px] transition-colors shadow-sm flex items-center justify-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                        className={`w-full py-2 sm:py-2.5 px-3 sm:px-4 text-[12px] sm:text-[13px] font-bold rounded-[14px] transition-colors shadow-sm flex items-center justify-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
                             currentStatus === 'locked'
                                 ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed dark:bg-zinc-800/40 dark:text-zinc-600'
                                 : currentStatus === 'completed'
@@ -430,57 +452,14 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
                 </div>
             </div>
 
-            {/* Right Column: Learning Materials Checklist & Overview (~56% width on desktop) */}
+            {/* Right Column: Learning Materials Checklist (~56% width on desktop) */}
             <div className="flex flex-col lg:flex-1 gap-2.5 justify-center lg:justify-start mt-5 lg:mt-0">
-                {/* Module Overview Card (Moved here for better layout balance - Mobile/Tablet only) */}
-                <motion.div 
-                    className={`lg:hidden relative overflow-hidden border shadow-sm rounded-[20px] p-5 mb-3 flex flex-col sm:flex-row items-start gap-4 group/desc transition-all duration-300 ${
-                        currentStatus === 'locked'
-                            ? 'bg-zinc-50/50 dark:bg-zinc-900/30 border-zinc-200/50 dark:border-zinc-800/50 opacity-80'
-                            : 'bg-white dark:bg-zinc-900 border-zinc-200/80 dark:border-zinc-800/80 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50'
-                    }`}
-                >
-                    <div
-                        className={`w-12 h-12 transition-transform duration-200 ${currentStatus !== 'locked' ? 'hover:scale-105 hover:-rotate-3' : ''} rounded-[16px] flex items-center justify-center flex-shrink-0 shadow-sm border ${
-                            currentStatus === 'completed'
-                                ? 'bg-emerald-50 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20'
-                                : currentStatus === 'locked'
-                                    ? 'bg-zinc-100 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700'
-                                    : 'bg-blue-50 border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20'
-                        }`}
-                    >
-                        {currentStatus === 'completed' ? (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-emerald-600 dark:text-emerald-400" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                <polyline points="22 4 12 14.01 9 11.01" />
-                            </svg>
-                        ) : currentStatus === 'locked' ? (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-zinc-400 dark:text-zinc-500" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                            </svg>
-                        ) : (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="12" cy="12" r="10" />
-                                <line x1="12" y1="16" x2="12" y2="12" />
-                                <line x1="12" y1="8" x2="12.01" y2="8" />
-                            </svg>
-                        )}
-                    </div>
-
-                    <div className="flex-1 relative z-10 text-left">
-                        <p className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1.5">Module Overview</p>
-                        <p className="text-[13.5px] text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium">
-                            {getModuleDescription(module.title)}
-                        </p>
-                    </div>
-                </motion.div>
 
                 <div className="flex items-center justify-between mb-2.5 gap-2">
                     {/* Learning Materials Badge */}
                     <motion.div 
                         
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-500 dark:text-zinc-400 shadow-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all duration-150"
+                        className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold uppercase tracking-wider bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-500 dark:text-zinc-400 shadow-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all duration-150"
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
                             <path d="M12 2L2 7l10 5 10-5-10-5z" />
@@ -493,7 +472,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
                     {/* Progress Badge */}
                     <motion.div 
                         
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-bold bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-slate-700 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all duration-150"
+                        className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-[12px] font-bold bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-slate-700 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all duration-150"
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -525,52 +504,13 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
                                             : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/60 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.04)] hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer group/row'
                                     }`}
                                 >
-                                    <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                                        {/* Status Checkbox */}
-                                        <motion.button
-                                            type="button"
-                                            disabled={currentStatus === 'locked' || isDownloading}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                toggleContentCompleted(cIndex);
-                                            }}
-                                            
-                                            
-                                            className={`relative flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full transition-all duration-300 overflow-hidden ${
-                                                isCompleted 
-                                                    ? 'bg-gradient-to-tr from-emerald-500 to-emerald-400 border-none shadow-[0_2px_8px_-2px_rgba(16,185,129,0.5)] ring-2 ring-emerald-500/20 ring-offset-1 dark:ring-offset-slate-900' 
-                                                    : 'bg-zinc-50 dark:bg-zinc-800/80 border-2 border-zinc-200 dark:border-zinc-700 hover:border-emerald-400 hover:bg-emerald-50/50 dark:hover:border-emerald-500/50 dark:hover:bg-emerald-500/10 group-hover/row:border-zinc-300 dark:group-hover/row:border-zinc-600'
-                                            } ${currentStatus === 'locked' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                        >
-                                            <motion.div
-                                                initial={false}
-                                                animate={{ 
-                                                    scale: isCompleted ? 1 : 0,
-                                                    opacity: isCompleted ? 1 : 0
-                                                }}
-                                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                                                className="absolute inset-0 flex items-center justify-center text-white"
-                                            >
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                                    <polyline points="20 6 9 17 4 12" />
-                                                </svg>
-                                            </motion.div>
-                                            
-                                            {/* Hover preview for uncompleted state */}
-                                            {!isCompleted && currentStatus !== 'locked' && (
-                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400/50 dark:text-emerald-500/50">
-                                                        <polyline points="20 6 9 17 4 12" />
-                                                    </svg>
-                                                </div>
-                                            )}
-                                        </motion.button>
+                                    <div className="flex items-center gap-3 min-w-0 flex-1">
 
                                         {/* Custom File Type Icon Container */}
                                         <motion.div
                                             whileHover={currentStatus !== 'locked' ? { scale: 1.05, rotate: -5 } : {}}
                                             transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                            className={`w-11 h-11 rounded-[12px] flex items-center justify-center border shrink-0 shadow-sm relative transition-colors duration-200 ${
+                                            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-[12px] flex items-center justify-center border shrink-0 shadow-sm relative transition-colors duration-200 ${
                                                 currentStatus === 'locked'
                                                     ? 'border-zinc-200/40 dark:border-zinc-800/40 bg-zinc-50/50 dark:bg-zinc-900/30 text-zinc-400 dark:text-zinc-500'
                                                     : isCompleted
@@ -583,16 +523,16 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
 
                                         {/* Title text & Material description */}
                                         <div className="min-w-0 flex-1 text-left flex flex-col items-start justify-center">
-                                            <p className="text-[14px] font-bold text-slate-800 dark:text-slate-200 leading-snug tracking-tight transition-colors group-hover/row:text-blue-700 dark:group-hover/row:text-blue-400 truncate pr-1 w-full" title={content.title}>
+                                            <p className="text-[14px] font-bold text-slate-800 dark:text-slate-200 leading-snug tracking-tight transition-colors group-hover/row:text-blue-700 dark:group-hover/row:text-blue-400 line-clamp-2 sm:line-clamp-none pr-1 w-full" title={content.title}>
                                                 {content.title}
                                             </p>
-                                            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-normal mt-0.5 mb-2 truncate w-full">
+                                            <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-normal mt-0.5 mb-2 line-clamp-1 sm:truncate w-full">
                                                 {getContentDescription(content.type)}
                                             </p>
                                             <motion.div 
                                                 whileHover={{ scale: 1.03 }}
                                                 whileTap={{ scale: 0.97 }}
-                                                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-500 dark:text-zinc-400 shadow-sm cursor-pointer group-hover/row:border-blue-200/80 dark:group-hover/row:border-blue-800/50 group-hover/row:text-blue-600 dark:group-hover/row:text-blue-400 transition-colors duration-150"
+                                                className="inline-flex items-center gap-1.5 px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wide bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-500 dark:text-zinc-400 shadow-sm cursor-pointer group-hover/row:border-blue-200/80 dark:group-hover/row:border-blue-800/50 group-hover/row:text-blue-600 dark:group-hover/row:text-blue-400 transition-colors duration-150"
                                             >
                                                 <span className="text-zinc-400 dark:text-zinc-500 group-hover/row:text-blue-500 dark:group-hover/row:text-blue-400 shrink-0 flex items-center justify-center w-3.5 h-3.5 [&>svg]:w-full [&>svg]:h-full transition-colors">
                                                     {config.icon}
@@ -603,70 +543,61 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
                                     </div>
 
                                     {/* Download/View Action Button */}
-                                    <button
+                                    <motion.button
                                         type="button"
                                         disabled={currentStatus === 'locked' || isDownloading}
                                         onClick={(e) => handleDownloadContent(e, cIndex)}
-                                        className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-colors duration-200 shrink-0 ${
-                                            isDownloading 
-                                                ? 'bg-blue-500/10 border-blue-500/30 text-blue-500 dark:bg-blue-950/20 dark:border-blue-900/30' 
-                                                : isCompleted 
-                                                    ? 'bg-emerald-50/60 border-emerald-100/50 text-emerald-600 dark:bg-emerald-950/20 dark:border-emerald-900/30 dark:text-emerald-400'
-                                                    : 'bg-zinc-50 border-zinc-200 text-zinc-500 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 dark:bg-zinc-800/40 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-blue-950/30 dark:hover:border-blue-900/40 dark:hover:text-blue-400'
-                                        }`}
+                                        whileHover={currentStatus !== 'locked' && !isDownloading ? { scale: 1.15 } : {}}
+                                        whileTap={currentStatus !== 'locked' && !isDownloading ? { scale: 0.9 } : {}}
+                                        className="relative min-w-[36px] min-h-[36px] flex items-center justify-center shrink-0 rounded-full focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                                         aria-label={`Download ${content.title}`}
                                     >
-                                        {isDownloading ? (
-                                            <motion.svg
-                                                className="h-4 w-4"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                animate={{ rotate: 360 }}
-                                                transition={{
-                                                    repeat: Infinity,
-                                                    ease: "linear",
-                                                    duration: 1
-                                                }}
-                                            >
-                                                <circle
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="9"
-                                                    stroke="currentColor"
-                                                    strokeWidth="3.5"
-                                                    className="opacity-20"
+                                        {/* Background circle — only shows when downloading or completed */}
+                                        <AnimatePresence>
+                                            {(isDownloading || isCompleted) && (
+                                                <motion.div
+                                                    initial={{ scale: 0, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    exit={{ scale: 0, opacity: 0 }}
+                                                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                                    className={`absolute inset-0 rounded-full ${
+                                                        isDownloading
+                                                            ? 'bg-blue-100 dark:bg-blue-900/40'
+                                                            : 'bg-emerald-100 dark:bg-emerald-900/40'
+                                                    }`}
                                                 />
-                                                <motion.circle
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="9"
-                                                    stroke="currentColor"
-                                                    strokeWidth="3.5"
-                                                    strokeLinecap="round"
-                                                    strokeDasharray="56"
-                                                    initial={{ strokeDashoffset: 42 }}
-                                                    animate={{
-                                                        strokeDashoffset: [42, 14, 42],
-                                                    }}
-                                                    transition={{
-                                                        duration: 1.5,
-                                                        ease: "easeInOut",
-                                                        repeat: Infinity,
-                                                    }}
-                                                />
-                                            </motion.svg>
-                                        ) : isCompleted ? (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                <polyline points="20 6 9 17 4 12" />
-                                            </svg>
-                                        ) : (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                                <polyline points="7 10 12 15 17 10" />
-                                                <line x1="12" y1="15" x2="12" y2="3" />
-                                            </svg>
-                                        )}
-                                    </button>
+                                            )}
+                                        </AnimatePresence>
+
+                                        {/* Icon layer */}
+                                        <div className="relative z-10">
+                                            {isDownloading ? (
+                                                <svg
+                                                    className="h-4 w-4 text-blue-500 dark:text-blue-400 animate-spin"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                >
+                                                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3.5" className="opacity-20" />
+                                                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="56" strokeDashoffset="16" />
+                                                </svg>
+                                            ) : isCompleted ? (
+                                                <motion.svg
+                                                    initial={{ scale: 0, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                                                    width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500 dark:text-emerald-400"
+                                                >
+                                                    <polyline points="20 6 9 17 4 12" />
+                                                </motion.svg>
+                                            ) : (
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-400 dark:text-zinc-500 group-hover/row:text-blue-500 dark:group-hover/row:text-blue-400 transition-colors">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                                    <polyline points="7 10 12 15 17 10" />
+                                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                                </svg>
+                                            )}
+                                        </div>
+                                    </motion.button>
                                 </motion.div>
                             );
                         })}

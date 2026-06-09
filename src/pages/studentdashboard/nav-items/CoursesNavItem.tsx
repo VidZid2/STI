@@ -13,9 +13,10 @@ interface CoursesNavItemProps {
     onCourseSelect: (course: SidebarCourse) => void;
     currentCourseId?: string | null;
     isExpanded?: boolean;
+    onMobileCoursesTap?: () => void;
 }
 
-export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSidebarClose, onCourseSelect, currentCourseId, isExpanded = true }) => {
+export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSidebarClose, onCourseSelect, currentCourseId, isExpanded = true, onMobileCoursesTap }) => {
     const [isOpen, setIsOpen] = useState(false);
     const anchorRef = useRef<HTMLDivElement>(null);
     const closeTimeoutRef = useRef<number | null>(null);
@@ -92,7 +93,10 @@ export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSid
             <button
                 type="button"
                 className={`nav-item ${isActive ? 'active' : ''}`}
-                onClick={(e) => e.preventDefault()}
+                onClick={(e) => {
+                    e.preventDefault();
+                    onMobileCoursesTap?.();
+                }}
                 aria-haspopup="menu"
                 aria-expanded={isOpen}
             >
@@ -143,14 +147,17 @@ export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSid
                     onMouseEnter={handleMouseEnter}
                 />
             )}
-            <SidebarCoursesDropdown
-                isOpen={isOpen}
-                onClose={handleClose}
-                courses={coursesWithProgress}
-                onCourseClick={handleCourseClick}
-                anchorRef={anchorRef}
-                currentCourseId={currentCourseId}
-            />
+            {/* Desktop only: hover dropdown. Mobile uses MobileCoursesSheet instead. */}
+            {isExpanded && (
+                <SidebarCoursesDropdown
+                    isOpen={isOpen}
+                    onClose={handleClose}
+                    courses={coursesWithProgress}
+                    onCourseClick={handleCourseClick}
+                    anchorRef={anchorRef}
+                    currentCourseId={currentCourseId}
+                />
+            )}
         </div>
     );
 });

@@ -50,12 +50,12 @@ const StreakBadge: React.FC<{ streak: number }> = ({ streak }) => {
             whileHover={{ scale: 1.05, rotate: -5 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
             className={cn(
-                'w-16 h-16 rounded-[20px] flex items-center justify-center flex-shrink-0 shadow-sm border transition-colors',
+                'w-12 h-12 sm:w-16 sm:h-16 rounded-[16px] sm:rounded-[20px] flex items-center justify-center flex-shrink-0 shadow-sm border transition-colors',
                 style.bg,
                 style.border
             )}
         >
-            <Flame className={cn("w-8 h-8", style.iconColor)} strokeWidth={2} />
+            <Flame className={cn("w-6 h-6 sm:w-8 sm:h-8", style.iconColor)} strokeWidth={2} />
         </motion.div>
     );
 };
@@ -242,16 +242,16 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.95 }}
                                     className={cn(
-                                        'sm:hidden absolute top-5 right-4 z-[60] flex items-center justify-center rounded-xl border p-2 shadow-sm transition-colors',
-                                        isDarkMode 
-                                            ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700' 
+                                        'sm:hidden absolute top-3 right-3 z-[60] w-6 h-6 flex items-center justify-center rounded-md border p-0 shadow-sm transition-colors',
+                                        isDarkMode
+                                            ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
                                             : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-50'
                                     )}
                                     aria-label="Close Modal"
                                 >
                                     <svg
-                                        width="18"
-                                        height="18"
+                                        width="12"
+                                        height="12"
                                         viewBox="0 0 24 24"
                                         fill="none"
                                         stroke="currentColor"
@@ -265,7 +265,7 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                                 </motion.button>
                                 
                                 {/* Header Group: Student Tools Style (Horizontal) */}
-                                <div className="flex items-start gap-3 sm:gap-5 w-full pt-1 sm:pt-2 shrink-0">
+                                <div className="flex items-start gap-2.5 sm:gap-5 w-full pt-1 sm:pt-2 shrink-0">
                                     {/* Icon Container */}
                                     <StreakBadge streak={streakData.currentStreak} />
 
@@ -315,7 +315,7 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                                         <div
                                             key={stat.label}
                                             className={cn(
-                                                'flex items-center gap-2.5 sm:gap-4 p-2.5 sm:p-4 rounded-[16px] sm:rounded-[20px] border transition-all duration-300 hover:shadow-sm group cursor-default',
+                                                'flex items-center gap-2 sm:gap-4 p-2 sm:p-4 rounded-[14px] sm:rounded-[20px] border transition-all duration-300 hover:shadow-sm group cursor-default',
                                                 isDarkMode 
                                                     ? 'bg-zinc-800/40 border-zinc-700/80 hover:border-zinc-600' 
                                                     : 'bg-white border-zinc-200/80 hover:border-blue-200/80 hover:shadow-md'
@@ -325,19 +325,19 @@ export const DailyStreakModal: React.FC<DailyStreakModalProps> = ({
                                             <motion.div
                                                 whileHover={{ scale: 1.08, rotate: -5 }}
                                                 transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                                                className={cn('w-9 h-9 sm:w-12 sm:h-12 rounded-[12px] sm:rounded-[16px] flex items-center justify-center flex-shrink-0 border shadow-sm', stat.colorClass, stat.bgClass, stat.borderClass)}
+                                                className={cn('w-8 h-8 sm:w-12 sm:h-12 rounded-[10px] sm:rounded-[16px] flex items-center justify-center flex-shrink-0 border shadow-sm', stat.colorClass, stat.bgClass, stat.borderClass)}
                                             >
                                                 {stat.icon}
                                             </motion.div>
                                             
                                             <div className='flex flex-col flex-1 min-w-0'>
-                                                <div className={cn('text-[8.5px] sm:text-[10px] font-bold uppercase tracking-wider mb-0.5 truncate', stat.colorClass)}>
+                                                <div className={cn('text-[8px] sm:text-[10px] font-bold uppercase tracking-wider mb-0.5 truncate', stat.colorClass)}>
                                                     STEP {i + 1} • {stat.label}
                                                 </div>
-                                                <div className={cn('text-[13.5px] sm:text-[16px] font-bold leading-tight tracking-tight truncate', isDarkMode ? 'text-zinc-100' : 'text-zinc-900')}>
+                                                <div className={cn('text-[12px] sm:text-[16px] font-bold leading-tight tracking-tight truncate', isDarkMode ? 'text-zinc-100' : 'text-zinc-900')}>
                                                     {stat.value}
                                                 </div>
-                                                <div className={cn('text-[10.5px] sm:text-[12.5px] mt-0.5 truncate', isDarkMode ? 'text-zinc-400' : 'text-zinc-500')}>
+                                                <div className={cn('text-[10px] sm:text-[12.5px] mt-0.5 truncate', isDarkMode ? 'text-zinc-400' : 'text-zinc-500')}>
                                                     {stat.desc}
                                                 </div>
                                             </div>

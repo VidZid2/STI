@@ -50,22 +50,23 @@ const ActionMenuItem: React.FC<ActionMenuItemProps> = ({ action, index, onClick 
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05, duration: 0.2, type: 'spring', stiffness: 300, damping: 24 }}
             onClick={onClick}
-            className="w-full text-left p-3 rounded-[16px] flex items-center gap-4 transition-all duration-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 group border border-transparent hover:border-zinc-200/50 dark:hover:border-zinc-700/50"
+            whileTap={{ scale: 0.97 }}
+            className="w-full text-left p-2.5 sm:p-3 rounded-[14px] flex items-center gap-3 sm:gap-4 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 group border border-transparent hover:border-slate-200/50 dark:hover:border-slate-700/50"
         >
             <motion.div
                 whileHover={{ scale: 1.05, rotate: -5 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                className="w-12 h-12 rounded-[14px] bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition-colors duration-300"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-[12px] bg-blue-50 border border-blue-100 dark:bg-blue-900/30 dark:border-blue-800/50 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors duration-300"
             >
-                <div className="w-5 h-5">
+                <div className="w-4 h-4 sm:w-[18px] sm:h-[18px]">
                     {action.icon}
                 </div>
             </motion.div>
             <div className="flex-1 min-w-0">
-                <h3 className="text-[13px] font-bold text-zinc-900 dark:text-zinc-100 truncate">{action.label}</h3>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 line-clamp-1">{action.description}</p>
+                <h3 className="text-[12px] sm:text-[13px] font-bold text-slate-900 dark:text-slate-100 truncate">{action.label}</h3>
+                <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">{action.description}</p>
             </div>
-            <div className="w-6 h-6 rounded-full bg-transparent group-hover:bg-blue-50 dark:group-hover:bg-blue-500/10 flex items-center justify-center flex-shrink-0 transition-colors duration-300">
+            <div className="w-6 h-6 rounded-full bg-transparent group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 flex items-center justify-center flex-shrink-0 transition-colors duration-300">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-transparent group-hover:text-blue-500 transition-colors duration-300">
                     <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -100,17 +101,17 @@ export const ActionsDropdown: React.FC<ActionsDropdownProps> = ({ activeTab }) =
     if (actions.length === 0) return null;
 
     return (
-        <div ref={dropdownRef} className="relative flex-shrink-0 z-50">
+        <div ref={dropdownRef} className="relative flex-1 sm:flex-initial z-50">
             <motion.button
                 onClick={() => setIsOpen(!isOpen)}
                 whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileTap={{ scale: 0.97 }}
                 aria-haspopup="true"
                 aria-expanded={isOpen}
-                className={`flex items-center gap-2 h-10 px-4 rounded-[14px] font-bold text-[13px] transition-all duration-200 border shadow-sm ${
+                className={`flex items-center justify-center gap-2 h-10 w-full px-4 rounded-[14px] font-bold text-[13px] transition-all duration-200 border shadow-sm ${
                     isOpen 
-                        ? 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/30 dark:text-blue-400' 
-                        : 'bg-white text-zinc-700 border-zinc-200/80 hover:bg-zinc-50 hover:text-zinc-900 hover:border-zinc-300 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:border-zinc-700'
+                        ? 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-400' 
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:border-slate-600'
                 }`}
             >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -140,13 +141,13 @@ export const ActionsDropdown: React.FC<ActionsDropdownProps> = ({ activeTab }) =
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: -10, scale: 0.95 }}
                             transition={{ duration: 0.2, type: 'spring', stiffness: 300, damping: 25 }}
-                            className="absolute top-full right-0 mt-2 p-3 rounded-[24px] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-xl z-50 w-[320px] sm:w-[360px] overflow-hidden flex flex-col gap-1"
+                            className="absolute top-full right-0 mt-2 p-2.5 sm:p-3 rounded-[18px] sm:rounded-[20px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl z-50 w-[280px] sm:w-[320px] overflow-hidden flex flex-col gap-0.5"
                         >
-                            {/* SaaS Background Accents for Dropdown */}
-                            <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/5 rounded-full blur-2xl pointer-events-none" aria-hidden="true" />
-                            <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-24 h-24 bg-blue-400/5 dark:bg-blue-400/5 rounded-full blur-2xl pointer-events-none" aria-hidden="true" />
+                            {/* Ambient Glow */}
+                            <div className="absolute top-0 right-0 -mr-8 -mt-8 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-20 h-20 bg-blue-400/5 rounded-full blur-2xl pointer-events-none" />
 
-                            <div className="relative z-10 flex flex-col gap-1">
+                            <div className="relative z-10 flex flex-col gap-0.5">
                                 {actions.map((action, index) => (
                                     <ActionMenuItem
                                         key={action.id}

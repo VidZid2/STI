@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ToolsNavTooltip from '../../../components/ui/misc/ToolsNavTooltip';
 import { CoursesNavItem, HelpNavItem, PathsNavItem } from '../nav-items';
+import MobileCoursesSheet from './MobileCoursesSheet';
 import type { SidebarCourse, DashboardView } from '../types';
 
 interface DashboardSidebarProps {
@@ -100,6 +101,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
     setSelectedCourse,
     openSettingsModal }) => {
     const [isMobileDock, setIsMobileDock] = useState(false);
+    const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
 
     useEffect(() => {
         const query = window.matchMedia('(max-width: 768px)');
@@ -133,6 +135,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
             .catch(err => console.error('Failed to log activity:', err));
     }, [setSelectedCourse, setActiveView]);
 
+    const handleMobileCoursesTap = useCallback(() => {
+        setIsMobileCoursesOpen(true);
+    }, []);
+
     return (
         <div className={`sidebar-wrapper ${isExpanded ? 'expanded' : 'collapsed'} ${isMobileDock ? 'mobile-dock' : ''}`}>
             {/* Toggle Button — outside the sidebar, on the right border edge */}
@@ -156,6 +162,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
                         onCourseSelect={handleCourseSelect}
                         currentCourseId={activeView === 'course' ? selectedCourse?.id ?? null : null}
                         isExpanded={isExpanded}
+                        onMobileCoursesTap={handleMobileCoursesTap}
                     />
 
                     <PathsNavItem
@@ -187,6 +194,14 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
                     <HelpNavItem onSidebarClose={() => {/* no-op */}} isExpanded={isExpanded} />
                 </div>
             </aside>
+            {isMobileDock && (
+                <MobileCoursesSheet
+                    isOpen={isMobileCoursesOpen}
+                    onClose={() => setIsMobileCoursesOpen(false)}
+                    onCourseSelect={handleCourseSelect}
+                    currentCourseId={activeView === 'course' ? selectedCourse?.id ?? null : null}
+                />
+            )}
         </div>
     );
 });

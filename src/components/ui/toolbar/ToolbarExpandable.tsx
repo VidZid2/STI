@@ -1241,6 +1241,23 @@ export default function ToolbarExpandable() {
     const ref = useRef<HTMLDivElement>(null!);
     const [isOpen, setIsOpen] = useState(false);
     const isDarkMode = useDarkMode();
+
+    // Mobile detection for hiding Course Progress toolbar item
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const query = window.matchMedia('(max-width: 640px)');
+        const sync = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile(e.matches);
+        sync(query);
+        if (query.addEventListener) {
+            query.addEventListener('change', sync as EventListener);
+            return () => query.removeEventListener('change', sync as EventListener);
+        } else {
+            // @ts-expect-error - Deprecated but necessary for Safari < 14
+            query.addListener(sync);
+            // @ts-expect-error
+            return () => query.removeListener(sync);
+        }
+    }, []);
     
     // Show hint only after 10 page visits, and only if not dismissed before
     const [showSearchHint, setShowSearchHint] = useState(() => {
@@ -1537,7 +1554,7 @@ export default function ToolbarExpandable() {
                     <div className='h-full w-full'>
                         {/* Buttons at the top */}
                         <div className='flex items-center gap-0.5 sm:gap-2 lg:gap-3' ref={menuRef}>
-                            {ITEMS.map((item) => (
+                            {ITEMS.filter(item => !(item.id === 3 && isMobile)).map((item) => (
                                 <motion.button
                                     key={item.id}
                                     aria-label={item.label}

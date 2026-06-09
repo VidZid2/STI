@@ -27,31 +27,36 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     void _totalCount;
 
     return (
-        <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="relative w-full">
-            <svg className='absolute left-3 top-0 bottom-0 my-auto w-4 h-4 text-zinc-400 z-10' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
+        <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="relative w-full group/search"
+        >
+            <svg className="absolute left-3.5 top-0 bottom-0 my-auto w-4 h-4 text-zinc-400 z-10 transition-colors duration-200 group-focus-within/search:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className={`h-10 w-full rounded-[14px] border pl-9 pr-8 py-2 text-[12px] sm:text-[13px] font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all bg-white border-zinc-200/80 text-zinc-900 placeholder-zinc-400 focus:border-blue-400 dark:bg-zinc-800 dark:border-zinc-700/80 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-blue-500/50`}
+                className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/80 pl-11 pr-12 py-2 text-sm font-semibold focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 shadow-sm transition-all duration-300 text-zinc-900 placeholder-zinc-400 dark:border-zinc-800 dark:bg-zinc-950/70 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-blue-500 dark:focus:ring-blue-500/10"
             />
-            <div className="absolute right-2.5 top-0 bottom-0 flex items-center gap-2">
+            <div className="absolute right-3 top-0 bottom-0 flex items-center z-10">
                 <AnimatePresence mode="wait">
                     {isSearching && value ? (
                         <motion.div
                             key="spinner"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            transition={{ duration: 0.15 }}
-                            className="w-5 h-5 flex items-center justify-center"
+                            initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                            exit={{ opacity: 0, scale: 0.8, rotate: 90 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                            className="w-6 h-6 flex items-center justify-center"
                         >
-                            <svg className='w-4 h-4 animate-spin text-blue-500' fill='none' viewBox='0 0 24 24'>
-                                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
-                                <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z' />
+                            <svg className="w-4 h-4 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                             </svg>
                         </motion.div>
                     ) : value ? (
@@ -60,15 +65,17 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
-                            transition={{ duration: 0.15 }}
-                            whileHover={{ scale: 1.1 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                            whileHover={{ scale: 1.15 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={() => onChange('')}
                             aria-label="Clear search"
-                            className="w-5 h-5 rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 flex items-center justify-center transition-colors"
+                            className="group/close relative w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
                         >
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-zinc-500 dark:text-zinc-400">
-                                <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
+                            <span className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500 to-blue-400 opacity-0 group-hover/close:opacity-100 transition-opacity duration-200" />
+                            <span className="absolute inset-[2px] rounded-full bg-zinc-200/80 group-hover/close:bg-transparent dark:bg-zinc-700 transition-colors duration-200" />
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="relative z-10 text-zinc-400 group-hover/close:text-blue-500 dark:text-zinc-500 dark:group-hover/close:text-white transition-colors duration-200">
+                                <path d="M18 6L6 18M6 6l12 12" />
                             </svg>
                         </motion.button>
                     ) : null}
@@ -91,7 +98,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, description
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className={`relative overflow-hidden w-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-10 flex flex-col items-center justify-center text-center group transition-all duration-300 hover:shadow-md ${className}`}
+        className={`relative overflow-hidden w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] p-6 sm:p-10 flex flex-col items-center justify-center text-center group transition-all duration-300 hover:shadow-md ${className}`}
     >
         {/* SaaS Accents */}
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/[0.03] rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
@@ -107,10 +114,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, description
         </motion.div>
 
         <div className="relative z-10 flex flex-col items-center">
-            <motion.h3 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="text-[17px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-1.5 leading-snug">
+            <motion.h3 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="text-[17px] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight m-0 mb-1.5 leading-snug">
                 {title}
             </motion.h3>
-            <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-[13.5px] text-zinc-500 dark:text-zinc-400 font-normal leading-relaxed m-0 max-w-[280px] mb-6">
+            <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-[13.5px] text-slate-500 dark:text-slate-400 font-normal leading-relaxed m-0 max-w-[280px] mb-6">
                 {description}
             </motion.p>
             {action && (
