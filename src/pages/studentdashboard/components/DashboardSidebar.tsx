@@ -4,6 +4,7 @@
  * No overlay. Smooth width + text transitions.
  */
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'motion/react';
 import ToolsNavTooltip from '../../../components/ui/misc/ToolsNavTooltip';
 import { CoursesNavItem, HelpNavItem, PathsNavItem } from '../nav-items';
 import MobileCoursesSheet from './MobileCoursesSheet';
@@ -102,6 +103,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
     openSettingsModal }) => {
     const [isMobileDock, setIsMobileDock] = useState(false);
     const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
+    const [isToolPanelOpen, setIsToolPanelOpen] = useState(false);
 
     useEffect(() => {
         const query = window.matchMedia('(max-width: 768px)');
@@ -119,6 +121,19 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
             // @ts-ignore
             return () => query.removeListener(syncMobileDock);
         }
+    }, []);
+
+    // Listen for tool panel open/close events from ToolMobileSheet
+    useEffect(() => {
+        const handleToolPanelOpen = () => setIsToolPanelOpen(true);
+        const handleToolPanelClose = () => setIsToolPanelOpen(false);
+
+        document.addEventListener('toolpanel:open', handleToolPanelOpen);
+        document.addEventListener('toolpanel:close', handleToolPanelClose);
+        return () => {
+            document.removeEventListener('toolpanel:open', handleToolPanelOpen);
+            document.removeEventListener('toolpanel:close', handleToolPanelClose);
+        };
     }, []);
     
     // Auto-collapse sidebar if returning to desktop and it was left open? 
@@ -140,7 +155,11 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
     }, []);
 
     return (
-        <div className={`sidebar-wrapper ${isExpanded ? 'expanded' : 'collapsed'} ${isMobileDock ? 'mobile-dock' : ''}`}>
+        <motion.div 
+            className={`sidebar-wrapper ${isExpanded ? 'expanded' : 'collapsed'} ${isMobileDock ? 'mobile-dock' : ''}`}
+            animate={isMobileDock && isToolPanelOpen ? { y: '100%', opacity: 0, pointerEvents: 'none' as const } : { y: 0, opacity: 1, pointerEvents: 'auto' as const }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
             {/* Toggle Button — outside the sidebar, on the right border edge */}
             <button
                 className="sidebar-collapse-toggle"
@@ -202,7 +221,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
                     currentCourseId={activeView === 'course' ? selectedCourse?.id ?? null : null}
                 />
             )}
-        </div>
+        </motion.div>
     );
 });
 

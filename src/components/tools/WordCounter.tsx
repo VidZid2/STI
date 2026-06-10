@@ -11,9 +11,9 @@
  */
 
 import * as React from "react";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { Save, BarChart3 } from "lucide-react";
+import { Save, BarChart3, Trash2, Copy } from "lucide-react";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
@@ -416,6 +416,32 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
     },
   ];
 
+  const handleExportStats = useCallback(() => {
+    const statsText = `Word Count Analysis
+Generated: ${new Date().toLocaleString()}
+
+Words: ${stats.words}
+Characters: ${stats.characters}
+Characters (no spaces): ${stats.charactersNoSpaces}
+Sentences: ${stats.sentences}
+Paragraphs: ${stats.paragraphs}
+Lines: ${stats.lines}
+Average Word Length: ${stats.avgWordLength.toFixed(1)}
+Average Sentence Length: ${stats.avgSentenceLength.toFixed(1)}
+Reading Time: ${stats.readingTime}
+Speaking Time: ${stats.speakingTime}
+ARI Grade Level: ${stats.ariGrade}
+
+Text:
+${text}`;
+    const blob = new Blob([statsText], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `word_count_${new Date().toISOString().split('T')[0]}.txt`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }, [stats, text]);
+
   // Loading Skeleton
   if (isPageLoading) {
       return (
@@ -523,7 +549,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
       <div className="flex-1 flex flex-col min-w-0">
         
         {/* Editor Header & Actions */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 p-5 px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm relative overflow-hidden group">
+        <div className="mt-[72px] sm:mt-0 flex flex-row justify-between items-center gap-4 mb-6 p-4 sm:p-5 px-5 sm:px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm relative overflow-hidden group">
           <div className="absolute top-1/2 left-0 -translate-y-1/2 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
           
           {/* Title Area */}
@@ -544,7 +570,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
             </motion.div>
             
             <div className="flex flex-col">
-              <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Word Counter</h1>
+              <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight whitespace-nowrap">Word Counter</h1>
               <div className="mt-1 flex flex-wrap items-center gap-2">
                 <ToolHeaderBadge
                   icon={Save}
@@ -561,7 +587,7 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="flex items-center gap-2 w-full sm:w-auto relative z-10"
+            className="flex flex-nowrap items-center gap-1.5 sm:gap-2 w-auto shrink-0 relative z-10 overflow-x-auto [scrollbar-width:none]"
           >
             <LayoutGroup>
               <motion.button
@@ -579,110 +605,6 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
                 Back
               </motion.button>
 
-              <motion.div layout transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }} className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block"></motion.div>
-              {hasSavedSession && (
-                <motion.button
-                  layout
-                  onClick={handleRestoreSaved}
-                  className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
-                  whileHover={{ y: -1 }}
-                  whileTap={{ scale: 0.97 }}
-                  transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-                >
-                  Restore
-                </motion.button>
-              )}
-
-              <motion.button
-                layout
-                onClick={handleLoadSample}
-                disabled={!!text}
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                whileHover={{ y: -1 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-              >
-                Sample
-              </motion.button>
-
-              <AnimatePresence mode="popLayout">
-                {text && (
-                  <>
-                    <motion.button
-                      layout
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      onClick={handleCopy}
-                      className={`flex items-center gap-1.5 px-4 py-2 text-sm font-bold rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 ${
-                        copySuccess 
-                          ? 'bg-cyan-50 text-cyan-600 dark:bg-cyan-900/20 dark:text-cyan-400'
-                          : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-                      }`}
-                      whileHover={{ y: -1 }}
-                      whileTap={{ scale: 0.97 }}
-                      transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-                    >
-                      {copySuccess ? 'Copied!' : 'Copy'}
-                    </motion.button>
-
-                    {/* Export Stats Button */}
-                    <motion.button
-                      layout
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      onClick={async () => {
-                        const statsText = `Word Count Analysis
-Generated: ${new Date().toLocaleString()}
-
-Words: ${stats.words}
-Characters: ${stats.characters}
-Characters (no spaces): ${stats.charactersNoSpaces}
-Sentences: ${stats.sentences}
-Paragraphs: ${stats.paragraphs}
-Lines: ${stats.lines}
-Average Word Length: ${stats.avgWordLength.toFixed(1)}
-Average Sentence Length: ${stats.avgSentenceLength.toFixed(1)}
-Reading Time: ${stats.readingTime}
-Speaking Time: ${stats.speakingTime}
-ARI Grade Level: ${stats.ariGrade}
-
-Text:
-${text}`;
-                        const blob = new Blob([statsText], { type: 'text/plain;charset=utf-8' });
-                        const a = document.createElement('a');
-                        a.href = URL.createObjectURL(blob);
-                        a.download = `word_count_${new Date().toISOString().split('T')[0]}.txt`;
-                        a.click();
-                        URL.revokeObjectURL(a.href);
-                      }}
-                      className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 rounded-xl hover:bg-cyan-100 dark:hover:bg-cyan-900/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2"
-                      whileHover={{ y: -1 }}
-                      whileTap={{ scale: 0.97 }}
-                      transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-                      title="Export analysis stats"
-                    >
-                      <BarChart3 className="w-4 h-4" />
-                      Export
-                    </motion.button>
-
-                    <motion.button
-                      layout
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      onClick={handleClear}
-                      className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-                      whileHover={{ y: -1 }}
-                      whileTap={{ scale: 0.97 }}
-                      transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-                    >
-                      Clear
-                    </motion.button>
-                  </>
-                )}
-              </AnimatePresence>
             </LayoutGroup>
           </motion.div>
         </div>
@@ -698,36 +620,82 @@ ${text}`;
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500/0 via-cyan-500 to-cyan-500/0 opacity-0 transition-opacity duration-300" style={{ opacity: isTyping ? 1 : 0 }} />
           
           {/* Editor Header */}
-          <div className="border-b border-zinc-100 dark:border-zinc-800 overflow-x-auto [scrollbar-width:none]">
-              <div className="flex items-center justify-between min-w-full w-max px-6 py-4">
-                  {/* Title moved to left */}
-                  <div className="flex items-center gap-3 shrink-0 pr-6">
-                      <motion.div
-                          whileHover={{ scale: 1.05, rotate: -5 }}
-                          transition={{ type: 'spring', damping: 20, stiffness: 350 }}
-                          className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-cyan-50/80 dark:bg-cyan-900/30 border border-cyan-200 shadow-sm ring-4 ring-white/50 dark:border-cyan-800/60 dark:ring-zinc-900/50 text-cyan-600 dark:text-cyan-400"
-                      >
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                          </svg>
-                      </motion.div>
-                      <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Text Editor</span>
+          <div className="border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between min-w-full p-4 sm:px-6 sm:py-4 gap-4 sm:gap-6">
+                  {/* Title and stats */}
+                  <div className="flex items-center justify-between w-full sm:w-auto">
+                      <div className="flex items-center gap-3 shrink-0 pr-6">
+                          <motion.div
+                              whileHover={{ scale: 1.05, rotate: -5 }}
+                              transition={{ type: 'spring', damping: 20, stiffness: 350 }}
+                              className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-cyan-50/80 dark:bg-cyan-900/30 border border-cyan-200 shadow-sm ring-4 ring-white/50 dark:border-cyan-800/60 dark:ring-zinc-900/50 text-cyan-600 dark:text-cyan-400"
+                          >
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
+                          </motion.div>
+                          <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Text Editor</span>
+                      </div>
+                      
+                      {/* Mobile Words Badge */}
+                      <span className="flex sm:hidden whitespace-nowrap text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-2.5 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
+                          {stats.words.toLocaleString()} words
+                      </span>
                   </div>
                   
-                  <div className="flex items-center gap-4 shrink-0">
-                      <span className="whitespace-nowrap text-[11px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
+                  {/* Desktop Words Badge & Actions */}
+                  <div className="hidden sm:flex items-center w-auto justify-end gap-3 shrink-0">
+                      <span className="whitespace-nowrap text-[11px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50 mr-2">
                           {stats.words.toLocaleString()} words
                       </span>
 
+                      <button
+                          type="button"
+                          onClick={handleCopy}
+                          className="flex items-center justify-center w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none"
+                          title="Copy text"
+                      >
+                          <Copy className="w-[18px] h-[18px] shrink-0" />
+                      </button>
+
+                      <button
+                          type="button"
+                          onClick={handleExportStats}
+                          className="flex items-center justify-center w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none"
+                          title="Export Stats"
+                      >
+                          <BarChart3 className="w-[18px] h-[18px] shrink-0" />
+                      </button>
+
                       {hasSavedSession && (
                           <button
-                            onClick={handleClearSaved}
-                            className="whitespace-nowrap text-[11px] font-bold text-rose-500 hover:text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/20 px-3 py-1.5 rounded-lg border border-rose-200/50 dark:border-rose-800/50 transition-colors shrink-0"
+                              type="button"
+                              onClick={handleRestoreSaved}
+                              className="px-4 h-[46px] flex items-center justify-center text-[13px] font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 hover:bg-cyan-100 dark:hover:bg-cyan-900/40 rounded-[16px] transition-colors focus:outline-none"
                           >
-                            Clear saved
+                              Restore
                           </button>
                       )}
+
+                      <button
+                          type="button"
+                          onClick={handleClear}
+                          disabled={!text && !hasSavedSession}
+                          className="flex items-center justify-center w-[46px] h-[46px] rounded-[16px] bg-[#fff0f0] text-red-500 transition-colors hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Clear text & saved session"
+                      >
+                          <Trash2 className="w-[18px] h-[18px] shrink-0" />
+                      </button>
+
+                      <button
+                          type="button"
+                          onClick={handleLoadSample}
+                          disabled={!!text}
+                          className="flex items-center justify-center gap-2 rounded-[16px] bg-cyan-600 hover:bg-cyan-700 px-5 h-[46px] text-[15px] font-bold text-white transition-all duration-300 shadow-sm hover:shadow-[0_8px_20px_rgba(8,145,178,0.35)] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
+                      >
+                          Load Sample
+                      </button>
                   </div>
               </div>
           </div>
@@ -736,10 +704,47 @@ ${text}`;
             ref={textareaRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="flex-1 w-full p-6 lg:p-8 bg-transparent border-none resize-none text-zinc-800 dark:text-zinc-200 focus:ring-0 focus:outline-none text-lg leading-relaxed placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
+            className="flex-1 w-full p-4 lg:p-8 bg-transparent border-none resize-none text-zinc-800 dark:text-zinc-200 focus:ring-0 focus:outline-none text-lg leading-relaxed placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
             placeholder="Start typing, or paste your document here..."
             spellCheck="false"
           />
+
+          {/* Action Footer (Mobile) */}
+          <div className="flex sm:hidden bg-zinc-50/50 dark:bg-zinc-800/20 border-t border-zinc-100 dark:border-zinc-800 px-4 py-4 items-center justify-between gap-3 relative z-10">
+              <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none"
+              >
+                  <Copy className="w-[18px] h-[18px] shrink-0" />
+              </button>
+              
+              <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={!text && !hasSavedSession}
+                  className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-[#fff0f0] text-red-500 transition-colors hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                  <Trash2 className="w-[18px] h-[18px] shrink-0" />
+              </button>
+
+              <button
+                  type="button"
+                  onClick={handleExportStats}
+                  className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none"
+              >
+                  <BarChart3 className="w-[18px] h-[18px] shrink-0" />
+              </button>
+
+              <button
+                  type="button"
+                  onClick={handleLoadSample}
+                  disabled={!!text}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-[16px] bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 h-[46px] text-[15px] font-bold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none shadow-sm hover:shadow-md"
+              >
+                  Sample
+              </button>
+          </div>
         </motion.div>
       </div>
 
@@ -753,7 +758,7 @@ ${text}`;
         
         {/* Statistics Grid */}
         <motion.div 
-            className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 lg:p-7 flex flex-col relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-cyan-200/80 dark:hover:border-cyan-800/50"
+            className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-5 sm:p-6 lg:p-7 flex flex-col relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-cyan-200/80 dark:hover:border-cyan-800/50"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 24 }}
@@ -785,7 +790,7 @@ ${text}`;
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 relative z-10 mt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 relative z-10 mt-2">
               {statItems.map((stat) => (
                   <div
                       key={stat.label}
@@ -807,7 +812,7 @@ ${text}`;
 
         {/* Time Estimates */}
         <motion.div 
-            className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-cyan-200/80 dark:hover:border-cyan-800/50"
+            className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-5 sm:p-6 lg:p-7 flex flex-col relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-cyan-200/80 dark:hover:border-cyan-800/50"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
@@ -881,7 +886,7 @@ ${text}`;
 
         {/* Style & Tone Insights Card */}
         <motion.div 
-            className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-cyan-200/80 dark:hover:border-cyan-800/50"
+            className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-5 sm:p-6 lg:p-7 flex flex-col relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-cyan-200/80 dark:hover:border-cyan-800/50"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.2 }}
@@ -1165,6 +1170,42 @@ ${text}`;
         </motion.div>
 
       </ToolMobileSheet>
+
+      {/* Global Floating Restore Banner (Mobile) */}
+      <AnimatePresence>
+          {hasSavedSession && (
+              <motion.div
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="fixed bottom-24 inset-x-4 z-[90] sm:hidden flex items-center justify-between p-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-white/5 border border-zinc-200/60 dark:border-zinc-800/60"
+              >
+                  <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-cyan-50 dark:bg-cyan-900/20 text-cyan-600 dark:text-cyan-400 shrink-0">
+                          <Save className="w-[18px] h-[18px]" />
+                      </div>
+                      <div className="flex flex-col">
+                          <span className="text-[13px] font-bold text-zinc-900 dark:text-white leading-tight">Draft Saved</span>
+                          <span className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 leading-tight">Tap to recover</span>
+                      </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                      <button
+                          onClick={handleClear}
+                          className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-[#fff0f0] hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-500 dark:text-red-400 transition-colors"
+                      >
+                          <Trash2 className="w-[18px] h-[18px]" />
+                      </button>
+                      <button
+                          onClick={handleRestoreSaved}
+                          className="px-4 h-10 flex items-center justify-center text-[13px] font-bold text-white bg-cyan-600 hover:bg-cyan-700 rounded-[14px] shadow-sm hover:scale-105 active:scale-95 transition-all"
+                      >
+                          Restore
+                      </button>
+                  </div>
+              </motion.div>
+          )}
+      </AnimatePresence>
 
       <style>{`
                 /* Skeleton Loading Animation */

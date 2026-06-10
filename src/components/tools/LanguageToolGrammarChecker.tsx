@@ -13,7 +13,7 @@
 import * as React from "react";
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { Save, FileSpreadsheet } from "lucide-react";
+import { Save, FileSpreadsheet, Trash2 } from "lucide-react";
 import {
     checkGrammar,
     getLanguageToolStatus,
@@ -370,7 +370,7 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
       <div className="flex-1 flex flex-col min-w-0 self-stretch">
         
         {/* Editor Header & Actions */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 p-5 px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-green-200/80 dark:hover:border-green-800/50">
+        <div className="mt-[72px] sm:mt-0 flex flex-row justify-between items-center gap-4 mb-6 p-5 px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-green-200/80 dark:hover:border-green-800/50">
           <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-green-500/10 dark:bg-green-500/5 rounded-full blur-3xl pointer-events-none group-hover:scale-150 transition-transform duration-700" aria-hidden="true" />
           
           {/* Title Area */}
@@ -392,7 +392,7 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
             </motion.div>
             
             <div className="flex flex-col">
-              <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Grammar Checker</h1>
+              <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight whitespace-nowrap">Grammar Checker</h1>
               <div className="mt-1 flex flex-wrap items-center gap-2">
                 <ToolHeaderLiveBadge label={`System ${apiStatus.canRequest ? 'Online' : 'Limited'}`} isOnline={apiStatus.canRequest} />
                 <ToolHeaderBadge
@@ -412,12 +412,12 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
-              className="flex items-center gap-2 w-full sm:w-auto relative z-10"
+              className="flex flex-nowrap items-center gap-1.5 sm:gap-2 w-auto shrink-0 relative z-10 overflow-x-auto [scrollbar-width:none]"
             >
               <motion.button
                 layout
                 onClick={onBack}
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                className="flex items-center gap-1 sm:gap-1.5 px-3 py-2 sm:px-4 sm:py-2 text-[13px] sm:text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-[14px] hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap"
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
@@ -427,48 +427,6 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                   <polyline points="12 19 5 12 12 5" />
                 </svg>
                 Back
-              </motion.button>
-
-              <motion.div layout transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }} className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block" />
-
-              {hasSavedSession && (
-                  <motion.button
-                    layout
-                    onClick={handleRestoreSaved}
-                    className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
-                    whileHover={{ y: -1 }}
-                    whileTap={{ scale: 0.97 }}
-                    transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-                  >
-                    Restore
-                  </motion.button>
-              )}
-
-              <motion.button
-                layout
-                onClick={handleClear}
-                disabled={!text}
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-                whileHover={{ y: -1 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-              >
-                Clear
-              </motion.button>
-
-              {/* Export DOCX Button */}
-              <motion.button
-                layout
-                onClick={handleExportDocx}
-                disabled={!text.trim()}
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-                whileHover={{ y: -1 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-                title="Export as Word document"
-              >
-                <FileSpreadsheet className="w-4 h-4" />
-                .docx
               </motion.button>
 
               <AnimatePresence mode="popLayout">
@@ -500,18 +458,6 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                       </motion.button>
                   )}
               </AnimatePresence>
-
-              <motion.button
-                layout
-                onClick={performAnalysis}
-                disabled={isAnalyzing || !text.trim() || !apiStatus.canRequest}
-                className="flex items-center gap-1.5 px-5 py-2 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                whileHover={{ y: -1, boxShadow: '0 8px 20px rgba(37, 99, 235, 0.35)' }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-              >
-                  {isAnalyzing ? 'Analyzing...' : 'Check'}
-              </motion.button>
             </motion.div>
           </LayoutGroup>
         </div>
@@ -526,11 +472,11 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
           {/* Subtle top indicator for typing */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500/0 via-emerald-500 to-emerald-500/0 opacity-0 transition-opacity duration-300" style={{ opacity: isTyping ? 1 : 0 }} />
           
-          {/* Inner Header Row (Like Paraphraser) */}
-          <div className="border-b border-zinc-100 dark:border-zinc-800 overflow-x-auto [scrollbar-width:none]">
-              <div className="flex items-center justify-between min-w-full w-max px-6 py-4">
-                  <div className="flex items-center gap-3 shrink-0 pr-6">
-                      <motion.div
+              {/* Inner Header Row (Like Paraphraser) */}
+              <div className="border-b border-zinc-100 dark:border-zinc-800">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full px-4 py-3 sm:px-6 sm:py-4 gap-3 sm:gap-4">
+                      <div className="flex items-center justify-start w-auto gap-3 shrink-0">
+                          <motion.div
                           whileHover={{ scale: 1.05, rotate: -5 }}
                           transition={{ type: 'spring', damping: 20, stiffness: 350 }}
                           className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-50/80 dark:bg-emerald-900/30 border border-emerald-200 shadow-sm ring-4 ring-white/50 dark:border-emerald-800/60 dark:ring-zinc-900/50 text-emerald-600 dark:text-emerald-400"
@@ -539,22 +485,73 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                           </svg>
                       </motion.div>
-                      <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Text Editor</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 shrink-0">
-                      <span className="whitespace-nowrap text-[11px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
+                      <div className="flex items-center gap-2.5">
+                          <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Text Editor</span>
+                          {/* Mobile Words Badge */}
+                          <span className="flex sm:hidden text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-2.5 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
+                              {stats.words} words
+                          </span>
+                      </div>
+                      
+                      {/* Desktop Words Badge */}
+                      <span className="hidden sm:flex text-[11px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
                           {stats.words} words
                       </span>
+                  </div>
 
+
+                  
+                  {/* Action Buttons on right (Desktop) */}
+                  <div className="hidden sm:flex items-center w-auto justify-end gap-3 shrink-0">
+                      {/* Desktop Restore/Clear */}
                       {hasSavedSession && (
-                          <button
-                            onClick={handleClearSaved}
-                            className="whitespace-nowrap text-[11px] font-bold text-rose-500 hover:text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/20 px-3 py-1.5 rounded-lg border border-rose-200/50 dark:border-rose-800/50 transition-colors shrink-0"
-                          >
-                            Clear saved
-                          </button>
+                          <div className="flex items-center gap-2 shrink-0 pr-4 border-r border-zinc-100 dark:border-zinc-800/60">
+                              <button
+                                onClick={handleRestoreSaved}
+                                className="flex whitespace-nowrap text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg border border-blue-200/50 dark:border-blue-800/50 transition-colors shrink-0"
+                              >
+                                Restore
+                              </button>
+                              <button
+                                onClick={handleClearSaved}
+                                className="flex whitespace-nowrap text-[11px] font-bold text-rose-500 hover:text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/20 px-3 py-1.5 rounded-lg border border-rose-200/50 dark:border-rose-800/50 transition-colors shrink-0"
+                              >
+                                Clear
+                              </button>
+                          </div>
                       )}
+                      <button
+                          type="button"
+                          onClick={handleExportDocx}
+                          disabled={!text.trim()}
+                          className="flex items-center justify-center w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Export as Word document"
+                      >
+                          <FileSpreadsheet className="w-[18px] h-[18px] shrink-0" />
+                      </button>
+                      <button
+                          type="button"
+                          onClick={handleClear}
+                          disabled={!text}
+                          className="flex items-center justify-center w-[46px] h-[46px] rounded-[16px] bg-[#fff0f0] text-red-500 transition-colors hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                          <Trash2 className="w-[18px] h-[18px] shrink-0" />
+                      </button>
+                      <button
+                          type="button"
+                          onClick={performAnalysis}
+                          disabled={isAnalyzing || !text.trim() || !apiStatus.canRequest}
+                          className="flex items-center justify-center gap-2 rounded-[16px] bg-blue-600 hover:bg-blue-700 px-5 h-[46px] text-[15px] font-bold text-white transition-all duration-300 shadow-sm hover:shadow-[0_8px_20px_rgba(37,99,235,0.35)] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
+                      >
+                          {isAnalyzing ? (
+                              <>
+                                  <svg className="animate-spin w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                      <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                                  </svg>
+                                  <span className="whitespace-nowrap tracking-tight">Analyzing...</span>
+                              </>
+                          ) : 'Check'}
+                      </button>
                   </div>
               </div>
           </div>
@@ -567,6 +564,8 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
           )}
 
           <div ref={containerRef} className="relative flex-1 w-full h-full flex flex-col">
+
+
               <textarea
                   ref={textareaRef}
                   value={text}
@@ -574,8 +573,43 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                   onScroll={handleScroll}
                   className="flex-1 w-full h-full p-6 lg:p-8 font-sans text-[15px] sm:text-[17px] leading-[1.8] tracking-normal whitespace-pre-wrap break-words text-left bg-transparent border-none resize-none text-zinc-800 dark:text-zinc-200 focus:ring-0 focus:outline-none z-0 placeholder:text-zinc-300 dark:placeholder:text-zinc-700 [scrollbar-width:thin]"
                   placeholder="Type or paste your text here to check grammar..."
-                  spellCheck="false"
+                  spellCheck={false}
               />
+          </div>
+
+          {/* Action Footer (Mobile) */}
+          <div className="flex sm:hidden bg-zinc-50/50 dark:bg-zinc-800/20 border-t border-zinc-100 dark:border-zinc-800 px-4 py-4 items-center justify-between gap-3 relative z-10">
+              <button
+                  type="button"
+                  onClick={handleExportDocx}
+                  disabled={!text.trim()}
+                  className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                  <FileSpreadsheet className="w-[18px] h-[18px] shrink-0" />
+              </button>
+              <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={!text}
+                  className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-[#fff0f0] text-red-500 transition-colors hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                  <Trash2 className="w-[18px] h-[18px] shrink-0" />
+              </button>
+              <button
+                  type="button"
+                  onClick={performAnalysis}
+                  disabled={isAnalyzing || !text.trim() || !apiStatus.canRequest}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-[16px] bg-blue-600 hover:bg-blue-700 h-[46px] text-[15px] font-bold text-white transition-all duration-300 shadow-sm hover:shadow-[0_8px_20px_rgba(37,99,235,0.35)] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
+              >
+                  {isAnalyzing ? (
+                      <>
+                          <svg className="animate-spin w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                          </svg>
+                          <span className="whitespace-nowrap tracking-tight">Analyzing...</span>
+                      </>
+                  ) : 'Check'}
+              </button>
           </div>
         </motion.div>
       </div>
@@ -659,7 +693,7 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
         </div>
 
         {/* Scrollable Issue Cards */}
-        <div className="flex-1 overflow-y-auto px-2 pb-4 [scrollbar-width:thin] flex flex-col gap-4 min-h-[300px] -mx-2">
+        <div className="flex-1 overflow-y-auto pb-4 [scrollbar-width:thin] flex flex-col gap-4 min-h-[300px]">
             <AnimatePresence mode="popLayout">
                 {issues.length === 0 ? (
                     <motion.div 
@@ -827,6 +861,42 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
 
 
       </ToolMobileSheet>
+
+      {/* Global Floating Restore Banner (Mobile) */}
+      <AnimatePresence>
+          {hasSavedSession && (
+              <motion.div
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="fixed bottom-24 inset-x-4 z-[90] sm:hidden flex items-center justify-between p-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-white/5 border border-zinc-200/60 dark:border-zinc-800/60"
+              >
+                  <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shrink-0">
+                          <Save className="w-[18px] h-[18px]" />
+                      </div>
+                      <div className="flex flex-col">
+                          <span className="text-[13px] font-bold text-zinc-900 dark:text-white leading-tight">Draft Saved</span>
+                          <span className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 leading-tight">Tap to recover</span>
+                      </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                      <button
+                          onClick={handleClearSaved}
+                          className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-[#fff0f0] hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-500 dark:text-red-400 transition-colors"
+                      >
+                          <Trash2 className="w-[18px] h-[18px]" />
+                      </button>
+                      <button
+                          onClick={handleRestoreSaved}
+                          className="px-4 h-10 flex items-center justify-center text-[13px] font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-[14px] shadow-sm hover:scale-105 active:scale-95 transition-all"
+                      >
+                          Restore
+                      </button>
+                  </div>
+              </motion.div>
+          )}
+      </AnimatePresence>
     </motion.div>
   );
 };

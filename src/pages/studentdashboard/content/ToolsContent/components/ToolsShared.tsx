@@ -32,7 +32,7 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
                         key={category.id}
                         onClick={() => onCategoryChange(category.id)}
                         aria-pressed={isActive}
-                        className={`relative flex flex-1 items-center justify-center gap-2.5 rounded-xl px-5 py-3 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:px-6 sm:text-base ${isActive ? 'text-white' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700/30'}`}
+                        className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:gap-2.5 sm:px-6 sm:py-3 sm:text-base ${isActive ? 'text-white' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700/30'}`}
                     >
                         {isActive && (
                             <motion.div

@@ -149,12 +149,12 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                         {/* Header */}
                         <motion.div 
                             animate={{
-                                padding: isMinimized ? '12px 16px' : '24px 24px 8px 24px'
+                                padding: isMinimized ? '12px 16px' : '12px 12px 2px 12px'
                             }}
                             className="relative border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-t-[20px]"
                         >
                             <motion.div 
-                                animate={{ marginBottom: isMinimized ? '0px' : '24px' }}
+                                animate={{ marginBottom: isMinimized ? '0px' : '10px' }}
                                 className="flex items-start gap-3 sm:gap-4"
                             >
                                 {/* Header Card */}
@@ -163,8 +163,8 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                     animate={{ 
                                         opacity: 1, 
                                         y: 0,
-                                        padding: isMinimized ? '12px 16px' : '24px',
-                                        gap: isMinimized ? '16px' : '24px'
+                                        padding: isMinimized ? '12px 16px' : '12px',
+                                        gap: isMinimized ? '16px' : '12px'
                                     }}
                                     transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
                                     className="flex-1 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[20px] sm:rounded-[24px] flex items-center group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 text-left"
@@ -175,9 +175,9 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
 
                                     <motion.div
                                         animate={{
-                                            width: isMinimized ? 40 : 64,
-                                            height: isMinimized ? 40 : 64,
-                                            borderRadius: isMinimized ? 12 : 20
+                                            width: isMinimized ? 40 : 40,
+                                            height: isMinimized ? 40 : 40,
+                                            borderRadius: isMinimized ? 12 : 12
                                         }}
                                         whileHover={{ scale: 1.05, rotate: -5 }}
                                         transition={{ type: 'spring', stiffness: 400, damping: 15 }}
@@ -193,13 +193,13 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                     
                                     <div className="relative z-10 flex-1 min-w-0 pr-2 sm:pr-4">
                                         <motion.h2 
-                                            animate={{ fontSize: isMinimized ? '16px' : '26px' }}
+                                            animate={{ fontSize: isMinimized ? '16px' : '17px' }}
                                             className="font-bold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-0.5 sm:mb-1 truncate"
                                         >
                                             {task.title}
                                         </motion.h2>
                                         <motion.p 
-                                            animate={{ fontSize: isMinimized ? '12px' : '14.5px' }}
+                                            animate={{ fontSize: isMinimized ? '12px' : '13px' }}
                                             className="text-zinc-600 dark:text-zinc-400 leading-relaxed m-0"
                                         >
                                             Task Instructions & Details
@@ -491,16 +491,16 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                             initial={{ opacity: 0 }}
                             animate={{ 
                                 opacity: 1,
-                                padding: isMinimized ? '8px' : '16px',
-                                paddingTop: isMinimized ? '4px' : '4px'
+                                padding: isMinimized ? '8px' : '8px',
+                                paddingTop: isMinimized ? '4px' : '2px'
                             }}
                             transition={{ delay: 0.3 }}
                             className="border-t border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-b-[20px]"
                         >
                             <motion.div
                                 animate={{
-                                    padding: isMinimized ? '8px 12px' : '16px',
-                                    gap: isMinimized ? '10px' : '16px'
+                                    padding: isMinimized ? '8px 12px' : '10px',
+                                    gap: isMinimized ? '10px' : '10px'
                                 }}
                                 whileHover={{ scale: 1.01 }}
                                 className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[20px] flex items-center group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 text-left"
@@ -512,9 +512,9 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                 {/* Icon Container */}
                                 <motion.div
                                     animate={{
-                                        width: isMinimized ? 36 : 44,
-                                        height: isMinimized ? 36 : 44,
-                                        borderRadius: isMinimized ? 12 : 14
+                                        width: isMinimized ? 36 : 32,
+                                        height: isMinimized ? 36 : 32,
+                                        borderRadius: isMinimized ? 12 : 10
                                     }}
                                     whileHover={{ scale: 1.05, rotate: -5 }}
                                     transition={{ type: 'spring', stiffness: 400, damping: 15 }}
@@ -529,9 +529,9 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                 {/* Text Area */}
                                 <div className="relative z-10 flex-1">
                                     <motion.h3 
-                                        animate={{ fontSize: isMinimized ? '14.5px' : '16px' }}
+                                        animate={{ fontSize: isMinimized ? '14.5px' : '13px' }}
                                         className="font-bold text-zinc-900 dark:text-zinc-100 tracking-tight m-0"
-                                        style={{ marginBottom: isMinimized ? '0px' : '2px' }}
+                                        style={{ marginBottom: isMinimized ? '0px' : '1px' }}
                                     >
                                         Still need help?
                                     </motion.h3>
@@ -541,7 +541,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                                 initial={{ height: 0, opacity: 0 }}
                                                 animate={{ height: 'auto', opacity: 1 }}
                                                 exit={{ height: 0, opacity: 0 }}
-                                                className="text-[13px] text-zinc-600 dark:text-zinc-400 leading-relaxed m-0 pr-2"
+                                                className="hidden sm:block text-[12px] text-zinc-600 dark:text-zinc-400 leading-relaxed m-0 pr-2"
                                             >
                                                 Have questions about this task? Contact your proctor.
                                             </motion.p>
@@ -553,8 +553,8 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                 <div className="relative z-10 flex-shrink-0">
                                     <motion.button
                                         animate={{
-                                            padding: isMinimized ? '8px 16px' : '10px 20px',
-                                            fontSize: isMinimized ? '13px' : '14px'
+                                            padding: isMinimized ? '8px 16px' : '6px 14px',
+                                            fontSize: isMinimized ? '13px' : '13px'
                                         }}
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}

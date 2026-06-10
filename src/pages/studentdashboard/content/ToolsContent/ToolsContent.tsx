@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Wrench, FileBox, FileText, ShieldCheck, Search, X } from 'lucide-react';
+import { Wrench, FileBox, FileText, ShieldCheck } from 'lucide-react';
 
 import { convertImageToPDF, mergePDFs } from '../../../../lib/pdfUtils';
 
@@ -87,6 +87,7 @@ const ToolsContent: React.FC = () => {
     const recentStorageKey = 'elms_recent_tools';
     const [activeCategory, setActiveCategory] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
     const [convertingFile, setConvertingFile] = useState<string | null>(null);
     const [conversionSuccess, setConversionSuccess] = useState<string | null>(null);
     const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
@@ -148,6 +149,16 @@ const ToolsContent: React.FC = () => {
             console.warn('[ToolsContent] Unable to load recent tools', error);
         }
     }, []);
+
+    useEffect(() => {
+        if (!searchQuery) {
+            setIsSearching(false);
+            return;
+        }
+        setIsSearching(true);
+        const timer = setTimeout(() => setIsSearching(false), 400);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     const isDedicatedToolOpen =
         showGrammarChecker ||
@@ -670,40 +681,73 @@ const ToolsContent: React.FC = () => {
                 transition={{ delay: 0.12, type: 'spring', stiffness: 300, damping: 26 }}
                 aria-label="Tool search and recommended workflow"
             >
-                <div className="relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white p-5 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7">
+                <div className="relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white p-4 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7">
                     <div className="absolute -right-20 -top-24 h-56 w-56 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/15" aria-hidden="true" />
                     <div className="absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl dark:bg-violet-500/15" aria-hidden="true" />
-                    <div className="relative z-10 flex flex-col gap-6">
+                    <div className="relative z-10 flex flex-col gap-4 sm:gap-6">
                         <div className="min-w-0">
                             <h2 className="text-xl font-black tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-2xl">
                                 Find the right tool before you lose momentum.
                             </h2>
-                            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+                            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-600 dark:text-zinc-400 hidden sm:block">
                                 Search by task, file type, or outcome. The page now behaves less like a directory and more like a student workspace.
                             </p>
                         </div>
-                        <div className="relative w-full">
+                        <motion.div
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+                            className="relative w-full group/search"
+                        >
                             <label htmlFor="tools-search" className="sr-only">Search student tools</label>
-                            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" aria-hidden="true" />
+                            <svg className="absolute left-3.5 top-0 bottom-0 my-auto w-4 h-4 text-zinc-400 z-10 transition-colors duration-200 group-focus-within/search:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
                             <input
                                 id="tools-search"
-                                type="search"
+                                type="text"
                                 value={searchQuery}
                                 onChange={(event) => setSearchQuery(event.target.value)}
-                                placeholder="Try “APA”, “compress”, “essay”..."
-                                className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/80 pl-11 pr-11 text-sm font-semibold text-zinc-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-zinc-800 dark:bg-zinc-950/70 dark:text-zinc-100 dark:focus:border-blue-500"
+                                placeholder='Try "APA", "compress", "essay"...'
+                                className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/80 pl-11 pr-12 py-2 text-sm font-semibold text-zinc-900 placeholder-zinc-400 outline-none transition-all duration-300 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-zinc-800 dark:bg-zinc-950/70 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-blue-500 dark:focus:ring-blue-500/10"
                             />
-                            {searchQuery && (
-                                <button
-                                    type="button"
-                                    onClick={() => setSearchQuery('')}
-                                    className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-200 hover:text-zinc-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
-                                    aria-label="Clear tool search"
-                                >
-                                    <X className="h-4 w-4" aria-hidden="true" />
-                                </button>
-                            )}
-                        </div>
+                            <div className="absolute right-[2px] sm:right-3 top-0 bottom-0 flex items-center z-10">
+                                <AnimatePresence mode="wait">
+                                    {isSearching && searchQuery ? (
+                                        <motion.div
+                                            key="spinner"
+                                            initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                            exit={{ opacity: 0, scale: 0.8, rotate: 90 }}
+                                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                            className="w-6 h-6 flex items-center justify-center"
+                                        >
+                                            <svg className="w-4 h-4 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                            </svg>
+                                        </motion.div>
+                                    ) : searchQuery ? (
+                                        <motion.button
+                                            key="close"
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.8 }}
+                                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                            whileHover={{ scale: 1.15 }}
+                                            whileTap={{ scale: 0.9 }}
+                                            onClick={() => setSearchQuery('')}
+                                            aria-label="Clear tool search"
+                                            className="relative w-6 h-6 p-0 rounded-full flex items-center justify-center flex-shrink-0 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors duration-200"
+                                        >
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                                <path d="M18 6L6 18M6 6l12 12" />
+                                            </svg>
+                                        </motion.button>
+                                    ) : null}
+                                </AnimatePresence>
+                            </div>
+                        </motion.div>
 
                         {/* Premium Category Filter Tabs with Sliding Indicator */}
                         <CategoryTabs
@@ -714,7 +758,7 @@ const ToolsContent: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+                <div className="flex gap-3 overflow-x-auto [scrollbar-width:none] sm:grid sm:grid-cols-3 xl:grid-cols-1">
                     {recommendedTools.map((tool, index) => (
                         <motion.button
                             key={tool.id}
@@ -727,7 +771,7 @@ const ToolsContent: React.FC = () => {
                                     setActiveCategory(tool.category);
                                 }
                             }}
-                            className="group relative flex w-full items-center gap-4 overflow-hidden rounded-[20px] border border-zinc-200/70 bg-white p-4 text-left shadow-sm transition-[border-color] duration-300 ease-out hover:border-blue-200/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-800/70 dark:bg-zinc-900 dark:hover:border-blue-800/50 dark:focus-visible:ring-offset-zinc-950 sm:p-5"
+                            className="group relative flex min-w-[260px] shrink-0 sm:min-w-0 sm:shrink items-center gap-4 overflow-hidden rounded-[20px] border border-zinc-200/70 bg-white p-3.5 text-left shadow-sm transition-[border-color] duration-300 ease-out hover:border-blue-200/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-800/70 dark:bg-zinc-900 dark:hover:border-blue-800/50 dark:focus-visible:ring-offset-zinc-950 sm:p-5"
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             whileHover={{
@@ -757,7 +801,7 @@ const ToolsContent: React.FC = () => {
 
                             {/* Text */}
                             <span className="relative min-w-0 flex-1">
-                                <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-[0.16em] text-blue-500 dark:text-blue-400/70">
+                                <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-[0.16em] text-blue-500 dark:text-blue-400/70 hidden sm:block">
                                     Step {index + 1}
                                 </span>
                                 <span className="block truncate text-[15px] font-bold leading-snug text-zinc-900 dark:text-zinc-100">

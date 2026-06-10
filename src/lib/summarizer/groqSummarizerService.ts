@@ -96,7 +96,8 @@ Your task is to summarize the user's text accurately. ${lengthPrompts[length]}
 IMPORTANT RULES:
 - Output ONLY the summary content. Do NOT say "Here is your summary:" or introduce your output.
 - Maintain the original languages. If the text is in Taglish or Tagalog, summarize it in fluent Taglish/Tagalog.
-- Maintain academic precision and keep important names, statistics, and dates intact.`,
+- Maintain academic precision and keep important names, statistics, and dates intact.
+- CRITICAL: If the input text is gibberish, a random assortment of characters (e.g. "Aowopdsp"), too short, or lacks any coherent meaning, you MUST reply with exactly this phrase and nothing else: [UNRECOGNIZABLE_TEXT]`,
                     },
                     {
                         role: 'user',

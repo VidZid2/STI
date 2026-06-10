@@ -101,7 +101,8 @@ IMPORTANT RULES:
 - Do NOT add quotes, explanations, or introductions
 - Maintain the original language
 - Keep proper nouns, names, numbers unchanged
-- Preserve paragraph structure`,
+- Preserve paragraph structure
+- CRITICAL: If the input text is gibberish, a random assortment of characters (e.g. "Aowopdsp"), too short, or lacks any coherent meaning, you MUST reply with exactly this phrase and nothing else: [UNRECOGNIZABLE_TEXT]`,
                     },
                     {
                         role: 'user',

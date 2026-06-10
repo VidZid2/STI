@@ -200,7 +200,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                     animate={{
                                         padding: isMinimized 
                                             ? (isMobile ? '8px 12px' : '12px 16px') 
-                                            : (isMobile ? '16px' : '24px')
+                                            : (isMobile ? '12px 12px 2px 12px' : '24px')
                                     }}
                                     className="relative border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-t-[20px]"
                                 >
@@ -213,10 +213,10 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                                 y: 0,
                                                 padding: isMinimized 
                                                     ? (isMobile ? '8px 12px' : '12px 16px') 
-                                                    : (isMobile ? '16px' : '24px'),
+                                                    : (isMobile ? '12px' : '24px'),
                                                 gap: isMinimized 
                                                     ? (isMobile ? '12px' : '16px') 
-                                                    : (isMobile ? '16px' : '24px')
+                                                    : (isMobile ? '12px' : '24px')
                                             }}
                                             transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
                                             className="flex-1 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[20px] sm:rounded-[24px] flex items-center group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 text-left"
@@ -227,9 +227,9 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
 
                                             <motion.div
                                                 animate={{
-                                                    width: isMinimized ? (isMobile ? 32 : 40) : (isMobile ? 48 : 64),
-                                                    height: isMinimized ? (isMobile ? 32 : 40) : (isMobile ? 48 : 64),
-                                                    borderRadius: isMinimized ? (isMobile ? 10 : 12) : (isMobile ? 16 : 20)
+                                                    width: isMinimized ? (isMobile ? 32 : 40) : (isMobile ? 40 : 64),
+                                                    height: isMinimized ? (isMobile ? 32 : 40) : (isMobile ? 40 : 64),
+                                                    borderRadius: isMinimized ? (isMobile ? 10 : 12) : (isMobile ? 12 : 20)
                                                 }}
                                                 whileHover={{ scale: 1.05, rotate: -5 }}
                                                 transition={{ type: 'spring', stiffness: 400, damping: 15 }}
@@ -246,13 +246,13 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                             <div className="relative z-10 flex-1 min-w-0 pr-2 sm:pr-4">
                                                 <motion.h2 
                                                     id="submit-modal-title"
-                                                    animate={{ fontSize: isMinimized ? (isMobile ? '15px' : '16px') : (isMobile ? '20px' : '26px') }}
+                                                    animate={{ fontSize: isMinimized ? (isMobile ? '15px' : '16px') : (isMobile ? '17px' : '26px') }}
                                                     className="font-bold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-0.5 sm:mb-1 truncate"
                                                 >
                                                     Submit Assignment
                                                 </motion.h2>
                                                 <motion.p 
-                                                    animate={{ fontSize: isMinimized ? (isMobile ? '11px' : '12px') : (isMobile ? '13px' : '14.5px') }}
+                                                    animate={{ fontSize: isMinimized ? (isMobile ? '11px' : '12px') : (isMobile ? '12px' : '14.5px') }}
                                                     className="text-zinc-600 dark:text-zinc-400 leading-relaxed m-0 truncate"
                                                 >
                                                     {task.title}
@@ -279,7 +279,7 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                 {/* Submission Content */}
                                 <div 
                                     onScroll={handleScroll}
-                                    style={{ padding: '20px 24px', flex: 1, overflowY: 'auto' }}
+                                    style={{ padding: isMobile ? '16px' : '20px 24px', flex: 1, overflowY: 'auto' }}
                                 >
                                     <div style={{ marginBottom: '16px', marginTop: '4px' }}>
                                         <h3 style={{
@@ -376,10 +376,10 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                     animate={{
                                         padding: isMinimized 
                                             ? (isMobile ? '8px 12px 12px' : '12px 16px 16px') 
-                                            : (isMobile ? '12px 16px 16px' : '16px 24px 24px'),
+                                            : (isMobile ? '8px 12px 12px' : '16px 24px 24px'),
                                         gap: isMinimized
                                             ? (isMobile ? '12px' : '16px')
-                                            : (isMobile ? '16px' : '20px')
+                                            : (isMobile ? '10px' : '20px')
                                     }}
                                     style={{
                                     display: 'flex', width: '100%', gap: '16px',
@@ -388,10 +388,10 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                         animate={{
                                             padding: isMinimized 
                                                 ? (isMobile ? '8px 12px' : '10px 16px') 
-                                                : (isMobile ? '10px 16px' : '12px 16px'),
+                                                : (isMobile ? '8px 14px' : '12px 16px'),
                                             fontSize: isMinimized 
                                                 ? (isMobile ? '12px' : '13px') 
-                                                : (isMobile ? '13px' : '14px')
+                                                : (isMobile ? '12px' : '14px')
                                         }}
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
@@ -409,10 +409,10 @@ const SubmitModal: React.FC<SubmitModalProps> = ({ task, onClose, onSubmitSucces
                                         animate={{
                                             padding: isMinimized 
                                                 ? (isMobile ? '8px 12px' : '10px 16px') 
-                                                : (isMobile ? '10px 16px' : '12px 16px'),
+                                                : (isMobile ? '8px 14px' : '12px 16px'),
                                             fontSize: isMinimized 
                                                 ? (isMobile ? '12px' : '13px') 
-                                                : (isMobile ? '13px' : '14px')
+                                                : (isMobile ? '12px' : '14px')
                                         }}
                                         whileHover={!isSubmitting && (submissionText.trim() || submissionFiles.length > 0)
                                             ? { scale: 1.02 } : {}}

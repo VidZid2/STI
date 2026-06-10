@@ -154,7 +154,7 @@ export const TextSummarizerEmpty: React.FC<EmptyStateProps> = ({ onAction }) => 
         <AlignLeft className="w-12 h-12 text-blue-500 dark:text-blue-400" />
       </div>
       <motion.div
-        className="absolute top-0 right-0 w-8 h-8 rounded-full bg-blue-200 dark:bg-blue-700 flex items-center justify-center text-xs font-bold text-blue-700 dark:text-blue-200"
+        className="absolute -top-2 -right-4 px-2.5 py-1 rounded-full bg-blue-200 dark:bg-blue-700 flex items-center justify-center text-[10px] font-black tracking-widest text-blue-800 dark:text-blue-100 uppercase"
         animate={{ y: [0, -4, 0] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
