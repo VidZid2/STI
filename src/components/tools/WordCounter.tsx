@@ -74,7 +74,7 @@ Whether you're writing an essay, blog post, or academic paper, this tool helps e
 const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) => {
   const [text, setText] = useState(initialText);
   const [isTyping, setIsTyping] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
+
   const [showCliches, setShowCliches] = useState(false);
   const [showActiveVoiceTips, setShowActiveVoiceTips] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -93,7 +93,6 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
     initialData,
     hasSavedSession,
     lastSavedAt,
-    clearSavedSession,
   } = useToolSession('word-counter', currentSession, {
     emptySession: EMPTY_WORDCOUNTER_SESSION,
     shouldPersist: shouldPersistWordCounterSession,
@@ -109,10 +108,6 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
   const handleRestoreSaved = () => {
     if (!shouldPersistWordCounterSession(initialData)) return;
     setText(initialData.text);
-  };
-
-  const handleClearSaved = () => {
-    clearSavedSession();
   };
 
   // Calculate comprehensive statistics
@@ -335,8 +330,6 @@ const WordCounter: React.FC<WordCounterProps> = ({ onBack, initialText = "" }) =
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
       console.error('Failed to copy text:', err);
     }

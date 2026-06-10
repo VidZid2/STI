@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { Save, FileText, FileSpreadsheet, AlertCircle, History, ChevronDown, Copy, BookOpen } from "lucide-react";
+import { Save, FileText, FileSpreadsheet, AlertCircle, ChevronDown, Copy, BookOpen } from "lucide-react";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
@@ -61,7 +61,6 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
     hasSavedSession,
     lastSavedAt,
     sessionHistory,
-    clearSavedSession,
     clearSessionHistory,
     saveImmediately,
     saveSnapshot,
@@ -226,10 +225,6 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
     setSummary(session.summary);
     setSummaryLength(session.summaryLength);
     saveImmediately(session);
-  };
-
-  const handleClearSaved = () => {
-    clearSavedSession();
   };
 
   const inputWordCount = getWordCount(inputText);
