@@ -89,6 +89,38 @@ const emptyCitationSession: CitationGeneratorSession = {
     autoFillInput: '',
 };
 
+// Reusable Floating label input field component (defined outside CitationGenerator to prevent focus loss on re-render)
+const FloatingInput = ({
+    label,
+    value,
+    onChange,
+}: {
+    label: string;
+    value: string;
+    onChange: (val: string) => void;
+}) => {
+    const id = React.useId();
+    return (
+        <div className="relative w-full">
+            <input
+                id={id}
+                type="text"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder=" "
+                autoComplete="off"
+                className="peer w-full rounded-[1rem] border-[1.5px] border-zinc-300 bg-transparent p-4 text-base text-zinc-900 outline-none transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-blue-600 dark:border-zinc-700 dark:text-zinc-100 dark:focus:border-blue-500"
+            />
+            <label
+                htmlFor={id}
+                className="pointer-events-none absolute left-[15px] top-0 origin-left -translate-y-1/2 scale-[0.8] bg-white px-1 text-zinc-500 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] peer-placeholder-shown:translate-y-[1rem] peer-placeholder-shown:scale-100 peer-placeholder-shown:bg-transparent peer-placeholder-shown:px-0 peer-focus:-translate-y-1/2 peer-focus:scale-[0.8] peer-focus:bg-white peer-focus:px-1 peer-focus:text-blue-600 dark:bg-zinc-900 dark:text-zinc-400 dark:peer-focus:bg-zinc-900 dark:peer-focus:text-blue-400 dark:peer-placeholder-shown:bg-transparent"
+            >
+                {label}
+            </label>
+        </div>
+    );
+};
+
 const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
     const [citationStyle, setCitationStyle] = useState<CitationStyle>('APA');
     const [sourceType, setSourceType] = useState<SourceType>('book');
@@ -510,38 +542,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
         });
     };
 
-    // Reusable Floating label input field component
-    const FloatingInput = ({
-        label,
-        value,
-        onChange,
-    }: {
-        label: string;
-        value: string;
-        onChange: (val: string) => void;
-    }) => {
-        const id = React.useId();
-        return (
-            <div className="relative w-full">
-                <input
-                    id={id}
-                    type="text"
-                    required
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder=" "
-                    autoComplete="off"
-                    className="peer w-full rounded-[1rem] border-[1.5px] border-zinc-300 bg-transparent p-4 text-base text-zinc-900 outline-none transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-yellow-500 dark:border-zinc-700 dark:text-zinc-100 dark:focus:border-yellow-500"
-                />
-                <label
-                    htmlFor={id}
-                    className="pointer-events-none absolute left-[15px] top-0 origin-left translate-y-[1rem] scale-100 text-zinc-500 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] peer-valid:-translate-y-1/2 peer-valid:scale-[0.8] peer-valid:bg-[#fafafa] peer-valid:px-1.5 peer-focus:-translate-y-1/2 peer-focus:scale-[0.8] peer-focus:bg-[#fafafa] peer-focus:px-1.5 peer-focus:text-yellow-600 dark:text-zinc-400 dark:peer-valid:bg-[#141415] dark:peer-focus:bg-[#141415] dark:peer-focus:text-yellow-400"
-                >
-                    {label}
-                </label>
-            </div>
-        );
-    };
 
     if (isPageLoading) {
         return (
