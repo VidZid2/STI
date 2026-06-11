@@ -639,8 +639,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                 aria-label="Citation generator overview"
             >
                 <div className="mt-[72px] sm:mt-0 flex flex-row justify-between items-center gap-4 p-4 sm:p-5 px-5 sm:px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
-                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-yellow-500/5 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
-                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-yellow-500/5 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
                     
                     {/* Title Area */}
                     <motion.div
@@ -736,8 +734,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 className={`group/step flex items-center gap-4 rounded-[24px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-sm transition-all duration-300 hover:shadow-md relative overflow-hidden ${item.borderHover}`}
                             >
                                 {/* SaaS Background Accents */}
-                                <div className="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-2xl pointer-events-none transition-transform duration-700 group-hover/step:scale-150" aria-hidden="true" />
-                                <div className="absolute bottom-0 left-0 -ml-12 -mb-12 w-24 h-24 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-2xl pointer-events-none transition-transform duration-700 group-hover/step:scale-150" aria-hidden="true" />
                                 
                                 <motion.div 
                                     whileHover={{ scale: 1.1, rotate: -5 }}
@@ -769,7 +765,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                 >
                     {/* Auto-Fill / Search Metadata Bar */}
                     <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
-                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-56 h-56 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
                         <div className="mb-6 flex items-start justify-between relative z-10">
                             <div className="flex items-center gap-5">
                                 <motion.div
@@ -840,7 +835,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
 
                     {/* Citation Style Selector */}
                     <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
-                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-56 h-56 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
                         <div className="flex items-center gap-5 mb-6 relative z-10">
                             <motion.div
                                 className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
@@ -880,7 +874,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
 
                     {/* Source Type Selector */}
                     <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
-                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-56 h-56 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
                         <div className="flex items-center gap-5 mb-6 relative z-10">
                             <motion.div
                                 className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
@@ -904,13 +897,13 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                     onClick={() => setSourceType(type)}
                                     className={`flex items-center gap-3 rounded-2xl border p-4 text-left transition-all shadow-sm ${
                                         sourceType === type
-                                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'
+                                            ? 'border-yellow-500 bg-yellow-50 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-300'
                                             : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700'
                                     }`}
                                 >
                                     <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
                                         sourceType === type
-                                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                            ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300'
                                             : 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500'
                                     }`}>
                                         <Icon className="h-5 w-5" aria-hidden="true" />
@@ -926,7 +919,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
 
                     {/* Source Details Form Fields */}
                     <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
-                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-56 h-56 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
                         <div className="flex items-center gap-5 mb-6 relative z-10">
                             <motion.div
                                 className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
@@ -1025,8 +1017,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50"
                 >
                     {/* SaaS Background Accents */}
-                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
-                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
 
                     {/* Left: Icon & Core Info */}
                     <div className="flex items-center gap-5 relative z-10 w-full mb-6">
@@ -1094,8 +1084,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50"
                 >
                     {/* SaaS Background Accents */}
-                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
-                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
 
                     {/* Left: Icon & Core Info */}
                     <div className="flex items-center gap-5 relative z-10 w-full mb-6">
@@ -1217,8 +1205,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50"
                 >
                     {/* SaaS Background Accents */}
-                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
-                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
 
                     {/* Left: Icon & Core Info */}
                     <div className="flex items-center gap-5 relative z-10 w-full mb-6">
