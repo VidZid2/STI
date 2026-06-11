@@ -637,7 +637,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                 className="flex flex-col gap-6"
                 aria-label="Citation generator overview"
             >
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-5 px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
+                <div className="mt-[72px] sm:mt-0 flex flex-row justify-between items-center gap-4 p-4 sm:p-5 px-5 sm:px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
                     <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-yellow-500/5 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
                     <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-yellow-500/5 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
                     
@@ -681,7 +681,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                             <motion.button
                                 layout
                                 onClick={onBack}
-                                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                                className="flex items-center gap-1 sm:gap-1.5 px-3 py-2 sm:px-4 sm:py-2 text-[13px] sm:text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-[14px] hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap"
                                 whileHover={{ y: -1 }}
                                 whileTap={{ scale: 0.97 }}
                                 transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
@@ -691,39 +691,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                     <polyline points="12 19 5 12 12 5" />
                                 </svg>
                                 Back
-                            </motion.button>
-                            <motion.div layout transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }} className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block" />
-
-                            <AnimatePresence mode="popLayout">
-                                {hasSavedSession && (
-                                    <motion.button
-                                        layout
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 0.8 }}
-                                        onClick={restoreSavedCitationSession}
-                                        className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
-                                        whileHover={{ y: -1 }}
-                                        whileTap={{ scale: 0.97 }}
-                                        transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-                                    >
-                                        Restore
-                                    </motion.button>
-                                )}
-                            </AnimatePresence>
-
-                            <motion.button
-                                layout
-                                onClick={handleClear}
-                                disabled={!hasClearableWork}
-                                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                whileHover={{ y: -1 }}
-                                whileTap={{ scale: 0.97 }}
-                                transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-                                title="Clear Workspace"
-                            >
-                                <Trash2 className="w-4 h-4 sm:hidden" strokeWidth={2.5} />
-                                <span className="hidden sm:inline">Clear</span>
                             </motion.button>
                         </LayoutGroup>
                     </motion.div>
@@ -801,17 +768,32 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     {/* Auto-Fill / Search Metadata Bar */}
                     <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
                         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-56 h-56 bg-yellow-500/10 dark:bg-yellow-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
-                        <div className="mb-6 flex items-center gap-5 relative z-10">
-                            <motion.div
-                                className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
-                                whileHover={{ scale: 1.05, rotate: -5 }}
-                            >
-                                <Zap className="w-8 h-8" strokeWidth={2} />
-                            </motion.div>
-                            <div>
-                                <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Quick Capture</h2>
-                                <p className="text-[15px] text-zinc-500 dark:text-zinc-400 mt-1">Paste a source and let the form start for you.</p>
+                        <div className="mb-6 flex items-start justify-between relative z-10">
+                            <div className="flex items-center gap-5">
+                                <motion.div
+                                    className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
+                                    whileHover={{ scale: 1.05, rotate: -5 }}
+                                >
+                                    <Zap className="w-8 h-8" strokeWidth={2} />
+                                </motion.div>
+                                <div>
+                                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Quick Capture</h2>
+                                    <p className="text-[15px] text-zinc-500 dark:text-zinc-400 mt-1">Paste a source and let the form start for you.</p>
+                                </div>
                             </div>
+                            
+                            <motion.button
+                                layout
+                                onClick={handleClear}
+                                disabled={!hasClearableWork}
+                                className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-[#fff0f0] hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-500 dark:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                                whileHover={{ y: -1 }}
+                                whileTap={{ scale: 0.97 }}
+                                transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
+                                title="Clear Workspace"
+                            >
+                                <Trash2 className="w-[18px] h-[18px]" strokeWidth={2.5} />
+                            </motion.button>
                         </div>
                         <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center relative z-10">
                         <div className="flex-1 relative">
