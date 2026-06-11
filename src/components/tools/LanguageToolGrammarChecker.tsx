@@ -398,7 +398,7 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                 <ToolHeaderBadge
                   icon={Save}
                   label={lastSavedAt ? `Saved ${formatToolSessionTime(lastSavedAt)}` : 'Auto-save ready'}
-                  tone="blue"
+                  tone="emerald"
                   hideOnSmall
                 />
               </div>
@@ -620,6 +620,7 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
         summary={`${issues.length} ${issues.length === 1 ? 'issue' : 'issues'}, ${qualityScore}/100 score`}
         actionLabel="Open grammar insights"
         className="w-full h-full lg:w-[340px] xl:w-[380px] shrink-0 flex flex-col gap-6"
+        tone="emerald"
       >
         
         {/* Quality Score - Premium Container */}

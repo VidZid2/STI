@@ -16,6 +16,7 @@ import {
 } from '../../../../../services/goalsService';
 import { COURSES_DATA } from '../../../../../services/pathsService';
 import { GoalTypeIcons, PriorityIcons } from '../shared';
+import { UiverseSwitch } from '../../../../../components/ui/UiverseSwitch';
 
 type NewGoalData = Omit<Goal, 'id' | 'student_id' | 'created_at' | 'updated_at'>;
 
@@ -1060,27 +1061,9 @@ const CreateGoalModal: React.FC<{
                                         <div style={{ fontSize: '10px', color: colors.textMuted }}>Get notified about your progress</div>
                                     </div>
                                 </div>
-                                <label 
-                                    className="settings-switch" 
-                                    onClick={(e) => e.stopPropagation()}
-                                    style={{ flexShrink: 0 }}
-                                >
-                                    <input 
-                                        type="checkbox" 
-                                        checked={reminder} 
-                                        onChange={() => setReminder(!reminder)}
-                                    />
-                                    <div className="settings-slider">
-                                        <div className="settings-circle">
-                                            <svg className="settings-cross" viewBox="0 0 365.696 365.696" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill="currentColor" d="M243.188 182.86 356.32 69.726c12.5-12.5 12.5-32.766 0-45.247L341.238 9.398c-12.504-12.503-32.77-12.503-45.25 0L182.86 122.528 69.727 9.374c-12.5-12.5-32.766-12.5-45.247 0L9.375 24.457c-12.5 12.504-12.5 32.77 0 45.25l113.152 113.152L9.398 295.99c-12.503 12.503-12.503 32.769 0 45.25L24.48 356.32c12.5 12.5 32.766 12.5 45.247 0l113.132-113.132L295.99 356.32c12.503 12.5 32.769 12.5 45.25 0l15.081-15.082c12.5-12.504 12.5-32.77 0-45.25zm0 0" />
-                                            </svg>
-                                            <svg className="settings-checkmark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" d="M4 12l5 5L20 6" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </label>
+                                <div style={{ flexShrink: 0, transform: 'scale(0.85)', transformOrigin: 'right' }}>
+                                    <UiverseSwitch checked={reminder} onChange={(checked) => setReminder(checked)} />
+                                </div>
                             </div>
 
                             {/* Tip Section */}

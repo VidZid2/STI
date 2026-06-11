@@ -26,6 +26,7 @@ import { CitationGeneratorEmpty } from "./empty-states";
 interface CitationGeneratorProps {
     onBack: () => void;
     initialText?: string;
+    onGoToReferenceManager?: () => void;
 }
 
 type CitationStyle = 'APA' | 'MLA' | 'Chicago';
@@ -109,11 +110,11 @@ const FloatingInput = ({
                 onChange={(e) => onChange(e.target.value)}
                 placeholder=" "
                 autoComplete="off"
-                className="peer w-full rounded-[1rem] border-[1.5px] border-zinc-300 bg-transparent p-4 text-base text-zinc-900 outline-none transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-blue-600 dark:border-zinc-700 dark:text-zinc-100 dark:focus:border-blue-500"
+                className="peer w-full rounded-[1rem] border-[1.5px] border-zinc-300 bg-transparent p-4 text-base text-zinc-900 outline-none transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-violet-500 dark:border-zinc-700 dark:text-zinc-100 dark:focus:border-violet-500"
             />
             <label
                 htmlFor={id}
-                className="pointer-events-none absolute left-[15px] top-0 origin-left -translate-y-1/2 scale-[0.8] bg-white px-1 text-zinc-500 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] peer-placeholder-shown:translate-y-[1rem] peer-placeholder-shown:scale-100 peer-placeholder-shown:bg-transparent peer-placeholder-shown:px-0 peer-focus:-translate-y-1/2 peer-focus:scale-[0.8] peer-focus:bg-white peer-focus:px-1 peer-focus:text-blue-600 dark:bg-zinc-900 dark:text-zinc-400 dark:peer-focus:bg-zinc-900 dark:peer-focus:text-blue-400 dark:peer-placeholder-shown:bg-transparent"
+                className="pointer-events-none absolute left-[15px] top-0 origin-left -translate-y-1/2 scale-[0.8] bg-white px-1 text-zinc-500 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] peer-placeholder-shown:translate-y-[1rem] peer-placeholder-shown:scale-100 peer-placeholder-shown:bg-transparent peer-placeholder-shown:px-0 peer-focus:-translate-y-1/2 peer-focus:scale-[0.8] peer-focus:bg-white peer-focus:px-1 peer-focus:text-violet-600 dark:bg-zinc-900 dark:text-zinc-400 dark:peer-focus:bg-zinc-900 dark:peer-focus:text-violet-400 dark:peer-placeholder-shown:bg-transparent"
             >
                 {label}
             </label>
@@ -121,7 +122,7 @@ const FloatingInput = ({
     );
 };
 
-const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
+const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToReferenceManager }) => {
     const [citationStyle, setCitationStyle] = useState<CitationStyle>('APA');
     const [sourceType, setSourceType] = useState<SourceType>('book');
     const [citationData, setCitationData] = useState<CitationData>(createEmptyCitationData());
@@ -639,7 +640,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                 className="flex flex-col gap-6"
                 aria-label="Citation generator overview"
             >
-                <div className="mt-[72px] sm:mt-0 flex flex-row justify-between items-center gap-4 p-4 sm:p-5 px-5 sm:px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
+                <div className="mt-[72px] sm:mt-0 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 sm:p-5 px-5 sm:px-6 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50">
                     
                     {/* Title Area */}
                     <motion.div
@@ -649,7 +650,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                     >
                         <motion.div
-                            className="flex items-center justify-center w-12 h-12 rounded-[16px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 border border-yellow-100 dark:border-yellow-800/50"
+                            className="flex items-center justify-center w-12 h-12 rounded-[16px] bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-800/50"
                             whileHover={{ scale: 1.05, rotate: -5 }}
                         >
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -660,11 +661,11 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                         <div className="flex flex-col">
                             <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Citation Manager</h1>
                             <div className="mt-1 flex flex-wrap items-center gap-2">
-                                <ToolHeaderBadge icon={Sparkles} label="Citation workspace" tone="amber" />
+                                <ToolHeaderBadge icon={Sparkles} label="Citation workspace" tone="violet" />
                                 <ToolHeaderBadge
                                     icon={Save}
                                     label={hasSavedSession ? `Saved ${formatToolSessionTime(lastSavedAt)}` : 'Auto-save ready'}
-                                    tone="emerald"
+                                    tone="violet"
                                     hideOnSmall
                                 />
                             </div>
@@ -673,16 +674,32 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
 
                     {/* Action Buttons */}
                     <motion.div
-                        className="flex flex-nowrap items-center gap-1.5 sm:gap-2 w-auto shrink-0 relative z-10 overflow-x-auto [scrollbar-width:none]"
+                        className="flex flex-wrap items-center gap-1.5 sm:gap-2 w-full sm:w-auto relative z-10"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.3 }}
                     >
                         <LayoutGroup>
+                            {onGoToReferenceManager && (
+                                <motion.button
+                                    layout
+                                    onClick={onGoToReferenceManager}
+                                    className="flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 text-[13px] sm:text-sm font-bold text-violet-700 bg-violet-50 dark:text-violet-300 dark:bg-violet-950/30 rounded-xl hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors shadow-sm whitespace-nowrap w-full sm:w-auto"
+                                    whileHover={{ y: -1 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                    </svg>
+                                    Reference Library
+                                </motion.button>
+                            )}
                             <motion.button
                                 layout
                                 onClick={onBack}
-                                className="flex items-center gap-1 sm:gap-1.5 px-3 py-2 sm:px-4 sm:py-2 text-[13px] sm:text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-[14px] hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap"
+                                className="flex items-center justify-center gap-1 sm:gap-1.5 px-3 py-2 sm:px-4 sm:py-2 text-[13px] sm:text-sm font-bold text-zinc-700 bg-zinc-100 dark:text-zinc-300 dark:bg-zinc-800/50 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap w-full sm:w-auto"
                                 whileHover={{ y: -1 }}
                                 whileTap={{ scale: 0.97 }}
                                 transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
@@ -704,27 +721,27 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                             title: 'Find metadata', 
                             detail: 'URL, ISBN, or manual input', 
                             icon: Search,
-                            borderHover: 'hover:border-yellow-300 dark:hover:border-yellow-700/50',
-                            textHover: 'group-hover/step:text-yellow-600 dark:group-hover/step:text-yellow-400',
-                            iconStyle: 'bg-yellow-50 border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+                            borderHover: 'hover:border-violet-300 dark:hover:border-violet-700/50',
+                            textHover: 'group-hover/step:text-violet-600 dark:group-hover/step:text-violet-400',
+                            iconStyle: 'bg-violet-50 border-violet-100 dark:bg-violet-500/10 dark:border-violet-500/20 text-violet-600 dark:text-violet-400'
                         },
                         { 
                             label: 'Step 2', 
                             title: `${citationStyle} + ${sourceType}`, 
                             detail: 'Choose style and source', 
                             icon: BookMarked,
-                            borderHover: 'hover:border-yellow-300 dark:hover:border-yellow-700/50',
-                            textHover: 'group-hover/step:text-yellow-600 dark:group-hover/step:text-yellow-400',
-                            iconStyle: 'bg-yellow-50 border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+                            borderHover: 'hover:border-violet-300 dark:hover:border-violet-700/50',
+                            textHover: 'group-hover/step:text-violet-600 dark:group-hover/step:text-violet-400',
+                            iconStyle: 'bg-violet-50 border-violet-100 dark:bg-violet-500/10 dark:border-violet-500/20 text-violet-600 dark:text-violet-400'
                         },
                         { 
                             label: 'Step 3', 
                             title: `${completenessScore}/100 complete`, 
                             detail: generatedCitation ? 'Ready to copy or save' : 'Fill required fields', 
                             icon: ClipboardCheck,
-                            borderHover: 'hover:border-yellow-300 dark:hover:border-yellow-700/50',
-                            textHover: 'group-hover/step:text-yellow-600 dark:group-hover/step:text-yellow-400',
-                            iconStyle: 'bg-yellow-50 border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+                            borderHover: 'hover:border-violet-300 dark:hover:border-violet-700/50',
+                            textHover: 'group-hover/step:text-violet-600 dark:group-hover/step:text-violet-400',
+                            iconStyle: 'bg-violet-50 border-violet-100 dark:bg-violet-500/10 dark:border-violet-500/20 text-violet-600 dark:text-violet-400'
                         },
                     ].map((item) => {
                         const Icon = item.icon;
@@ -765,11 +782,11 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     transition={{ duration: 0.4, delay: 0.1 }}
                 >
                     {/* Auto-Fill / Search Metadata Bar */}
-                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
+                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50">
                         <div className="mb-6 flex items-start justify-between relative z-10">
                             <div className="flex items-center gap-5">
                                 <motion.div
-                                    className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
+                                    className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 shadow-sm border border-violet-100 dark:border-violet-800/50 shrink-0"
                                     whileHover={{ scale: 1.05, rotate: -5 }}
                                 >
                                     <Zap className="w-8 h-8" strokeWidth={2} />
@@ -800,7 +817,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 value={autoFillInput}
                                 onChange={(e) => setAutoFillInput(e.target.value)}
                                 placeholder="Paste website URL or book ISBN to auto-fill..."
-                                className="h-12 w-full rounded-2xl border border-zinc-200 bg-white px-4 pl-11 text-[15px] font-semibold text-zinc-900 outline-none transition-all placeholder:text-zinc-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+                                className="h-12 w-full rounded-2xl border border-zinc-200 bg-white px-4 pl-11 text-[15px] font-semibold text-zinc-900 outline-none transition-all placeholder:text-zinc-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-500"
                                 disabled={isAutoFilling}
                             />
                             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" aria-hidden="true" />
@@ -809,8 +826,8 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                             layout
                             onClick={handleAutoFill}
                             disabled={isAutoFilling || !autoFillInput.trim()}
-                            className="flex h-12 shrink-0 items-center justify-center gap-1.5 px-5 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                            whileHover={{ y: -1, boxShadow: '0 8px 20px rgba(37, 99, 235, 0.35)' }}
+                            className="flex h-12 shrink-0 items-center justify-center gap-1.5 px-5 text-sm font-bold text-white bg-violet-600 rounded-xl hover:bg-violet-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                            whileHover={{ y: -1, boxShadow: '0 8px 20px rgba(124, 58, 237, 0.35)' }}
                             whileTap={{ scale: 0.97 }}
                             transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
                         >
@@ -835,10 +852,10 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     </div>
 
                     {/* Citation Style Selector */}
-                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
+                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50">
                         <div className="flex items-center gap-5 mb-6 relative z-10">
                             <motion.div
-                                className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
+                                className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 shadow-sm border border-violet-100 dark:border-violet-800/50 shrink-0"
                                 whileHover={{ scale: 1.05, rotate: -5 }}
                             >
                                 <Type className="w-8 h-8" strokeWidth={2} />
@@ -855,14 +872,14 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                     onClick={() => setCitationStyle(style)}
                                     className={`relative z-10 flex-1 rounded-xl py-3.5 text-center text-[15px] font-black transition-colors ${
                                         citationStyle === style 
-                                            ? 'text-yellow-700 dark:text-yellow-300' 
+                                            ? 'text-violet-700 dark:text-violet-300' 
                                             : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                                     }`}
                                 >
                                     {citationStyle === style && (
                                         <motion.div
                                             layoutId="activeStyleTab"
-                                            className="absolute inset-0 rounded-xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100/50 dark:border-yellow-800/50 shadow-sm"
+                                            className="absolute inset-0 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-100/50 dark:border-violet-800/50 shadow-sm"
                                             transition={{ type: "spring", stiffness: 380, damping: 30 }}
                                             style={{ zIndex: -1 }}
                                         />
@@ -874,10 +891,10 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     </div>
 
                     {/* Source Type Selector */}
-                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
+                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50">
                         <div className="flex items-center gap-5 mb-6 relative z-10">
                             <motion.div
-                                className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
+                                className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 shadow-sm border border-violet-100 dark:border-violet-800/50 shrink-0"
                                 whileHover={{ scale: 1.05, rotate: -5 }}
                             >
                                 <Layers className="w-8 h-8" strokeWidth={2} />
@@ -898,13 +915,13 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                     onClick={() => setSourceType(type)}
                                     className={`flex items-center gap-3 rounded-2xl border p-4 text-left transition-all shadow-sm ${
                                         sourceType === type
-                                            ? 'border-yellow-500 bg-yellow-50 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-300'
+                                            ? 'border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300'
                                             : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700'
                                     }`}
                                 >
                                     <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
                                         sourceType === type
-                                            ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300'
+                                            ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300'
                                             : 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500'
                                     }`}>
                                         <Icon className="h-5 w-5" aria-hidden="true" />
@@ -919,10 +936,10 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     </div>
 
                     {/* Source Details Form Fields */}
-                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50">
+                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50">
                         <div className="flex items-center gap-5 mb-6 relative z-10">
                             <motion.div
-                                className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 shadow-sm border border-yellow-100 dark:border-yellow-800/50 shrink-0"
+                                className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 shadow-sm border border-violet-100 dark:border-violet-800/50 shrink-0"
                                 whileHover={{ scale: 1.05, rotate: -5 }}
                             >
                                 <FileText className="w-8 h-8" strokeWidth={2} />
@@ -1009,13 +1026,14 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                 summary={generatedCitation ? `${completenessScore}/100 complete` : 'Preview, save, and citation tips'}
                 actionLabel="Open citation output"
                 className="w-full lg:w-[340px] xl:w-[380px] shrink-0 flex flex-col gap-6 lg:sticky lg:top-8"
+                tone="violet"
             >
                 {/* Completeness Score Circular Indicator */}
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-                    className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50"
+                    className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50"
                 >
                     {/* SaaS Background Accents */}
 
@@ -1024,9 +1042,9 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                         <motion.div
                             whileHover={{ scale: 1.05, rotate: -5 }}
                             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                            className="w-16 h-16 rounded-[20px] bg-yellow-50 border border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
+                            className="w-16 h-16 rounded-[20px] bg-violet-50 border border-violet-100 dark:bg-violet-500/10 dark:border-violet-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
                         >
-                            <ClipboardCheck className="w-7 h-7 text-yellow-600 dark:text-yellow-400" strokeWidth={2.5} />
+                            <ClipboardCheck className="w-7 h-7 text-violet-600 dark:text-violet-400" strokeWidth={2.5} />
                         </motion.div>
 
                         <div>
@@ -1042,7 +1060,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     {/* Right: Modern Stat Cards */}
                     <div className="flex items-center gap-4 relative z-10 w-full">
                         {/* Score Card combining both text and ring */}
-                        <div className="flex flex-1 items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 shadow-sm transition-colors hover:border-blue-300 dark:hover:border-blue-700 group/card">
+                        <div className="flex flex-1 items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 shadow-sm transition-colors hover:border-violet-300 dark:hover:border-violet-700/50 group/card">
                             {/* The Ring acts as the icon! */}
                             <div className="w-10 h-10 flex-shrink-0 relative flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 shadow-sm border border-zinc-200/50 dark:border-zinc-700/50">
                                 <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 36 36">
@@ -1053,7 +1071,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                             completenessScore === 100 
                                                 ? 'text-emerald-500' 
                                                 : completenessScore >= 50 
-                                                    ? 'text-blue-500' 
+                                                    ? 'text-violet-500' 
                                                     : 'text-zinc-300 dark:text-zinc-700'
                                         }`}
                                         strokeWidth="4" 
@@ -1067,7 +1085,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                             </div>
                             
                             <div>
-                                <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 group-hover/card:text-blue-600 dark:group-hover/card:text-blue-400 transition-colors">Score</p>
+                                <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 group-hover/card:text-violet-600 dark:group-hover/card:text-violet-400 transition-colors">Score</p>
                                 <div className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none flex items-baseline gap-1">
                                     <NumberTicker value={completenessScore} className="tracking-tight" />
                                     <span className="text-xs font-semibold text-zinc-500">/ 100</span>
@@ -1082,7 +1100,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
-                    className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50"
+                    className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50"
                 >
                     {/* SaaS Background Accents */}
 
@@ -1091,9 +1109,9 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                         <motion.div
                             whileHover={{ scale: 1.05, rotate: -5 }}
                             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                            className="w-16 h-16 rounded-[20px] bg-yellow-50 border border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
+                            className="w-16 h-16 rounded-[20px] bg-violet-50 border border-violet-100 dark:bg-violet-500/10 dark:border-violet-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
                         >
-                            <ClipboardCheck className="w-7 h-7 text-yellow-600 dark:text-yellow-400" strokeWidth={2.5} />
+                            <ClipboardCheck className="w-7 h-7 text-violet-600 dark:text-violet-400" strokeWidth={2.5} />
                         </motion.div>
 
                         <div>
@@ -1115,9 +1133,9 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 className="flex flex-col gap-4 relative z-10"
                             >
-                                <div className="relative overflow-hidden rounded-2xl border border-yellow-200/60 bg-gradient-to-br from-yellow-50/80 to-white p-5 sm:p-6 font-serif text-[15px] sm:text-[16px] leading-relaxed text-zinc-800 shadow-sm dark:border-yellow-900/30 dark:from-yellow-900/10 dark:to-zinc-900 dark:text-zinc-200">
+                                <div className="relative overflow-hidden rounded-2xl border border-violet-200/60 bg-gradient-to-br from-violet-50/80 to-white p-5 sm:p-6 font-serif text-[15px] sm:text-[16px] leading-relaxed text-zinc-800 shadow-sm dark:border-violet-900/30 dark:from-violet-900/10 dark:to-zinc-900 dark:text-zinc-200">
                                     {/* Left Accent Bar */}
-                                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-yellow-400 dark:bg-yellow-500" />
+                                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-violet-400 dark:bg-violet-500" />
                                     
                                     <div className="relative z-10 pl-2">
                                         {formatCitation(generatedCitation)}
@@ -1158,7 +1176,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                         className={`w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 text-[13px] font-bold rounded-[14px] transition-colors shadow-sm focus:outline-none ${
                                             copied
                                                 ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-700 dark:bg-emerald-900/50 dark:hover:bg-emerald-900/70 dark:text-emerald-400'
-                                                : 'bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:hover:bg-yellow-900/70 text-yellow-700 dark:text-yellow-300'
+                                                : 'bg-violet-100 hover:bg-violet-200 dark:bg-violet-900/50 dark:hover:bg-violet-900/70 text-violet-700 dark:text-violet-300'
                                         }`}
                                     >
                                         {copied ? (
@@ -1202,7 +1220,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.2 }}
-                    className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-yellow-200/80 dark:hover:border-yellow-800/50"
+                    className="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-6 lg:p-7 flex flex-col gap-2 group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50"
                 >
                     {/* SaaS Background Accents */}
 
@@ -1211,9 +1229,9 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                         <motion.div
                             whileHover={{ scale: 1.05, rotate: -5 }}
                             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                            className="w-16 h-16 rounded-[20px] bg-yellow-50 border border-yellow-100 dark:bg-yellow-500/10 dark:border-yellow-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
+                            className="w-16 h-16 rounded-[20px] bg-violet-50 border border-violet-100 dark:bg-violet-500/10 dark:border-violet-500/20 flex items-center justify-center flex-shrink-0 shadow-sm"
                         >
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-yellow-600 dark:text-yellow-400">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-violet-600 dark:text-violet-400">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="12" y1="16" x2="12" y2="12" />
                                 <line x1="12" y1="8" x2="12.01" y2="8" />
@@ -1235,9 +1253,9 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                             {
                                 title: "Author Formatting",
                                 text: "Separate multiple authors with commas.",
-                                borderHover: "hover:border-amber-300 dark:hover:border-amber-700/50",
-                                textHover: "group-hover/tip:text-amber-600 dark:group-hover/tip:text-amber-400",
-                                iconStyle: "bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-600 dark:text-amber-400",
+                                borderHover: "hover:border-violet-300 dark:hover:border-violet-700/50",
+                                textHover: "group-hover/tip:text-violet-600 dark:group-hover/tip:text-violet-400",
+                                iconStyle: "bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 text-violet-600 dark:text-violet-400",
                                 icon: (
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
@@ -1309,7 +1327,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                         className="fixed bottom-20 inset-x-4 z-[90] sm:hidden flex items-center justify-between p-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md rounded-[20px] border border-zinc-200/60 dark:border-zinc-800/60"
                     >
                         <div className="flex items-center gap-3">
-                            <div className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 shrink-0">
+                            <div className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 shrink-0">
                                 <Save className="w-[18px] h-[18px]" />
                             </div>
                             <div className="flex flex-col">
@@ -1326,7 +1344,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                             </button>
                             <button
                                 onClick={restoreSavedCitationSession}
-                                className="px-4 h-10 flex items-center justify-center text-[13px] font-bold text-white bg-yellow-600 hover:bg-yellow-700 rounded-[14px] shadow-sm hover:scale-105 active:scale-95 transition-all"
+                                className="px-4 h-10 flex items-center justify-center text-[13px] font-bold text-white bg-violet-600 hover:bg-violet-700 rounded-[14px] shadow-sm hover:scale-105 active:scale-95 transition-all"
                             >
                                 Restore
                             </button>

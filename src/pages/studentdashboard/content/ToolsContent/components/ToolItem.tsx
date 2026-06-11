@@ -821,7 +821,7 @@ const ToolItem: React.FC<{
                                                 animate={{ opacity: 1, scale: 1, rotate: 0 }}
                                                 exit={{ opacity: 0, scale: 0.5, rotate: 90 }}
                                                 transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
-                                                className="absolute right-5 top-5 z-20 rounded-xl border border-zinc-200 bg-white/80 p-2 text-zinc-500 shadow-sm transition-colors hover:bg-white dark:border-zinc-700 dark:bg-zinc-800/70 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                                                className="absolute right-5 top-5 z-20 flex items-center justify-center rounded-xl border border-zinc-200 bg-white/80 p-2 text-zinc-500 shadow-sm transition-colors hover:bg-white dark:border-zinc-700 dark:bg-zinc-800/70 dark:text-zinc-300 dark:hover:bg-zinc-700"
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.97 }}
                                                 aria-label={`Close ${tool.name} tutorial`}

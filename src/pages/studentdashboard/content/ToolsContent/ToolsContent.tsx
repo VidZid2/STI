@@ -46,7 +46,7 @@ interface Tool {
     accept: string;
     multiple: boolean;
     badges?: string[];
-    accent?: 'blue' | 'emerald' | 'violet' | 'amber' | 'rose' | 'cyan';
+    accent?: 'blue' | 'emerald' | 'violet' | 'violet' | 'rose' | 'cyan';
     recommended?: boolean;
     linkTo?: string;
     onClick?: () => void; // Custom click handler for dedicated pages
@@ -101,6 +101,7 @@ const ToolsContent: React.FC = () => {
     const [showTextSummarizer, setShowTextSummarizer] = useState(false);
     // Reference Manager dedicated page state
     const [showReferenceManager, setShowReferenceManager] = useState(false);
+    const [refReferrer, setRefReferrer] = useState<'dashboard' | 'citation'>('dashboard');
     // Paraphraser dedicated page state
     const [showParaphraser, setShowParaphraser] = useState(false);
     // Plagiarism Checker dedicated page state
@@ -198,7 +199,18 @@ const ToolsContent: React.FC = () => {
 
     // If Citation Generator is active, show dedicated page
     if (showCitationGenerator) {
-        return <div className={isDarkMode ? 'dark' : ''}><CitationGenerator onBack={() => setShowCitationGenerator(false)} /></div>;
+        return (
+            <div className={isDarkMode ? 'dark' : ''}>
+                <CitationGenerator 
+                    onBack={() => setShowCitationGenerator(false)} 
+                    onGoToReferenceManager={() => {
+                        setRefReferrer('citation');
+                        setShowCitationGenerator(false);
+                        setShowReferenceManager(true);
+                    }}
+                />
+            </div>
+        );
     }
 
     // If Text Summarizer is active, show dedicated page
@@ -208,7 +220,18 @@ const ToolsContent: React.FC = () => {
 
     // If Reference Manager is active, show dedicated page
     if (showReferenceManager) {
-        return <div className={isDarkMode ? 'dark' : ''}><ReferenceManager onBack={() => setShowReferenceManager(false)} /></div>;
+        return (
+            <div className={isDarkMode ? 'dark' : ''}>
+                <ReferenceManager 
+                    onBack={() => {
+                        setShowReferenceManager(false);
+                        if (refReferrer === 'citation') {
+                            setShowCitationGenerator(true);
+                        }
+                    }} 
+                />
+            </div>
+        );
     }
 
     // If Paraphraser is active, show dedicated page
@@ -542,7 +565,7 @@ const ToolsContent: React.FC = () => {
             accept: '',
             multiple: false,
             badges: ['Auto-save', 'APA/MLA', 'Export'],
-            accent: 'amber',
+            accent: 'violet',
             onClick: () => setShowCitationGenerator(true), // Opens dedicated page
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -581,7 +604,10 @@ const ToolsContent: React.FC = () => {
             multiple: false,
             badges: ['Auto-save', 'Saved library', 'Export'],
             accent: 'violet',
-            onClick: () => setShowReferenceManager(true), // Opens dedicated page
+            onClick: () => {
+                setRefReferrer('dashboard');
+                setShowReferenceManager(true);
+            }, // Opens dedicated page
             icon: (
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
@@ -711,7 +737,7 @@ const ToolsContent: React.FC = () => {
                                 placeholder='Try "APA", "compress", "essay"...'
                                 className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/80 pl-11 pr-12 py-2 text-sm font-semibold text-zinc-900 placeholder-zinc-400 outline-none transition-all duration-300 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-zinc-800 dark:bg-zinc-950/70 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-blue-500 dark:focus:ring-blue-500/10"
                             />
-                            <div className="absolute right-[2px] sm:right-3 top-0 bottom-0 flex items-center z-10">
+                            <div className="absolute right-2 sm:right-3 top-0 bottom-0 flex items-center z-10">
                                 <AnimatePresence mode="wait">
                                     {isSearching && searchQuery ? (
                                         <motion.div
@@ -740,7 +766,7 @@ const ToolsContent: React.FC = () => {
                                             aria-label="Clear tool search"
                                             className="relative w-6 h-6 p-0 rounded-full flex items-center justify-center flex-shrink-0 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors duration-200"
                                         >
-                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                                                 <path d="M18 6L6 18M6 6l12 12" />
                                             </svg>
                                         </motion.button>

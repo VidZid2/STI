@@ -9,3 +9,4 @@ export { default as GettingStartedModal } from './GettingStartedModal';
 export { default as HelpCenterModal } from './HelpCenterModal';
 export { default as KeyboardShortcutsModal } from './KeyboardShortcutsModal';
 export { default as VideoTutorialsModal } from './VideoTutorialsModal';
+export { default as LevelJourneyModal } from './LevelJourneyModal';

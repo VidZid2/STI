@@ -8,6 +8,7 @@ interface ToolMobileSheetProps {
     actionLabel?: string;
     className: string;
     children: ReactNode;
+    tone?: "blue" | "emerald" | "violet" | "amber" | "rose" | "zinc" | "cyan";
 }
 
 const ToolMobileSheet: React.FC<ToolMobileSheetProps> = ({
@@ -16,6 +17,7 @@ const ToolMobileSheet: React.FC<ToolMobileSheetProps> = ({
     actionLabel = "Open insights",
     className,
     children,
+    tone = "blue",
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
@@ -139,7 +141,15 @@ const ToolMobileSheet: React.FC<ToolMobileSheetProps> = ({
                     aria-controls={isOpen ? titleId : undefined}
                 >
                     <span className="flex min-w-0 items-center gap-3">
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300">
+                        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${
+                            tone === "emerald" ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300" :
+                            tone === "amber" ? "bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300" :
+                            tone === "violet" ? "bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300" :
+                            tone === "rose" ? "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300" :
+                            tone === "zinc" ? "bg-zinc-50 text-zinc-600 dark:bg-zinc-950/40 dark:text-zinc-300" :
+                            tone === "cyan" ? "bg-cyan-50 text-cyan-600 dark:bg-cyan-950/40 dark:text-cyan-300" :
+                            "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300"
+                        }`}>
                             <PanelBottomOpen className="h-5 w-5" />
                         </span>
                         <span className="min-w-0">

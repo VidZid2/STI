@@ -474,7 +474,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                             <ToolHeaderBadge
                                 icon={Save}
                                 label={lastSavedAt ? `Saved ${formatToolSessionTime(lastSavedAt)}` : 'Auto-save ready'}
-                                tone="blue"
+                                tone="cyan"
                                 hideOnSmall
                             />
                         </div>
@@ -907,6 +907,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                     summary={resultSummary}
                     actionLabel="Open rewrite panel"
                     className="w-full h-full flex flex-col gap-3 sm:gap-4"
+                    tone="cyan"
                 >
                 <motion.div
                     className={`flex flex-col bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[24px] overflow-hidden min-h-[300px] lg:min-h-[400px] transition-all duration-300 relative group ${theme.hoverBorder} hover:shadow-md`}

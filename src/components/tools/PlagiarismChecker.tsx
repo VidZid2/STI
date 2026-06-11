@@ -429,7 +429,7 @@ const PlagiarismChecker: React.FC<PlagiarismCheckerProps> = ({ onBack }) => {
                                 <ToolHeaderBadge
                                     icon={Save}
                                     label={lastSavedAt ? `Saved ${formatToolSessionTime(lastSavedAt)}` : 'Auto-save ready'}
-                                    tone="blue"
+                                    tone="rose"
                                     hideOnSmall
                                 />
                             </div>
@@ -648,6 +648,7 @@ const PlagiarismChecker: React.FC<PlagiarismCheckerProps> = ({ onBack }) => {
                 summary={result ? `${result.uniqueScore}% unique, ${result.score}% similar` : `${wordCount} words ready`}
                 actionLabel="Open originality results"
                 className="w-full lg:w-[340px] xl:w-[380px] shrink-0 flex flex-col gap-6"
+                tone="rose"
             >
                 {/* Results Card */}
                 <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] shadow-sm p-6 lg:p-7 relative overflow-hidden flex-1 group transition-all duration-300 hover:shadow-md hover:border-red-200/80 dark:hover:border-red-800/50">

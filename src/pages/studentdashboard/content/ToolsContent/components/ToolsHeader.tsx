@@ -43,8 +43,8 @@ export const ToolsHeader: React.FC<ToolsHeaderProps> = ({ totalTools }) => {
             {/* Right: Modern Stat Cards */}
             <div className="flex items-center gap-3 md:gap-4 relative z-10 w-full md:w-auto">
                 {/* Available Tools Card */}
-                <div className="flex-1 md:flex-none flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:shadow-sm hover:border-blue-200 dark:hover:border-blue-800/50">
-                    <div className="text-blue-500 bg-blue-100 dark:bg-blue-900/30 p-2 md:p-2.5 rounded-lg md:rounded-xl flex-shrink-0 border border-blue-200/60 dark:border-blue-800/50">
+                <div className="flex-1 md:flex-none flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-white dark:bg-zinc-800/80 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 group">
+                    <div className="text-blue-500 bg-blue-50 dark:bg-blue-900/30 p-2 md:p-2.5 rounded-lg md:rounded-xl flex-shrink-0 border border-blue-100 dark:border-blue-800/50 transition-colors group-hover:bg-blue-100">
                         <Zap className="w-4 h-4 md:w-5 md:h-5 text-blue-600 dark:text-blue-400" strokeWidth={2} />
                     </div>
                     <div>
@@ -54,8 +54,8 @@ export const ToolsHeader: React.FC<ToolsHeaderProps> = ({ totalTools }) => {
                 </div>
 
                 {/* Privacy Card */}
-                <div className="flex-1 md:flex-none flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 transition-colors hover:shadow-sm hover:border-emerald-200 dark:hover:border-emerald-800/50">
-                    <div className="text-emerald-500 bg-emerald-100 dark:bg-emerald-900/30 p-2 md:p-2.5 rounded-lg md:rounded-xl flex-shrink-0 border border-emerald-200/60 dark:border-emerald-800/50">
+                <div className="flex-1 md:flex-none flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-white dark:bg-zinc-800/80 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-emerald-200/80 dark:hover:border-emerald-800/50 group">
+                    <div className="text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-2 md:p-2.5 rounded-lg md:rounded-xl flex-shrink-0 border border-emerald-100 dark:border-emerald-800/50 transition-colors group-hover:bg-emerald-100">
                         <ShieldCheck className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
                     </div>
                     <div>

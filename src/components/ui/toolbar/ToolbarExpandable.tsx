@@ -1,10 +1,10 @@
 'use client';
 
 import { useRef, useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import useMeasure from 'react-use-measure';
 import { AnimatePresence, motion, MotionConfig } from 'motion/react';
 import { cn } from '@/lib/utils';
-import useClickOutside from '@/hooks/useClickOutside';
 import { useNotifications, type Notification as SharedNotification, type NotificationCategory } from '@/contexts/NotificationContext';
 import { ViewerCounter } from '../misc/ViewerCounter';
 // MorphingDialog removed - mail is now inside the toolbar
@@ -1239,6 +1239,7 @@ export default function ToolbarExpandable() {
     const [contentRef, { height: heightContent }] = useMeasure();
     const [menuRef, { width: widthContainer }] = useMeasure();
     const ref = useRef<HTMLDivElement>(null!);
+    const dropdownRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const isDarkMode = useDarkMode();
 
@@ -1272,10 +1273,25 @@ export default function ToolbarExpandable() {
         return visitCount >= 10;
     });
 
-    useClickOutside(ref, () => {
-        setIsOpen(false);
-        setActive(null);
-    });
+    // Custom click-outside that checks both the toolbar buttons AND the portaled dropdown
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+            const target = event.target as Node;
+            // If click is inside the toolbar buttons, ignore
+            if (ref.current && ref.current.contains(target)) return;
+            // If click is inside the portaled dropdown, ignore
+            if (dropdownRef.current && dropdownRef.current.contains(target)) return;
+            // Otherwise close
+            setIsOpen(false);
+            setActive(null);
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, []);
 
     // Dismiss search hint permanently when user clicks search
     const dismissSearchHint = useCallback(() => {
@@ -1528,21 +1544,26 @@ export default function ToolbarExpandable() {
 
     return (
         <MotionConfig transition={transition}>
-            {/* Mobile/Tablet Backdrop Overlay */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={closePanel}
-                        className={cn(
-                            'fixed inset-0 z-40 block sm:hidden',
-                            isDarkMode ? 'bg-slate-900/60 backdrop-blur-[2px]' : 'bg-black/20 backdrop-blur-[2px]'
-                        )}
-                    />
-                )}
-            </AnimatePresence>
+            {/* Mobile/Tablet Backdrop Overlay - portaled to body so it blurs everything including the dock */}
+            {createPortal(
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            onClick={closePanel}
+                            className={cn(
+                                'fixed inset-0 block sm:hidden',
+                                isDarkMode ? 'bg-slate-900/50 backdrop-blur-sm' : 'bg-black/25 backdrop-blur-sm'
+                            )}
+                            style={{ zIndex: 999 }}
+                        />
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
 
             <div className='flex items-center gap-3 relative z-50'>
                 {/* Viewer Counter */}
@@ -1588,57 +1609,62 @@ export default function ToolbarExpandable() {
                     </div>
 
                     {/* Dropdown content below - responsive positioning */}
-                    <AnimatePresence initial={false} mode='sync'>
-                        {isOpen ? (
-                            <motion.div
-                                key='dropdown'
-                                initial={{ height: 0, width: widthContainer || 150 }}
-                                animate={{
-                                    height: heightContent || 0,
-                                    width: Math.max(widthContainer || 150, 320)
-                                }}
-                                exit={{ height: 0, width: widthContainer || 150 }}
-                                className={cn(
-                                    'overflow-hidden rounded-xl border',
-                                    // Mobile: fixed, centered horizontally
-                                    'fixed left-1/2 -translate-x-1/2 top-[60px] w-[calc(100vw-2rem)] max-w-[400px]',
-                                    // Desktop: absolute, left-aligned below buttons
-                                    'sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:translate-x-0 sm:w-auto sm:max-w-none',
-                                    isDarkMode
-                                        ? 'border-slate-700/60 bg-slate-800 shadow-[0_12px_40px_rgba(0,0,0,0.4)]'
-                                        : 'border-black/[0.08] bg-white shadow-[0_12px_40px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.04)]'
-                                )}
-                                style={{
-                                    originY: 0,
-                                    zIndex: 9999,
-                                }}
-                            >
-                                <div ref={contentRef} className='p-4'>
-                                    {ITEMS.map((item) => {
-                                        const isSelected = active === item.id;
+                    {/* Portaled to body so it renders above the backdrop overlay on mobile */}
+                    {createPortal(
+                        <AnimatePresence initial={false} mode='sync'>
+                            {isOpen ? (
+                                <motion.div
+                                    key='dropdown'
+                                    initial={{ height: 0, width: widthContainer || 150 }}
+                                    animate={{
+                                        height: heightContent || 0,
+                                        width: Math.max(widthContainer || 150, 320)
+                                    }}
+                                    exit={{ height: 0, width: widthContainer || 150 }}
+                                    className={cn(
+                                        'overflow-hidden rounded-xl border',
+                                        // Mobile: fixed, centered horizontally
+                                        'fixed left-1/2 -translate-x-1/2 top-[60px] w-[calc(100vw-2rem)] max-w-[400px]',
+                                        // Desktop: absolute, left-aligned below buttons
+                                        'sm:fixed sm:left-auto sm:right-4 sm:top-[60px] sm:translate-x-0 sm:w-auto sm:max-w-none',
+                                        isDarkMode
+                                            ? 'border-slate-700/60 bg-slate-800 shadow-[0_12px_40px_rgba(0,0,0,0.4)]'
+                                            : 'border-black/[0.08] bg-white shadow-[0_12px_40px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.04)]'
+                                    )}
+                                    ref={dropdownRef}
+                                    style={{
+                                        originY: 0,
+                                        zIndex: 9999,
+                                    }}
+                                >
+                                    <div ref={contentRef} className='p-4'>
+                                        {ITEMS.map((item) => {
+                                            const isSelected = active === item.id;
 
-                                        return (
-                                            <motion.div
-                                                key={item.id}
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: isSelected ? 1 : 0 }}
-                                                exit={{ opacity: 0 }}
-                                            >
-                                                <div
-                                                    className={cn(
-                                                        'text-sm',
-                                                        isSelected ? 'block' : 'hidden'
-                                                    )}
+                                            return (
+                                                <motion.div
+                                                    key={item.id}
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: isSelected ? 1 : 0 }}
+                                                    exit={{ opacity: 0 }}
                                                 >
-                                                    {item.content}
-                                                </div>
-                                            </motion.div>
-                                        );
-                                    })}
-                                </div>
-                            </motion.div>
-                        ) : null}
-                    </AnimatePresence>
+                                                    <div
+                                                        className={cn(
+                                                            'text-sm',
+                                                            isSelected ? 'block' : 'hidden'
+                                                        )}
+                                                    >
+                                                        {item.content}
+                                                    </div>
+                                                </motion.div>
+                                            );
+                                        })}
+                                    </div>
+                                </motion.div>
+                            ) : null}
+                        </AnimatePresence>,
+                        document.body
+                    )}
                 </div>
             </div>
         </MotionConfig>
