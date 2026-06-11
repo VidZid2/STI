@@ -13,7 +13,7 @@
 import * as React from "react";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { Save, BarChart3, Trash2, Copy } from "lucide-react";
+import { Save, Download, Trash2, Copy } from "lucide-react";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
@@ -658,7 +658,7 @@ ${text}`;
                           className="flex items-center justify-center w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none"
                           title="Export Stats"
                       >
-                          <BarChart3 className="w-[18px] h-[18px] shrink-0" />
+                          <Download className="w-[18px] h-[18px] shrink-0" />
                       </button>
 
                       {hasSavedSession && (
@@ -726,7 +726,7 @@ ${text}`;
                   onClick={handleExportStats}
                   className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none"
               >
-                  <BarChart3 className="w-[18px] h-[18px] shrink-0" />
+                  <Download className="w-[18px] h-[18px] shrink-0" />
               </button>
 
               <button
@@ -1171,7 +1171,7 @@ ${text}`;
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="fixed bottom-24 inset-x-4 z-[90] sm:hidden flex items-center justify-between p-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-white/5 border border-zinc-200/60 dark:border-zinc-800/60"
+                  className="fixed bottom-20 inset-x-4 z-[90] sm:hidden flex items-center justify-between p-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md rounded-[20px] border border-zinc-200/60 dark:border-zinc-800/60"
               >
                   <div className="flex items-center gap-3">
                       <div className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-cyan-50 dark:bg-cyan-900/20 text-cyan-600 dark:text-cyan-400 shrink-0">

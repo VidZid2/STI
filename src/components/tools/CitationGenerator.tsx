@@ -15,7 +15,7 @@
 import * as React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { BookMarked, BookOpen, Bookmark, CheckCircle2, ClipboardCheck, Globe2, Newspaper, Save, Search, Sparkles, Zap, Type, Layers, FileText, FileSpreadsheet } from "lucide-react";
+import { BookMarked, BookOpen, Bookmark, CheckCircle2, ClipboardCheck, Globe2, Newspaper, Save, Search, Sparkles, Zap, Type, Layers, FileText, FileSpreadsheet, Trash2 } from "lucide-react";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
@@ -670,12 +670,12 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                         </div>
                     </motion.div>
 
-                    {/* Actions */}
+                    {/* Action Buttons */}
                     <motion.div
-                        className="flex items-center gap-2 relative z-10 w-full sm:w-auto"
+                        className="flex flex-nowrap items-center gap-1.5 sm:gap-2 w-auto shrink-0 relative z-10 overflow-x-auto [scrollbar-width:none]"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: 0.1 }}
+                        transition={{ duration: 0.3 }}
                     >
                         <LayoutGroup>
                             <motion.button
@@ -692,7 +692,6 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 </svg>
                                 Back
                             </motion.button>
-
                             <motion.div layout transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }} className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 mx-2 hidden sm:block" />
 
                             <AnimatePresence mode="popLayout">
@@ -717,12 +716,14 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 layout
                                 onClick={handleClear}
                                 disabled={!hasClearableWork}
-                                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 whileHover={{ y: -1 }}
                                 whileTap={{ scale: 0.97 }}
                                 transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
+                                title="Clear Workspace"
                             >
-                                Clear
+                                <Trash2 className="w-4 h-4 sm:hidden" strokeWidth={2.5} />
+                                <span className="hidden sm:inline">Clear</span>
                             </motion.button>
                         </LayoutGroup>
                     </motion.div>
@@ -1327,6 +1328,43 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                 </motion.div>
             </ToolMobileSheet>
             </div>
+            
+            {/* Global Floating Restore Banner (Mobile) */}
+            <AnimatePresence>
+                {hasSavedSession && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="fixed bottom-20 inset-x-4 z-[90] sm:hidden flex items-center justify-between p-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md rounded-[20px] border border-zinc-200/60 dark:border-zinc-800/60"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shrink-0">
+                                <Save className="w-[18px] h-[18px]" />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[13px] font-bold text-zinc-900 dark:text-white leading-tight">Draft Saved</span>
+                                <span className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 leading-tight">Tap to recover</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                            <button
+                                onClick={clearSavedSession}
+                                className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-[#fff0f0] hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-500 dark:text-red-400 transition-colors"
+                            >
+                                <Trash2 className="w-[18px] h-[18px]" />
+                            </button>
+                            <button
+                                onClick={restoreSavedCitationSession}
+                                className="px-4 h-10 flex items-center justify-center text-[13px] font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-[14px] shadow-sm hover:scale-105 active:scale-95 transition-all"
+                            >
+                                Restore
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
         </motion.div>
     );
 };
