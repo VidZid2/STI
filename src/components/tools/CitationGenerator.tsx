@@ -1115,8 +1115,13 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 className="flex flex-col gap-4 relative z-10"
                             >
-                                <div className="rounded-2xl border border-zinc-200 border-l-4 border-l-violet-500 bg-zinc-50 p-4 font-serif text-[15px] leading-7 text-zinc-700 shadow-sm dark:border-zinc-700/80 dark:border-l-violet-500 dark:bg-zinc-800/50 dark:text-zinc-300">
-                                    {formatCitation(generatedCitation)}
+                                <div className="relative overflow-hidden rounded-2xl border border-yellow-200/60 bg-gradient-to-br from-yellow-50/80 to-white p-5 sm:p-6 font-serif text-[15px] sm:text-[16px] leading-relaxed text-zinc-800 shadow-sm dark:border-yellow-900/30 dark:from-yellow-900/10 dark:to-zinc-900 dark:text-zinc-200">
+                                    {/* Left Accent Bar */}
+                                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-yellow-400 dark:bg-yellow-500" />
+                                    
+                                    <div className="relative z-10 pl-2">
+                                        {formatCitation(generatedCitation)}
+                                    </div>
                                 </div>
                                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2.5 w-full pt-4 border-t border-zinc-200/60 dark:border-zinc-700/60 shrink-0">
                                     {/* Export DOCX Button */}
