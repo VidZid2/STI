@@ -1118,66 +1118,60 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                 <div className="rounded-2xl border border-zinc-200 border-l-4 border-l-violet-500 bg-zinc-50 p-4 font-serif text-[15px] leading-7 text-zinc-700 shadow-sm dark:border-zinc-700/80 dark:border-l-violet-500 dark:bg-zinc-800/50 dark:text-zinc-300">
                                     {formatCitation(generatedCitation)}
                                 </div>
-                                <div className="flex gap-2">
-                                    <motion.button
-                                        layout
-                                        onClick={handleCopy}
-                                        className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-bold rounded-xl transition-colors shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 ${
-                                            copied 
-                                                ? 'bg-emerald-500 text-white' 
-                                                : 'bg-violet-600 hover:bg-violet-700 text-white'
-                                        }`}
-                                        whileHover={copied ? undefined : { y: -1, boxShadow: '0 8px 20px rgba(124, 58, 237, 0.35)' }}
-                                        whileTap={{ scale: 0.97 }}
-                                        transition={{ layout: { type: "spring", bounce: 0.2, duration: 0.6 } }}
-                                    >
-                                        {copied ? (
-                                            <>
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <polyline points="20 6 9 17 4 12" />
-                                                </svg>
-                                                Copied!
-                                            </>
-                                        ) : (
-                                            <>
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                                                </svg>
-                                                Copy
-                                            </>
-                                        )}
-                                    </motion.button>
-
+                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2.5 w-full pt-4 border-t border-zinc-200/60 dark:border-zinc-700/60 shrink-0">
                                     {/* Export DOCX Button */}
-                                    <motion.button
+                                    <button
                                         onClick={() => exportBibliographyToDocx([{ citation: generatedCitation, format: citationStyle }], { title: 'Citation', style: citationStyle })}
-                                        className="flex items-center justify-center gap-1.5 px-4 py-3 text-sm font-bold rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
-                                        whileHover={{ y: -1 }}
-                                        whileTap={{ scale: 0.98 }}
+                                        className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 text-[13px] font-bold rounded-[14px] transition-colors shadow-sm focus:outline-none bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300"
                                         title="Export as Word document"
                                     >
-                                        <FileSpreadsheet className="h-4 w-4" />
-                                        .docx
-                                    </motion.button>
+                                        <FileSpreadsheet className="w-4 h-4 shrink-0" />
+                                        <span className="whitespace-nowrap tracking-tight">.docx</span>
+                                    </button>
 
-                                    <motion.button
+                                    {/* Save to Reference Button */}
+                                    <button
                                         onClick={handleSaveReference}
-                                        className={`px-4 py-3 text-sm font-bold rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 ${
+                                        className={`w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 text-[13px] font-bold rounded-[14px] transition-colors shadow-sm focus:outline-none ${
                                             savedToReference
-                                                ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-500 text-emerald-600 dark:text-emerald-400'
-                                                : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400'
+                                                : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
                                         }`}
-                                        whileHover={{ y: -1 }}
-                                        whileTap={{ scale: 0.98 }}
                                         title="Save to Reference Manager"
                                     >
                                         {savedToReference ? (
-                                            <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+                                            <CheckCircle2 className="w-4 h-4 shrink-0" />
                                         ) : (
-                                            <Bookmark className="h-4 w-4" aria-hidden="true" />
+                                            <Bookmark className="w-4 h-4 shrink-0" />
                                         )}
-                                    </motion.button>
+                                        <span className="whitespace-nowrap tracking-tight">{savedToReference ? 'Saved' : 'Save'}</span>
+                                    </button>
+
+                                    {/* Copy Button */}
+                                    <button
+                                        onClick={handleCopy}
+                                        className={`w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 text-[13px] font-bold rounded-[14px] transition-colors shadow-sm focus:outline-none ${
+                                            copied
+                                                ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-700 dark:bg-emerald-900/50 dark:hover:bg-emerald-900/70 dark:text-emerald-400'
+                                                : 'bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/50 dark:hover:bg-yellow-900/70 text-yellow-700 dark:text-yellow-300'
+                                        }`}
+                                    >
+                                        {copied ? (
+                                            <>
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                                                    <polyline points="20 6 9 17 4 12"/>
+                                                </svg>
+                                                <span className="whitespace-nowrap tracking-tight">Copied</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                                </svg>
+                                                <span className="whitespace-nowrap tracking-tight">Copy</span>
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
                             </motion.div>
                         ) : (
