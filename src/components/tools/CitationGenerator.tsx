@@ -665,6 +665,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                     icon={Save}
                                     label={hasSavedSession ? `Saved ${formatToolSessionTime(lastSavedAt)}` : 'Auto-save ready'}
                                     tone="emerald"
+                                    hideOnSmall
                                 />
                             </div>
                         </div>
