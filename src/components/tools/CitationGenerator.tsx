@@ -529,11 +529,12 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     placeholder=" "
-                    className="peer h-14 w-full rounded-2xl border border-zinc-200 bg-zinc-50/70 px-4 pt-5 pb-2 text-[15px] font-semibold text-zinc-900 outline-none transition-all placeholder-transparent focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-50 dark:focus:bg-zinc-900"
+                    autoComplete="off"
+                    className="peer w-full rounded-[1rem] border-[1.5px] border-zinc-300 bg-transparent p-4 text-base text-zinc-900 outline-none transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-blue-600 dark:border-zinc-700 dark:text-zinc-100 dark:focus:border-blue-500"
                 />
                 <label
                     htmlFor={id}
-                    className="pointer-events-none absolute left-4 top-1/2 origin-[0] -translate-y-1/2 text-sm font-bold text-zinc-400 transition-all duration-200 peer-focus:top-3 peer-focus:-translate-y-0 peer-focus:text-[11px] peer-focus:uppercase peer-focus:tracking-[0.14em] peer-focus:text-blue-600 peer-[:not(:placeholder-shown)]:top-3 peer-[:not(:placeholder-shown)]:-translate-y-0 peer-[:not(:placeholder-shown)]:text-[11px] peer-[:not(:placeholder-shown)]:uppercase peer-[:not(:placeholder-shown)]:tracking-[0.14em] dark:text-zinc-500 dark:peer-focus:text-blue-400"
+                    className="pointer-events-none absolute left-[15px] top-0 origin-left -translate-y-1/2 scale-[0.8] bg-white px-1 text-zinc-500 transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] peer-placeholder-shown:translate-y-[1rem] peer-placeholder-shown:scale-100 peer-placeholder-shown:bg-transparent peer-placeholder-shown:px-0 peer-focus:-translate-y-1/2 peer-focus:scale-[0.8] peer-focus:bg-white peer-focus:px-1 peer-focus:text-blue-600 dark:bg-zinc-900 dark:text-zinc-400 dark:peer-focus:bg-zinc-900 dark:peer-focus:text-blue-400 dark:peer-placeholder-shown:bg-transparent"
                 >
                     {label}
                 </label>
