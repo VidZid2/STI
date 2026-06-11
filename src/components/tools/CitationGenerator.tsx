@@ -854,14 +854,14 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                                     onClick={() => setCitationStyle(style)}
                                     className={`relative z-10 flex-1 rounded-xl py-3.5 text-center text-[15px] font-black transition-colors ${
                                         citationStyle === style 
-                                            ? 'text-violet-700 dark:text-violet-300' 
+                                            ? 'text-yellow-700 dark:text-yellow-300' 
                                             : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
                                     }`}
                                 >
                                     {citationStyle === style && (
                                         <motion.div
                                             layoutId="activeStyleTab"
-                                            className="absolute inset-0 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-100/50 dark:border-violet-800/50 shadow-sm"
+                                            className="absolute inset-0 rounded-xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100/50 dark:border-yellow-800/50 shadow-sm"
                                             transition={{ type: "spring", stiffness: 380, damping: 30 }}
                                             style={{ zIndex: -1 }}
                                         />
@@ -1309,7 +1309,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                         className="fixed bottom-20 inset-x-4 z-[90] sm:hidden flex items-center justify-between p-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md rounded-[20px] border border-zinc-200/60 dark:border-zinc-800/60"
                     >
                         <div className="flex items-center gap-3">
-                            <div className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shrink-0">
+                            <div className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 shrink-0">
                                 <Save className="w-[18px] h-[18px]" />
                             </div>
                             <div className="flex flex-col">
@@ -1326,7 +1326,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack }) => {
                             </button>
                             <button
                                 onClick={restoreSavedCitationSession}
-                                className="px-4 h-10 flex items-center justify-center text-[13px] font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-[14px] shadow-sm hover:scale-105 active:scale-95 transition-all"
+                                className="px-4 h-10 flex items-center justify-center text-[13px] font-bold text-white bg-yellow-600 hover:bg-yellow-700 rounded-[14px] shadow-sm hover:scale-105 active:scale-95 transition-all"
                             >
                                 Restore
                             </button>

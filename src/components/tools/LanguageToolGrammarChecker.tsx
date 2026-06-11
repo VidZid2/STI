@@ -872,7 +872,7 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                   className="fixed bottom-20 inset-x-4 z-[90] sm:hidden flex items-center justify-between p-3 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md rounded-[20px] border border-zinc-200/60 dark:border-zinc-800/60"
               >
                   <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shrink-0">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 shrink-0">
                           <Save className="w-[18px] h-[18px]" />
                       </div>
                       <div className="flex flex-col">
@@ -889,7 +889,7 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                       </button>
                       <button
                           onClick={handleRestoreSaved}
-                          className="px-4 h-10 flex items-center justify-center text-[13px] font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-[14px] shadow-sm hover:scale-105 active:scale-95 transition-all"
+                          className="px-4 h-10 flex items-center justify-center text-[13px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-[14px] shadow-sm hover:scale-105 active:scale-95 transition-all"
                       >
                           Restore
                       </button>
