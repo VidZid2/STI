@@ -14,8 +14,6 @@ import MaintenanceBanner from '../../components/shared/MaintenanceBanner';
 const ToolsContent = React.lazy(() => import('./content/ToolsContent'));
 const HomeContent = React.lazy(() => import('./content/HomeContent'));
 const PathsContent = React.lazy(() => import('./content/PathsContent'));
-import WidgetsToggleButton from '../../components/ui/misc/WidgetsToggleButton';
-
 
 
 
@@ -28,36 +26,19 @@ const CourseViewPage = React.lazy(() => import('./content/CourseViewPage'));
 
 // Context imports
 import { useNotifications } from '../../contexts/NotificationContext';
-import { useQuickViewSettings } from '../../contexts/QuickViewSettingsContext';
 
-// Service imports
-import { getCourseProgressData, formatMinutesToHours } from '../../services/studyTimeService';
-import { formatDaysUntil, getDeadlineTypeColor } from '../../services/deadlinesService';
-import { formatRelativeTime } from '../../services/activityService';
 
 // Extracted modules from local folder
 import { NotificationItem, GroupedNotification, DashboardIntro, DashboardTutorial, DashboardHeader, DashboardSidebar } from './components';
-import { WidgetSidebar } from './components/WidgetSidebar';
 import { DashboardSuspenseFallback } from './components/DashboardSuspenseFallback';
-import { getSidebarCoursesWithProgress, getTodaysQuote } from './utils';
+import { getSidebarCoursesWithProgress } from './utils';
 import { isDashboardView } from './types';
 import { ToolsSkeleton } from './content/ToolsContent/components/ToolsShared';
 
 // Custom hooks - extracted for cleaner code
 import {
     useDashboardState,
-    useDashboardData,
-    useWeather,
-    useTodos,
-    useWidgetVisibility,
-    useAchievements,
-    useGradePredictor,
-    useStudyInsights,
-    useCalendar,
     useKeyboardNavigation } from './hooks';
-
-// Widget components - available for future refactoring
-// import { QuoteWidget, WeatherWidget, ActivityWidget, QuickStatsCard } from './widgets';
 
 // ============================================================================
 // REFACTORED: State and logic extracted to ./DashboardPage/hooks
@@ -74,9 +55,6 @@ const DashboardPage: React.FC = () => {
         sidebarActive,
         setSidebarActive,
         toggleSidebar,
-        widgetsSidebarActive,
-        setWidgetsSidebarActive,
-        toggleWidgetsSidebar,
         settingsModalActive,
         openSettingsModal,
         closeSettingsModal,
@@ -164,74 +142,10 @@ const DashboardPage: React.FC = () => {
     const {
         toastNotifications,
         dismissToast,
-        clearAllToasts,
-        addNotification
+        clearAllToasts
     } = useNotifications();
 
-    // Quick View Settings - controls sidebar widget visibility and behavior
-    const { settings: quickViewSettings, refreshTrigger } = useQuickViewSettings();
-
-    // addNotification can be called to add new notifications dynamically
-    void addNotification; // Suppress unused warning - available for dynamic use
-
-    const closeToast = (id: string | number) => {
-        dismissToast(id as any);
-    };
-
-    // Widget visibility hook
-    const {
-        widgetVisibility,
-        toggleWidget,
-        restoreAllWidgets,
-        hasHiddenWidgets } = useWidgetVisibility();
-
-    // Dashboard data hook (deadlines, activities, progress)
-    const {
-        upcomingDeadlines,
-        recentActivities,
-        overallProgress,
-        totalCourses } = useDashboardData(refreshTrigger);
-
-    // Weather hook
-    const {
-        weather,
-        weatherLoading,
-        weatherError } = useWeather();
-
-    // Todos hook
-    const {
-        todos,
-        newTodoText,
-        setNewTodoText,
-        isAddingTodo,
-        setIsAddingTodo,
-        todoInputRef,
-        addTodo,
-        toggleTodo,
-        deleteTodo,
-        clearAllTodos,
-        completedCount } = useTodos();
-
-    // Achievements hook
-    const { achievements } = useAchievements(refreshTrigger);
-
-    // Grade predictor hook
-    const { gradePredictor } = useGradePredictor(refreshTrigger);
-
-    // Study insights hook
-    const { studyInsights } = useStudyInsights(refreshTrigger);
-
-    // Get today's quote from utils
-    const todaysQuote = getTodaysQuote();
-
-    // Calendar hook (for deadline highlighting)
-    const {
-        calendarView,
-        setCalendarView,
-        calendarMonth,
-        setCalendarMonth,
-        calendarData,
-        hasDeadlines } = useCalendar(upcomingDeadlines);
+    // Calendar hook removed; moved to HomeContent if needed
 
     // Duplicate code removed during refactoring
 
@@ -389,66 +303,7 @@ const DashboardPage: React.FC = () => {
 
 
 
-
-            {/* Floating Widgets Toggle Button - Always visible, outside AnimatePresence */}
-            <WidgetsToggleButton
-                isWidgetsSidebarActive={widgetsSidebarActive}
-                onToggle={toggleWidgetsSidebar}
-            />
-
-            {/* Widgets Sidebar — extracted to ./components/WidgetSidebar.tsx */}
-            <WidgetSidebar
-                widgetsSidebarActive={widgetsSidebarActive}
-                toggleWidgetsSidebar={toggleWidgetsSidebar}
-                widgetVisibility={widgetVisibility}
-                toggleWidget={toggleWidget}
-                restoreAllWidgets={restoreAllWidgets}
-                hasHiddenWidgets={hasHiddenWidgets}
-                isDemoMode={isDemoMode}
-                todos={todos}
-                newTodoText={newTodoText}
-                setNewTodoText={setNewTodoText}
-                isAddingTodo={isAddingTodo}
-                setIsAddingTodo={setIsAddingTodo}
-                todoInputRef={todoInputRef}
-                addTodo={addTodo}
-                toggleTodo={toggleTodo}
-                deleteTodo={deleteTodo}
-                clearAllTodos={clearAllTodos}
-                completedCount={completedCount}
-                weather={weather}
-                isWeatherLoading={weatherLoading}
-                deadlines={upcomingDeadlines}
-                recentActivity={recentActivities}
-                gradePredictor={gradePredictor}
-                studyInsights={studyInsights}
-                notifications={toastNotifications}
-                groupedNotifications={[]}
-                quickViewSettings={quickViewSettings}
-                achievements={achievements}
-                formatDaysUntil={formatDaysUntil}
-                getDeadlineTypeColor={getDeadlineTypeColor}
-                formatRelativeTime={formatRelativeTime}
-                getCourseProgressData={getCourseProgressData}
-                formatMinutesToHours={formatMinutesToHours}
-                refreshTrigger={refreshTrigger}
-                totalCourses={totalCourses}
-                upcomingDeadlines={upcomingDeadlines}
-                overallProgress={overallProgress}
-                openSettingsModal={openSettingsModal}
-                todaysQuote={todaysQuote}
-                weatherLoading={weatherLoading}
-                weatherError={weatherError}
-                recentActivities={recentActivities}
-                calendarData={calendarData}
-                calendarView={calendarView}
-                setCalendarView={setCalendarView}
-                calendarMonth={calendarMonth}
-                setCalendarMonth={setCalendarMonth}
-                hasDeadlines={hasDeadlines}
-            />
-
-            {/* AI Chatbot - Removed */}
+            {/* Dashboard sidebar and widgets removed for Bento layout */}
 
             <SettingsModal isOpen={settingsModalActive} onClose={closeSettingsModal} />
 
@@ -456,7 +311,6 @@ const DashboardPage: React.FC = () => {
             <DashboardTutorial
                 isOpen={tutorialActive}
                 onClose={closeTutorial}
-                onToggleWidgetsSidebar={(open) => setWidgetsSidebarActive(open)}
             />
             <Confetti active={showConfetti} />
 
@@ -498,7 +352,7 @@ const DashboardPage: React.FC = () => {
                                         message: notification.message,
                                         type: notification.type || 'assignment'
                                     }}
-                                    onClose={closeToast}
+                                    onClose={dismissToast}
                                 />
                             ))
                         )}
