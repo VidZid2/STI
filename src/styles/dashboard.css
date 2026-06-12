@@ -3039,6 +3039,10 @@ body.dark-mode .main-content {
         max-width: 360px;
     }
 
+    .widgets-sidebar .widgets-content {
+        padding: 0.75rem;
+    }
+
     .widgets-toggle-btn {
         left: -45px;
     }
@@ -3065,6 +3069,11 @@ body.dark-mode .main-content {
     .header {
         padding: 0 1rem;
         height: 60px;
+    }
+
+    .widgets-sidebar {
+        top: 60px;
+        height: calc(100vh - 60px);
     }
 
     .main-content {

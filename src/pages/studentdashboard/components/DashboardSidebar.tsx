@@ -104,6 +104,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
     const [isMobileDock, setIsMobileDock] = useState(false);
     const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
     const [isToolPanelOpen, setIsToolPanelOpen] = useState(false);
+    const [isWidgetsPanelOpen, setIsWidgetsPanelOpen] = useState(false);
 
     useEffect(() => {
         const query = window.matchMedia('(max-width: 768px)');
@@ -135,6 +136,19 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
             document.removeEventListener('toolpanel:close', handleToolPanelClose);
         };
     }, []);
+
+    // Listen for widgets panel open/close events
+    useEffect(() => {
+        const handleWidgetsPanelOpen = () => setIsWidgetsPanelOpen(true);
+        const handleWidgetsPanelClose = () => setIsWidgetsPanelOpen(false);
+
+        document.addEventListener('widgetspanel:open', handleWidgetsPanelOpen);
+        document.addEventListener('widgetspanel:close', handleWidgetsPanelClose);
+        return () => {
+            document.removeEventListener('widgetspanel:open', handleWidgetsPanelOpen);
+            document.removeEventListener('widgetspanel:close', handleWidgetsPanelClose);
+        };
+    }, []);
     
     // Auto-collapse sidebar if returning to desktop and it was left open? 
     // Usually it's better to preserve the explicit state from the user. We'll stick to `sidebarActive` logic
@@ -157,7 +171,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
     return (
         <motion.div 
             className={`sidebar-wrapper ${isExpanded ? 'expanded' : 'collapsed'} ${isMobileDock ? 'mobile-dock' : ''}`}
-            animate={isMobileDock && isToolPanelOpen ? { y: '100%', opacity: 0, pointerEvents: 'none' as const } : { y: 0, opacity: 1, pointerEvents: 'auto' as const }}
+            animate={isMobileDock && (isToolPanelOpen || isWidgetsPanelOpen) ? { y: '100%', opacity: 0, pointerEvents: 'none' as const } : { y: 0, opacity: 1, pointerEvents: 'auto' as const }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
             {/* Toggle Button — outside the sidebar, on the right border edge */}

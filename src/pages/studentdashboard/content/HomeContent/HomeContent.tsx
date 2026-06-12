@@ -6,30 +6,15 @@ import { COURSE_DATA } from '../CourseViewPage/data/demoCourses';
 import { getBookmarks, toggleBookmarkSync, getBookmarksSync } from '../../../../services/bookmarkService';
 import { getStreakData, type StreakData, getCurrentLevel, getXPProgress } from '../../../../services/studyTimeService';
 import { getProfile, getImages, getSettings } from '../../../../services/profileService';
+import GradualBlur from '../../../../components/ui/effects/GradualBlur';
+import { useWeather } from '../../hooks';
 
-// Extracted modules for dashboard widgets and data
-import {
-    useDashboardData,
-    useWeather,
-    useTodos,
-    useCalendar
-} from '../../hooks';
-
-import {
-    WeatherWidget,
-    ActivityWidget,
-    CalendarWidget,
-    TodoWidget,
-} from '../../widgets';
-
-import { formatDaysUntil, getDeadlineTypeColor } from '../../../../services/deadlinesService';
-import { formatRelativeTime } from '../../../../services/activityService';
-import { useQuickViewSettings } from '../../../../contexts/QuickViewSettingsContext';
 interface HomeContentProps {
     onShowWelcomeModal?: () => void;
+    quickViewSlot?: React.ReactNode;
 }
 
-const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
+const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickViewSlot }) => {
     const [isStatsExpanded, setIsStatsExpanded] = useState(false);
     const [isNewsExpanded, setIsNewsExpanded] = useState(false);
     const [currentCourseIndex, setCurrentCourseIndex] = useState(0);
@@ -44,16 +29,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
     const [level] = useState(() => getCurrentLevel());
     const [xpProgress] = useState(() => getXPProgress());
     const [isDarkMode, setIsDarkMode] = useState(false);
-
-    // ========================================================================
-    // HOOKS MOVED FROM StudentDashboard.tsx FOR BENTO WIDGETS
-    // ========================================================================
-    const { refreshTrigger } = useQuickViewSettings();
-    const { upcomingDeadlines, recentActivities } = useDashboardData(refreshTrigger);
-    const { weather, weatherLoading, weatherError } = useWeather();
-    const { todos, addTodo, toggleTodo, deleteTodo, clearAllTodos, completedCount, setNewTodoText } = useTodos();
-    const { calendarView, setCalendarView, calendarMonth, setCalendarMonth, calendarData, hasDeadlines } = useCalendar(upcomingDeadlines);
-    // ========================================================================
+    const { weather, weatherLoading } = useWeather();
 
     useEffect(() => {
         const handleSettingsUpdated = () => {
@@ -179,18 +155,8 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                 <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
                 <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-[80px] translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
-                {/* ===================================================================== */}
-                {/* BENTO GRID LAYOUT: 12-Column Grid */}
-                {/* ===================================================================== */}
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 w-full relative z-10">
-                    
-                    {/* ----------------------------------------------------------------- */}
-                    {/* LEFT COLUMN: Span 8 (Profile, Progress, Control Panel, Carousel)  */}
-                    {/* ----------------------------------------------------------------- */}
-                    <div className="xl:col-span-8 flex flex-col gap-6 min-w-0">
-
-                        {/* --- Top Section: Profile Card --- */}
-                        <div className="flex flex-col relative w-full mb-0">
+                {/* --- Top Section: Profile Card --- */}
+                <div className="flex flex-col relative w-full mb-0">
                     {/* Good Morning / User Profile Card (Study Tools UI/UX) */}
                     <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-3 sm:p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 w-full overflow-hidden">
                         
@@ -271,11 +237,100 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                     <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-[1.4] max-w-xl line-clamp-2 sm:line-clamp-none">
                                         Your learning overview is ready. Track active courses, module progress, and study momentum from one clean dashboard.
                                     </p>
+
+                                    {/* Weather Badge - Mobile/Tablet Only */}
+                                    {!weatherLoading && weather ? (
+                                        <div className="md:hidden flex items-center gap-1.5 mt-2 self-start px-2.5 py-1 bg-slate-50 dark:bg-slate-800/80 rounded-[10px] border border-slate-150 dark:border-slate-700/60 shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all">
+                                            <div className="w-4 h-4 flex-shrink-0">
+                                                {weather.icon === 'sunny' && (
+                                                    <svg className="w-full h-full text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
+                                                    </svg>
+                                                )}
+                                                {weather.icon === 'night' && (
+                                                    <svg className="w-full h-full text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                                                    </svg>
+                                                )}
+                                                {weather.icon === 'cloudy' && (
+                                                    <svg className="w-full h-full text-slate-400 dark:text-slate-500" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                    </svg>
+                                                )}
+                                                {weather.icon === 'partly-cloudy' && (
+                                                    <svg className="w-full h-full text-sky-400" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                    </svg>
+                                                )}
+                                                {weather.icon === 'rainy' && (
+                                                    <svg className="w-full h-full text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                    </svg>
+                                                )}
+                                                {weather.icon === 'stormy' && (
+                                                    <svg className="w-full h-full text-slate-500 dark:text-slate-400" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                    </svg>
+                                                )}
+                                            </div>
+                                            <span className="text-slate-800 dark:text-slate-200 text-[10px] font-bold">{weather.temperature}°C</span>
+                                            <span className="text-slate-400 dark:text-slate-500 text-[9px] font-bold uppercase tracking-wider">{weather.condition}</span>
+                                        </div>
+                                    ) : weatherLoading ? (
+                                        <div className="md:hidden w-20 h-5 bg-slate-50 dark:bg-slate-750 animate-pulse rounded-[10px] mt-2" />
+                                    ) : null}
                                 </div>
                             </div>
 
-                            {/* Right: Expand Icon */}
-                            <div className="flex items-center justify-end flex-shrink-0">
+                            {/* Right side: Weather Pill & Expand Icon */}
+                            <div className="flex items-center gap-3.5 justify-end flex-shrink-0">
+                                {/* Weather Card - Desktop */}
+                                {!weatherLoading && weather ? (
+                                    <div className="hidden md:flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/50 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] rounded-[14px] flex-shrink-0 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                        <div className="w-7 h-7 flex-shrink-0">
+                                            {weather.icon === 'sunny' && (
+                                                <svg className="w-full h-full text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
+                                                </svg>
+                                            )}
+                                            {weather.icon === 'night' && (
+                                                <svg className="w-full h-full text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                                                </svg>
+                                            )}
+                                            {weather.icon === 'cloudy' && (
+                                                <svg className="w-full h-full text-slate-400 dark:text-slate-500" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                </svg>
+                                            )}
+                                            {weather.icon === 'partly-cloudy' && (
+                                                <svg className="w-full h-full text-sky-400" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                </svg>
+                                            )}
+                                            {weather.icon === 'rainy' && (
+                                                <svg className="w-full h-full text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                </svg>
+                                            )}
+                                            {weather.icon === 'stormy' && (
+                                                <svg className="w-full h-full text-slate-500 dark:text-slate-400" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                </svg>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-col text-left">
+                                            <div className="flex items-baseline gap-0.5">
+                                                <span className="font-extrabold text-slate-800 dark:text-slate-200 text-sm leading-none">{weather.temperature}°</span>
+                                                <span className="text-slate-400 dark:text-slate-500 text-[8px] font-bold">C</span>
+                                            </div>
+                                            <span className="text-slate-500 dark:text-slate-400 text-[9px] font-bold uppercase tracking-wider mt-0.5">{weather.condition}</span>
+                                        </div>
+                                    </div>
+                                ) : weatherLoading ? (
+                                    <div className="hidden md:flex w-24 h-10 bg-slate-50 dark:bg-slate-750 animate-pulse rounded-[14px] border border-slate-100 dark:border-slate-700/50 flex-shrink-0" />
+                                ) : null}
+
                                 <motion.div 
                                     animate={{ rotate: isStatsExpanded ? 180 : 0 }}
                                     className="w-10 h-10 rounded-[14px] bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 flex-shrink-0"
@@ -530,7 +585,124 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                         </AnimatePresence>
                     </div>
                 </div>
-                
+                {/* --- Middle Section: Continue Where You Left Off --- */}
+                <div className="flex flex-col gap-6 relative z-10 w-full">
+                    {/* Top: STI Campus News Card */}
+                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-3 sm:p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-yellow-300 dark:hover:border-yellow-700 w-full overflow-hidden">
+                        
+                        {/* Header (Always Visible, Minimized State imitating Student Tools) */}
+                        <div 
+                            className="flex flex-row items-center justify-between gap-4 cursor-pointer w-full"
+                            onClick={() => setIsNewsExpanded(!isNewsExpanded)}
+                        >
+                            {/* Left: Icon & Text */}
+                            <div className="flex items-center gap-3 sm:gap-5 min-w-0 flex-1">
+                                <motion.div 
+                                    whileHover={{ scale: 1.05, rotate: -5 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                    className="w-14 h-14 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-100 dark:border-yellow-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300"
+                                >
+                                    <svg className="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l6 6v10a2 2 0 0 1-2 2z"/><polyline points="15 4 15 10 21 10"/><path d="M8 12h8"/><path d="M8 16h8"/></svg>
+                                </motion.div>
+                                <div className="min-w-0 flex-1">
+                                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-1.5 transition-colors truncate">
+                                        STI Campus News
+                                    </h2>
+                                    <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-none truncate">
+                                        Click to view the latest announcements
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Right: Tags & Expand Icon */}
+                            <div className="flex items-center gap-3 flex-shrink-0">
+                                {/* Tag 1 (Matches AVAILABLE 11 Tools) */}
+                                <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 rounded-[12px] border border-yellow-100 dark:border-yellow-800/30">
+                                    <div className="w-6 h-6 rounded-[8px] bg-yellow-100 dark:bg-yellow-900/50 flex items-center justify-center text-yellow-600 dark:text-yellow-400">
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-bold text-yellow-600/70 dark:text-yellow-400/70 uppercase leading-none mb-0.5">AVAILABLE</span>
+                                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-none">3 Updates</span>
+                                    </div>
+                                </div>
+
+                                {/* Tag 2 (Matches DATA Local-first) */}
+                                <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-[12px] border border-emerald-100 dark:border-emerald-800/30">
+                                    <div className="w-6 h-6 rounded-[8px] bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-bold text-emerald-600/70 dark:text-emerald-400/70 uppercase leading-none mb-0.5">LATEST</span>
+                                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-none">Overhaul</span>
+                                    </div>
+                                </div>
+
+                                {/* Expand Toggle Button */}
+                                <motion.div 
+                                    animate={{ rotate: isNewsExpanded ? 180 : 0 }}
+                                    className="w-10 h-10 rounded-[14px] bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                                </motion.div>
+                            </div>
+                        </div>
+
+                        {/* Expanded Content (Slideshow) */}
+                        <AnimatePresence>
+                            {isNewsExpanded && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                                    animate={{ height: "auto", opacity: 1, marginTop: 24 }}
+                                    exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                                    className="overflow-hidden w-full flex flex-col gap-6"
+                                >
+                                    {/* Large Slide 1: STI Overhaul */}
+                                    <div className="w-full flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-6 rounded-[20px] border border-slate-100 dark:border-slate-700/50">
+                                        {/* Large Left Text */}
+                                        <div className="flex flex-col gap-3">
+                                            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
+                                                The Great STI Overhaul
+                                            </h3>
+                                            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-md">
+                                                We've completely redesigned the campus experience. Check out what's new for the upcoming semester and explore the upgraded facilities and technology.
+                                            </p>
+                                        </div>
+
+                                        {/* Large Right Picture & Button */}
+                                        <div className="flex flex-col sm:flex-row items-stretch gap-4 w-full xl:w-auto">
+                                            {/* Large Picture Placeholder */}
+                                            <div className="flex w-full sm:w-64 h-20 sm:h-auto min-h-[5rem] sm:min-h-[6rem] bg-slate-100 dark:bg-slate-700 rounded-[16px] border border-slate-200 dark:border-slate-600 items-center justify-center shadow-inner relative group-hover:border-yellow-200 dark:group-hover:border-yellow-800/50 transition-colors">
+                                                <svg className="w-10 h-10 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                            </div>
+                                            
+                                            {/* Large Update Button */}
+                                            <motion.button 
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                onClick={onShowWelcomeModal}
+                                                className="w-full sm:w-auto h-20 sm:h-auto min-h-[5rem] sm:min-h-[6rem] px-8 bg-yellow-100 dark:bg-yellow-900/40 hover:bg-yellow-200 dark:hover:bg-yellow-800/60 text-yellow-700 dark:text-yellow-400 font-bold rounded-[16px] transition-colors text-base sm:text-lg shadow-sm flex flex-col items-center justify-center gap-2 border border-yellow-200 dark:border-yellow-800/50 cursor-pointer"
+                                            >
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                                <span>View Full Details</span>
+                                            </motion.button>
+                                        </div>
+                                    </div>
+
+                                    {/* Slideshow Indicators */}
+                                    <div className="w-full flex items-center justify-center gap-2 pb-2">
+                                        <div className="w-6 h-1.5 rounded-full bg-yellow-400 dark:bg-yellow-500 transition-all shadow-sm"></div>
+                                        <div className="w-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 transition-all cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-600"></div>
+                                        <div className="w-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 transition-all cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-600"></div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </div>
+
+                <hr className="border-slate-200/60 dark:border-slate-700/60 relative z-10" />
 
                 {/* --- Bottom Section: Overall Progress (Redesigned as Study Tools + Carousel) --- */}
                 <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 relative z-10 w-full max-w-6xl mx-auto items-start">
@@ -591,7 +763,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
 
 
                         {/* 4 Action Buttons (Redesigned as Control Center Tiles) */}
-                        <div className="order-1 lg:order-3 hidden sm:grid grid-cols-2 gap-3 w-full">
+                        <div className="order-1 lg:order-3 hidden sm:grid lg:hidden grid-cols-2 gap-3 w-full">
                             {/* Tools */}
                             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-[0_1px_2px_rgba(0,0,0,0.02)] rounded-[16px] p-3.5 flex items-center gap-3.5 group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer overflow-hidden">
                                 <motion.div
@@ -667,6 +839,32 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
                                     </p>
                                 </div>
                             </div>
+                        </div>
+                        
+                        {/* Quick View Widgets Slot (Desktop Only) - Fixed height for 'Pantay' alignment */}
+                        <div className="order-4 hidden lg:flex w-full rounded-[24px] mt-2 flex-col h-[350px] lg:h-[559px] relative group/qv">
+                            {/* Inner container with overflow-hidden for GradualBlur clipping */}
+                            <div className="w-full h-full bg-white dark:bg-slate-800 rounded-[24px] p-5 sm:p-6 flex flex-col gap-1 relative overflow-hidden">
+                                
+                                {/* Widgets Area (Scrolling handled internally by WidgetSidebar) */}
+                                <div className="flex-1 overflow-hidden min-h-0 -mx-1 px-1 flex flex-col">
+                                    {quickViewSlot}
+                                </div>
+
+                                {/* Gradual Blur overlaying the bottom of the card seamlessly */}
+                                {quickViewSlot && (
+                                    <GradualBlur
+                                        position="bottom"
+                                        height="4.5rem"
+                                        strength={3}
+                                        curve="ease-out"
+                                        zIndex={10}
+                                        style={{ bottom: 0, left: 0, right: 0, width: '100%', borderRadius: '0 0 24px 24px' }}
+                                    />
+                                )}
+                            </div>
+                            {/* Border + Shadow Overlay — sits OUTSIDE overflow-hidden so shadow renders on all corners */}
+                            <div className="absolute inset-0 rounded-[24px] border border-slate-200 dark:border-slate-700 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] group-hover/qv:shadow-md transition-shadow duration-300 pointer-events-none z-20"></div>
                         </div>
                     </div>
 
@@ -937,175 +1135,6 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal }) => {
 
                     </div>
                 </div>
-                    </div>
-                    {/* ----------------------------------------------------------------- */}
-                    {/* RIGHT COLUMN: Span 4 (Widgets & Campus News)                    */}
-                    {/* ----------------------------------------------------------------- */}
-                    <div className="xl:col-span-4 flex flex-col gap-6 min-w-0">
-                        {/* 1. Calendar / Deadlines Widget */}
-                        <CalendarWidget 
-                            upcomingDeadlines={upcomingDeadlines}
-                            calendarData={calendarData}
-                            calendarView={calendarView}
-                            setCalendarView={setCalendarView}
-                            calendarMonth={calendarMonth}
-                            setCalendarMonth={setCalendarMonth}
-                            hasDeadlines={hasDeadlines}
-                            getDeadlineTypeColor={getDeadlineTypeColor}
-                            compactMode={false}
-                            onClose={() => {}}
-                        />
-
-                        {/* 2. Todos Widget */}
-                        <TodoWidget 
-                            todos={todos}
-                            setNewTodoText={setNewTodoText}
-                            addTodo={addTodo}
-                            toggleTodo={toggleTodo}
-                            deleteTodo={deleteTodo}
-                            clearAllTodos={clearAllTodos}
-                            completedCount={completedCount}
-                            compactMode={false}
-                            onClose={() => {}}
-                        />
-
-                        {/* 3. Campus News (moved from left side) */}
-                        {/* --- Middle Section: Continue Where You Left Off --- */}
-                <div className="flex flex-col gap-6 relative z-10 w-full">
-                    {/* Top: STI Campus News Card */}
-                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-3 sm:p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-yellow-300 dark:hover:border-yellow-700 w-full overflow-hidden">
-                        
-                        {/* Header (Always Visible, Minimized State imitating Student Tools) */}
-                        <div 
-                            className="flex flex-row items-center justify-between gap-4 cursor-pointer w-full"
-                            onClick={() => setIsNewsExpanded(!isNewsExpanded)}
-                        >
-                            {/* Left: Icon & Text */}
-                            <div className="flex items-center gap-3 sm:gap-5 min-w-0 flex-1">
-                                <motion.div 
-                                    whileHover={{ scale: 1.05, rotate: -5 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                    className="w-14 h-14 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-100 dark:border-yellow-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300"
-                                >
-                                    <svg className="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l6 6v10a2 2 0 0 1-2 2z"/><polyline points="15 4 15 10 21 10"/><path d="M8 12h8"/><path d="M8 16h8"/></svg>
-                                </motion.div>
-                                <div className="min-w-0 flex-1">
-                                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-1.5 transition-colors truncate">
-                                        STI Campus News
-                                    </h2>
-                                    <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-none truncate">
-                                        Click to view the latest announcements
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Right: Tags & Expand Icon */}
-                            <div className="flex items-center gap-3 flex-shrink-0">
-                                {/* Tag 1 (Matches AVAILABLE 11 Tools) */}
-                                <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 rounded-[12px] border border-yellow-100 dark:border-yellow-800/30">
-                                    <div className="w-6 h-6 rounded-[8px] bg-yellow-100 dark:bg-yellow-900/50 flex items-center justify-center text-yellow-600 dark:text-yellow-400">
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] font-bold text-yellow-600/70 dark:text-yellow-400/70 uppercase leading-none mb-0.5">AVAILABLE</span>
-                                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-none">3 Updates</span>
-                                    </div>
-                                </div>
-
-                                {/* Tag 2 (Matches DATA Local-first) */}
-                                <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-[12px] border border-emerald-100 dark:border-emerald-800/30">
-                                    <div className="w-6 h-6 rounded-[8px] bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] font-bold text-emerald-600/70 dark:text-emerald-400/70 uppercase leading-none mb-0.5">LATEST</span>
-                                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-none">Overhaul</span>
-                                    </div>
-                                </div>
-
-                                {/* Expand Toggle Button */}
-                                <motion.div 
-                                    animate={{ rotate: isNewsExpanded ? 180 : 0 }}
-                                    className="w-10 h-10 rounded-[14px] bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-                                </motion.div>
-                            </div>
-                        </div>
-
-                        {/* Expanded Content (Slideshow) */}
-                        <AnimatePresence>
-                            {isNewsExpanded && (
-                                <motion.div
-                                    initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                                    animate={{ height: "auto", opacity: 1, marginTop: 24 }}
-                                    exit={{ height: 0, opacity: 0, marginTop: 0 }}
-                                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                                    className="overflow-hidden w-full flex flex-col gap-6"
-                                >
-                                    {/* Large Slide 1: STI Overhaul */}
-                                    <div className="w-full flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-6 rounded-[20px] border border-slate-100 dark:border-slate-700/50">
-                                        {/* Large Left Text */}
-                                        <div className="flex flex-col gap-3">
-                                            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
-                                                The Great STI Overhaul
-                                            </h3>
-                                            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-md">
-                                                We've completely redesigned the campus experience. Check out what's new for the upcoming semester and explore the upgraded facilities and technology.
-                                            </p>
-                                        </div>
-
-                                        {/* Large Right Picture & Button */}
-                                        <div className="flex flex-col sm:flex-row items-stretch gap-4 w-full xl:w-auto">
-                                            {/* Large Picture Placeholder */}
-                                            <div className="flex w-full sm:w-64 h-20 sm:h-auto min-h-[5rem] sm:min-h-[6rem] bg-slate-100 dark:bg-slate-700 rounded-[16px] border border-slate-200 dark:border-slate-600 items-center justify-center shadow-inner relative group-hover:border-yellow-200 dark:group-hover:border-yellow-800/50 transition-colors">
-                                                <svg className="w-10 h-10 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                                            </div>
-                                            
-                                            {/* Large Update Button */}
-                                            <motion.button 
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                onClick={onShowWelcomeModal}
-                                                className="w-full sm:w-auto h-20 sm:h-auto min-h-[5rem] sm:min-h-[6rem] px-8 bg-yellow-100 dark:bg-yellow-900/40 hover:bg-yellow-200 dark:hover:bg-yellow-800/60 text-yellow-700 dark:text-yellow-400 font-bold rounded-[16px] transition-colors text-base sm:text-lg shadow-sm flex flex-col items-center justify-center gap-2 border border-yellow-200 dark:border-yellow-800/50 cursor-pointer"
-                                            >
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                                                <span>View Full Details</span>
-                                            </motion.button>
-                                        </div>
-                                    </div>
-
-                                    {/* Slideshow Indicators */}
-                                    <div className="w-full flex items-center justify-center gap-2 pb-2">
-                                        <div className="w-6 h-1.5 rounded-full bg-yellow-400 dark:bg-yellow-500 transition-all shadow-sm"></div>
-                                        <div className="w-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 transition-all cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-600"></div>
-                                        <div className="w-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 transition-all cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-600"></div>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
-
-                
-
-                        {/* 4. Weather & Activity */}
-                        <WeatherWidget 
-                            weather={weather}
-                            weatherLoading={weatherLoading}
-                            weatherError={weatherError}
-                            compactMode={false}
-                            onClose={() => {}}
-                        />
-                        <ActivityWidget 
-                            recentActivities={recentActivities}
-                            formatRelativeTime={formatRelativeTime}
-                            compactMode={false}
-                            onClose={() => {}}
-                        />
-                    </div>
-                </div>
-
             </motion.div>
         </div>
     );

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useQuickViewSettings } from '../../../contexts/QuickViewSettingsContext';
+import { UiverseSwitch } from '../UiverseSwitch';
 
 interface QuickSettingsDropdownProps {
     onOpenFullSettings?: () => void;
@@ -115,22 +116,22 @@ const QuickSettingsDropdown: React.FC<QuickSettingsDropdownProps> = ({ onOpenFul
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`w-full flex items-center justify-center gap-1.5 lg:gap-1 text-[13px] lg:text-[11px] font-bold py-2 lg:py-1.5 px-3 lg:px-2 rounded-[12px] lg:rounded-[10px] transition-colors shadow-sm ${
                     isDarkMode 
-                        ? 'bg-slate-700 hover:bg-slate-600 text-slate-300' 
-                        : 'bg-zinc-50 hover:bg-zinc-100 text-zinc-600'
+                        ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' 
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                 }`}
             >
                 <motion.svg 
-                    className="w-3.5 h-3.5" 
+                    className="w-4 h-4 lg:w-3.5 lg:h-3.5" 
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
                     animate={{ rotate: isOpen ? 90 : 0 }}
                     transition={{ duration: 0.2 }}
                 >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </motion.svg>
                 Settings
             </motion.button>
@@ -147,75 +148,64 @@ const QuickSettingsDropdown: React.FC<QuickSettingsDropdownProps> = ({ onOpenFul
                             stiffness: 400,
                             damping: 25,
                         }}
-                        className={`absolute bottom-full left-0 mb-2 rounded-xl shadow-lg border overflow-hidden z-50 ${
+                        className={`absolute bottom-full left-0 mb-2 rounded-xl shadow-lg border overflow-hidden z-50 w-[calc(200%+8px)] sm:w-[220px] lg:w-[calc(200%+8px)] sm:max-w-none ${
                             isDarkMode 
                                 ? 'bg-slate-800 border-slate-700' 
                                 : 'bg-white border-zinc-100'
                         }`}
-                        style={{ width: '220px' }}
                     >
                         {/* Header */}
-                        <div className={`px-3 py-2 border-b ${isDarkMode ? 'border-slate-700 bg-slate-700/50' : 'border-zinc-100 bg-zinc-50/50'}`}>
-                            <span className={`text-[10px] font-semibold uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-zinc-400'}`}>Quick View Settings</span>
+                        <div className={`px-2.5 py-1.5 border-b ${isDarkMode ? 'border-slate-700 bg-slate-700/50' : 'border-zinc-100 bg-zinc-50/50'}`}>
+                            <span className={`text-[9px] font-semibold uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-zinc-400'}`}>Quick View Settings</span>
                         </div>
 
                         {/* Settings List */}
                         <div className="py-1">
                             {settingsList.map((setting, index) => (
-                                <motion.button
+                                <motion.div
                                     key={setting.id}
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.03 }}
                                     onClick={setting.onToggle}
-                                    className="w-full flex items-center gap-2.5 px-3 py-2 group"
-                                    style={{ 
-                                        transition: 'background-color 0.2s ease-out',
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.backgroundColor = isDarkMode 
-                                            ? 'rgba(59, 130, 246, 0.15)' 
-                                            : 'rgba(59, 130, 246, 0.08)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.backgroundColor = 'transparent';
-                                    }}
+                                    whileHover={{ scale: 1.01 }}
+                                    whileTap={{ scale: 0.99 }}
+                                    className={`flex items-center gap-2 p-2 mx-1.5 my-1 rounded-xl cursor-pointer transition-colors shadow-sm border ${
+                                        isDarkMode 
+                                            ? 'bg-zinc-900/50 border-zinc-800/80 hover:border-zinc-700/80' 
+                                            : 'bg-white border-zinc-200/80 hover:border-zinc-300'
+                                    }`}
                                 >
                                     <motion.div
-                                        className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${
-                                            !setting.enabled ? (isDarkMode ? 'group-hover:bg-blue-500/20 group-hover:text-blue-400' : 'group-hover:bg-blue-100 group-hover:text-blue-500') : ''
+                                        whileHover={{ scale: 1.05, rotate: -5 }}
+                                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                        className={`p-1.5 rounded-lg flex items-center justify-center flex-shrink-0 border ${
+                                            setting.enabled 
+                                                ? (isDarkMode ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-blue-50 border-blue-100 text-blue-600')
+                                                : (isDarkMode ? 'bg-zinc-800 border-zinc-700/50 text-zinc-500' : 'bg-slate-50 border-slate-200 text-slate-400')
                                         }`}
-                                        animate={{
-                                            backgroundColor: setting.enabled 
-                                                ? 'rgba(59, 130, 246, 0.2)' 
-                                                : isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
-                                            color: setting.enabled ? '#3b82f6' : isDarkMode ? '#94a3b8' : '#94a3b8',
-                                        }}
-                                        transition={{ duration: 0.15 }}
                                     >
-                                        {setting.icon}
+                                        {React.cloneElement(setting.icon as React.ReactElement<any>, { className: 'w-3.5 h-3.5', strokeWidth: "2.5" })}
                                     </motion.div>
-                                    <div className="flex-1 text-left min-w-0">
-                                        <div className={`text-[11px] font-medium ${isDarkMode ? 'text-slate-200' : 'text-zinc-700'}`}>{setting.label}</div>
-                                        <div className={`text-[9px] truncate ${isDarkMode ? 'text-slate-400' : 'text-zinc-400'}`}>{setting.description}</div>
+                                    
+                                    <div className="flex-1 min-w-0 pr-1 text-left">
+                                        <div className={`text-[11.5px] font-extrabold tracking-tight leading-none mb-0.5 ${
+                                            isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
+                                        }`}>
+                                            {setting.label}
+                                        </div>
+                                        <div className={`text-[9.5px] font-medium leading-tight ${
+                                            isDarkMode ? 'text-zinc-400' : 'text-zinc-500'
+                                        }`}>
+                                            {setting.description}
+                                        </div>
                                     </div>
-                                    {/* Toggle Indicator */}
-                                    <motion.div
-                                        className="w-7 h-3.5 rounded-full p-0.5 cursor-pointer flex-shrink-0"
-                                        animate={{
-                                            backgroundColor: setting.enabled ? '#3b82f6' : isDarkMode ? '#475569' : '#e4e4e7',
-                                        }}
-                                        transition={{ duration: 0.15 }}
-                                    >
-                                        <motion.div
-                                            className={`w-2.5 h-2.5 rounded-full shadow-sm ${isDarkMode ? 'bg-slate-200' : 'bg-white'}`}
-                                            animate={{
-                                                x: setting.enabled ? 14 : 0,
-                                            }}
-                                            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                                        />
-                                    </motion.div>
-                                </motion.button>
+
+                                    {/* Toggle Switch */}
+                                    <div style={{ flexShrink: 0, marginLeft: 'auto', transform: 'scale(0.68)', transformOrigin: 'right' }} className="pointer-events-none">
+                                        <UiverseSwitch checked={setting.enabled} onChange={() => {}} />
+                                    </div>
+                                </motion.div>
                             ))}
                         </div>
 
@@ -234,7 +224,7 @@ const QuickSettingsDropdown: React.FC<QuickSettingsDropdownProps> = ({ onOpenFul
                                     setIsOpen(false);
                                     onOpenFullSettings();
                                 }}
-                                className={`w-full flex items-center justify-center gap-1.5 px-3 py-2.5 border-t text-[10px] text-blue-500 ${
+                                className={`w-full flex items-center justify-center gap-1.5 px-3 py-2 border-t text-[10px] text-blue-500 ${
                                     isDarkMode 
                                         ? 'border-slate-700' 
                                         : 'border-zinc-100'

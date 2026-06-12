@@ -14,6 +14,8 @@ import MaintenanceBanner from '../../components/shared/MaintenanceBanner';
 const ToolsContent = React.lazy(() => import('./content/ToolsContent'));
 const HomeContent = React.lazy(() => import('./content/HomeContent'));
 const PathsContent = React.lazy(() => import('./content/PathsContent'));
+import WidgetsToggleButton from '../../components/ui/misc/WidgetsToggleButton';
+
 
 
 
@@ -26,19 +28,36 @@ const CourseViewPage = React.lazy(() => import('./content/CourseViewPage'));
 
 // Context imports
 import { useNotifications } from '../../contexts/NotificationContext';
+import { useQuickViewSettings } from '../../contexts/QuickViewSettingsContext';
 
+// Service imports
+import { getCourseProgressData, formatMinutesToHours } from '../../services/studyTimeService';
+import { formatDaysUntil, getDeadlineTypeColor } from '../../services/deadlinesService';
+import { formatRelativeTime } from '../../services/activityService';
 
 // Extracted modules from local folder
-import { NotificationItem, GroupedNotification, DashboardIntro, DashboardTutorial, DashboardHeader, DashboardSidebar } from './components';
+import { NotificationItem, GroupedNotification, DashboardIntro, DashboardTutorial, DashboardHeader, DashboardSidebar, DailyInspirationToast } from './components';
+import { WidgetSidebar } from './components/WidgetSidebar';
 import { DashboardSuspenseFallback } from './components/DashboardSuspenseFallback';
-import { getSidebarCoursesWithProgress } from './utils';
+import { getSidebarCoursesWithProgress, getTodaysQuote } from './utils';
 import { isDashboardView } from './types';
 import { ToolsSkeleton } from './content/ToolsContent/components/ToolsShared';
 
 // Custom hooks - extracted for cleaner code
 import {
     useDashboardState,
+    useDashboardData,
+    useWeather,
+    useTodos,
+    useWidgetVisibility,
+    useAchievements,
+    useGradePredictor,
+    useStudyInsights,
+    useCalendar,
     useKeyboardNavigation } from './hooks';
+
+// Widget components - available for future refactoring
+// import { QuoteWidget, WeatherWidget, ActivityWidget, QuickStatsCard } from './widgets';
 
 // ============================================================================
 // REFACTORED: State and logic extracted to ./DashboardPage/hooks
@@ -55,6 +74,9 @@ const DashboardPage: React.FC = () => {
         sidebarActive,
         setSidebarActive,
         toggleSidebar,
+        widgetsSidebarActive,
+        setWidgetsSidebarActive,
+        toggleWidgetsSidebar,
         settingsModalActive,
         openSettingsModal,
         closeSettingsModal,
@@ -142,10 +164,74 @@ const DashboardPage: React.FC = () => {
     const {
         toastNotifications,
         dismissToast,
-        clearAllToasts
+        clearAllToasts,
+        addNotification
     } = useNotifications();
 
-    // Calendar hook removed; moved to HomeContent if needed
+    // Quick View Settings - controls sidebar widget visibility and behavior
+    const { settings: quickViewSettings, refreshTrigger } = useQuickViewSettings();
+
+    // addNotification can be called to add new notifications dynamically
+    void addNotification; // Suppress unused warning - available for dynamic use
+
+    const closeToast = (id: string | number) => {
+        dismissToast(id as any);
+    };
+
+    // Widget visibility hook
+    const {
+        widgetVisibility,
+        toggleWidget,
+        restoreAllWidgets,
+        hasHiddenWidgets } = useWidgetVisibility();
+
+    // Dashboard data hook (deadlines, activities, progress)
+    const {
+        upcomingDeadlines,
+        recentActivities,
+        overallProgress,
+        totalCourses } = useDashboardData(refreshTrigger);
+
+    // Weather hook
+    const {
+        weather,
+        weatherLoading,
+        weatherError } = useWeather();
+
+    // Todos hook
+    const {
+        todos,
+        newTodoText,
+        setNewTodoText,
+        isAddingTodo,
+        setIsAddingTodo,
+        todoInputRef,
+        addTodo,
+        toggleTodo,
+        deleteTodo,
+        clearAllTodos,
+        completedCount } = useTodos();
+
+    // Achievements hook
+    const { achievements } = useAchievements(refreshTrigger);
+
+    // Grade predictor hook
+    const { gradePredictor } = useGradePredictor(refreshTrigger);
+
+    // Study insights hook
+    const { studyInsights } = useStudyInsights(refreshTrigger);
+
+    // Get today's quote from utils
+    const todaysQuote = getTodaysQuote();
+
+    // Calendar hook (for deadline highlighting)
+    const {
+        calendarView,
+        setCalendarView,
+        calendarMonth,
+        setCalendarMonth,
+        calendarData,
+        hasDeadlines } = useCalendar(upcomingDeadlines);
 
     // Duplicate code removed during refactoring
 
@@ -153,6 +239,57 @@ const DashboardPage: React.FC = () => {
     // to prevent re-renders of the entire DashboardPage
 
     // AI Chat Logic - Removed
+
+    const widgetSidebarProps = {
+        widgetsSidebarActive,
+        toggleWidgetsSidebar,
+        widgetVisibility,
+        toggleWidget,
+        restoreAllWidgets,
+        hasHiddenWidgets,
+        isDemoMode,
+        todos,
+        newTodoText,
+        setNewTodoText,
+        isAddingTodo,
+        setIsAddingTodo,
+        todoInputRef,
+        addTodo,
+        toggleTodo,
+        deleteTodo,
+        clearAllTodos,
+        completedCount,
+        weather,
+        isWeatherLoading: weatherLoading,
+        deadlines: upcomingDeadlines,
+        recentActivity: recentActivities,
+        gradePredictor,
+        studyInsights,
+        notifications: toastNotifications,
+        groupedNotifications: [],
+        quickViewSettings,
+        achievements,
+        formatDaysUntil,
+        getDeadlineTypeColor,
+        formatRelativeTime,
+        getCourseProgressData,
+        formatMinutesToHours,
+        refreshTrigger,
+        totalCourses,
+        upcomingDeadlines,
+        overallProgress,
+        openSettingsModal,
+        todaysQuote,
+        weatherLoading,
+        weatherError,
+        recentActivities,
+        calendarData,
+        calendarView,
+        setCalendarView,
+        calendarMonth,
+        setCalendarMonth,
+        hasDeadlines
+    };
 
     return (
         <div className="dashboard-container">
@@ -188,7 +325,10 @@ const DashboardPage: React.FC = () => {
                             transition={{ duration: 0.2 }}
                         >
                             <ErrorBoundary name="Home">
-                                <HomeContent onShowWelcomeModal={showWelcomeModal} />
+                                <HomeContent 
+                                    onShowWelcomeModal={showWelcomeModal} 
+                                    quickViewSlot={<WidgetSidebar isInline={true} {...widgetSidebarProps} />}
+                                />
                             </ErrorBoundary>
                         </motion.div>
                     )}
@@ -303,7 +443,17 @@ const DashboardPage: React.FC = () => {
 
 
 
-            {/* Dashboard sidebar and widgets removed for Bento layout */}
+
+            {/* Mobile/Tablet Widget Sidebar - Hidden on PC */}
+            <div className="lg:hidden">
+                <WidgetsToggleButton
+                    isWidgetsSidebarActive={widgetsSidebarActive}
+                    onToggle={toggleWidgetsSidebar}
+                />
+                <WidgetSidebar {...widgetSidebarProps} />
+            </div>
+
+            {/* AI Chatbot - Removed */}
 
             <SettingsModal isOpen={settingsModalActive} onClose={closeSettingsModal} />
 
@@ -311,6 +461,7 @@ const DashboardPage: React.FC = () => {
             <DashboardTutorial
                 isOpen={tutorialActive}
                 onClose={closeTutorial}
+                onToggleWidgetsSidebar={(open) => setWidgetsSidebarActive(open)}
             />
             <Confetti active={showConfetti} />
 
@@ -322,6 +473,11 @@ const DashboardPage: React.FC = () => {
                     setWelcomeModalActive(true);
                 }
             }} />}
+
+            {/* Daily Inspiration Toast */}
+            {!showIntro && !tutorialActive && !welcomeModalActive && (
+                <DailyInspirationToast quote={todaysQuote} />
+            )}
 
             {/* Toast Notifications Container - Compact Design on Left Side */}
             {/* Only show toast notifications after intro and tutorial are complete */}
@@ -352,7 +508,7 @@ const DashboardPage: React.FC = () => {
                                         message: notification.message,
                                         type: notification.type || 'assignment'
                                     }}
-                                    onClose={dismissToast}
+                                    onClose={closeToast}
                                 />
                             ))
                         )}

@@ -9,9 +9,12 @@ import { getStreakData, getStreakTier, updateStreak } from '../../../services/st
 
 interface StreakWidgetProps {
     compact?: boolean;
+    compactMode?: boolean;
+    isInline?: boolean;
 }
 
-export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false }) => {
+export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false, compactMode = false, isInline = false }) => {
+    const isCompact = compact || compactMode;
     const [streakData, setStreakData] = React.useState(() => getStreakData());
     const [isDarkMode, setIsDarkMode] = React.useState(false);
 
@@ -95,45 +98,45 @@ export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false }) =
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
             transition={{ duration: 0.3, ease: 'easeOut', delay: 0.03 }}
-            className={`mx-3 mt-3 rounded-xl ${compact ? 'p-2' : 'p-3'}`}
-            style={{
-                background: colors.bgGradient,
-                border: `1px solid ${colors.borderColor}`,
-            }}
+            className={`${isInline ? '' : 'mx-1'} mt-3 bg-white dark:bg-slate-800 border shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md cursor-pointer group ${isCompact ? 'p-3 rounded-[20px]' : 'p-4 rounded-[24px]'}`}
+            style={{ borderColor: colors.borderColor }}
         >
-            <div className={`flex items-center ${compact ? 'gap-2' : 'gap-3'}`}>
-                <motion.div
-                    animate={{ rotate: [0, -10, 10, -10, 0] }}
-                    transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 3 }}
-                    className={compact ? 'text-lg' : 'text-2xl'}
+            <div className={`flex items-center ${isCompact ? 'gap-3' : 'gap-4'}`}>
+                <div 
+                    className={`rounded-[14px] flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105 ${isCompact ? 'w-10 h-10' : 'w-12 h-12'}`}
+                    style={{
+                        backgroundColor: colors.badgeBg,
+                        border: `1px solid ${colors.borderColor}`
+                    }}
                 >
-                    {tier.flameEmoji}
-                </motion.div>
-                <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                        <span
-                            className={`font-semibold ${compact ? 'text-xs' : 'text-sm'}`}
-                            style={{ color: colors.textColor }}
-                        >
+                    <motion.div
+                        animate={{ rotate: [0, -10, 10, -10, 0] }}
+                        transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 3 }}
+                        className={isCompact ? 'text-xl' : 'text-2xl'}
+                    >
+                        {tier.flameEmoji}
+                    </motion.div>
+                </div>
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <div className="flex items-center gap-2 mb-0.5">
+                        <span className={`font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none ${isCompact ? 'text-[13px]' : 'text-[15px]'}`}>
                             {streakData.currentStreak} Day Streak!
                         </span>
                         <motion.span
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ type: 'spring', delay: 0.5 }}
-                            className={`px-1.5 py-0.5 rounded-full ${compact ? 'text-[8px]' : 'text-[10px]'}`}
+                            className={`px-2 py-0.5 rounded-[8px] font-bold leading-none ${isCompact ? 'text-[9px]' : 'text-[10px]'}`}
                             style={{
                                 backgroundColor: colors.badgeBg,
                                 color: colors.textColor,
+                                border: `1px solid ${colors.borderColor}`
                             }}
                         >
                             +{tier.xpBonus} XP
                         </motion.span>
                     </div>
-                    <p
-                        className={compact ? 'text-[9px]' : 'text-[11px]'}
-                        style={{ color: colors.subTextColor }}
-                    >
+                    <p className={`text-slate-500 dark:text-slate-400 font-semibold truncate ${isCompact ? 'text-[10px]' : 'text-xs'}`}>
                         {getMessage()}
                     </p>
                 </div>

@@ -8,6 +8,7 @@ export { NotificationIcon } from './NotificationIcon';
 export { NotificationItem } from './NotificationItem';
 export { SmallTypeIcon } from './SmallTypeIcon';
 export { GroupedNotification } from './GroupedNotification';
+export { DailyInspirationToast } from './DailyInspirationToast';
 
 // Widget components
 export { StreakWidget } from './StreakWidget';

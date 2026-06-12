@@ -1,4 +1,4 @@
-﻿// Deadlines Service - Manages upcoming deadlines with localStorage + Supabase sync
+// Deadlines Service - Manages upcoming deadlines with localStorage + Supabase sync
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getStudentId } from './databaseService';
@@ -15,7 +15,7 @@ export interface Deadline {
 }
 
 const STORAGE_KEY = 'dashboard-deadlines';
-const DEADLINES_RESET_KEY = 'deadlines-reset-v1'; // Flag for fresh start
+const DEADLINES_RESET_KEY = 'deadlines-reset-v2'; // Flag for fresh start
 
 // Course data for reference
 export const COURSES = [
@@ -30,9 +30,24 @@ export const COURSES = [
     { id: 'uts', name: 'Understanding the Self', shortName: 'UTS' },
 ];
 
-// Default deadlines - empty (no demo data)
+// Default deadlines - with one example
 const getDefaultDeadlines = (): Deadline[] => {
-    return []; // Start with no deadlines
+    // Return a mock deadline due in 2 days
+    const inTwoDays = new Date();
+    inTwoDays.setDate(inTwoDays.getDate() + 2);
+
+    return [
+        {
+            id: 'demo-deadline-1',
+            title: 'Midterm Project Prototype',
+            type: 'project',
+            courseId: 'cp1',
+            courseName: 'Computer Programming 1',
+            dueDate: inTwoDays.toISOString(),
+            completed: false,
+            createdAt: new Date().toISOString()
+        }
+    ];
 };
 
 // Load deadlines from localStorage

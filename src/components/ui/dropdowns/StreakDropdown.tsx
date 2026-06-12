@@ -118,7 +118,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
     const [showWelcome, setShowWelcome] = useState(false);
     const [showStreakModal, setShowStreakModal] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
-    const [showAutoTooltip, setShowAutoTooltip] = useState(false);
+
     const [tutorialsCompleted, setTutorialsCompleted] = useState(false);
     const [componentReady, setComponentReady] = useState(false);
     const shouldReduceMotion = useReducedMotion();
@@ -198,19 +198,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
         return () => clearTimeout(timer);
     }, [componentReady, tutorialsCompleted]);
 
-    // Show auto tooltip only after tutorials are completed
-    useEffect(() => {
-        if (!tutorialsCompleted) return;
-        
-        // Show auto tooltip after a short delay
-        const tooltipTimer = setTimeout(() => {
-            setShowAutoTooltip(true);
-            // Auto-hide after 4 seconds
-            setTimeout(() => setShowAutoTooltip(false), 4000);
-        }, 1500);
-        
-        return () => clearTimeout(tooltipTimer);
-    }, [tutorialsCompleted]);
+
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -362,18 +350,6 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
         return pool[index];
     }, [streakData.currentStreak]);
 
-    // Get tooltip message
-    const getTooltipMessage = () => {
-        if (streakData.currentStreak === 0) return "Start your streak today";
-        if (streakData.currentStreak === 1) return "Day 1 · Come back tomorrow";
-        if (streakData.currentStreak < 7) return `${7 - streakData.currentStreak}d to weekly milestone`;
-        if (streakData.currentStreak === 7) return "Weekly milestone reached";
-        if (streakData.currentStreak < 10) return `${10 - streakData.currentStreak}d to Silver tier`;
-        if (streakData.currentStreak === 10) return "Silver tier unlocked";
-        if (streakData.currentStreak < 30) return `${30 - streakData.currentStreak}d to Gold tier`;
-        if (streakData.currentStreak < 90) return `${90 - streakData.currentStreak}d to Diamond`;
-        return "Diamond tier · Legendary";
-    };
 
     // Compact progress bar (0-1 ratio toward next milestone)
     const getProgress = () => {
@@ -401,91 +377,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                 streakData={streakData}
             />
 
-            {/* Auto-playing & hover tooltip - beautiful premium SaaS design */}
-            {/* Auto-playing & hover tooltip - beautiful premium SaaS design */}
-            <AnimatePresence>
-                {((showAutoTooltip && tutorialsCompleted) || isHovered) && !isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute top-full mt-2.5 z-50 left-0 sm:left-1/2 sm:-translate-x-1/2 pointer-events-none"
-                    >
-                        <motion.div
-                            initial={{ y: 8 }}
-                            animate={{ y: 0 }}
-                            exit={{ y: 4 }}
-                            transition={{ type: 'spring', stiffness: 450, damping: 26 }}
-                            className="w-[250px] pointer-events-auto"
-                        >
-                            <div
-                                className="p-3.5 rounded-2xl flex items-center gap-3.5 backdrop-blur-xl"
-                                style={{
-                                    backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255, 255, 255, 0.85)',
-                                    border: `1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'}`,
-                                    boxShadow: isDarkMode 
-                                        ? '0 10px 40px -10px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0,0,0,0.2)'
-                                        : '0 10px 40px -10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.02)',
-                                    position: 'relative',
-                                    overflow: 'hidden'
-                                }}
-                            >
-                            {/* Tools Page Style SVG Icon Container */}
-                            <div 
-                                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
-                                style={{ background: isDarkMode ? 'rgba(249, 115, 22, 0.15)' : 'rgba(255, 237, 213, 0.6)' }}
-                            >
-                                <motion.div
-                                    animate={shouldReduceMotion ? { scale: 1, rotate: 0 } : { scale: [1, 1.05, 0.98, 1.02, 1], rotate: [0, 3, -2, 1, 0] }}
-                                    transition={shouldReduceMotion ? { duration: 0 } : { repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-                                >
-                                    <Flame className={`w-5 h-5 ${isDarkMode ? 'text-orange-400' : 'text-orange-500'}`} strokeWidth={2.5} />
-                                </motion.div>
-                            </div>
-
-                            {/* Text Content matching Tools Page Cards */}
-                            <div className="flex-1 min-w-0 flex flex-col justify-center" style={{ textAlign: 'left' }}>
-                                <div 
-                                    className="text-[13px] font-bold leading-tight whitespace-nowrap"
-                                    style={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}
-                                >
-                                    Daily Streak
-                                </div>
-                                <div 
-                                    className="text-[10.5px] font-medium mt-0.5 leading-tight whitespace-nowrap truncate"
-                                    style={{ color: isDarkMode ? '#94a3b8' : '#64748b' }}
-                                >
-                                    {getTooltipMessage()}
-                                </div>
-                            </div>
-
-                            {/* Arrow Pointer */}
-                            <div 
-                                className="absolute -top-[5px] left-[20px] sm:left-1/2 sm:-translate-x-1/2 z-10"
-                                style={{
-                                    width: 0,
-                                    height: 0,
-                                    borderLeft: '5px solid transparent',
-                                    borderRight: '5px solid transparent',
-                                    borderBottom: `5px solid ${isDarkMode ? 'rgba(30, 41, 59, 0.85)' : 'rgba(255, 255, 255, 0.85)'}`,
-                                }}
-                            />
-
-                            {/* Auto-dismiss progress timer bar */}
-                            {showAutoTooltip && !isHovered && (
-                                <motion.div
-                                    className="absolute bottom-0 left-0 h-[2px]"
-                                    style={{ backgroundColor: '#f97316', opacity: 0.8 }}
-                                    initial={{ width: '100%' }}
-                                    animate={{ width: '0%' }}
-                                    transition={{ duration: 4, ease: 'linear' }}
-                                />
-                            )}
-                        </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* Obsolete tooltip removed - now handled by DailyToasts */}
 
             {/* ─── Premium SaaS Streak Button (Tools Page Aesthetic) ─── */}
             <motion.button
