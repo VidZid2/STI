@@ -149,16 +149,16 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="relative overflow-hidden bg-white/60 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 shadow-sm hover:shadow-md transition-all duration-300 rounded-[24px] sm:rounded-[28px] p-3 sm:p-6 lg:p-8 flex flex-col gap-4 sm:gap-7 group"
+                className="relative overflow-hidden bg-transparent sm:bg-white/60 dark:bg-transparent sm:dark:bg-slate-900/50 sm:backdrop-blur-md border-0 sm:border border-slate-200/80 dark:border-slate-800/80 shadow-none sm:shadow-sm sm:hover:shadow-md transition-all duration-300 rounded-none sm:rounded-[28px] p-3 sm:p-6 lg:p-8 flex flex-col gap-4 sm:gap-7 group"
             >
                 {/* Background ambient glow effect for SaaS feel */}
-                <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-                <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-[80px] translate-x-1/3 translate-y-1/3 pointer-events-none" />
+                <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none hidden sm:block" />
+                <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-[80px] translate-x-1/3 translate-y-1/3 pointer-events-none hidden sm:block" />
 
                 {/* --- Top Section: Profile Card --- */}
                 <div className="flex flex-col relative w-full mb-0">
                     {/* Good Morning / User Profile Card (Study Tools UI/UX) */}
-                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-3 sm:p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 w-full overflow-hidden">
+                    <div className="bg-white dark:bg-slate-800 border-y sm:border border-slate-200 dark:border-slate-700 shadow-sm sm:shadow-sm rounded-[16px] sm:rounded-[24px] p-4 sm:p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 w-full overflow-hidden">
                         
                         {/* Header (Clickable for Dropdown) */}
                         <div 

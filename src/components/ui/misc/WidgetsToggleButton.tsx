@@ -107,7 +107,7 @@ const WidgetsToggleButton: React.FC<WidgetsToggleButtonProps> = memo(({
             }}
         >
             <button
-                className="floating-widgets-toggle visible"
+                className="floating-widgets-toggle visible hidden md:flex"
                 onClick={handleClick}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
@@ -126,7 +126,6 @@ const WidgetsToggleButton: React.FC<WidgetsToggleButtonProps> = memo(({
                         ? (isDarkMode ? '#60a5fa' : '#1d4ed8') 
                         : 'white',
                     cursor: 'pointer',
-                    display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '1.5rem',

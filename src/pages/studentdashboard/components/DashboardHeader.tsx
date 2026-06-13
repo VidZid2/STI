@@ -14,11 +14,13 @@ import type { DashboardView } from '../types';
 interface DashboardHeaderProps {
     setActiveView: (view: DashboardView) => void;
     isDemoMode: boolean;
+    toggleWidgetsSidebar?: () => void;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     setActiveView,
-    isDemoMode
+    isDemoMode,
+    toggleWidgetsSidebar
 }) => {
     const [isDarkMode, setIsDarkMode] = useState(() => 
         typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
@@ -124,6 +126,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
             <div className="header-right flex items-center gap-0.5 sm:gap-3 shrink-0">
                 <ToolbarExpandable />
+                {toggleWidgetsSidebar && (
+                    <button
+                        onClick={toggleWidgetsSidebar}
+                        className="md:hidden flex items-center justify-center w-8 h-8 rounded-full text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+                        aria-label="Toggle Quick View"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                )}
                 <div className={`w-[1px] h-6 sm:h-8 mx-0.5 sm:mx-2 ${isDarkMode ? 'bg-slate-700/50' : 'bg-zinc-200'}`}></div>
                 <UserProfileDropdown />
             </div>

@@ -300,6 +300,7 @@ const DashboardPage: React.FC = () => {
             <DashboardHeader
                 setActiveView={setActiveView}
                 isDemoMode={isDemoMode}
+                toggleWidgetsSidebar={toggleWidgetsSidebar}
             />
 
             {/* Sidebar — extracted to ./components/DashboardSidebar.tsx */}
