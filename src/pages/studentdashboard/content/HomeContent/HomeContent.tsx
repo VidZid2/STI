@@ -232,14 +232,13 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                         <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none transition-colors truncate mb-1">
                                             {profile.firstName} {profile.lastName}
                                         </h2>
-                                        <div className="flex items-center gap-1.5 flex-wrap">
-                                            <span className="w-fit px-2 py-0.5 rounded-[8px] bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border border-transparent dark:border-slate-700/50">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <span className="w-fit px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                                 Good Morning
                                             </span>
-                                            
-                                            {/* Weather Badge - Mobile/Tablet Only */}
+                                            {/* Weather Badge - Mobile Only */}
                                             {!weatherLoading && weather ? (
-                                                <div className="md:hidden flex items-center gap-1 px-2 py-0.5 bg-slate-50 dark:bg-slate-800/80 rounded-[8px] border border-slate-150 dark:border-slate-700/60 shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all">
+                                                <div className="flex items-center gap-1 px-2 py-0.5 bg-slate-50 dark:bg-slate-800/80 rounded-md border border-slate-200 dark:border-slate-700/60 shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all">
                                                     <div className="w-3.5 h-3.5 flex-shrink-0">
                                                         {weather.icon === 'sunny' && (
                                                             <svg className="w-full h-full text-amber-500" fill="currentColor" viewBox="0 0 24 24">
@@ -272,10 +271,10 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                             </svg>
                                                         )}
                                                     </div>
-                                                    <span className="text-slate-800 dark:text-slate-200 text-[10px] font-bold">{weather.temperature}°C</span>
+                                                    <span className="text-slate-800 dark:text-slate-200 text-[10px] font-bold leading-none translate-y-[0.5px]">{weather.temperature}°C</span>
                                                 </div>
                                             ) : weatherLoading ? (
-                                                <div className="md:hidden w-16 h-5 bg-slate-50 dark:bg-slate-750 animate-pulse rounded-[8px]" />
+                                                <div className="w-16 h-[22px] bg-slate-50 dark:bg-slate-750 animate-pulse rounded-md" />
                                             ) : null}
                                         </div>
                                     </div>
@@ -291,15 +290,9 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                             Good Morning
                                         </span>
                                     </div>
-                                    <div className="hidden sm:flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                                        <svg className="w-4 h-4 shrink-0 text-blue-500/70 dark:text-blue-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                        </svg>
-                                        <p className="text-sm font-medium leading-[1.4] max-w-xl">
-                                            <span className="text-slate-700 dark:text-slate-300 font-bold tracking-wide">Overview ready.</span>{" "}
-                                            Track active courses, module progress, and study momentum from one clean dashboard.
-                                        </p>
-                                    </div>
+                                    <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-[1.4] max-w-xl">
+                                        Your learning overview is ready. Track active courses, module progress, and study momentum from one clean dashboard.
+                                    </p>
                                 </div>
                             </div>
 
