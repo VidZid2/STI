@@ -101,6 +101,21 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     </div>
                 </motion.div>
 
+                {/* Mobile ONLY: "Overview Ready" Header Status Pill */}
+                <motion.div 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="sm:hidden flex items-center gap-1.5 ml-1 px-2.5 py-1.5 rounded-full border border-blue-100/50 dark:border-blue-800/30 bg-blue-50/50 dark:bg-blue-900/20"
+                >
+                    <svg className="w-3 h-3 shrink-0 text-blue-500/80 dark:text-blue-400/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                    <span className="text-[10px] font-bold tracking-wide text-blue-700 dark:text-blue-300">
+                        Overview Ready
+                    </span>
+                </motion.div>
+
                 <div
                     className="h-5 w-[1px] mx-1 sm:mx-2 hidden sm:block"
                     style={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}
