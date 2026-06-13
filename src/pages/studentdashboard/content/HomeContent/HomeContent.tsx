@@ -232,9 +232,52 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                         <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none transition-colors truncate mb-1">
                                             {profile.firstName} {profile.lastName}
                                         </h2>
-                                        <span className="w-fit px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                            Good Morning
-                                        </span>
+                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                            <span className="w-fit px-2 py-0.5 rounded-[8px] bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border border-transparent dark:border-slate-700/50">
+                                                Good Morning
+                                            </span>
+                                            
+                                            {/* Weather Badge - Mobile/Tablet Only */}
+                                            {!weatherLoading && weather ? (
+                                                <div className="md:hidden flex items-center gap-1 px-2 py-0.5 bg-slate-50 dark:bg-slate-800/80 rounded-[8px] border border-slate-150 dark:border-slate-700/60 shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all">
+                                                    <div className="w-3.5 h-3.5 flex-shrink-0">
+                                                        {weather.icon === 'sunny' && (
+                                                            <svg className="w-full h-full text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
+                                                            </svg>
+                                                        )}
+                                                        {weather.icon === 'night' && (
+                                                            <svg className="w-full h-full text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                                                            </svg>
+                                                        )}
+                                                        {weather.icon === 'cloudy' && (
+                                                            <svg className="w-full h-full text-slate-400 dark:text-slate-500" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                            </svg>
+                                                        )}
+                                                        {weather.icon === 'partly-cloudy' && (
+                                                            <svg className="w-full h-full text-sky-400" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                            </svg>
+                                                        )}
+                                                        {weather.icon === 'rainy' && (
+                                                            <svg className="w-full h-full text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                            </svg>
+                                                        )}
+                                                        {weather.icon === 'stormy' && (
+                                                            <svg className="w-full h-full text-slate-500 dark:text-slate-400" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
+                                                            </svg>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-slate-800 dark:text-slate-200 text-[10px] font-bold">{weather.temperature}°C</span>
+                                                </div>
+                                            ) : weatherLoading ? (
+                                                <div className="md:hidden w-16 h-5 bg-slate-50 dark:bg-slate-750 animate-pulse rounded-[8px]" />
+                                            ) : null}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -251,48 +294,6 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                     <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-[1.4] max-w-xl">
                                         Your learning overview is ready. Track active courses, module progress, and study momentum from one clean dashboard.
                                     </p>
-
-                                    {/* Weather Badge - Mobile/Tablet Only */}
-                                    {!weatherLoading && weather ? (
-                                        <div className="md:hidden flex items-center gap-1.5 mt-2 self-start px-2.5 py-1 bg-slate-50 dark:bg-slate-800/80 rounded-[10px] border border-slate-150 dark:border-slate-700/60 shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all">
-                                            <div className="w-4 h-4 flex-shrink-0">
-                                                {weather.icon === 'sunny' && (
-                                                    <svg className="w-full h-full text-amber-500" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
-                                                    </svg>
-                                                )}
-                                                {weather.icon === 'night' && (
-                                                    <svg className="w-full h-full text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                                                    </svg>
-                                                )}
-                                                {weather.icon === 'cloudy' && (
-                                                    <svg className="w-full h-full text-slate-400 dark:text-slate-500" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
-                                                    </svg>
-                                                )}
-                                                {weather.icon === 'partly-cloudy' && (
-                                                    <svg className="w-full h-full text-sky-400" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
-                                                    </svg>
-                                                )}
-                                                {weather.icon === 'rainy' && (
-                                                    <svg className="w-full h-full text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
-                                                    </svg>
-                                                )}
-                                                {weather.icon === 'stormy' && (
-                                                    <svg className="w-full h-full text-slate-500 dark:text-slate-400" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
-                                                    </svg>
-                                                )}
-                                            </div>
-                                            <span className="text-slate-800 dark:text-slate-200 text-[10px] font-bold">{weather.temperature}°C</span>
-                                            <span className="text-slate-400 dark:text-slate-500 text-[9px] font-bold uppercase tracking-wider">{weather.condition}</span>
-                                        </div>
-                                    ) : weatherLoading ? (
-                                        <div className="md:hidden w-20 h-5 bg-slate-50 dark:bg-slate-750 animate-pulse rounded-[10px] mt-2" />
-                                    ) : null}
                                 </div>
                             </div>
 
