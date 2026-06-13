@@ -9,11 +9,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
     goalTypeConfig,
     type GoalWithProgress,
-
-
 } from '../../../../../services/goalsService';
 import GoalIcon from '../components/GoalIcon';
 import { getPriorityInfo, formatTimeRemaining } from '../shared';
+// import { ModalTooltip } from '../../PathsContent/components/PathProgressRing';
 
 export interface GoalDetailModalProps {
     goal: GoalWithProgress | null;
@@ -38,6 +37,8 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
         textMuted: isDarkMode ? '#94a3b8' : '#334155',
         accent: '#3b82f6',
     };
+
+
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -111,175 +112,71 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                             }}
                         >
                             {/* Header */}
-                            <div style={{ padding: '20px 24px', borderBottom: `1px solid ${colors.border}` }}>
-                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
+                            <motion.div 
+                                style={{ padding: '12px 16px' }}
+                                className="relative z-10 shrink-0 border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-t-[20px]"
+                            >
+                                {/* Student Tools Style Header Card */}
+                                <motion.div 
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
+                                    className={`relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[20px] sm:rounded-[24px] flex items-center group transition-all duration-300 hover:shadow-md hover:border-slate-300/80 dark:hover:border-slate-700/50 text-left p-[12px_16px] gap-[12px] mb-0`}
+                                >
+                                    {/* SaaS Background Accents */}
+                                    <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" style={{ backgroundColor: `${config.color}15` }} aria-hidden="true" />
+                                    <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" style={{ backgroundColor: `${config.color}10` }} aria-hidden="true" />
+
                                     <motion.div
-                                        initial={{ scale: 0, rotate: -180 }}
-                                        animate={{ scale: 1, rotate: 0 }}
-                                        transition={{ delay: 0.1, type: 'spring', stiffness: 400 }}
-                                        whileHover={{ scale: 1.1, rotate: 5 }}
+                                        whileHover={{ scale: 1.05, rotate: -5 }}
+                                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                        className={`flex items-center justify-center flex-shrink-0 shadow-sm relative z-10 w-[40px] h-[40px] rounded-[12px]`}
                                         style={{
-                                            width: '52px',
-                                            height: '52px',
-                                            borderRadius: '14px',
                                             background: `linear-gradient(135deg, ${config.color}20 0%, ${config.color}10 100%)`,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            flexShrink: 0,
-                                            cursor: 'pointer',
-                                            boxShadow: `0 4px 12px ${config.color}20`,
+                                            border: `1px solid ${config.color}30`,
+                                            color: config.color
                                         }}
                                     >
-                                        <GoalIcon type={goal.type} color={config.color} size={26} />
+                                        <div className="sm:hidden flex items-center justify-center"><GoalIcon type={goal.type} color={config.color} size={20} /></div>
+                                        <div className="hidden sm:flex items-center justify-center"><GoalIcon type={goal.type} color={config.color} size={24} /></div>
                                     </motion.div>
 
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                        <h2 style={{
-                                            margin: 0,
-                                            fontSize: '18px',
-                                            fontWeight: 600,
-                                            color: colors.textPrimary,
-                                            marginBottom: '6px',
-                                        }}>
+                                    <div className="relative z-10 flex-1 min-w-0 pr-2 sm:pr-4">
+                                        <h2 
+                                            className={`font-bold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-0.5 sm:mb-1 truncate transition-all duration-300 text-[16px]`}
+                                        >
                                             {goal.title}
                                         </h2>
-                                        {goal.description && (
-                                            <p style={{
-                                                margin: 0,
-                                                fontSize: '13px',
-                                                color: colors.textSecondary,
-                                                marginBottom: '8px',
-                                            }}>
-                                                {goal.description}
-                                            </p>
-                                        )}
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                            <motion.span
-                                                initial={{ opacity: 0, x: -10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: 0.2 }}
-                                                style={{
-                                                    display: 'inline-flex',
-                                                    alignItems: 'center',
-                                                    gap: '4px',
-                                                    padding: '3px 8px',
-                                                    borderRadius: '6px',
-                                                    background: `${priorityInfo.color}15`,
-                                                    fontSize: '11px',
-                                                    fontWeight: 500,
-                                                    color: priorityInfo.color,
-                                                }}
-                                            >
+                                        
+                                        {/* Description hidden in compact mode */}
+
+                                        <div 
+                                            className={`flex flex-wrap items-center overflow-hidden transition-all duration-300 mt-[2px] gap-[6px] max-h-[24px]`}
+                                        >
+                                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-red-50 dark:bg-red-500/10 text-[11px] sm:text-[12px] font-medium whitespace-nowrap" style={{ color: priorityInfo.color, backgroundColor: `${priorityInfo.color}15` }}>
                                                 {priorityInfo.label} Priority
-                                            </motion.span>
-                                            <motion.span
-                                                initial={{ opacity: 0, x: -10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: 0.25 }}
-                                                style={{
-                                                    display: 'inline-flex',
-                                                    alignItems: 'center',
-                                                    gap: '4px',
-                                                    padding: '3px 8px',
-                                                    borderRadius: '6px',
-                                                    background: `${config.color}15`,
-                                                    fontSize: '11px',
-                                                    fontWeight: 500,
-                                                    color: config.color,
-                                                }}
-                                            >
+                                            </div>
+                                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-500/10 text-[11px] sm:text-[12px] font-medium whitespace-nowrap" style={{ color: config.color, backgroundColor: `${config.color}15` }}>
                                                 {config.label}
-                                            </motion.span>
+                                            </div>
                                         </div>
                                     </div>
-
-                                    <motion.button
-                                        whileHover={{ scale: 1.1, background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' }}
-                                        whileTap={{ scale: 0.95 }}
-                                        onClick={onClose}
-                                        style={{
-                                            width: '36px',
-                                            height: '36px',
-                                            borderRadius: '10px',
-                                            border: 'none',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: colors.textSecondary,
-                                        }}
-                                    >
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <line x1="18" y1="6" x2="6" y2="18" />
-                                            <line x1="6" y1="6" x2="18" y2="18" />
-                                        </svg>
-                                    </motion.button>
-                                </div>
-
-                                {/* Stats Row */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.15 }}
-                                    style={{
-                                        display: 'flex',
-                                        gap: '12px',
-                                        padding: '12px 16px',
-                                        borderRadius: '12px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                    }}
-                                >
-                                    <div style={{ flex: 1, textAlign: 'center' }}>
-                                        <div style={{ fontSize: '11px', color: colors.textMuted, marginBottom: '4px' }}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '4px', verticalAlign: 'middle' }}>
-                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                    <div className="relative z-20 self-start sm:self-center">
+                                        <motion.button
+                                            onClick={onClose}
+                                            whileHover={{ scale: 1.1 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            className="flex-shrink-0 flex items-center justify-center rounded-lg sm:rounded-xl border border-zinc-200/80 bg-white/80 backdrop-blur-md p-2 text-zinc-500 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700/80 dark:bg-zinc-800/80 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                                            aria-label="Close modal"
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5">
+                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                <line x1="6" y1="6" x2="18" y2="18"></line>
                                             </svg>
-                                            Progress
-                                        </div>
-                                        <div style={{ fontSize: '16px', fontWeight: 700, color: config.color }}>
-                                            {goal.type === 'study_time' && goal.unit === 'hours' 
-                                                ? `${Math.floor(goal.current_value)}h ${Math.round((goal.current_value % 1) * 60)}m / ${goal.target_value}h`
-                                                : `${goal.current_value}/${goal.target_value}`}
-                                        </div>
-                                        <div style={{ fontSize: '10px', color: colors.textMuted }}>
-                                            {goal.type === 'study_time' && goal.unit === 'hours' ? '' : goal.unit}
-                                        </div>
-                                    </div>
-                                    <div style={{ width: '1px', background: colors.border }} />
-                                    <div style={{ flex: 1, textAlign: 'center' }}>
-                                        <div style={{ fontSize: '11px', color: colors.textMuted, marginBottom: '4px' }}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '4px', verticalAlign: 'middle' }}>
-                                                <circle cx="12" cy="12" r="10" />
-                                                <polyline points="12 6 12 12 16 14" />
-                                            </svg>
-                                            Time Left
-                                        </div>
-                                        <div style={{ 
-                                            fontSize: '14px', 
-                                            fontWeight: 600, 
-                                            color: goal.is_overdue ? '#ef4444' : colors.textPrimary 
-                                        }}>
-                                            {formatTimeRemaining(goal.days_remaining)}
-                                        </div>
-                                    </div>
-                                    <div style={{ width: '1px', background: colors.border }} />
-                                    <div style={{ flex: 1, textAlign: 'center' }}>
-                                        <div style={{ fontSize: '11px', color: colors.textMuted, marginBottom: '4px' }}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '4px', verticalAlign: 'middle' }}>
-                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                                <polyline points="22 4 12 14.01 9 11.01" />
-                                            </svg>
-                                            Completion
-                                        </div>
-                                        <div style={{ fontSize: '16px', fontWeight: 700, color: goal.progress_percentage === 100 ? '#10b981' : config.color }}>
-                                            {goal.progress_percentage}%
-                                        </div>
+                                        </motion.button>
                                     </div>
                                 </motion.div>
-                            </div>
+                            </motion.div>
 
                             {/* Progress Section */}
                             <div style={{ padding: '20px 24px', flex: 1, overflowY: 'auto' }}>
@@ -294,92 +191,155 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                         </div>
                                         <span style={{ fontSize: '14px', fontWeight: 700, color: config.color }}>{goal.progress_percentage}%</span>
                                     </div>
-                                    <div style={{
-                                        height: '10px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
-                                        borderRadius: '5px',
-                                        overflow: 'hidden',
-                                    }}>
+                                    <div className="w-full h-3 rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.15)] border border-black/5 dark:border-white/5">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: `${goal.progress_percentage}%` }}
-                                            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                                            transition={{ duration: 1, ease: "easeOut" }}
+                                            className="h-full rounded-full relative"
                                             style={{
-                                                height: '100%',
                                                 background: goal.progress_percentage === 100 
                                                     ? 'linear-gradient(90deg, #10b981, #34d399)' 
                                                     : `linear-gradient(90deg, ${config.color}, ${config.color}cc)`,
-                                                borderRadius: '5px',
                                             }}
                                         />
                                     </div>
                                 </div>
+
+                                {/* Stats Row */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.15 }}
+                                    className="flex items-center justify-between gap-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 shadow-sm rounded-[20px] p-4 mb-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default"
+                                >
+                                    {/* Column 1 */}
+                                    <div className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-1 sm:px-2">
+                                        <div className="text-slate-400 dark:text-slate-500 shrink-0">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                            </svg>
+                                        </div>
+                                        <div className="flex flex-col text-left min-w-0">
+                                            <div className="text-[12px] font-medium text-slate-500 dark:text-slate-400 leading-tight mb-1">
+                                                Progress
+                                            </div>
+                                            <div className="text-[14px] sm:text-[15px] font-bold leading-none truncate" style={{ color: config.color }}>
+                                                {goal.type === 'study_time' && goal.unit === 'hours' 
+                                                    ? `${Math.floor(goal.current_value)}h ${Math.round((goal.current_value % 1) * 60)}m / ${goal.target_value}h`
+                                                    : `${goal.current_value}/${goal.target_value}`}
+                                            </div>
+                                            {!(goal.type === 'study_time' && goal.unit === 'hours') && (
+                                                <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-none">
+                                                    {goal.unit}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Divider 1 */}
+                                    <div className="w-[1px] h-8 bg-slate-200/60 dark:bg-slate-700/60" />
+
+                                    {/* Column 2 */}
+                                    <div className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-1 sm:px-2">
+                                        <div className="text-slate-400 dark:text-slate-500 shrink-0">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <polyline points="12 6 12 12 16 14" />
+                                            </svg>
+                                        </div>
+                                        <div className="flex flex-col text-left min-w-0">
+                                            <div className="text-[12px] font-medium text-slate-500 dark:text-slate-400 leading-tight mb-1">
+                                                Time Left
+                                            </div>
+                                            <div className="text-[14px] sm:text-[15px] font-bold text-slate-800 dark:text-slate-200 leading-none truncate" style={{ color: goal.is_overdue ? '#ef4444' : undefined }}>
+                                                {formatTimeRemaining(goal.days_remaining)}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Divider 2 */}
+                                    <div className="w-[1px] h-8 bg-slate-200/60 dark:bg-slate-700/60" />
+
+                                    {/* Column 3 */}
+                                    <div className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-1 sm:px-2">
+                                        <div className="text-slate-400 dark:text-slate-500 shrink-0">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                <polyline points="22 4 12 14.01 9 11.01" />
+                                            </svg>
+                                        </div>
+                                        <div className="flex flex-col text-left min-w-0">
+                                            <div className="text-[12px] font-medium text-slate-500 dark:text-slate-400 leading-tight mb-1">
+                                                Completion
+                                            </div>
+                                            <div className="text-[14px] sm:text-[15px] font-bold leading-none truncate" style={{ color: goal.progress_percentage === 100 ? '#10b981' : config.color }}>
+                                                {goal.progress_percentage}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
 
                                 {/* Status Badge */}
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
-                                    style={{
-                                        padding: '14px 16px',
-                                        borderRadius: '12px',
-                                        background: goal.status === 'completed' 
-                                            ? 'rgba(16, 185, 129, 0.08)' 
-                                            : goal.status === 'paused'
-                                            ? 'rgba(245, 158, 11, 0.08)'
-                                            : 'rgba(59, 130, 246, 0.08)',
-                                        border: `1px solid ${goal.status === 'completed' 
-                                            ? 'rgba(16, 185, 129, 0.15)' 
-                                            : goal.status === 'paused'
-                                            ? 'rgba(245, 158, 11, 0.15)'
-                                            : 'rgba(59, 130, 246, 0.15)'}`,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '12px',
-                                        marginBottom: '16px',
-                                    }}
+                                    className={`bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] p-4 flex flex-row items-center gap-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default mb-4`}
                                 >
                                     <motion.div
-                                        animate={goal.status === 'active' ? { scale: [1, 1.1, 1] } : {}}
-                                        transition={{ duration: 2, repeat: Infinity }}
-                                        style={{
-                                            width: '36px',
-                                            height: '36px',
-                                            borderRadius: '10px',
-                                            background: goal.status === 'completed' 
-                                                ? 'rgba(16, 185, 129, 0.15)' 
-                                                : goal.status === 'paused'
-                                                ? 'rgba(245, 158, 11, 0.15)'
-                                                : 'rgba(59, 130, 246, 0.15)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: goal.status === 'completed' ? '#10b981' : goal.status === 'paused' ? '#f59e0b' : '#3b82f6',
+                                        whileHover={{ scale: 1.05, rotate: -5 }}
+                                        animate={goal.status === 'active' ? { scale: [1, 1.05, 1] } : {}}
+                                        transition={{ 
+                                            duration: goal.status === 'active' ? 2 : undefined, 
+                                            repeat: goal.status === 'active' ? Infinity : undefined, 
+                                            type: "spring", stiffness: 400, damping: 15 
                                         }}
+                                        className={`w-14 h-14 rounded-[16px] border flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300 ${
+                                            goal.status === 'completed' ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800/50 text-emerald-600 dark:text-emerald-400'
+                                            : goal.status === 'paused' ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-100 dark:border-amber-800/50 text-amber-600 dark:text-amber-400'
+                                            : 'bg-blue-50 dark:bg-blue-900/30 border-blue-100 dark:border-blue-800/50 text-blue-600 dark:text-blue-400'
+                                        }`}
                                     >
                                         {goal.status === 'completed' ? (
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                                                 <polyline points="22 4 12 14.01 9 11.01" />
                                             </svg>
                                         ) : goal.status === 'paused' ? (
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                                                 <circle cx="12" cy="12" r="10" />
                                                 <rect x="9" y="9" width="2" height="6" fill="currentColor" />
                                                 <rect x="13" y="9" width="2" height="6" fill="currentColor" />
                                             </svg>
                                         ) : (
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                                                 <circle cx="12" cy="12" r="10" />
                                                 <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
                                             </svg>
                                         )}
                                     </motion.div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: '13px', fontWeight: 600, color: colors.textPrimary }}>
+                                    <div className="flex flex-col min-w-0 flex-1">
+                                        <h2 className="text-[15px] sm:text-[16px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-1.5 transition-colors">
                                             {goal.status === 'completed' ? 'Goal Achieved! 🎉' : goal.status === 'paused' ? 'Goal Paused' : 'In Progress'}
-                                        </div>
-                                        <div style={{ fontSize: '11px', color: colors.textMuted }}>
+                                        </h2>
+                                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] sm:text-[13px] font-semibold border shadow-sm w-fit ${
+                                            goal.status === 'completed' 
+                                                ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20'
+                                                : goal.status === 'paused'
+                                                ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'
+                                                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700/80'
+                                        }`}>
+                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                                {goal.status === 'completed' ? (
+                                                    <><path strokeLinecap="round" strokeLinejoin="round" d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline strokeLinecap="round" strokeLinejoin="round" points="22 4 12 14.01 9 11.01" /></>
+                                                ) : goal.status === 'paused' ? (
+                                                    <><circle cx="12" cy="12" r="10" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3" /></>
+                                                ) : (
+                                                    <><circle cx="12" cy="12" r="10" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3" /></>
+                                                )}
+                                            </svg>
                                             {goal.status === 'completed' 
                                                 ? `Completed on ${new Date(goal.completed_at!).toLocaleDateString()}`
                                                 : goal.status === 'paused'
@@ -396,195 +356,38 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                     </div>
                                 </motion.div>
 
-                                {/* Milestones Section */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.3 }}
-                                    style={{ marginBottom: '16px' }}
-                                >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                        <div style={{
-                                            width: '24px',
-                                            height: '24px',
-                                            borderRadius: '6px',
-                                            background: `${config.color}10`,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}>
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={config.color} strokeWidth="2">
-                                                <path d="M12 20V10" />
-                                                <path d="M18 20V4" />
-                                                <path d="M6 20v-4" />
-                                            </svg>
-                                        </div>
-                                        <span style={{ fontSize: '13px', fontWeight: 600, color: colors.textPrimary }}>Milestones</span>
-                                    </div>
-                                    
-                                    {/* Progress Track */}
-                                    <div style={{ position: 'relative', marginBottom: '8px' }}>
-                                        {/* Background Track */}
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            left: '12px',
-                                            right: '12px',
-                                            height: '3px',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
-                                            borderRadius: '2px',
-                                            transform: 'translateY(-50%)',
-                                            zIndex: 0,
-                                        }} />
-                                        {/* Progress Track */}
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${Math.min(goal.progress_percentage, 100)}%` }}
-                                            transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                                            style={{
-                                                position: 'absolute',
-                                                top: '50%',
-                                                left: '12px',
-                                                height: '3px',
-                                                background: `linear-gradient(90deg, ${config.color}, ${config.color}cc)`,
-                                                borderRadius: '2px',
-                                                transform: 'translateY(-50%)',
-                                                zIndex: 1,
-                                            }}
-                                        />
-                                        
-                                        {/* Milestone Points */}
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
-                                            {[25, 50, 75, 100].map((milestone, index) => {
-                                                const isAchieved = goal.progress_percentage >= milestone;
-                                                const isCurrent = goal.progress_percentage >= milestone - 25 && goal.progress_percentage < milestone;
-                                                return (
-                                                    <motion.div
-                                                        key={milestone}
-                                                        initial={{ scale: 0, opacity: 0 }}
-                                                        animate={{ scale: 1, opacity: 1 }}
-                                                        transition={{ 
-                                                            delay: 0.4 + index * 0.1,
-                                                            type: 'spring',
-                                                            stiffness: 400,
-                                                            damping: 20
-                                                        }}
-                                                        whileHover={{ scale: 1.1 }}
-                                                        style={{
-                                                            display: 'flex',
-                                                            flexDirection: 'column',
-                                                            alignItems: 'center',
-                                                            gap: '6px',
-                                                            cursor: 'pointer',
-                                                        }}
-                                                    >
-                                                        <motion.div
-                                                            animate={isCurrent ? { 
-                                                                boxShadow: [`0 0 0 0 ${config.color}40`, `0 0 0 8px ${config.color}00`]
-                                                            } : {}}
-                                                            transition={{ duration: 1.5, repeat: isCurrent ? Infinity : 0 }}
-                                                            style={{
-                                                                width: '28px',
-                                                                height: '28px',
-                                                                borderRadius: '50%',
-                                                                background: isAchieved 
-                                                                    ? `linear-gradient(135deg, ${config.color}, ${config.color}dd)`
-                                                                    : isDarkMode ? 'rgba(255,255,255,0.08)' : '#ffffff',
-                                                                border: isAchieved 
-                                                                    ? 'none' 
-                                                                    : `2px solid ${isCurrent ? config.color : colors.border}`,
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center',
-                                                                boxShadow: isAchieved 
-                                                                    ? `0 2px 8px ${config.color}40`
-                                                                    : '0 1px 3px rgba(0,0,0,0.08)',
-                                                            }}
-                                                        >
-                                                            {isAchieved ? (
-                                                                <motion.svg 
-                                                                    initial={{ scale: 0 }}
-                                                                    animate={{ scale: 1 }}
-                                                                    transition={{ delay: 0.5 + index * 0.1, type: 'spring' }}
-                                                                    width="14" 
-                                                                    height="14" 
-                                                                    viewBox="0 0 24 24" 
-                                                                    fill="none" 
-                                                                    stroke="#ffffff" 
-                                                                    strokeWidth="3"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                >
-                                                                    <polyline points="20 6 9 17 4 12" />
-                                                                </motion.svg>
-                                                            ) : (
-                                                                <span style={{ 
-                                                                    fontSize: '10px', 
-                                                                    fontWeight: 600, 
-                                                                    color: isCurrent ? config.color : colors.textMuted 
-                                                                }}>
-                                                                    {milestone}
-                                                                </span>
-                                                            )}
-                                                        </motion.div>
-                                                        <span style={{ 
-                                                            fontSize: '11px', 
-                                                            fontWeight: isAchieved ? 600 : 500, 
-                                                            color: isAchieved ? config.color : colors.textMuted,
-                                                        }}>
-                                                            {milestone}%
-                                                        </span>
-                                                    </motion.div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                </motion.div>
+
 
                                 {/* Quick Stats */}
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.4 }}
-                                    style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: '1fr 1fr',
-                                        gap: '10px',
-                                    }}
+                                    className="grid grid-cols-2 gap-3"
                                 >
-                                    <div style={{
-                                        padding: '12px',
-                                        borderRadius: '10px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        border: `1px solid ${colors.border}`,
-                                    }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
+                                    <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-[12px] p-3 sm:p-3.5 transition-all hover:shadow-sm">
+                                        <div className="flex items-center gap-1.5 mb-2">
+                                            <svg className="w-3.5 h-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                                                 <line x1="16" y1="2" x2="16" y2="6" />
                                                 <line x1="8" y1="2" x2="8" y2="6" />
                                                 <line x1="3" y1="10" x2="21" y2="10" />
                                             </svg>
-                                            <span style={{ fontSize: '10px', color: colors.textMuted }}>Started</span>
+                                            <span className="text-[11px] sm:text-[12px] font-medium text-slate-500 dark:text-slate-400">Started</span>
                                         </div>
-                                        <div style={{ fontSize: '12px', fontWeight: 600, color: colors.textPrimary }}>
+                                        <div className="text-[13px] sm:text-[14px] font-bold text-slate-900 dark:text-slate-100">
                                             {new Date(goal.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                         </div>
                                     </div>
-                                    <div style={{
-                                        padding: '12px',
-                                        borderRadius: '10px',
-                                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        border: `1px solid ${colors.border}`,
-                                    }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
+                                    <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-[12px] p-3 sm:p-3.5 transition-all hover:shadow-sm">
+                                        <div className="flex items-center gap-1.5 mb-2">
+                                            <svg className="w-3.5 h-3.5 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                 <circle cx="12" cy="12" r="10" />
                                                 <polyline points="12 6 12 12 16 14" />
                                             </svg>
-                                            <span style={{ fontSize: '10px', color: colors.textMuted }}>Daily Avg</span>
+                                            <span className="text-[11px] sm:text-[12px] font-medium text-slate-500 dark:text-slate-400">Daily Avg</span>
                                         </div>
-                                        <div style={{ fontSize: '12px', fontWeight: 600, color: colors.textPrimary }}>
+                                        <div className="text-[13px] sm:text-[14px] font-bold text-slate-900 dark:text-slate-100">
                                             {goal.type === 'study_time' && goal.unit === 'hours' 
                                                 ? (() => {
                                                     const avgHours = goal.current_value / Math.max(1, Math.ceil((Date.now() - new Date(goal.start_date).getTime()) / (1000 * 60 * 60 * 24)));
@@ -610,34 +413,15 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                     }}
                                 >
                                     {/* Mark Complete Button */}
-                                    <motion.button
+                                    <motion.div
                                         initial={{ opacity: 0, y: 5 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.55 }}
-                                        whileHover={{ 
-                                            scale: 1.02, 
-                                            boxShadow: `0 8px 28px ${config.color}45`,
-                                        }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => { onComplete(goal.id); onClose(); }}
-                                        style={{
-                                            width: '100%',
-                                            padding: '14px 24px',
-                                            borderRadius: '12px',
-                                            border: 'none',
-                                            background: `linear-gradient(135deg, ${config.color}, ${config.color}dd)`,
-                                            color: '#ffffff',
-                                            fontSize: '14px',
-                                            fontWeight: 600,
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '10px',
-                                            boxShadow: `0 4px 16px ${config.color}35`,
-                                            transition: 'all 0.2s ease',
-                                        }}
                                     >
+                                        <button
+                                            onClick={() => { onComplete(goal.id); onClose(); }}
+                                            className="w-full flex items-center justify-center gap-1.5 font-bold py-2.5 px-4 rounded-[14px] transition-colors shadow-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus:outline-none"
+                                        >
                                         <motion.div
                                             animate={{ scale: [1, 1.15, 1] }}
                                             transition={{ duration: 1.5, delay: 0.8, repeat: Infinity }}
@@ -648,7 +432,8 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                             </svg>
                                         </motion.div>
                                         Mark Complete
-                                    </motion.button>
+                                    </button>
+                                    </motion.div>
                                 </motion.div>
                             )}
                         </motion.div>

@@ -20,14 +20,15 @@ import {
 import type { GoalWithProgress, GoalPriority } from '../../../../services/goalsService';
 import { useNotifications } from '../../../../contexts/NotificationContext';
 import GoalIcon from './components/GoalIcon';
-import ActionTooltip from './components/ActionTooltip';
 
 import { FilterTabs } from './components/FilterTabs';
 import { ProgressHistoryChart } from './components/ProgressHistoryChart';
-import { CelebrationAnimation } from './components/CelebrationAnimation';
+import { AnimatedCircularProgressBar } from '@/components/ui/animated-circular-progress-bar';
+import { triggerGlobalToast } from '../../components/DailyInspirationToast';
 import GoalDetailModal from './modals/GoalDetailModal';
 import CreateGoalModal from './modals/CreateGoalModal';
 import AchievementsModal from './modals/AchievementsModal';
+import { EmptyState } from '../CourseViewPage/components/SharedComponents';
 
 type NewGoalData = any;
 
@@ -191,7 +192,7 @@ const GoalsContent: React.FC = () => {
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
     const [completedGoalIds, setCompletedGoalIds] = useState<Set<string>>(new Set());
     const [isAchievementsModalOpen, setIsAchievementsModalOpen] = useState(false);
-    const [celebrationGoal, setCelebrationGoal] = useState<{ id: string; title: string } | null>(null);
+
     const { addNotification } = useNotifications();
 
     // Detect dark mode from body class (synced with dashboard)
@@ -418,8 +419,8 @@ const GoalsContent: React.FC = () => {
         const updated = await updateGoalStatus(id, 'completed');
         if (updated) {
             setGoals(prev => prev.map(g => g.id === id ? updated : g));
-            // Trigger celebration animation
-            setCelebrationGoal({ id, title: goal?.title || 'Goal' });
+            // Trigger global toast notification
+            triggerGlobalToast('goal_completed', { title: goal?.title || 'Goal' });
             // Show notification only if enabled and only once
             if (goal?.metadata?.notifications_enabled) {
                 addNotification(
@@ -463,152 +464,180 @@ const GoalsContent: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{
-                padding: '24px 32px',
-                minHeight: '100%',
-                background: colors.bg,
-            }}
+            className="p-4 sm:p-6 lg:p-8 max-w-[1200px] mx-auto min-h-screen pb-24"
         >
-            {/* Header Section - Matching PathsContent */}
+            {/* Header Section - Modernized to match PathsContent */}
             <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    justifyContent: 'space-between',
-                    marginBottom: '24px',
-                    padding: '20px 24px',
-                    borderRadius: '16px',
-                    background: colors.cardBg,
-                    border: `1px solid ${colors.border}`,
-                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-[72px] md:mt-0 mb-7"
             >
+                <motion.div 
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative flex flex-col gap-3 sm:gap-4 p-5 sm:p-7 -mx-4 sm:-mx-6 lg:mx-0 rounded-[20px] sm:rounded-[24px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700"
+                >
+                    {/* Top Row: Title & Action */}
+                    <div className="relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-6 min-w-0 w-full sm:w-auto">
+                            {/* Circular Progress Module */}
+                            <div className="relative flex-shrink-0 mb-1 sm:mb-0">
+                                {/* The Circle */}
+                                <div className="relative w-[72px] h-[72px] sm:w-[84px] sm:h-[84px]">
+                                    {stats.total > 0 ? (
+                                        <AnimatedCircularProgressBar
+                                            max={100}
+                                            min={0}
+                                            value={Math.round((stats.completed / stats.total) * 100)}
+                                            gaugePrimaryColor="rgb(59, 130, 246)"
+                                            gaugeSecondaryColor={isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)"}
+                                            className="w-full h-full text-blue-500"
+                                            hideText={true}
+                                        >
+                                            {/* Inner Icon Container */}
+                                            <motion.div
+                                                initial={{ opacity: 0, scale: 0.8 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                                                whileHover={{ scale: 1.05, rotate: -5, transition: { type: 'spring', stiffness: 400, damping: 15 } }}
+                                                className="absolute flex items-center justify-center shadow-sm transition-all duration-500 inset-0 m-auto w-[44px] h-[44px] sm:w-[52px] sm:h-[52px] rounded-full bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20"
+                                            >
+                                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400 transition-all duration-500 sm:w-7 sm:h-7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <circle cx="12" cy="12" r="10" />
+                                                    <circle cx="12" cy="12" r="6" />
+                                                    <circle cx="12" cy="12" r="2" />
+                                                </svg>
+                                            </motion.div>
+                                        </AnimatedCircularProgressBar>
+                                    ) : (
+                                        <div className="w-full h-full relative">
+                                            {/* Inner Icon Container (Empty State) */}
+                                            <motion.div
+                                                initial={{ opacity: 0, scale: 0.8 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                                                whileHover={{ scale: 1.05, rotate: -5, transition: { type: 'spring', stiffness: 400, damping: 15 } }}
+                                                className="absolute flex items-center justify-center shadow-sm transition-all duration-500 inset-0 m-auto w-[56px] h-[56px] sm:w-[60px] sm:h-[60px] rounded-[16px] sm:rounded-[20px] bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-100 dark:from-blue-500/10 dark:to-blue-500/5 dark:border-blue-500/20"
+                                            >
+                                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400 transition-all duration-500 w-8 h-8 sm:w-10 sm:h-10" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <circle cx="12" cy="12" r="10" />
+                                                    <circle cx="12" cy="12" r="6" />
+                                                    <circle cx="12" cy="12" r="2" />
+                                                </svg>
+                                            </motion.div>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {/* Overlapping Custom Badge */}
+                                {stats.total > 0 && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10, x: "-50%", scale: 0.8 }}
+                                        animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+                                        transition={{ duration: 0.4, delay: 0.4, type: "spring", stiffness: 300, damping: 20 }}
+                                        className="absolute -bottom-1.5 sm:-bottom-2 left-1/2 px-1.5 sm:px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 border-[2px] sm:border-[2.5px] border-white dark:border-slate-800 shadow-sm flex items-center justify-center whitespace-nowrap z-10 min-w-[36px] sm:min-w-[40px]"
+                                    >
+                                        <span className="text-[11px] sm:text-[13px] font-black text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
+                                            {Math.round((stats.completed / stats.total) * 100)}%
+                                        </span>
+                                    </motion.div>
+                                )}
+                            </div>
+                            
+                            {/* Title & Description */}
+                            <div className="min-w-0 flex flex-col justify-center items-center sm:items-start py-1">
+                                <div className="flex items-center justify-center sm:justify-start gap-3 mb-2 sm:mb-3 flex-wrap">
+                                    <h1 className="text-xl sm:text-[26px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none">
+                                        Learning Goals
+                                    </h1>
+                                </div>
+                                <p className="text-sm sm:text-[14.5px] font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl text-center sm:text-left">
+                                    Track your progress and achieve your learning milestones. Set clear objectives and monitor your daily progression.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
-                {/* Left side - Title and description */}
-                <motion.div
+                    {/* Bottom Row: Detailed Metrics */}
+                    <div className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-2 sm:mt-0">
+                        {/* Metric 1 */}
+                        <motion.div 
+                            className="flex flex-col p-3 sm:p-4 rounded-[16px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700"
+                        >
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="p-1.5 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <circle cx="12" cy="12" r="6" />
+                                        <circle cx="12" cy="12" r="2" />
+                                    </svg>
+                                </div>
+                                <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Total Goals</span>
+                            </div>
+                            <div className="flex items-baseline gap-1.5">
+                                <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.total}</span>
+                                <span className="text-xs font-medium text-slate-500">Created</span>
+                            </div>
+                        </motion.div>
+
+                        {/* Metric 2 */}
+                        <motion.div 
+                            className="flex flex-col p-3 sm:p-4 rounded-[16px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-700"
+                        >
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="p-1.5 rounded-md bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <polyline points="12 6 12 12 16 14" />
+                                    </svg>
+                                </div>
+                                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Active Focus</span>
+                            </div>
+                            <div className="flex items-baseline gap-1.5">
+                                <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.active}</span>
+                                <span className="text-xs font-medium text-slate-500">In Progress</span>
+                            </div>
+                        </motion.div>
+
+                        {/* Metric 3 */}
+                        <motion.div 
+                            className="flex flex-col p-3 sm:p-4 rounded-[16px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700 col-span-2 md:col-span-1"
+                        >
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="p-1.5 rounded-md bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                        <polyline points="22 4 12 14.01 9 11.01" />
+                                    </svg>
+                                </div>
+                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Milestones</span>
+                            </div>
+                            <div className="flex items-baseline gap-1.5">
+                                <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.completed}</span>
+                                <span className="text-xs font-medium text-slate-500">Completed</span>
+                            </div>
+                        </motion.div>
+                    </div>
+
+                    {/* Search and Filter Bar Moved Inside Header */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="relative z-30 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 shadow-sm rounded-[20px] p-3 sm:p-4 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-5 mt-4 sm:mt-5 w-full transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+                    >
+                {/* Search Input with Suggestions */}
+                <motion.div 
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4, delay: 0.15 }}
-                    style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '16px' }}
+                    transition={{ delay: 0.3, duration: 0.4 }}
+                    className="relative flex-1 min-w-[220px] group/search"
                 >
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.1, type: 'spring', stiffness: 400 }}
-                        style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '12px',
-                            background: 'rgba(59, 130, 246, 0.1)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#3b82f6',
-                        }}
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="12" cy="12" r="10" />
-                            <circle cx="12" cy="12" r="6" />
-                            <circle cx="12" cy="12" r="2" />
-                        </svg>
-                    </motion.div>
-                    <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: colors.textPrimary }}>
-                                Learning Goals
-                            </h1>
-                            <motion.span
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.25 }}
-                                style={{
-                                    fontSize: '10px',
-                                    fontWeight: 600,
-                                    color: '#3b82f6',
-                                    background: 'rgba(59, 130, 246, 0.1)',
-                                    padding: '3px 8px',
-                                    borderRadius: '6px',
-                                    textTransform: 'uppercase',
-                                }}
-                            >
-                                {stats.total} Goal{stats.total !== 1 ? 's' : ''}
-                            </motion.span>
-                        </div>
-                        <p style={{ margin: 0, fontSize: '13px', color: colors.textSecondary }}>
-                            Track your progress and achieve your learning milestones
-                        </p>
-                    </div>
-                </motion.div>
-
-
-                {/* Right side - Stats Cards */}
-                <motion.div
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4, delay: 0.2 }}
-                    style={{ display: 'flex', alignItems: 'stretch', gap: '10px' }}
-                >
-                    {[
-                        { label: 'Total', value: stats.total, desc: 'GOALS', color: '#3b82f6', icon: (
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
-                            </svg>
-                        )},
-                        { label: 'Active', value: stats.active, desc: 'IN PROGRESS', color: '#f59e0b', icon: (
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-                            </svg>
-                        )},
-                        { label: 'Done', value: stats.completed, desc: 'COMPLETED', color: '#10b981', icon: (
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-                            </svg>
-                        )},
-                    ].map((stat, i) => (
-                        <motion.div
-                            key={stat.label}
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.25 + i * 0.05 }}
-                            whileHover={{ y: -2, scale: 1.02 }}
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                padding: '10px 16px',
-                                borderRadius: '10px',
-                                background: `${stat.color}10`,
-                                minWidth: '72px',
-                            }}
-                        >
-                            <div style={{ color: stat.color, marginBottom: '4px' }}>{stat.icon}</div>
-                            <span style={{ fontSize: '18px', fontWeight: 700, color: stat.color, lineHeight: 1 }}>{stat.value}</span>
-                            <span style={{ fontSize: '10px', fontWeight: 500, color: colors.textMuted, textTransform: 'uppercase' }}>{stat.desc}</span>
-                        </motion.div>
-                    ))}
-                </motion.div>
-            </motion.div>
-
-
-            {/* Search and Filter Bar */}
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    marginBottom: '24px',
-                    flexWrap: 'wrap',
-                }}
-            >
-                {/* Search Input with Suggestions */}
-                <motion.div style={{ position: 'relative', flex: 1, minWidth: '200px' }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}>
-                        <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                    <svg className="absolute left-3.5 top-0 bottom-0 my-auto w-4 h-4 text-slate-400 z-10 transition-colors duration-200 group-focus-within/search:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <input
                         ref={searchInputRef}
@@ -622,51 +651,55 @@ const GoalsContent: React.FC = () => {
                         }}
                         onFocus={() => setShowSuggestions(true)}
                         onKeyDown={handleSearchKeyDown}
-                        style={{
-                            width: '100%',
-                            padding: '10px 70px 10px 42px',
-                            borderRadius: '10px',
-                            border: `1px solid ${colors.border}`,
-                            background: colors.cardBg,
-                            fontSize: '13px',
-                            color: colors.textPrimary,
-                            outline: 'none',
-                            boxSizing: 'border-box',
-                        }}
+                        className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50/80 pl-11 pr-20 py-2 text-sm font-semibold focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 shadow-sm transition-all duration-300 text-slate-900 placeholder-slate-400 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:ring-blue-500/10"
                     />
-                    {/* Keyboard hint */}
-                    {!searchQuery && (
-                        <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'none' }}>
-                            <span style={{ fontSize: '10px', color: colors.textMuted, padding: '2px 6px', borderRadius: '4px', background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', fontFamily: 'monospace' }}>/</span>
-                        </div>
-                    )}
-                    {/* Clear button */}
-                    {searchQuery && !isSearching && (
-                        <div style={{ position: 'absolute', right: '12px', top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <motion.button
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.8 }}
-                                onClick={() => { setSearchQuery(''); setShowSuggestions(false); }}
-                                style={{ background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)', border: 'none', borderRadius: '4px', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                            >
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
-                            </motion.button>
-                        </div>
-                    )}
-                    {/* Loading Spinner */}
-                    <AnimatePresence>
-                        {isSearching && (
-                            <div style={{ position: 'absolute', right: '12px', top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                                <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }} transition={{ duration: 0.15 }}>
-                                    <motion.svg width="16" height="16" viewBox="0 0 24 24" fill="none" animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}>
-                                        <circle cx="12" cy="12" r="10" stroke={colors.border} strokeWidth="2.5" />
-                                        <path d="M12 2a10 10 0 0 1 10 10" stroke={colors.accent} strokeWidth="2.5" strokeLinecap="round" />
-                                    </motion.svg>
+                    
+                    <div className="absolute right-3 top-0 bottom-0 flex items-center justify-center z-10 w-6">
+                        <AnimatePresence mode="wait">
+                            {isSearching ? (
+                                <motion.div
+                                    key="spinner"
+                                    initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                    exit={{ opacity: 0, scale: 0.8, rotate: 90 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                    className="w-6 h-6 flex items-center justify-center"
+                                >
+                                    <svg className="w-4 h-4 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                    </svg>
                                 </motion.div>
-                            </div>
-                        )}
-                    </AnimatePresence>
+                            ) : searchQuery ? (
+                                <motion.button
+                                    key="clear"
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.8 }}
+                                    onClick={() => {
+                                        setSearchQuery('');
+                                        setShowSuggestions(false);
+                                        searchInputRef.current?.focus();
+                                    }}
+                                    className="!w-5 !h-5 !min-w-[20px] !min-h-[20px] !p-0 flex items-center justify-center rounded-[6px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+                                >
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg>
+                                </motion.button>
+                            ) : (
+                                <motion.kbd
+                                    key="hint"
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.8 }}
+                                    className="hidden sm:inline-flex items-center justify-center h-5 px-1.5 text-[10px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-500 dark:shadow-none pointer-events-none"
+                                >
+                                    /
+                                </motion.kbd>
+                            )}
+                        </AnimatePresence>
+                    </div>
                     
                     {/* Search Suggestions Dropdown */}
                     <AnimatePresence>
@@ -677,139 +710,118 @@ const GoalsContent: React.FC = () => {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: -8, scale: 0.98 }}
                                 transition={{ duration: 0.15 }}
-                                style={{
-                                    position: 'absolute',
-                                    top: '100%',
-                                    left: 0,
-                                    right: 0,
-                                    marginTop: '6px',
-                                    background: colors.cardBg,
-                                    border: `1px solid ${colors.border}`,
-                                    borderRadius: '10px',
-                                    boxShadow: isDarkMode ? '0 8px 24px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.12)',
-                                    zIndex: 100,
-                                    overflow: 'hidden',
-                                }}
+                                className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-lg shadow-slate-200/50 dark:bg-slate-800 dark:border-slate-700 dark:shadow-none z-50 overflow-hidden"
                             >
-                                <div style={{ padding: '6px 10px', borderBottom: `1px solid ${colors.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <span style={{ fontSize: '10px', fontWeight: 600, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Suggestions</span>
-                                    <span style={{ fontSize: '9px', color: colors.textMuted }}>↑↓ navigate • Enter select</span>
+                                <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Suggestions</span>
+                                    <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 hidden sm:inline">↑↓ navigate • Enter select</span>
+                                    <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 sm:hidden">Tap to select</span>
                                 </div>
-                                {searchSuggestions.map((goal, index) => (
-                                    <motion.div
-                                        key={goal.id}
-                                        onClick={() => {
-                                            setSearchQuery(goal.title);
-                                            setShowSuggestions(false);
-                                        }}
-                                        style={{
-                                            padding: '8px 12px',
-                                            cursor: 'pointer',
-                                            background: selectedSuggestionIndex === index ? (isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)') : 'transparent',
-                                            borderLeft: selectedSuggestionIndex === index ? `2px solid ${colors.accent}` : '2px solid transparent',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '10px',
-                                        }}
-                                        onMouseEnter={() => setSelectedSuggestionIndex(index)}
-                                    >
-                                        <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
-                                        </div>
-                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                            <div style={{ fontSize: '12px', fontWeight: 500, color: colors.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</div>
-                                            <div style={{ fontSize: '10px', color: colors.textMuted }}>{goal.progress_percentage}% complete • {goal.status}</div>
-                                        </div>
-                                    </motion.div>
-                                ))}
+                                <div className="flex flex-col">
+                                    {searchSuggestions.map((goal, index) => {
+                                        const isSelected = selectedSuggestionIndex === index;
+                                        return (
+                                            <motion.div
+                                                key={goal.id}
+                                                onClick={() => {
+                                                    setSearchQuery(goal.title);
+                                                    setShowSuggestions(false);
+                                                }}
+                                                className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors border-l-2 ${
+                                                    isSelected 
+                                                        ? 'bg-blue-50/50 dark:bg-blue-500/10 border-blue-500' 
+                                                        : 'border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                                                }`}
+                                                onMouseEnter={() => setSelectedSuggestionIndex(index)}
+                                            >
+                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                                    isSelected 
+                                                        ? 'bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400' 
+                                                        : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                                                }`}>
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                        <polyline points="22 4 12 14.01 9 11.01" />
+                                                    </svg>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className={`text-sm font-semibold truncate ${isSelected ? 'text-blue-700 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200'}`}>
+                                                        {goal.title}
+                                                    </div>
+                                                    <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+                                                        <span>{goal.progress_percentage}% complete</span>
+                                                        <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+                                                        <span className="capitalize">{goal.status}</span>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        );
+                                    })}
+                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
                 </motion.div>
 
-                <FilterTabs activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto lg:ml-auto">
+                    <FilterTabs activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
 
-                {/* Action Buttons */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {/* Achievements Button */}
-                    <motion.button
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ 
-                            default: { duration: 0.15, ease: 'easeOut' },
-                            opacity: { delay: 0.35, duration: 0.3 },
-                            x: { delay: 0.35, duration: 0.3 }
-                        }}
-                        whileHover={{ 
-                            scale: 1.02,
-                            boxShadow: '0 6px 20px rgba(245, 158, 11, 0.25)',
-                        }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setIsAchievementsModalOpen(true)}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            padding: '8px 14px',
-                            background: isDarkMode ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.08)',
-                            color: '#f59e0b',
-                            border: `1px solid ${isDarkMode ? 'rgba(245, 158, 11, 0.3)' : 'rgba(245, 158, 11, 0.2)'}`,
-                            borderRadius: '10px',
-                            fontSize: '12px',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                        }}
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                            <path d="M4 22h16" />
-                            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-                        </svg>
-                        Achievements
-                    </motion.button>
+                    {/* Action Buttons */}
+                    <div className="flex flex-1 sm:flex-none items-center gap-2">
+                        {/* Achievements Button */}
+                        <motion.button
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ 
+                                default: { duration: 0.15, ease: 'easeOut' },
+                                opacity: { delay: 0.35, duration: 0.3 },
+                                x: { delay: 0.35, duration: 0.3 }
+                            }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setIsAchievementsModalOpen(true)}
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-bold py-2 px-3 sm:py-2.5 sm:px-4 rounded-[12px] sm:rounded-[14px] transition-colors shadow-sm bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/30 dark:hover:bg-amber-900/50 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 focus:outline-none text-[12px] sm:text-[13px] whitespace-nowrap"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-[18px] sm:h-[18px]">
+                                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                                <path d="M4 22h16" />
+                                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+                                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+                            </svg>
+                            Achievements
+                        </motion.button>
 
-                    {/* New Goal Button */}
-                    <motion.button
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ 
-                            default: { duration: 0.15, ease: 'easeOut' },
-                            opacity: { delay: 0.4, duration: 0.3 },
-                            x: { delay: 0.4, duration: 0.3 }
-                        }}
-                        whileHover={{ 
-                            scale: 1.02,
-                            boxShadow: '0 6px 20px rgba(59, 130, 246, 0.25)',
-                        }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setIsCreateModalOpen(true)}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            padding: '8px 14px',
-                            background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
-                            color: '#3b82f6',
-                            border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
-                            borderRadius: '10px',
-                            fontSize: '12px',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                        }}
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        New Goal
-                    </motion.button>
+                        {/* New Goal Button */}
+                        <motion.button
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ 
+                                default: { duration: 0.15, ease: 'easeOut' },
+                                opacity: { delay: 0.4, duration: 0.3 },
+                                x: { delay: 0.4, duration: 0.3 }
+                            }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-bold py-2 px-3 sm:py-2.5 sm:px-4 rounded-[12px] sm:rounded-[14px] transition-colors shadow-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus:outline-none text-[12px] sm:text-[13px] whitespace-nowrap"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-[18px] sm:h-[18px]">
+                                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                            New Goal
+                        </motion.button>
+                    </div>
                 </div>
+                    </motion.div>
+                </motion.div>
             </motion.div>
 
             {/* Progress History Chart */}
-            <ProgressHistoryChart goals={goals} />
+            <div className="-mx-4 sm:-mx-6 lg:mx-0">
+                <ProgressHistoryChart goals={goals} />
+            </div>
 
             {/* Goals Grid */}
             <AnimatePresence mode="popLayout">
@@ -852,7 +864,7 @@ const GoalsContent: React.FC = () => {
                                 </span>
                             </motion.div>
                         )}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
                             {[1, 2, 3].map((i) => (
                                 <motion.div
                                     key={i}
@@ -886,65 +898,36 @@ const GoalsContent: React.FC = () => {
                 ) : filteredGoals.length === 0 ? (
                     // Empty State
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        style={{
-                            padding: '48px 24px',
-                            textAlign: 'center',
-                            background: colors.cardBg,
-                            borderRadius: '16px',
-                            border: `1px solid ${colors.border}`,
-                        }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="col-span-full -mx-4 sm:-mx-6 lg:mx-0"
                     >
-                        <div style={{
-                            width: '64px',
-                            height: '64px',
-                            margin: '0 auto 16px',
-                            borderRadius: '16px',
-                            background: 'rgba(59, 130, 246, 0.08)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5">
-                                <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
-                            </svg>
-                        </div>
-                        <p style={{ margin: 0, fontSize: '14px', fontWeight: 500, color: colors.textPrimary }}>
-                            {searchQuery ? 'No goals found' : 'No goals yet'}
-                        </p>
-                        <p style={{ margin: '8px 0 16px', fontSize: '13px', color: colors.textMuted }}>
-                            {searchQuery ? 'Try a different search term' : 'Create your first goal to start tracking'}
-                        </p>
-                        {!searchQuery && (
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => setIsCreateModalOpen(true)}
-                                style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    padding: '12px 24px',
-                                    background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: '12px',
-                                    fontSize: '14px',
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                }}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                        <EmptyState
+                            icon={
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
                                 </svg>
-                                Create Goal
-                            </motion.button>
-                        )}
+                            }
+                            title={searchQuery ? `No goals match "${searchQuery}"` : "No goals yet"}
+                            description={searchQuery ? 'Try a different search term' : 'Create your first goal to start tracking'}
+                            className="py-16 !rounded-none sm:!rounded-[24px] !border-x-0 sm:!border-x"
+                            action={searchQuery ? {
+                                label: 'Clear search',
+                                onClick: () => {
+                                    setSearchQuery('');
+                                    if (searchInputRef.current) searchInputRef.current.focus();
+                                }
+                            } : {
+                                label: 'Create Goal',
+                                onClick: () => setIsCreateModalOpen(true)
+                            }}
+                        />
                     </motion.div>
                 ) : (
                     // Goals Cards Grid
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(480px, 1fr))', gap: '24px' }}>
                         {filteredGoals.map((goal, index) => {
                             const config = goalTypeConfig[goal.type];
                             const priorityInfo = getPriorityInfo(goal.priority);
@@ -956,364 +939,148 @@ const GoalsContent: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ delay: index * 0.05, type: 'spring', stiffness: 400, damping: 25 }}
-                                    whileHover={{ y: -6 }}
                                     onClick={() => setSelectedGoal(goal)}
-                                    style={{
-                                        padding: '20px',
-                                        borderRadius: '16px',
-                                        background: colors.cardBg,
-                                        border: `1px solid ${goal.status === 'completed' ? 'rgba(16, 185, 129, 0.3)' : colors.border}`,
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                                    }}
+                                    className={`relative flex flex-col p-[24px] rounded-[24px] cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 bg-white dark:bg-slate-800 border group/goalcard ${
+                                        goal.status === 'completed' 
+                                            ? 'border-emerald-500/40 dark:border-emerald-500/30' 
+                                            : 'border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-700'
+                                    }`}
                                 >
-                                    {/* Header */}
-                                    <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+
+                                    {/* Action Buttons floating top right */}
+                                    <div className="absolute top-5 right-5 flex items-center gap-2 z-20">
+                                        {goal.status !== 'completed' && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); handlePause(goal.id, e); }}
+                                                className={`flex items-center justify-center w-11 h-11 rounded-[14px] transition-colors focus:outline-none shrink-0 ${
+                                                    goal.status === 'paused'
+                                                        ? 'bg-blue-50 text-blue-500 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50'
+                                                        : 'bg-[#fff8e6] text-amber-500 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50'
+                                                }`}
+                                            >
+                                                {goal.status === 'paused' ? (
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                                                ) : (
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
+                                                )}
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteClick(goal.id, e); }}
+                                            className="flex items-center justify-center w-11 h-11 rounded-[14px] bg-[#fff0f0] text-red-500 transition-colors hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 focus:outline-none shrink-0"
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    {/* New Header Layout */}
+                                    <div className="flex items-start gap-3 mb-3 relative z-10 pr-[80px]">
                                         <motion.div
-                                            whileHover={{ scale: 1.08 }}
+                                            whileHover={{ scale: 1.05, rotate: 5 }}
+                                            className="w-11 h-11 rounded-[14px] flex items-center justify-center shrink-0 mt-0.5 shadow-sm"
                                             style={{
-                                                width: '48px',
-                                                height: '48px',
-                                                borderRadius: '12px',
-                                                background: `${config.color}15`,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                flexShrink: 0,
+                                                background: `linear-gradient(135deg, ${config.color}22, ${config.color}11)`,
+                                                border: `1px solid ${config.color}33`,
                                             }}
                                         >
-                                            <GoalIcon type={goal.type} color={config.color} size={24} />
+                                            <GoalIcon type={goal.type} color={config.color} size={22} />
                                         </motion.div>
-                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                            <h3 style={{
-                                                margin: 0,
-                                                fontSize: '15px',
-                                                fontWeight: 600,
-                                                color: colors.textPrimary,
-                                                textDecoration: goal.status === 'completed' ? 'line-through' : 'none',
-                                                opacity: goal.status === 'completed' ? 0.7 : 1,
-                                                paddingRight: goal.status !== 'completed' ? '70px' : '36px',
-                                            }}>
+                                        
+                                        <div className="flex flex-col flex-1 min-w-0">
+                                            <h3 className="text-[16px] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight truncate mb-1.5"
+                                                style={{ textDecoration: goal.status === 'completed' ? 'line-through' : 'none', opacity: goal.status === 'completed' ? 0.7 : 1 }}>
                                                 {goal.title}
                                             </h3>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
-                                                <span style={{
-                                                    fontSize: '10px',
-                                                    fontWeight: 600,
-                                                    color: priorityInfo.color,
-                                                    padding: '3px 8px',
-                                                    borderRadius: '4px',
-                                                    background: `${priorityInfo.color}15`,
-                                                }}>
+                                            
+                                            {/* Badges immediately under title */}
+                                            <div className="flex items-center gap-1.5 flex-wrap">
+                                                <span style={{ color: priorityInfo.color, background: `${priorityInfo.color}15`, border: `1px solid ${priorityInfo.color}33` }} 
+                                                      className="text-[9.5px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider">
                                                     {priorityInfo.label}
                                                 </span>
                                                 {goal.days_remaining !== undefined && goal.status !== 'completed' && (
-                                                    <span style={{ fontSize: '11px', color: goal.is_overdue ? '#ef4444' : colors.textMuted, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-                                                        </svg>
-                                                        {formatTimeRemaining(goal.days_remaining)}
-                                                    </span>
+                                                    <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md border ${
+                                                        goal.is_overdue 
+                                                            ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800/30 text-red-600 dark:text-red-400' 
+                                                            : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 text-slate-500 dark:text-slate-400'
+                                                    }`}>
+                                                        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                                                        <span className="text-[9.5px] font-bold uppercase tracking-wider">{formatTimeRemaining(goal.days_remaining)}</span>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
-                                        {/* Action Buttons - Top Right */}
-                                        <div style={{ 
-                                            display: 'flex', 
-                                            gap: '6px',
-                                            flexShrink: 0,
-                                        }}>
-                                            {/* Pause/Resume Button - Only for non-completed goals */}
-                                            {goal.status !== 'completed' && (
-                                                <ActionTooltip 
-                                                    label={goal.status === 'paused' ? 'Resume' : 'Pause'} 
-                                                    color={goal.status === 'paused' ? '#3b82f6' : '#f59e0b'}
-                                                >
-                                                    <motion.button
-                                                        whileHover={{ scale: 1.1, backgroundColor: goal.status === 'paused' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(245, 158, 11, 0.15)' }}
-                                                        whileTap={{ scale: 0.9 }}
-                                                        onClick={(e) => handlePause(goal.id, e)}
-                                                        style={{
-                                                            width: '28px',
-                                                            height: '28px',
-                                                            borderRadius: '8px',
-                                                            border: 'none',
-                                                            background: goal.status === 'paused' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-                                                            color: goal.status === 'paused' ? '#3b82f6' : '#f59e0b',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            transition: 'all 0.15s ease',
-                                                        }}
-                                                    >
-                                                        {goal.status === 'paused' ? (
-                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                                <polygon points="5 3 19 12 5 21 5 3" />
-                                                            </svg>
-                                                        ) : (
-                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                                <rect x="6" y="4" width="4" height="16" />
-                                                                <rect x="14" y="4" width="4" height="16" />
-                                                            </svg>
-                                                        )}
-                                                    </motion.button>
-                                                </ActionTooltip>
-                                            )}
-                                            {/* Delete Button - Always visible */}
-                                            <ActionTooltip label="Delete" color="#ef4444">
-                                                    <motion.button
-                                                        whileHover={{ scale: 1.1, backgroundColor: 'rgba(239, 68, 68, 0.15)' }}
-                                                        whileTap={{ scale: 0.9 }}
-                                                        onClick={(e) => handleDeleteClick(goal.id, e)}
-                                                        style={{
-                                                            width: '28px',
-                                                            height: '28px',
-                                                            borderRadius: '8px',
-                                                            border: 'none',
-                                                            background: 'rgba(239, 68, 68, 0.1)',
-                                                            color: '#ef4444',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            transition: 'all 0.15s ease',
-                                                        }}
-                                                    >
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                            <polyline points="3 6 5 6 21 6" />
-                                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                                        </svg>
-                                                    </motion.button>
-                                                </ActionTooltip>
-                                        </div>
                                     </div>
 
-
-                                    {/* Description */}
-                                    {goal.description && (
-                                        <p style={{
-                                            margin: '0 0 14px',
-                                            fontSize: '13px',
-                                            color: colors.textSecondary,
-                                            lineHeight: 1.5,
-                                            display: '-webkit-box',
-                                            WebkitLineClamp: 2,
-                                            WebkitBoxOrient: 'vertical',
-                                            overflow: 'hidden',
-                                        }}>
-                                            {goal.description}
-                                        </p>
-                                    )}
-
-                                    {/* Stats Row */}
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 5 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.05 + 0.1 }}
-                                        style={{
-                                            display: 'flex',
-                                            gap: '8px',
-                                            marginBottom: '14px',
-                                            padding: '12px',
-                                            borderRadius: '10px',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                        }}
-                                    >
-                                        <div style={{ flex: 1, textAlign: 'center' }}>
-                                            <div style={{ fontSize: '18px', fontWeight: 700, color: config.color, lineHeight: 1 }}>
-                                                {goal.type === 'study_time' && goal.unit === 'hours' 
-                                                    ? `${Math.floor(goal.current_value)}h ${Math.round((goal.current_value % 1) * 60)}m`
-                                                    : goal.current_value}
+                                    {/* Description and Metadata */}
+                                    <div className="mb-5 flex flex-col gap-1.5 relative z-10">
+                                        {goal.metadata?.course_title && (
+                                            <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-500 dark:text-slate-400 truncate">
+                                                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+                                                {goal.metadata.course_title}
                                             </div>
-                                            <div style={{ fontSize: '9px', color: colors.textMuted, marginTop: '4px', textTransform: 'uppercase' }}>
-                                                Current
-                                            </div>
-                                        </div>
-                                        <div style={{ width: '1px', background: colors.border, margin: '4px 0' }} />
-                                        <div style={{ flex: 1, textAlign: 'center' }}>
-                                            <div style={{ fontSize: '18px', fontWeight: 700, color: config.color, lineHeight: 1 }}>
-                                                {goal.type === 'study_time' && goal.unit === 'hours' 
-                                                    ? `${goal.target_value}h`
-                                                    : goal.target_value}
-                                            </div>
-                                            <div style={{ fontSize: '9px', color: colors.textMuted, marginTop: '4px', textTransform: 'uppercase' }}>
-                                                Target
-                                            </div>
-                                        </div>
-                                        <div style={{ width: '1px', background: colors.border, margin: '4px 0' }} />
-                                        <div style={{ flex: 1, textAlign: 'center' }}>
-                                            <div style={{ fontSize: '18px', fontWeight: 700, color: goal.progress_percentage === 100 ? '#10b981' : config.color, lineHeight: 1 }}>
-                                                {goal.progress_percentage}%
-                                            </div>
-                                            <div style={{ fontSize: '9px', color: colors.textMuted, marginTop: '4px', textTransform: 'uppercase' }}>
-                                                Progress
-                                            </div>
-                                        </div>
-                                    </motion.div>
-
-
-                                    {/* Progress Bar */}
-                                    <div style={{ marginBottom: '14px' }}>
-                                        <div style={{
-                                            height: '6px',
-                                            background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
-                                            borderRadius: '3px',
-                                            overflow: 'hidden',
-                                        }}>
-                                            <motion.div
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${goal.progress_percentage}%` }}
-                                                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                                                style={{
-                                                    height: '100%',
-                                                    background: goal.progress_percentage === 100 
-                                                        ? 'linear-gradient(90deg, #10b981, #34d399)' 
-                                                        : `linear-gradient(90deg, ${config.color}, ${config.color}cc)`,
-                                                    borderRadius: '3px',
-                                                }}
-                                            />
-                                        </div>
+                                        )}
+                                        {goal.description && (
+                                            <p className="m-0 text-[13px] text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2 mt-1">
+                                                {goal.description}
+                                            </p>
+                                        )}
                                     </div>
 
-                                    {/* Status Badge - Hoverable Button */}
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }}>
-                                        <motion.button
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ 
-                                                default: { duration: 0.15, ease: 'easeOut' },
-                                                opacity: { delay: index * 0.05 + 0.2, duration: 0.3 },
-                                                x: { delay: index * 0.05 + 0.2, duration: 0.3 }
-                                            }}
-                                            whileHover={{ 
-                                                scale: 1.05,
-                                                boxShadow: goal.status === 'completed' 
-                                                    ? '0 4px 12px rgba(16, 185, 129, 0.25)' 
-                                                    : goal.status === 'paused' 
-                                                    ? '0 4px 12px rgba(245, 158, 11, 0.25)' 
-                                                    : '0 4px 12px rgba(59, 130, 246, 0.25)',
-                                            }}
-                                            whileTap={{ scale: 0.95 }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setSelectedGoal(goal);
-                                            }}
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                padding: '6px 12px',
-                                                borderRadius: '8px',
-                                                border: 'none',
-                                                background: goal.status === 'completed' 
-                                                    ? 'rgba(16, 185, 129, 0.1)' 
-                                                    : goal.status === 'paused' 
-                                                    ? 'rgba(245, 158, 11, 0.1)' 
-                                                    : 'rgba(59, 130, 246, 0.1)',
-                                                color: goal.status === 'completed' ? '#10b981' : goal.status === 'paused' ? '#f59e0b' : '#3b82f6',
-                                                fontSize: '11px',
-                                                fontWeight: 600,
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s ease',
-                                            }}
-                                        >
-                                            <motion.div
-                                                animate={goal.status === 'active' ? { 
-                                                    scale: [1, 1.2, 1],
-                                                } : {}}
-                                                transition={{ 
-                                                    duration: 1.5, 
-                                                    repeat: goal.status === 'active' ? Infinity : 0,
-                                                    ease: 'easeInOut'
-                                                }}
+                                    {/* Unified Stats & Progress Section - PathsContent Style */}
+                                    <div className="mt-auto pt-4 flex flex-col gap-4 relative z-10 w-full border-t border-slate-100 dark:border-slate-700/50">
+                                        
+
+
+                                        {/* Circular Progress & Status */}
+                                        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full pt-4 border-t border-slate-100 dark:border-slate-700/50">
+                                            <div className="flex items-center gap-3 min-w-0 w-full lg:w-auto">
+                                                <div className="relative shrink-0 flex items-center justify-center bg-slate-50 dark:bg-slate-800/50 rounded-full border border-slate-100 dark:border-slate-700/50 shadow-sm p-1 group-hover/goalcard:shadow-md transition-shadow">
+                                                    <AnimatedCircularProgressBar
+                                                        max={100}
+                                                        min={0}
+                                                        value={goal.progress_percentage}
+                                                        gaugePrimaryColor={goal.status === 'completed' ? '#10b981' : config.color}
+                                                        gaugeSecondaryColor={isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'}
+                                                        className="h-10 w-10 sm:h-11 sm:w-11 text-[10px] text-slate-800 dark:text-slate-200 font-extrabold"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col min-w-0">
+                                                    <span className="text-[13px] sm:text-[14px] font-black text-slate-900 dark:text-slate-100 tracking-tight truncate">
+                                                        {goal.status === 'completed' ? 'Goal Reached!' : goal.status === 'paused' ? 'Paused' : 'In Progress'}
+                                                    </span>
+                                                    <div className="flex items-center gap-1.5 mt-1">
+                                                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[6px] bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 text-[10.5px] font-bold text-slate-600 dark:text-slate-300">
+                                                            <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                            {goal.type === 'study_time' && goal.unit === 'hours' ? (
+                                                                <>{Math.floor(goal.current_value)}h {Math.round((goal.current_value % 1) * 60)}m / {goal.target_value}h</>
+                                                            ) : (
+                                                                <>{goal.current_value} / {goal.target_value} {goal.unit}</>
+                                                            )} completed
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <motion.button
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                onClick={(e) => { e.stopPropagation(); setSelectedGoal(goal); }}
+                                                className={`flex w-full lg:flex-1 items-center justify-center gap-2 rounded-[14px] py-2.5 px-4 font-bold transition-colors shadow-sm focus:outline-none ${
+                                                    goal.status === 'completed' 
+                                                        ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-700 dark:bg-emerald-900/50 dark:hover:bg-emerald-900/70 dark:text-emerald-300' 
+                                                        : goal.status === 'paused'
+                                                        ? 'bg-amber-100 hover:bg-amber-200 text-amber-700 dark:bg-amber-900/50 dark:hover:bg-amber-900/70 dark:text-amber-300'
+                                                        : 'bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 dark:text-blue-300'
+                                                }`}
                                             >
-                                                {goal.status === 'completed' ? (
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
-                                                ) : goal.status === 'paused' ? (
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
-                                                ) : (
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-                                                )}
-                                            </motion.div>
-                                            {goal.status === 'completed' ? 'Completed' : goal.status === 'paused' ? 'Paused' : 'In Progress'}
-                                        </motion.button>
-                                        <motion.div 
-                                            initial={{ opacity: 0, x: 10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: index * 0.05 + 0.25 }}
-                                            style={{ 
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                padding: '5px 10px',
-                                                borderRadius: '8px',
-                                                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                            }}
-                                        >
-                                            {goal.type === 'study_time' && goal.unit === 'hours' ? (
-                                                // Show hours and minutes for study time goals
-                                                <>
-                                                    <span style={{ 
-                                                        fontSize: '12px', 
-                                                        fontWeight: 700, 
-                                                        color: config.color,
-                                                    }}>
-                                                        {Math.floor(goal.current_value)}h {Math.round((goal.current_value % 1) * 60)}m
-                                                    </span>
-                                                    <span style={{ 
-                                                        fontSize: '11px', 
-                                                        color: colors.textSecondary,
-                                                        fontWeight: 400,
-                                                    }}>
-                                                        of
-                                                    </span>
-                                                    <span style={{ 
-                                                        fontSize: '12px', 
-                                                        fontWeight: 600, 
-                                                        color: colors.textPrimary,
-                                                    }}>
-                                                        {goal.target_value}h
-                                                    </span>
-                                                </>
-                                            ) : (
-                                                // Default display for other goal types
-                                                <>
-                                                    <span style={{ 
-                                                        fontSize: '12px', 
-                                                        fontWeight: 700, 
-                                                        color: config.color,
-                                                    }}>
-                                                        {goal.current_value}
-                                                    </span>
-                                                    <span style={{ 
-                                                        fontSize: '11px', 
-                                                        color: colors.textSecondary,
-                                                        fontWeight: 400,
-                                                    }}>
-                                                        of
-                                                    </span>
-                                                    <span style={{ 
-                                                        fontSize: '12px', 
-                                                        fontWeight: 600, 
-                                                        color: colors.textPrimary,
-                                                    }}>
-                                                        {goal.target_value}
-                                                    </span>
-                                                    <span style={{ 
-                                                        fontSize: '10px', 
-                                                        color: colors.textSecondary,
-                                                        fontWeight: 500,
-                                                    }}>
-                                                        {goal.unit}
-                                                    </span>
-                                                </>
-                                            )}
-                                        </motion.div>
+                                                View Details
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                            </motion.button>
+                                        </div>
                                     </div>
                                 </motion.div>
                             );
@@ -1340,12 +1107,6 @@ const GoalsContent: React.FC = () => {
                 goals={goals}
             />
 
-            {/* Celebration Animation */}
-            <CelebrationAnimation
-                isVisible={!!celebrationGoal}
-                onComplete={() => setCelebrationGoal(null)}
-                goalTitle={celebrationGoal?.title}
-            />
 
             {/* Delete Confirmation Modal */}
             <AnimatePresence>
@@ -1441,44 +1202,23 @@ const GoalsContent: React.FC = () => {
                                 </p>
 
                                 {/* Buttons */}
-                                <div style={{ display: 'flex', gap: '10px' }}>
+                                <div className="flex flex-col gap-2.5 mt-2">
                                     <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => setDeleteConfirmId(null)}
-                                        style={{
-                                            flex: 1,
-                                            padding: '10px 16px',
-                                            borderRadius: '10px',
-                                            border: `1px solid ${colors.border}`,
-                                            background: colors.cardBg,
-                                            color: colors.textPrimary,
-                                            fontSize: '13px',
-                                            fontWeight: 500,
-                                            cursor: 'pointer',
-                                            transition: 'all 0.15s ease',
-                                        }}
-                                    >
-                                        Cancel
-                                    </motion.button>
-                                    <motion.button
-                                        whileHover={{ scale: 1.02, boxShadow: '0 4px 16px rgba(239, 68, 68, 0.3)' }}
+                                        whileHover={{ scale: 1.01 }}
                                         whileTap={{ scale: 0.98 }}
                                         onClick={handleConfirmDelete}
-                                        style={{
-                                            flex: 1,
-                                            padding: '10px 16px',
-                                            borderRadius: '10px',
-                                            border: 'none',
-                                            background: '#ef4444',
-                                            color: '#ffffff',
-                                            fontSize: '13px',
-                                            fontWeight: 600,
-                                            cursor: 'pointer',
-                                            transition: 'all 0.15s ease',
-                                        }}
+                                        className="w-full flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-[14px] transition-colors shadow-sm bg-red-100 hover:bg-red-200 dark:bg-red-900/40 dark:hover:bg-red-900/60 text-red-700 dark:text-red-400 focus:outline-none"
                                     >
-                                        Delete
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6"/></svg>
+                                        Delete Goal
+                                    </motion.button>
+                                    <motion.button
+                                        whileHover={{ scale: 1.01 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => setDeleteConfirmId(null)}
+                                        className="w-full flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-[14px] transition-colors shadow-sm bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none"
+                                    >
+                                        Cancel
                                     </motion.button>
                                 </div>
                             </motion.div>

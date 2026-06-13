@@ -3,9 +3,10 @@
  * Confetti/celebration overlay when a goal is completed.
  * Extracted from GoalsContent.tsx during Phase 8.3
  */
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { Confetti, type ConfettiRef } from '@/components/ui/confetti';
 
 // Celebration Animation Component - Minimalistic Blue Theme
 const CelebrationAnimation: React.FC<{
@@ -13,27 +14,35 @@ const CelebrationAnimation: React.FC<{
     onComplete: () => void;
     goalTitle?: string;
 }> = ({ isVisible, onComplete, goalTitle }) => {
-    const blueAccent = '#3b82f6';
-    const blueBg = 'rgba(59, 130, 246, 0.08)';
-    const blueBorder = 'rgba(59, 130, 246, 0.15)';
-    
-    // Subtle confetti particles - blue theme
-    const particles = useMemo(() => {
-        const colors = ['#3b82f6', '#60a5fa', '#93c5fd', '#2563eb', '#1d4ed8'];
-        return Array.from({ length: 30 }, (_, i) => ({
-            id: i,
-            x: Math.random() * 100,
-            delay: Math.random() * 0.3,
-            duration: 2.5 + Math.random() * 1,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            size: 4 + Math.random() * 6,
-            rotation: Math.random() * 360,
-            type: Math.random() > 0.6 ? 'circle' : 'rect',
-        }));
-    }, []);
+    const confettiRef = useRef<ConfettiRef>(null);
 
     useEffect(() => {
         if (isVisible) {
+            const duration = 3500;
+            const end = Date.now() + duration;
+
+            const frame = () => {
+                confettiRef.current?.fire({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444']
+                });
+                confettiRef.current?.fire({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            };
+            frame();
+
             const timer = setTimeout(onComplete, 4000);
             return () => clearTimeout(timer);
         }
@@ -48,48 +57,13 @@ const CelebrationAnimation: React.FC<{
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
                     onClick={onComplete}
-                    style={{
-                        position: 'fixed',
-                        inset: 0,
-                        background: 'rgba(0, 0, 0, 0.4)',
-                        backdropFilter: 'blur(8px)',
-                        zIndex: 10001,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                    }}
+                    className="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-[10001] flex items-center justify-center cursor-pointer p-4"
                 >
-                    {/* Subtle confetti */}
-                    {particles.map((particle) => (
-                        <motion.div
-                            key={particle.id}
-                            initial={{ 
-                                x: `${particle.x}vw`,
-                                y: '-5vh',
-                                rotate: 0,
-                                opacity: 0.8,
-                            }}
-                            animate={{ 
-                                y: '105vh',
-                                rotate: particle.rotation + 540,
-                                opacity: [0.8, 0.6, 0],
-                            }}
-                            transition={{
-                                duration: particle.duration,
-                                delay: particle.delay,
-                                ease: 'easeOut',
-                            }}
-                            style={{
-                                position: 'absolute',
-                                width: particle.size,
-                                height: particle.type === 'rect' ? particle.size * 0.5 : particle.size,
-                                background: particle.color,
-                                borderRadius: particle.type === 'circle' ? '50%' : '1px',
-                                pointerEvents: 'none',
-                            }}
-                        />
-                    ))}
+                    <Confetti 
+                        ref={confettiRef}
+                        manualstart={true}
+                        className="fixed inset-0 z-[10005] w-full h-full pointer-events-none" 
+                    />
 
                     {/* Center card */}
                     <motion.div
@@ -98,50 +72,22 @@ const CelebrationAnimation: React.FC<{
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                         onClick={(e) => e.stopPropagation()}
-                        style={{
-                            background: '#ffffff',
-                            borderRadius: '20px',
-                            padding: '32px 40px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '20px',
-                            boxShadow: '0 24px 48px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.04)',
-                            maxWidth: '340px',
-                            textAlign: 'center',
-                        }}
+                        className="bg-white dark:bg-slate-800 rounded-[24px] p-8 sm:p-10 flex flex-col items-center gap-5 shadow-2xl border border-slate-200 dark:border-slate-700/50 max-w-[340px] w-full text-center relative overflow-hidden"
                     >
+                        {/* Decorative glow */}
+                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 bg-blue-500/10 dark:bg-blue-400/5 rounded-full blur-2xl pointer-events-none" />
+
                         {/* Icon */}
                         <motion.div
                             initial={{ scale: 0.5, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ delay: 0.15, type: 'spring', stiffness: 400, damping: 25 }}
-                            style={{
-                                width: 72,
-                                height: 72,
-                                borderRadius: '18px',
-                                background: `linear-gradient(135deg, ${blueAccent} 0%, #2563eb 100%)`,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0 8px 24px rgba(59, 130, 246, 0.35)',
-                            }}
+                            className="w-14 h-14 rounded-[20px] bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300"
                         >
-                            <motion.div
-                                animate={{ 
-                                    scale: [1, 1.1, 1],
-                                }}
-                                transition={{ 
-                                    duration: 1.5,
-                                    repeat: Infinity,
-                                    ease: 'easeInOut',
-                                }}
-                            >
-                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                    <polyline points="22 4 12 14.01 9 11.01" />
-                                </svg>
-                            </motion.div>
+                            <svg className="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
                         </motion.div>
 
                         {/* Title */}
@@ -149,24 +95,13 @@ const CelebrationAnimation: React.FC<{
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.25 }}
+                            className="z-10"
                         >
-                            <h3 style={{
-                                margin: 0,
-                                fontSize: '22px',
-                                fontWeight: 700,
-                                color: '#0f172a',
-                                letterSpacing: '-0.02em',
-                                marginBottom: '6px',
-                            }}>
+                            <h3 className="text-[22px] font-bold text-slate-900 dark:text-white tracking-tight mb-1.5">
                                 Goal Completed!
                             </h3>
                             {goalTitle && (
-                                <p style={{
-                                    margin: 0,
-                                    fontSize: '14px',
-                                    color: '#64748b',
-                                    lineHeight: 1.5,
-                                }}>
+                                <p className="text-[14px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
                                     {goalTitle}
                                 </p>
                             )}
@@ -177,78 +112,27 @@ const CelebrationAnimation: React.FC<{
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.35 }}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '10px 16px',
-                                background: blueBg,
-                                border: `1px solid ${blueBorder}`,
-                                borderRadius: '12px',
-                            }}
+                            className="inline-flex items-center gap-2.5 px-4 py-2.5 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 rounded-[12px] z-10"
                         >
-                            <div style={{
-                                width: 8,
-                                height: 8,
-                                borderRadius: '50%',
-                                background: '#10b981',
-                            }} />
-                            <span style={{
-                                fontSize: '13px',
-                                fontWeight: 600,
-                                color: blueAccent,
-                            }}>
+                            <span className="text-[13px] font-bold text-indigo-600 dark:text-indigo-400">
                                 100% Complete
                             </span>
                         </motion.div>
 
                         {/* Dismiss button */}
                         <motion.button
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.45 }}
-                            whileHover={{ scale: 1.02, boxShadow: '0 4px 16px rgba(59, 130, 246, 0.35)' }}
-                            whileTap={{ scale: 0.98 }}
                             onClick={onComplete}
-                            style={{
-                                padding: '12px 28px',
-                                borderRadius: '12px',
-                                border: 'none',
-                                background: `linear-gradient(135deg, ${blueAccent} 0%, #2563eb 100%)`,
-                                color: '#fff',
-                                fontSize: '14px',
-                                fontWeight: 600,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                boxShadow: '0 2px 8px rgba(59, 130, 246, 0.25)',
-                                marginTop: '4px',
-                            }}
+                            className="w-full mt-2 py-3 px-6 rounded-[14px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[14px] transition-colors flex items-center justify-center gap-2 shadow-sm focus:outline-none z-10"
                         >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M18 6L6 18M6 6l12 12" />
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-70">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>
                             Dismiss
                         </motion.button>
-
-                        {/* Subtle ring animation */}
-                        <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: [1, 1.3, 1.5], opacity: [0.3, 0.1, 0] }}
-                            transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
-                            style={{
-                                position: 'absolute',
-                                width: 100,
-                                height: 100,
-                                borderRadius: '50%',
-                                border: `2px solid ${blueAccent}`,
-                                top: '50%',
-                                left: '50%',
-                                transform: 'translate(-50%, -80%)',
-                                pointerEvents: 'none',
-                            }}
-                        />
                     </motion.div>
                 </motion.div>
             )}

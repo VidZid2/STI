@@ -103,31 +103,57 @@ export const DEFAULT_MODULES: CourseDataType['modules'] = [
     },
     // 2nd Semester Modules
     {
-        id: 6, title: 'Module 6: Object-Oriented Programming', status: 'locked', term: 'prelims', semester: 'second', contents: [
-            { type: 'handout-a', title: 'OOP Concepts', completed: false },
-            { type: 'slideshow', title: 'Classes and Objects', completed: false },
-            { type: 'video', title: 'Inheritance and Polymorphism', completed: false },
+        id: 6, title: 'Module 6: Art Appreciation', status: 'locked', term: 'prelims', semester: 'second', contents: [
+            { type: 'handout-a', title: 'Course Overview', completed: false },
+            { type: 'slideshow', title: 'Introduction to Art', completed: false },
         ]
     },
     {
-        id: 7, title: 'Module 7: Advanced Data Structures', status: 'locked', term: 'midterm', semester: 'second', contents: [
-            { type: 'handout-a', title: 'Trees and Graphs', completed: false },
-            { type: 'slideshow', title: 'Algorithms Slides', completed: false },
-            { type: 'video', title: 'Graph Traversal Video', completed: false },
+        id: 7, title: 'Module 7: Computer Programming 2', status: 'locked', term: 'prelims', semester: 'second', contents: [
+            { type: 'handout-a', title: 'Course Overview', completed: false },
+            { type: 'video', title: 'Programming Basics', completed: false },
         ]
     },
     {
-        id: 8, title: 'Module 8: Web Integration', status: 'locked', term: 'prefinals', semester: 'second', contents: [
-            { type: 'handout-a', title: 'API Basics', completed: false },
-            { type: 'slideshow', title: 'Connecting to Backends', completed: false },
-            { type: 'video', title: 'Fetch and Axios', completed: false },
+        id: 8, title: 'Module 8: Discrete Structures 1 (Discrete Mathematics)', status: 'locked', term: 'midterm', semester: 'second', contents: [
+            { type: 'handout-a', title: 'Course Overview', completed: false },
+            { type: 'slideshow', title: 'Logic and Proofs', completed: false },
         ]
     },
     {
-        id: 9, title: 'Module 9: Final Project', status: 'locked', term: 'finals', semester: 'second', contents: [
-            { type: 'handout-a', title: 'Project Requirements', completed: false },
-            { type: 'slideshow', title: 'Best Practices', completed: false },
-            { type: 'video', title: 'Deployment Guide', completed: false },
+        id: 9, title: 'Module 9: Ethics', status: 'locked', term: 'midterm', semester: 'second', contents: [
+            { type: 'handout-a', title: 'Course Overview', completed: false },
+            { type: 'video', title: 'Introduction to Ethics', completed: false },
+        ]
+    },
+    {
+        id: 10, title: 'Module 10: Mathematics in the Modern World', status: 'locked', term: 'midterm', semester: 'second', contents: [
+            { type: 'handout-a', title: 'Course Overview', completed: false },
+            { type: 'slideshow', title: 'Math in Nature', completed: false },
+        ]
+    },
+    {
+        id: 11, title: 'Module 11: National Service Training Program 2', status: 'locked', term: 'prefinals', semester: 'second', contents: [
+            { type: 'handout-a', title: 'Course Overview', completed: false },
+            { type: 'video', title: 'Community Service', completed: false },
+        ]
+    },
+    {
+        id: 12, title: 'Module 12: P.E./PATHFIT 2: Exercise-based Fitness Activities', status: 'locked', term: 'prefinals', semester: 'second', contents: [
+            { type: 'handout-a', title: 'Course Overview', completed: false },
+            { type: 'video', title: 'Fitness Basics', completed: false },
+        ]
+    },
+    {
+        id: 13, title: 'Module 13: Science, Technology, and Society', status: 'locked', term: 'finals', semester: 'second', contents: [
+            { type: 'handout-a', title: 'Course Overview', completed: false },
+            { type: 'slideshow', title: 'Technology Impact', completed: false },
+        ]
+    },
+    {
+        id: 14, title: 'Module 14: Systems Administration and Maintenance', status: 'locked', term: 'finals', semester: 'second', contents: [
+            { type: 'handout-a', title: 'Course Overview', completed: false },
+            { type: 'video', title: 'System Setup', completed: false },
         ]
     },
 ];

@@ -8,6 +8,8 @@ interface AnimatedCircularProgressBarProps {
   gaugePrimaryColor: string
   gaugeSecondaryColor: string
   className?: string
+  hideText?: boolean
+  children?: React.ReactNode
 }
 
 export function AnimatedCircularProgressBar({
@@ -17,6 +19,8 @@ export function AnimatedCircularProgressBar({
   gaugePrimaryColor,
   gaugeSecondaryColor,
   className,
+  hideText = false,
+  children,
 }: AnimatedCircularProgressBarProps) {
   const circumference = 2 * Math.PI * 45
   const percentPx = circumference / 100
@@ -98,12 +102,21 @@ export function AnimatedCircularProgressBar({
           }
         />
       </svg>
-      <div className="absolute inset-0 m-auto size-fit flex items-center justify-center delay-(--delay) duration-(--transition-length) ease-linear">
-        <NumberTicker
-          value={currentPercent}
-          className="font-bold tracking-tighter text-inherit dark:text-inherit"
-        />
-      </div>
+      
+      {!hideText && !children && (
+        <div className="absolute inset-0 m-auto size-fit flex items-center justify-center delay-(--delay) duration-(--transition-length) ease-linear">
+          <NumberTicker
+            value={currentPercent}
+            className="font-bold tracking-tighter text-inherit dark:text-inherit"
+          />
+        </div>
+      )}
+
+      {children && (
+        <div className="absolute inset-0 m-auto size-full flex items-center justify-center">
+          {children}
+        </div>
+      )}
     </div>
   )
 }

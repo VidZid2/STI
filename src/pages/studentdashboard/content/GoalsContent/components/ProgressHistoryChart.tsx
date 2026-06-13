@@ -4,59 +4,46 @@
  * Extracted from GoalsContent.tsx during Phase 8.3
  */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { motion } from 'motion/react';
-import { AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { getAggregatedProgressHistory, getRealTimeProgress } from '../../../../../services/goalsService';
+import { BarChart, Bar, ChartTooltip, Grid, BarXAxis } from '../../../../../components/ui/bar-chart';
 
-// Progress History Chart Component
-const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({  goals = [] }) => {
+const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({ goals = [] }) => {
     const [historyData, setHistoryData] = useState<{ date: string; completed: number; active: number; totalProgress: number }[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
     const goalsRef = useRef(goals);
     const hasLoadedRef = useRef(false);
 
-    // Keep goalsRef updated
     useEffect(() => {
         goalsRef.current = goals;
     }, [goals]);
 
-    // Initial load - only runs once
     useEffect(() => {
         const loadHistory = async () => {
             if (!hasLoadedRef.current) {
                 setIsLoading(true);
             }
-            const data = await getAggregatedProgressHistory(7);
+            const data = await getAggregatedProgressHistory(90);
             setHistoryData(data);
             setIsLoading(false);
             hasLoadedRef.current = true;
         };
         loadHistory();
-        
-        // Refresh every 30 seconds
         const interval = setInterval(loadHistory, 30000);
         return () => clearInterval(interval);
     }, []);
 
-    // Calculate real-time stats from current goals (no loading state needed)
     const currentStats = useMemo(() => {
         const activeGoals = goals.filter(g => g.status === 'active');
         const completedGoals = goals.filter(g => g.status === 'completed');
         
-        // Get real-time progress for each active goal
         const realTimeProgressValues = activeGoals.map(goal => {
             const realProgress = getRealTimeProgress(goal);
-            const progressPercent = goal.target_value > 0 
-                ? Math.min(Math.round((realProgress / goal.target_value) * 100), 100)
-                : 0;
-            return progressPercent;
+            return goal.target_value > 0 ? Math.min(Math.round((realProgress / goal.target_value) * 100), 100) : 0;
         });
         
-        // Include completed goals (100% each)
         const completedProgressValues = completedGoals.map(() => 100);
-        
-        // Calculate average progress across all goals
         const allProgressValues = [...realTimeProgressValues, ...completedProgressValues];
         const avgProgress = allProgressValues.length > 0
             ? Math.round(allProgressValues.reduce((sum, p) => sum + p, 0) / allProgressValues.length)
@@ -65,28 +52,24 @@ const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({  goals = [] }) => {
         return {
             totalProgress: avgProgress,
             active: activeGoals.length,
-            completed: completedGoals.length };
+            completed: completedGoals.length
+        };
     }, [goals]);
 
-    // Merge historical data with current real-time stats for today
     const chartData = useMemo(() => {
         if (historyData.length === 0) return historyData;
-        
         const today = new Date().toISOString().split('T')[0];
         return historyData.map((entry, index) => {
-            // Update today's entry with real-time data
             if (index === historyData.length - 1 && entry.date === today) {
-                return {
-                    ...entry,
-                    ...currentStats };
+                return { ...entry, ...currentStats };
             }
             return entry;
         });
     }, [historyData, currentStats]);
 
-    const formatDate = (dateStr: string) => {
+    const formatDateLabel = (dateStr: string) => {
         const date = new Date(dateStr);
-        return date.toLocaleDateString('en-US', { weekday: 'short' });
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     };
 
     return (
@@ -94,57 +77,38 @@ const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({  goals = [] }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            style={{
-                marginBottom: '20px',
-                padding: '16px 20px',
-                borderRadius: '14px',
-                background: 'var(--dashboard-surface)',
-                border: `1px solid var(--border-color)` }}
+            className="mb-6 rounded-[20px] sm:rounded-[24px] border border-slate-200/60 dark:border-slate-700/50 bg-white dark:bg-slate-800/90 shadow-sm overflow-hidden"
         >
             {/* Header */}
             <div 
-                style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between',
-                    marginBottom: isExpanded ? '16px' : '0',
-                    cursor: 'pointer' }}
+                className="flex items-center justify-between p-5 sm:p-6 cursor-pointer group"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div className="flex items-center gap-4">
                     <motion.div
-                        animate={{ rotate: isExpanded ? 0 : -90 }}
-                        transition={{ duration: 0.2 }}
-                        style={{
-                            width: '32px',
-                            height: '32px',
-                            borderRadius: '8px',
-                            background: 'rgba(59, 130, 246, 0.1)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#3b82f6' }}
+                        animate={{ 
+                            rotate: isExpanded ? 0 : -90,
+                            backgroundColor: isExpanded ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)'
+                        }}
+                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                        className="w-12 h-12 rounded-[14px] flex items-center justify-center text-blue-600 dark:text-blue-400"
                     >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M3 3v18h18" />
                             <path d="m19 9-5 5-4-4-3 3" />
                         </svg>
                     </motion.div>
                     <div>
-                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
-                            Progress History
-                        </div>
-                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                            Last 7 days overview
-                        </div>
+                        <h3 className="text-[16px] font-bold text-slate-900 dark:text-slate-100 tracking-tight">Progress History</h3>
+                        <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">Last 7 days overview</p>
                     </div>
                 </div>
                 <motion.div
                     animate={{ rotate: isExpanded ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                    style={{ color: 'var(--text-muted)' }}
+                    transition={{ duration: 0.3, type: 'spring', stiffness: 300, damping: 20 }}
+                    className="w-9 h-9 rounded-full bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 group-hover:bg-slate-100 dark:group-hover:bg-slate-700 transition-all"
                 >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <polyline points="6 9 12 15 18 9" />
                     </svg>
                 </motion.div>
@@ -157,248 +121,106 @@ const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({  goals = [] }) => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-                        style={{ overflow: 'hidden' }}
+                        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                        className="overflow-hidden"
                     >
-                        {isLoading ? (
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '120px' }}>
-                                <motion.svg
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    animate={{ rotate: 360 }}
-                                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                >
-                                    <circle cx="12" cy="12" r="10" stroke={'var(--border-color)'} strokeWidth="2.5" />
-                                    <path d="M12 2a10 10 0 0 1 10 10" stroke={'var(--accent-color)'} strokeWidth="2.5" strokeLinecap="round" />
-                                </motion.svg>
-                            </div>
-                        ) : chartData.length === 0 ? (
-                            <div style={{ 
-                                display: 'flex', 
-                                flexDirection: 'column',
-                                alignItems: 'center', 
-                                justifyContent: 'center', 
-                                height: '120px',
-                                color: 'var(--text-muted)',
-                                fontSize: '12px' }}>
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ marginBottom: '8px', opacity: 0.5 }}>
-                                    <path d="M3 3v18h18" />
-                                    <path d="m19 9-5 5-4-4-3 3" />
-                                </svg>
-                                No progress data yet
-                            </div>
-                        ) : (
-                            <>
-                                {/* Mini Line Chart */}
-                                <div style={{ position: 'relative', height: '80px', marginBottom: '12px', paddingLeft: '28px' }}>
-                                    {/* Y-axis labels */}
-                                    <div style={{ 
-                                        position: 'absolute', 
-                                        left: 0, 
-                                        top: 0, 
-                                        bottom: 0, 
-                                        width: '24px',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'space-between',
-                                        paddingTop: '2px',
-                                        paddingBottom: '2px' }}>
-                                        {[100, 50, 0].map((val) => (
-                                            <span key={val} style={{ 
-                                                fontSize: '9px', 
-                                                color: 'var(--text-muted)',
-                                                textAlign: 'right',
-                                                lineHeight: 1 }}>
-                                                {val}
-                                            </span>
-                                        ))}
-                                    </div>
-                                    
-                                    {/* Chart area */}
-                                    <div style={{ 
-                                        position: 'relative', 
-                                        height: '100%',
-                                        background: 'var(--bg-hover)',
-                                        borderRadius: '8px',
-                                        overflow: 'hidden' }}>
-                                        {/* Grid lines */}
-                                        <div style={{ 
-                                            position: 'absolute', 
-                                            inset: 0, 
-                                            display: 'flex', 
-                                            flexDirection: 'column', 
-                                            justifyContent: 'space-between',
-                                            padding: '0 8px' }}>
-                                            {[0, 1, 2].map((i) => (
-                                                <div key={i} style={{ 
-                                                    borderBottom: `1px dashed ${'var(--border-light)'}` }} />
-                                            ))}
-                                        </div>
-                                        
-                                        {/* SVG Chart */}
-                                        <svg 
-                                            width="100%" 
-                                            height="100%" 
-                                            viewBox="0 0 100 100" 
-                                            preserveAspectRatio="xMidYMid meet"
-                                            style={{ position: 'absolute', left: 0, top: 0 }}
-                                        >
-                                            {/* Gradient fill */}
-                                            <defs>
-                                                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2" />
-                                                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-                                                </linearGradient>
-                                            </defs>
-                                            
-                                            {/* Area fill */}
-                                            {chartData.length > 1 && (
-                                                <motion.path
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    transition={{ duration: 0.5, delay: 0.2 }}
-                                                    d={(() => {
-                                                        const padding = 8;
-                                                        const width = 100 - padding * 2;
-                                                        const height = 100 - padding * 2;
-                                                        const points = chartData.map((d, i) => {
-                                                            const x = padding + (i / Math.max(1, chartData.length - 1)) * width;
-                                                            const y = padding + (1 - d.totalProgress / 100) * height;
-                                                            return { x, y };
-                                                        });
-                                                        return `M ${points[0].x} ${points[0].y} ${points.map(p => `L ${p.x} ${p.y}`).join(' ')} L ${points[points.length - 1].x} ${padding + height} L ${points[0].x} ${padding + height} Z`;
-                                                    })()}
-                                                    fill="url(#progressGradient)"
-                                                />
-                                            )}
-                                            
-                                            {/* Line */}
-                                            {chartData.length > 1 && (
-                                                <motion.path
-                                                    initial={{ pathLength: 0 }}
-                                                    animate={{ pathLength: 1 }}
-                                                    transition={{ duration: 0.8, delay: 0.1, ease: 'easeOut' }}
-                                                    d={(() => {
-                                                        const padding = 8;
-                                                        const width = 100 - padding * 2;
-                                                        const height = 100 - padding * 2;
-                                                        const points = chartData.map((d, i) => {
-                                                            const x = padding + (i / Math.max(1, chartData.length - 1)) * width;
-                                                            const y = padding + (1 - d.totalProgress / 100) * height;
-                                                            return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-                                                        });
-                                                        return points.join(' ');
-                                                    })()}
-                                                    fill="none"
-                                                    stroke="#3b82f6"
-                                                    strokeWidth="2"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    vectorEffect="non-scaling-stroke"
-                                                />
-                                            )}
-                                            
-                                            {/* Data points */}
-                                            {chartData.map((d, i) => {
-                                                const padding = 8;
-                                                const width = 100 - padding * 2;
-                                                const height = 100 - padding * 2;
-                                                const x = padding + (i / Math.max(1, chartData.length - 1)) * width;
-                                                const y = padding + (1 - d.totalProgress / 100) * height;
-                                                return (
-                                                    <motion.circle
-                                                        key={i}
-                                                        initial={{ scale: 0, opacity: 0 }}
-                                                        animate={{ scale: 1, opacity: 1 }}
-                                                        transition={{ duration: 0.3, delay: 0.3 + i * 0.05 }}
-                                                        cx={x}
-                                                        cy={y}
-                                                        r="3"
-                                                        fill="#fff"
-                                                        stroke="#3b82f6"
-                                                        strokeWidth="1.5"
-                                                        vectorEffect="non-scaling-stroke"
+                        <div className="px-5 sm:px-6 pb-6 pt-2">
+                            {isLoading ? (
+                                <div className="flex items-center justify-center h-[200px]">
+                                    <motion.svg width="28" height="28" viewBox="0 0 24 24" fill="none" animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+                                        <circle cx="12" cy="12" r="10" className="stroke-slate-200 dark:stroke-slate-700" strokeWidth="3" />
+                                        <path d="M12 2a10 10 0 0 1 10 10" className="stroke-blue-500" strokeWidth="3" strokeLinecap="round" />
+                                    </motion.svg>
+                                </div>
+                            ) : chartData.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center h-[200px] text-slate-400 dark:text-slate-500">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mb-3 opacity-50">
+                                        <path d="M3 3v18h18" />
+                                        <path d="m19 9-5 5-4-4-3 3" />
+                                    </svg>
+                                    <span className="text-[13px] font-medium">No progress data yet</span>
+                                </div>
+                            ) : (
+                                <>
+                                    {/* Main Chart Area */}
+                                    <div className="relative h-[160px] sm:h-[180px] mb-4 pl-8">
+                                        {/* Chart Container */}
+                                        <div className="relative h-full w-full bg-slate-50/50 dark:bg-slate-800/50 rounded-[16px] border border-slate-100 dark:border-slate-700/50 overflow-visible py-4 pb-10">
+                                            {chartData.length > 0 && (
+                                                <BarChart 
+                                                    data={chartData} 
+                                                    xDataKey="date" 
+                                                    margin={{ top: 0, right: 8, bottom: 32, left: 8 }}
+                                                    aspectRatio="auto"
+                                                    className="h-full w-full"
+                                                    barGap={0.1}
+                                                >
+                                                    <Grid horizontal={true} strokeDasharray="4,4" fadeHorizontal={true} />
+                                                    <Bar dataKey="totalProgress" fill="#3b82f6" />
+                                                    <BarXAxis showAllLabels={false} maxLabels={7} tickFormat={formatDateLabel} />
+                                                    <ChartTooltip 
+                                                        showDots={false}
+                                                        rows={(point) => [{
+                                                            color: '#3b82f6',
+                                                            label: 'Progress',
+                                                            value: `${point.totalProgress}%`
+                                                        }]}
                                                     />
-                                                );
-                                            })}
-                                        </svg>
+                                                </BarChart>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
 
-                                {/* Day labels */}
-                                <div style={{ 
-                                    display: 'flex', 
-                                    justifyContent: 'space-between',
-                                    paddingLeft: '0',
-                                    marginBottom: '12px' }}>
-                                    {chartData.map((d, i) => (
-                                        <motion.span
-                                            key={i}
-                                            initial={{ opacity: 0, y: 5 }}
+                                    {/* Stats Row */}
+                                    <div className="grid grid-cols-3 gap-3 sm:gap-4">
+                                        {/* Stat 1 */}
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 15 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.3, delay: 0.4 + i * 0.03 }}
-                                            style={{ 
-                                                fontSize: '10px', 
-                                                color: 'var(--text-muted)',
-                                                fontWeight: 500 }}
+                                            transition={{ duration: 0.4, delay: 0.5 }}
+                                            className="bg-blue-50/50 dark:bg-blue-500/10 border border-blue-100/50 dark:border-blue-500/20 rounded-[16px] p-3 sm:p-4 text-center"
                                         >
-                                            {formatDate(d.date)}
-                                        </motion.span>
-                                    ))}
-                                </div>
-
-                                {/* Stats Row */}
-                                <div style={{ 
-                                    display: 'grid', 
-                                    gridTemplateColumns: 'repeat(3, 1fr)', 
-                                    gap: '10px',
-                                    padding: '10px',
-                                    borderRadius: '10px',
-                                    background: 'var(--bg-hover)' }}>
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.3, delay: 0.5 }}
-                                        style={{ textAlign: 'center' }}
-                                    >
-                                        <div style={{ fontSize: '16px', fontWeight: 700, color: '#3b82f6' }}>
-                                            {currentStats.totalProgress}%
-                                        </div>
-                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 500 }}>
-                                            Current Progress
-                                        </div>
-                                    </motion.div>
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.3, delay: 0.55 }}
-                                        style={{ textAlign: 'center' }}
-                                    >
-                                        <div style={{ fontSize: '16px', fontWeight: 700, color: '#10b981' }}>
-                                            {currentStats.completed}
-                                        </div>
-                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 500 }}>
-                                            Goals Completed
-                                        </div>
-                                    </motion.div>
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.3, delay: 0.6 }}
-                                        style={{ textAlign: 'center' }}
-                                    >
-                                        <div style={{ fontSize: '16px', fontWeight: 700, color: '#f59e0b' }}>
-                                            {currentStats.active}
-                                        </div>
-                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 500 }}>
-                                            Active Goals
-                                        </div>
-                                    </motion.div>
-                                </div>
-                            </>
-                        )}
+                                            <div className="text-[20px] sm:text-[24px] font-black text-blue-600 dark:text-blue-400 tracking-tight leading-none mb-1">
+                                                {currentStats.totalProgress}%
+                                            </div>
+                                            <div className="text-[11px] sm:text-[12px] font-bold text-blue-500/70 dark:text-blue-400/70 uppercase tracking-wide">
+                                                Overall Progress
+                                            </div>
+                                        </motion.div>
+                                        
+                                        {/* Stat 2 */}
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 15 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.4, delay: 0.55 }}
+                                            className="bg-emerald-50/50 dark:bg-emerald-500/10 border border-emerald-100/50 dark:border-emerald-500/20 rounded-[16px] p-3 sm:p-4 text-center"
+                                        >
+                                            <div className="text-[20px] sm:text-[24px] font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-none mb-1">
+                                                {currentStats.completed}
+                                            </div>
+                                            <div className="text-[11px] sm:text-[12px] font-bold text-emerald-500/70 dark:text-emerald-400/70 uppercase tracking-wide">
+                                                Goals Completed
+                                            </div>
+                                        </motion.div>
+                                        
+                                        {/* Stat 3 */}
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 15 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.4, delay: 0.6 }}
+                                            className="bg-amber-50/50 dark:bg-amber-500/10 border border-amber-100/50 dark:border-amber-500/20 rounded-[16px] p-3 sm:p-4 text-center"
+                                        >
+                                            <div className="text-[20px] sm:text-[24px] font-black text-amber-600 dark:text-amber-400 tracking-tight leading-none mb-1">
+                                                {currentStats.active}
+                                            </div>
+                                            <div className="text-[11px] sm:text-[12px] font-bold text-amber-500/70 dark:text-amber-400/70 uppercase tracking-wide">
+                                                Active Goals
+                                            </div>
+                                        </motion.div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -406,5 +228,4 @@ const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({  goals = [] }) => {
     );
 };
 
-// Milestone Badge Icon Component — extracted to ./components/MilestoneIcon.tsx
 export { ProgressHistoryChart };

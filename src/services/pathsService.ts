@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Learning Paths Service
  * Handles all database operations for learning paths
  */
@@ -145,6 +145,15 @@ export const COURSES_DATA: Record<string, CourseInfo> = {
         instructor: 'Dan Risty Montojo',
         image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=200&fit=crop&crop=center'
     },
+    'artapp': { id: 'artapp', title: 'Art Appreciation', shortTitle: 'ARTAPP', subtitle: 'GEDC1010', modules: 1, category: 'ge', instructor: 'Dr. Jane Smith', image: '' },
+    'comprog2': { id: 'comprog2', title: 'Computer Programming 2', shortTitle: 'CP2', subtitle: 'CITE1006', modules: 1, category: 'major', instructor: 'John Doe', image: '' },
+    'discrete': { id: 'discrete', title: 'Discrete Structures', shortTitle: 'DISCRETE', subtitle: 'COSC1002', modules: 1, category: 'major', instructor: 'Alan Turing', image: '' },
+    'ethics2': { id: 'ethics2', title: 'Ethics', shortTitle: 'ETHICS', subtitle: 'GEDC1009', modules: 1, category: 'ge', instructor: 'Sarah Jenkins', image: '' },
+    'math2': { id: 'math2', title: 'Mathematics in the Modern World', shortTitle: 'MMW', subtitle: 'GEDC1005', modules: 1, category: 'ge', instructor: 'Mark Lee', image: '' },
+    'nstp2': { id: 'nstp2', title: 'NSTP 2', shortTitle: 'NSTP2', subtitle: 'NSTP1010', modules: 1, category: 'nstp', instructor: 'Prof. Wilson', image: '' },
+    'pathfit2': { id: 'pathfit2', title: 'PATHFIT 2', shortTitle: 'PE2', subtitle: 'PHED1006', modules: 1, category: 'pe', instructor: 'Coach Davis', image: '' },
+    'sts': { id: 'sts', title: 'Science, Technology, and Society', shortTitle: 'STS', subtitle: 'GEDC1013', modules: 1, category: 'ge', instructor: 'Dr. Emily Chen', image: '' },
+    'sysadmin': { id: 'sysadmin', title: 'Systems Administration', shortTitle: 'SYSADMIN', subtitle: 'INTE1006', modules: 1, category: 'major', instructor: 'Linus Torvalds', image: '' },
 };
 
 // Learning paths using actual course IDs
@@ -153,7 +162,7 @@ const DEMO_PATHS: LearningPath[] = [
     {
         id: 'path-full-semester',
         title: 'Full 1st Semester',
-        description: 'Complete all courses for your first semester as a BSIT student',
+        description: 'Your complete guide for your <span class="text-blue-600 dark:text-blue-400 font-bold">first semester</span> as a <span class="text-blue-600 dark:text-blue-400 font-bold">BSIT student</span>. Learn the basics of <span class="text-blue-600 dark:text-blue-400 font-bold">programming</span>, understand <span class="text-blue-600 dark:text-blue-400 font-bold">IT concepts</span>, and improve your <span class="text-blue-600 dark:text-blue-400 font-bold">communication</span> skills. Includes PE and NSTP.',
         icon: 'graduation',
         color: '#3b82f6',
         estimated_hours: 150,
@@ -165,6 +174,21 @@ const DEMO_PATHS: LearningPath[] = [
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
     },
+    {
+        id: 'path-second-semester',
+        title: 'Full 2nd Semester',
+        description: 'Advance your skills in your <span class="text-emerald-600 dark:text-emerald-400 font-bold">second semester</span> of <span class="text-emerald-600 dark:text-emerald-400 font-bold">BSIT</span>. Dive deeper into <span class="text-emerald-600 dark:text-emerald-400 font-bold">programming</span> and <span class="text-emerald-600 dark:text-emerald-400 font-bold">discrete mathematics</span>, and explore <span class="text-emerald-600 dark:text-emerald-400 font-bold">systems administration</span>.',
+        icon: 'graduation',
+        color: '#10b981',
+        estimated_hours: 180,
+        difficulty: 'advanced',
+        courses: ['artapp', 'comprog2', 'discrete', 'ethics2', 'math2', 'nstp2', 'pathfit2', 'sts', 'sysadmin'],
+        created_by: 'admin',
+        is_public: true,
+        enrolled_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+    }
 ];
 
 // Demo progress - connected to actual courses
@@ -367,8 +391,14 @@ function getDemoPathsFromStorage(): LearningPath[] {
         const stored = localStorage.getItem('demo-learning-paths');
         if (stored) {
             const demoPaths = JSON.parse(stored) as LearningPath[];
-            // Combine with the default full semester path
-            return [...DEMO_PATHS, ...demoPaths];
+            // Combine with the default full semester path and apply override
+            const combined = [...DEMO_PATHS, ...demoPaths];
+            return combined.map(p => {
+                if (p.id === 'path-full-semester') {
+                    return { ...p, description: DEMO_PATHS[0].description };
+                }
+                return p;
+            });
         }
     } catch (e) {
     }
@@ -406,7 +436,14 @@ export async function getAllPaths(): Promise<LearningPath[]> {
             return DEMO_PATHS;
         }
 
-        return data || DEMO_PATHS;
+        // Apply UI overrides for the case study presentation
+        const paths = data || DEMO_PATHS;
+        return paths.map(p => {
+            if (p.id === 'path-full-semester') {
+                return { ...p, description: DEMO_PATHS[0].description };
+            }
+            return p;
+        });
     } catch (err) {
         return DEMO_PATHS;
     }

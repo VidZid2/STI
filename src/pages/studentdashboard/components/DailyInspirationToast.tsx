@@ -4,6 +4,12 @@ import { motion, AnimatePresence } from 'motion/react';
 import { getStreakData } from '../../../services/studyTimeService';
 import { TextAnimate } from '../../../components/ui/text-animate';
 
+export type GlobalToastType = 'quote' | 'streak' | 'goal_completed';
+
+export const triggerGlobalToast = (type: GlobalToastType, data?: any) => {
+    window.dispatchEvent(new CustomEvent('global-toast', { detail: { type, data, id: Math.random().toString(36).substring(2, 9) } }));
+};
+
 interface DailyInspirationToastProps {
     quote: { text: string; author: string } | null;
 }
@@ -12,8 +18,26 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
     const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1024 : true);
     
     // Manage multiple toasts
-    const [toasts, setToasts] = useState<Array<{ id: string, type: 'quote' | 'streak' }>>([]);
+    const [toasts, setToasts] = useState<Array<{ id: string, type: GlobalToastType, data?: any }>>([]);
     const exitDirsRef = useRef<Record<string, string>>({});
+
+    const dismissToast = (id: string, direction: string) => {
+        exitDirsRef.current[id] = direction;
+        setToasts(prev => prev.filter(t => t.id !== id));
+    };
+
+    useEffect(() => {
+        const handleGlobalToast = (e: Event) => {
+            const detail = (e as CustomEvent).detail;
+            setToasts(prev => [detail, ...prev]);
+            // Auto dismiss custom toasts after 5 seconds
+            setTimeout(() => {
+                dismissToast(detail.id, 'default');
+            }, 5000);
+        };
+        window.addEventListener('global-toast', handleGlobalToast);
+        return () => window.removeEventListener('global-toast', handleGlobalToast);
+    }, []);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -57,10 +81,7 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
         }
     }, [quote]);
 
-    const dismissToast = (id: string, direction: string) => {
-        exitDirsRef.current[id] = direction;
-        setToasts(prev => prev.filter(t => t.id !== id));
-    };
+
 
     // Prevent blocking clicks when empty, but keep AnimatePresence mounted so the last exit animation runs!
     const containerPointerEvents = toasts.length === 0 ? 'pointer-events-none' : '';
@@ -88,9 +109,11 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
     };
 
     const variants: any = {
-        initial: ({ isMobile }: { isMobile: boolean }) => isMobile 
-            ? { opacity: 0, y: 50, scale: 0.7 }
-            : { opacity: 1, y: "150%", scale: 1 },
+        initial: () => ({
+            opacity: 0, 
+            y: 50, 
+            scale: 0.8
+        }),
         animate: ({ isMobile, offset }: { isMobile: boolean, offset: number }) => {
             const yOffset = isMobile ? offset * 12 : -offset * 12;
             const scale = 1 - (offset * 0.05);
@@ -159,8 +182,8 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
                                 style={{ zIndex: 100 - offset }}
                             >
                                 <div 
-                                    className={`relative flex items-center gap-3 overflow-hidden rounded-xl shadow-sm p-3.5 
-                                        ${isFront && !isMobile ? 'pr-4' : ''} 
+                                    className={`relative flex items-center gap-3 w-full overflow-hidden rounded-xl shadow-sm p-3.5 
+                                        ${isFront && !isMobile ? 'pr-8' : ''} 
                                         ${isMobile && isFront ? 'pointer-events-none' : ''}
                                         ${t.type === 'quote' 
                                             ? 'bg-blue-600 dark:bg-blue-900 border border-yellow-400' 
@@ -201,6 +224,31 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
                                                 <p className="text-white text-xs sm:text-sm font-normal leading-snug">
                                                     "<TextAnimate animation="blurInUp" by="character" once as="span" className="inline">{quote?.text || ""}</TextAnimate>" <span className="text-blue-200 text-[10px] sm:text-xs font-medium whitespace-nowrap ml-1">— {quote?.author}</span>
                                                 </p>
+                                            </div>
+                                        </>
+                                    ) : t.type === 'goal_completed' ? (
+                                        <>
+                                            <div className="w-8 h-8 flex-shrink-0 rounded-full bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/50">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
+                                                <h4 className="text-[12px] font-bold text-slate-800 dark:text-slate-200 leading-tight">
+                                                    Goal Completed!
+                                                </h4>
+                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug truncate">
+                                                    {t.data?.title || 'Goal'}
+                                                </p>
+                                            </div>
+                                            <div className="flex flex-col items-end justify-center pl-2 border-l border-slate-100 dark:border-slate-700">
+                                                <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 leading-none">
+                                                    100%
+                                                </span>
+                                                <span className="text-[9px] font-bold uppercase tracking-wider text-indigo-400 mt-0.5">
+                                                    Complete
+                                                </span>
                                             </div>
                                         </>
                                     ) : (

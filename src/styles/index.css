@@ -27,6 +27,23 @@
     --color-danger-bg: rgba(239, 68, 68, 0.1);
     --color-purple: #8b5cf6;
     --color-purple-bg: rgba(139, 92, 246, 0.1);
+
+    /* Chart Colors */
+    --chart-background: #ffffff;
+    --chart-foreground: #0f172a;
+    --chart-foreground-muted: #64748b;
+    --chart-line-primary: #3b82f6;
+    --chart-line-secondary: #10b981;
+    --chart-crosshair: #cbd5e1;
+    --chart-grid: #e2e8f0;
+    --chart-tooltip-background: rgba(255, 255, 255, 0.95);
+    --chart-tooltip-foreground: #0f172a;
+    --chart-tooltip-muted: #64748b;
+    --chart-marker-background: #ffffff;
+    --chart-marker-border: #e2e8f0;
+    --chart-marker-foreground: #0f172a;
+    --chart-ring-background: rgba(59, 130, 246, 0.25);
+    --chart-label: #64748b;
 }
 
 html.dark {
@@ -42,6 +59,23 @@ html.dark {
     --accent-bg: rgba(96, 165, 250, 0.1);
     --ring-focus: rgba(96, 165, 250, 0.2);
     /* Status colors stay the same in dark mode — they're semantic */
+
+    /* Chart Colors */
+    --chart-background: #1e293b;
+    --chart-foreground: #f1f5f9;
+    --chart-foreground-muted: #94a3b8;
+    --chart-line-primary: #60a5fa;
+    --chart-line-secondary: #34d399;
+    --chart-crosshair: #475569;
+    --chart-grid: #334155;
+    --chart-tooltip-background: rgba(30, 41, 59, 0.95);
+    --chart-tooltip-foreground: #f1f5f9;
+    --chart-tooltip-muted: #94a3b8;
+    --chart-marker-background: #1e293b;
+    --chart-marker-border: #334155;
+    --chart-marker-foreground: #f1f5f9;
+    --chart-ring-background: rgba(96, 165, 250, 0.25);
+    --chart-label: #94a3b8;
 }
 
 html.pink-theme {
@@ -5759,6 +5793,53 @@ html.hide-avatars [class*="avatar-container"] {
         --animate-gradient: gradient 8s linear infinite;
         --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
         --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+        --color-chart-background: var(--chart-background);
+        --color-chart-foreground: var(--chart-foreground);
+        --color-chart-foreground-muted: var(--chart-foreground-muted);
+        --color-chart-line-primary: var(--chart-line-primary);
+        --color-chart-line-secondary: var(--chart-line-secondary);
+        --color-chart-crosshair: var(--chart-crosshair);
+        --color-chart-grid: var(--chart-grid);
+        --color-chart-tooltip-background: var(--chart-tooltip-background);
+        --color-chart-tooltip-foreground: var(--chart-tooltip-foreground);
+        --color-chart-tooltip-muted: var(--chart-tooltip-muted);
+        --color-chart-marker-background: var(--chart-marker-background);
+        --color-chart-marker-border: var(--chart-marker-border);
+        --color-chart-marker-foreground: var(--chart-marker-foreground);
+        --color-chart-ring-background: var(--chart-ring-background);
+        --color-chart-label: var(--chart-label);
+    }
+  :root {
+        --chart-background: oklch(1 0 0);
+        --chart-foreground: oklch(0.145 0.004 285);
+        --chart-foreground-muted: oklch(0.55 0.014 260);
+        --chart-line-primary: var(--chart-1);
+        --chart-line-secondary: var(--chart-2);
+        --chart-crosshair: oklch(0.4 0.1828 274.34);
+        --chart-grid: oklch(0.9 0 0);
+        --chart-tooltip-background: oklch(0.21 0.006 285 / 0.8);
+        --chart-tooltip-foreground: oklch(0.15 0.005 260);
+        --chart-tooltip-muted: oklch(0.5 0.01 260);
+        --chart-marker-background: oklch(0.97 0.005 260);
+        --chart-marker-border: oklch(0.85 0.01 260);
+        --chart-marker-foreground: oklch(0.3 0.01 260);
+        --chart-ring-background: oklch(0.9 0.005 260 / 0.25);
+        --chart-label: oklch(0.45 0.01 260);
+    }
+  .dark {
+        --chart-background: oklch(0.145 0 0);
+        --chart-foreground: oklch(0.45 0 0);
+        --chart-foreground-muted: oklch(0.65 0.01 260);
+        --chart-crosshair: oklch(0.45 0 0);
+        --chart-grid: oklch(0.25 0 0);
+        --chart-tooltip-background: oklch(0.92 0.004 260 / 0.85);
+        --chart-tooltip-foreground: oklch(0.985 0 0);
+        --chart-tooltip-muted: oklch(0.65 0.01 260);
+        --chart-marker-background: oklch(0.25 0.01 260);
+        --chart-marker-border: oklch(0.4 0.01 260);
+        --chart-marker-foreground: oklch(0.9 0 0);
+        --chart-ring-background: oklch(0.35 0.01 260 / 0.25);
+        --chart-label: oklch(0.75 0.01 260);
     }
 }
 

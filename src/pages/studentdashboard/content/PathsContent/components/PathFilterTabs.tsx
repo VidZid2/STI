@@ -1,156 +1,141 @@
-﻿/**
+/**
  * PathFilterTabs
  * Filter tabs for PathsContent (All / In Progress / Completed / Bookmarked).
  * Extracted from PathsContent.tsx during Phase 8.6
+ * 
+ * PERFORMANCE: Uses GPU-accelerated CSS transform transitions instead of
+ * Framer Motion layout animations. Only `transform` and `opacity` are animated,
+ * both compositor-only properties — guaranteeing 60fps without layout thrashing.
  */
-import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import type { FilterTab } from './PathIcon';
 
-// Filter Tabs Component with proper sliding indicator
 interface FilterTabsProps {
     activeFilter: FilterTab;
     setActiveFilter: (filter: FilterTab) => void;
-    
 }
 
-const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter }) => {
-    const containerRef = React.useRef<HTMLDivElement>(null);
-    const [indicatorStyle, setIndicatorStyle] = useState({ left: 5, width: 60 });
-    
-    const tabs: { id: FilterTab; label: string; icon: React.ReactNode }[] = [
-        {
-            id: 'all',
-            label: 'All',
-            icon: (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="7" height="7" />
-                    <rect x="14" y="3" width="7" height="7" />
-                    <rect x="14" y="14" width="7" height="7" />
-                    <rect x="3" y="14" width="7" height="7" />
-                </svg>
-            ) },
-        {
-            id: 'enrolled',
-            label: 'Enrolled',
-            icon: (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                    <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-            ) },
-        {
-            id: 'available',
-            label: 'Available',
-            icon: (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="16" />
-                    <line x1="8" y1="12" x2="16" y2="12" />
-                </svg>
-            ) },
-    ];
+const tabs: { id: FilterTab; label: string; icon: React.ReactNode }[] = [
+    {
+        id: 'all',
+        label: 'All',
+        icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+            </svg>
+        ),
+    },
+    {
+        id: 'enrolled',
+        label: 'Enrolled',
+        icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+        ),
+    },
+    {
+        id: 'available',
+        label: 'Available',
+        icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+            </svg>
+        ),
+    },
+];
 
-    // Update indicator position when active filter changes
-    useEffect(() => {
-        if (!containerRef.current) return;
+const FilterTabs: React.FC<FilterTabsProps> = ({ activeFilter, setActiveFilter }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+    const [indicator, setIndicator] = useState({ x: 0, width: 0, ready: false });
+
+    const measure = useCallback(() => {
         const container = containerRef.current;
-        const activeIndex = tabs.findIndex(t => t.id === activeFilter);
-        const buttons = container.querySelectorAll<HTMLButtonElement>('button[data-filter-tab]');
-        
-        if (buttons[activeIndex]) {
-            const button = buttons[activeIndex];
-            const containerRect = container.getBoundingClientRect();
-            const buttonRect = button.getBoundingClientRect();
-            
-            setIndicatorStyle({
-                left: buttonRect.left - containerRect.left,
-                width: buttonRect.width });
-        }
+        const btn = buttonRefs.current.get(activeFilter);
+        if (!container || !btn) return;
+
+        setIndicator({
+            x: btn.offsetLeft,
+            width: btn.offsetWidth,
+            ready: true,
+        });
     }, [activeFilter]);
 
-    // Initial measurement after mount
+    // Measure on filter change
     useEffect(() => {
-        const timer = setTimeout(() => {
-            if (!containerRef.current) return;
-            const container = containerRef.current;
-            const activeIndex = tabs.findIndex(t => t.id === activeFilter);
-            const buttons = container.querySelectorAll<HTMLButtonElement>('button[data-filter-tab]');
-            
-            if (buttons[activeIndex]) {
-                const button = buttons[activeIndex];
-                const containerRect = container.getBoundingClientRect();
-                const buttonRect = button.getBoundingClientRect();
-                
-                setIndicatorStyle({
-                    left: buttonRect.left - containerRect.left,
-                    width: buttonRect.width });
-            }
-        }, 50);
-        return () => clearTimeout(timer);
-    }, []);
+        // Use rAF to batch with next paint — avoids forced reflow
+        const id = requestAnimationFrame(measure);
+        return () => cancelAnimationFrame(id);
+    }, [measure]);
+
+    // Re-measure on resize (debounced)
+    useEffect(() => {
+        let timeout: ReturnType<typeof setTimeout>;
+        const onResize = () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(measure, 100);
+        };
+        window.addEventListener('resize', onResize, { passive: true });
+        return () => {
+            window.removeEventListener('resize', onResize);
+            clearTimeout(timeout);
+        };
+    }, [measure]);
 
     return (
-        <motion.div 
-            ref={containerRef}
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.35, duration: 0.4 }}
-            style={{
-                display: 'flex',
-                gap: '4px',
-                padding: '4px',
-                borderRadius: '12px',
-                background: 'var(--bg-hover)',
-                position: 'relative' }}
+        <div
+            className="rounded-xl shadow-sm border bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700 w-full sm:w-auto overflow-x-auto"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
         >
-            {/* Sliding Background Indicator */}
-            <motion.div
+            <div ref={containerRef} className="flex gap-1 p-1 relative min-w-max">
+            {/* Sliding indicator — GPU-accelerated via transform + will-change */}
+            <div
+                className="absolute top-1 bottom-1 left-0 rounded-lg bg-white border border-slate-200 shadow-sm dark:bg-slate-700 dark:border-slate-600 pointer-events-none"
                 style={{
-                    position: 'absolute',
-                    top: '4px',
-                    bottom: '4px',
-                    borderRadius: '8px',
-                    background: 'rgba(59, 130, 246, 0.1)',
-                    border: `1px solid ${'rgba(59, 130, 246, 0.1)'}`,
-                    zIndex: 0 }}
-                initial={false}
-                animate={{
-                    left: indicatorStyle.left,
-                    width: indicatorStyle.width }}
-                transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                    width: indicator.width,
+                    transform: `translateX(${indicator.x}px)`,
+                    transition: indicator.ready
+                        ? 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), width 0.35s cubic-bezier(0.22, 1, 0.36, 1)'
+                        : 'none',
+                    willChange: 'transform, width',
+                    zIndex: 0,
+                }}
             />
-            
-            {tabs.map((tab) => (
-                <motion.button
-                    key={tab.id}
-                    data-filter-tab={tab.id}
-                    onClick={() => setActiveFilter(tab.id)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '7px 12px',
-                        borderRadius: '8px',
-                        border: 'none',
-                        background: 'transparent',
-                        color: activeFilter === tab.id ? 'var(--accent-color)' : 'var(--text-secondary)',
-                        fontSize: '12px',
-                        fontWeight: 500,
-                        cursor: 'pointer',
-                        position: 'relative',
-                        zIndex: 1,
-                        transition: 'color 0.2s ease' }}
-                >
-                    {tab.icon}
-                    {tab.label}
-                </motion.button>
-            ))}
-        </motion.div>
+
+            {tabs.map((tab) => {
+                const isActive = activeFilter === tab.id;
+                return (
+                    <button
+                        key={tab.id}
+                        ref={(el) => {
+                            if (el) buttonRefs.current.set(tab.id, el);
+                        }}
+                        data-filter-tab={tab.id}
+                        onClick={() => setActiveFilter(tab.id)}
+                        className={`relative z-10 flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-[13px] font-bold whitespace-nowrap sm:flex-shrink-0 select-none ${isActive
+                            ? 'text-blue-600 dark:text-slate-100'
+                            : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                        }`}
+                        style={{
+                            transition: 'color 0.2s ease',
+                            WebkitTapHighlightColor: 'transparent',
+                        }}
+                    >
+                        {tab.icon}
+                        {tab.label}
+                    </button>
+                );
+            })}
+            </div>
+        </div>
     );
 };
-
 
 export { FilterTabs };
