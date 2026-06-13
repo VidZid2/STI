@@ -10,8 +10,7 @@ import { StreakWidget } from './index';
 import { WidgetContainer } from './WidgetContainer';
 import QuickSettingsDropdown from '../../../components/ui/dropdowns/QuickSettingsDropdown';
 import HelpDropdown from '../../../components/ui/dropdowns/HelpDropdown';
-import { ErrorBoundary } from '../../../components/shared';
-import { TodoWidget } from '../widgets';
+
 
 import type { CalendarData, WeatherData, WidgetVisibility, AchievementStats, TodoItem, GradePrediction, StudyInsights } from '../types';
 import type { Deadline } from '../../../services/deadlinesService';

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { TodoItem } from '../types';
 import CreateGoalModal from '../content/GoalsContent/modals/CreateGoalModal';
@@ -28,7 +28,7 @@ export const TodoWidget = React.memo<TodoWidgetProps>(({
     onClose,
 }) => {
     // Phase 1B: Local input state to prevent parent re-renders while typing
-    const [localText, setLocalText] = useState('');
+
     const [localIsAdding, setLocalIsAdding] = useState(false);
     const localInputRef = useRef<HTMLInputElement>(null);
 
@@ -39,18 +39,7 @@ export const TodoWidget = React.memo<TodoWidgetProps>(({
         }
     }, [localIsAdding]);
 
-    const handleSubmit = useCallback(() => {
-        if (!localText.trim()) return;
-        setNewTodoText(localText);
-        addTodo();
-        setLocalText('');
-        setLocalIsAdding(false);
-    }, [localText, setNewTodoText, addTodo]);
 
-    const handleCancel = useCallback(() => {
-        setLocalText('');
-        setLocalIsAdding(false);
-    }, []);
 
     return (
         <motion.div

@@ -29,7 +29,6 @@ export const CalendarWidget = React.memo<CalendarWidgetProps>(({
     setCalendarView,
     calendarMonth,
     setCalendarMonth,
-    hasDeadlines,
     upcomingDeadlines,
     getDeadlineTypeColor,
     compactMode = false,

@@ -1,8 +1,6 @@
 "use client";
 
-import { CreditCard, FileText, LogOut, Settings, User } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { CreditCard, FileText, LogOut, Settings, User, Sparkles } from "lucide-react";
 import * as React from "react";
 import {
   DropdownMenu,
@@ -12,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import Gemini from "../icons/gemini";
 
 interface Profile {
   name: string;
@@ -60,7 +57,7 @@ export default function ProfileDropdown({
       label: "Model",
       value: data.model,
       href: "#",
-      icon: <Gemini className="h-4 w-4" />,
+      icon: <Sparkles className="h-4 w-4" />,
     },
     {
       label: "Subscription",
@@ -101,7 +98,7 @@ export default function ProfileDropdown({
               <div className="relative">
                 <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-0.5">
                   <div className="h-full w-full overflow-hidden rounded-full bg-white dark:bg-zinc-900">
-                    <Image
+                    <img
                       alt={data.name}
                       className="h-full w-full rounded-full object-cover"
                       height={36}
@@ -152,7 +149,7 @@ export default function ProfileDropdown({
             <div className="space-y-1">
               {menuItems.map((item) => (
                 <DropdownMenuItem asChild key={item.label}>
-                  <Link
+                  <a
                     className="group flex cursor-pointer items-center rounded-xl border border-transparent p-3 transition-all duration-200 hover:border-zinc-200/50 hover:bg-zinc-100/80 hover:shadow-sm dark:hover:border-zinc-700/50 dark:hover:bg-zinc-800/60"
                     href={item.href}
                   >
@@ -176,7 +173,7 @@ export default function ProfileDropdown({
                         </span>
                       )}
                     </div>
-                  </Link>
+                  </a>
                 </DropdownMenuItem>
               ))}
             </div>

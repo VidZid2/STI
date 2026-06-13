@@ -165,7 +165,7 @@ const HelpDropdown: React.FC = () => {
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.03 }}
-                                    onClick={(e) => {
+                                    onClick={() => {
                                         setIsOpen(false);
                                         link.onClick?.();
                                     }}
