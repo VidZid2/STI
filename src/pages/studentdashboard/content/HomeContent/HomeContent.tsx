@@ -162,79 +162,93 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                         
                         {/* Header (Clickable for Dropdown) */}
                         <div 
-                            className="flex flex-row items-center justify-between gap-4 cursor-pointer w-full"
+                            className="flex flex-row items-start sm:items-center justify-between gap-4 cursor-pointer w-full"
                             onClick={() => setIsStatsExpanded(!isStatsExpanded)}
                         >
                             {/* Left: Avatar & Text */}
-                            <div className="flex items-center gap-3 sm:gap-5 min-w-0 flex-1">
-                                <motion.div
-                                    whileHover={{ scale: 1.05, rotate: -5 }}
-                                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                                    className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 relative transition-transform duration-300"
-                                >
-                                    {/* Circular Level Gauge & Online Status Ring */}
-                                    <svg 
-                                        className="absolute -inset-[6px] w-[68px] h-[68px] pointer-events-none z-0" 
-                                        viewBox="0 0 68 68"
-                                        style={{ transform: 'rotate(-90deg)' }}
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5 min-w-0 flex-1 w-full">
+                                <div className="flex items-center gap-3 sm:gap-5 w-full sm:w-auto">
+                                    <motion.div
+                                        whileHover={{ scale: 1.05, rotate: -5 }}
+                                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                        className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 relative transition-transform duration-300"
                                     >
-                                        {/* Background track */}
-                                        <circle
-                                            cx="34"
-                                            cy="34"
-                                            r="30"
-                                            fill="none"
-                                            stroke={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
-                                            strokeWidth="4"
-                                        />
-                                        {/* Progress track */}
-                                        <motion.circle
-                                            cx="34"
-                                            cy="34"
-                                            r="30"
-                                            fill="none"
-                                            stroke="#3b82f6"
-                                            strokeWidth="4"
-                                            strokeLinecap="round"
-                                            pathLength="100"
-                                            strokeDasharray="100"
-                                            initial={{ strokeDashoffset: 100 }}
-                                            animate={{ strokeDashoffset: Math.max(0, 100 - xpProgress) }}
-                                            transition={{ duration: 1.2, ease: "easeOut" }}
-                                        />
-                                    </svg>
+                                        {/* Circular Level Gauge & Online Status Ring */}
+                                        <svg 
+                                            className="absolute -inset-[6px] w-[68px] h-[68px] pointer-events-none z-0" 
+                                            viewBox="0 0 68 68"
+                                            style={{ transform: 'rotate(-90deg)' }}
+                                        >
+                                            {/* Background track */}
+                                            <circle
+                                                cx="34"
+                                                cy="34"
+                                                r="30"
+                                                fill="none"
+                                                stroke={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
+                                                strokeWidth="4"
+                                            />
+                                            {/* Progress track */}
+                                            <motion.circle
+                                                cx="34"
+                                                cy="34"
+                                                r="30"
+                                                fill="none"
+                                                stroke="#3b82f6"
+                                                strokeWidth="4"
+                                                strokeLinecap="round"
+                                                pathLength="100"
+                                                strokeDasharray="100"
+                                                initial={{ strokeDashoffset: 100 }}
+                                                animate={{ strokeDashoffset: Math.max(0, 100 - xpProgress) }}
+                                                transition={{ duration: 1.2, ease: "easeOut" }}
+                                            />
+                                        </svg>
 
-                                    {/* Avatar Background */}
-                                    <div 
-                                        className="w-full h-full rounded-full flex items-center justify-center shadow-sm overflow-hidden relative z-10"
-                                        style={{ 
-                                            background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'
-                                        }}
-                                    >
-                                        {profileImage ? (
-                                            <img src={profileImage} alt="Profile" className='w-full h-full object-cover' />
-                                        ) : (
-                                            <div className={`w-full h-full flex items-center justify-center font-extrabold text-[18px] ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                                                {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
-                                            </div>
-                                        )}
-                                    </div>
+                                        {/* Avatar Background */}
+                                        <div 
+                                            className="w-full h-full rounded-full flex items-center justify-center shadow-sm overflow-hidden relative z-10"
+                                            style={{ 
+                                                background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'
+                                            }}
+                                        >
+                                            {profileImage ? (
+                                                <img src={profileImage} alt="Profile" className='w-full h-full object-cover' />
+                                            ) : (
+                                                <div className={`w-full h-full flex items-center justify-center font-extrabold text-[18px] ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                                    {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
+                                                </div>
+                                            )}
+                                        </div>
 
-                                    {/* Level Badge overlapping bottom center */}
-                                    <div className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 min-w-[36px] h-[18px] px-1.5 rounded-md flex items-center justify-center text-[10px] font-bold tracking-wider shadow-sm border-[2px] z-20 bg-blue-500 text-white transition-colors duration-300 ${isDarkMode ? (showOnlineStatus ? 'border-emerald-400' : 'border-slate-800') : (showOnlineStatus ? 'border-emerald-500' : 'border-white')}`}>
-                                        LV.{level}
+                                        {/* Level Badge overlapping bottom center */}
+                                        <div className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 min-w-[36px] h-[18px] px-1.5 rounded-md flex items-center justify-center text-[10px] font-bold tracking-wider shadow-sm border-[2px] z-20 bg-blue-500 text-white transition-colors duration-300 ${isDarkMode ? (showOnlineStatus ? 'border-emerald-400' : 'border-slate-800') : (showOnlineStatus ? 'border-emerald-500' : 'border-white')}`}>
+                                            LV.{level}
+                                        </div>
+                                    </motion.div>
+                                    
+                                    {/* Mobile Only: Name & Badge (beside avatar) */}
+                                    <div className="flex flex-col sm:hidden justify-center min-w-0 flex-1">
+                                        <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none transition-colors truncate mb-1">
+                                            {profile.firstName} {profile.lastName}
+                                        </h2>
+                                        <span className="w-fit px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                            Good Morning
+                                        </span>
                                     </div>
-                                </motion.div>
-                                <div className="text-left flex flex-col justify-center min-w-0 flex-1">
-                                    <div className="flex items-center gap-2 mb-1 sm:mb-1.5 flex-wrap">
-                                        <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none transition-colors truncate">
+                                </div>
+
+                                <div className="text-left flex flex-col justify-center min-w-0 flex-1 w-full">
+                                    {/* Desktop Only: Name & Badge */}
+                                    <div className="hidden sm:flex items-center gap-2 mb-1.5 flex-wrap">
+                                        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none transition-colors truncate">
                                             {profile.firstName} {profile.lastName}
                                         </h2>
                                         <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                             Good Morning
                                         </span>
                                     </div>
-                                    <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-[1.4] max-w-xl line-clamp-2 sm:line-clamp-none">
+                                    <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-[1.4] max-w-xl">
                                         Your learning overview is ready. Track active courses, module progress, and study momentum from one clean dashboard.
                                     </p>
 
