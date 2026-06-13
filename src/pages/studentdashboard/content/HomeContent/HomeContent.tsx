@@ -1062,18 +1062,18 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
 
                                             {/* Progress Bar Section */}
                                             <div className="flex flex-col gap-2.5">
-                                                <div className="flex justify-between items-center gap-3">
+                                                <div className="flex flex-wrap sm:flex-nowrap justify-start sm:justify-between items-center gap-2 sm:gap-3">
                                                     <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-[12px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default group/tag">
-                                                        <div className="w-6 h-6 rounded-[8px] bg-blue-50 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover/tag:scale-110 transition-transform duration-300">
+                                                        <div className="w-6 h-6 rounded-[8px] bg-blue-50 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover/tag:scale-110 transition-transform duration-300 shrink-0">
                                                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                                                         </div>
-                                                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">{currentProgressPercentage}% Complete</span>
+                                                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider whitespace-nowrap">{currentProgressPercentage}% Complete</span>
                                                     </div>
                                                     <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-[12px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default group/tag">
-                                                        <div className="w-6 h-6 rounded-[8px] bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover/tag:scale-110 transition-transform duration-300">
+                                                        <div className="w-6 h-6 rounded-[8px] bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover/tag:scale-110 transition-transform duration-300 shrink-0">
                                                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
                                                         </div>
-                                                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 tracking-wider">{currentModulesRemaining} modules remaining</span>
+                                                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 tracking-wider whitespace-nowrap">{currentModulesRemaining} modules remaining</span>
                                                     </div>
                                                 </div>
                                                 <div className="w-full h-3 rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.15)] border border-black/5 dark:border-white/5">
