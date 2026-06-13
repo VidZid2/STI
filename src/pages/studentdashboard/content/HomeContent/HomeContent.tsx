@@ -291,9 +291,16 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                             Good Morning
                                         </span>
                                     </div>
-                                    <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-[1.4] max-w-xl">
-                                        Your learning overview is ready. Track active courses, module progress, and study momentum from one clean dashboard.
-                                    </p>
+                                    <div className="flex items-start sm:items-center gap-2 mt-2 sm:mt-0 text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-800/30 sm:bg-transparent sm:dark:bg-transparent p-2 sm:p-0 rounded-[10px] sm:rounded-none border border-slate-100 dark:border-slate-700/30 sm:border-transparent">
+                                        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mt-0.5 sm:mt-0 shrink-0 text-blue-500/70 dark:text-blue-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                        </svg>
+                                        <p className="text-[11px] sm:text-sm font-medium leading-[1.4] max-w-xl">
+                                            <span className="text-slate-700 dark:text-slate-300 font-bold tracking-wide">Overview ready.</span>{" "}
+                                            <span className="hidden sm:inline">Track active courses, module progress, and study momentum from one clean dashboard.</span>
+                                            <span className="sm:hidden">Track your courses, progress, and momentum.</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
