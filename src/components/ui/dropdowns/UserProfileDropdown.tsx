@@ -48,6 +48,8 @@ import {
     getXPNeededForLevel,
 } from '@/services/studyTimeService';
 import { LevelJourneyModal } from '@/components/ui/modals';
+import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
+
 
 type ProfileTab = 'profile' | 'settings';
 
@@ -301,44 +303,38 @@ export default function UserProfileDropdown() {
                     {/* Premium SaaS Avatar Container */}
                     <div className="relative shrink-0 w-8 h-8 sm:w-10 sm:h-10 mr-0.5 sm:mr-1.5 flex items-center justify-center">
                         {/* Circular Level Gauge */}
-                        <svg className="absolute -inset-[3px] pointer-events-none z-0" viewBox="0 0 46 46" style={{ transform: 'rotate(-90deg)' }}>
-                            <circle cx="23" cy="23" r="21" fill="none" stroke={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'} strokeWidth="4" />
-                            <motion.circle
-                                cx="23" cy="23" r="21" fill="none" stroke="#3b82f6" strokeWidth="4" strokeLinecap="round"
-                                pathLength="100" strokeDasharray="100"
-                                initial={{ strokeDashoffset: 100 }}
-                                animate={{ strokeDashoffset: Math.max(0, 100 - xpProgress) }}
-                                transition={{ duration: 1.2, ease: "easeOut" }}
-                            />
-                        </svg>
-
-                        {/* The Avatar Box */}
-                        <div 
-                            className="w-full h-full rounded-full flex items-center justify-center shadow-sm overflow-hidden relative z-10"
-                            style={{ background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)' }}
+                        <AnimatedCircularProgressBar
+                            max={100}
+                            min={0}
+                            value={xpProgress}
+                            gaugePrimaryColor="#3b82f6"
+                            gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
+                            className="w-8 h-8 sm:w-10 sm:h-10 shrink-0"
                         >
-                            {profileImage ? (
-                                <img src={profileImage} alt="Profile" className='w-full h-full object-cover' />
-                            ) : (
-                                <div className={cn('w-full h-full flex items-center justify-center font-extrabold text-[15px]', isDarkMode ? 'text-blue-400' : 'text-blue-600')}>
-                                    {getInitials(profile.firstName, profile.lastName)}
-                                </div>
-                            )}
-                        </div>
-                        
-                        {/* Level Badge overlapping bottom center */}
-                        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-20 flex justify-center">
-                            <motion.div 
-                                className={cn(
-                                    'min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[8.5px] font-bold tracking-wider shadow-sm border-2 transition-colors duration-300 bg-blue-500 text-white',
-                                    isDarkMode ? (showOnlineStatus ? 'border-emerald-400' : 'border-slate-800') : (showOnlineStatus ? 'border-emerald-500' : 'border-white')
+                            <div className="absolute inset-1 sm:inset-1.5 rounded-full flex items-center justify-center shadow-sm overflow-hidden z-10" style={{ background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)' }}>
+                                {profileImage ? (
+                                    <img src={profileImage} alt="Profile" className='w-full h-full object-cover' />
+                                ) : (
+                                    <div className={cn('w-full h-full flex items-center justify-center font-extrabold text-[15px]', isDarkMode ? 'text-blue-400' : 'text-blue-600')}>
+                                        {getInitials(profile.firstName, profile.lastName)}
+                                    </div>
                                 )}
-                                animate={showLevelUp ? { scale: [1, 1.3, 1] } : {}}
-                                transition={{ duration: 0.5 }}
-                            >
-                                LV.{level}
-                            </motion.div>
-                        </div>
+                            </div>
+                            
+                            {/* Level Badge overlapping bottom center */}
+                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-20 flex justify-center">
+                                <motion.div 
+                                    className={cn(
+                                        'min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[8.5px] font-bold tracking-wider shadow-sm border-[2px] transition-colors duration-300 bg-blue-500 text-white',
+                                        isDarkMode ? (showOnlineStatus ? 'border-emerald-400' : 'border-slate-800') : (showOnlineStatus ? 'border-emerald-500' : 'border-white')
+                                    )}
+                                    animate={showLevelUp ? { scale: [1, 1.3, 1] } : {}}
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    LV.{level}
+                                </motion.div>
+                            </div>
+                        </AnimatedCircularProgressBar>
                     </div>
 
                     {/* Text Content matching Tools Page Cards */}

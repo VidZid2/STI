@@ -207,7 +207,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
 
                     <NavItemButton id="goals" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Goals />} label="Goals" description="Track progress" />
                     <NavItemButton id="groups" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Groups />} label="Groups" description="Collaborate together" />
-                    <NavItemButton id="users" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Users />} label="Users" description="Manage accounts" />
+                    <NavItemButton id="users" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Users />} label="Community" description="Connect with peers" />
 
                     <ToolsNavTooltip isExpanded={isExpanded}>
                         <div>

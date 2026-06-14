@@ -17,12 +17,14 @@ const TeacherSpotlightSkeleton: React.FC<{
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.28, duration: 0.4 }}
+            className="rounded-[20px] sm:rounded-[24px] -mx-4 sm:-mx-6 lg:mx-0"
             style={{
                 marginBottom: '24px',
                 padding: '18px',
-                borderRadius: '14px',
                 background: 'var(--dashboard-surface)',
-                border: `1px solid var(--border-color)` }}
+                border: `1px solid var(--border-color)`,
+                overflow: 'hidden'
+            }}
         >
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
@@ -134,13 +136,54 @@ const TeacherSpotlight: React.FC<{
         return () => clearInterval(interval);
     }, [teachers.length]);
 
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    const carouselTransition = isMobile 
+        ? { type: "tween", ease: "easeOut", duration: 0.25 } 
+        : { type: "spring", stiffness: 300, damping: 30, duration: 0.2 };
+
+    // Native touch swipe detection for mobile (bypasses Framer Motion's drag restrictions over scroll areas)
+    const [touchStart, setTouchStart] = useState<{ x: number, y: number } | null>(null);
+    const [touchEnd, setTouchEnd] = useState<{ x: number, y: number } | null>(null);
+
+    const onTouchStart = (e: React.TouchEvent) => {
+        setTouchEnd(null); // Reset
+        setTouchStart({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
+    };
+
+    const onTouchMove = (e: React.TouchEvent) => {
+        setTouchEnd({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
+    };
+
+    const onTouchEndEvent = () => {
+        if (!touchStart || !touchEnd) return;
+        
+        const xDistance = touchStart.x - touchEnd.x;
+        const yDistance = touchStart.y - touchEnd.y;
+        
+        // Ensure it's a horizontal swipe, not a vertical scroll, and distance is enough
+        if (Math.abs(xDistance) > Math.abs(yDistance) && Math.abs(xDistance) > 40) {
+            if (xDistance > 0) {
+                handleNext();
+            } else {
+                handlePrev();
+            }
+        }
+    };
+
     if (isLoading) {
         return <TeacherSpotlightSkeleton   />;
     }
 
     if (teachers.length === 0) return null;
 
-    const currentTeacher = teachers[currentIndex];
+    if (teachers.length === 0) return null;
 
     // Category color helper
     const getCategoryColor = (category: string) => {
@@ -152,304 +195,198 @@ const TeacherSpotlight: React.FC<{
         return categoryColors[category] || '#64748b';
     };
 
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.28, duration: 0.4 }}
-            style={{
-                marginBottom: '24px',
-                padding: '18px',
-                borderRadius: '14px',
-                background: 'var(--dashboard-surface)',
-                border: `1px solid var(--border-color)`,
-                overflow: 'hidden' }}
+            className="flex flex-col group transition-all duration-300 w-full relative h-full touch-pan-y"
+            onTouchStart={isMobile ? onTouchStart : undefined}
+            onTouchMove={isMobile ? onTouchMove : undefined}
+            onTouchEnd={isMobile ? onTouchEndEvent : undefined}
         >
+
             {/* Section Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="flex items-center justify-between mb-5 w-full">
+                <div className="flex items-center gap-3 min-w-0">
                     <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                        style={{
-                            width: '38px',
-                            height: '38px',
-                            borderRadius: '10px',
-                            background: 'rgba(245, 158, 11, 0.1)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center' }}
+                        whileHover={{ scale: 1.05, rotate: 15 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-[12px] sm:rounded-[14px] bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300"
                     >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg className="w-5 h-5 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                         </svg>
                     </motion.div>
-                    <div>
-                        <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                    <div className="flex flex-col min-w-0">
+                        <h3 className="text-[15px] sm:text-[16px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-0.5 transition-colors truncate">
                             Teacher Spotlight
                         </h3>
-                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)' }}>
-                            Your Teachers This Semester · {teachers.length} Faculty
-                        </p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                            <p className="text-[12px] sm:text-[13px] font-medium text-slate-500 dark:text-slate-400 leading-none truncate">
+                                Your Teachers This Semester
+                            </p>
+                            <div className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 border border-amber-200/50 dark:border-amber-700/50 text-amber-700 dark:text-amber-400 text-[10px] sm:text-[11px] font-bold tracking-wide flex items-center gap-1 shrink-0">
+                                <span>{teachers.length}</span>
+                                <span>Faculty</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                {/* Navigation Arrows */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={handlePrev}
-                        style={{
-                            width: '30px',
-                            height: '30px',
-                            borderRadius: '8px',
-                            border: `1px solid var(--border-color)`,
-                            background: 'transparent',
-                            color: 'var(--text-secondary)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer' }}
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="15 18 9 12 15 6" />
-                        </svg>
-                    </motion.button>
-                    <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={handleNext}
-                        style={{
-                            width: '30px',
-                            height: '30px',
-                            borderRadius: '8px',
-                            border: `1px solid var(--border-color)`,
-                            background: 'transparent',
-                            color: 'var(--text-secondary)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer' }}
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    </motion.button>
                 </div>
             </div>
 
-            {/* Carousel Content */}
-            <div ref={carouselRef} style={{ position: 'relative', overflow: 'hidden' }}>
-                <AnimatePresence mode="wait" initial={false}>
+            {/* Spotlight Content */}
+            <div className="relative w-[calc(100%+8px)] -ml-1 flex flex-col flex-1 min-h-0 overflow-hidden px-1">
+                <AnimatePresence mode="wait" custom={direction}>
                     <motion.div
                         key={currentIndex}
-                        initial={{ opacity: 0, x: direction > 0 ? 50 : -50 }}
+                        custom={direction}
+                        initial={(dir: number) => ({ opacity: 0, x: dir > 0 ? 30 : -30 })}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: direction > 0 ? -50 : 50 }}
-                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                        style={{
-                            display: 'flex',
-                            gap: '16px',
-                            alignItems: 'flex-start' }}
+                        exit={(dir: number) => ({ opacity: 0, x: dir > 0 ? -30 : 30 })}
+                        transition={{ type: "tween", ease: "easeInOut", duration: 0.2 }}
+                        className="w-full flex flex-col gap-4 py-1"
                     >
-                        {/* Teacher Card */}
-                        <motion.div
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => onTeacherClick(currentTeacher.teacher)}
-                            style={{
-                                flex: '0 0 auto',
-                                width: '200px',
-                                padding: '16px',
-                                borderRadius: '12px',
-                                background: 'var(--bg-hover)',
-                                border: `1px solid var(--border-color)`,
-                                cursor: 'pointer',
-                                textAlign: 'center' }}
-                        >
-                            {/* Avatar */}
-                            <motion.div
-                                initial={{ scale: 0.8 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: 0.1, type: 'spring', stiffness: 300 }}
-                                style={{
-                                    width: '64px',
-                                    height: '64px',
-                                    borderRadius: '16px',
-                                    background: `linear-gradient(135deg, #f59e0b20 0%, #f59e0b10 100%)`,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '22px',
-                                    fontWeight: 600,
-                                    color: '#f59e0b',
-                                    margin: '0 auto 12px',
-                                    position: 'relative' }}
-                            >
-                                {currentTeacher.teacher.profile_image ? (
-                                    <img 
-                                        src={currentTeacher.teacher.profile_image} 
-                                        alt={currentTeacher.teacher.full_name}
-                                        style={{ width: '100%', height: '100%', borderRadius: '16px', objectFit: 'cover' }}
-                                    />
-                                ) : (
-                                    `${currentTeacher.teacher.first_name?.[0] || ''}${currentTeacher.teacher.last_name?.[0] || ''}`
-                                )}
-                                {/* Online indicator */}
-                                <div style={{
-                                    position: 'absolute',
-                                    bottom: -2,
-                                    right: -2,
-                                    width: '14px',
-                                    height: '14px',
-                                    borderRadius: '50%',
-                                    background: currentTeacher.teacher.is_online ? '#10b981' : '#94a3b8',
-                                    border: '3px solid white',
-                                    boxShadow: currentTeacher.teacher.is_online ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none' }} />
-                            </motion.div>
-                            
-                            {/* Name */}
-                            <h4 style={{
-                                margin: '0 0 4px',
-                                fontSize: '14px',
-                                fontWeight: 600,
-                                color: 'var(--text-primary)' }}>
-                                {currentTeacher.teacher.full_name}
-                            </h4>
-                            
-                            {/* Role Badge */}
-                            <span style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                padding: '3px 8px',
-                                borderRadius: '6px',
-                                background: 'rgba(245, 158, 11, 0.1)',
-                                fontSize: '10px',
-                                fontWeight: 500,
-                                color: '#f59e0b' }}>
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                    <circle cx="9" cy="7" r="4" />
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                </svg>
-                                Faculty
-                            </span>
-                        </motion.div>
-
-                        {/* Courses List */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                            <p style={{
-                                margin: '0 0 10px',
-                                fontSize: '11px',
-                                fontWeight: 600,
-                                color: 'var(--text-muted)',
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.5px' }}>
-                                Teaching This Semester
-                            </p>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                {currentTeacher.courses.map((course, idx) => (
+                        {(() => {
+                            const currentTeacher = teachers[currentIndex];
+                            if (!currentTeacher) return null;
+                            return (
+                                <>
+                                    {/* Horizontal Teacher Profile Card */}
                                     <motion.div
-                                        key={course.id}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.1 + idx * 0.05, duration: 0.3 }}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '12px',
-                                            padding: '10px 14px',
-                                            borderRadius: '10px',
-                                            background: 'var(--bg-hover)',
-                                            border: `1px solid var(--border-color)` }}
+                                        whileHover={{ scale: 1.01 }}
+                                        whileTap={{ scale: 0.99 }}
+                                        onClick={() => onTeacherClick(currentTeacher.teacher)}
+                                        className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] p-4 flex items-center gap-4 cursor-pointer hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300"
                                     >
-                                        {/* Course Icon */}
-                                        <div style={{
-                                            width: '36px',
-                                            height: '36px',
-                                            borderRadius: '8px',
-                                            background: `${getCategoryColor(course.category)}15`,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            flexShrink: 0 }}>
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={getCategoryColor(course.category)} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                                            </svg>
+                                        {/* Avatar */}
+                                        <div className="relative w-[52px] h-[52px] shrink-0">
+                                            <div className="w-full h-full rounded-[14px] bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 text-[20px] font-bold overflow-hidden border border-blue-100 dark:border-blue-900/50 shadow-sm">
+                                                {currentTeacher.teacher.profile_image ? (
+                                                    <img 
+                                                        src={currentTeacher.teacher.profile_image} 
+                                                        alt={currentTeacher.teacher.full_name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    `${currentTeacher.teacher.first_name?.[0] || ''}${currentTeacher.teacher.last_name?.[0] || ''}`
+                                                )}
+                                            </div>
+                                            {/* Online indicator */}
+                                            <div className={`absolute -bottom-0.5 -right-0.5 w-[14px] h-[14px] rounded-full border-[2.5px] border-white dark:border-slate-800 ${currentTeacher.teacher.is_online ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-400 shadow-none'}`} />
                                         </div>
                                         
-                                        {/* Course Info */}
-                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                            <p style={{
-                                                margin: 0,
-                                                fontSize: '13px',
-                                                fontWeight: 500,
-                                                color: 'var(--text-primary)',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                whiteSpace: 'nowrap' }}>
-                                                {course.title}
-                                            </p>
-                                            <p style={{
-                                                margin: 0,
-                                                fontSize: '11px',
-                                                color: 'var(--text-muted)' }}>
-                                                {course.subtitle} · {course.short_title}
-                                            </p>
+                                        {/* Name & Badge */}
+                                        <div className="flex flex-col min-w-0 justify-center">
+                                            <h4 className="text-[16px] font-bold text-slate-900 dark:text-slate-100 mb-1 leading-tight truncate">
+                                                {currentTeacher.teacher.full_name}
+                                            </h4>
+                                            <div className="flex">
+                                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[6px] bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-bold tracking-wider uppercase">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                                        <circle cx="9" cy="7" r="4" />
+                                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                                    </svg>
+                                                    Faculty
+                                                </span>
+                                            </div>
                                         </div>
-                                        
-                                        {/* Category Badge */}
-                                        <span style={{
-                                            padding: '3px 8px',
-                                            borderRadius: '5px',
-                                            background: `${getCategoryColor(course.category)}15`,
-                                            fontSize: '10px',
-                                            fontWeight: 600,
-                                            color: getCategoryColor(course.category),
-                                            textTransform: 'uppercase',
-                                            flexShrink: 0 }}>
-                                            {course.category}
-                                        </span>
                                     </motion.div>
-                                ))}
-                            </div>
-                        </div>
+
+                                    {/* Courses List - Compact */}
+                                    <div className="w-full flex flex-col mt-2">
+                                        <p className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 px-1">
+                                            Teaching This Semester
+                                        </p>
+                                        <div className="flex flex-col gap-2.5 max-h-[180px] overflow-y-auto overflow-x-hidden px-1.5 -mx-1.5 pb-2 custom-scrollbar">
+                                            {currentTeacher.courses.map((course, idx) => {
+                                                const isEmerald = course.category === 'ge';
+                                                const isBlue = course.category === 'major';
+                                                const isPurple = course.category === 'nstp';
+                                                const isAmber = course.category === 'pe';
+                                                
+                                                const iconColorClass = isEmerald ? 'text-emerald-500 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30' :
+                                                                    isBlue ? 'text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30' :
+                                                                    isPurple ? 'text-purple-500 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30' :
+                                                                    isAmber ? 'text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30' :
+                                                                    'text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800';
+                                                
+                                                const badgeColorClass = isEmerald ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10' :
+                                                                    isBlue ? 'text-blue-600 dark:text-blue-400 bg-blue-500/10' :
+                                                                    isPurple ? 'text-purple-600 dark:text-purple-400 bg-purple-500/10' :
+                                                                    isAmber ? 'text-amber-600 dark:text-amber-400 bg-amber-500/10' :
+                                                                    'text-slate-600 dark:text-slate-400 bg-slate-500/10';
+
+                                                return (
+                                                    <motion.div
+                                                        key={course.id}
+                                                        initial={{ opacity: 0, x: 10 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        transition={{ delay: 0.05 + idx * 0.03, duration: 0.2 }}
+                                                        className="flex items-center gap-4 p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[16px] hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300"
+                                                    >
+                                                        {/* Course Icon Squircle */}
+                                                        <div className={`w-[40px] h-[40px] shrink-0 rounded-[12px] flex items-center justify-center ${iconColorClass}`}>
+                                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                                                            </svg>
+                                                        </div>
+                                                        
+                                                        {/* Course Info */}
+                                                        <div className="min-w-0 flex-1 flex flex-col justify-center gap-1">
+                                                            <h5 className="text-[14px] font-bold text-slate-900 dark:text-slate-100 truncate leading-tight">
+                                                                {course.title}
+                                                            </h5>
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <span className={`px-2 py-[2px] rounded-[6px] text-[10px] font-extrabold uppercase tracking-wider leading-none ${badgeColorClass}`}>
+                                                                    {course.category}
+                                                                </span>
+                                                                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate leading-none mt-px">
+                                                                    {course.short_title}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </motion.div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </>
+                            );
+                        })()}
                     </motion.div>
                 </AnimatePresence>
             </div>
-
-            {/* Pagination Dots */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-                marginTop: '16px' }}>
-                {teachers.map((_, idx) => (
-                    <motion.button
-                        key={idx}
-                        onClick={() => {
-                            setDirection(idx > currentIndex ? 1 : -1);
-                            setCurrentIndex(idx);
-                        }}
-                        whileHover={{ scale: 1.2 }}
-                        whileTap={{ scale: 0.9 }}
-                        style={{
-                            width: idx === currentIndex ? '20px' : '8px',
-                            height: '8px',
-                            borderRadius: '4px',
-                            border: 'none',
-                            background: idx === currentIndex ? '#f59e0b' : 'var(--border-medium)',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s ease' }}
-                    />
-                ))}
-            </div>
+            
+            {/* Pagination Controls */}
+                {teachers.length > 1 && (
+                    <div className="w-full pt-2.5 mt-auto">
+                        <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-slate-900/50 p-1.5 rounded-[14px] border border-slate-200/60 dark:border-slate-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+                            <button 
+                                type="button"
+                                onClick={handlePrev} 
+                                className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                            </button>
+                            <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300 text-center tracking-wide flex-1">
+                                Page {currentIndex + 1} <span className="text-slate-400 dark:text-slate-500 font-medium mx-0.5">/</span> {teachers.length}
+                            </span>
+                            <button 
+                                type="button"
+                                onClick={handleNext} 
+                                className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                            </button>
+                        </div>
+                </div>
+            )}
         </motion.div>
     );
 };

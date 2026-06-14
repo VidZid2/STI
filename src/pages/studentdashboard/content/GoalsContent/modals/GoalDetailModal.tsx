@@ -211,10 +211,10 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.15 }}
-                                    className="flex items-center justify-between gap-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 shadow-sm rounded-[20px] p-4 mb-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default"
+                                    className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 shadow-sm rounded-[16px] sm:rounded-[20px] p-2.5 sm:p-4 mb-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default"
                                 >
                                     {/* Column 1 */}
-                                    <div className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-1 sm:px-2">
+                                    <div className="flex-1 flex items-center justify-start sm:justify-center gap-3 px-3 py-2 sm:py-0 sm:px-2 rounded-xl sm:rounded-none bg-slate-50 dark:bg-slate-800/80 sm:bg-transparent sm:dark:bg-transparent border border-slate-100 dark:border-slate-700/50 sm:border-none">
                                         <div className="text-slate-400 dark:text-slate-500 shrink-0">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -239,10 +239,10 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                     </div>
 
                                     {/* Divider 1 */}
-                                    <div className="w-[1px] h-8 bg-slate-200/60 dark:bg-slate-700/60" />
+                                    <div className="hidden sm:block w-[1px] h-8 bg-slate-200/60 dark:bg-slate-700/60" />
 
                                     {/* Column 2 */}
-                                    <div className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-1 sm:px-2">
+                                    <div className="flex-1 flex items-center justify-start sm:justify-center gap-3 px-3 py-2 sm:py-0 sm:px-2 rounded-xl sm:rounded-none bg-slate-50 dark:bg-slate-800/80 sm:bg-transparent sm:dark:bg-transparent border border-slate-100 dark:border-slate-700/50 sm:border-none">
                                         <div className="text-slate-400 dark:text-slate-500 shrink-0">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <circle cx="12" cy="12" r="10" />
@@ -260,10 +260,10 @@ const GoalDetailModal: React.FC<GoalDetailModalProps> = ({
                                     </div>
 
                                     {/* Divider 2 */}
-                                    <div className="w-[1px] h-8 bg-slate-200/60 dark:bg-slate-700/60" />
+                                    <div className="hidden sm:block w-[1px] h-8 bg-slate-200/60 dark:bg-slate-700/60" />
 
                                     {/* Column 3 */}
-                                    <div className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-1 sm:px-2">
+                                    <div className="flex-1 flex items-center justify-start sm:justify-center gap-3 px-3 py-2 sm:py-0 sm:px-2 rounded-xl sm:rounded-none bg-slate-50 dark:bg-slate-800/80 sm:bg-transparent sm:dark:bg-transparent border border-slate-100 dark:border-slate-700/50 sm:border-none">
                                         <div className="text-slate-400 dark:text-slate-500 shrink-0">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />

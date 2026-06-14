@@ -137,6 +137,17 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
     const [showScrollIndicator, setShowScrollIndicator] = React.useState(false);
 
     React.useEffect(() => {
+        if (!isInline && widgetsSidebarActive) {
+            // Lock body scroll to prevent background scrolling/nav bar hiding
+            const originalStyle = window.getComputedStyle(document.body).overflow;
+            document.body.style.overflow = 'hidden';
+            return () => {
+                document.body.style.overflow = originalStyle;
+            };
+        }
+    }, [isInline, widgetsSidebarActive]);
+
+    React.useEffect(() => {
         if (!isInline) return;
         const el = scrollRef.current;
         if (!el) return;

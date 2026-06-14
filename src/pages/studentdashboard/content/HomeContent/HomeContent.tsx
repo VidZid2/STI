@@ -7,6 +7,7 @@ import { getBookmarks, toggleBookmarkSync, getBookmarksSync } from '../../../../
 import { getStreakData, type StreakData, getCurrentLevel, getXPProgress } from '../../../../services/studyTimeService';
 import { getProfile, getImages, getSettings } from '../../../../services/profileService';
 import GradualBlur from '../../../../components/ui/effects/GradualBlur';
+import { AnimatedCircularProgressBar } from '../../../../components/ui/animated-circular-progress-bar';
 import { useWeather } from '../../hooks';
 
 interface HomeContentProps {
@@ -171,60 +172,38 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                     <motion.div
                                         whileHover={{ scale: 1.05, rotate: -5 }}
                                         transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                                        className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 relative transition-transform duration-300"
+                                        className="relative shrink-0 flex items-center justify-center transition-transform duration-300"
                                     >
                                         {/* Circular Level Gauge & Online Status Ring */}
-                                        <svg 
-                                            className="absolute -inset-[6px] w-[68px] h-[68px] pointer-events-none z-0" 
-                                            viewBox="0 0 68 68"
-                                            style={{ transform: 'rotate(-90deg)' }}
+                                        <AnimatedCircularProgressBar
+                                            max={100}
+                                            min={0}
+                                            value={xpProgress}
+                                            gaugePrimaryColor="#3b82f6"
+                                            gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
+                                            className="w-16 h-16"
                                         >
-                                            {/* Background track */}
-                                            <circle
-                                                cx="34"
-                                                cy="34"
-                                                r="30"
-                                                fill="none"
-                                                stroke={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
-                                                strokeWidth="4"
-                                            />
-                                            {/* Progress track */}
-                                            <motion.circle
-                                                cx="34"
-                                                cy="34"
-                                                r="30"
-                                                fill="none"
-                                                stroke="#3b82f6"
-                                                strokeWidth="4"
-                                                strokeLinecap="round"
-                                                pathLength="100"
-                                                strokeDasharray="100"
-                                                initial={{ strokeDashoffset: 100 }}
-                                                animate={{ strokeDashoffset: Math.max(0, 100 - xpProgress) }}
-                                                transition={{ duration: 1.2, ease: "easeOut" }}
-                                            />
-                                        </svg>
+                                            {/* Avatar Background */}
+                                            <div 
+                                                className="absolute inset-2 rounded-full flex items-center justify-center shadow-sm overflow-hidden z-10"
+                                                style={{ 
+                                                    background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'
+                                                }}
+                                            >
+                                                {profileImage ? (
+                                                    <img src={profileImage} alt="Profile" className='w-full h-full object-cover' />
+                                                ) : (
+                                                    <div className={`w-full h-full flex items-center justify-center font-extrabold text-[18px] ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                                        {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
+                                                    </div>
+                                                )}
+                                            </div>
 
-                                        {/* Avatar Background */}
-                                        <div 
-                                            className="w-full h-full rounded-full flex items-center justify-center shadow-sm overflow-hidden relative z-10"
-                                            style={{ 
-                                                background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'
-                                            }}
-                                        >
-                                            {profileImage ? (
-                                                <img src={profileImage} alt="Profile" className='w-full h-full object-cover' />
-                                            ) : (
-                                                <div className={`w-full h-full flex items-center justify-center font-extrabold text-[18px] ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                                                    {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Level Badge overlapping bottom center */}
-                                        <div className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 min-w-[36px] h-[18px] px-1.5 rounded-md flex items-center justify-center text-[10px] font-bold tracking-wider shadow-sm border-[2px] z-20 bg-blue-500 text-white transition-colors duration-300 ${isDarkMode ? (showOnlineStatus ? 'border-emerald-400' : 'border-slate-800') : (showOnlineStatus ? 'border-emerald-500' : 'border-white')}`}>
-                                            LV.{level}
-                                        </div>
+                                            {/* Level Badge overlapping bottom center */}
+                                            <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 min-w-[36px] h-[18px] px-1.5 rounded-md flex items-center justify-center text-[10px] font-bold tracking-wider shadow-sm border-[2px] z-20 bg-blue-500 text-white transition-colors duration-300 ${isDarkMode ? (showOnlineStatus ? 'border-emerald-400' : 'border-slate-800') : (showOnlineStatus ? 'border-emerald-500' : 'border-white')}`}>
+                                                LV.{level}
+                                            </div>
+                                        </AnimatedCircularProgressBar>
                                     </motion.div>
                                     
                                     {/* Mobile Only: Name & Badge (beside avatar) */}

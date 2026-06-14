@@ -699,9 +699,9 @@ export const getAggregatedProgressHistory = async (
                 ? Math.round(dayHistory.reduce((sum, h) => sum + h.progress_percentage, 0) / dayHistory.length)
                 : (i > 0 && dailyData[i - 1] ? dailyData[i - 1].totalProgress : 0);
             
-            // Mock realistic ascending data for the 90-day chart for the case study
+            // Mock realistic ascending data for the chart for the case study
             // ONLY if there are no actual goals on this date, so we don't overwrite real progress!
-            if (days > 30 && goalsOnDate.length === 0) {
+            if (days >= 30 && goalsOnDate.length === 0) {
                 const baseProgress = Math.min(100, Math.max(5, (i / days) * 100));
                 // Add some realistic noise (±15%) but trend upwards
                 const noise = (Math.random() - 0.3) * 30; 
@@ -743,9 +743,9 @@ export const getAggregatedProgressHistory = async (
                 ? Math.round(goalsOnDate.reduce((sum, g) => sum + g.progress_percentage, 0) / goalsOnDate.length)
                 : 0;
 
-            // Mock realistic ascending data for the 90-day chart for the case study
+            // Mock realistic ascending data for the chart for the case study
             // ONLY if there are no actual goals on this date, so we don't overwrite real progress!
-            if (days > 30 && goalsOnDate.length === 0) {
+            if (days >= 30 && goalsOnDate.length === 0) {
                 const baseProgress = Math.min(100, Math.max(5, (i / days) * 100));
                 const noise = (Math.random() - 0.3) * 30;
                 totalProgress = Math.max(0, Math.min(100, Math.round(baseProgress + noise)));

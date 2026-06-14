@@ -32,6 +32,7 @@ import { GroupCard } from './components/GroupCard';
 import { GroupsSkeleton } from './components/GroupsSkeleton';
 import { FilterTabs } from './components/FilterTabs';
 import { getSettings } from '../../../../services/profileService';
+import { EmptyState } from '../CourseViewPage/components/SharedComponents';
 
 // Custom hook for detecting reduced motion preference
 const useReducedMotion = (): boolean => {
@@ -327,105 +328,154 @@ const GroupsContent: React.FC = () => {
     }
 
     return (
-        <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto', minHeight: '100vh' }}>
-            {/* Header */}
+        <div className="p-4 sm:p-6 lg:p-8 max-w-[1200px] mx-auto min-h-screen pb-24">
+            {/* Header Section */}
             <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                style={{ marginBottom: '28px' }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-[72px] md:mt-0 mb-7"
             >
-                <div style={{
-                    display: 'flex', alignItems: 'center', gap: '16px', padding: '18px 22px',
-                    borderRadius: '14px', background: colors.cardBg, border: `1px solid ${colors.border}`,
-                    flexWrap: 'wrap',
-                }}>
-                    {/* Icon */}
-                    <motion.div
-                        whileHover={reducedMotion ? {} : { scale: 1.05, rotate: 5 }}
-                        style={{
-                            width: '46px', height: '46px', borderRadius: '12px',
-                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                    </motion.div>
+                <motion.div 
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative flex flex-col gap-3 sm:gap-4 p-5 sm:p-7 -mx-4 sm:-mx-6 lg:mx-0 rounded-[20px] sm:rounded-[24px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700"
+                >
+                {/* Background ambient glow effect for SaaS feel */}
+                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 pointer-events-none hidden sm:block" />
+                <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-emerald-500/5 rounded-full blur-[60px] translate-y-1/3 -translate-x-1/3 pointer-events-none hidden sm:block" />
 
-                    {/* Title */}
-                    <div style={{ flex: 1, minWidth: '200px' }}>
-                        <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 }}
-                            style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}
-                        >
-                            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: colors.textPrimary }}>
-                                Study Groups
-                            </h1>
-                            <span style={{
-                                padding: '3px 8px', borderRadius: '6px',
-                                background: 'rgba(59, 130, 246, 0.1)', fontSize: '11px',
-                                fontWeight: 600, color: '#3b82f6',
-                            }}>
-                                {stats.totalGroups} groups
-                            </span>
-                        </motion.div>
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.15 }}
-                            style={{ margin: 0, fontSize: '13px', color: colors.textSecondary }}
-                        >
-                            Collaborate with classmates and join study sessions
-                        </motion.p>
-                    </div>
+                {/* Top Row: Title & Action */}
+                <div className="relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-6">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-6 min-w-0 w-full sm:w-auto">
+                        {/* Icon Container with Gradient Bounding Box */}
+                        <div className="relative flex-shrink-0 mb-2 sm:mb-0">
+                            <div className="relative w-[72px] h-[72px] sm:w-[84px] sm:h-[84px]">
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                                    whileHover={{ scale: 1.05, rotate: -5, transition: { type: 'spring', stiffness: 400, damping: 15 } }}
+                                    className="absolute flex items-center justify-center shadow-sm transition-all duration-500 inset-0 m-auto w-[60px] h-[60px] sm:w-[68px] sm:h-[68px] rounded-[18px] sm:rounded-[20px] bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-100 dark:from-blue-500/10 dark:to-blue-500/5 dark:border-blue-500/20"
+                                >
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400 transition-all duration-500" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                </motion.div>
+                            </div>
+                            
+                            {/* Overlapping Custom Badge */}
+                            {stats.totalGroups > 0 && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 10, x: "-50%", scale: 0.8 }}
+                                    animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+                                    transition={{ duration: 0.4, delay: 0.4, type: "spring", stiffness: 300, damping: 20 }}
+                                    className="absolute -bottom-2 left-1/2 px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 border-[2.5px] border-white dark:border-slate-800 shadow-sm flex items-center justify-center whitespace-nowrap z-10 min-w-[40px]"
+                                >
+                                    <span className="text-[13px] font-black text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
+                                        {stats.totalGroups}
+                                    </span>
+                                </motion.div>
+                            )}
+                        </div>
 
-                    {/* Quick Stats Cards - Matching CatalogContent design */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        style={{ display: 'flex', alignItems: 'stretch', gap: '10px' }}
-                    >
-                        {[
-                            { label: 'Total', value: stats.totalGroups, description: 'Groups', color: '#3b82f6', bgColor: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.06)', icon: 'grid' },
-                            { label: 'My Groups', value: stats.myGroups, description: 'Joined', color: '#8b5cf6', bgColor: isDarkMode ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.06)', icon: 'check' },
-                            { label: 'Public', value: stats.publicGroups, description: 'Open', color: '#f59e0b', bgColor: isDarkMode ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.06)', icon: 'users' },
-                            { label: 'Online', value: stats.onlineMembers, description: 'Active', color: '#10b981', bgColor: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.06)', icon: 'chat' },
-                        ].map((stat, i) => (
-                            <motion.div
-                                key={stat.label}
-                                initial={{ opacity: 0, y: 8 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.25 + i * 0.05, duration: 0.3 }}
-                                whileHover={reducedMotion ? {} : { y: -2, scale: 1.02, transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] } }}
-                                style={{
-                                    display: 'flex', flexDirection: 'column', alignItems: 'center',
-                                    padding: '10px 16px', borderRadius: '10px', background: stat.bgColor,
-                                    cursor: 'default', minWidth: '72px',
-                                }}
-                                title={`${stat.label}: ${stat.value}`}
+                        {/* Text Content */}
+                        <div className="flex flex-col justify-center min-w-0 flex-1 pt-1 sm:pt-2">
+                            <motion.h1 
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                                className="text-2xl sm:text-[28px] font-black text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-2"
                             >
-                                <div style={{ color: stat.color, marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <GroupIcon icon={stat.icon} color={stat.color} size={16} />
+                                Study Groups
+                            </motion.h1>
+                            <motion.p 
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                                className="text-sm sm:text-[15px] font-medium text-slate-500 dark:text-slate-400 max-w-[400px] leading-snug"
+                            >
+                                Collaborate with classmates and join study sessions
+                            </motion.p>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    {/* Bottom Row: Detailed Metrics */}
+                    <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-4">
+                        {/* Metric 1 */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.3 }}
+                            className="flex flex-col p-3 sm:p-4 rounded-[16px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700"
+                        >
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="p-1.5 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                                    <GroupIcon icon="grid" size={14} />
                                 </div>
-                                <span style={{ fontSize: '18px', fontWeight: 700, color: stat.color, lineHeight: 1, marginBottom: '2px' }}>
-                                    {stat.value}
-                                </span>
-                                <span style={{ fontSize: '10px', fontWeight: 500, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
-                                    {stat.description}
-                                </span>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </div>
-            </motion.div>
+                                <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Total Groups</span>
+                            </div>
+                            <div className="flex items-baseline gap-1.5">
+                                <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.totalGroups}</span>
+                                <span className="text-xs font-medium text-slate-500">Available</span>
+                            </div>
+                        </motion.div>
+
+                        {/* Metric 2 */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.3 }}
+                            className="flex flex-col p-3 sm:p-4 rounded-[16px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-violet-300 dark:hover:border-violet-700"
+                        >
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="p-1.5 rounded-md bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400">
+                                    <GroupIcon icon="check" size={14} />
+                                </div>
+                                <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider">My Groups</span>
+                            </div>
+                            <div className="flex items-baseline gap-1.5">
+                                <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.myGroups}</span>
+                                <span className="text-xs font-medium text-slate-500">Joined</span>
+                            </div>
+                        </motion.div>
+
+                        {/* Metric 3 */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.3 }}
+                            className="flex flex-col p-3 sm:p-4 rounded-[16px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-700"
+                        >
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="p-1.5 rounded-md bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                                    <GroupIcon icon="users" size={14} />
+                                </div>
+                                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Public</span>
+                            </div>
+                            <div className="flex items-baseline gap-1.5">
+                                <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.publicGroups}</span>
+                                <span className="text-xs font-medium text-slate-500">Open</span>
+                            </div>
+                        </motion.div>
+
+                        {/* Metric 4 */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.3 }}
+                            className="flex flex-col p-3 sm:p-4 rounded-[16px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700"
+                        >
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="p-1.5 rounded-md bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                                    <GroupIcon icon="chat" size={14} />
+                                </div>
+                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Online</span>
+                            </div>
+                            <div className="flex items-baseline gap-1.5">
+                                <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.onlineMembers}</span>
+                                <span className="text-xs font-medium text-slate-500">Active</span>
+                            </div>
+                        </motion.div>
+                    </div>
 
             {/* Search and Filters */}
             <motion.div
@@ -439,44 +489,19 @@ const GroupsContent: React.FC = () => {
                     ease: [0.22, 1, 0.36, 1] 
                 }}
                 style={{
-                    display: 'flex', gap: '12px', marginBottom: '24px',
+                    display: 'flex', gap: '12px', marginTop: '12px',
                     flexWrap: 'wrap', alignItems: 'center',
                 }}
             >
-                {/* Search Input - matching CatalogContent design */}
-                <motion.div
-                    layout
+                {/* Search Input - matching PathsContent design */}
+                <motion.div 
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ 
-                        layout: { type: 'spring', stiffness: 400, damping: 30 },
-                        opacity: { delay: 0.3, duration: 0.4 },
-                        x: { delay: 0.3, duration: 0.4 }
-                    }}
-                    style={{
-                        flex: 1, minWidth: '220px', position: 'relative',
-                    }}
+                    transition={{ delay: 0.3, duration: 0.4 }}
+                    className="relative flex-1 min-w-[220px] group/search"
                 >
-                    <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke={colors.textMuted}
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        style={{
-                            position: 'absolute',
-                            left: '14px',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            pointerEvents: 'none',
-                            zIndex: 1,
-                        }}
-                    >
-                        <circle cx="11" cy="11" r="8" />
-                        <path d="m21 21-4.35-4.35" />
+                    <svg className="absolute left-3.5 top-0 bottom-0 my-auto w-4 h-4 text-slate-400 z-10 transition-colors duration-200 group-focus-within/search:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <input
                         ref={searchInputRef}
@@ -486,129 +511,64 @@ const GroupsContent: React.FC = () => {
                         aria-expanded={showSuggestions}
                         aria-controls={showSuggestions ? "search-suggestions" : undefined}
                         aria-autocomplete="list"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={handleSearchKeyDown}
-                        onFocus={(e) => {
-                            e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-                            e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
-                            if (searchSuggestions.length > 0) setShowSuggestions(true);
-                        }}
-                        onBlur={(e) => {
-                            e.target.style.borderColor = colors.border;
-                            e.target.style.boxShadow = 'none';
-                        }}
                         placeholder="Search groups..."
-                        style={{
-                            width: '100%',
-                            padding: '11px 42px 11px 42px',
-                            borderRadius: '12px',
-                            border: `1px solid ${colors.border}`,
-                            background: colors.cardBg,
-                            color: colors.textPrimary,
-                            fontSize: '13px',
-                            outline: 'none',
-                            transition: reducedMotion ? 'none' : 'all 0.2s ease',
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setShowSuggestions(true);
+                            setSelectedSuggestionIndex(-1);
                         }}
+                        onFocus={() => setShowSuggestions(true)}
+                        onKeyDown={handleSearchKeyDown}
+                        className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50/80 pl-11 pr-20 py-2 text-sm font-semibold focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 shadow-sm transition-all duration-300 text-slate-900 placeholder-slate-400 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:ring-blue-500/10"
                     />
-                    {/* Loading Spinner */}
-                    <AnimatePresence>
-                        {isSearching && (
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.5 }} 
-                                animate={{ opacity: 1, scale: 1 }} 
-                                exit={{ opacity: 0, scale: 0.5 }} 
-                                transition={{ duration: 0.2 }}
-                                style={{ position: 'absolute', right: '14px', top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '18px', height: '100%' }}
-                            >
-                                <motion.svg 
-                                    width="16" 
-                                    height="16" 
-                                    viewBox="0 0 16 16" 
-                                    fill="none" 
-                                    style={{ display: 'block' }} 
-                                    animate={{ rotate: 360 }} 
-                                    transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+                    
+                    <div className="absolute right-3 top-0 bottom-0 flex items-center justify-center z-10 w-6">
+                        <AnimatePresence mode="wait">
+                            {isSearching ? (
+                                <motion.div
+                                    key="spinner"
+                                    initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                    exit={{ opacity: 0, scale: 0.8, rotate: 90 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                    className="w-6 h-6 flex items-center justify-center"
                                 >
-                                    <circle cx="8" cy="8" r="6" stroke={isDarkMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)'} strokeWidth="2" fill="none" />
-                                    <circle cx="8" cy="8" r="6" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeDasharray="28" strokeDashoffset="21" fill="none" />
-                                </motion.svg>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                    {/* Clear Search Button */}
-                    <AnimatePresence>
-                        {searchQuery && !isSearching && (
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.8 }} 
-                                animate={{ opacity: 1, scale: 1 }} 
-                                exit={{ opacity: 0, scale: 0.8 }}
-                                transition={{ duration: 0.15 }}
-                                style={{ position: 'absolute', right: '12px', top: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                            >
-                                <motion.button 
-                                    onClick={() => setSearchQuery('')}
-                                    aria-label="Clear search (Esc)"
-                                    title="Clear search (Esc)"
-                                    style={{ 
-                                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)', 
-                                        border: 'none', 
-                                        borderRadius: '6px', 
-                                        width: '20px', 
-                                        height: '20px', 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center', 
-                                        cursor: 'pointer', 
-                                        padding: 0 
+                                    <svg className="w-4 h-4 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                    </svg>
+                                </motion.div>
+                            ) : searchQuery ? (
+                                <motion.button
+                                    key="clear"
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.8 }}
+                                    onClick={() => {
+                                        setSearchQuery('');
+                                        setShowSuggestions(false);
+                                        searchInputRef.current?.focus();
                                     }}
-                                    whileHover={{ scale: 1.1 }} 
-                                    whileTap={{ scale: 0.9 }}
+                                    className="!w-5 !h-5 !min-w-[20px] !min-h-[20px] !p-0 flex items-center justify-center rounded-[6px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
                                 >
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }} aria-hidden="true">
-                                        <path d="M18 6L6 18M6 6l12 12" />
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                                     </svg>
                                 </motion.button>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                    {/* Keyboard Shortcut Hint */}
-                    <AnimatePresence>
-                        {!searchQuery && !isSearching && (
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.8 }} 
-                                animate={{ opacity: 1, scale: 1 }} 
-                                exit={{ opacity: 0, scale: 0.8 }}
-                                transition={{ duration: 0.15 }}
-                                style={{ 
-                                    position: 'absolute', 
-                                    right: '12px', 
-                                    top: 0, 
-                                    bottom: 0, 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    justifyContent: 'center',
-                                    pointerEvents: 'none',
-                                }}
-                            >
-                                <div 
-                                    style={{ 
-                                        padding: '4px 8px', 
-                                        borderRadius: '6px', 
-                                        background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)', 
-                                        border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
-                                        fontSize: '11px', 
-                                        fontWeight: 500, 
-                                        color: colors.textMuted,
-                                        fontFamily: 'monospace',
-                                    }}
-                                    title="Press / to search"
+                            ) : (
+                                <motion.kbd
+                                    key="hint"
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.8 }}
+                                    className="hidden sm:inline-flex items-center justify-center h-5 px-1.5 text-[10px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-500 dark:shadow-none pointer-events-none"
                                 >
                                     /
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                                </motion.kbd>
+                            )}
+                        </AnimatePresence>
+                    </div>
 
                     {/* Search Suggestions Dropdown */}
                     <AnimatePresence>
@@ -755,126 +715,140 @@ const GroupsContent: React.FC = () => {
                     </AnimatePresence>
                 </motion.div>
 
-                {/* Filter Tabs */}
-                <FilterTabs
-                    activeFilter={activeFilter}
-                    setActiveFilter={setActiveFilter}
-                    stats={stats}
-                />
+                {/* Filter & Sort Container */}
+                <motion.div layout="position" transition={{ type: 'spring', stiffness: 500, damping: 40, mass: 0.8 }} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full lg:w-auto relative">
+                    {/* Filter Tabs */}
+                    <div className="w-full sm:w-auto">
+                        <FilterTabs
+                            activeFilter={activeFilter}
+                            setActiveFilter={setActiveFilter}
+                            stats={stats}
+                        />
+                    </div>
 
-                {/* Sort Dropdown - Matching CatalogContent design */}
-                <motion.div 
-                    layout
-                    initial={{ opacity: 0, x: 10 }} 
-                    animate={{ opacity: 1, x: 0 }} 
-                    transition={{ 
-                        layout: { type: 'spring', stiffness: 400, damping: 30 },
-                        opacity: { delay: 0.4, duration: 0.4 }, 
-                        x: { delay: 0.4, duration: 0.4 } 
-                    }} 
-                    style={{ position: 'relative' }}
-                >
-                    <motion.button 
-                        onClick={() => setShowSortDropdown(!showSortDropdown)} 
-                        whileHover={{ scale: 1.02 }} 
-                        whileTap={{ scale: 0.98 }}
-                        aria-label={`Sort by: ${sortBy === 'recent' ? 'Most Recent' : sortBy === 'members' ? 'Most Members' : sortBy === 'activity' ? 'Most Active' : 'Name A-Z'}. Click to change.`}
-                        aria-expanded={showSortDropdown}
-                        aria-haspopup="listbox"
-                        style={{ 
-                            display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 12px', borderRadius: '10px', 
-                            border: `1px solid ${showSortDropdown ? colors.accent : colors.border}`,
-                            background: showSortDropdown ? (isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : colors.cardBg,
-                            color: showSortDropdown ? colors.accent : colors.textSecondary,
-                            fontSize: '12px', fontWeight: 500, cursor: 'pointer',
-                            transition: 'border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease'
-                        }}
+                    {/* Sort Dropdown - Matching CatalogContent design */}
+                    <motion.div 
+                        layout="position"
+                        initial={{ opacity: 0, x: 10 }} 
+                        animate={{ opacity: 1, x: 0 }} 
+                        transition={{ 
+                            layout: { type: 'spring', stiffness: 400, damping: 30 },
+                            opacity: { delay: 0.4, duration: 0.4 }, 
+                            x: { delay: 0.4, duration: 0.4 } 
+                        }} 
+                        className="w-full sm:w-auto z-[100]"
                     >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M6 12h12M9 18h6" /></svg>
-                        <span>{sortBy === 'recent' ? 'Most Recent' : sortBy === 'members' ? 'Most Members' : sortBy === 'activity' ? 'Most Active' : 'Name A-Z'}</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: showSortDropdown ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}>
-                            <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                    </motion.button>
-                    <AnimatePresence>
-                        {showSortDropdown && (
-                            <>
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowSortDropdown(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }} />
-                                <motion.div 
-                                    role="listbox"
-                                    aria-label="Sort options"
-                                    initial={{ opacity: 0, y: -8, scale: 0.95 }} 
-                                    animate={{ opacity: 1, y: 0, scale: 1 }} 
-                                    exit={{ opacity: 0, y: -8, scale: 0.95 }} 
-                                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                                    style={{ position: 'absolute', top: '100%', right: 0, marginTop: '6px', padding: '6px', borderRadius: '12px', background: colors.cardBg, border: `1px solid ${colors.border}`, boxShadow: isDarkMode ? '0 8px 24px rgba(0,0,0,0.3)' : '0 8px 24px rgba(0,0,0,0.1)', zIndex: 50, minWidth: '160px' }}
-                                >
-                                    {([
-                                        { value: 'recent', label: 'Most Recent' },
-                                        { value: 'members', label: 'Most Members' },
-                                        { value: 'activity', label: 'Most Active' },
-                                        { value: 'name', label: 'Name A-Z' },
-                                    ] as { value: GroupSortOption; label: string }[]).map((option) => (
-                                        <motion.button 
-                                            key={option.value} 
-                                            role="option"
-                                            aria-selected={sortBy === option.value}
-                                            onClick={() => { setSortBy(option.value); setShowSortDropdown(false); }} 
-                                            whileHover={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
-                                            style={{ 
-                                                width: '100%', padding: '10px 12px', borderRadius: '8px', border: 'none', 
-                                                background: sortBy === option.value ? (isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.06)') : 'transparent', 
-                                                color: sortBy === option.value ? colors.accent : colors.textSecondary, 
-                                                fontSize: '12px', fontWeight: 500, cursor: 'pointer', textAlign: 'left', 
-                                                display: 'flex', alignItems: 'center', justifyContent: 'space-between' 
-                                            }}
-                                        >
-                                            {option.label}
-                                            {sortBy === option.value && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>}
-                                        </motion.button>
-                                    ))}
-                                </motion.div>
-                            </>
-                        )}
-                    </AnimatePresence>
+                        <motion.button 
+                            onClick={() => setShowSortDropdown(!showSortDropdown)} 
+                            whileHover={{ scale: 1.02 }} 
+                            whileTap={{ scale: 0.97 }}
+                            aria-label={`Sort by: ${sortBy === 'recent' ? 'Most Recent' : sortBy === 'members' ? 'Most Members' : sortBy === 'activity' ? 'Most Active' : 'Name A-Z'}. Click to change.`}
+                            aria-expanded={showSortDropdown}
+                            aria-haspopup="listbox"
+                            className={`flex w-full sm:w-auto items-center justify-center gap-2 h-10 px-4 rounded-[14px] font-bold text-[13px] transition-all duration-200 border shadow-sm ${
+                                showSortDropdown 
+                                    ? 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/30 dark:border-blue-800/50 dark:text-blue-400' 
+                                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:border-slate-600'
+                            }`}
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M6 12h12M9 18h6" /></svg>
+                            <span>{sortBy === 'recent' ? 'Most Recent' : sortBy === 'members' ? 'Most Members' : sortBy === 'activity' ? 'Most Active' : 'Name A-Z'}</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: showSortDropdown ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}>
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </motion.button>
+                        <AnimatePresence>
+                            {showSortDropdown && (
+                                <>
+                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowSortDropdown(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }} />
+                                    <motion.div
+                                        role="menu"
+                                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                        transition={{ duration: 0.2, type: 'spring', stiffness: 300, damping: 25 }}
+                                        className="absolute top-full left-0 right-0 mt-2 p-1.5 sm:p-2 rounded-[16px] sm:rounded-[18px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl z-[200] w-full overflow-hidden flex flex-col gap-0.5"
+                                    >
+                                        {/* Ambient Glow */}
+                                        <div className="absolute top-0 right-0 -mr-8 -mt-8 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+                                        <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-20 h-20 bg-blue-400/5 rounded-full blur-2xl pointer-events-none" />
+
+                                        <div className="relative z-10 flex flex-col gap-0.5">
+                                            {[
+                                                { id: 'recent', label: 'Most Recent', description: 'Newest groups first', icon: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" /> },
+                                                { id: 'members', label: 'Most Members', description: 'Largest communities', icon: <><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></> },
+                                                { id: 'activity', label: 'Most Active', description: 'By recent activity', icon: <path d="M22 12h-4l-3 9L9 3l-3 9H2" strokeLinecap="round" strokeLinejoin="round" /> },
+                                                { id: 'name', label: 'Name A-Z', description: 'Alphabetical order', icon: <path d="M4 6h16M4 12h10M4 18h4" strokeLinecap="round" strokeLinejoin="round" /> }
+                                            ].map((option, index) => (
+                                                <motion.button
+                                                    key={option.id}
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: index * 0.05, duration: 0.2, type: 'spring', stiffness: 300, damping: 24 }}
+                                                    onClick={() => {
+                                                        setSortBy(option.id as GroupSortOption);
+                                                        setShowSortDropdown(false);
+                                                    }}
+                                                    whileTap={{ scale: 0.97 }}
+                                                    className="w-full text-left p-1.5 sm:p-2 rounded-[12px] flex items-center gap-2.5 sm:gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 group border border-transparent hover:border-slate-200/50 dark:hover:border-slate-700/50"
+                                                    style={{ transition: 'background-color 0.2s ease, border-color 0.2s ease' }}
+                                                >
+                                                    <div
+                                                        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-[10px] flex items-center justify-center flex-shrink-0 shadow-sm hover:scale-105 hover:-rotate-[5deg] ${sortBy === option.id ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800' : 'bg-blue-50 border border-blue-100 dark:bg-blue-900/30 dark:border-blue-800/50 text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50'}`}
+                                                        style={{ transition: 'transform 0.2s cubic-bezier(0.22,1,0.36,1), background-color 0.2s ease' }}
+                                                    >
+                                                        <div className="w-3.5 h-3.5 sm:w-4 sm:h-4">
+                                                            <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                                {option.icon}
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className={`text-[11px] sm:text-[12px] font-bold truncate ${sortBy === option.id ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-slate-100'}`}>{option.label}</h3>
+                                                        <p className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">{option.description}</p>
+                                                    </div>
+                                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-300 ${sortBy === option.id ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-500' : 'bg-transparent text-transparent group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 group-hover:text-blue-500'}`}>
+                                                        {sortBy === option.id ? (
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                                <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+                                                            </svg>
+                                                        ) : (
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                                <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+                                                            </svg>
+                                                        )}
+                                                    </div>
+                                                </motion.button>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                </>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
                 </motion.div>
 
                 {/* Create Group Button - Matching GoalsContent design */}
                 <motion.button
-                    layout
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ 
-                        layout: { type: 'spring', stiffness: 400, damping: 30 },
                         default: { duration: 0.15, ease: 'easeOut' },
                         opacity: { delay: 0.4, duration: 0.3 },
                         x: { delay: 0.4, duration: 0.3 }
                     }}
-                    whileHover={{ 
-                        scale: 1.02,
-                        boxShadow: '0 6px 20px rgba(59, 130, 246, 0.25)',
-                    }}
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setIsCreateModalOpen(true)}
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '8px 12px',
-                        background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.08)',
-                        color: '#3b82f6',
-                        border: `1px solid ${isDarkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
-                        borderRadius: '10px',
-                        fontSize: '12px',
-                        fontWeight: 500,
-                        cursor: 'pointer',
-                    }}
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-bold py-2 px-3 sm:py-2.5 sm:px-4 rounded-[12px] sm:rounded-[14px] transition-colors shadow-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus:outline-none text-[12px] sm:text-[13px] whitespace-nowrap"
                 >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-[18px] sm:h-[18px]">
                         <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
                     New Group
                 </motion.button>
+            </motion.div>
+            </motion.div>
             </motion.div>
 
             {/* Groups Grid */}
@@ -906,28 +880,27 @@ const GroupsContent: React.FC = () => {
                             ))
                         ) : (
                             <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                style={{
-                                    gridColumn: '1 / -1', padding: '60px 20px', textAlign: 'center',
-                                    background: colors.cardBg, borderRadius: '16px', border: `1px solid ${colors.border}`,
-                                }}
+                                key="empty-state"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                transition={{ duration: 0.2 }}
+                                className="col-span-full -mx-4 sm:-mx-6 lg:mx-0 bg-white dark:bg-slate-800 rounded-[24px] border border-slate-200 dark:border-slate-700 shadow-sm text-center"
                             >
-                                <div style={{
-                                    width: '64px', height: '64px', borderRadius: '16px', margin: '0 auto 16px',
-                                    background: 'rgba(59, 130, 246, 0.1)', display: 'flex',
-                                    alignItems: 'center', justifyContent: 'center',
-                                }}>
-                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
-                                        <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-                                    </svg>
-                                </div>
-                                <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 600, color: colors.textPrimary }}>
-                                    No groups found
-                                </h3>
-                                <p style={{ margin: 0, fontSize: '13px', color: colors.textSecondary }}>
-                                    {searchQuery ? 'Try a different search term' : 'No groups match your current filters'}
-                                </p>
+                                <EmptyState
+                                    icon={
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                                        </svg>
+                                    }
+                                    title={searchQuery ? `No groups match "${searchQuery}"` : "No groups found"}
+                                    description={searchQuery ? 'Try a different search term' : 'No groups match your current filters'}
+                                    className="py-16"
+                                    action={searchQuery ? {
+                                        label: 'Clear search',
+                                        onClick: () => setSearchQuery('')
+                                    } : undefined}
+                                />
                             </motion.div>
                         )}
                     </AnimatePresence>

@@ -21,6 +21,7 @@ import { DisplaySettingsProvider, useDisplaySettings } from './contexts/DisplayS
 import { NotificationSettingsProvider } from './contexts/NotificationSettingsContext'
 import { SystemConfigProvider } from './contexts/SystemConfigContext'
 import { ErrorBoundary } from './components/shared'
+import { NotFoundPage } from '@/components/ui/404-page-not-found'
 
 
 function HomePage() {
@@ -122,6 +123,7 @@ function AppContent() {
         <Route path="/chat/:groupId" element={<MaintenanceGuard><NotificationProvider><QuickViewSettingsProvider><GroupChatPage /></QuickViewSettingsProvider></NotificationProvider></MaintenanceGuard>} />
         <Route path="/focus" element={<MaintenanceGuard><FocusModePage /></MaintenanceGuard>} />
         <Route path="/focus/:groupId" element={<MaintenanceGuard><FocusModePage /></MaintenanceGuard>} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );

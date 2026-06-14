@@ -10,6 +10,15 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api/ai': {
+        target: 'https://opencode.ai',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/ai/, ''),
+      },
+    },
+  },
   optimizeDeps: {
     include: ['pdfjs-dist', 'emoji-mart', '@emoji-mart/react'],
   },

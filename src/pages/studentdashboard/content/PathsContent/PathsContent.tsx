@@ -477,7 +477,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                     </div>
 
                     {/* Footer Text Container */}
-                    <motion.div layout="position" transition={{ type: 'spring', stiffness: 500, damping: 40, mass: 0.8 }} className="relative z-30 flex flex-col lg:flex-row items-start lg:items-center justify-between mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[12px] sm:rounded-[16px] px-3 sm:px-4 py-3 sm:py-3.5 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 group cursor-default gap-3 lg:gap-0" style={{ transition: 'box-shadow 0.3s ease, border-color 0.3s ease' }}>
+                    <motion.div layout="position" transition={{ type: 'spring', stiffness: 500, damping: 40, mass: 0.8 }} className="relative z-[60] flex flex-col lg:flex-row items-start lg:items-center justify-between mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[12px] sm:rounded-[16px] px-3 sm:px-4 py-3 sm:py-3.5 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 group cursor-default gap-3 lg:gap-0" style={{ transition: 'box-shadow 0.3s ease, border-color 0.3s ease' }}>
                         <div className="flex items-start lg:items-center gap-3 w-full lg:w-auto">
                             <div className="hidden sm:flex p-1.5 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-500 transition-colors group-hover:text-blue-600 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 mt-1 lg:mt-0">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

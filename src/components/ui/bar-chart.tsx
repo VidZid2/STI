@@ -1086,30 +1086,29 @@ export function Bar({
         return (
           <motion.path
             key={`${category}-${dataKey}`}
-            d={path}
             fill={fill}
             stroke={stroke}
             style={{ transformOrigin: `${originX}px ${originY}px` }}
             initial={
               shouldAnimateEntry && animationType === "grow"
-                ? growInitial
+                ? { ...growInitial, d: path }
                 : shouldAnimateEntry && animationType === "fade"
-                  ? { opacity: 0, filter: "blur(4px)" }
-                  : { opacity: barOpacity }
+                  ? { opacity: 0, filter: "blur(4px)", d: path }
+                  : { opacity: barOpacity, d: path }
             }
             animate={
-              shouldAnimateEntry && animationType === "grow"
-                ? growAnimate
-                : shouldAnimateEntry && animationType === "fade"
-                  ? { opacity: barOpacity, filter: "blur(0px)" }
-                  : { opacity: barOpacity }
+              animationType === "grow"
+                ? { ...growAnimate, d: path }
+                : animationType === "fade"
+                  ? { opacity: barOpacity, filter: "blur(0px)", d: path }
+                  : { opacity: barOpacity, d: path }
             }
             transition={
               shouldAnimateEntry && animationType === "grow"
                 ? growTransition
                 : shouldAnimateEntry && animationType === "fade"
                   ? { duration: 0.5, delay, ease: "easeOut" }
-                  : { opacity: { duration: 0.3, ease: "easeInOut" } }
+                  : { duration: 0.4, ease: "backOut" }
             }
           />
         );

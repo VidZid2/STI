@@ -36,7 +36,7 @@ import { formatDaysUntil, getDeadlineTypeColor } from '../../services/deadlinesS
 import { formatRelativeTime } from '../../services/activityService';
 
 // Extracted modules from local folder
-import { NotificationItem, GroupedNotification, DashboardIntro, DashboardTutorial, DashboardHeader, DashboardSidebar, DailyInspirationToast } from './components';
+import { DashboardIntro, DashboardTutorial, DashboardHeader, DashboardSidebar, DailyInspirationToast } from './components';
 import { WidgetSidebar } from './components/WidgetSidebar';
 import { DashboardSuspenseFallback } from './components/DashboardSuspenseFallback';
 import { getSidebarCoursesWithProgress, getTodaysQuote } from './utils';
@@ -164,7 +164,6 @@ const DashboardPage: React.FC = () => {
     const {
         toastNotifications,
         dismissToast,
-        clearAllToasts,
         addNotification
     } = useNotifications();
 
@@ -475,46 +474,13 @@ const DashboardPage: React.FC = () => {
                 }
             }} />}
 
-            {/* Daily Inspiration Toast */}
+            {/* Daily Inspiration Toast & Generic Toasts (Unified Stack) */}
             {!showIntro && !tutorialActive && !welcomeModalActive && (
-                <DailyInspirationToast quote={todaysQuote} />
-            )}
-
-            {/* Toast Notifications Container - Compact Design on Left Side */}
-            {/* Only show toast notifications after intro and tutorial are complete */}
-            {!showIntro && !tutorialActive && !welcomeModalActive && (
-                <div className="fixed top-20 left-4 z-[10001] w-[300px] max-w-[calc(100vw-2rem)] flex flex-col gap-2.5">
-                    <AnimatePresence mode="popLayout">
-                        {toastNotifications.length > 3 ? (
-                            <GroupedNotification
-                                key="grouped"
-                                notifications={toastNotifications.map(n => ({
-                                    id: n.id,
-                                    title: n.title,
-                                    message: n.message,
-                                    type: n.type || 'assignment'
-                                }))}
-                                onClearAll={clearAllToasts}
-                                onViewAll={() => {
-                                    // Could open a notification panel or navigate
-                                }}
-                            />
-                        ) : (
-                            toastNotifications.map(notification => (
-                                <NotificationItem
-                                    key={notification.id}
-                                    notification={{
-                                        id: notification.id,
-                                        title: notification.title,
-                                        message: notification.message,
-                                        type: notification.type || 'assignment'
-                                    }}
-                                    onClose={closeToast}
-                                />
-                            ))
-                        )}
-                    </AnimatePresence>
-                </div>
+                <DailyInspirationToast 
+                    quote={todaysQuote} 
+                    externalToasts={toastNotifications} 
+                    onExternalToastClose={closeToast} 
+                />
             )}
 
 

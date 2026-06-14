@@ -192,6 +192,8 @@ const GoalsContent: React.FC = () => {
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
     const [completedGoalIds, setCompletedGoalIds] = useState<Set<string>>(new Set());
     const [isAchievementsModalOpen, setIsAchievementsModalOpen] = useState(false);
+    const [mobileHistoryPage, setMobileHistoryPage] = useState(0);
+    const [goalsPage, setGoalsPage] = useState(0);
 
     const { addNotification } = useNotifications();
 
@@ -229,8 +231,8 @@ const GoalsContent: React.FC = () => {
         accent: '#3b82f6',
     };
 
-    const loadGoals = useCallback(async () => {
-        setIsLoading(true);
+    const loadGoals = useCallback(async (showLoading = true) => {
+        if (showLoading) setIsLoading(true);
         // First fetch goals, then sync with real-time data
         const fetchedGoals = await fetchGoals();
         // Sync active goals with real progress from study time, streak, etc.
@@ -238,7 +240,7 @@ const GoalsContent: React.FC = () => {
         const fetchedStats = await getGoalStats();
         setGoals(syncedGoals.length > 0 ? syncedGoals : fetchedGoals);
         setStats(fetchedStats);
-        setIsLoading(false);
+        if (showLoading) setIsLoading(false);
     }, []);
 
     useEffect(() => {
@@ -341,6 +343,16 @@ const GoalsContent: React.FC = () => {
         return result;
     }, [goals, activeFilter, searchQuery]);
 
+    // Goals pagination
+    const goalsPerPage = 1;
+    const totalGoalsPages = Math.ceil(filteredGoals.length / goalsPerPage);
+    const paginatedGoals = filteredGoals.slice(goalsPage * goalsPerPage, (goalsPage + 1) * goalsPerPage);
+
+    // Reset goals page when filter or search changes
+    useEffect(() => {
+        setGoalsPage(0);
+    }, [activeFilter, searchQuery]);
+
     // Search suggestions - show matching goals as user types
     const searchSuggestions = useMemo(() => {
         if (!searchQuery || searchQuery.length < 1) return [];
@@ -406,7 +418,7 @@ const GoalsContent: React.FC = () => {
         const newGoal = await createGoal(goalData);
         if (newGoal) {
             setGoals(prev => [newGoal, ...prev]);
-            loadGoals();
+            loadGoals(false);
         }
     };
 
@@ -429,7 +441,7 @@ const GoalsContent: React.FC = () => {
                     'system'
                 );
             }
-            loadGoals();
+            loadGoals(false);
         }
     };
 
@@ -454,7 +466,7 @@ const GoalsContent: React.FC = () => {
         const success = await deleteGoal(deleteConfirmId);
         if (success) {
             setGoals(prev => prev.filter(g => g.id !== deleteConfirmId));
-            loadGoals();
+            loadGoals(false);
         }
         setDeleteConfirmId(null);
     };
@@ -613,7 +625,7 @@ const GoalsContent: React.FC = () => {
                                         <polyline points="22 4 12 14.01 9 11.01" />
                                     </svg>
                                 </div>
-                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Milestones</span>
+                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Achievements</span>
                             </div>
                             <div className="flex items-baseline gap-1.5">
                                 <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.completed}</span>
@@ -623,6 +635,7 @@ const GoalsContent: React.FC = () => {
                     </div>
 
                     {/* Search and Filter Bar Moved Inside Header */}
+
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -818,13 +831,13 @@ const GoalsContent: React.FC = () => {
                 </motion.div>
             </motion.div>
 
-            {/* Progress History Chart */}
-            <div className="-mx-4 sm:-mx-6 lg:mx-0">
-                <ProgressHistoryChart goals={goals} />
-            </div>
-
-            {/* Goals Grid */}
-            <AnimatePresence mode="popLayout">
+            {/* Main Layout Grid */}
+            <div className="flex flex-col xl:flex-row gap-6 xl:items-stretch w-full">
+                
+                {/* Left Side: Goals Grid */}
+                <div className="flex-1 min-w-0 order-2 xl:order-1 w-full flex flex-col">
+                    {/* Goals Grid */}
+                    <AnimatePresence mode="popLayout">
                 {isLoading || isSearching ? (
                     // Loading Skeleton
                     <motion.div
@@ -832,38 +845,6 @@ const GoalsContent: React.FC = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
-                        {/* Search indicator */}
-                        {isSearching && searchQuery && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    marginBottom: '16px',
-                                    padding: '10px 14px',
-                                    borderRadius: '10px',
-                                    background: 'rgba(59, 130, 246, 0.05)',
-                                    border: '1px solid rgba(59, 130, 246, 0.1)',
-                                }}
-                            >
-                                <motion.svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    animate={{ rotate: 360 }}
-                                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                >
-                                    <circle cx="12" cy="12" r="10" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="3" />
-                                    <path d="M12 2a10 10 0 0 1 10 10" stroke="#3b82f6" strokeWidth="3" strokeLinecap="round" />
-                                </motion.svg>
-                                <span style={{ fontSize: '12px', color: '#3b82f6', fontWeight: 500 }}>
-                                    Searching for "{searchQuery}"...
-                                </span>
-                            </motion.div>
-                        )}
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
                             {[1, 2, 3].map((i) => (
                                 <motion.div
@@ -902,7 +883,7 @@ const GoalsContent: React.FC = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="col-span-full -mx-4 sm:-mx-6 lg:mx-0"
+                        className="col-span-full -mx-4 sm:-mx-6 lg:mx-0 flex-1 flex flex-col"
                     >
                         <EmptyState
                             icon={
@@ -912,7 +893,7 @@ const GoalsContent: React.FC = () => {
                             }
                             title={searchQuery ? `No goals match "${searchQuery}"` : "No goals yet"}
                             description={searchQuery ? 'Try a different search term' : 'Create your first goal to start tracking'}
-                            className="py-16 !rounded-none sm:!rounded-[24px] !border-x-0 sm:!border-x"
+                            className="py-16 flex-1 h-full"
                             action={searchQuery ? {
                                 label: 'Clear search',
                                 onClick: () => {
@@ -927,25 +908,28 @@ const GoalsContent: React.FC = () => {
                     </motion.div>
                 ) : (
                     // Goals Cards Grid
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(480px, 1fr))', gap: '24px' }}>
-                        {filteredGoals.map((goal, index) => {
-                            const config = goalTypeConfig[goal.type];
-                            const priorityInfo = getPriorityInfo(goal.priority);
-                            return (
-                                <motion.div
-                                    key={goal.id}
-                                    layout
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    transition={{ delay: index * 0.05, type: 'spring', stiffness: 400, damping: 25 }}
-                                    onClick={() => setSelectedGoal(goal)}
-                                    className={`relative flex flex-col p-[24px] rounded-[24px] cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 bg-white dark:bg-slate-800 border group/goalcard ${
-                                        goal.status === 'completed' 
-                                            ? 'border-emerald-500/40 dark:border-emerald-500/30' 
-                                            : 'border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-700'
-                                    }`}
-                                >
+                    <div className="-mx-4 sm:-mx-6 lg:mx-0 flex-1 flex flex-col">
+                        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 shadow-sm rounded-[20px] p-4 transition-all duration-300 hover:shadow-md cursor-default overflow-hidden flex flex-col h-full">
+                                <motion.div layout className="grid gap-[24px] min-h-[180px]" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))' }}>
+                                    <AnimatePresence mode="wait">
+                                        {paginatedGoals.map((goal, index) => {
+                                            const config = goalTypeConfig[goal.type];
+                                            const priorityInfo = getPriorityInfo(goal.priority);
+                                            return (
+                                                <motion.div
+                                                    key={goal.id}
+                                                    layout
+                                                    initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
+                                                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                                                    exit={{ opacity: 0, y: -10, filter: 'blur(5px)', transition: { duration: 0.15 } }}
+                                                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                                                    onClick={() => setSelectedGoal(goal)}
+                                            className={`relative flex flex-col p-[24px] rounded-[24px] cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 bg-slate-50/50 dark:bg-slate-900/50 border group/goalcard ${
+                                                goal.status === 'completed' 
+                                                    ? 'border-emerald-500/40 dark:border-emerald-500/30' 
+                                                    : 'border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-700'
+                                            }`}
+                                        >
 
                                     {/* Action Buttons floating top right */}
                                     <div className="absolute top-5 right-5 flex items-center gap-2 z-20">
@@ -969,7 +953,7 @@ const GoalsContent: React.FC = () => {
                                         <button
                                             type="button"
                                             onClick={(e) => { e.stopPropagation(); handleDeleteClick(goal.id, e); }}
-                                            className="flex items-center justify-center w-11 h-11 rounded-[14px] bg-[#fff0f0] text-red-500 transition-colors hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 focus:outline-none shrink-0"
+                                            className="flex items-center justify-center w-11 h-11 rounded-[14px] bg-slate-50 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:bg-slate-800/50 dark:text-slate-500 dark:hover:bg-red-900/30 dark:hover:text-red-400 focus:outline-none shrink-0"
                                         >
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6" />
@@ -1032,12 +1016,12 @@ const GoalsContent: React.FC = () => {
                                     </div>
 
                                     {/* Unified Stats & Progress Section - PathsContent Style */}
-                                    <div className="mt-auto pt-4 flex flex-col gap-4 relative z-10 w-full border-t border-slate-100 dark:border-slate-700/50">
+                                    <div className="mt-auto flex flex-col gap-4 relative z-10 w-full">
                                         
 
 
                                         {/* Circular Progress & Status */}
-                                        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full pt-4 border-t border-slate-100 dark:border-slate-700/50">
+                                        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full pt-4 border-t border-slate-200 dark:border-slate-600/60">
                                             <div className="flex items-center gap-3 min-w-0 w-full lg:w-auto">
                                                 <div className="relative shrink-0 flex items-center justify-center bg-slate-50 dark:bg-slate-800/50 rounded-full border border-slate-100 dark:border-slate-700/50 shadow-sm p-1 group-hover/goalcard:shadow-md transition-shadow">
                                                     <AnimatedCircularProgressBar
@@ -1085,9 +1069,196 @@ const GoalsContent: React.FC = () => {
                                 </motion.div>
                             );
                         })}
+                            </AnimatePresence>
+                        </motion.div>
+
+                            {/* Pagination Controls - inside card */}
+                            {filteredGoals.length > 0 && (
+                                <div className="pt-4 mt-auto">
+                                    <div className="flex items-center justify-between w-full gap-2 bg-slate-50/50 dark:bg-slate-900/50 p-1.5 rounded-[14px] border border-slate-100 dark:border-slate-700/50 transition-all duration-300">
+                                        <button 
+                                            type="button"
+                                            onClick={() => setGoalsPage(prev => Math.max(0, prev - 1))} 
+                                            disabled={goalsPage === 0}
+                                            className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border ${
+                                                goalsPage === 0
+                                                    ? 'bg-slate-50/50 dark:bg-slate-900/20 border-slate-100 dark:border-slate-800/40 text-slate-300 dark:text-slate-700 cursor-not-allowed'
+                                                    : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                            }`}
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                        </button>
+                                        <span className="text-[13px] text-slate-500 dark:text-slate-400 text-center tracking-wide flex-1 font-medium">
+                                            Page <span className="text-blue-600 dark:text-blue-400 font-bold mx-0.5 text-[14px]">{goalsPage + 1}</span> <span className="text-slate-300 dark:text-slate-600 font-medium mx-1">/</span> {totalGoalsPages}
+                                        </span>
+                                        <button 
+                                            type="button"
+                                            onClick={() => setGoalsPage(prev => Math.min(totalGoalsPages - 1, prev + 1))} 
+                                            disabled={goalsPage === totalGoalsPages - 1}
+                                            className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border ${
+                                                goalsPage === totalGoalsPages - 1
+                                                    ? 'bg-slate-50/50 dark:bg-slate-900/20 border-slate-100 dark:border-slate-800/40 text-slate-300 dark:text-slate-700 cursor-not-allowed'
+                                                    : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                            }`}
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
-            </AnimatePresence>
+                    </AnimatePresence>
+                </div>
+                
+                {/* Right Side: Progress History Chart */}
+                <div className="flex-1 min-w-0 w-full order-1 xl:order-2 xl:sticky xl:top-6 flex flex-col">
+                    <div className="hidden xl:block -mx-4 sm:-mx-6 lg:mx-0 flex-1 flex flex-col">
+                        <ProgressHistoryChart goals={filteredGoals} />
+                    </div>
+                    
+                    {/* Mobile-Friendly Progress Summary */}
+                    <div className="block xl:hidden mb-6 -mx-4 sm:-mx-6 lg:mx-0">
+                        <div className="bg-white dark:bg-slate-800 rounded-[20px] sm:rounded-[24px] border border-slate-200/60 dark:border-slate-700/50 p-5 sm:p-6 shadow-sm">
+                            <div className="flex items-center gap-4 mb-5">
+                                <div className="w-12 h-12 rounded-[14px] bg-blue-50/80 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M3 3v18h18" />
+                                        <path d="m19 9-5 5-4-4-3 3" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 className="text-[16px] font-bold text-slate-900 dark:text-slate-100 tracking-tight">Progress Overview</h3>
+                                    <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">Your learning journey</p>
+                                </div>
+                            </div>
+
+
+                            {/* Recent History List */}
+                            <div className="mt-6 pt-6 border-t border-slate-200/60 dark:border-slate-700/50">
+                                <h4 className="text-[13px] font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-4">Recent Activity</h4>
+                                <div className="flex flex-col gap-3">
+                                    {(() => {
+                                        const sortedGoals = goals.slice().sort((a, b) => new Date(b.updated_at || b.created_at).getTime() - new Date(a.updated_at || a.created_at).getTime());
+                                        const itemsPerPage = 3;
+                                        const totalPages = Math.ceil(sortedGoals.length / itemsPerPage);
+                                        const paginatedGoals = sortedGoals.slice(mobileHistoryPage * itemsPerPage, (mobileHistoryPage + 1) * itemsPerPage);
+
+                                        if (sortedGoals.length === 0) {
+                                            return (
+                                                <div className="text-center py-4">
+                                                    <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400">No recent activity yet</p>
+                                                </div>
+                                            );
+                                        }
+
+                                        return (
+                                            <>
+                                                <AnimatePresence mode="wait">
+                                                    <motion.div
+                                                        key={mobileHistoryPage}
+                                                        initial={{ opacity: 0, x: 10 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        exit={{ opacity: 0, x: -10 }}
+                                                        transition={{ duration: 0.2, ease: "easeOut" }}
+                                                        className="flex flex-col gap-3"
+                                                    >
+                                                        {paginatedGoals.map((goal) => (
+                                                            <div key={goal.id} className="bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/60 rounded-[16px] p-3 flex items-center justify-between shadow-[0_2px_8px_-3px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer group">
+                                                                <div className="flex items-center gap-3 min-w-0">
+                                                                    <div className="w-11 h-11 rounded-[12px] flex items-center justify-center shrink-0 border bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800/50 transition-colors group-hover:border-blue-300 dark:group-hover:border-blue-700">
+                                                                        <GoalIcon type={goal.type} color="currentColor" size={20} />
+                                                                    </div>
+                                                                    <div className="min-w-0 flex-1 text-left flex flex-col justify-center">
+                                                                        <p className="text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase tracking-widest leading-none mb-1 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-300">
+                                                                            {goal.type.replace('_', ' ')}
+                                                                        </p>
+                                                                        <p className="text-[14px] font-extrabold text-slate-800 dark:text-slate-200 leading-snug truncate w-full transition-colors group-hover:text-blue-700 dark:group-hover:text-blue-400">
+                                                                            {goal.title}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center gap-2 shrink-0 ml-2">
+                                                                    <div className="flex flex-col items-end gap-1.5">
+                                                                        <div className="flex items-center gap-1.5 border border-slate-200/80 dark:border-slate-700 rounded-full px-2 py-0.5 sm:px-2.5 sm:py-1 bg-slate-50 dark:bg-slate-800/50 transition-colors group-hover:border-blue-200/80 dark:group-hover:border-blue-800/50 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-900/20">
+                                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 transition-colors group-hover:text-blue-500 dark:group-hover:text-blue-400 hidden sm:block">
+                                                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                                                                <line x1="16" y1="2" x2="16" y2="6" />
+                                                                                <line x1="8" y1="2" x2="8" y2="6" />
+                                                                                <line x1="3" y1="10" x2="21" y2="10" />
+                                                                            </svg>
+                                                                            <span className="text-[10px] sm:text-[11px] font-bold text-slate-600 dark:text-slate-300 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                                                                                {new Date(goal.updated_at || goal.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                                                            </span>
+                                                                        </div>
+                                                                        {(new Date().getTime() - new Date(goal.updated_at || goal.created_at).getTime()) > 30 * 24 * 60 * 60 * 1000 && (
+                                                                            <span className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-1.5 py-0.5 rounded-[4px]">
+                                                                                Archived
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    
+                                                                    {/* Delete / Hide Button */}
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={(e) => { e.stopPropagation(); handleDeleteClick(goal.id, e); }}
+                                                                        className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100/50 text-slate-400 transition-all hover:bg-red-100 hover:text-red-500 dark:bg-slate-800/50 dark:hover:bg-red-900/30 dark:hover:text-red-400 focus:outline-none"
+                                                                        title="Delete from History"
+                                                                    >
+                                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                            <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6" />
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </motion.div>
+                                                </AnimatePresence>
+
+                                                {/* Pagination Controls */}
+                                                {totalPages > 1 && (
+                                                    <div className="w-full pt-2.5 mt-1">
+                                                        <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-slate-800/80 p-1.5 rounded-[14px] border border-slate-200/80 dark:border-slate-700/60 shadow-sm transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-500">
+                                                            <button 
+                                                                type="button"
+                                                                onClick={() => setMobileHistoryPage(prev => Math.max(0, prev - 1))} 
+                                                                disabled={mobileHistoryPage === 0}
+                                                                className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border ${
+                                                                    mobileHistoryPage === 0
+                                                                        ? 'bg-slate-50/50 dark:bg-slate-800/20 border-slate-100 dark:border-slate-700/40 text-slate-300 dark:text-slate-600 cursor-not-allowed'
+                                                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                                                }`}
+                                                            >
+                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                                            </button>
+                                                            <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300 text-center tracking-wide flex-1">
+                                                                Page {mobileHistoryPage + 1} <span className="text-slate-400 dark:text-slate-500 font-medium mx-0.5">/</span> {totalPages}
+                                                            </span>
+                                                            <button 
+                                                                type="button"
+                                                                onClick={() => setMobileHistoryPage(prev => Math.min(totalPages - 1, prev + 1))} 
+                                                                disabled={mobileHistoryPage === totalPages - 1}
+                                                                className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border ${
+                                                                    mobileHistoryPage === totalPages - 1
+                                                                        ? 'bg-slate-50/50 dark:bg-slate-800/20 border-slate-100 dark:border-slate-700/40 text-slate-300 dark:text-slate-600 cursor-not-allowed'
+                                                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                                                }`}
+                                                            >
+                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
+                                        );
+                                    })()}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Modals */}
             <CreateGoalModal

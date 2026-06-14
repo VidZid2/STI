@@ -21,11 +21,16 @@ import {
 
 
 
+import { getProfile } from '../../../../services/profileService';
+import { getCurrentLevel, getXPProgress } from '../../../../services/studyTimeService';
+import { AnimatedCircularProgressBar } from '../../../../components/ui/animated-circular-progress-bar';
+
+
 import { FilterTabs } from './components/FilterTabs';
 import { UserCard, UserListItem } from './components/UserCard';
 import { UserCardSkeleton } from './components/UsersSkeleton';
 import { TeacherSpotlight } from './components/TeacherSpotlight';
-import { EmptyState } from './components/UsersEmptyState';
+import { EmptyState } from '../CourseViewPage/components/SharedComponents';
 import UserDetailModal from './modals/UserDetailModal';
 
 // Custom hook for detecting reduced motion preference
@@ -103,6 +108,10 @@ type FilterTab = UserFilter;
 
 // Main UsersContent Component
 const UsersContent: React.FC = () => {
+    const myProfile = getProfile();
+    const myLevel = getCurrentLevel();
+    const myProgress = getXPProgress();
+    
     // Accessibility: Detect reduced motion preference
     const reducedMotion = useReducedMotion();
     // Mobile detection for always-visible quick actions
@@ -133,7 +142,42 @@ const UsersContent: React.FC = () => {
     const sortDropdownRef = useRef<HTMLDivElement>(null);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [classmates, setClassmates] = useState<UserAccount[]>([]);
-    const [showAllClassmates, setShowAllClassmates] = useState(false);
+    const [currentClassmatesPage, setCurrentClassmatesPage] = useState(0);
+    const [filterOnlineOnly, setFilterOnlineOnly] = useState(false);
+    const [classmatesPageDirection, setClassmatesPageDirection] = useState(0);
+    const [classmateSearchQuery, setClassmateSearchQuery] = useState('');
+    const [isClassmateSearching, setIsClassmateSearching] = useState(false);
+    const [debouncedClassmateSearch, setDebouncedClassmateSearch] = useState('');
+    
+    useEffect(() => {
+        if (!classmateSearchQuery) {
+            setDebouncedClassmateSearch('');
+            setIsClassmateSearching(false);
+            return;
+        }
+        setIsClassmateSearching(true);
+        const timer = setTimeout(() => {
+            setDebouncedClassmateSearch(classmateSearchQuery);
+            setIsClassmateSearching(false);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [classmateSearchQuery]);
+    
+    const classmatesPerPage = isMobile ? 4 : 9;
+    const filteredClassmates = classmates.filter(c => {
+        if (filterOnlineOnly && !c.is_online) return false;
+        if (debouncedClassmateSearch) {
+            const q = debouncedClassmateSearch.toLowerCase();
+            const fullName = `${c.first_name || ''} ${c.last_name || ''}`.toLowerCase();
+            return fullName.includes(q);
+        }
+        return true;
+    });
+    const totalClassmatesPages = Math.ceil(filteredClassmates.length / classmatesPerPage);
+    const paginatedClassmates = filteredClassmates.slice(
+        currentClassmatesPage * classmatesPerPage,
+        (currentClassmatesPage + 1) * classmatesPerPage
+    );
     const [favorites, setFavorites] = useState<string[]>(() => {
         // Load favorites from localStorage
         const saved = localStorage.getItem('user_favorites');
@@ -145,32 +189,6 @@ const UsersContent: React.FC = () => {
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const loadMoreRef = useRef<HTMLDivElement>(null);
     
-    // Recently viewed users (stored as user IDs with timestamps)
-    const [recentlyViewed, setRecentlyViewed] = useState<{ id: string; timestamp: number }[]>(() => {
-        const saved = localStorage.getItem('recently_viewed_users');
-        return saved ? JSON.parse(saved) : [];
-    });
-
-    // Add user to recently viewed
-    const addToRecentlyViewed = useCallback((userId: string) => {
-        setRecentlyViewed(prev => {
-            // Remove if already exists
-            const filtered = prev.filter(item => item.id !== userId);
-            // Add to beginning with current timestamp
-            const updated = [{ id: userId, timestamp: Date.now() }, ...filtered].slice(0, 10); // Keep max 10
-            // Save to localStorage
-            localStorage.setItem('recently_viewed_users', JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
-
-    // Clear recently viewed
-    const clearRecentlyViewed = useCallback(() => {
-        setRecentlyViewed([]);
-        localStorage.removeItem('recently_viewed_users');
-    }, []);
-
-    // Toggle favorite handler
     const handleToggleFavorite = useCallback((userId: string) => {
         setFavorites(prev => {
             const newFavorites = prev.includes(userId)
@@ -186,14 +204,7 @@ const UsersContent: React.FC = () => {
     const handleUserClick = useCallback((user: UserAccount) => {
         setSelectedUser(user);
         setIsModalOpen(true);
-        // Add to recently viewed (don't track yourself)
-        const isCurrentUser = user.id === 'demo-user-1' || 
-                              user.email.toLowerCase().includes('deasis') ||
-                              user.student_id === '02000543210';
-        if (!isCurrentUser) {
-            addToRecentlyViewed(user.id);
-        }
-    }, [addToRecentlyViewed]);
+    }, []);
 
     // Handle modal close
     const handleModalClose = useCallback(() => {
@@ -405,131 +416,86 @@ const UsersContent: React.FC = () => {
 
 
     return (
-        <div style={{ 
-            padding: '24px', 
-            maxWidth: '1200px', 
-            margin: '0 auto',
-            minHeight: '100vh',
-        }}>
-            {/* Header Section - Matching PathsContent style */}
+        <div className="p-4 sm:p-6 lg:p-8 max-w-[1200px] mx-auto min-h-screen pb-24">
+            {/* Header Section - Matching GoalsContent/PathsContent style */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                style={{ marginBottom: '28px' }}
+                className="mt-[72px] md:mt-0 mb-7"
             >
                 <motion.div 
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-                    style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '16px',
-                        padding: '18px 22px',
-                        borderRadius: '14px',
-                        background: colors.cardBg,
-                        border: `1px solid ${colors.border}`,
-                        boxShadow: isDarkMode 
-                            ? '0 2px 12px rgba(0,0,0,0.15)' 
-                            : '0 2px 12px rgba(0,0,0,0.04)',
-                        flexWrap: 'wrap',
-                    }}
+                    className="relative flex flex-col gap-3 sm:gap-4 p-5 sm:p-7 -mx-4 sm:-mx-6 lg:mx-0 rounded-[20px] sm:rounded-[24px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700"
                 >
-                    {/* Icon */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                        whileHover={{ scale: 1.08, transition: { duration: 0.2 } }}
-                        style={{
-                            width: '46px',
-                            height: '46px',
-                            borderRadius: '12px',
-                            background: isDarkMode 
-                                ? 'rgba(59, 130, 246, 0.12)'
-                                : 'rgba(59, 130, 246, 0.08)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,
-                        }}
-                    >
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                    </motion.div>
-                    
-                    {/* Title & Description */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                        style={{ flex: 1, minWidth: '200px' }}
-                    >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                            <h1 style={{ 
-                                margin: 0, 
-                                fontSize: '20px', 
-                                fontWeight: 600, 
-                                color: colors.textPrimary,
-                                letterSpacing: '-0.3px',
-                            }}>
-                                Users
-                            </h1>
-                            <motion.span
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: 0.25, duration: 0.3 }}
-                                style={{
-                                    fontSize: '10px',
-                                    fontWeight: 600,
-                                    color: '#3b82f6',
-                                    background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)',
-                                    padding: '3px 8px',
-                                    borderRadius: '6px',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.4px',
-                                }}
-                            >
-                                {stats.totalUsers} User{stats.totalUsers !== 1 ? 's' : ''}
-                            </motion.span>
+                    {/* Top Row: Title & Action */}
+                    <div className="relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-6 min-w-0 w-full sm:w-auto">
+                            {/* Icon Container */}
+                            <div className="relative flex-shrink-0 mb-1 sm:mb-0">
+                                <div className="relative w-[72px] h-[72px] sm:w-[84px] sm:h-[84px]">
+                                    <div className="w-full h-full relative">
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                                            whileHover={{ scale: 1.05, rotate: -5, transition: { type: 'spring', stiffness: 400, damping: 15 } }}
+                                            className="absolute flex items-center justify-center shadow-sm transition-all duration-500 inset-0 m-auto w-[56px] h-[56px] sm:w-[60px] sm:h-[60px] rounded-[16px] sm:rounded-[20px] bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-100 dark:from-blue-500/10 dark:to-blue-500/5 dark:border-blue-500/20"
+                                        >
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400 transition-all duration-500 sm:w-8 sm:h-8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                                <circle cx="9" cy="7" r="4" />
+                                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                            </svg>
+                                        </motion.div>
+                                    </div>
+                                </div>
+                                
+                                {/* Overlapping Custom Badge */}
+                                {stats.totalUsers > 0 && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10, x: "-50%", scale: 0.8 }}
+                                        animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+                                        transition={{ duration: 0.4, delay: 0.4, type: "spring", stiffness: 300, damping: 20 }}
+                                        className="absolute -bottom-1.5 sm:-bottom-2 left-1/2 px-1.5 sm:px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 border-[2px] sm:border-[2.5px] border-white dark:border-slate-800 shadow-sm flex items-center justify-center whitespace-nowrap z-10 min-w-[36px] sm:min-w-[40px]"
+                                    >
+                                        <span className="text-[11px] sm:text-[13px] font-black text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
+                                            {stats.totalUsers}
+                                        </span>
+                                    </motion.div>
+                                )}
+                            </div>
+                            
+                            {/* Title & Description */}
+                            <div className="min-w-0 flex flex-col justify-center items-center sm:items-start py-1">
+                                <div className="flex items-center justify-center sm:justify-start gap-3 mb-2 sm:mb-3 flex-wrap">
+                                    <h1 className="text-xl sm:text-[26px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none">
+                                        Community
+                                    </h1>
+                                </div>
+                                <p className="text-sm sm:text-[14.5px] font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl text-center sm:text-left">
+                                    Connect with your classmates and instructors
+                                </p>
+                            </div>
                         </div>
-                        <p style={{ 
-                            margin: 0, 
-                            fontSize: '13px', 
-                            color: colors.textSecondary,
-                            fontWeight: 400,
-                        }}>
-                            Manage user accounts and permissions
-                        </p>
-                    </motion.div>
+                    </div>
 
-                    {/* Quick Stats Cards */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'stretch',
-                            gap: '10px',
-                            flexWrap: 'wrap',
-                        }}
-                    >
+                    {/* Bottom Row: Detailed Metrics */}
+                    <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-2 sm:mt-0">
                         {[
                             {
                                 label: 'Total',
                                 value: stats.totalUsers,
-                                description: 'Users',
-                                color: '#3b82f6',
-                                bgColor: isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.06)',
+                                description: 'Peers',
+                                color: 'text-blue-600 dark:text-blue-400',
+                                bgColor: 'bg-blue-50 dark:bg-blue-500/10',
+                                borderColor: 'hover:border-blue-300 dark:hover:border-blue-700',
                                 icon: (
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                         <circle cx="9" cy="7" r="4" />
                                         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -541,10 +507,11 @@ const UsersContent: React.FC = () => {
                                 label: 'Online',
                                 value: stats.onlineUsers,
                                 description: 'Online',
-                                color: '#10b981',
-                                bgColor: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.06)',
+                                color: 'text-emerald-600 dark:text-emerald-400',
+                                bgColor: 'bg-emerald-50 dark:bg-emerald-500/10',
+                                borderColor: 'hover:border-emerald-300 dark:hover:border-emerald-700',
                                 icon: (
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                                         <polyline points="22 4 12 14.01 9 11.01" />
                                     </svg>
@@ -554,10 +521,11 @@ const UsersContent: React.FC = () => {
                                 label: 'Students',
                                 value: stats.students,
                                 description: 'Enrolled',
-                                color: '#8b5cf6',
-                                bgColor: isDarkMode ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.06)',
+                                color: 'text-violet-600 dark:text-violet-400',
+                                bgColor: 'bg-violet-50 dark:bg-violet-500/10',
+                                borderColor: 'hover:border-violet-300 dark:hover:border-violet-700',
                                 icon: (
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                                         <path d="M6 12v5c3 3 9 3 12 0v-5" />
                                     </svg>
@@ -567,10 +535,11 @@ const UsersContent: React.FC = () => {
                                 label: 'Teachers',
                                 value: stats.teachers,
                                 description: 'Faculty',
-                                color: '#f59e0b',
-                                bgColor: isDarkMode ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.06)',
+                                color: 'text-amber-600 dark:text-amber-400',
+                                bgColor: 'bg-amber-50 dark:bg-amber-500/10',
+                                borderColor: 'hover:border-amber-300 dark:hover:border-amber-700',
                                 icon: (
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                         <circle cx="9" cy="7" r="4" />
                                         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -579,1181 +548,329 @@ const UsersContent: React.FC = () => {
                                 ),
                             },
                         ].map((stat, i) => (
-                            <motion.div
+                            <motion.div 
                                 key={stat.label}
                                 initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.25 + i * 0.05, duration: 0.3 }}
-                                whileHover={{ 
-                                    y: -2, 
-                                    scale: 1.02,
-                                    transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] } 
-                                }}
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    padding: '10px 16px',
-                                    borderRadius: '10px',
-                                    background: stat.bgColor,
-                                    cursor: 'default',
-                                    minWidth: '72px',
-                                }}
-                                title={`${stat.label}: ${stat.value}`}
+                                className={`flex flex-col p-3 sm:p-4 rounded-[16px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md ${stat.borderColor}`}
                             >
-                                <div style={{ 
-                                    color: stat.color, 
-                                    marginBottom: '4px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
-                                    {stat.icon}
-                                </div>
-                                <span style={{ 
-                                    fontSize: '18px', 
-                                    fontWeight: 700, 
-                                    color: stat.color,
-                                    lineHeight: 1,
-                                    marginBottom: '2px',
-                                }}>
-                                    {stat.value}
-                                </span>
-                                <span style={{ 
-                                    fontSize: '10px', 
-                                    fontWeight: 500, 
-                                    color: colors.textMuted,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.3px',
-                                }}>
-                                    {stat.description}
-                                </span>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </motion.div>
-            </motion.div>
-
-            {/* Classmates Section */}
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25, duration: 0.4 }}
-                style={{
-                    marginBottom: '24px',
-                    padding: '18px',
-                    borderRadius: '14px',
-                    background: colors.cardBg,
-                    border: `1px solid ${colors.border}`,
-                }}
-            >
-                {/* Section Header */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                            style={{
-                                width: '38px',
-                                height: '38px',
-                                borderRadius: '10px',
-                                background: isDarkMode ? 'rgba(139, 92, 246, 0.12)' : 'rgba(139, 92, 246, 0.08)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                <circle cx="9" cy="7" r="4" />
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                            </svg>
-                        </motion.div>
-                        <div>
-                            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: colors.textPrimary }}>
-                                My Classmates
-                            </h3>
-                            <p style={{ margin: 0, fontSize: '12px', color: colors.textSecondary }}>
-                                BSIT101A · {classmates.length} students
-                            </p>
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{
-                            fontSize: '11px',
-                            padding: '4px 10px',
-                            borderRadius: '8px',
-                            background: 'rgba(16, 185, 129, 0.1)',
-                            color: '#10b981',
-                            fontWeight: 500,
-                        }}>
-                            {classmates.filter(c => c.is_online).length} Online
-                        </span>
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => setShowAllClassmates(!showAllClassmates)}
-                            style={{
-                                padding: '6px 12px',
-                                borderRadius: '8px',
-                                border: `1px solid ${colors.border}`,
-                                background: 'transparent',
-                                color: colors.textSecondary,
-                                fontSize: '12px',
-                                fontWeight: 500,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                            }}
-                        >
-                            {showAllClassmates ? 'Show Less' : 'View All'}
-                            <motion.svg
-                                width="12"
-                                height="12"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                animate={{ rotate: showAllClassmates ? 180 : 0 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <polyline points="6 9 12 15 18 9" />
-                            </motion.svg>
-                        </motion.button>
-                    </div>
-                </div>
-
-                {/* Classmates Grid */}
-                <motion.div
-                    initial={false}
-                    animate={{ height: showAllClassmates ? 'auto' : '140px' }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    style={{ overflow: 'hidden', position: 'relative' }}
-                >
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                        gap: '10px',
-                    }}>
-                        {classmates.slice(0, showAllClassmates ? classmates.length : 8).map((classmate, index) => (
-                            <motion.div
-                                key={classmate.id}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: index * 0.02, duration: 0.2 }}
-                                whileHover={{ 
-                                    scale: 1.02,
-                                    background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-                                }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => handleUserClick(classmate)}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                    padding: '10px 12px',
-                                    borderRadius: '10px',
-                                    border: `1px solid ${colors.border}`,
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s ease',
-                                }}
-                            >
-                                <div style={{ position: 'relative', flexShrink: 0 }}>
-                                    <div style={{
-                                        width: '36px',
-                                        height: '36px',
-                                        borderRadius: '10px',
-                                        background: `linear-gradient(135deg, #8b5cf620 0%, #8b5cf610 100%)`,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: '13px',
-                                        fontWeight: 600,
-                                        color: '#8b5cf6',
-                                    }}>
-                                        {classmate.profile_image ? (
-                                            <img src={classmate.profile_image} alt={classmate.full_name} style={{ width: '100%', height: '100%', borderRadius: '10px', objectFit: 'cover' }} />
-                                        ) : `${classmate.first_name?.[0] || ''}${classmate.last_name?.[0] || ''}`}
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className={`p-1.5 rounded-md ${stat.bgColor} ${stat.color}`}>
+                                        {stat.icon}
                                     </div>
-                                    <div style={{
-                                        position: 'absolute',
-                                        bottom: -1,
-                                        right: -1,
-                                        width: '10px',
-                                        height: '10px',
-                                        borderRadius: '50%',
-                                        background: classmate.is_online ? '#10b981' : '#94a3b8',
-                                        border: '2px solid white',
-                                        boxShadow: classmate.is_online ? '0 0 6px rgba(16, 185, 129, 0.5)' : 'none',
-                                    }} />
+                                    <span className={`text-[10px] font-bold ${stat.color} uppercase tracking-wider`}>{stat.label}</span>
                                 </div>
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                    <p style={{
-                                        margin: 0,
-                                        fontSize: '12px',
-                                        fontWeight: 500,
-                                        color: colors.textPrimary,
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                    }}>
-                                        {classmate.full_name}
-                                    </p>
-                                    <p style={{
-                                        margin: 0,
-                                        fontSize: '10px',
-                                        color: classmate.is_online ? '#10b981' : colors.textMuted,
-                                    }}>
-                                        {classmate.is_online ? 'Online' : 'Offline'}
-                                    </p>
+                                <div className="flex items-baseline gap-1.5">
+                                    <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stat.value}</span>
+                                    <span className="text-xs font-medium text-slate-500">{stat.description}</span>
                                 </div>
                             </motion.div>
                         ))}
                     </div>
-                    
-                    {/* Gradient Fade */}
-                    {!showAllClassmates && classmates.length > 8 && (
-                        <div style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: '40px',
-                            background: `linear-gradient(transparent, ${colors.cardBg})`,
-                            pointerEvents: 'none',
-                        }} />
-                    )}
                 </motion.div>
             </motion.div>
 
-            {/* Teacher Spotlight Section */}
-            <TeacherSpotlight 
-                onTeacherClick={handleUserClick}
-            />
-
-            {/* Recently Viewed Section */}
-            <LayoutGroup>
-            <AnimatePresence mode="wait">
-                {recentlyViewed.length > 0 && (
-                    <motion.div
-                        key="recently-viewed-section"
-                        layout
-                        initial={{ opacity: 0, y: 20, scale: 0.98, height: 0 }}
-                        animate={{ opacity: 1, y: 0, scale: 1, height: 'auto' }}
-                        exit={{ 
-                            opacity: 0, 
-                            y: -10, 
-                            scale: 0.98, 
-                            height: 0,
-                            marginBottom: 0,
-                            padding: 0,
-                            transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } 
-                        }}
-                        transition={{ delay: 0.3, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                        style={{
-                            marginBottom: '24px',
-                            padding: '16px 18px',
-                            borderRadius: '14px',
-                            background: colors.cardBg,
-                            border: `1px solid ${colors.border}`,
-                            overflow: 'hidden',
-                        }}
-                    >
-                    {/* Section Header */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                                style={{
-                                    width: '34px',
-                                    height: '34px',
-                                    borderRadius: '9px',
-                                    background: isDarkMode ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
-                                </svg>
-                            </motion.div>
-                            <div>
-                                <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: colors.textPrimary }}>
-                                    Recently Viewed
-                                </h3>
-                                <p style={{ margin: 0, fontSize: '11px', color: colors.textSecondary }}>
-                                    {recentlyViewed.length} profile{recentlyViewed.length !== 1 ? 's' : ''} viewed
-                                </p>
+            {/* Main Content Split Layout */}
+            <div className="flex flex-col mb-6">
+                
+                {/* Unified Container: Classmates & Teacher Spotlight */}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25, duration: 0.4 }}
+                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] -mx-4 sm:-mx-6 lg:mx-0 p-5 sm:p-6 flex flex-col xl:flex-row transition-all duration-300 hover:shadow-md relative overflow-hidden"
+                >
+                    {/* Classmates Section (Left) */}
+                    <div className="flex-1 flex flex-col min-w-0 pr-0 xl:pr-6">
+                        {/* Background Ambient Glow */}
+                        {/* Section Header */}
+                        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 xl:gap-0 mb-5 relative z-10">
+                            <div className="flex items-center gap-3 min-w-0">
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    whileHover={{ scale: 1.05, rotate: -5 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-[12px] sm:rounded-[14px] bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300"
+                                >
+                                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                </motion.div>
+                                <div className="flex flex-col min-w-0">
+                                    <h3 className="text-[15px] sm:text-[16px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-0.5 transition-colors truncate">
+                                        My Classmates
+                                    </h3>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                        <p className="text-[12px] sm:text-[13px] font-medium text-slate-500 dark:text-slate-400 leading-none truncate">
+                                            BSIT101A
+                                        </p>
+                                        <div className="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 border border-blue-200/50 dark:border-blue-700/50 text-blue-700 dark:text-blue-400 text-[10px] sm:text-[11px] font-bold tracking-wide flex items-center gap-1 shrink-0">
+                                            <span>{classmates.length}</span>
+                                            <span>Students</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="flex-1 flex justify-end w-full mt-3 sm:mt-0 sm:ml-8">
+                                {/* Search Classmates */}
+                                <div className="relative group/search w-full">
+                                    <svg className="absolute left-3.5 top-0 bottom-0 my-auto w-4 h-4 text-slate-400 z-10 transition-colors duration-200 group-focus-within/search:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    <input
+                                        type="text"
+                                        placeholder="Search classmates..."
+                                        value={classmateSearchQuery}
+                                        onChange={(e) => {
+                                            setClassmateSearchQuery(e.target.value);
+                                            setCurrentClassmatesPage(0);
+                                        }}
+                                        className="h-10 w-full rounded-[14px] border border-slate-200 bg-slate-50/80 pl-10 pr-[72px] py-2 text-[14px] font-semibold focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 shadow-sm transition-all duration-300 text-slate-900 placeholder-slate-400 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:ring-blue-500/10"
+                                    />
+                                    <div className="absolute right-2 top-0 bottom-0 flex items-center gap-2 z-10">
+                                        <motion.div layout transition={{ type: "spring", stiffness: 400, damping: 25 }} className="relative flex items-center group/tooltip">
+                                            <button 
+                                                onClick={() => { setFilterOnlineOnly(!filterOnlineOnly); setCurrentClassmatesPage(0); }}
+                                                className={`!min-w-0 !min-h-0 !p-0 w-[26px] h-[26px] sm:w-7 sm:h-7 flex flex-shrink-0 items-center justify-center rounded-[6px] sm:rounded-md border transition-all duration-300 cursor-pointer ${
+                                                    filterOnlineOnly 
+                                                        ? 'bg-blue-500 border-blue-500 text-white shadow-[0_0_8px_rgba(59,130,246,0.4)]' 
+                                                        : 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/50 hover:bg-blue-100 dark:hover:bg-blue-800/40'
+                                                }`}
+                                            >
+                                                <svg className="w-[18px] h-[18px] sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M15 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                                    <circle cx="8" cy="7" r="4" />
+                                                    <circle cx="19" cy="8" r="2.5" className={filterOnlineOnly ? 'fill-white animate-pulse' : 'fill-blue-500 animate-pulse'} stroke="none" />
+                                                </svg>
+                                            </button>
+                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 border border-slate-200 dark:border-slate-700 text-[10px] font-extrabold rounded-[6px] opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 shadow-sm whitespace-nowrap pointer-events-none z-50">
+                                                {filterOnlineOnly ? 'Show All' : 'Online Only'}
+                                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-slate-800 border-b border-r border-slate-200 dark:border-slate-700 rotate-45"></div>
+                                            </div>
+                                        </motion.div>
+                                        <AnimatePresence mode="popLayout">
+                                            {isClassmateSearching ? (
+                                                <motion.div
+                                                    layout
+                                                    key="spinner"
+                                                    initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                                                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                                    exit={{ opacity: 0, scale: 0.8, rotate: 90 }}
+                                                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                                    className="!min-w-0 !min-h-0 !p-0 w-[26px] h-[26px] sm:w-7 sm:h-7 flex flex-shrink-0 items-center justify-center"
+                                                >
+                                                    <svg className="w-[18px] h-[18px] sm:w-[18px] sm:h-[18px] animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                    </svg>
+                                                </motion.div>
+                                            ) : classmateSearchQuery ? (
+                                                <motion.button 
+                                                    layout
+                                                    key="clear"
+                                                    initial={{ opacity: 0, scale: 0.8 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.8 }}
+                                                    onClick={() => { setClassmateSearchQuery(''); setCurrentClassmatesPage(0); }}
+                                                    className="!min-w-0 !min-h-0 !p-0 w-[26px] h-[26px] sm:w-7 sm:h-7 flex flex-shrink-0 items-center justify-center rounded-[6px] sm:rounded-md bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                                                >
+                                                    <svg className="w-[18px] h-[18px] sm:w-[18px] sm:h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                </motion.button>
+                                            ) : (
+                                                <motion.div 
+                                                    layout
+                                                    key="hint"
+                                                    initial={{ opacity: 0, scale: 0.8 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.8 }}
+                                                    className="hidden sm:flex h-6 w-6 items-center justify-center rounded-[6px] border border-slate-200 bg-white text-[11px] font-bold text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500"
+                                                >
+                                                    /
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={clearRecentlyViewed}
-                            style={{
-                                padding: '5px 10px',
-                                borderRadius: '6px',
-                                border: 'none',
-                                background: isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.08)',
-                                color: '#ef4444',
-                                fontSize: '11px',
-                                fontWeight: 500,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                            }}
-                        >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                            </svg>
-                            Clear
-                        </motion.button>
-                    </div>
 
-                    {/* Recently Viewed Users */}
-                    <div style={{
-                        display: 'flex',
-                        gap: '10px',
-                        overflowX: 'auto',
-                        paddingBottom: '4px',
-                        scrollbarWidth: 'thin',
-                    }}>
-                        <AnimatePresence mode="popLayout">
-                            {recentlyViewed.map((item, index) => {
-                                const user = users.find(u => u.id === item.id) || classmates.find(u => u.id === item.id);
-                                if (!user) return null;
-                                
-                                const roleInfo = getRoleInfo(user.role);
-                                const timeAgo = getTimeAgo(item.timestamp);
-                                
-                                return (
-                                    <motion.div
-                                        key={item.id}
-                                        layout
-                                        initial={{ opacity: 0, scale: 0.8, x: -20 }}
-                                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                                        exit={{ opacity: 0, scale: 0.8, x: 20, transition: { duration: 0.2 } }}
-                                        transition={{ delay: index * 0.03, duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                                        whileHover={{ scale: 1.02, y: -2 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => handleUserClick(user)}
-                                        style={{
-                                            flexShrink: 0,
-                                            width: '140px',
-                                            padding: '12px',
-                                            borderRadius: '10px',
-                                            border: `1px solid ${colors.border}`,
-                                            background: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
-                                            cursor: 'pointer',
-                                            textAlign: 'center',
-                                        }}
-                                    >
-                                    {/* Avatar */}
-                                    <div style={{
-                                        width: '44px',
-                                        height: '44px',
-                                        borderRadius: '12px',
-                                        background: `linear-gradient(135deg, ${roleInfo.color}20 0%, ${roleInfo.color}10 100%)`,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: '15px',
-                                        fontWeight: 600,
-                                        color: roleInfo.color,
-                                        margin: '0 auto 8px',
-                                        position: 'relative',
-                                    }}>
-                                        {user.profile_image ? (
-                                            <img 
-                                                src={user.profile_image} 
-                                                alt={user.full_name}
-                                                style={{ width: '100%', height: '100%', borderRadius: '12px', objectFit: 'cover' }}
-                                            />
-                                        ) : (
-                                            `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`
-                                        )}
-                                        {/* Online indicator */}
-                                        <div style={{
-                                            position: 'absolute',
-                                            bottom: -2,
-                                            right: -2,
-                                            width: '12px',
-                                            height: '12px',
-                                            borderRadius: '50%',
-                                            background: user.is_online ? '#10b981' : '#94a3b8',
-                                            border: '2px solid white',
-                                        }} />
-                                    </div>
-                                    
-                                    {/* Name */}
-                                    <p style={{
-                                        margin: '0 0 2px',
-                                        fontSize: '12px',
-                                        fontWeight: 500,
-                                        color: colors.textPrimary,
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                    }}>
-                                        {user.full_name.split(' ')[0]}
-                                    </p>
-                                    
-                                    {/* Time ago */}
-                                    <p style={{
-                                        margin: 0,
-                                        fontSize: '10px',
-                                        color: colors.textMuted,
-                                    }}>
-                                        {timeAgo}
-                                    </p>
-                                    </motion.div>
-                                );
-                            })}
-                        </AnimatePresence>
-                    </div>
-                </motion.div>
-            )}
-            </AnimatePresence>
-            </LayoutGroup>
+                        {/* Separator */}
+                        <hr className="border-t border-slate-200 dark:border-slate-600 w-full mb-5 relative z-10" />
 
-            {/* Search and Filter Bar */}
-            <motion.div
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ 
-                    delay: 0.3, 
-                    duration: 0.4,
-                    layout: { duration: 0.3, ease: [0.22, 1, 0.36, 1] }
-                }}
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '16px',
-                    marginBottom: '20px',
-                    flexWrap: 'wrap',
-                }}
-            >
-                {/* Search Input */}
-                <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.35, duration: 0.4 }}
-                    style={{
-                        position: 'relative',
-                        flex: '1',
-                        minWidth: '200px',
-                    }}
-                >
-                    <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke={isDarkMode ? '#64748b' : '#94a3b8'}
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        style={{
-                            position: 'absolute',
-                            left: '14px',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            pointerEvents: 'none',
-                        }}
-                    >
-                        <circle cx="11" cy="11" r="8" />
-                        <path d="m21 21-4.35-4.35" />
-                    </svg>
-                    <input
-                        ref={searchInputRef}
-                        type="search"
-                        role="combobox"
-                        aria-label="Search users"
-                        aria-expanded={showSuggestions && searchSuggestions.length > 0}
-                        aria-controls="search-suggestions"
-                        aria-autocomplete="list"
-                        aria-activedescendant={selectedSuggestionIndex >= 0 ? `suggestion-${selectedSuggestionIndex}` : undefined}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={handleSearchKeyDown}
-                        onFocus={() => {
-                            if (searchSuggestions.length > 0) setShowSuggestions(true);
-                        }}
-                        placeholder="Search users..."
-                        style={{
-                            width: '100%',
-                            padding: '11px 42px 11px 42px',
-                            borderRadius: '12px',
-                            border: `1px solid ${colors.border}`,
-                            background: colors.cardBg,
-                            color: colors.textPrimary,
-                            fontSize: '13px',
-                            outline: 'none',
-                            transition: reducedMotion ? 'none' : 'all 0.2s ease',
-                        }}
-                    />
-                    
-                    {/* Search Suggestions Dropdown */}
-                    <AnimatePresence>
-                        {showSuggestions && searchSuggestions.length > 0 && (
-                            <motion.div
-                                ref={suggestionsRef}
-                                id="search-suggestions"
-                                role="listbox"
-                                aria-label="Search suggestions"
-                                initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
-                                animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-                                exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.98 }}
-                                transition={reducedMotion ? { duration: 0.01 } : { duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                                style={{
-                                    position: 'absolute',
-                                    top: '100%',
-                                    left: 0,
-                                    right: 0,
-                                    marginTop: '6px',
-                                    background: colors.cardBg,
-                                    border: `1px solid ${colors.border}`,
-                                    borderRadius: '12px',
-                                    boxShadow: isDarkMode 
-                                        ? '0 8px 24px rgba(0,0,0,0.4)' 
-                                        : '0 8px 24px rgba(0,0,0,0.1)',
-                                    zIndex: 50,
-                                    overflow: 'hidden',
-                                }}
-                            >
-                                {/* Suggestions Header */}
-                                <div style={{
-                                    padding: '8px 12px',
-                                    borderBottom: `1px solid ${colors.border}`,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                }}>
-                                    <span style={{
-                                        fontSize: '10px',
-                                        fontWeight: 600,
-                                        color: colors.textMuted,
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.5px',
-                                    }}>
-                                        Suggestions
-                                    </span>
-                                    <span style={{
-                                        fontSize: '10px',
-                                        color: colors.textMuted,
-                                    }}>
-                                        ↑↓ Navigate · Enter Select
-                                    </span>
-                                </div>
-                                
-                                {/* Suggestion Items */}
-                                {searchSuggestions.map((user, index) => {
-                                    const roleInfo = getRoleInfo(user.role);
-                                    const isSelected = index === selectedSuggestionIndex;
-                                    
-                                    return (
-                                        <motion.div
-                                            key={user.id}
-                                            id={`suggestion-${index}`}
-                                            role="option"
-                                            aria-selected={isSelected}
-                                            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -10 }}
-                                            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, x: 0 }}
-                                            transition={reducedMotion ? { duration: 0.01 } : { delay: index * 0.03, duration: 0.15 }}
-                                            onClick={() => handleSuggestionClick(user)}
-                                            onMouseEnter={() => setSelectedSuggestionIndex(index)}
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '12px',
-                                                padding: '10px 12px',
-                                                cursor: 'pointer',
-                                                background: isSelected 
-                                                    ? isDarkMode ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)'
-                                                    : 'transparent',
-                                                borderLeft: isSelected ? '3px solid #3b82f6' : '3px solid transparent',
-                                                transition: reducedMotion ? 'none' : 'all 0.1s ease',
-                                            }}
-                                        >
-                                            {/* Avatar */}
-                                            <div style={{
-                                                width: '36px',
-                                                height: '36px',
-                                                borderRadius: '10px',
-                                                background: `linear-gradient(135deg, ${roleInfo.color}20 0%, ${roleInfo.color}10 100%)`,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                fontSize: '12px',
-                                                fontWeight: 600,
-                                                color: roleInfo.color,
-                                                flexShrink: 0,
-                                                position: 'relative',
-                                            }}>
-                                                {user.profile_image ? (
-                                                    <img 
-                                                        src={user.profile_image} 
-                                                        alt={user.full_name}
-                                                        style={{ width: '100%', height: '100%', borderRadius: '10px', objectFit: 'cover' }}
-                                                    />
-                                                ) : (
-                                                    `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`
-                                                )}
-                                                {/* Online indicator */}
-                                                <div style={{
-                                                    position: 'absolute',
-                                                    bottom: -1,
-                                                    right: -1,
-                                                    width: '10px',
-                                                    height: '10px',
-                                                    borderRadius: '50%',
-                                                    background: user.is_online ? '#10b981' : '#94a3b8',
-                                                    border: '2px solid white',
-                                                }} />
-                                            </div>
-                                            
-                                            {/* User Info */}
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                    <span style={{
-                                                        fontSize: '13px',
-                                                        fontWeight: 500,
-                                                        color: colors.textPrimary,
-                                                        overflow: 'hidden',
-                                                        textOverflow: 'ellipsis',
-                                                        whiteSpace: 'nowrap',
-                                                    }}>
-                                                        {user.full_name}
-                                                    </span>
-                                                    <span style={{
-                                                        fontSize: '9px',
-                                                        padding: '2px 6px',
-                                                        borderRadius: '4px',
-                                                        background: roleInfo.bgColor,
-                                                        color: roleInfo.color,
-                                                        fontWeight: 600,
-                                                        flexShrink: 0,
-                                                    }}>
-                                                        {roleInfo.label}
-                                                    </span>
-                                                </div>
-                                                <span style={{
-                                                    fontSize: '11px',
-                                                    color: colors.textMuted,
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    whiteSpace: 'nowrap',
-                                                    display: 'block',
-                                                }}>
-                                                    {user.email}
-                                                </span>
-                                            </div>
-                                            
-                                            {/* Arrow */}
-                                            <svg 
-                                                width="14" 
-                                                height="14" 
-                                                viewBox="0 0 24 24" 
-                                                fill="none" 
-                                                stroke={isSelected ? '#3b82f6' : colors.textMuted}
-                                                strokeWidth="2" 
-                                                strokeLinecap="round" 
-                                                strokeLinejoin="round"
-                                                style={{ flexShrink: 0, opacity: isSelected ? 1 : 0.5 }}
-                                            >
-                                                <polyline points="9 18 15 12 9 6" />
-                                            </svg>
-                                        </motion.div>
-                                    );
-                                })}
-                                
-                                {/* View All Results */}
-                                <div style={{
-                                    padding: '8px 12px',
-                                    borderTop: `1px solid ${colors.border}`,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '6px',
-                                }}>
-                                    <span style={{
-                                        fontSize: '11px',
-                                        color: '#3b82f6',
-                                        fontWeight: 500,
-                                    }}>
-                                        Press Enter to view all results
-                                    </span>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                    {/* Loading Spinner */}
-                    <AnimatePresence>
-                        {isSearching && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.8 }}
-                                transition={{ duration: 0.15 }}
-                                style={{
-                                    position: 'absolute',
-                                    right: '14px',
-                                    top: 0,
-                                    bottom: 0,
-                                    pointerEvents: 'none',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <motion.svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="#3b82f6"
-                                    strokeWidth="2.5"
-                                    strokeLinecap="round"
-                                    animate={{ rotate: 360 }}
-                                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                    style={{ display: 'block' }}
+                        {/* Classmates Grid */}
+                        <div className="relative z-10 w-full mb-2 overflow-hidden pb-2 -mb-2 px-1 -mx-1">
+                            <AnimatePresence mode="popLayout" custom={classmatesPageDirection}>
+                                <motion.div
+                                    key={isClassmateSearching ? 'searching' : (paginatedClassmates.length === 0 ? 'empty' : currentClassmatesPage)}
+                                    custom={classmatesPageDirection}
+                                    variants={{
+                                        enter: (dir: number) => ({ x: dir > 0 ? '100%' : dir < 0 ? '-100%' : 0, opacity: 0 }),
+                                        center: { x: 0, opacity: 1 },
+                                        exit: (dir: number) => ({ x: dir < 0 ? '100%' : dir > 0 ? '-100%' : 0, opacity: 0 })
+                                    }}
+                                    initial="enter"
+                                    animate="center"
+                                    exit="exit"
+                                    transition={{ damping: 18, stiffness: 90, type: 'spring', duration: 0.2 }}
+                                    className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 w-full"
                                 >
-                                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                                </motion.svg>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </motion.div>
-
-                {/* Sort Dropdown */}
-                <motion.div
-                    ref={sortDropdownRef}
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.35, duration: 0.4 }}
-                    style={{ position: 'relative' }}
-                >
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            padding: '10px 14px',
-                            borderRadius: '10px',
-                            border: `1px solid ${colors.border}`,
-                            background: colors.cardBg,
-                            color: colors.textSecondary,
-                            fontSize: '12px',
-                            fontWeight: 500,
-                            cursor: 'pointer',
-                            transition: 'all 0.2s ease',
-                        }}
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M11 5h10" />
-                            <path d="M11 9h7" />
-                            <path d="M11 13h4" />
-                            <path d="m3 17 3 3 3-3" />
-                            <path d="M6 18V4" />
-                        </svg>
-                        {sortOption === 'name' ? 'Name' : sortOption === 'role' ? 'Role' : 'Recent'}
-                        <motion.svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            animate={{ rotate: isSortDropdownOpen ? 180 : 0 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            <polyline points="6 9 12 15 18 9" />
-                        </motion.svg>
-                    </motion.button>
-
-                    {/* Sort Dropdown Menu */}
-                    <AnimatePresence>
-                        {isSortDropdownOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                                transition={{ duration: 0.15 }}
-                                style={{
-                                    position: 'absolute',
-                                    top: 'calc(100% + 6px)',
-                                    right: 0,
-                                    minWidth: '160px',
-                                    background: colors.cardBg,
-                                    borderRadius: '12px',
-                                    border: `1px solid ${colors.border}`,
-                                    boxShadow: isDarkMode
-                                        ? '0 8px 24px rgba(0, 0, 0, 0.4)'
-                                        : '0 8px 24px rgba(0, 0, 0, 0.1)',
-                                    padding: '6px',
-                                    zIndex: 100,
-                                }}
-                            >
-                                {[
-                                    { id: 'name' as UserSortOption, label: 'Sort by Name', icon: (
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M3 6h18" />
-                                            <path d="M7 12h10" />
-                                            <path d="M10 18h4" />
-                                        </svg>
-                                    )},
-                                    { id: 'role' as UserSortOption, label: 'Sort by Role', icon: (
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                            <circle cx="9" cy="7" r="4" />
-                                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                        </svg>
-                                    )},
-                                    { id: 'recent' as UserSortOption, label: 'Recently Active', icon: (
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <circle cx="12" cy="12" r="10" />
-                                            <polyline points="12 6 12 12 16 14" />
-                                        </svg>
-                                    )},
-                                ].map((option) => (
-                                    <motion.button
-                                        key={option.id}
-                                        whileHover={{ background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => {
-                                            setSortOption(option.id);
-                                            setIsSortDropdownOpen(false);
-                                        }}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '10px',
-                                            width: '100%',
-                                            padding: '10px 12px',
-                                            borderRadius: '8px',
-                                            border: 'none',
-                                            background: sortOption === option.id
-                                                ? isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
-                                                : 'transparent',
-                                            color: sortOption === option.id ? '#3b82f6' : colors.textSecondary,
-                                            fontSize: '12px',
-                                            fontWeight: 500,
-                                            cursor: 'pointer',
-                                            textAlign: 'left',
-                                        }}
+                                {isClassmateSearching ? (
+                                    Array.from({ length: classmatesPerPage }).map((_, i) => (
+                                        <div 
+                                            key={`skeleton-${i}`} 
+                                            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-[0_1px_2px_rgba(0,0,0,0.02)] rounded-[16px] p-3.5 flex items-center gap-3.5 overflow-hidden"
+                                        >
+                                            {/* Avatar Skeleton */}
+                                            <div className="relative flex-shrink-0">
+                                                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-[3px] border-slate-100 dark:border-slate-700 flex items-center justify-center bg-slate-50/50 dark:bg-slate-800/50">
+                                                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-slate-200 dark:bg-slate-600 animate-pulse" />
+                                                </div>
+                                                <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 min-w-[32px] sm:min-w-[36px] h-[16px] sm:h-[18px] bg-slate-200 dark:bg-slate-600 rounded-md border-[2px] border-white dark:border-slate-800 animate-pulse" />
+                                            </div>
+                                            {/* Text Skeleton */}
+                                            <div className="flex flex-col min-w-0 justify-center gap-2 flex-1 mt-0.5">
+                                                <div className="h-[14px] bg-slate-200 dark:bg-slate-600 rounded-[4px] animate-pulse w-[75%]" />
+                                                <div className="h-[10px] bg-slate-100 dark:bg-slate-700 rounded-[3px] animate-pulse w-[40%]" />
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : paginatedClassmates.length > 0 ? (
+                                    paginatedClassmates.map((classmate, index) => (
+                                    <div
+                                        key={classmate.id}
+                                        onClick={() => handleUserClick(classmate)}
+                                        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-[0_1px_2px_rgba(0,0,0,0.02)] rounded-[16px] p-3.5 flex items-center gap-3.5 group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer overflow-hidden"
                                     >
-                                        {option.icon}
-                                        {option.label}
-                                        {sortOption === option.id && (
-                                            <motion.svg
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                width="14"
-                                                height="14"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="#3b82f6"
-                                                strokeWidth="2.5"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                style={{ marginLeft: 'auto' }}
-                                            >
-                                                <polyline points="20 6 9 17 4 12" />
-                                            </motion.svg>
-                                        )}
-                                    </motion.button>
-                                ))}
-                            </motion.div>
+                                        {(() => {
+                                        const isMe = classmate.email === myProfile.email || classmate.full_name.includes(myProfile.firstName);
+                                        const userLevel = isMe ? myLevel : 1;
+                                        const userProgress = isMe ? myProgress : 0;
+                                        
+                                        return (
+                                            <div className="relative flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+                                                <AnimatedCircularProgressBar
+                                                    max={100}
+                                                    min={0}
+                                                    value={userProgress}
+                                                    gaugePrimaryColor="#3b82f6"
+                                                    gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
+                                                    className="w-14 h-14 sm:w-16 sm:h-16"
+                                                >
+                                                    <div className="absolute inset-1.5 sm:inset-2 rounded-full flex items-center justify-center shadow-sm overflow-hidden z-10 bg-blue-50 dark:bg-blue-900/30">
+                                                        {classmate.profile_image ? (
+                                                            <img src={classmate.profile_image} alt={classmate.full_name} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <span className="text-[14px] sm:text-[16px] font-extrabold leading-none text-blue-600 dark:text-blue-400">
+                                                                {classmate.first_name?.[0] || ''}{classmate.last_name?.[0] || ''}
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 min-w-[32px] sm:min-w-[36px] h-[16px] sm:h-[18px] px-1.5 rounded-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold tracking-wider shadow-sm border-[2px] z-20 transition-colors duration-300 text-white bg-blue-500 ${isDarkMode ? (classmate.is_online ? 'border-emerald-400' : 'border-slate-800') : (classmate.is_online ? 'border-emerald-500' : 'border-white')}`}>
+                                                        LV.{userLevel}
+                                                    </div>
+                                                </AnimatedCircularProgressBar>
+                                            </div>
+                                        );
+                                    })()}
+                                        <div className="flex flex-col min-w-0 justify-center">
+                                            <h2 className="text-[14px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+                                                {classmate.full_name}
+                                            </h2>
+                                            <p className={`text-[11px] font-semibold leading-none truncate ${classmate.is_online ? 'text-emerald-500 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                                                {classmate.is_online ? 'Online' : 'Offline'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    ))
+                                ) : (
+                                    <div
+                                        key="empty-state"
+                                        className="col-span-full"
+                                    >
+                                        <EmptyState
+                                            icon={
+                                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
+                                                </svg>
+                                            }
+                                            title={classmateSearchQuery ? `No classmates match "${classmateSearchQuery}"` : "No classmates found"}
+                                            description={classmateSearchQuery ? 'Try a different search term' : 'There are no classmates matching your current filters.'}
+                                            action={classmateSearchQuery ? {
+                                                label: 'Clear search',
+                                                onClick: () => {
+                                                    setClassmateSearchQuery('');
+                                                }
+                                            } : undefined}
+                                        />
+                                    </div>
+                                )}
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Pagination Controls */}
+                        {totalClassmatesPages > 1 && (
+                            <div className="w-full pt-2.5 mt-auto">
+                                <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-slate-900/50 p-1.5 rounded-[14px] border border-slate-200/60 dark:border-slate-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            setClassmatesPageDirection(-1);
+                                            setCurrentClassmatesPage(prev => Math.max(0, prev - 1));
+                                        }} 
+                                        disabled={currentClassmatesPage === 0}
+                                        className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border ${
+                                            currentClassmatesPage === 0
+                                                ? 'bg-slate-50/50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-700/40 text-slate-300 dark:text-slate-600 cursor-not-allowed'
+                                                : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                        }`}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                    </button>
+                                    <span className="text-[13px] font-bold text-slate-700 dark:text-slate-300 text-center tracking-wide flex-1">
+                                        Page {currentClassmatesPage + 1} <span className="text-slate-400 dark:text-slate-500 font-medium mx-0.5">/</span> {totalClassmatesPages}
+                                    </span>
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            setClassmatesPageDirection(1);
+                                            setCurrentClassmatesPage(prev => Math.min(totalClassmatesPages - 1, prev + 1));
+                                        }} 
+                                        disabled={currentClassmatesPage === totalClassmatesPages - 1}
+                                        className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border ${
+                                            currentClassmatesPage === totalClassmatesPages - 1
+                                                ? 'bg-slate-50/50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-700/40 text-slate-300 dark:text-slate-600 cursor-not-allowed'
+                                                : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                        }`}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                    </button>
+                                </div>
+                            </div>
                         )}
-                    </AnimatePresence>
+                    </div>
+
+                    {/* Vertical/Horizontal Separator */}
+                    <div className="hidden xl:block w-px bg-slate-200 dark:bg-slate-700 my-2 mx-2 shrink-0" />
+                    <hr className="xl:hidden border-t border-slate-200 dark:border-slate-700 w-full my-6 shrink-0" />
+
+                    {/* Teacher Spotlight Section (Right) */}
+                    <div className="w-full xl:w-[340px] shrink-0 pl-0 xl:pl-4 flex flex-col">
+                        <TeacherSpotlight 
+                            onTeacherClick={handleUserClick}
+                        />
+                    </div>
                 </motion.div>
+            </div>
 
-                {/* View Toggle */}
-                <motion.div
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.35, duration: 0.4 }}
-                    style={{
-                        display: 'flex',
-                        gap: '2px',
-                        padding: '3px',
-                        borderRadius: '10px',
-                        background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                    }}
-                >
-                    <motion.button
-                        aria-label="Grid view"
-                        aria-pressed={viewMode === 'grid'}
-                        whileHover={reducedMotion ? {} : { scale: 1.05 }}
-                        whileTap={reducedMotion ? {} : { scale: 0.95 }}
-                        onClick={() => setViewMode('grid')}
-                        style={{
-                            width: '34px',
-                            height: '34px',
-                            borderRadius: '8px',
-                            border: 'none',
-                            background: viewMode === 'grid'
-                                ? isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
-                                : 'transparent',
-                            color: viewMode === 'grid' ? '#3b82f6' : colors.textMuted,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: reducedMotion ? 'none' : 'all 0.2s ease',
-                        }}
-                        title="Grid View"
-                    >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <rect x="3" y="3" width="7" height="7" />
-                            <rect x="14" y="3" width="7" height="7" />
-                            <rect x="14" y="14" width="7" height="7" />
-                            <rect x="3" y="14" width="7" height="7" />
-                        </svg>
-                    </motion.button>
-                    <motion.button
-                        aria-label="List view"
-                        aria-pressed={viewMode === 'list'}
-                        whileHover={reducedMotion ? {} : { scale: 1.05 }}
-                        whileTap={reducedMotion ? {} : { scale: 0.95 }}
-                        onClick={() => setViewMode('list')}
-                        style={{
-                            width: '34px',
-                            height: '34px',
-                            borderRadius: '8px',
-                            border: 'none',
-                            background: viewMode === 'list'
-                                ? isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'
-                                : 'transparent',
-                            color: viewMode === 'list' ? '#3b82f6' : colors.textMuted,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: reducedMotion ? 'none' : 'all 0.2s ease',
-                        }}
-                        title="List View"
-                    >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <line x1="8" y1="6" x2="21" y2="6" />
-                            <line x1="8" y1="12" x2="21" y2="12" />
-                            <line x1="8" y1="18" x2="21" y2="18" />
-                            <line x1="3" y1="6" x2="3.01" y2="6" />
-                            <line x1="3" y1="12" x2="3.01" y2="12" />
-                            <line x1="3" y1="18" x2="3.01" y2="18" />
-                        </svg>
-                    </motion.button>
-                </motion.div>
 
-                {/* Filter Tabs */}
-                <FilterTabs
-                    activeFilter={activeFilter}
-                    setActiveFilter={setActiveFilter}
-                    stats={stats}
-                />
-            </motion.div>
-
-            {/* Users Grid */}
-            <section aria-label="Users list" aria-busy={isLoading || isSearching}>
-            <AnimatePresence mode="wait">
-                {(isLoading || isSearching) ? (
-                    <motion.div
-                        key="loading"
-                        aria-label="Loading users"
-                        initial={reducedMotion ? { opacity: 0 } : { opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                            gap: '14px',
-                        }}
-                    >
-                        {[...Array(8)].map((_, i) => (
-                            <UserCardSkeleton key={i} index={i} />
-                        ))}
-                    </motion.div>
-                ) : users.length === 0 ? (
-                    <EmptyState searchQuery={searchQuery} />
-                ) : viewMode === 'grid' ? (
-                    <motion.div
-                        key="users-grid"
-                        role="list"
-                        aria-label={`Showing ${displayedUsers.length} of ${users.length} users in grid view`}
-                        initial={reducedMotion ? { opacity: 0 } : { opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                            gap: '12px',
-                        }}
-                    >
-                        <AnimatePresence>
-                            {displayedUsers.map((user, index) => (
-                                <UserCard
-                                    key={user.id}
-                                    user={user}
-                                    index={index}
-                                    onClick={handleUserClick}
-                                    favorites={favorites}
-                                    onToggleFavorite={handleToggleFavorite}
-                                    reducedMotion={reducedMotion}
-                                    isMobile={isMobile}
-                                />
-                            ))}
-                        </AnimatePresence>
-                    </motion.div>
-                ) : (
-                    <motion.div
-                        key="users-list"
-                        initial={reducedMotion ? { opacity: 0 } : { opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '8px',
-                        }}
-                    >
-                        {/* List Header - Hide on mobile for cleaner look */}
-                        {!isMobile && (
-                            <motion.div
-                                initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
-                                animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '16px',
-                                    padding: '10px 18px 10px 76px',
-                                    fontSize: '11px',
-                                    fontWeight: 600,
-                                    color: colors.textMuted,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.5px',
-                                }}
-                            >
-                                <span style={{ flex: 2 }}>User</span>
-                                <span style={{ flex: 1, textAlign: 'center' }}>Role</span>
-                                <span style={{ flex: 1, textAlign: 'center' }}>Section</span>
-                                <span style={{ width: '80px', textAlign: 'right' }}>Status</span>
-                                <span style={{ width: '16px' }} aria-hidden="true" />
-                            </motion.div>
-                        )}
-                        <AnimatePresence>
-                            {displayedUsers.map((user, index) => (
-                                <UserListItem
-                                    key={user.id}
-                                    user={user}
-                                    index={index}
-                                    onClick={handleUserClick}
-                                    favorites={favorites}
-                                    onToggleFavorite={handleToggleFavorite}
-                                    reducedMotion={reducedMotion}
-                                    isMobile={isMobile}
-                                />
-                            ))}
-                        </AnimatePresence>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-            
-            {/* Load More / Infinite Scroll Trigger */}
-            {!isLoading && !isSearching && hasMoreUsers && (
-                <div 
-                    ref={loadMoreRef}
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        padding: '24px',
-                        gap: '12px',
-                    }}
-                >
-                    {isLoadingMore ? (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                color: colors.textMuted,
-                                fontSize: '13px',
-                            }}
-                        >
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                style={{
-                                    width: '16px',
-                                    height: '16px',
-                                    border: '2px solid',
-                                    borderColor: `${colors.accent} transparent transparent transparent`,
-                                    borderRadius: '50%',
-                                }}
-                            />
-                            Loading more...
-                        </motion.div>
-                    ) : (
-                        <motion.button
-                            whileHover={reducedMotion ? {} : { scale: 1.02 }}
-                            whileTap={reducedMotion ? {} : { scale: 0.98 }}
-                            onClick={() => setDisplayedCount(prev => Math.min(prev + USERS_PER_PAGE, users.length))}
-                            style={{
-                                padding: '10px 24px',
-                                borderRadius: '10px',
-                                border: `1px solid ${colors.border}`,
-                                background: colors.cardBg,
-                                color: colors.textSecondary,
-                                fontSize: '13px',
-                                fontWeight: 500,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                            }}
-                        >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="6 9 12 15 18 9" />
-                            </svg>
-                            Load more ({users.length - displayedCount} remaining)
-                        </motion.button>
-                    )}
-                </div>
-            )}
-            
-            {/* Showing count indicator */}
-            {!isLoading && !isSearching && users.length > 0 && (
-                <div style={{
-                    textAlign: 'center',
-                    padding: '16px',
-                    fontSize: '12px',
-                    color: colors.textMuted,
-                }}>
-                    Showing {displayedUsers.length} of {users.length} users
-                </div>
-            )}
-            </section>
 
             {/* User Detail Modal */}
             <UserDetailModal

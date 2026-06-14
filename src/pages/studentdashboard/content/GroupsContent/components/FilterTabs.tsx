@@ -1,10 +1,9 @@
-﻿/**
+/**
  * FilterTabs
  * Filter tabs for GroupsContent (All / My Groups / Public).
  * Extracted from GroupsContent.tsx during Phase 8.2
  */
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'motion/react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { GroupFilter, GroupStats } from '../../../../../services/groupsService';
 
 // Filter Tabs Component
@@ -12,10 +11,10 @@ const FilterTabs: React.FC<{
     activeFilter: GroupFilter;
     setActiveFilter: (filter: GroupFilter) => void;
     stats: GroupStats;
-    
 }> = ({ activeFilter, setActiveFilter, stats }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [indicatorStyle, setIndicatorStyle] = useState({ left: 5, width: 60 });
+    const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+    const [indicator, setIndicator] = useState({ x: 0, width: 0, ready: false });
     
     const tabs: { id: GroupFilter; label: string; count: number; icon: React.ReactNode }[] = [
         { id: 'all', label: 'All', count: stats.totalGroups, icon: (
@@ -37,80 +36,87 @@ const FilterTabs: React.FC<{
         )},
     ];
 
-    useEffect(() => {
-        if (!containerRef.current) return;
-        const activeIndex = tabs.findIndex(t => t.id === activeFilter);
-        const buttons = containerRef.current.querySelectorAll<HTMLButtonElement>('button[data-filter-tab]');
-        if (buttons[activeIndex]) {
-            const containerRect = containerRef.current.getBoundingClientRect();
-            const buttonRect = buttons[activeIndex].getBoundingClientRect();
-            setIndicatorStyle({ left: buttonRect.left - containerRect.left, width: buttonRect.width });
-        }
+    const measure = useCallback(() => {
+        const container = containerRef.current;
+        const btn = buttonRefs.current.get(activeFilter);
+        if (!container || !btn) return;
+
+        setIndicator({
+            x: btn.offsetLeft,
+            width: btn.offsetWidth,
+            ready: true,
+        });
     }, [activeFilter]);
 
+    // Measure on filter change
     useEffect(() => {
-        const timer = setTimeout(() => {
-            if (!containerRef.current) return;
-            const activeIndex = tabs.findIndex(t => t.id === activeFilter);
-            const buttons = containerRef.current.querySelectorAll<HTMLButtonElement>('button[data-filter-tab]');
-            if (buttons[activeIndex]) {
-                const containerRect = containerRef.current.getBoundingClientRect();
-                const buttonRect = buttons[activeIndex].getBoundingClientRect();
-                setIndicatorStyle({ left: buttonRect.left - containerRect.left, width: buttonRect.width });
-            }
-        }, 50);
-        return () => clearTimeout(timer);
-    }, []);
+        const id = requestAnimationFrame(measure);
+        return () => cancelAnimationFrame(id);
+    }, [measure]);
+
+    // Re-measure on resize
+    useEffect(() => {
+        let timeout: ReturnType<typeof setTimeout>;
+        const onResize = () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(measure, 100);
+        };
+        window.addEventListener('resize', onResize, { passive: true });
+        return () => {
+            window.removeEventListener('resize', onResize);
+            clearTimeout(timeout);
+        };
+    }, [measure]);
 
     return (
-        <motion.div 
-            ref={containerRef}
-            layout
-            initial={{ opacity: 0, x: 10 }} 
-            animate={{ opacity: 1, x: 0 }} 
-            transition={{ 
-                layout: { type: 'spring', stiffness: 400, damping: 30 },
-                delay: 0.35, 
-                duration: 0.4 
-            }}
-            style={{
-                display: 'flex', gap: '4px', padding: '4px', borderRadius: '12px',
-                background: 'var(--bg-hover)', position: 'relative' }}
+        <div
+            className="rounded-xl shadow-sm border bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700 w-full sm:w-auto overflow-x-auto"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
         >
-            <motion.div
-                layout
+            <div ref={containerRef} className="flex gap-1 p-1 relative min-w-max">
+            {/* Sliding indicator */}
+            <div
+                className="absolute top-1 bottom-1 left-0 rounded-lg bg-white border border-slate-200 shadow-sm dark:bg-slate-700 dark:border-slate-600 pointer-events-none"
                 style={{
-                    position: 'absolute', top: '4px', bottom: '4px', borderRadius: '8px',
-                    background: 'rgba(59, 130, 246, 0.1)',
-                    border: `1px solid ${'rgba(59, 130, 246, 0.1)'}`, zIndex: 0 }}
-                initial={false}
-                animate={{ left: indicatorStyle.left, width: indicatorStyle.width }}
-                transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                    width: indicator.width,
+                    transform: `translateX(${indicator.x}px)`,
+                    transition: indicator.ready
+                        ? 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), width 0.35s cubic-bezier(0.22, 1, 0.36, 1)'
+                        : 'none',
+                    willChange: 'transform, width',
+                    zIndex: 0,
+                }}
             />
-            {tabs.map((tab) => (
-                <motion.button
-                    layout
-                    key={tab.id} 
-                    data-filter-tab={tab.id} 
-                    onClick={() => setActiveFilter(tab.id)}
-                    whileHover={{ scale: 1.02 }} 
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ layout: { type: 'spring', stiffness: 400, damping: 30 } }}
-                    style={{
-                        display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 12px', borderRadius: '8px',
-                        border: 'none', background: 'transparent', color: activeFilter === tab.id ? 'var(--accent-color)' : 'var(--text-secondary)',
-                        fontSize: '12px', fontWeight: 500, cursor: 'pointer', position: 'relative', zIndex: 1, transition: 'color 0.2s ease' }}
-                >
-                    {tab.icon}
-                    {tab.label}
-                    <span style={{
-                        fontSize: '10px', padding: '2px 6px', borderRadius: '10px',
-                        background: activeFilter === tab.id ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-hover)' }}>
-                        {tab.count}
-                    </span>
-                </motion.button>
-            ))}
-        </motion.div>
+
+            {tabs.map((tab) => {
+                const isActive = activeFilter === tab.id;
+                return (
+                    <button
+                        key={tab.id}
+                        ref={(el) => {
+                            if (el) buttonRefs.current.set(tab.id, el);
+                        }}
+                        data-filter-tab={tab.id}
+                        onClick={() => setActiveFilter(tab.id)}
+                        className={`relative z-10 flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-[13px] font-bold whitespace-nowrap sm:flex-shrink-0 select-none ${isActive
+                            ? 'text-blue-600 dark:text-slate-100'
+                            : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                        }`}
+                        style={{
+                            transition: 'color 0.2s ease',
+                            WebkitTapHighlightColor: 'transparent',
+                        }}
+                    >
+                        {tab.icon}
+                        {tab.label}
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isActive ? 'bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400' : 'bg-slate-200/50 text-slate-500 dark:bg-slate-700/50 dark:text-slate-400'}`}>
+                            {tab.count}
+                        </span>
+                    </button>
+                );
+            })}
+            </div>
+        </div>
     );
 };
 

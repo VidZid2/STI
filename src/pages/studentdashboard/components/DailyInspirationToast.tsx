@@ -3,8 +3,9 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { getStreakData } from '../../../services/studyTimeService';
 import { TextAnimate } from '../../../components/ui/text-animate';
+import { NotificationIcon } from './NotificationIcon';
 
-export type GlobalToastType = 'quote' | 'streak' | 'goal_completed';
+export type GlobalToastType = 'quote' | 'streak' | 'goal_completed' | 'assignment' | 'grade' | 'warning' | 'announcement' | string;
 
 export const triggerGlobalToast = (type: GlobalToastType, data?: any) => {
     window.dispatchEvent(new CustomEvent('global-toast', { detail: { type, data, id: Math.random().toString(36).substring(2, 9) } }));
@@ -12,28 +13,35 @@ export const triggerGlobalToast = (type: GlobalToastType, data?: any) => {
 
 interface DailyInspirationToastProps {
     quote: { text: string; author: string } | null;
+    externalToasts?: any[];
+    onExternalToastClose?: (id: any) => void;
 }
 
-export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ quote }) => {
+export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ quote, externalToasts = [], onExternalToastClose }) => {
     const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1024 : true);
     
-    // Manage multiple toasts
-    const [toasts, setToasts] = useState<Array<{ id: string, type: GlobalToastType, data?: any }>>([]);
+    // Manage multiple internal toasts
+    const [internalToasts, setInternalToasts] = useState<Array<{ id: string, type: GlobalToastType, data?: any, title?: string, message?: string }>>([]);
     const exitDirsRef = useRef<Record<string, string>>({});
 
     const dismissToast = (id: string, direction: string) => {
         exitDirsRef.current[id] = direction;
-        setToasts(prev => prev.filter(t => t.id !== id));
+        
+        setInternalToasts(prev => prev.filter(t => t.id !== id));
+        
+        if (onExternalToastClose) {
+            onExternalToastClose(id);
+        }
     };
 
     useEffect(() => {
         const handleGlobalToast = (e: Event) => {
             const detail = (e as CustomEvent).detail;
-            setToasts(prev => [detail, ...prev]);
-            // Auto dismiss custom toasts after 5 seconds
+            setInternalToasts(prev => [detail, ...prev]);
+            
             setTimeout(() => {
-                dismissToast(detail.id, 'default');
-            }, 5000);
+                dismissToast(detail.id, 'down');
+            }, 4000);
         };
         window.addEventListener('global-toast', handleGlobalToast);
         return () => window.removeEventListener('global-toast', handleGlobalToast);
@@ -47,41 +55,51 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
 
     useEffect(() => {
         // Build the initial stack
-        const initialToasts: Array<{ id: string, type: 'quote' | 'streak' }> = [];
+        const initialToasts: Array<{ id: string, type: GlobalToastType, data?: any }> = [];
         
-        // Add streak (goes in back)
+        // 1. Goal Completed
+        initialToasts.push({ 
+            id: 'goal_init', 
+            type: 'goal_completed', 
+            data: { title: 'Complete 5 Quizzes' } 
+        });
+
+        // 2. Add streak
         const streakData = getStreakData();
         if (streakData && streakData.currentStreak > 0) {
-            initialToasts.push({ id: 'streak', type: 'streak' });
+            initialToasts.push({ id: 'streak_init', type: 'streak' });
+        } else {
+            initialToasts.push({ id: 'streak_init', type: 'streak' }); // Fallback to always show for testing
         }
         
-        // Add quote (goes in front) only once a day
+        // 3. Add quote
         if (quote) {
-            const todayStr = new Date().toDateString();
-            const lastSeenQuote = localStorage.getItem('lastSeenDailyQuote');
-            if (lastSeenQuote !== todayStr) {
-                initialToasts.push({ id: 'quote', type: 'quote' });
-                localStorage.setItem('lastSeenDailyQuote', todayStr);
-            }
+            initialToasts.push({ id: 'quote_init', type: 'quote' });
         }
         
-        if (initialToasts.length > 0) {
-            const timer = setTimeout(() => {
-                setToasts(initialToasts);
-                
-                // Auto dismiss the front toast (quote) after 10 seconds
+        const timer = setTimeout(() => {
+            setInternalToasts(initialToasts);
+            
+            initialToasts.forEach((toast, index) => {
                 setTimeout(() => {
-                    dismissToast('quote', 'default');
-                    // Then auto dismiss streak 5s later
-                    setTimeout(() => dismissToast('streak', 'default'), 5000);
-                }, 10000);
-            }, 1500);
+                    dismissToast(toast.id, 'down');
+                }, 4000 + (index * 1500));
+            });
+        }, 1500);
 
-            return () => clearTimeout(timer);
-        }
+        return () => clearTimeout(timer);
     }, [quote]);
 
+    // Combine external and internal toasts
+    const combinedExternalToasts = externalToasts.map(t => ({
+        id: t.id.toString(),
+        type: t.type || 'assignment',
+        title: t.title,
+        message: t.message,
+        data: t
+    }));
 
+    const toasts = [...combinedExternalToasts, ...internalToasts];
 
     // Prevent blocking clicks when empty, but keep AnimatePresence mounted so the last exit animation runs!
     const containerPointerEvents = toasts.length === 0 ? 'pointer-events-none' : '';
@@ -121,32 +139,37 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
                 opacity: 1, 
                 y: yOffset, 
                 scale: scale,
-                transition: { type: 'tween', ease: [0.16, 1, 0.3, 1], duration: 0.8 }
+                transition: { type: 'tween', ease: [0.22, 1, 0.36, 1], duration: 1.2 }
             };
         },
         exit: ({ isMobile, id }: { isMobile: boolean, id: string }) => {
-            const direction = exitDirsRef.current[id] || 'left';
-            if (!isMobile) {
-                return { 
-                    opacity: 1, 
-                    y: "150%", 
-                    transition: { type: 'tween', ease: [0.16, 1, 0.3, 1], duration: 0.8 } 
-                };
+            const direction = exitDirsRef.current[id] || 'down';
+            // Buttery smooth ease-out-quint with a long 1.6s duration
+            const transition = { type: 'tween', ease: [0.22, 1, 0.36, 1], duration: 1.6 };
+            
+            if (isMobile) {
+                switch (direction) {
+                    case 'left': return { x: -500, opacity: 0, scale: 0.9, transition };
+                    case 'right': return { x: 500, opacity: 0, scale: 0.9, transition };
+                    case 'up': return { y: -200, opacity: 0, scale: 0.9, transition };
+                    case 'down': return { y: 200, opacity: 0, scale: 0.9, transition };
+                    default: return { y: 200, opacity: 0, scale: 0.9, transition };
+                }
             }
-            const transition = { type: 'tween', ease: [0.16, 1, 0.3, 1], duration: 0.8 };
-            switch (direction) {
-                case 'left': return { x: '-100vw', transition };
-                case 'right': return { x: '100vw', transition };
-                case 'up': return { y: '-100vh', transition };
-                case 'down': return { y: '100vh', transition };
-                default: return { x: '100vw', transition };
-            }
+            
+            // For Desktop, just go down normally off-screen
+            return { 
+                opacity: 0, 
+                y: 150, 
+                scale: 0.95,
+                transition 
+            };
         }
     };
 
     const streakData = getStreakData();
     const getTooltipMessage = () => {
-        if (!streakData) return '';
+        if (!streakData) return 'Start your learning journey today!';
         if (streakData.currentStreak === 0) return 'Start your learning journey today!';
         if (streakData.currentStreak === 1) return 'You started a streak! Keep it up tomorrow.';
         if (streakData.currentStreak < 7) return `${7 - streakData.currentStreak}d to weekly milestone`;
@@ -218,11 +241,11 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
                                             
                                             {/* Text Content */}
                                             <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
-                                                <h4 className="text-[9px] font-bold uppercase tracking-wider text-yellow-400 mb-0.5">
+                                                <h4 className="text-[13px] font-bold text-yellow-400 leading-tight">
                                                     Daily Inspiration
                                                 </h4>
-                                                <p className="text-white text-xs sm:text-sm font-normal leading-snug">
-                                                    "<TextAnimate animation="blurInUp" by="character" once as="span" className="inline">{quote?.text || ""}</TextAnimate>" <span className="text-blue-200 text-[10px] sm:text-xs font-medium whitespace-nowrap ml-1">— {quote?.author}</span>
+                                                <p className="text-white text-[10.5px] font-medium mt-0.5 leading-snug line-clamp-2">
+                                                    "<TextAnimate animation="blurInUp" by="character" once as="span" className="inline">{quote?.text || ""}</TextAnimate>" <span className="text-blue-200 text-[9.5px] font-medium whitespace-nowrap ml-1">— {quote?.author}</span>
                                                 </p>
                                             </div>
                                         </>
@@ -251,7 +274,7 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
                                                 </span>
                                             </div>
                                         </>
-                                    ) : (
+                                    ) : t.type === 'streak' ? (
                                         <>
                                             {/* Streak Icon */}
                                             <div className="w-8 h-8 flex-shrink-0 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-500">
@@ -270,6 +293,19 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
                                                     {getTooltipMessage()}
                                                 </p>
                                             </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <NotificationIcon type={t.type as any} title={t.title || ''} />
+                                            <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
+                                                <h4 className="text-[13px] font-semibold text-slate-800 dark:text-slate-100 leading-tight">
+                                                    {t.title}
+                                                </h4>
+                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug line-clamp-1">
+                                                    {t.message}
+                                                </p>
+                                            </div>
+                                            <div className="flex-shrink-0 w-2 h-2 rounded-full" style={{ backgroundColor: t.type === 'warning' ? '#f59e0b' : '#3b82f6' }} />
                                         </>
                                     )}
                                 </div>

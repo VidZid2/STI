@@ -124,12 +124,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
             <div className="header-center hidden md:flex items-center justify-center w-full max-w-[600px]" />
 
-            <div className="header-right flex items-center gap-0.5 sm:gap-3 shrink-0">
-                <ToolbarExpandable />
+            <div className="header-right flex items-center gap-1 sm:gap-3 shrink-0">
+                <div className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 z-10">
+                    <ToolbarExpandable />
+                </div>
                 {toggleWidgetsSidebar && (
                     <button
                         onClick={toggleWidgetsSidebar}
-                        className="md:hidden flex items-center justify-center w-8 h-8 rounded-full text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+                        className="md:hidden flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100/80 dark:border-blue-800/30 text-blue-600 dark:text-blue-400 shadow-sm transition-all hover:scale-105 active:scale-95"
                         aria-label="Toggle Quick View"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,7 +139,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                         </svg>
                     </button>
                 )}
-                <div className={`w-[1px] h-6 sm:h-8 mx-0.5 sm:mx-2 ${isDarkMode ? 'bg-slate-700/50' : 'bg-zinc-200'}`}></div>
+
+                <div className={`hidden md:block w-[1px] h-6 sm:h-8 mx-0.5 sm:mx-2 ${isDarkMode ? 'bg-slate-700/50' : 'bg-zinc-200'}`}></div>
+                
                 <UserProfileDropdown />
             </div>
         </div>
