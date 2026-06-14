@@ -454,7 +454,7 @@ export function Terminal({
               {line.type === "command" ? (
                 <span>
                   {prompt}
-                  <SyntaxHighlightedText text={line.content} />
+                  <SyntaxHighlightedText text={String(line.content)} />
                 </span>
               ) : typeof line.content === "string" ? (
                 <span className="text-neutral-400">{line.content}</span>

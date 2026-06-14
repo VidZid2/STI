@@ -912,7 +912,7 @@ const GoalsContent: React.FC = () => {
                         <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 shadow-sm rounded-[20px] p-4 transition-all duration-300 hover:shadow-md cursor-default overflow-hidden flex flex-col h-full">
                                 <motion.div layout className="grid gap-[24px] min-h-[180px]" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))' }}>
                                     <AnimatePresence mode="wait">
-                                        {paginatedGoals.map((goal, index) => {
+                                        {paginatedGoals.map((goal) => {
                                             const config = goalTypeConfig[goal.type];
                                             const priorityInfo = getPriorityInfo(goal.priority);
                                             return (

@@ -415,7 +415,7 @@ const GroupsContent: React.FC = () => {
                         >
                             <div className="flex items-center gap-2 mb-2">
                                 <div className="p-1.5 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                                    <GroupIcon icon="grid" size={14} />
+                                    <GroupIcon icon="grid" size={14} color="currentColor" />
                                 </div>
                                 <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Total Groups</span>
                             </div>
@@ -432,7 +432,7 @@ const GroupsContent: React.FC = () => {
                         >
                             <div className="flex items-center gap-2 mb-2">
                                 <div className="p-1.5 rounded-md bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400">
-                                    <GroupIcon icon="check" size={14} />
+                                    <GroupIcon icon="check" size={14} color="currentColor" />
                                 </div>
                                 <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider">My Groups</span>
                             </div>
@@ -449,7 +449,7 @@ const GroupsContent: React.FC = () => {
                         >
                             <div className="flex items-center gap-2 mb-2">
                                 <div className="p-1.5 rounded-md bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                                    <GroupIcon icon="users" size={14} />
+                                    <GroupIcon icon="users" size={14} color="currentColor" />
                                 </div>
                                 <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Public</span>
                             </div>
@@ -466,7 +466,7 @@ const GroupsContent: React.FC = () => {
                         >
                             <div className="flex items-center gap-2 mb-2">
                                 <div className="p-1.5 rounded-md bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                                    <GroupIcon icon="chat" size={14} />
+                                    <GroupIcon icon="chat" size={14} color="currentColor" />
                                 </div>
                                 <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Online</span>
                             </div>

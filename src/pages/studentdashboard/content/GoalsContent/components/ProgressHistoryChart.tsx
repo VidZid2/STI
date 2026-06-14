@@ -4,7 +4,7 @@
  * Extracted from GoalsContent.tsx during Phase 8.3
  */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { getAggregatedProgressHistory, getRealTimeProgress } from '../../../../../services/goalsService';
 import { BarChart, Bar, ChartTooltip, Grid, BarXAxis } from '../../../../../components/ui/bar-chart';
 

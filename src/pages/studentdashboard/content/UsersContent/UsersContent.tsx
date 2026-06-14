@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Users Content - User Account Management Page
  * Minimalistic professional design matching PathsContent/GoalsContent

@@ -1,7 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal } from '../ui/terminal';
-import { AlertOctagon, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 interface Props {
   children?: ReactNode;
   fallback?: ReactNode;

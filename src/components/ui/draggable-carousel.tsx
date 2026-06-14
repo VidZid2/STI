@@ -1,7 +1,7 @@
 'use client';
 import {
   Children,
-  ReactNode,
+  type ReactNode,
   createContext,
   useContext,
   useEffect,
@@ -274,7 +274,7 @@ function CarouselContent({
     setItemsCount(itemsLength);
   }, [itemsLength, setItemsCount]);
 
-  const onDragEnd = (e: any, info: any) => {
+  const onDragEnd = (_e: any, info: any) => {
     // Use info.offset.x instead of dragX.get() for more reliable mobile swiping distance detection
     const offset = info.offset.x;
     const velocity = info.velocity.x;

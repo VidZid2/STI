@@ -2,7 +2,7 @@
  * TeacherSpotlight + TeacherSpotlightSkeleton
  * Extracted from UsersContent.tsx during Phase 8.4
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { fetchUsers, getTeacherCourses, type UserAccount, type TeacherCourse } from '../../../../../services/usersService';
 import { SkeletonPulse } from './UsersSkeleton';
@@ -92,7 +92,7 @@ const TeacherSpotlight: React.FC<{
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [direction, setDirection] = useState(0);
-    const carouselRef = useRef<HTMLDivElement>(null);
+
 
     // Load teachers and their courses
     useEffect(() => {
@@ -144,9 +144,7 @@ const TeacherSpotlight: React.FC<{
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    const carouselTransition = isMobile 
-        ? { type: "tween", ease: "easeOut", duration: 0.25 } 
-        : { type: "spring", stiffness: 300, damping: 30, duration: 0.2 };
+
 
     // Native touch swipe detection for mobile (bypasses Framer Motion's drag restrictions over scroll areas)
     const [touchStart, setTouchStart] = useState<{ x: number, y: number } | null>(null);
@@ -185,15 +183,7 @@ const TeacherSpotlight: React.FC<{
 
     if (teachers.length === 0) return null;
 
-    // Category color helper
-    const getCategoryColor = (category: string) => {
-        const categoryColors: Record<string, string> = {
-            major: '#3b82f6',
-            ge: '#10b981',
-            pe: '#f59e0b',
-            nstp: '#8b5cf6' };
-        return categoryColors[category] || '#64748b';
-    };
+
 
 
     return (
@@ -244,9 +234,14 @@ const TeacherSpotlight: React.FC<{
                     <motion.div
                         key={currentIndex}
                         custom={direction}
-                        initial={(dir: number) => ({ opacity: 0, x: dir > 0 ? 30 : -30 })}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={(dir: number) => ({ opacity: 0, x: dir > 0 ? -30 : 30 })}
+                        variants={{
+                            enter: (dir: number) => ({ opacity: 0, x: dir > 0 ? 30 : -30 }),
+                            center: { opacity: 1, x: 0 },
+                            exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -30 : 30 })
+                        }}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
                         transition={{ type: "tween", ease: "easeInOut", duration: 0.2 }}
                         className="w-full flex flex-col gap-4 py-1"
                     >
