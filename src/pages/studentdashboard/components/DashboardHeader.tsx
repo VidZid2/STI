@@ -15,12 +15,14 @@ interface DashboardHeaderProps {
     setActiveView: (view: DashboardView) => void;
     isDemoMode: boolean;
     toggleWidgetsSidebar?: () => void;
+    isQuickViewActive?: boolean;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     setActiveView,
     isDemoMode,
-    toggleWidgetsSidebar
+    toggleWidgetsSidebar,
+    isQuickViewActive = false
 }) => {
     const [isDarkMode, setIsDarkMode] = useState(() => 
         typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
@@ -28,6 +30,15 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const [isHeaderHidden, setIsHeaderHidden] = useState(false);
     const lastScrollY = useRef(0);
     
+    const isQuickViewActiveRef = useRef(isQuickViewActive);
+    
+    useEffect(() => {
+        isQuickViewActiveRef.current = isQuickViewActive;
+        if (isQuickViewActive) {
+            setIsHeaderHidden(false);
+        }
+    }, [isQuickViewActive]);
+
     useEffect(() => {
         const checkDarkMode = () => {
             setIsDarkMode(document.body.classList.contains('dark-mode'));
@@ -38,6 +49,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         
         const handleScroll = () => {
+            if (isQuickViewActiveRef.current) return;
+
             const currentY = window.scrollY;
             const delta = currentY - lastScrollY.current;
 

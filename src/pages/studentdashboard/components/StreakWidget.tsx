@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
+import { Flame, Droplet, Sparkles } from 'lucide-react';
 import { getStreakData, getStreakTier, updateStreak } from '../../../services/studyTimeService';
 
 interface StreakWidgetProps {
@@ -112,9 +113,24 @@ export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false, com
                     <motion.div
                         animate={{ rotate: [0, -10, 10, -10, 0] }}
                         transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 3 }}
-                        className={isCompact ? 'text-xl' : 'text-2xl'}
+                        className={`flex items-center justify-center relative ${isCompact ? 'w-6 h-6' : 'w-7 h-7'}`}
                     >
-                        {tier.flameEmoji}
+                        {streakData.currentStreak >= 10 ? (
+                            <>
+                                <Flame className="w-full h-full text-orange-500" fill="currentColor" strokeWidth={1.5} />
+                                <motion.div 
+                                    animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }} 
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                    className="absolute -bottom-1 -right-1"
+                                >
+                                    <Sparkles className="w-3.5 h-3.5 text-amber-500" fill="currentColor" />
+                                </motion.div>
+                            </>
+                        ) : streakData.currentStreak >= 3 ? (
+                            <Flame className="w-full h-full text-orange-500" fill="currentColor" strokeWidth={1.5} />
+                        ) : (
+                            <Droplet className="w-[85%] h-[85%] text-blue-500" fill="currentColor" strokeWidth={1.5} />
+                        )}
                     </motion.div>
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col justify-center">

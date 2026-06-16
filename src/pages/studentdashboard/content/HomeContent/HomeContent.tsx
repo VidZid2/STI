@@ -17,7 +17,7 @@ interface HomeContentProps {
 
 const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickViewSlot }) => {
     const [isStatsExpanded, setIsStatsExpanded] = useState(false);
-    const [isNewsExpanded, setIsNewsExpanded] = useState(false);
+    const [isFullscreenImageOpen, setIsFullscreenImageOpen] = useState(false);
     const [currentCourseIndex, setCurrentCourseIndex] = useState(0);
     // Bookmark state — initialise from localStorage cache immediately (no flash)
     const [bookmarkedIds, setBookmarkedIds] = useState<string[]>(() => getBookmarksSync());
@@ -578,120 +578,103 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                         </AnimatePresence>
                     </div>
                 </div>
-                {/* --- Middle Section: Continue Where You Left Off --- */}
+                {/* --- Middle Section: Campus Announcements --- */}
                 <div className="flex flex-col gap-6 relative z-10 w-full">
-                    {/* Top: STI Campus News Card */}
-                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-3 sm:p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-yellow-300 dark:hover:border-yellow-700 w-full overflow-hidden">
-                        
-                        {/* Header (Always Visible, Minimized State imitating Student Tools) */}
-                        <div 
-                            className="flex flex-row items-center justify-between gap-4 cursor-pointer w-full"
-                            onClick={() => setIsNewsExpanded(!isNewsExpanded)}
-                        >
-                            {/* Left: Icon & Text */}
-                            <div className="flex items-center gap-3 sm:gap-5 min-w-0 flex-1">
+                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] flex flex-col lg:flex-row w-full overflow-hidden transition-all duration-300 hover:shadow-md">
+                        {/* Left: STI Pinned News */}
+                        <div className="flex-1 p-5 lg:p-8 flex flex-col gap-6 group hover:bg-slate-50/30 dark:hover:bg-slate-800/50 transition-colors">
+                            {/* Header */}
+                            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 w-full">
                                 <motion.div 
                                     whileHover={{ scale: 1.05, rotate: -5 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                    className="w-14 h-14 rounded-[20px] bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-100 dark:border-yellow-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300"
+                                    className="w-14 h-14 rounded-[20px] bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300 mt-1 mx-auto sm:mx-0"
                                 >
-                                    <svg className="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l6 6v10a2 2 0 0 1-2 2z"/><polyline points="15 4 15 10 21 10"/><path d="M8 12h8"/><path d="M8 16h8"/></svg>
+                                    <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l6 6v10a2 2 0 0 1-2 2z"/><polyline points="15 4 15 10 21 10"/><path d="M8 12h8"/><path d="M8 16h8"/></svg>
                                 </motion.div>
-                                <div className="min-w-0 flex-1">
-                                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-1.5 transition-colors truncate">
-                                        STI Campus News
-                                    </h2>
-                                    <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-none truncate">
-                                        Click to view the latest announcements
+                                <div className="min-w-0 flex-1 flex flex-col items-center sm:items-start justify-center w-full">
+                                    <div className="flex flex-col lg:flex-row items-center gap-2 lg:gap-3 w-full sm:w-auto">
+                                        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none truncate text-center sm:text-left w-full sm:w-auto">
+                                            eLMS 2.0
+                                        </h2>
+                                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-0.5 lg:mt-0 w-full sm:w-auto">
+                                            <span className="px-2 py-0.5 rounded-[6px] bg-blue-100 dark:bg-blue-900/30 text-[10px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-widest border border-blue-200/50 dark:border-blue-800/30 flex items-center gap-1 shadow-sm">
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
+                                                Pinned
+                                            </span>
+                                            <span className="px-2 py-0.5 rounded-[6px] bg-slate-100 dark:bg-slate-700/50 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest border border-slate-200/50 dark:border-slate-600/50 flex items-center gap-1 shadow-sm">
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                                Jun 16, 2026
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-snug mt-2 text-center sm:text-left w-full">
+                                        Major updates to your learning experience
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Right: Tags & Expand Icon */}
-                            <div className="flex items-center gap-3 flex-shrink-0">
-                                {/* Tag 1 (Matches AVAILABLE 11 Tools) */}
-                                <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 rounded-[12px] border border-yellow-100 dark:border-yellow-800/30">
-                                    <div className="w-6 h-6 rounded-[8px] bg-yellow-100 dark:bg-yellow-900/50 flex items-center justify-center text-yellow-600 dark:text-yellow-400">
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] font-bold text-yellow-600/70 dark:text-yellow-400/70 uppercase leading-none mb-0.5">AVAILABLE</span>
-                                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-none">3 Updates</span>
-                                    </div>
-                                </div>
+                            {/* Placeholder Picture */}
+                            <motion.div 
+                                className="w-full h-48 sm:h-64 bg-slate-100 dark:bg-slate-700 rounded-[16px] border border-slate-200 dark:border-slate-600 flex items-center justify-center shadow-inner relative overflow-hidden"
+                            >
+                                <svg className="w-12 h-12 text-slate-400 dark:text-slate-500 z-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            </motion.div>
 
-                                {/* Tag 2 (Matches DATA Local-first) */}
-                                <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-[12px] border border-emerald-100 dark:border-emerald-800/30">
-                                    <div className="w-6 h-6 rounded-[8px] bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] font-bold text-emerald-600/70 dark:text-emerald-400/70 uppercase leading-none mb-0.5">LATEST</span>
-                                        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-none">Overhaul</span>
-                                    </div>
-                                </div>
+                            {/* Description */}
+                            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                                We've completely redesigned the eLMS platform to offer a faster, cleaner, and more intuitive experience. Navigate through your courses seamlessly, manage your tasks effectively, and engage with the new dashboard features starting this semester.
+                            </p>
 
-                                {/* Expand Toggle Button */}
-                                <motion.div 
-                                    animate={{ rotate: isNewsExpanded ? 180 : 0 }}
-                                    className="w-10 h-10 rounded-[14px] bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-                                </motion.div>
-                            </div>
+                            {/* Button */}
+                            <motion.button 
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={onShowWelcomeModal}
+                                className="w-full sm:w-auto mt-auto px-8 py-4 bg-blue-100 dark:bg-blue-900/40 hover:bg-blue-200 dark:hover:bg-blue-800/60 text-blue-700 dark:text-blue-400 font-bold rounded-[16px] transition-colors text-base shadow-sm flex items-center justify-center gap-3 border border-blue-200 dark:border-blue-800/50 cursor-pointer"
+                            >
+                                <span>Explore eLMS 2.0 Features</span>
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </motion.button>
                         </div>
+                        
+                        {/* Divider */}
+                        <div className="w-full lg:w-px h-px lg:h-auto bg-slate-200 dark:bg-slate-700 block"></div>
 
-                        {/* Expanded Content (Slideshow) */}
-                        <AnimatePresence>
-                            {isNewsExpanded && (
-                                <motion.div
-                                    initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                                    animate={{ height: "auto", opacity: 1, marginTop: 24 }}
-                                    exit={{ height: 0, opacity: 0, marginTop: 0 }}
-                                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                                    className="overflow-hidden w-full flex flex-col gap-6"
-                                >
-                                    {/* Large Slide 1: STI Overhaul */}
-                                    <div className="w-full flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 bg-slate-50/50 dark:bg-slate-800/50 p-4 sm:p-6 rounded-[20px] border border-slate-100 dark:border-slate-700/50">
-                                        {/* Large Left Text */}
-                                        <div className="flex flex-col gap-3">
-                                            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
-                                                The Great STI Overhaul
-                                            </h3>
-                                            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-md">
-                                                We've completely redesigned the campus experience. Check out what's new for the upcoming semester and explore the upgraded facilities and technology.
-                                            </p>
-                                        </div>
-
-                                        {/* Large Right Picture & Button */}
-                                        <div className="flex flex-col sm:flex-row items-stretch gap-4 w-full xl:w-auto">
-                                            {/* Large Picture Placeholder */}
-                                            <div className="flex w-full sm:w-64 h-20 sm:h-auto min-h-[5rem] sm:min-h-[6rem] bg-slate-100 dark:bg-slate-700 rounded-[16px] border border-slate-200 dark:border-slate-600 items-center justify-center shadow-inner relative group-hover:border-yellow-200 dark:group-hover:border-yellow-800/50 transition-colors">
-                                                <svg className="w-10 h-10 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                                            </div>
-                                            
-                                            {/* Large Update Button */}
-                                            <motion.button 
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                onClick={onShowWelcomeModal}
-                                                className="w-full sm:w-auto h-20 sm:h-auto min-h-[5rem] sm:min-h-[6rem] px-8 bg-yellow-100 dark:bg-yellow-900/40 hover:bg-yellow-200 dark:hover:bg-yellow-800/60 text-yellow-700 dark:text-yellow-400 font-bold rounded-[16px] transition-colors text-base sm:text-lg shadow-sm flex flex-col items-center justify-center gap-2 border border-yellow-200 dark:border-yellow-800/50 cursor-pointer"
-                                            >
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                                                <span>View Full Details</span>
-                                            </motion.button>
-                                        </div>
+                        {/* Right: Extra Announcements */}
+                        <div className="w-full lg:w-1/3 xl:w-[400px] p-5 lg:p-8 flex flex-col gap-5 bg-slate-50/50 dark:bg-slate-800/30">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className="w-10 h-10 rounded-[14px] bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center flex-shrink-0 shadow-sm">
+                                    <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                                </div>
+                                <div className="flex flex-col">
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none">
+                                        Latest Updates
+                                    </h3>
+                                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 leading-none mt-1">
+                                        Campus announcements & notices
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex flex-col gap-2 p-1 pb-2 flex-1 justify-center">
+                                {/* Empty State */}
+                                <div className="flex flex-col items-center justify-center py-10 text-center px-4">
+                                    <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-4">
+                                        <svg className="w-6 h-6 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
                                     </div>
-
-                                    {/* Slideshow Indicators */}
-                                    <div className="w-full flex items-center justify-center gap-2 pb-2">
-                                        <div className="w-6 h-1.5 rounded-full bg-yellow-400 dark:bg-yellow-500 transition-all shadow-sm"></div>
-                                        <div className="w-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 transition-all cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-600"></div>
-                                        <div className="w-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 transition-all cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-600"></div>
-                                    </div>
-                                </motion.div>
+                                    <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">You're all caught up!</h4>
+                                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400">There are no new announcements or updates at this time.</p>
+                                </div>
+                            </div>
+                            
+                            {/* Hidden safely until there are actual announcements to show */}
+                            {false && (
+                                <button className="w-full py-3 mt-auto text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-[12px] transition-colors">
+                                    View All Announcements
+                                </button>
                             )}
-                        </AnimatePresence>
+                        </div>
                     </div>
                 </div>
 
@@ -1127,7 +1110,37 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
 
 
                     </div>
-                </div>
+                    {/* Full Screen Image Modal */}
+            <AnimatePresence>
+                {isFullscreenImageOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 sm:p-8"
+                        onClick={() => setIsFullscreenImageOpen(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                            className="relative max-w-5xl w-full aspect-video bg-slate-800 rounded-2xl overflow-hidden flex items-center justify-center border border-slate-700 shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <svg className="w-24 h-24 text-slate-600" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            
+                            <button 
+                                onClick={() => setIsFullscreenImageOpen(false)}
+                                className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-md transition-colors"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
             </motion.div>
         </div>
     );

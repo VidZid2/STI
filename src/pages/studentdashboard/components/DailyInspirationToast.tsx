@@ -57,24 +57,23 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
         // Build the initial stack
         const initialToasts: Array<{ id: string, type: GlobalToastType, data?: any }> = [];
         
-        // 1. Goal Completed
-        initialToasts.push({ 
-            id: 'goal_init', 
-            type: 'goal_completed', 
-            data: { title: 'Complete 5 Quizzes' } 
-        });
-
-        // 2. Add streak
+        // 1. Add streak - ALWAYS SHOW
         const streakData = getStreakData();
         if (streakData && streakData.currentStreak > 0) {
             initialToasts.push({ id: 'streak_init', type: 'streak' });
         } else {
-            initialToasts.push({ id: 'streak_init', type: 'streak' }); // Fallback to always show for testing
+            initialToasts.push({ id: 'streak_init', type: 'streak' }); // Fallback to always show
         }
         
-        // 3. Add quote
+        // 2. Add quote - ONLY ONCE A DAY
         if (quote) {
-            initialToasts.push({ id: 'quote_init', type: 'quote' });
+            const today = new Date().toDateString();
+            const lastQuoteDate = localStorage.getItem('lastQuoteToastDate');
+            
+            if (lastQuoteDate !== today) {
+                initialToasts.push({ id: 'quote_init', type: 'quote' });
+                localStorage.setItem('lastQuoteToastDate', today);
+            }
         }
         
         const timer = setTimeout(() => {

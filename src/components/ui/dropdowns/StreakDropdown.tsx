@@ -175,9 +175,10 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
     useEffect(() => {
         if (!componentReady) return;
         
-        // FOR TESTING: Always show modal on reload
-        // const modalShownThisSession = sessionStorage.getItem(STREAK_MODAL_SHOWN_KEY) === 'true';
-        // if (modalShownThisSession) return;
+        // Check if modal was already shown today
+        const today = new Date().toDateString();
+        const lastShownDate = localStorage.getItem('streak-modal-last-shown');
+        if (lastShownDate === today) return;
         
         // If tutorials are completed, show immediately
         // If not, wait a bit longer to avoid conflicting with other modals
@@ -188,8 +189,8 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
             const data = getStreakData();
             setStreakData(data);
             
-            // Show modal and mark as shown for this session
-            // sessionStorage.setItem(STREAK_MODAL_SHOWN_KEY, 'true');
+            // Show modal and mark as shown for today
+            localStorage.setItem('streak-modal-last-shown', today);
             setShowWelcome(true);
             setShowStreakModal(true);
             setTimeout(() => setShowWelcome(false), 3000);
