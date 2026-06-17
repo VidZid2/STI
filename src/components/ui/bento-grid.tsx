@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import { MagicCard } from "@/components/ui/magic-card";
+import { useTheme } from "next-themes";
 
 export const BentoGrid = ({
   className,
@@ -25,32 +27,42 @@ export const BentoGridItem = ({
   description,
   header,
   icon,
+  background,
 }: {
   className?: string;
   title?: string | React.ReactNode;
   description?: string | React.ReactNode;
   header?: React.ReactNode;
   icon?: React.ReactNode;
+  background?: React.ReactNode;
 }) => {
+  const { theme } = useTheme();
+
   return (
-    <div
+    <MagicCard
       className={cn(
-        "group/bento shadow-input row-span-1 flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-4 transition duration-200 hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none overflow-hidden",
+        "group/bento shadow-input row-span-1 rounded-xl border border-transparent bg-white transition duration-200 hover:shadow-xl relative overflow-hidden",
         className,
       )}
+      gradientColor={theme === "dark" ? "#262626" : "#D9D9D955"}
+      gradientFrom="#eab308"
+      gradientTo="#3b82f6"
     >
-      <div className="flex-1 min-h-0">
-        {header}
-      </div>
-      <div className="flex-shrink-0 pt-3 transition duration-200 group-hover/bento:translate-x-2">
-        {icon}
-        <div className="mt-1 mb-1 font-sans font-bold text-neutral-600 dark:text-neutral-200 text-sm leading-snug">
-          {title}
+      <div className="relative flex flex-col justify-between space-y-4 p-4 h-full w-full pointer-events-none">
+        {background}
+        <div className="pointer-events-auto flex flex-1 w-full min-h-0">
+          {header}
         </div>
-        <div className="font-sans text-xs font-normal text-neutral-600 dark:text-neutral-300 leading-snug">
-          {description}
+        <div className="transition duration-200 group-hover/bento:translate-x-2 relative z-10 pointer-events-auto">
+          {icon}
+          <div className="mt-2 mb-2 font-sans font-bold text-neutral-600">
+            {title}
+          </div>
+          <div className="font-sans text-xs font-normal text-neutral-600">
+            {description}
+          </div>
         </div>
       </div>
-    </div>
+    </MagicCard>
   );
 };

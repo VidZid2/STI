@@ -8,19 +8,19 @@ import { DiaText } from '../ui/dia-text';
 
 const CHANGES_TESTIMONIALS = [
   {
-    quote: "We've completely refreshed the dashboard to make your learning experience smooth and distraction-free.",
+    quote: "We've completely refreshed the dashboard. *Navigation is simpler*, *load times are blazingly fast*, and your learning experience is now truly *distraction-free*.",
     author: "A Cleaner, Faster UI",
     image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&q=80&auto=format&fit=crop",
     alt: "A Cleaner, Faster UI",
   },
   {
-    quote: "Say goodbye to visual noise. Everything is organized exactly where you expect it.",
+    quote: "Say *goodbye to visual noise*. We've removed redundant elements so everything you need, from modules to quizzes, is *organized exactly where you expect it*.",
     author: "Decluttered View",
     image: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?w=400&q=80&auto=format&fit=crop",
     alt: "Decluttered View",
   },
   {
-    quote: "Studying on the go? The mobile layout is now fully optimized and incredibly easy to navigate.",
+    quote: "Studying on the go? The mobile layout is fully optimized with *buttery smooth animations*, *centered content*, and incredibly easy *one-handed navigation*.",
     author: "Better Mobile Layout",
     image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80&auto=format&fit=crop",
     alt: "Better Mobile Layout",

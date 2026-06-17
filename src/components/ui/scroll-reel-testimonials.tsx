@@ -98,10 +98,30 @@ function Featured({ src, alt }: { src: string; alt?: string }) {
   );
 }
 
-/* Per-character split. Spaces live between word spans as plain text
- * nodes so natural line-wrapping is preserved. Each char rises in
- * with an inline animation-delay; while the block is exiting, the
- * char animation is removed so in-flight rises are killed. */
+const SCROLL_REEL_CSS = `
+@keyframes scroll-reel-rise {
+  0% {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(12px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0) scale(1);
+  }
+}
+.scroll-reel-char {
+  display: inline-block;
+  opacity: 0;
+  animation: scroll-reel-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.scroll-reel-exit .scroll-reel-char {
+  animation: none;
+  opacity: 0;
+}
+`;
+
 function Chars({
   text,
   startIndex,
@@ -112,33 +132,50 @@ function Chars({
   staggerMs: number;
 }) {
   let idx = startIndex;
-  const words = text.split(" ");
+  
+  // Split into alternating regular and highlighted segments using *
+  const segments = text.split(/(\*.*?\*)/g);
+  
   return (
     <>
-      {words.map((word, wi) => {
-        const wordSpan = (
-          <span className="inline-block whitespace-nowrap">
-            {Array.from(word).map((ch, ci) => {
-              const delay = idx * staggerMs;
-              idx++;
-              return (
-                <span
-                  key={ci}
-                  className="scroll-reel-char"
-                  style={{ animationDelay: `${delay}ms` }}
-                >
-                  {ch}
+      <style>{SCROLL_REEL_CSS}</style>
+      {segments.map((segment, segIdx) => {
+        if (!segment) return null;
+        
+        const isHighlight = segment.startsWith('*') && segment.endsWith('*');
+        const content = isHighlight ? segment.slice(1, -1) : segment;
+        
+        const words = content.split(" ");
+        
+        return (
+          <span key={segIdx} className={isHighlight ? "font-bold text-blue-600 dark:text-blue-400" : ""}>
+            {words.map((word, wi) => {
+              const wordSpan = (
+                <span className="inline-block whitespace-nowrap">
+                  {Array.from(word).map((ch, ci) => {
+                    const delay = idx * staggerMs;
+                    idx++;
+                    return (
+                      <span
+                        key={ci}
+                        className="scroll-reel-char"
+                        style={{ animationDelay: `${delay}ms` }}
+                      >
+                        {ch}
+                      </span>
+                    );
+                  })}
                 </span>
+              );
+              if (wi < words.length - 1) idx++;
+              return (
+                <React.Fragment key={wi}>
+                  {wordSpan}
+                  {wi < words.length - 1 ? " " : null}
+                </React.Fragment>
               );
             })}
           </span>
-        );
-        if (wi < words.length - 1) idx++;
-        return (
-          <React.Fragment key={wi}>
-            {wordSpan}
-            {wi < words.length - 1 ? " " : null}
-          </React.Fragment>
         );
       })}
     </>
@@ -312,16 +349,60 @@ export function ScrollReelTestimonials({
       </div>
 
       {/* Content section */}
-      <div className="flex min-w-0 flex-1 flex-col justify-between self-stretch px-5 py-7 md:py-10">
+      <div className="flex min-w-0 flex-1 flex-col self-stretch px-5 py-7 md:py-10 justify-center">
         <div className="flex flex-col gap-[9px]">
+        <div className="flex items-start justify-between mb-2">
           <svg
-            className="block h-12 w-12 text-slate-300 dark:text-slate-700"
+            className="block h-10 w-10 text-slate-300 dark:text-slate-700 md:h-12 md:w-12"
             viewBox="0 0 24 24"
             fill="currentColor"
             aria-hidden="true"
           >
             <path d="M4.58 17.32C3.55 16.23 3 15 3 13.01c0-3.5 2.46-6.64 6.03-8.19l.9 1.38c-3.34 1.8-4 4.15-4.25 5.62.54-.28 1.24-.38 1.93-.31 1.8.17 3.23 1.65 3.23 3.49a3.5 3.5 0 0 1-3.5 3.5c-1.07 0-2.1-.49-2.75-1.18zm10 0C13.55 16.23 13 15 13 13.01c0-3.5 2.46-6.64 6.03-8.19l.9 1.38c-3.34 1.8-4 4.15-4.25 5.62.54-.28 1.24-.38 1.93-.31 1.8.17 3.23 1.65 3.23 3.49a3.5 3.5 0 0 1-3.5 3.5c-1.07 0-2.1-.49-2.75-1.18z" />
           </svg>
+
+          {/* Controls - Moved to top right */}
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => paginate(-1)}
+              disabled={index === 0}
+              aria-label="Previous testimonial"
+              className="grid h-8 w-8 cursor-pointer place-items-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-0 text-slate-800 dark:text-slate-200 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:enabled:scale-[1.08] active:enabled:scale-[0.94] disabled:cursor-default disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm"
+            >
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M7.5 2.5 3.5 6l4 3.5" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => paginate(1)}
+              disabled={index === count - 1}
+              aria-label="Next testimonial"
+              className="grid h-8 w-8 cursor-pointer place-items-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-0 text-slate-800 dark:text-slate-200 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:enabled:scale-[1.08] active:enabled:scale-[0.94] disabled:cursor-default disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm"
+            >
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m4.5 2.5 4 3.5-4 3.5" />
+              </svg>
+            </button>
+          </div>
+        </div>
 
           {/* Text stage */}
           <div
@@ -360,51 +441,9 @@ export function ScrollReelTestimonials({
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Controls */}
-        <div className="mt-6 flex items-center gap-1.5 md:mt-0">
-          <button
-            type="button"
-            onClick={() => paginate(-1)}
-            disabled={index === 0}
-            aria-label="Previous testimonial"
-            className="grid h-8 w-8 cursor-pointer place-items-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-0 text-slate-800 dark:text-slate-200 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:enabled:scale-[1.08] active:enabled:scale-[0.94] disabled:cursor-default disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm"
-          >
-            <svg
-              className="h-4 w-4"
-              viewBox="0 0 12 12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M7.5 2.5 3.5 6l4 3.5" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={() => paginate(1)}
-            disabled={index === count - 1}
-            aria-label="Next testimonial"
-            className="grid h-8 w-8 cursor-pointer place-items-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-0 text-slate-800 dark:text-slate-200 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:enabled:scale-[1.08] active:enabled:scale-[0.94] disabled:cursor-default disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shadow-sm"
-          >
-            <svg
-              className="h-4 w-4"
-              viewBox="0 0 12 12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="m4.5 2.5 4 3.5-4 3.5" />
-            </svg>
-          </button>
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 
