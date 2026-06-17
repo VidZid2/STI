@@ -275,7 +275,7 @@ export function ScrollReelTestimonials({
   const sideY = -middleY;
 
   const colStyle = (y: number): React.CSSProperties => ({
-    transform: `translateY(${y}px)`,
+    transform: `translate3d(0, ${y}px, 0)`,
     transition: mounted ? `transform ${SLIDE_MS}ms ${EASE_INOUT}` : "none",
   });
 

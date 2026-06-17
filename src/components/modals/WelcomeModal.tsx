@@ -5,6 +5,7 @@ import { ScrollReelTestimonials } from '../ui/scroll-reel-testimonials';
 import { AdvantagesBento } from '../ui/advantages-bento';
 import HoverBrandLogo from '../ui/hover-brand-logo';
 import { DiaText } from '../ui/dia-text';
+import { Feature197 } from '../ui/accordion-feature-section';
 
 const CHANGES_TESTIMONIALS = [
   {
@@ -25,6 +26,41 @@ const CHANGES_TESTIMONIALS = [
     image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80&auto=format&fit=crop",
     alt: "Better Mobile Layout",
   },
+];
+
+const elmsFeatures = [
+    {
+        id: 1,
+        icon: Sparkles,
+        title: "Streak Tracking",
+        sub: "Build consistent learning habits",
+        image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&q=80",
+        description: "Stay motivated by tracking your consecutive study days. Build habits that last and keep pushing your personal records higher.",
+    },
+    {
+        id: 2,
+        icon: LayoutDashboard,
+        title: "Interactive Widgets",
+        sub: "Your dashboard, upgraded",
+        image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80",
+        description: "Live weather and dynamic study goals right on your dashboard. Everything you need is available at a glance without switching tabs.",
+    },
+    {
+        id: 3,
+        icon: ShieldCheck,
+        title: "Dark Mode Support",
+        sub: "Easy on the eyes, day or night",
+        image: "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80",
+        description: "A beautifully crafted dark mode that is easy on the eyes. Study late into the night without eye strain, featuring deep blacks and legible text.",
+    },
+    {
+        id: 4,
+        icon: Rocket,
+        title: "Mobile Ready",
+        sub: "Study anywhere, anytime",
+        image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80",
+        description: "Your entire eLMS fits perfectly in your pocket. Smooth scrolling, stacked layouts, and touch-friendly targets ensure studying on-the-go is flawless.",
+    }
 ];
 
 interface WelcomeModalProps {
@@ -60,7 +96,6 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
         const scrollEl = modalRef.current;
         if (!scrollEl) return;
 
-        let rafId: number;
         let cancelled = false;
 
         // Mark as done so it won't repeat
@@ -73,58 +108,25 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
             const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
             if (maxScroll <= 5) return; // Nothing meaningful to scroll
 
-            let scrollPos = 0;
-            let phase: 'down' | 'pause' | 'up' | 'done' = 'down';
-            const SPEED_DOWN = 0.6;  // px per frame (~36px/s at 60fps) — slow & gentle
-            const SPEED_UP = 1.2;    // px per frame — a bit faster going back up
+            // Native CSS smooth scroll down
+            scrollEl.scrollTo({ top: maxScroll, behavior: 'smooth' });
 
-            const step = () => {
-                if (cancelled) return;
-
-                if (phase === 'down') {
-                    scrollPos += SPEED_DOWN;
-                    if (scrollPos >= maxScroll) {
-                        scrollPos = maxScroll;
-                        scrollEl.scrollTop = scrollPos;
-                        phase = 'pause';
-                        // Pause at the bottom for 800ms before scrolling back
-                        setTimeout(() => {
-                            if (!cancelled) {
-                                phase = 'up';
-                                rafId = requestAnimationFrame(step);
-                            }
-                        }, 800);
-                        return;
-                    }
-                    scrollEl.scrollTop = scrollPos;
-                    rafId = requestAnimationFrame(step);
-                } else if (phase === 'up') {
-                    scrollPos -= SPEED_UP;
-                    if (scrollPos <= 0) {
-                        scrollPos = 0;
-                        scrollEl.scrollTop = 0;
-                        phase = 'done';
-                        return; // Finished — only once
-                    }
-                    scrollEl.scrollTop = scrollPos;
-                    rafId = requestAnimationFrame(step);
+            // After a delay, native smooth scroll back up
+            setTimeout(() => {
+                if (!cancelled) {
+                    scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
                 }
-            };
+            }, 1200);
 
-            rafId = requestAnimationFrame(step);
         }, 1200); // 1.2s delay so content settles first
 
         // If user touches the modal, cancel auto-scroll immediately
-        const onTouch = () => {
-            cancelled = true;
-            cancelAnimationFrame(rafId);
-        };
+        const onTouch = () => { cancelled = true; };
         scrollEl.addEventListener('touchstart', onTouch, { once: true, passive: true });
 
         return () => {
             cancelled = true;
             clearTimeout(startDelay);
-            cancelAnimationFrame(rafId);
             scrollEl.removeEventListener('touchstart', onTouch);
         };
     }, [activeTab, isOpen]);
@@ -172,56 +174,47 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
     useEffect(() => {
         if (!isOpen) return;
 
-        // Only block touches that are OUTSIDE the modal (background/backdrop)
-        const preventTouch = (e: TouchEvent) => {
-            if (modalRef.current && modalRef.current.contains(e.target as Node)) {
-                return; // Allow scrolling inside the modal
-            }
-            e.preventDefault();
-        };
-
-        // Lock CSS completely
+        // Lock CSS completely using standard properties
         document.body.style.overflow = 'hidden';
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.overscrollBehavior = 'none';
-
-        // Add passive: false to ensure preventDefault works
-        document.addEventListener('touchmove', preventTouch, { passive: false });
+        document.body.style.overscrollBehavior = 'contain';
 
         return () => {
             document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
             document.body.style.overscrollBehavior = '';
-            document.removeEventListener('touchmove', preventTouch);
         };
     }, [isOpen]);
 
-    // ResizeObserver to track content height changes
+    // ResizeObserver to track content height changes smoothly
     useEffect(() => {
         const el = contentRef.current;
         if (!el) return;
 
         let rafId: number;
+        let timeoutId: NodeJS.Timeout;
+        
+        // Debounce the observer to prevent layout thrashing on every animation frame
         const observer = new ResizeObserver(() => {
             cancelAnimationFrame(rafId);
-            rafId = requestAnimationFrame(() => {
-                if (el) {
-                    const h = el.scrollHeight;
-                    if (h > 0) setContentHeight(prev => prev !== h ? h : prev);
-                }
-            });
+            clearTimeout(timeoutId);
+            
+            timeoutId = setTimeout(() => {
+                rafId = requestAnimationFrame(() => {
+                    if (el) {
+                        const h = el.scrollHeight;
+                        if (h > 0) setContentHeight(prev => prev !== h ? h : prev);
+                    }
+                });
+            }, 50);
         });
 
         observer.observe(el);
-        // Also observe all direct children so we catch AnimatePresence swaps
-        Array.from(el.children).forEach(child => observer.observe(child));
 
         return () => {
             cancelAnimationFrame(rafId);
+            clearTimeout(timeoutId);
             observer.disconnect();
         };
     }, [activeTab]);
-
     const renderContent = () => {
         switch (activeTab) {
             case 'changes':
@@ -236,16 +229,19 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                         style={{ willChange: 'transform, opacity' }}
                     >
                         {/* Animated Headline */}
-                        <div className="text-center flex-shrink-0 mb-2">
-                            <p className="text-2xl sm:text-3xl lg:text-4xl font-light text-slate-800 dark:text-slate-100 tracking-tight leading-tight">
-                                Your eLMS is now{" "}
-                                <DiaText
-                                    repeat
-                                    repeatDelay={1.1}
-                                    text={["cleaner.", "faster.", "smarter."]}
-                                    className="font-bold"
-                                />
-                            </p>
+                        <div className="text-center flex-shrink-0 mb-2 px-2">
+                            <div className="flex flex-col sm:flex-row items-center justify-center text-2xl sm:text-3xl lg:text-4xl font-light text-slate-800 dark:text-slate-100 tracking-tight leading-tight sm:gap-2">
+                                <span>Your eLMS is now</span>
+                                <span className="inline-block font-bold">
+                                    <DiaText
+                                        repeat
+                                        repeatDelay={1.1}
+                                        fixedWidth={true}
+                                        className="text-center"
+                                        text={["cleaner.", "faster.", "smarter."]}
+                                    />
+                                </span>
+                            </div>
                         </div>
 
                         {/* Scroll Reel */}
@@ -281,30 +277,14 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                         animate={{ opacity: 1, x: 0 }} 
                         exit={{ opacity: 0, x: direction * -60 }}
                         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                        className="space-y-6"
+                        className="space-y-6 flex flex-col"
                         style={{ willChange: 'transform, opacity' }}
                     >
-                        <div className="text-center space-y-2 mb-8">
+                        <div className="text-center space-y-2 mb-4">
                             <h3 className="text-2xl font-bold text-slate-800 dark:text-white">Exciting New Tools</h3>
                             <p className="text-slate-500 dark:text-slate-400">Discover the new interactive widgets we've added to boost your productivity.</p>
                         </div>
-                        <div className="grid grid-cols-1 gap-4">
-                            {[
-                                { title: "Streak Tracking", desc: "Stay motivated by tracking your consecutive study days.", icon: Sparkles, color: "text-orange-500", bg: "bg-orange-100 dark:bg-orange-900/30", border: "hover:border-orange-200 dark:hover:border-orange-800/50" },
-                                { title: "Interactive Widgets", desc: "Live weather and dynamic study goals right on your dashboard.", icon: Rocket, color: "text-indigo-500", bg: "bg-indigo-100 dark:bg-indigo-900/30", border: "hover:border-indigo-200 dark:hover:border-indigo-800/50" }
-                            ].map((feat, i) => (
-                                <div key={i} className={`flex items-center gap-4 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 transition-all cursor-pointer ${feat.border}`}>
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${feat.bg} ${feat.color}`}>
-                                        <feat.icon className="w-6 h-6" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h4 className="font-bold text-slate-700 dark:text-slate-200">{feat.title}</h4>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{feat.desc}</p>
-                                    </div>
-                                    <ChevronRight className="w-5 h-5 text-slate-300 dark:text-slate-600" />
-                                </div>
-                            ))}
-                        </div>
+                        <Feature197 features={elmsFeatures} />
                     </motion.div>
                 );
             case 'feedback':
@@ -399,7 +379,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                                                     strokeWidth={isActive ? 2.5 : 2.1} 
                                                 />
                                                 {/* Tooltip */}
-                                                <span className="opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none absolute -bottom-10 translate-y-2 group-hover:translate-y-0 text-[10px] sm:text-[11px] tracking-wide text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-md shadow-md border border-slate-100 dark:border-slate-700 font-bold whitespace-nowrap z-50">
+                                                <span className="opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none absolute -bottom-10 translate-y-2 group-hover:translate-y-0 text-[10px] sm:text-[11px] tracking-wide text-white dark:text-slate-100 bg-slate-800 dark:bg-slate-700 px-2.5 py-1 rounded-md shadow-md border border-slate-700 font-bold whitespace-nowrap z-50">
                                                     {tab.label}
                                                 </span>
                                             </button>
@@ -408,7 +388,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
 
-                            {/* Content Area — CSS height transition */}
+                            {/* Content Area — Smooth CSS height transition */}
                             <div 
                                 className="overflow-hidden hide-scrollbar"
                                 style={{ 

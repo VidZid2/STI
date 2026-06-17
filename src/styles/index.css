@@ -2,8 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+
+/* Accordion slide animation — targets Radix data-state directly */
+.radix-accordion-content[data-state="open"] {
+  animation: accordion-down 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.radix-accordion-content[data-state="closed"] {
+  animation: accordion-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* ============================================
-   DESIGN TOKENS - DYNAMIC MODAL THEME VARIABLES
    ============================================ */
 
 :root {
