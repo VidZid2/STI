@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Sparkles, LayoutDashboard, X, Rocket, ShieldCheck, ChevronRight, MessageSquare } from 'lucide-react';
+import { Sparkles, LayoutDashboard, X, Rocket, ShieldCheck, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ScrollReelTestimonials } from '../ui/scroll-reel-testimonials';
 import { AdvantagesBento } from '../ui/advantages-bento';
