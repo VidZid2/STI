@@ -17,12 +17,7 @@ import { CpuArchitecture } from "./cpu-architecture";
 import Grainient from "./grainient";
 import { InteractiveMenu, type InteractiveMenuItem } from "./modern-mobile-menu";
 import { motion, useAnimate } from "motion/react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  useCarousel,
-} from "./carousel";
+
 
 
 

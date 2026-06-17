@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
+
 
 export interface CpuArchitectureSvgProps {
   className?: string;
