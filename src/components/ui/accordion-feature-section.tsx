@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { Plus } from "lucide-react";
+import { useDevicePerformance } from "../../hooks/use-device-performance";
 
 import {
   Accordion,
@@ -42,6 +43,7 @@ const defaultFeatures: FeatureItem[] = [
 ];
 
 const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
+  const { isLowEnd } = useDevicePerformance();
   const [activeTabId, setActiveTabId] = useState<number | null>(features[0]?.id || 1);
   const [activeImage, setActiveImage] = useState(features[0]?.image || defaultFeatures[0].image);
 
@@ -53,9 +55,9 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
             {features.map((tab, index) => (
               <motion.div
                 key={tab.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={isLowEnd ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 + 0.1, ease: [0.16, 1, 0.3, 1] }}
+                transition={isLowEnd ? { duration: 0 } : { duration: 0.5, delay: index * 0.1 + 0.1, ease: [0.16, 1, 0.3, 1] }}
               >
                 <AccordionItem value={`item-${tab.id}`} className="py-2">
                   <AccordionPrimitive.Header className="flex">
@@ -92,19 +94,22 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
                   </AccordionPrimitive.Header>
                   <AccordionContent className="pb-4 sm:pb-2 pl-2 sm:ps-[4.5rem] pr-2 sm:pr-4">
                     <motion.div
-                      initial={{ opacity: 0, y: -10 }}
+                      initial={isLowEnd ? false : { opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+                      transition={isLowEnd ? { duration: 0 } : { duration: 0.3, delay: 0.05, ease: "easeOut" }}
                     >
                       <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed text-sm sm:text-base">
                         {tab.description}
                       </p>
                       <div className="mt-4 md:hidden">
-                        <img
-                          src={tab.image}
-                          alt={tab.title}
-                          className="w-full aspect-video sm:aspect-auto sm:max-h-80 rounded-xl object-cover shadow-sm border border-slate-200 dark:border-slate-800"
-                        />
+                        <div className="w-full aspect-video rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-sm">
+                          <img
+                            src={tab.image}
+                            alt={tab.title}
+                            loading="lazy"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
                       </div>
                     </motion.div>
                   </AccordionContent>

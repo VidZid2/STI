@@ -295,7 +295,7 @@ export function ScrollReelTestimonials({
       {/* Reel section */}
       <div
         aria-hidden="true"
-        className="relative h-56 w-full shrink-0 self-stretch overflow-hidden md:h-auto md:w-[380px]"
+        className="relative h-40 w-full shrink-0 self-stretch overflow-hidden sm:h-56 md:h-auto md:w-[380px]"
         style={{
           WebkitMaskImage:
             "linear-gradient(to right, transparent 0%, black 14%, black 86%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
