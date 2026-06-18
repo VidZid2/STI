@@ -35,7 +35,7 @@ interface WelcomeModalProps {
 
 const TABS = [
     { id: 'changes', label: 'What Changed?', icon: LayoutDashboard },
-    { id: 'advantages', label: 'Speed & Fixes', icon: ShieldCheck },
+    { id: 'advantages', label: 'Core Upgrades', icon: ShieldCheck },
     { id: 'features', label: 'New Features', icon: Rocket },
     { id: 'feedback', label: 'Give Feedback', icon: MessageSquare },
 ];
@@ -198,7 +198,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                         animate={{ opacity: 1, x: 0 }} 
                         exit={{ opacity: 0, x: direction * -60 }}
                         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                        className="w-full flex flex-col md:h-[500px]"
+                        className="w-full flex flex-col"
                         style={{ willChange: 'transform, opacity' }}
                     >
                         <WelcomeFeatures />
