@@ -198,7 +198,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                         animate={{ opacity: 1, x: 0 }} 
                         exit={{ opacity: 0, x: direction * -60 }}
                         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                        className="w-full h-[500px] flex flex-col"
+                        className="w-full flex flex-col"
                         style={{ willChange: 'transform, opacity' }}
                     >
                         <WelcomeFeatures />

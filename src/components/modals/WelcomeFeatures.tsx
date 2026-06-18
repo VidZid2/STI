@@ -114,7 +114,7 @@ export function WelcomeFeatures() {
   );
 
   return (
-    <div className="w-full h-full flex flex-col pt-2 sm:pt-4">
+    <div className="w-full flex flex-col pt-2 sm:pt-4">
       <div className="text-center space-y-2 mb-6 sm:mb-8 shrink-0 px-4">
         <h3 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white tracking-tight">Everything New</h3>
         <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base max-w-lg mx-auto">
@@ -122,12 +122,10 @@ export function WelcomeFeatures() {
         </p>
       </div>
 
-      <div className="w-full flex-1 min-h-0 relative">
-        <div className="absolute inset-0 overflow-y-auto overflow-x-hidden hide-scrollbar px-1 sm:px-2 pb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-start">
-            <AccordionList items={col1} />
-            <AccordionList items={col2} />
-          </div>
+      <div className="w-full px-1 sm:px-2 pb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-start">
+          <AccordionList items={col1} />
+          <AccordionList items={col2} />
         </div>
       </div>
     </div>
