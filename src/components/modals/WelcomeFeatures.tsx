@@ -119,7 +119,7 @@ export function WelcomeFeatures() {
         <h3 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 tracking-tight">New features!</h3>
       </div>
 
-      <div className="w-full pb-6 px-1 sm:px-2">
+      <div className="w-full flex-1 min-h-0 overflow-y-auto hide-scrollbar pb-6 px-1 sm:px-2">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-start">
           <AccordionList items={col1} />
           <AccordionList items={col2} />
