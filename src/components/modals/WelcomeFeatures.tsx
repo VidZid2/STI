@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -61,8 +61,8 @@ const featuresData = [
   },
 ];
 
-const AccordionList = ({ items }: { items: typeof featuresData }) => (
-  <Accordion type="multiple" className="w-full rounded-2xl bg-white dark:bg-[#18181b] p-2 shadow-sm border border-slate-100 dark:border-slate-800/60">
+const AccordionList = ({ items, value, onValueChange }: { items: typeof featuresData, value: string[], onValueChange: (v: string[]) => void }) => (
+  <Accordion type="multiple" value={value} onValueChange={onValueChange} className="w-full rounded-2xl bg-white dark:bg-[#18181b] p-2 shadow-sm border border-slate-100 dark:border-slate-800/60">
     {items.map((item) => (
       <AccordionItem
         key={item.id}
@@ -75,7 +75,10 @@ const AccordionList = ({ items }: { items: typeof featuresData }) => (
               <item.icon className="size-5" strokeWidth={2.5} />
             </span>
             <div className="flex flex-col gap-0.5">
-              <span className="font-medium text-[15px] leading-5 text-slate-800 dark:text-slate-100">{item.title}</span>
+              <span className="font-medium text-[15px] leading-5 text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                {item.title}
+                <span className="rounded-full bg-blue-100/80 dark:bg-blue-500/20 px-2 py-[2px] text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest ring-1 ring-blue-600/10 dark:ring-blue-400/20">NEW</span>
+              </span>
               <span className="font-normal text-sm leading-5 text-slate-500 dark:text-slate-400">{item.subtitle}</span>
             </div>
           </div>
@@ -97,16 +100,50 @@ export function WelcomeFeatures() {
   const col1 = featuresData.slice(0, 3);
   const col2 = featuresData.slice(3, 6);
 
+  const [activeItems, setActiveItems] = useState<string[]>(["item-1"]);
+  const [isPaused, setIsPaused] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
+
+  useEffect(() => {
+    // If the user hovered over the component or manually clicked an item, pause auto-play
+    if (isPaused || userInteracted) return;
+
+    const interval = setInterval(() => {
+      setActiveItems(prev => {
+        const currentId = prev[0];
+        if (!currentId) return [featuresData[0].id];
+        
+        const currentIndex = featuresData.findIndex(f => f.id === currentId);
+        const nextIndex = (currentIndex + 1) % featuresData.length;
+        return [featuresData[nextIndex].id];
+      });
+    }, 4000); // Switch to next item every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [isPaused, userInteracted]);
+
+  const handleValueChange = (newValues: string[]) => {
+    // If user clicks, we permanently stop the autoplay
+    setUserInteracted(true);
+    setActiveItems(newValues);
+  };
+
   return (
-    <div className="w-full h-full flex flex-col">
+    <div 
+      className="w-full h-full flex flex-col"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
+    >
       <div className="text-center mb-6 sm:mb-8 shrink-0 px-4">
         <h3 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 tracking-tight">New features!</h3>
       </div>
 
       <div className="w-full pb-6 px-1 sm:px-2">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-start">
-          <AccordionList items={col1} />
-          <AccordionList items={col2} />
+          <AccordionList items={col1} value={activeItems} onValueChange={handleValueChange} />
+          <AccordionList items={col2} value={activeItems} onValueChange={handleValueChange} />
         </div>
       </div>
     </div>
