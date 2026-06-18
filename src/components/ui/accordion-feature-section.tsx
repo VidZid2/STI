@@ -92,14 +92,20 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
                       />
                     </AccordionPrimitive.Trigger>
                   </AccordionPrimitive.Header>
-                  <AccordionContent className="relative pb-4 sm:pb-2 pl-[1.55rem] sm:ps-[4.5rem] pr-2 sm:pr-4">
-                      {/* Dashed connector line from icon to content — mobile only */}
-                      {tab.icon && (
-                        <div className="w-px h-full absolute left-[1.25rem] sm:left-[1.75rem] inset-y-0 border-l border-dashed border-slate-300 dark:border-slate-700 md:hidden" />
-                      )}
-                      <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed text-sm sm:text-base pl-3 sm:pl-0">
+                  <AccordionContent className="relative pb-6 sm:pb-2 pl-[52px] sm:ps-[4.5rem] pr-4">
+                    {/* Timeline dashed line for mobile */}
+                    <div className="w-px h-full absolute left-5 inset-y-0 border-l-2 border-dashed border-slate-200 dark:border-slate-800 md:hidden" />
+                    
+                    <motion.div
+                      initial={isLowEnd ? false : { opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={isLowEnd ? { duration: 0 } : { duration: 0.3, delay: 0.05, ease: "easeOut" }}
+                      className="relative z-10"
+                    >
+                      <p className="mt-1 text-slate-600 dark:text-slate-400 leading-relaxed text-sm sm:text-base">
                         {tab.description}
                       </p>
+                    </motion.div>
                   </AccordionContent>
                 </AccordionItem>
               </motion.div>
