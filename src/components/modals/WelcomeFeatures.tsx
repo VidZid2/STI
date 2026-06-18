@@ -9,12 +9,10 @@ import {
 } from "@/components/ui/accordion";
 import { 
   Flame, 
-  Wrench, 
   LayoutTemplate, 
   Users, 
   Target, 
   BookOpen, 
-  CloudUpload, 
   BotMessageSquare 
 } from "lucide-react";
 
@@ -25,13 +23,6 @@ const featuresData = [
     title: "Day Streak",
     subtitle: "Build consistent habits",
     content: "Stay motivated by tracking your consecutive study days. Build habits that last and keep pushing your personal records higher.",
-  },
-  {
-    id: "item-2",
-    icon: Wrench,
-    title: "Student Tools",
-    subtitle: "Maximize your productivity",
-    content: "Essential utilities and resources right at your fingertips to maximize your productivity and learning efficiency.",
   },
   {
     id: "item-3",
@@ -60,13 +51,6 @@ const featuresData = [
     title: "Revamp Course System",
     subtitle: "Distraction-free learning",
     content: "A streamlined, distraction-free view for your modules, lessons, and quizzes. Focus entirely on your learning material.",
-  },
-  {
-    id: "item-7",
-    icon: CloudUpload,
-    title: "Upload & Deleting System",
-    subtitle: "Manage files easily",
-    content: "Manage your files with ease using our lightning-fast, highly reliable cloud upload and deletion interface.",
   },
   {
     id: "item-8",
@@ -110,8 +94,8 @@ const AccordionList = ({ items }: { items: typeof featuresData }) => (
 
 export function WelcomeFeatures() {
   // Split into two columns for desktop
-  const col1 = featuresData.slice(0, 4);
-  const col2 = featuresData.slice(4, 8);
+  const col1 = featuresData.slice(0, 3);
+  const col2 = featuresData.slice(3, 6);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -119,7 +103,7 @@ export function WelcomeFeatures() {
         <h3 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 tracking-tight">New features!</h3>
       </div>
 
-      <div className="w-full flex-1 min-h-0 overflow-y-auto hide-scrollbar pb-6 px-1 sm:px-2">
+      <div className="w-full pb-6 px-1 sm:px-2">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-start">
           <AccordionList items={col1} />
           <AccordionList items={col2} />
