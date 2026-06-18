@@ -77,41 +77,41 @@ const featuresData = [
   },
 ];
 
+const AccordionList = ({ items }: { items: typeof featuresData }) => (
+  <Accordion type="multiple" className="w-full rounded-2xl bg-white dark:bg-[#18181b] p-2 shadow-sm border border-slate-100 dark:border-slate-800/60">
+    {items.map((item) => (
+      <AccordionItem
+        key={item.id}
+        value={item.id}
+        className="group/item border-b border-slate-100 dark:border-slate-800/60 last:border-none"
+      >
+        <AccordionTrigger className="flex w-full items-center justify-between py-3 px-3 hover:no-underline hover:bg-slate-50 dark:hover:bg-[#27272a]/60 rounded-xl transition-colors data-[state=open]:bg-slate-50 dark:data-[state=open]:bg-[#27272a]/60">
+          <div className="flex items-center gap-4 text-left">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-all duration-300 ease-out group-hover/item:scale-110 group-hover/item:-rotate-6 group-hover/item:shadow-md">
+              <item.icon className="size-5" strokeWidth={2.5} />
+            </span>
+            <div className="flex flex-col gap-0.5">
+              <span className="font-medium text-[15px] leading-5 text-slate-800 dark:text-slate-100">{item.title}</span>
+              <span className="font-normal text-sm leading-5 text-slate-500 dark:text-slate-400">{item.subtitle}</span>
+            </div>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent className="px-3 pb-4 pt-1">
+          <div className="pl-[60px] pr-2">
+            <p className="text-slate-600 dark:text-slate-400/80 text-[14px] leading-relaxed">
+              {item.content}
+            </p>
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    ))}
+  </Accordion>
+);
+
 export function WelcomeFeatures() {
   // Split into two columns for desktop
   const col1 = featuresData.slice(0, 4);
   const col2 = featuresData.slice(4, 8);
-
-  const AccordionList = ({ items }: { items: typeof featuresData }) => (
-    <Accordion type="multiple" className="w-full rounded-2xl bg-white dark:bg-[#18181b] p-2 shadow-sm border border-slate-100 dark:border-slate-800/60">
-      {items.map((item) => (
-        <AccordionItem
-          key={item.id}
-          value={item.id}
-          className="group/item border-b border-slate-100 dark:border-slate-800/60 last:border-none"
-        >
-          <AccordionTrigger className="flex w-full items-center justify-between py-3 px-3 hover:no-underline hover:bg-slate-50 dark:hover:bg-[#27272a]/60 rounded-xl transition-colors data-[state=open]:bg-slate-50 dark:data-[state=open]:bg-[#27272a]/60">
-            <div className="flex items-center gap-4 text-left">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-all duration-300 ease-out group-hover/item:scale-110 group-hover/item:-rotate-6 group-hover/item:shadow-md">
-                <item.icon className="size-5" strokeWidth={2.5} />
-              </span>
-              <div className="flex flex-col gap-0.5">
-                <span className="font-medium text-[15px] leading-5 text-slate-800 dark:text-slate-100">{item.title}</span>
-                <span className="font-normal text-sm leading-5 text-slate-500 dark:text-slate-400">{item.subtitle}</span>
-              </div>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-3 pb-4 pt-1">
-            <div className="pl-[60px] pr-2">
-              <p className="text-slate-600 dark:text-slate-400/80 text-[14px] leading-relaxed">
-                {item.content}
-              </p>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
-  );
 
   return (
     <div className="w-full h-full flex flex-col pt-2 sm:pt-4">
