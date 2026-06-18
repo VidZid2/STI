@@ -102,12 +102,10 @@ const SCROLL_REEL_CSS = `
 @keyframes scroll-reel-rise {
   0% {
     opacity: 0;
-    filter: blur(8px);
     transform: translateY(12px) scale(0.95);
   }
   100% {
     opacity: 1;
-    filter: blur(0px);
     transform: translateY(0) scale(1);
   }
 }
