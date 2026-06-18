@@ -90,7 +90,7 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
                       />
                     </AccordionPrimitive.Trigger>
                   </AccordionPrimitive.Header>
-                  <AccordionContent className="ms-3 pb-2 ps-12 sm:ps-16 pr-4">
+                  <AccordionContent className="pb-4 sm:pb-2 pl-2 sm:ps-[4.5rem] pr-2 sm:pr-4">
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -103,7 +103,7 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
                         <img
                           src={tab.image}
                           alt={tab.title}
-                          className="h-full max-h-64 sm:max-h-80 w-full rounded-xl object-cover shadow-sm border border-slate-200 dark:border-slate-800"
+                          className="w-full aspect-video sm:aspect-auto sm:max-h-80 rounded-xl object-cover shadow-sm border border-slate-200 dark:border-slate-800"
                         />
                       </div>
                     </motion.div>
