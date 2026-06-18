@@ -115,11 +115,8 @@ export function WelcomeFeatures() {
 
   return (
     <div className="w-full h-full flex flex-col pt-2 sm:pt-4">
-      <div className="text-center space-y-2 mb-6 sm:mb-8 shrink-0 px-4">
-        <h3 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white tracking-tight">Everything New</h3>
-        <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base max-w-lg mx-auto">
-          We've packed this update with powerful tools to transform how you study. Explore the new features below.
-        </p>
+      <div className="text-center mb-6 sm:mb-8 shrink-0 px-4">
+        <h3 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 tracking-tight">New features!</h3>
       </div>
 
       <div className="w-full pb-6 px-1 sm:px-2">
