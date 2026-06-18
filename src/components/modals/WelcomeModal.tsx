@@ -327,17 +327,18 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-slate-900/60 sm:bg-slate-900/40 backdrop-blur-sm sm:backdrop-blur-md"
+                        className="fixed inset-0 bg-slate-900/60 sm:bg-slate-900/40 backdrop-blur-sm sm:backdrop-blur-md"
                         style={{ willChange: 'opacity' }}
                     />
 
                     {/* Modal Content */}
                     <motion.div
                         ref={modalRef}
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 15, scale: 0.95 }}
                         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                         className="relative w-full max-w-4xl lg:max-w-6xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-200/50 dark:border-slate-700/50 flex flex-col max-h-[95vh] overflow-y-auto hide-scrollbar"
                         style={{ willChange: 'transform, opacity' }}
