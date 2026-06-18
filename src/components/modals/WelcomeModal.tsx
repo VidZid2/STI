@@ -6,7 +6,7 @@ import { AdvantagesBento } from '../ui/advantages-bento';
 import HoverBrandLogo from '../ui/hover-brand-logo';
 import { DiaText } from '../ui/dia-text';
 import { Feature197 } from '../ui/accordion-feature-section';
-
+import { useDevicePerformance } from '../../hooks/use-device-performance';
 const CHANGES_TESTIMONIALS = [
   {
     quote: "We've completely refreshed the dashboard. *Navigation is simpler*, *load times are blazingly fast*, and your learning experience is now truly *distraction-free*.",
@@ -76,6 +76,7 @@ const TABS = [
 ];
 
 const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
+    const { isLowEnd } = useDevicePerformance();
     const [activeTab, setActiveTab] = useState('changes');
     const [direction, setDirection] = useState(0); // -1 = left, 1 = right
     const contentRef = useRef<HTMLDivElement>(null);
@@ -393,9 +394,9 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                             <div 
                                 className="overflow-hidden hide-scrollbar"
                                 style={{ 
-                                    height: contentHeight > 0 ? `${contentHeight}px` : 'auto',
-                                    transition: 'height 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                                    willChange: 'height',
+                                    height: (contentHeight > 0 && !isLowEnd) ? `${contentHeight}px` : 'auto',
+                                    transition: isLowEnd ? 'none' : 'height 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    willChange: isLowEnd ? 'auto' : 'height',
                                     scrollbarWidth: 'none', 
                                     msOverflowStyle: 'none' 
                                 }}
