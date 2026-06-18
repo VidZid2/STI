@@ -5,7 +5,6 @@ import { ScrollReelTestimonials } from '../ui/scroll-reel-testimonials';
 import { AdvantagesBento } from '../ui/advantages-bento';
 import HoverBrandLogo from '../ui/hover-brand-logo';
 import { DiaText } from '../ui/dia-text';
-import { Feature197 } from '../ui/accordion-feature-section';
 import { useDevicePerformance } from '../../hooks/use-device-performance';
 const CHANGES_TESTIMONIALS = [
   {
@@ -26,41 +25,6 @@ const CHANGES_TESTIMONIALS = [
     image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80&auto=format&fit=crop",
     alt: "Better Mobile Layout",
   },
-];
-
-const elmsFeatures = [
-    {
-        id: 1,
-        icon: Sparkles,
-        title: "Streak Tracking",
-        sub: "Build consistent learning habits",
-        image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&q=80",
-        description: "Stay motivated by tracking your consecutive study days. Build habits that last and keep pushing your personal records higher.",
-    },
-    {
-        id: 2,
-        icon: LayoutDashboard,
-        title: "Interactive Widgets",
-        sub: "Your dashboard, upgraded",
-        image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80",
-        description: "Live weather and dynamic study goals right on your dashboard. Everything you need is available at a glance without switching tabs.",
-    },
-    {
-        id: 3,
-        icon: ShieldCheck,
-        title: "Dark Mode Support",
-        sub: "Easy on the eyes, day or night",
-        image: "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80",
-        description: "A beautifully crafted dark mode that is easy on the eyes. Study late into the night without eye strain, featuring deep blacks and legible text.",
-    },
-    {
-        id: 4,
-        icon: Rocket,
-        title: "Mobile Ready",
-        sub: "Study anywhere, anytime",
-        image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80",
-        description: "Your entire eLMS fits perfectly in your pocket. Smooth scrolling, stacked layouts, and touch-friendly targets ensure studying on-the-go is flawless.",
-    }
 ];
 
 interface WelcomeModalProps {
@@ -233,14 +197,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                         animate={{ opacity: 1, x: 0 }} 
                         exit={{ opacity: 0, x: direction * -60 }}
                         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                        className="space-y-6 flex flex-col"
+                        className="space-y-6 flex flex-col min-h-[200px]"
                         style={{ willChange: 'transform, opacity' }}
                     >
-                        <div className="text-center space-y-2 mb-4">
-                            <h3 className="text-2xl font-bold text-slate-800 dark:text-white">Exciting New Tools</h3>
-                            <p className="text-slate-500 dark:text-slate-400">Discover the new interactive widgets we've added to boost your productivity.</p>
-                        </div>
-                        <Feature197 features={elmsFeatures} />
+                        {/* Features content has been emptied as requested */}
                     </motion.div>
                 );
             case 'feedback':
