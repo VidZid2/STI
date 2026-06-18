@@ -124,7 +124,7 @@ export function WelcomeFeatures() {
 
       <div className="w-full flex-1 min-h-0 relative">
         <div className="absolute inset-0 overflow-y-auto overflow-x-hidden hide-scrollbar px-1 sm:px-2 pb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-start">
             <AccordionList items={col1} />
             <AccordionList items={col2} />
           </div>
