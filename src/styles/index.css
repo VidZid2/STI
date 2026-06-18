@@ -28,6 +28,7 @@
 }
 .radix-accordion-content > div {
   overflow: hidden;
+  min-height: 0;
 }
 
 /* ============================================
