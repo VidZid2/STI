@@ -52,6 +52,7 @@ const AccordionContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
+    forceMount
     className={cn("radix-accordion-content text-sm", className)}
     {...props}
   >
