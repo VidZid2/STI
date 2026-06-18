@@ -12,12 +12,22 @@
   to { height: 0; }
 }
 
-/* Accordion slide animation — targets Radix data-state directly */
+/* Accordion animation — CSS Grid trick for 60fps on mobile.
+   grid-template-rows: 0fr → 1fr is compositable and avoids
+   layout-thrashing height recalculations every frame. */
+.radix-accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
 .radix-accordion-content[data-state="open"] {
-  animation: accordion-down 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  grid-template-rows: 1fr;
 }
 .radix-accordion-content[data-state="closed"] {
-  animation: accordion-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  grid-template-rows: 0fr;
+}
+.radix-accordion-content > div {
+  overflow: hidden;
 }
 
 /* ============================================

@@ -93,11 +93,6 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
                     </AccordionPrimitive.Trigger>
                   </AccordionPrimitive.Header>
                   <AccordionContent className="pb-4 sm:pb-2 pl-2 sm:ps-[4.5rem] pr-2 sm:pr-4">
-                    <motion.div
-                      initial={isLowEnd ? false : { opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={isLowEnd ? { duration: 0 } : { duration: 0.3, delay: 0.05, ease: "easeOut" }}
-                    >
                       <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed text-sm sm:text-base">
                         {tab.description}
                       </p>
@@ -111,7 +106,6 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
                           />
                         </div>
                       </div>
-                    </motion.div>
                   </AccordionContent>
                 </AccordionItem>
               </motion.div>
