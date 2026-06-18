@@ -92,20 +92,14 @@ const Feature197 = ({ features = defaultFeatures }: Feature197Props) => {
                       />
                     </AccordionPrimitive.Trigger>
                   </AccordionPrimitive.Header>
-                  <AccordionContent className="pb-4 sm:pb-2 pl-2 sm:ps-[4.5rem] pr-2 sm:pr-4">
-                      <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed text-sm sm:text-base">
+                  <AccordionContent className="relative pb-4 sm:pb-2 pl-[1.55rem] sm:ps-[4.5rem] pr-2 sm:pr-4">
+                      {/* Dashed connector line from icon to content — mobile only */}
+                      {tab.icon && (
+                        <div className="w-px h-full absolute left-[1.25rem] sm:left-[1.75rem] inset-y-0 border-l border-dashed border-slate-300 dark:border-slate-700 md:hidden" />
+                      )}
+                      <p className="mt-2 text-slate-600 dark:text-slate-400 leading-relaxed text-sm sm:text-base pl-3 sm:pl-0">
                         {tab.description}
                       </p>
-                      <div className="mt-4 md:hidden">
-                        <div className="w-full aspect-video rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-sm">
-                          <img
-                            src={tab.image}
-                            alt={tab.title}
-                            loading="lazy"
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                      </div>
                   </AccordionContent>
                 </AccordionItem>
               </motion.div>
