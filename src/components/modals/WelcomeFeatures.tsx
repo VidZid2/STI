@@ -114,7 +114,7 @@ export function WelcomeFeatures() {
   const col2 = featuresData.slice(4, 8);
 
   return (
-    <div className="w-full h-full flex flex-col pt-2 sm:pt-4">
+    <div className="w-full h-full flex flex-col">
       <div className="text-center mb-6 sm:mb-8 shrink-0 px-4">
         <h3 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 tracking-tight">New features!</h3>
       </div>
