@@ -6,6 +6,7 @@ import { AdvantagesBento } from '../ui/advantages-bento';
 import HoverBrandLogo from '../ui/hover-brand-logo';
 import { DiaText } from '../ui/dia-text';
 import { useDevicePerformance } from '../../hooks/use-device-performance';
+import { NewFeaturesAccordion } from '../ui/new-features-accordion';
 const CHANGES_TESTIMONIALS = [
   {
     quote: "We've completely refreshed the dashboard. *Navigation is simpler*, *load times are blazingly fast*, and your learning experience is now truly *distraction-free*.",
@@ -197,10 +198,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                         animate={{ opacity: 1, x: 0 }} 
                         exit={{ opacity: 0, x: direction * -60 }}
                         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                        className="space-y-6 flex flex-col min-h-[200px]"
+                        className="w-full flex flex-col"
                         style={{ willChange: 'transform, opacity' }}
                     >
-                        {/* Features content has been emptied as requested */}
+                        <NewFeaturesAccordion />
                     </motion.div>
                 );
             case 'feedback':
