@@ -83,54 +83,9 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
     const modalRef = useRef<HTMLDivElement>(null);
     const [contentHeight, setContentHeight] = useState<number>(0);
     const wheelCooldown = useRef(false);
-    const hasAutoScrolled = useRef<Record<string, boolean>>({});
 
     const tabIds = TABS.map(t => t.id);
 
-    // Mobile auto-scroll for 'changes' and 'advantages' tabs (once per refresh per tab)
-    useEffect(() => {
-        const isMobile = window.matchMedia('(max-width: 768px)').matches;
-        if (!isMobile || !isOpen) return;
-        if (activeTab !== 'changes' && activeTab !== 'advantages') return;
-        if (hasAutoScrolled.current[activeTab]) return;
-
-        const scrollEl = modalRef.current;
-        if (!scrollEl) return;
-
-        let cancelled = false;
-
-        // Mark as done so it won't repeat
-        hasAutoScrolled.current[activeTab] = true;
-
-        // Wait for content to fully render before starting
-        const startDelay = setTimeout(() => {
-            if (cancelled) return;
-
-            const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
-            if (maxScroll <= 5) return; // Nothing meaningful to scroll
-
-            // Native CSS smooth scroll down
-            scrollEl.scrollTo({ top: maxScroll, behavior: 'smooth' });
-
-            // After a delay, native smooth scroll back up
-            setTimeout(() => {
-                if (!cancelled) {
-                    scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            }, 1200);
-
-        }, 1200); // 1.2s delay so content settles first
-
-        // If user touches the modal, cancel auto-scroll immediately
-        const onTouch = () => { cancelled = true; };
-        scrollEl.addEventListener('touchstart', onTouch, { once: true, passive: true });
-
-        return () => {
-            cancelled = true;
-            clearTimeout(startDelay);
-            scrollEl.removeEventListener('touchstart', onTouch);
-        };
-    }, [activeTab, isOpen]);
 
     const navigateTab = useCallback((dir: 1 | -1) => {
         setDirection(dir);
