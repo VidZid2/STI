@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Sparkles, LayoutDashboard, X, Rocket, ShieldCheck, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, X, Rocket, ShieldCheck, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ScrollReelTestimonials } from '../ui/scroll-reel-testimonials';
 import { AdvantagesBento } from '../ui/advantages-bento';
 import HoverBrandLogo from '../ui/hover-brand-logo';
 import { WelcomeFeatures } from './WelcomeFeatures';
 import { DiaText } from '../ui/dia-text';
+import { CallToAction } from '@/components/ui/cta-3';
 import { useDevicePerformance } from '../../hooks/use-device-performance';
 const CHANGES_TESTIMONIALS = [
   {
@@ -215,21 +216,18 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
                         className="w-full flex flex-col items-center justify-center p-4 sm:p-6 space-y-6"
                         style={{ willChange: 'transform, opacity' }}
                     >
-                        <div className="text-center space-y-3 max-w-lg mx-auto">
-                            <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-4 border border-blue-200 dark:border-blue-800/50 shadow-inner">
-                                <MessageSquare className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            <h3 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white tracking-tight">We Want Your Feedback</h3>
-                            <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
-                                This new update is built entirely for you. If you spot a glitch, have a suggestion, or just want to tell us what you think, let us know!
-                            </p>
-                        </div>
-                        <button 
-                            onClick={onClose}
-                            className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 hover:-translate-y-0.5"
-                        >
-                            Submit Feedback
-                        </button>
+                        <CallToAction
+                            title="We Want Your Feedback"
+                            description="This new update is built entirely for you. If you spot a glitch, have a suggestion, or just want to tell us what you think, let us know!"
+                            action={
+                                <button 
+                                    onClick={onClose}
+                                    className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 hover:-translate-y-0.5"
+                                >
+                                    Continue
+                                </button>
+                            }
+                        />
                     </motion.div>
                 );
         }

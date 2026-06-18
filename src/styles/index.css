@@ -1,3 +1,4 @@
+@import "../components/agent-elements/agent-ui.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,23 +13,14 @@
   to { height: 0; }
 }
 
-/* Accordion animation — CSS Grid trick for 60fps on mobile.
-   grid-template-rows: 0fr → 1fr is compositable and avoids
-   layout-thrashing height recalculations every frame. */
-.radix-accordion-content {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
+/* Accordion slide animation — targets Radix data-state directly */
 .radix-accordion-content[data-state="open"] {
-  grid-template-rows: 1fr;
+  animation: accordion-down 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
 }
 .radix-accordion-content[data-state="closed"] {
-  grid-template-rows: 0fr;
-}
-.radix-accordion-content > div {
+  animation: accordion-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   overflow: hidden;
-  min-height: 0;
 }
 
 /* ============================================
@@ -5836,6 +5828,8 @@ html.hide-avatars [class*="avatar-container"] {
         --color-chart-marker-foreground: var(--chart-marker-foreground);
         --color-chart-ring-background: var(--chart-ring-background);
         --color-chart-label: var(--chart-label);
+        --animate-accordion-down: accordion-down 0.2s ease-out;
+        --animate-accordion-up: accordion-up 0.2s ease-out;
     }
   :root {
         --chart-background: oklch(1 0 0);
@@ -5918,6 +5912,22 @@ html.hide-avatars [class*="avatar-container"] {
     transform: translateZ(0) rotate(360deg);
         }
     }
+  @keyframes accordion-down {
+  from {
+    height: 0;
+    }
+  to {
+    height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+    }
+  to {
+    height: 0;
+    }
+  }
 }
 
 .cpu-architecture {
@@ -5986,4 +5996,4 @@ html.hide-avatars [class*="avatar-container"] {
   100% {
     offset-distance: 100%;
   }
-}
+}

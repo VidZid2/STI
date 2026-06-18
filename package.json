@@ -12,6 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@base-ui/react": "^1.5.0",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.14.0",
@@ -31,6 +32,7 @@
     "@radix-ui/react-slot": "^1.2.5",
     "@react-three/fiber": "^9.6.1",
     "@react-three/postprocessing": "^3.0.4",
+    "@streamdown/code": "^1.1.1",
     "@supabase/supabase-js": "^2.98.0",
     "@tabler/icons-react": "^3.44.0",
     "@tiptap/extension-link": "^3.22.3",
@@ -45,6 +47,7 @@
     "@visx/grid": "^4.0.0",
     "@visx/responsive": "^4.0.0",
     "@visx/scale": "^4.0.0",
+    "ai": "^6.0.208",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -82,6 +85,7 @@
     "react-virtuoso": "^4.18.0",
     "rough-notation": "^0.5.1",
     "sonner": "^2.0.7",
+    "streamdown": "^2.5.0",
     "swiper": "^12.1.4",
     "tailwind-merge": "^3.6.0",
     "tesseract.js": "^6.0.1",

@@ -185,10 +185,12 @@ const Grainient = ({
     ctxMap.set(container, { renderer, program, mesh });
 
     const setSize = () => {
-      const rect = container.getBoundingClientRect();
-      const w = Math.max(1, Math.floor(rect.width));
-      const h = Math.max(1, Math.floor(rect.height));
+      const w = Math.max(1, container.clientWidth);
+      const h = Math.max(1, container.clientHeight);
       renderer.setSize(w, h);
+      // Force style back to 100% since setSize overwrites them with px values
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
       const res = program.uniforms.iResolution.value;
       res[0] = gl.drawingBufferWidth;
       res[1] = gl.drawingBufferHeight;
