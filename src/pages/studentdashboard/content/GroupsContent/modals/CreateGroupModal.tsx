@@ -1,17 +1,19 @@
-/**
- * CreateGroupModal
- * Multi-step group creation wizard.
- * Extracted from GroupsContent.tsx during Phase 8.2
- */
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
+import { ColorPicker } from '../../../../../components/ui/color-picker';
 import { createPortal } from 'react-dom';
 import { supabase, isSupabaseConfigured } from '../../../../../lib/supabase';
 import { getProfile } from '../../../../../services/profileService';
 import { type GroupCategory } from '../../../../../services/groupsService';
+import { getClassmates as getLocalClassmates } from '../../../../../services/usersService';
+import { AnimatedCircularProgressBar } from '../../../../../components/ui/animated-circular-progress-bar';
 import GroupIcon from '../components/GroupIcon';
+import { X, ChevronRight, Check, Users, Link as LinkIcon, Search, AlertCircle, Copy, HelpCircle, Briefcase, Plus, Book, Code, MessagesSquare, BookOpen, GraduationCap, Trash2 } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem } from '../../../../../components/ui/carousel';
+import { UiverseSwitch } from '../../../../../components/ui/UiverseSwitch';
+import { triggerGlobalToast } from '../../../components/DailyInspirationToast';
 
-const CreateGroupModal: React.FC<{
+interface CreateGroupModalProps {
     isOpen: boolean;
     onClose: () => void;
     onCreateGroup: (group: {
@@ -25,113 +27,52 @@ const CreateGroupModal: React.FC<{
         maxMembers: number;
         isPrivate: boolean;
     }) => void;
-}> = ({ isOpen, onClose, onCreateGroup }) => {
+}
+
+const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, onCreateGroup }) => {
     const isDarkMode = document.documentElement.classList.contains("dark");
     const [step, setStep] = useState(1);
+    
+    // Core Form States
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [category, setCategory] = useState<GroupCategory>('study');
+    const [category, setCategory] = useState<GroupCategory>('project');
     const [selectedIcon, setSelectedIcon] = useState('users');
     const [selectedColor, setSelectedColor] = useState('#3b82f6');
     const [maxMembers, setMaxMembers] = useState(10);
     const [isPrivate, setIsPrivate] = useState(false);
-    const [isCreating, setIsCreating] = useState(false);
-    const [showNameSuggestions, setShowNameSuggestions] = useState(false);
+    
+    // Course and Avatar
+    const [selectedCourse, setSelectedCourse] = useState<{ id: string; title: string; shortTitle: string } | null>(null);
+    const [showCourseDropdown, setShowCourseDropdown] = useState(false);
+    const [groupAvatar, setGroupAvatar] = useState<string | null>(null);
+    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+    const [imageError, setImageError] = useState<{type: 'size' | 'inappropriate' | 'warning' | null, message: string}>({ type: null, message: '' });
+    const avatarInputRef = useRef<HTMLInputElement>(null);
+    const courseDropdownRef = useRef<HTMLDivElement>(null);
+    const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
+    const [hoveredCategory, setHoveredCategory] = useState<GroupCategory | null>(null);
+    const [hoveredColor, setHoveredColor] = useState<string | null>(null);
+    const [hoveredIconId, setHoveredIconId] = useState<string | null>(null);
+    const [hoveredPreset, setHoveredPreset] = useState<number | null>(null);
+    
+    // Teammate Invitation States
     const [inviteEmails, setInviteEmails] = useState<{
         email: string;
         name: string;
         section: string;
         program: string;
+        profile_image?: string;
+        level?: number;
+        progress?: number;
     }[]>([]);
     const [currentInviteEmail, setCurrentInviteEmail] = useState('');
-    const [showSuccess, setShowSuccess] = useState(false);
-    const [confettiParticles, setConfettiParticles] = useState<{ id: number; x: number; y: number; color: string; rotation: number; scale: number }[]>([]);
-    const [hoveredTooltip, setHoveredTooltip] = useState<{ text: string; x: number; y: number; color: string } | null>(null);
-    const tooltipRef = useRef<HTMLDivElement>(null);
-
-    // Quick Templates
-    const quickTemplates = [
-        { name: 'Exam Prep Squad', description: 'Prepare for upcoming exams together', category: 'review' as GroupCategory, icon: 'check', color: '#f59e0b', maxMembers: 8 },
-        { name: 'Homework Heroes', description: 'Help each other with assignments', category: 'study' as GroupCategory, icon: 'book', color: '#3b82f6', maxMembers: 10 },
-        { name: 'Project Team', description: 'Collaborate on group projects', category: 'project' as GroupCategory, icon: 'code', color: '#8b5cf6', maxMembers: 6 },
-        { name: 'Study Buddies', description: 'Regular study sessions & support', category: 'study' as GroupCategory, icon: 'users', color: '#10b981', maxMembers: 12 },
-    ];
-
-    // Name suggestions based on category
-    const nameSuggestions: Record<GroupCategory, string[]> = {
-        all: ['Study Squad', 'Learning Circle', 'Team Alpha', 'Think Tank', 'Knowledge Hub'],
-        study: ['Study Squad', 'Learning Circle', 'Study Buddies', 'Brain Trust', 'Knowledge Hub'],
-        project: ['Project Pioneers', 'Team Alpha', 'Code Crew', 'Build Squad', 'Dev Team'],
-        review: ['Exam Prep Pro', 'Review Rangers', 'Quiz Masters', 'Test Tacklers', 'Ace Squad'],
-        discussion: ['Think Tank', 'Debate Club', 'Idea Exchange', 'Discussion Den', 'Mind Meld'],
-    };
-
-    // Email added indicator
-    const [showEmailAdded, setShowEmailAdded] = useState(false);
-    const [recentlyAddedClassmate, setRecentlyAddedClassmate] = useState<string | null>(null);
     const [emailError, setEmailError] = useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = useState('');
     const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+    const [showEmailAdded, setShowEmailAdded] = useState(false);
     
-    // Course linking
-    const [selectedCourse, setSelectedCourse] = useState<{ id: string; title: string; shortTitle: string } | null>(null);
-    const [showCourseDropdown, setShowCourseDropdown] = useState(false);
-    const enrolledCourses = [
-        { id: 'cp1', title: 'Computer Programming 1', shortTitle: 'CP1' },
-        { id: 'itc', title: 'Introduction to Computing', shortTitle: 'ITC' },
-        { id: 'euth1', title: 'Euthenics 1', shortTitle: 'EUTH1' },
-        { id: 'purcom', title: 'Purposive Communication', shortTitle: 'PURCOM' },
-        { id: 'tcw', title: 'The Contemporary World', shortTitle: 'TCW' },
-        { id: 'uts', title: 'Understanding the Self', shortTitle: 'UTS' },
-        { id: 'ppc', title: 'Philippine Popular Culture', shortTitle: 'PPC' },
-        { id: 'pe1', title: 'P.E./PATHFIT 1', shortTitle: 'PE1' },
-        { id: 'nstp1', title: 'NSTP 1', shortTitle: 'NSTP1' },
-    ];
-    
-    // Group avatar upload
-    const [groupAvatar, setGroupAvatar] = useState<string | null>(null);
-    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
-    const avatarInputRef = useRef<HTMLInputElement>(null);
-    
-    // Invite link
-    const [inviteLink, setInviteLink] = useState<string | null>(null);
-    const [showInviteLinkCopied, setShowInviteLinkCopied] = useState(false);
-    
-    // Undo remove invite
-    const [removedInvite, setRemovedInvite] = useState<{ email: string; name: string; section: string; program: string } | null>(null);
-    const [showUndoToast, setShowUndoToast] = useState(false);
-    const undoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    
-    // Email validation helper - only accept @meycauayan.sti.edu.ph
-    const isValidEmail = (email: string): boolean => {
-        const emailRegex = /^[^\s@]+@meycauayan\.sti\.edu\.ph$/i;
-        return emailRegex.test(email);
-    };
-    
-    // Check if email exists in database
-    // @ts-ignore - Reserved for future use
-    const _checkEmailExists = async (email: string): Promise<boolean> => {
-        if (!isSupabaseConfigured() || !supabase) return false;
-        try {
-            const db = supabase;
-            const { data, error } = await db
-                .from('students')
-                .select('id, email')
-                .ilike('email', email.toLowerCase())
-                .eq('is_active', true)
-                .limit(1);
-            
-            if (error) {
-                return false;
-            }
-            
-            return data && data.length > 0;
-        } catch (err) {
-            return false;
-        }
-    };
-    
-    // Classmates from Supabase
+    // Classmates Search
     const [classmates, setClassmates] = useState<{ 
         id: string; 
         name: string; 
@@ -139,140 +80,55 @@ const CreateGroupModal: React.FC<{
         avatar: string;
         section: string;
         program: string;
-        yearLevel: string;
+        profile_image?: string;
+        level?: number;
+        progress?: number;
     }[]>([]);
-    const [isLoadingClassmates, setIsLoadingClassmates] = useState(false);
-    const [hoveredClassmateId, setHoveredClassmateId] = useState<string | null>(null);
     const [classmateSearchQuery, setClassmateSearchQuery] = useState('');
     const [isSearchingClassmates, setIsSearchingClassmates] = useState(false);
-    const classmateSearchRef = useRef<HTMLInputElement>(null);
-    
-    // Pagination state for classmates
     const [classmatesPage, setClassmatesPage] = useState(1);
-    const classmatesPerPage = 5;
+    const classmatesPerPage = 4;
     const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Shareable Link
+    const [inviteLink, setInviteLink] = useState<string | null>(null);
+    const [showInviteLinkCopied, setShowInviteLinkCopied] = useState(false);
+
+    // Success and loading animation
+    const [showAllMembers, setShowAllMembers] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
     
-    // Reset page when search query changes
-    useEffect(() => {
-        setClassmatesPage(1);
-    }, [classmateSearchQuery]);
+    // Auto-resizing classmates card container
+    const [classmatesContainerHeight, setClassmatesContainerHeight] = useState<number | 'auto'>('auto');
+    const classmatesContentRef = useRef<HTMLDivElement>(null);
 
-    // Fetch classmates from Supabase with server-side search
-    useEffect(() => {
-        if (!isOpen || !isSupabaseConfigured() || !supabase) return;
-        
-        const db = supabase;
-        
-        const fetchClassmates = async (searchQuery: string = '') => {
-            setIsSearchingClassmates(true);
-            try {
-                let query = db
-                    .from('students')
-                    .select('id, full_name, email, section, program, year_level')
-                    .eq('is_active', true);
-                
-                // Server-side search if query exists
-                if (searchQuery.trim()) {
-                    const q = searchQuery.trim().toLowerCase();
-                    query = query.or(`full_name.ilike.%${q}%,email.ilike.%${q}%,section.ilike.%${q}%,program.ilike.%${q}%`);
-                }
-                
-                const { data, error } = await query.order('full_name', { ascending: true });
-                
-                if (!error && data) {
-                    setClassmates(data.map(student => ({
-                        id: student.id,
-                        name: student.full_name,
-                        email: student.email || '',
-                        avatar: student.full_name?.charAt(0)?.toUpperCase() || '?',
-                        section: student.section || 'N/A',
-                        program: student.program || 'N/A',
-                        yearLevel: student.year_level || 'N/A',
-                    })));
-                }
-            } catch (err) {
-            }
-            setIsSearchingClassmates(false);
-            setIsLoadingClassmates(false);
-        };
-
-        // Initial load when modal opens
-        if (!classmateSearchQuery) {
-            setIsLoadingClassmates(true);
-            fetchClassmates();
-        }
-    }, [isOpen]);
-
-    // Debounced search effect
-    useEffect(() => {
-        if (!isOpen || !isSupabaseConfigured() || !supabase) return;
-        
-        const db = supabase;
-        
-        // Clear previous timeout
-        if (searchDebounceRef.current) {
-            clearTimeout(searchDebounceRef.current);
-        }
-        
-        // Debounce search by 300ms
-        searchDebounceRef.current = setTimeout(async () => {
-            setIsSearchingClassmates(true);
-            try {
-                let query = db
-                    .from('students')
-                    .select('id, full_name, email, section, program, year_level')
-                    .eq('is_active', true);
-                
-                if (classmateSearchQuery.trim()) {
-                    const q = classmateSearchQuery.trim().toLowerCase();
-                    query = query.or(`full_name.ilike.%${q}%,email.ilike.%${q}%,section.ilike.%${q}%,program.ilike.%${q}%`);
-                }
-                
-                const { data, error } = await query.order('full_name', { ascending: true });
-                
-                if (!error && data) {
-                    setClassmates(data.map(student => ({
-                        id: student.id,
-                        name: student.full_name,
-                        email: student.email || '',
-                        avatar: student.full_name?.charAt(0)?.toUpperCase() || '?',
-                        section: student.section || 'N/A',
-                        program: student.program || 'N/A',
-                        yearLevel: student.year_level || 'N/A',
-                    })));
-                }
-            } catch (err) {
-            }
-            setIsSearchingClassmates(false);
-        }, 300);
-        
-        return () => {
-            if (searchDebounceRef.current) {
-                clearTimeout(searchDebounceRef.current);
-            }
-        };
-    }, [classmateSearchQuery, isOpen]);
-
-    const colors = {
-        bg: isDarkMode ? '#0f172a' : '#ffffff',
-        cardBg: isDarkMode ? '#1e293b' : '#f8fafc',
-        border: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-        textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
-        textSecondary: isDarkMode ? '#94a3b8' : '#475569',
-        textMuted: isDarkMode ? '#64748b' : '#94a3b8',
-        accent: '#3b82f6',
-    };
-
-    const iconOptions = [
-        { id: 'users', label: 'Team', tooltip: 'Perfect for general study groups' },
-        { id: 'book', label: 'Study', tooltip: 'For focused learning sessions' },
-        { id: 'code', label: 'Code', tooltip: 'Programming & tech projects' },
-        { id: 'chat', label: 'Discussion', tooltip: 'Open conversations & debates' },
-        { id: 'check', label: 'Review', tooltip: 'Exam prep & quizzes' },
-        { id: 'heart', label: 'Support', tooltip: 'Peer support & motivation' },
-        { id: 'grid', label: 'General', tooltip: 'Multi-purpose group' },
-        { id: 'lock', label: 'Private', tooltip: 'Exclusive invite-only' },
+    // Quick Start Presets
+    const presets = [
+        { name: 'Capstone', description: 'Final year thesis or capstone team project', category: 'project' as GroupCategory, icon: 'star', color: '#f59e0b', maxMembers: 5 },
+        { name: 'Web', description: 'Collaborate on programming and coding assignments', category: 'project' as GroupCategory, icon: 'code', color: '#3b82f6', maxMembers: 6 },
+        { name: 'Research', description: 'Collaborate on academic research papers and literature reviews', category: 'project' as GroupCategory, icon: 'book', color: '#8b5cf6', maxMembers: 4 },
+        { name: 'Presentation', description: 'Work on slides, scripts, and group presentations', category: 'project' as GroupCategory, icon: 'users', color: '#10b981', maxMembers: 8 },
+        { name: 'Group Project', description: 'General purpose collaborative team workspace', category: 'project' as GroupCategory, icon: 'briefcase', color: '#ec4899', maxMembers: 10 },
+        { name: 'Custom (Specify)', description: 'Create and specify your own custom group', category: 'general' as GroupCategory, icon: 'edit', color: '#64748b', maxMembers: 10 },
     ];
+
+    const enrolledCourses = [
+        { id: 'cp1', title: 'Computer Programming 1', shortTitle: 'CP1', description: 'Fundamental concepts of programming and logic formulation' },
+        { id: 'itc', title: 'Introduction to Computing', shortTitle: 'ITC', description: 'Introduction to computer systems, hardware, and digital literacy' },
+        { id: 'euth1', title: 'Euthenics 1', shortTitle: 'EUTH1', description: 'Personal development, ethics, and values education' },
+        { id: 'purcom', title: 'Purposive Communication', shortTitle: 'PURCOM', description: 'Communication principles for professional and academic contexts' },
+        { id: 'tcw', title: 'The Contemporary World', shortTitle: 'TCW', description: 'Global systems, economic trends, and international relations' },
+        { id: 'uts', title: 'Understanding the Self', shortTitle: 'UTS', description: 'Self-exploration, psychology, and holistic development' },
+        { id: 'ppc', title: 'Philippine Popular Culture', shortTitle: 'PPC', description: 'Philippine media, culture, art, and national identity' },
+        { id: 'pe1', title: 'P.E./PATHFIT 1', shortTitle: 'PE1', description: 'Physical fitness, health education, and PATHFIT courses' },
+        { id: 'nstp1', title: 'NSTP 1', shortTitle: 'NSTP1', description: 'National Service Training Program civic service learning' },
+    ];
+
+    const hoveredIndex = hoveredCourseId === 'clear' 
+        ? 0 
+        : enrolledCourses.findIndex(c => c.id === hoveredCourseId) !== -1
+            ? (selectedCourse ? enrolledCourses.findIndex(c => c.id === hoveredCourseId) + 1 : enrolledCourses.findIndex(c => c.id === hoveredCourseId))
+            : -1;
 
     const colorOptions = [
         { color: '#3b82f6', name: 'Blue' },
@@ -285,296 +141,423 @@ const CreateGroupModal: React.FC<{
         { color: '#84cc16', name: 'Lime' },
     ];
 
-    const categoryOptions: { id: GroupCategory; label: string; description: string; longDescription: string; icon: React.ReactNode; benefits: string[] }[] = [
-        { 
-            id: 'study', 
-            label: 'Study Group', 
-            description: 'Learn together with classmates',
-            longDescription: 'Perfect for regular study sessions, sharing notes, and helping each other understand difficult concepts.',
-            icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                </svg>
-            ),
-            benefits: ['Share notes', 'Ask questions', 'Study sessions']
-        },
+    const iconOptions = [
+        { id: 'users', label: 'Team' },
+        { id: 'book', label: 'Study' },
+        { id: 'code', label: 'Code' },
+        { id: 'chat', label: 'Discuss' },
+        { id: 'check', label: 'Review' },
+        { id: 'grid', label: 'General' },
+    ];
+
+    const categoryOptions: { id: GroupCategory; label: string; description: string; icon: React.ReactNode }[] = [
         { 
             id: 'project', 
             label: 'Project Team', 
-            description: 'Collaborate on assignments',
-            longDescription: 'Ideal for group projects, coding assignments, and any collaborative work that needs coordination.',
-            icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
-                </svg>
-            ),
-            benefits: ['Task tracking', 'File sharing', 'Deadlines']
+            description: 'Dedicated workspace for group projects, task delegation, and collaborative output.',
+            icon: <Briefcase size={20} strokeWidth={2.5} />
+        },
+        { 
+            id: 'study', 
+            label: 'Study Group', 
+            description: 'A collaborative environment to share notes, discuss lectures, and prepare for exams.',
+            icon: <Book size={20} strokeWidth={2.5} />
         },
         { 
             id: 'review', 
             label: 'Exam Prep', 
-            description: 'Prepare for tests together',
-            longDescription: 'Great for exam preparation, quiz practice, and reviewing key concepts before important tests.',
-            icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-            ),
-            benefits: ['Practice tests', 'Flashcards', 'Review notes']
+            description: 'Focused study space with a goal-oriented setup to ace upcoming midterms or finals.',
+            icon: <Check size={20} strokeWidth={2.5} />
         },
         { 
             id: 'discussion', 
             label: 'Discussion', 
-            description: 'Share ideas and debate',
-            longDescription: 'Best for open discussions, brainstorming sessions, and exploring different perspectives on topics.',
-            icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-            ),
-            benefits: ['Share ideas', 'Get feedback', 'Brainstorm']
+            description: 'Open forum for brainstorming, Q&A, and casual academic discourse.',
+            icon: <MessagesSquare size={20} strokeWidth={2.5} />
         },
     ];
 
-    // Keyboard shortcuts: Enter to proceed, Escape to go back/close
+    // Load initial classmates
+    useEffect(() => {
+        if (!isOpen) return;
+        
+        const fetchClassmates = async () => {
+            setIsSearchingClassmates(true);
+            try {
+                if (isSupabaseConfigured() && supabase) {
+                    const { data, error } = await supabase
+                        .from('students')
+                        .select('id, full_name, email, section, program, profile_image')
+                        .eq('is_active', true)
+                        .order('full_name', { ascending: true })
+                        .limit(40);
+                    
+                    if (!error && data) {
+                        setClassmates(data.map(student => {
+                            const nameSum = (student.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                            const calculatedLevel = (nameSum % 10) + 1;
+                            const calculatedProgress = (nameSum % 80) + 10;
+                            return {
+                                id: student.id,
+                                name: student.full_name,
+                                email: student.email || '',
+                                avatar: student.full_name?.charAt(0)?.toUpperCase() || '?',
+                                section: student.section || 'N/A',
+                                program: student.program || 'N/A',
+                                profile_image: student.profile_image,
+                                level: calculatedLevel,
+                                progress: calculatedProgress
+                            };
+                        }));
+                        setIsSearchingClassmates(false);
+                        return;
+                    }
+                }
+                
+                // Local fallback
+                const localData = await getLocalClassmates();
+                setClassmates(localData.map(c => {
+                    const nameSum = (c.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                    const calculatedLevel = c.level || (nameSum % 10) + 1;
+                    const calculatedProgress = c.xp ? (c.xp % 100) : (nameSum % 80) + 10;
+                    return {
+                        id: c.id,
+                        name: c.full_name,
+                        email: c.email || '',
+                        avatar: c.full_name?.charAt(0)?.toUpperCase() || '?',
+                        section: c.section || 'N/A',
+                        program: c.program || 'N/A',
+                        profile_image: c.profile_image,
+                        level: calculatedLevel,
+                        progress: calculatedProgress
+                    };
+                }));
+            } catch (err) {
+                console.error('Error fetching classmates:', err);
+            }
+            setIsSearchingClassmates(false);
+        };
+        fetchClassmates();
+    }, [isOpen]);
+
+    // Search debounced effect
+    useEffect(() => {
+        if (!isOpen) return;
+        if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+        
+        setIsSearchingClassmates(true);
+        searchDebounceRef.current = setTimeout(async () => {
+            try {
+                if (isSupabaseConfigured() && supabase) {
+                    let query = supabase
+                        .from('students')
+                        .select('id, full_name, email, section, program, profile_image')
+                        .eq('is_active', true);
+                    
+                    if (classmateSearchQuery.trim()) {
+                        const q = classmateSearchQuery.trim().toLowerCase();
+                        query = query.or(`full_name.ilike.%${q}%,email.ilike.%${q}%,section.ilike.%${q}%,program.ilike.%${q}%`);
+                    }
+                    
+                    const { data, error } = await query.order('full_name', { ascending: true }).limit(40);
+                    
+                    if (!error && data) {
+                        setClassmates(data.map(student => {
+                            const nameSum = (student.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                            const calculatedLevel = (nameSum % 10) + 1;
+                            const calculatedProgress = (nameSum % 80) + 10;
+                            return {
+                                id: student.id,
+                                name: student.full_name,
+                                email: student.email || '',
+                                avatar: student.full_name?.charAt(0)?.toUpperCase() || '?',
+                                section: student.section || 'N/A',
+                                program: student.program || 'N/A',
+                                profile_image: student.profile_image,
+                                level: calculatedLevel,
+                                progress: calculatedProgress
+                            };
+                        }));
+                        setClassmatesPage(1);
+                        setIsSearchingClassmates(false);
+                        return;
+                    }
+                }
+                
+                // Local search fallback
+                const localData = await getLocalClassmates();
+                let filtered = localData;
+                if (classmateSearchQuery.trim()) {
+                    const q = classmateSearchQuery.trim().toLowerCase();
+                    filtered = localData.filter(c => 
+                        c.full_name.toLowerCase().includes(q) || 
+                        c.email?.toLowerCase().includes(q) || 
+                        c.section?.toLowerCase().includes(q) || 
+                        c.program?.toLowerCase().includes(q)
+                    );
+                }
+                
+                setClassmates(filtered.map(c => {
+                    const nameSum = (c.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                    const calculatedLevel = c.level || (nameSum % 10) + 1;
+                    const calculatedProgress = c.xp ? (c.xp % 100) : (nameSum % 80) + 10;
+                    return {
+                        id: c.id,
+                        name: c.full_name,
+                        email: c.email || '',
+                        avatar: c.full_name?.charAt(0)?.toUpperCase() || '?',
+                        section: c.section || 'N/A',
+                        program: c.program || 'N/A',
+                        profile_image: c.profile_image,
+                        level: calculatedLevel,
+                        progress: calculatedProgress
+                    };
+                }));
+                setClassmatesPage(1);
+            } catch (err) {
+                console.error('Error searching classmates:', err);
+            }
+            setIsSearchingClassmates(false);
+        }, 300);
+        
+        return () => {
+            if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+        };
+    }, [classmateSearchQuery, isOpen]);
+
+    // Sync search input to classmate search query
+    useEffect(() => {
+        setClassmateSearchQuery(currentInviteEmail);
+    }, [currentInviteEmail]);
+
+    // Reset when modal opens/closes
+    useEffect(() => {
+        if (isOpen) {
+            setStep(1);
+            setName('');
+            setDescription('');
+            setCategory('project');
+            setSelectedIcon('users');
+            setSelectedColor('#3b82f6');
+            setMaxMembers(10);
+            setIsPrivate(false);
+            setInviteEmails([]);
+            setCurrentInviteEmail('');
+            setInviteLink(null);
+            setGroupAvatar(null);
+            setSelectedCourse(null);
+        }
+    }, [isOpen]);
+
+    // Keydown handlers
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!isOpen) return;
-            
-            // Don't trigger if user is typing in an input
-            const activeElement = document.activeElement;
-            const isInputFocused = activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA';
+            const target = e.target as HTMLElement;
+            const isInputFocused = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
             
             if (e.key === 'Escape') {
                 e.preventDefault();
-                if (showSuccess) {
-                    onClose();
-                } else if (step > 1) {
-                    setStep(step - 1);
-                } else {
-                    onClose();
-                }
+                if (step > 1) setStep(step - 1);
+                else onClose();
             }
-            
-            // Enter to proceed (only if not in input)
-            if (e.key === 'Enter' && !e.shiftKey && !isInputFocused) {
+            if (e.key === 'Enter' && !isInputFocused) {
                 e.preventDefault();
-                if (showSuccess) {
-                    onClose();
-                } else if (step < 3) { // 3 total steps
-                    // Only proceed if required fields are filled
-                    if (step === 1 && name.trim()) {
-                        setStep(step + 1);
-                    } else if (step === 2) {
-                        setStep(step + 1);
-                    }
-                } else if (step === 3 && name.trim() && !isCreating) {
+                if (step === 1 && name.trim().length >= 3) {
+                    setStep(2);
+                } else if (step === 2 && !isCreating) {
                     handleCreate();
                 }
             }
         };
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose, step, name, showSuccess, isCreating]);
+    }, [isOpen, step, name, isCreating]);
 
+    // Handle course dropdown click outside
     useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-            setStep(1);
+        const handleClickOutside = (event: MouseEvent) => {
+            if (courseDropdownRef.current && !courseDropdownRef.current.contains(event.target as Node)) {
+                setShowCourseDropdown(false);
+            }
+        };
+        if (showCourseDropdown) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showCourseDropdown]);
+
+    // Classmates container height auto-observer for smooth height transitions
+    useEffect(() => {
+        if (!isOpen) return;
+        const element = classmatesContentRef.current;
+        if (!element) return;
+
+        const observer = new ResizeObserver((entries) => {
+            if (!entries || entries.length === 0) return;
+            const rect = entries[0].contentRect;
+            // The card container has padding-top and padding-bottom of p-2 (8px + 8px = 16px)
+            setClassmatesContainerHeight(rect.height + 16);
+        });
+
+        observer.observe(element);
+        return () => observer.disconnect();
+    }, [isOpen, step, classmatesPage, isSearchingClassmates, classmates.length, inviteEmails.length]);
+
+    // Reset container height when changing steps or opening/closing modal
+    useEffect(() => {
+        setClassmatesContainerHeight('auto');
+    }, [step, isOpen]);
+
+    // Apply Presets (One-click Quick Fill)
+    const applyPreset = (preset: typeof presets[0]) => {
+        if (preset.name === 'Custom (Specify)') {
             setName('');
             setDescription('');
-            setCategory('study');
-            setSelectedIcon('users');
-            setSelectedColor('#3b82f6');
-            setMaxMembers(10);
-            setIsPrivate(false);
-            setShowNameSuggestions(false);
-            setInviteEmails([]);
-            setCurrentInviteEmail('');
-            setShowSuccess(false);
-            setConfettiParticles([]);
-        } else {
-            document.body.style.overflow = '';
+            setCategory(preset.category);
+            setSelectedIcon(preset.icon as GroupIconType);
+            setSelectedColor(preset.color);
+            return;
         }
-        return () => { document.body.style.overflow = ''; };
-    }, [isOpen]);
+        setName(preset.name);
+        setDescription(preset.description);
+        setCategory(preset.category);
+        setSelectedIcon(preset.icon as GroupIconType);
+        setSelectedColor(preset.color);
+        setMaxMembers(preset.maxMembers);
+    };
 
-    const applyTemplate = (template: typeof quickTemplates[0]) => {
-        setName(template.name);
-        setDescription(template.description);
-        setCategory(template.category);
-        setSelectedIcon(template.icon);
-        setSelectedColor(template.color);
-        setMaxMembers(template.maxMembers);
+    // Form validation
+    const isValidEmail = (email: string): boolean => {
+        return /^[^\s@]+@meycauayan\.sti\.edu\.ph$/i.test(email);
     };
 
     const addInviteEmail = async (email: string) => {
-        // Clear any previous error
         setEmailError(false);
         setEmailErrorMessage('');
         
-        if (!email.trim()) {
-            return;
-        }
+        if (!email.trim()) return;
+        const normalized = email.toLowerCase().trim();
+        const currentUser = getProfile();
         
-        // Check max limit (80 invites)
-        if (inviteEmails.length >= 80) {
-            setEmailError(true);
-            setEmailErrorMessage('Maximum 80 invites allowed');
-            setTimeout(() => {
-                setEmailError(false);
-                setEmailErrorMessage('');
-            }, 2500);
-            return;
-        }
-        
-        const normalizedEmail = email.toLowerCase().trim();
-        const currentUserEmail = getProfile().email.toLowerCase().trim();
-        
-        // Show loading state immediately
-        setIsCheckingEmail(true);
-        
-        // Small delay to show spinner
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        // Validate email format - must be @sti.edu.ph
-        if (!isValidEmail(normalizedEmail)) {
-            setIsCheckingEmail(false);
+        if (!isValidEmail(normalized)) {
             setEmailError(true);
             setEmailErrorMessage('Only @meycauayan.sti.edu.ph emails allowed');
-            setTimeout(() => {
-                setEmailError(false);
-                setEmailErrorMessage('');
-            }, 2500);
             return;
         }
-        
-        // Prevent user from adding themselves
-        if (normalizedEmail === currentUserEmail) {
-            setIsCheckingEmail(false);
+
+        if (currentUser && normalized === currentUser.email?.toLowerCase().trim()) {
             setEmailError(true);
-            setEmailErrorMessage("You can't invite yourself");
-            setTimeout(() => {
-                setEmailError(false);
-                setEmailErrorMessage('');
-            }, 2500);
+            setEmailErrorMessage("You cannot invite yourself");
             return;
         }
-        
-        // Check if already added
-        if (inviteEmails.some(inv => inv.email === normalizedEmail)) {
-            setIsCheckingEmail(false);
+
+        if (inviteEmails.some(inv => inv.email === normalized)) {
             setEmailError(true);
-            setEmailErrorMessage('Email already added');
-            setTimeout(() => {
-                setEmailError(false);
-                setEmailErrorMessage('');
-            }, 2000);
+            setEmailErrorMessage('Already invited');
             return;
         }
-        
-        // Check if email exists in database and get student data
-        let studentData: { name: string; section: string; program: string } | null = null;
-        
-        if (isSupabaseConfigured() && supabase) {
-            const { data, error } = await supabase
-                .from('students')
-                .select('full_name, section, program')
-                .eq('email', normalizedEmail)
-                .single();
-            
-            if (!error && data) {
-                studentData = {
-                    name: data.full_name || '',
-                    section: data.section || 'N/A',
-                    program: data.program || 'N/A',
-                };
+
+        setIsCheckingEmail(true);
+        try {
+            if (isSupabaseConfigured() && supabase) {
+                const { data, error } = await supabase
+                    .from('students')
+                    .select('full_name, section, program')
+                    .eq('email', normalized)
+                    .single();
+                
+                if (!error && data) {
+                    const nameSum = (data.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                    setInviteEmails(prev => [...prev, {
+                        email: normalized,
+                        name: data.full_name || 'Classmate',
+                        section: data.section || 'N/A',
+                        program: data.program || 'N/A',
+                        profile_image: data.profile_image,
+                        level: data.level || (nameSum % 10) + 1,
+                        progress: data.xp ? (data.xp % 100) : (nameSum % 80) + 10
+                    }]);
+                    setCurrentInviteEmail('');
+                    setShowEmailAdded(true);
+                    setTimeout(() => setShowEmailAdded(false), 1500);
+                } else {
+                    setEmailError(true);
+                    setEmailErrorMessage('Student not found in STI database');
+                }
+            } else {
+                // Config fallback
+                const localData = await getLocalClassmates();
+                const matched = localData.find(c => c.email?.toLowerCase().trim() === normalized);
+                
+                if (matched) {
+                    const nameSum = (matched.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                    setInviteEmails(prev => [...prev, {
+                        email: normalized,
+                        name: matched.full_name,
+                        section: matched.section || 'N/A',
+                        program: matched.program || 'N/A',
+                        profile_image: matched.profile_image,
+                        level: matched.level || (nameSum % 10) + 1,
+                        progress: matched.xp ? (matched.xp % 100) : (nameSum % 80) + 10
+                    }]);
+                    setCurrentInviteEmail('');
+                    setShowEmailAdded(true);
+                    setTimeout(() => setShowEmailAdded(false), 1500);
+                } else {
+                    // Fallback formatting for other valid meycauayan emails
+                    const namePart = normalized.split('@')[0];
+                    const capitalized = namePart
+                        .split('.')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    
+                    const nameSum = capitalized.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                    setInviteEmails(prev => [...prev, {
+                        email: normalized,
+                        name: capitalized,
+                        section: 'N/A',
+                        program: 'N/A',
+                        level: (nameSum % 10) + 1,
+                        progress: (nameSum % 80) + 10
+                    }]);
+                    setCurrentInviteEmail('');
+                    setShowEmailAdded(true);
+                    setTimeout(() => setShowEmailAdded(false), 1500);
+                }
             }
-        }
-        
-        setIsCheckingEmail(false);
-        
-        if (!studentData) {
+        } catch (err) {
             setEmailError(true);
-            setEmailErrorMessage('Student not found in system');
-            setTimeout(() => {
-                setEmailError(false);
-                setEmailErrorMessage('');
-            }, 2500);
-            return;
+            setEmailErrorMessage('Error looking up classmate');
+        } finally {
+            setIsCheckingEmail(false);
         }
-        
-        setInviteEmails([...inviteEmails, {
-            email: normalizedEmail,
-            name: studentData.name,
-            section: studentData.section,
-            program: studentData.program,
+    };
+
+    const addClassmate = (c: typeof classmates[0]) => {
+        if (inviteEmails.some(inv => inv.email === c.email)) return;
+        setInviteEmails(prev => [...prev, {
+            email: c.email,
+            name: c.name,
+            section: c.section,
+            program: c.program,
+            profile_image: c.profile_image,
+            level: c.level,
+            progress: c.progress
         }]);
-        setShowEmailAdded(true);
-        setTimeout(() => setShowEmailAdded(false), 1500);
-        setCurrentInviteEmail('');
     };
 
     const removeInviteEmail = (email: string) => {
-        const inviteToRemove = inviteEmails.find(inv => inv.email === email);
-        if (inviteToRemove) {
-            // Clear any existing undo timeout
-            if (undoTimeoutRef.current) {
-                clearTimeout(undoTimeoutRef.current);
-            }
-            
-            // Store removed invite for undo
-            setRemovedInvite(inviteToRemove);
-            setShowUndoToast(true);
-            
-            // Remove from list
-            setInviteEmails(inviteEmails.filter(inv => inv.email !== email));
-            
-            // Auto-hide undo toast after 4 seconds
-            undoTimeoutRef.current = setTimeout(() => {
-                setShowUndoToast(false);
-                setRemovedInvite(null);
-            }, 4000);
-        }
+        setInviteEmails(prev => prev.filter(inv => inv.email !== email));
     };
-    
-    const undoRemoveInvite = () => {
-        if (removedInvite) {
-            setInviteEmails(prev => [...prev, removedInvite]);
-            setShowUndoToast(false);
-            setRemovedInvite(null);
-            if (undoTimeoutRef.current) {
-                clearTimeout(undoTimeoutRef.current);
-            }
-        }
-    };
-    
-    // Handle avatar upload
-    const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            if (file.size > 2 * 1024 * 1024) { // 2MB limit
-                alert('Image must be less than 2MB');
-                return;
-            }
-            setIsUploadingAvatar(true);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setGroupAvatar(reader.result as string);
-                setIsUploadingAvatar(false);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-    
-    // Generate invite link
+
     const generateInviteLink = () => {
-        const linkId = Math.random().toString(36).substring(2, 10);
-        const link = `${window.location.origin}/join/${linkId}`;
-        setInviteLink(link);
+        const id = Math.random().toString(36).substring(2, 10);
+        setInviteLink(`${window.location.origin}/join/${id}`);
     };
-    
-    // Copy invite link
+
     const copyInviteLink = async () => {
         if (inviteLink) {
             await navigator.clipboard.writeText(inviteLink);
@@ -583,31 +566,64 @@ const CreateGroupModal: React.FC<{
         }
     };
 
-    // Generate confetti particles
-    const generateConfetti = () => {
-        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', selectedColor];
-        const particles = Array.from({ length: 50 }, (_, i) => ({
-            id: i,
-            x: Math.random() * 100,
-            y: Math.random() * 100,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            rotation: Math.random() * 360,
-            scale: 0.5 + Math.random() * 0.5,
-        }));
-        setConfettiParticles(particles);
+    const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Check file size (2MB limit)
+            if (file.size > 2 * 1024 * 1024) {
+                setImageError({ type: 'size', message: 'File is too large! Maximum size is 2MB.' });
+                setGroupAvatar(null);
+                if (avatarInputRef.current) avatarInputRef.current.value = '';
+                return;
+            }
+
+            // Reset error state and begin MiMo 2.5 scanning simulation
+            setImageError({ type: null, message: '' });
+            setIsUploadingAvatar(true);
+
+            // Mock MiMo 2.5 Image Processing Delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            // Mock Inappropriate Image Detection (For demonstration, trigger if filename contains certain words)
+            const lowerName = file.name.toLowerCase();
+            const isBad = lowerName.includes('bad') || lowerName.includes('nsfw') || lowerName.includes('inappropriate');
+            
+            if (isBad) {
+                setIsUploadingAvatar(false);
+                setImageError({ 
+                    type: 'inappropriate', 
+                    message: '⚠️ MiMo 2.5 Security: Inappropriate image detected. This has been automatically reported to the Admin and your Teachers.' 
+                });
+                setGroupAvatar(null);
+                if (avatarInputRef.current) avatarInputRef.current.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = reader.result as string;
+                const img = new Image();
+                img.onload = () => {
+                    if (img.width !== 256 || img.height !== 256) {
+                        setImageError({ type: 'warning', message: `Image is ${img.width}x${img.height}. We recommend 256x256px for the best display.` });
+                    }
+                    setGroupAvatar(result);
+                    setIsUploadingAvatar(false);
+                };
+                img.src = result;
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleCreate = async () => {
         if (!name.trim()) return;
         setIsCreating(true);
-        await new Promise(resolve => setTimeout(resolve, 800));
         
-        // Show success animation
-        setShowSuccess(true);
-        generateConfetti();
+        // Simulating submission delay
+        await new Promise(resolve => setTimeout(resolve, 850));
         
-        // Wait for animation then close
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        triggerGlobalToast('group_created', { title: 'Group Card Created!', message: 'Initializing workspace and channels...' });
         
         onCreateGroup({
             name: name.trim(),
@@ -620,2273 +636,1140 @@ const CreateGroupModal: React.FC<{
             maxMembers,
             isPrivate,
         });
-        // Note: inviteEmails would be sent to backend here
+
         setIsCreating(false);
-        setShowSuccess(false);
-        setConfettiParticles([]);
         onClose();
     };
 
-    const canProceed = step === 1 ? name.trim().length >= 3 : true;
-    const totalSteps = 3;
+    // Paginated filtered classmates
+    const filteredClassmates = classmates.filter(c => !inviteEmails.some(inv => inv.email === c.email));
+    const totalPages = Math.ceil(filteredClassmates.length / classmatesPerPage);
+    const paginatedClassmates = filteredClassmates.slice((classmatesPage - 1) * classmatesPerPage, classmatesPage * classmatesPerPage);
+
+    // Added members collapsing logic
+    const shouldCollapse = inviteEmails.length > 7;
+    const displayLimit = inviteEmails.length > 10 ? 8 : 6;
+    const visibleMembers = shouldCollapse && !showAllMembers 
+        ? inviteEmails.slice(0, displayLimit) 
+        : inviteEmails;
+
+    // Auto-minimizing header state
+    const [isMinimized, setIsMinimized] = useState(false);
+    const lastScrollY = useRef(0);
+    const scrollDirection = useRef<'up' | 'down' | null>(null);
+    const anchorScrollY = useRef(0);
+
+    const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+        const currentScrollY = e.currentTarget.scrollTop;
+        
+        // Handle iOS rubber banding / top of scroll
+        if (currentScrollY <= 10) {
+            setIsMinimized(false);
+            lastScrollY.current = currentScrollY;
+            scrollDirection.current = null;
+            anchorScrollY.current = currentScrollY;
+            return;
+        }
+
+        const delta = currentScrollY - lastScrollY.current;
+        
+        if (delta > 0) {
+            if (scrollDirection.current !== 'down') {
+                scrollDirection.current = 'down';
+                anchorScrollY.current = lastScrollY.current;
+            }
+            if (currentScrollY - anchorScrollY.current > 30) {
+                setIsMinimized(true);
+            }
+        } else if (delta < 0) {
+            if (scrollDirection.current !== 'up') {
+                scrollDirection.current = 'up';
+                anchorScrollY.current = lastScrollY.current;
+            }
+            // Do not expand just by scrolling up. Only expand at the very top.
+        }
+
+        lastScrollY.current = currentScrollY;
+    }, []);
+    const livePreviewCard = (
+        <div className="flex flex-col w-full mt-auto relative z-10 pt-6 border-t border-zinc-200/50 dark:border-zinc-800/50">
+            <div className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-3">Live Preview</div>
+            <div className="flex items-center gap-4 bg-white dark:bg-zinc-900 p-4 rounded-[20px] border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm transition-all duration-300">
+                <div className="w-12 h-12 rounded-[14px] bg-zinc-100/80 dark:bg-zinc-800 flex items-center justify-center overflow-hidden flex-shrink-0 border border-zinc-200/50 dark:border-zinc-700/50">
+                    {groupAvatar ? <img src={groupAvatar} className="w-full h-full object-cover" /> : <GroupIcon icon={selectedIcon} color={selectedColor} size={22} />}
+                </div>
+                <div className="overflow-hidden flex-1 min-w-0">
+                    <div className="text-[15px] font-bold text-zinc-900 dark:text-white truncate mb-0.5">{name || 'Unnamed Group'}</div>
+                    <div className="text-[13px] text-zinc-500 dark:text-zinc-400 truncate font-medium">{description || 'No description yet'}</div>
+                </div>
+            </div>
+        </div>
+    );
 
     return createPortal(
         <AnimatePresence>
             {isOpen && (
-                <>
+                <div className="fixed inset-0 z-[99999] flex items-center justify-center p-0 sm:p-5">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
                         onClick={onClose}
                         style={{
-                            position: 'fixed', inset: 0, background: 'rgba(0, 0, 0, 0.5)',
-                            backdropFilter: 'blur(4px)', zIndex: 9998,
+                            position: 'absolute', inset: 0,
+                            background: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(0, 0, 0, 0.55)',
+                            backdropFilter: 'blur(12px)',
                         }}
                     />
 
-                    {/* Success Animation with Confetti */}
-                    <AnimatePresence>
-                        {showSuccess && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                style={{
-                                    position: 'fixed', inset: 0, zIndex: 10001,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    pointerEvents: 'none',
+                    {/* Success Animation Overlay Removed - Now using Toast */}
+
+                    {/* Side-by-Side Modal Box */}
+                    <motion.div
+                        layout
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+                        className="relative w-full max-w-[1080px] h-[100dvh] sm:h-auto sm:max-h-[95vh] md:h-[720px] bg-white dark:bg-[#0f172a] rounded-none sm:rounded-[24px] shadow-2xl border border-zinc-200/80 dark:border-zinc-800/80 overflow-hidden flex flex-col md:flex-row pointer-events-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* LEFT SIDEBAR (Hidden on mobile, 340px on PC) */}
+                        <div className="hidden md:flex flex-col w-[340px] bg-zinc-50/50 dark:bg-zinc-900/50 border-r border-zinc-200/50 dark:border-zinc-800/50 p-6 lg:p-8 relative overflow-hidden group/sidebar">
+                             {/* Background decorations */}
+                             <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-1000 group-hover/sidebar:scale-110" />
+                             <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 bg-blue-400/5 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none" />
+                             
+                             {/* Header Card inside Sidebar */}
+                             <motion.div 
+                                 initial={{ opacity: 0, x: -20 }}
+                                 animate={{ opacity: 1, x: 0 }}
+                                 transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 25 }}
+                                 className="bg-white dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[20px] p-5 shadow-sm relative z-10 mb-10 mt-2 overflow-hidden group hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 transition-all duration-300"
+                             >
+                                  {/* Inner Glow */}
+                                  <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                                  <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 mb-4 shadow-sm group-hover:scale-105 group-hover:rotate-[-5deg] transition-all duration-300">
+                                      <GroupIcon icon={selectedIcon} color={selectedColor} size={24} />
+                                  </div>
+                                  <h2 className="text-xl font-extrabold text-zinc-900 dark:text-white mb-1 tracking-tight">Create Workspace</h2>
+                                  <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Setup your new project environment and invite teammates.</p>
+                             </motion.div>
+
+                             {/* Steps Indicator */}
+                             <div className="space-y-0 relative z-10 pl-2">
+                                 {/* Connecting Line */}
+                                 <div className="absolute left-[26px] top-[40px] bottom-[40px] w-[2px] bg-zinc-200/60 dark:bg-zinc-800/60 rounded-full" />
+                                 
+                                 {/* Step 1 Item */}
+                                 <motion.div 
+                                     initial={{ opacity: 0, x: -20 }}
+                                     animate={{ opacity: 1, x: 0 }}
+                                     transition={{ delay: 0.2, type: "spring" }}
+                                     className={`relative flex gap-5 items-start pb-8 transition-all duration-300 ${step === 1 ? 'opacity-100 scale-[1.02]' : 'opacity-50 hover:opacity-70 cursor-pointer'}`}
+                                     onClick={() => { if(step > 1) setStep(1); }}
+                                 >
+                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 z-10 transition-all duration-500 shadow-sm ${step === 1 ? 'bg-blue-500 text-white border border-blue-600 shadow-blue-500/20 scale-110' : 'bg-white dark:bg-zinc-900 text-zinc-400 border border-zinc-200 dark:border-zinc-800'}`}>
+                                         {step > 1 ? <Check size={16} strokeWidth={3} className="text-blue-500 dark:text-blue-400" /> : '1'}
+                                     </div>
+                                     <div className="mt-0.5">
+                                         <h3 className={`text-sm font-bold transition-colors ${step === 1 ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-500 dark:text-zinc-400'}`}>Details & Theme</h3>
+                                         <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1 font-medium leading-relaxed max-w-[200px]">Name your group, select a category, and choose a custom theme color.</p>
+                                     </div>
+                                 </motion.div>
+                                 
+                                 {/* Step 2 Item */}
+                                 <motion.div 
+                                     initial={{ opacity: 0, x: -20 }}
+                                     animate={{ opacity: 1, x: 0 }}
+                                     transition={{ delay: 0.3, type: "spring" }}
+                                     className={`relative flex gap-5 items-start transition-all duration-300 ${step === 2 ? 'opacity-100 scale-[1.02]' : 'opacity-50 hover:opacity-70'}`}
+                                 >
+                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 z-10 transition-all duration-500 shadow-sm ${step === 2 ? 'bg-blue-500 text-white border border-blue-600 shadow-blue-500/20 scale-110' : 'bg-white dark:bg-zinc-900 text-zinc-400 border border-zinc-200 dark:border-zinc-800'}`}>
+                                         2
+                                     </div>
+                                     <div className="mt-0.5">
+                                         <h3 className={`text-sm font-bold transition-colors ${step === 2 ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-500 dark:text-zinc-400'}`}>Members & Privacy</h3>
+                                         <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-1 font-medium leading-relaxed max-w-[200px]">Invite classmates via email or share a link. Manage privacy settings.</p>
+                                     </div>
+                                 </motion.div>
+                             </div>
+
+                             {/* Live Preview of Group Name/Desc */}
+                             {livePreviewCard}
+                        </div>
+
+                        {/* RIGHT CONTENT AREA */}
+                        <div className="flex-1 flex flex-col relative z-10 w-full h-full min-h-0 min-w-0">
+                            {/* Unified Auto-Minimizing Header */}
+                            <motion.div 
+                                animate={{
+                                    padding: isMinimized ? '12px 16px' : '16px 20px'
                                 }}
+                                className="relative border-b border-zinc-100 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-900/50 flex-shrink-0 z-20"
                             >
-                                {/* Confetti Particles */}
-                                {confettiParticles.map((particle) => (
-                                    <motion.div
-                                        key={particle.id}
-                                        initial={{ 
-                                            x: '50%', y: '50%', 
-                                            scale: 0, rotate: 0, opacity: 1 
-                                        }}
-                                        animate={{ 
-                                            x: `${particle.x}%`, 
-                                            y: `${particle.y + 100}%`,
-                                            scale: particle.scale,
-                                            rotate: particle.rotation + 360,
-                                            opacity: 0,
-                                        }}
-                                        transition={{ 
-                                            duration: 2, 
-                                            ease: [0.22, 1, 0.36, 1],
-                                            delay: Math.random() * 0.3,
-                                        }}
-                                        style={{
-                                            position: 'absolute',
-                                            width: '10px', height: '10px',
-                                            background: particle.color,
-                                            borderRadius: Math.random() > 0.5 ? '50%' : '2px',
-                                        }}
-                                    />
-                                ))}
-                                
-                                {/* Success Message */}
-                                <motion.div
-                                    initial={{ scale: 0, y: 20 }}
-                                    animate={{ scale: 1, y: 0 }}
-                                    exit={{ scale: 0, y: -20 }}
-                                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                                    style={{
-                                        background: '#ffffff',
-                                        borderRadius: '20px',
-                                        padding: '32px 48px',
-                                        textAlign: 'center',
-                                        boxShadow: '0 24px 48px rgba(0,0,0,0.2)',
-                                    }}
+                                <motion.div 
+                                    animate={{ marginBottom: isMinimized ? '0px' : '8px' }}
+                                    className="flex items-start gap-3 sm:gap-4"
                                 >
-                                    <motion.div
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ delay: 0.2, type: 'spring', stiffness: 400 }}
-                                        style={{
-                                            width: '64px', height: '64px', borderRadius: '50%',
-                                            background: `linear-gradient(135deg, ${selectedColor}20 0%, ${selectedColor}10 100%)`,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            margin: '0 auto 16px',
+                                    {/* Header Card */}
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ 
+                                            opacity: 1, 
+                                            y: 0,
+                                            padding: isMinimized ? '12px 16px' : '16px',
+                                            gap: isMinimized ? '12px' : '16px'
                                         }}
+                                        transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
+                                        className="flex-1 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[20px] flex items-center group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 text-left"
                                     >
-                                        <motion.svg 
-                                            width="32" height="32" viewBox="0 0 24 24" fill="none" 
-                                            stroke={selectedColor} strokeWidth="3" strokeLinecap="round"
-                                            initial={{ pathLength: 0 }}
-                                            animate={{ pathLength: 1 }}
-                                            transition={{ delay: 0.4, duration: 0.5 }}
+                                        {/* SaaS Background Accents */}
+                                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                        <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+
+                                        <motion.div
+                                            animate={{
+                                                width: isMinimized ? 40 : 48,
+                                                height: isMinimized ? 40 : 48,
+                                                borderRadius: isMinimized ? 12 : 14
+                                            }}
+                                            whileHover={{ scale: 1.05, rotate: -5 }}
+                                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                            className="bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600 dark:text-blue-400 relative z-10"
                                         >
-                                            <motion.path d="M20 6L9 17l-5-5" />
-                                        </motion.svg>
+                                            <div className="hidden sm:flex">
+                                                <GroupIcon icon={selectedIcon} color={selectedColor} size={isMinimized ? 20 : 24} />
+                                            </div>
+                                            <div className="flex sm:hidden">
+                                                <GroupIcon icon={selectedIcon} color={selectedColor} size={isMinimized ? 18 : 20} />
+                                            </div>
+                                        </motion.div>
+                                        
+                                        <div className="relative z-10 flex-1 min-w-0 pr-2 sm:pr-4">
+                                            <motion.h2 
+                                                animate={{ fontSize: isMinimized ? '16px' : '18px' }}
+                                                className="font-bold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-0.5 truncate"
+                                            >
+                                                Create Workspace
+                                            </motion.h2>
+                                            <motion.div 
+                                                animate={{ 
+                                                    height: isMinimized ? 0 : 'auto',
+                                                    opacity: isMinimized ? 0 : 1,
+                                                    marginTop: isMinimized ? 0 : '4px'
+                                                }}
+                                                className="overflow-hidden"
+                                            >
+                                                <p className="text-zinc-500 dark:text-zinc-400 font-medium m-0 text-xs sm:text-[13px] leading-snug">
+                                                    Setup your new project environment and invite teammates.
+                                                </p>
+                                            </motion.div>
+                                        </div>
+                                        <div className="relative z-20 self-start">
+                                            <motion.button
+                                                onClick={onClose}
+                                                whileHover={{ scale: 1.1 }}
+                                                whileTap={{ scale: 0.95 }}
+                                                className="lg:hidden flex-shrink-0 flex items-center justify-center rounded-lg sm:rounded-xl border border-zinc-200/80 bg-white/80 backdrop-blur-md p-2 text-zinc-500 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700/80 dark:bg-zinc-800/80 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                                                aria-label="Close modal"
+                                            >
+                                                <X size={18} strokeWidth={2.5} className="sm:w-5 sm:h-5" />
+                                            </motion.button>
+                                        </div>
                                     </motion.div>
-                                    <motion.h3
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.3 }}
-                                        style={{ margin: '0 0 8px 0', fontSize: '20px', fontWeight: 600, color: '#0f172a' }}
-                                    >
-                                        Group Created! ??
-                                    </motion.h3>
-                                    <motion.p
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.4 }}
-                                        style={{ margin: 0, fontSize: '14px', color: '#64748b' }}
-                                    >
-                                        {name} is ready for collaboration
-                                    </motion.p>
                                 </motion.div>
                             </motion.div>
-                        )}
-                    </AnimatePresence>
-                    
-                    {/* Modal */}
-                    <div style={{
-                        position: 'fixed', inset: 0, display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', zIndex: 9999, pointerEvents: 'none', padding: '20px',
-                    }}>
-                        <motion.div
-                            layout
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            transition={{ 
-                                type: 'spring', 
-                                stiffness: 400, 
-                                damping: 30,
-                                layout: { type: 'spring', damping: 25, stiffness: 200 }
-                            }}
-                            style={{
-                                width: '100%', maxWidth: '520px', maxHeight: '90vh',
-                                background: colors.bg, borderRadius: '20px',
-                                boxShadow: isDarkMode ? '0 24px 48px rgba(0, 0, 0, 0.4)' : '0 24px 48px rgba(0, 0, 0, 0.15)',
-                                overflow: 'hidden', display: 'flex', flexDirection: 'column', pointerEvents: 'auto',
-                            }}
-                        >
-                            {/* Progress Bar - At the very top */}
-                            <div style={{
-                                height: '4px',
-                                background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
-                                borderRadius: '20px 20px 0 0',
-                                overflow: 'hidden',
-                            }}>
-                                <motion.div
-                                    initial={{ width: '33%' }}
-                                    animate={{ width: `${(step / totalSteps) * 100}%` }}
-                                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                    style={{ height: '100%', background: selectedColor }}
-                                />
-                            </div>
 
-                            {/* Header */}
-                            <div style={{
-                                padding: '20px 24px', borderBottom: `1px solid ${colors.border}`,
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <motion.div
-                                        initial={{ scale: 0, rotate: -180 }}
-                                        animate={{ scale: 1, rotate: 0 }}
-                                        transition={{ delay: 0.1, type: 'spring', stiffness: 400 }}
-                                        style={{
-                                            width: '42px', height: '42px', borderRadius: '12px',
-                                            background: `linear-gradient(135deg, ${selectedColor}20 0%, ${selectedColor}10 100%)`,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        }}
-                                    >
-                                        <GroupIcon icon={selectedIcon} color={selectedColor} size={22} />
-                                    </motion.div>
-                                    <div>
-                                        <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: colors.textPrimary }}>
-                                            Create Study Group
-                                        </h2>
-                                        <p style={{ margin: 0, fontSize: '12px', color: colors.textMuted }}>
-                                            Step {step} of {totalSteps} � {step === 1 ? 'Basic Info' : step === 2 ? 'Customize' : 'Invite Friends'}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    {/* Keyboard Shortcuts Hint */}
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            <kbd style={{
-                                                padding: '3px 6px', borderRadius: '4px',
-                                                background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                                                border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
-                                                fontSize: '10px', fontWeight: 500, color: colors.textMuted,
-                                                fontFamily: 'system-ui, -apple-system, sans-serif',
-                                            }}>
-                                                Esc
-                                            </kbd>
-                                            <span style={{ fontSize: '10px', color: colors.textMuted }}>
-                                                {step > 1 ? 'Back' : 'Close'}
-                                            </span>
-                                        </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            <kbd style={{
-                                                padding: '3px 6px', borderRadius: '4px',
-                                                background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                                                border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
-                                                fontSize: '10px', fontWeight: 500, color: colors.textMuted,
-                                                fontFamily: 'system-ui, -apple-system, sans-serif',
-                                            }}>
-                                                Enter
-                                            </kbd>
-                                            <span style={{ fontSize: '10px', color: colors.textMuted }}>
-                                                {step < totalSteps ? 'Next' : 'Create'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    {/* Close Button */}
-                                    <motion.button
-                                        onClick={onClose}
-                                        whileHover={{ scale: 1.1, backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }}
-                                        whileTap={{ scale: 0.9 }}
-                                        style={{
-                                            width: '32px', height: '32px', borderRadius: '8px', border: 'none',
-                                            background: 'transparent', cursor: 'pointer', display: 'flex',
-                                            alignItems: 'center', justifyContent: 'center', color: colors.textMuted,
-                                        }}
-                                    >
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M18 6L6 18M6 6l12 12" />
-                                        </svg>
-                                    </motion.button>
-                                </div>
-                            </div>
-
-                            {/* Content */}
-                            <motion.div 
-                                layout
-                                transition={{ layout: { type: 'spring', damping: 25, stiffness: 200 } }}
-                                style={{ flex: 1, overflow: 'auto', padding: '20px 24px' }}
-                                onScroll={() => setHoveredTooltip(null)}
-                            >
+                            {/* Scrollable Form Content */}
+                            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative" onScroll={handleScroll}>
                                 <AnimatePresence mode="wait">
-                                    {step === 1 ? (
+                                     {step === 1 ? (
                                         <motion.div
                                             key="step1"
-                                            layout
-                                            initial={{ opacity: 0, x: -20 }}
+                                            initial={{ opacity: 0, x: -12 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: 20 }}
-                                            transition={{ duration: 0.2, layout: { type: 'spring', damping: 25, stiffness: 200 } }}
+                                            exit={{ opacity: 0, x: 12 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="space-y-6 max-w-none p-4 sm:p-6 md:max-w-none md:mx-0 md:p-8 w-full min-w-0"
                                         >
-                                            {/* Quick Templates */}
-                                            <div style={{ marginBottom: '20px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="2">
-                                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                                                    </svg>
-                                                    <label style={{
-                                                        fontSize: '12px', fontWeight: 600,
-                                                        color: colors.textSecondary,
-                                                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    }}>
-                                                        Quick Start Templates
-                                                    </label>
-                                                    <span style={{
-                                                        fontSize: '9px', padding: '2px 6px', borderRadius: '4px',
-                                                        background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontWeight: 500,
-                                                    }}>
-                                                        One-click setup
-                                                    </span>
+
+                                            {/* Mobile Live Preview */}
+                                            <div className="md:hidden pb-2">
+                                                {livePreviewCard}
+                                            </div>
+
+                                            {/* Presets Row */}
+                                            <div className="space-y-3">
+                                                <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                                                    <GroupIcon icon="star" color="#888" size={12} />
+                                                    Quick-Fill Presets
                                                 </div>
-                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-                                                    {quickTemplates.map((template, i) => (
-                                                        <motion.button
-                                                            key={i}
-                                                            onClick={() => applyTemplate(template)}
-                                                            whileHover={{ scale: 1.02, y: -2 }}
-                                                            whileTap={{ scale: 0.98 }}
-                                                            style={{
-                                                                padding: '10px 12px', borderRadius: '10px',
-                                                                border: `1px solid ${name === template.name ? template.color : colors.border}`,
-                                                                background: name === template.name ? `${template.color}10` : colors.cardBg,
-                                                                cursor: 'pointer', textAlign: 'left',
-                                                                transition: 'all 0.2s ease',
-                                                            }}
-                                                        >
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                                                <div style={{
-                                                                    width: '24px', height: '24px', borderRadius: '6px',
-                                                                    background: `${template.color}20`,
-                                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                }}>
-                                                                    <GroupIcon icon={template.icon} color={template.color} size={14} />
+                                                <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner w-full">
+                                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                                        {presets.map((preset, idx) => (
+                                                            <motion.button
+                                                                key={idx}
+                                                                type="button"
+                                                                whileHover={{ scale: 1.02 }}
+                                                                whileTap={{ scale: 0.98 }}
+                                                                onClick={() => applyPreset(preset)}
+                                                                className="w-full p-3 rounded-xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white hover:bg-zinc-50 dark:bg-zinc-955/60 dark:hover:bg-zinc-900 text-left transition-all cursor-pointer shadow-sm hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 flex flex-col gap-1.5"
+                                                            >
+                                                                <div className="flex items-start justify-between gap-2 w-full">
+                                                                    <span className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate pt-1">{preset.name}</span>
+                                                                    <div 
+                                                                        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 border"
+                                                                        style={{ backgroundColor: `${preset.color}15`, borderColor: `${preset.color}40`, color: preset.color }}
+                                                                    >
+                                                                        <GroupIcon icon={preset.icon} color={preset.color} size={14} />
+                                                                    </div>
                                                                 </div>
-                                                                <span style={{ fontSize: '12px', fontWeight: 600, color: colors.textPrimary }}>
-                                                                    {template.name}
-                                                                </span>
-                                                            </div>
-                                                            <p style={{ margin: 0, fontSize: '10px', color: colors.textMuted, lineHeight: 1.3 }}>
-                                                                {template.description}
-                                                            </p>
-                                                        </motion.button>
-                                                    ))}
+                                                                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug line-clamp-2 pr-2">
+                                                                    {preset.description}
+                                                                </div>
+                                                            </motion.button>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            {/* Divider */}
-                                            <div style={{ 
-                                                display: 'flex', alignItems: 'center', gap: '12px', 
-                                                marginBottom: '20px', color: colors.textMuted 
-                                            }}>
-                                                <div style={{ flex: 1, height: '1px', background: colors.border }} />
-                                                <span style={{ fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                                    or customize
-                                                </span>
-                                                <div style={{ flex: 1, height: '1px', background: colors.border }} />
-                                            </div>
-
-                                            {/* Group Name */}
-                                            <div style={{ marginBottom: '20px', position: 'relative' }}>
-                                                <label style={{
-                                                    display: 'block', fontSize: '12px', fontWeight: 600,
-                                                    color: colors.textSecondary, marginBottom: '8px',
-                                                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                }}>
-                                                    Group Name *
+                                            {/* Name Field */}
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider block">
+                                                    Workspace Name <span className="text-red-500">*</span>
                                                 </label>
-                                                <div style={{ position: 'relative' }}>
+                                                <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner w-full">
                                                     <input
                                                         type="text"
                                                         value={name}
                                                         onChange={(e) => setName(e.target.value)}
-                                                        onFocus={() => setShowNameSuggestions(true)}
-                                                        onBlur={() => setTimeout(() => setShowNameSuggestions(false), 150)}
-                                                        placeholder="e.g., CP1 Study Squad"
+                                                        placeholder="e.g., CP1 Capstone Project Group 1"
                                                         maxLength={50}
-                                                        style={{
-                                                            width: '100%', padding: '12px 14px', borderRadius: '10px',
-                                                            border: `1px solid ${name.length >= 50 ? '#ef4444' : name.length >= 3 ? 'rgba(16, 185, 129, 0.4)' : colors.border}`,
-                                                            background: name.length >= 50 ? (isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)') : colors.cardBg, 
-                                                            color: colors.textPrimary,
-                                                            fontSize: '14px', outline: 'none',
-                                                            transition: 'all 0.2s ease',
-                                                        }}
+                                                        className="w-full block px-4 py-3 rounded-xl border border-zinc-200/60 dark:border-zinc-800/80 bg-white dark:bg-zinc-950/60 text-sm font-medium text-zinc-900 dark:text-zinc-100 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-zinc-400 shadow-sm"
                                                     />
-                                                    {/* Name Suggestions Dropdown */}
+                                                </div>
+                                                <div className="flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500 font-medium px-1">
+                                                    <span>Minimum 3 characters</span>
+                                                    <span>{name.length}/50</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Description Field */}
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider block">
+                                                    Description
+                                                </label>
+                                                <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner w-full">
+                                                    <textarea
+                                                        value={description}
+                                                        onChange={(e) => setDescription(e.target.value)}
+                                                        placeholder="Explain the project scope, roles, or learning objective..."
+                                                        maxLength={200}
+                                                        rows={3}
+                                                        className="w-full block px-4 py-3 rounded-xl border border-zinc-200/60 dark:border-zinc-800/80 bg-white dark:bg-zinc-950/60 text-sm font-medium text-zinc-900 dark:text-zinc-100 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 placeholder-zinc-400 resize-none shadow-sm"
+                                                    />
+                                                </div>
+                                                <div className="flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500 font-medium px-1">
+                                                    <span>Optional</span>
+                                                    <span className={description.length >= 200 ? 'text-red-500 font-bold' : ''}>{description.length}/200</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Course Linking */}
+                                            <div className="space-y-2">
+                                                <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider uppercase flex items-center gap-1.5 mb-2 select-none">
+                                                    <BookOpen size={12} strokeWidth={2.5} className="text-zinc-400 dark:text-zinc-500" />
+                                                    Link to Course
+                                                </label>
+                                                <div className="relative" ref={courseDropdownRef}>
+                                                    <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner w-full">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowCourseDropdown(!showCourseDropdown)}
+                                                            className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 flex items-center gap-3 cursor-pointer outline-none shadow-sm ${
+                                                                showCourseDropdown
+                                                                    ? 'border-blue-500 ring-4 ring-blue-500/10 bg-white dark:bg-zinc-955/60 text-zinc-900 dark:text-zinc-100'
+                                                                    : 'border-zinc-200/60 dark:border-zinc-800/80 bg-white dark:bg-zinc-955/60 hover:bg-zinc-50 dark:hover:bg-zinc-900/80 text-zinc-800 dark:text-zinc-200'
+                                                            }`}
+                                                        >
+                                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
+                                                                selectedCourse 
+                                                                    ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20' 
+                                                                    : 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-400 dark:text-zinc-500 border border-zinc-200/50 dark:border-zinc-700/50'
+                                                            }`}>
+                                                                {selectedCourse ? <GraduationCap size={16} strokeWidth={2.2} /> : <BookOpen size={16} strokeWidth={2.2} />}
+                                                            </div>
+                                                            <div className="flex-1 text-left overflow-hidden">
+                                                                <div className="text-[10px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider leading-none mb-1">
+                                                                    Course Link
+                                                                </div>
+                                                                <div className={`text-[13.5px] truncate font-bold ${
+                                                                    selectedCourse ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-400 dark:text-zinc-650'
+                                                                }`}>
+                                                                    {selectedCourse ? `${selectedCourse.shortTitle} — ${selectedCourse.title}` : 'Select related subject (optional)...'}
+                                                                </div>
+                                                            </div>
+                                                            <ChevronRight 
+                                                                size={18} 
+                                                                className={`text-zinc-400 dark:text-zinc-500 transition-transform duration-300 flex-shrink-0 ${
+                                                                    showCourseDropdown ? 'rotate-90 text-blue-500 dark:text-blue-400' : ''
+                                                                }`} 
+                                                            />
+                                                        </button>
+                                                    </div>
                                                     <AnimatePresence>
-                                                        {showNameSuggestions && !name && (
+                                                        {showCourseDropdown && (
                                                             <motion.div
                                                                 initial={{ opacity: 0, y: -8 }}
                                                                 animate={{ opacity: 1, y: 0 }}
                                                                 exit={{ opacity: 0, y: -8 }}
-                                                                style={{
-                                                                    position: 'absolute', top: '100%', left: 0, right: 0,
-                                                                    marginTop: '4px', background: colors.cardBg,
-                                                                    border: `1px solid ${colors.border}`, borderRadius: '10px',
-                                                                    boxShadow: '0 6px 20px rgba(0,0,0,0.1)', zIndex: 10,
-                                                                    overflow: 'hidden',
-                                                                }}
+                                                                className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-2xl max-h-[280px] overflow-y-auto z-[60] p-1.5 scrollbar-none"
+                                                                onMouseLeave={() => setHoveredCourseId(null)}
                                                             >
-                                                                <div style={{
-                                                                    padding: '6px 10px', borderBottom: `1px solid ${colors.border}`,
-                                                                    display: 'flex', alignItems: 'center', gap: '6px',
-                                                                }}>
-                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="2">
-                                                                        <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
-                                                                    </svg>
-                                                                    <span style={{ fontSize: '10px', fontWeight: 600, color: colors.textMuted, textTransform: 'uppercase' }}>
-                                                                        Suggestions for {categoryOptions.find(c => c.id === category)?.label}
-                                                                    </span>
+                                                                <div className="flex flex-col gap-1 relative w-full">
+                                                                    <AnimatePresence>
+                                                                        {hoveredIndex !== -1 && (
+                                                                            <motion.div
+                                                                                initial={{ opacity: 0 }}
+                                                                                animate={{ 
+                                                                                    opacity: 1,
+                                                                                    y: hoveredIndex * 54, // 50px height + 4px gap
+                                                                                }}
+                                                                                exit={{ opacity: 0 }}
+                                                                                className="absolute left-0 right-0 h-[50px] bg-gradient-to-r from-zinc-200/60 to-zinc-100/40 dark:from-zinc-800/70 dark:to-zinc-800/30 rounded-lg pointer-events-none z-0 shadow-sm border border-zinc-200/20 dark:border-zinc-700/10"
+                                                                                transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                                                                            />
+                                                                        )}
+                                                                    </AnimatePresence>
+                                                                    {selectedCourse && (
+                                                                        <button
+                                                                            type="button"
+                                                                            onMouseEnter={() => setHoveredCourseId('clear')}
+                                                                            onClick={() => { setSelectedCourse(null); setShowCourseDropdown(false); }}
+                                                                            className="w-full text-left px-3 h-[50px] rounded-lg cursor-pointer transition-colors flex items-center justify-between relative z-10"
+                                                                        >
+                                                                            <div className="flex flex-col justify-center min-w-0 flex-1 pr-4">
+                                                                                <span className="font-bold text-xs text-red-500">
+                                                                                    Clear course link
+                                                                                </span>
+                                                                                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium truncate mt-0.5">
+                                                                                    Remove course association from this workspace
+                                                                                </span>
+                                                                            </div>
+                                                                            <div className="w-8 h-8 rounded-md bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-center flex-shrink-0 relative z-10">
+                                                                                <X size={14} strokeWidth={2.5} />
+                                                                            </div>
+                                                                        </button>
+                                                                    )}
+
+                                                                    {enrolledCourses.map((c) => {
+                                                                        const isSelected = selectedCourse?.id === c.id;
+                                                                        return (
+                                                                            <button
+                                                                                key={c.id}
+                                                                                type="button"
+                                                                                onMouseEnter={() => setHoveredCourseId(c.id)}
+                                                                                onClick={() => { setSelectedCourse(c); setShowCourseDropdown(false); }}
+                                                                                className={`w-full text-left px-3 h-[50px] rounded-lg flex items-center justify-between cursor-pointer transition-all duration-200 relative overflow-hidden z-10 ${
+                                                                                    isSelected
+                                                                                        ? 'bg-blue-50/80 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-l-2 border-blue-500 pl-2.5'
+                                                                                        : 'text-zinc-700 dark:text-zinc-300 border-l-2 border-transparent hover:text-zinc-950 dark:hover:text-zinc-50'
+                                                                                }`}
+                                                                            >
+                                                                                <div className="flex flex-col justify-center min-w-0 flex-1 pr-4 relative z-10">
+                                                                                    <span className={`font-bold text-xs truncate ${isSelected ? 'text-blue-600 dark:text-blue-450' : 'text-zinc-800 dark:text-zinc-200'}`}>
+                                                                                        {c.title}
+                                                                                    </span>
+                                                                                    <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium truncate mt-0.5">
+                                                                                        {c.description}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div className="flex items-center gap-2.5 flex-shrink-0 relative z-10">
+                                                                                    <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider border transition-colors duration-200 ${
+                                                                                        isSelected
+                                                                                            ? 'bg-blue-500 border-blue-600 text-white dark:border-blue-500 shadow-sm'
+                                                                                            : 'bg-blue-50 dark:bg-blue-955/40 border-blue-100 dark:border-blue-900/30 text-blue-600 dark:text-blue-400'
+                                                                                    }`}>
+                                                                                        {c.shortTitle}
+                                                                                    </span>
+                                                                                    {isSelected && <Check size={14} className="text-blue-500 dark:text-blue-400" strokeWidth={2.5} />}
+                                                                                </div>
+                                                                            </button>
+                                                                        );
+                                                                    })}
                                                                 </div>
-                                                                {nameSuggestions[category].map((suggestion, i) => (
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
+                                            </div>
+
+                                            {/* Appearance Section */}
+                                            <div className="space-y-6 pt-2">
+                                                {/* Category Options */}
+                                                <div className="space-y-3">
+                                                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider block">
+                                                        Workspace Category
+                                                    </label>
+                                                    <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner w-full">
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                            {categoryOptions.map((opt) => {
+                                                                const isSelected = category === opt.id;
+                                                                return (
                                                                     <motion.button
-                                                                        key={i}
-                                                                        onClick={() => { setName(suggestion); setShowNameSuggestions(false); }}
-                                                                        whileHover={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
-                                                                        style={{
-                                                                            width: '100%', padding: '8px 12px', border: 'none',
-                                                                            background: 'transparent', cursor: 'pointer', textAlign: 'left',
-                                                                            display: 'flex', alignItems: 'center', gap: '8px',
-                                                                        }}
+                                                                        key={opt.id}
+                                                                        type="button"
+                                                                        onClick={() => setCategory(opt.id as GroupCategory)}
+                                                                        whileHover="hover"
+                                                                        className={`p-4 rounded-[16px] border flex items-start gap-4 transition-all duration-300 cursor-pointer text-left relative overflow-hidden group hover:shadow-md hover:-translate-y-0.5 ${
+                                                                            isSelected 
+                                                                                ? 'shadow-sm text-zinc-900 dark:text-zinc-100' 
+                                                                                : 'bg-white dark:bg-zinc-950/60 border-zinc-200/60 dark:border-zinc-800/80 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-650 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700'
+                                                                        }`}
+                                                                        style={isSelected ? {
+                                                                            borderColor: selectedColor,
+                                                                            backgroundColor: `${selectedColor}08`,
+                                                                            boxShadow: `0 2px 8px -2px ${selectedColor}25, 0 0 0 1px ${selectedColor}40`
+                                                                        } : {}}
                                                                     >
-                                                                        <span style={{ fontSize: '12px', color: colors.textPrimary }}>{suggestion}</span>
+                                                                        {/* Background Glow when selected - REMOVED per user request */}
+                                                                        
+                                                                        <div className="flex flex-col justify-center min-w-0 flex-1 relative z-10 pt-1 pr-2">
+                                                                            <div className="flex items-center justify-between mb-1.5">
+                                                                                <span className={`font-bold text-base tracking-tight transition-colors duration-200 ${isSelected ? '' : 'text-zinc-800 dark:text-zinc-200'}`} style={isSelected ? { color: selectedColor } : {}}>
+                                                                                    {opt.label}
+                                                                                </span>
+                                                                            </div>
+                                                                            <span className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400 font-medium">
+                                                                                {opt.description}
+                                                                            </span>
+                                                                        </div>
+                                                                        <motion.div 
+                                                                            variants={{ hover: { scale: 1.05, rotate: -5 } }}
+                                                                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                                                            className={`w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 shadow-sm relative z-10 border transition-colors duration-300 ${
+                                                                                isSelected ? '' : 'bg-zinc-50 dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-700/50 text-zinc-500 dark:text-zinc-400'
+                                                                            }`}
+                                                                            style={isSelected ? { backgroundColor: `${selectedColor}15`, borderColor: `${selectedColor}40`, color: selectedColor } : {}}
+                                                                        >
+                                                                            {opt.icon}
+                                                                        </motion.div>
                                                                     </motion.button>
-                                                                ))}
-                                                            </motion.div>
-                                                        )}
-                                                    </AnimatePresence>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div style={{
-                                                    display: 'flex', justifyContent: 'space-between',
-                                                    marginTop: '6px', fontSize: '11px',
-                                                }}>
-                                                    <span style={{ 
-                                                        color: name.length < 3 ? '#f59e0b' : name.length >= 50 ? '#ef4444' : '#10b981',
-                                                        display: 'flex', alignItems: 'center', gap: '4px',
-                                                    }}>
-                                                        {name.length < 3 ? (
-                                                            <>
-                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-                                                                </svg>
-                                                                Minimum 3 characters
-                                                            </>
-                                                        ) : name.length >= 50 ? (
-                                                            <>
-                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                    <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
-                                                                </svg>
-                                                                Character limit reached
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-                                                                </svg>
-                                                                Looks good!
-                                                            </>
-                                                        )}
-                                                    </span>
-                                                    <span style={{ 
-                                                        color: name.length >= 50 ? '#ef4444' : name.length >= 45 ? '#f59e0b' : colors.textMuted,
-                                                        fontWeight: name.length >= 45 ? 600 : 400,
-                                                    }}>
-                                                        {name.length}/50
-                                                    </span>
-                                                </div>
-                                            </div>
 
-                                            {/* Description */}
-                                            <div style={{ marginBottom: '20px' }}>
-                                                <label style={{
-                                                    display: 'block', fontSize: '12px', fontWeight: 600,
-                                                    color: colors.textSecondary, marginBottom: '8px',
-                                                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                }}>
-                                                    Description
-                                                </label>
-                                                <textarea
-                                                    value={description}
-                                                    onChange={(e) => setDescription(e.target.value)}
-                                                    placeholder="What's this group about? Share your goals..."
-                                                    maxLength={200}
-                                                    rows={3}
-                                                    style={{
-                                                        width: '100%', padding: '12px 14px', borderRadius: '10px',
-                                                        border: `1px solid ${description.length >= 200 ? '#ef4444' : colors.border}`, 
-                                                        background: description.length >= 200 ? (isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)') : colors.cardBg,
-                                                        color: colors.textPrimary, fontSize: '14px', outline: 'none',
-                                                        resize: 'none', fontFamily: 'inherit',
-                                                        transition: 'all 0.2s ease',
-                                                    }}
-                                                />
-                                                <div style={{ 
-                                                    display: 'flex', justifyContent: 'space-between',
-                                                    marginTop: '6px', fontSize: '11px',
-                                                }}>
-                                                    <span style={{ 
-                                                        color: description.length >= 200 ? '#ef4444' : colors.textMuted,
-                                                        display: 'flex', alignItems: 'center', gap: '4px',
-                                                    }}>
-                                                        {description.length >= 200 && (
-                                                            <>
-                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                    <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
-                                                                </svg>
-                                                                Character limit reached
-                                                            </>
-                                                        )}
-                                                    </span>
-                                                    <span style={{ 
-                                                        color: description.length >= 200 ? '#ef4444' : description.length >= 180 ? '#f59e0b' : colors.textMuted,
-                                                        fontWeight: description.length >= 180 ? 600 : 400,
-                                                    }}>
-                                                        {description.length}/200
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            {/* Category Selection */}
-                                            <div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                                                    <label style={{
-                                                        fontSize: '12px', fontWeight: 600,
-                                                        color: colors.textSecondary,
-                                                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    }}>
-                                                        Category
+                                                {/* Fallback Icon Select */}
+                                                <div className="space-y-3">
+                                                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider block text-left">
+                                                        Workspace Icon
                                                     </label>
-                                                    <div 
-                                                        title="Choose a category that best describes your group's purpose"
-                                                        style={{
-                                                            width: '16px', height: '16px', borderRadius: '50%',
-                                                            background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
-                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                            cursor: 'help',
-                                                        }}
-                                                    >
-                                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2">
-                                                            <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
-                                                        </svg>
-                                                    </div>
-                                                </div>
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                                                    {categoryOptions.map((cat) => (
-                                                        <motion.button
-                                                            key={cat.id}
-                                                            onClick={() => setCategory(cat.id)}
-                                                            whileHover={{ scale: 1.01 }}
-                                                            whileTap={{ scale: 0.99 }}
-                                                            style={{
-                                                                padding: '16px', borderRadius: '14px', border: 'none',
-                                                                background: category === cat.id ? '#ffffff' : '#f8fafc',
-                                                                cursor: 'pointer', textAlign: 'left',
-                                                                outline: category === cat.id ? `2px solid ${selectedColor}` : '1px solid #e2e8f0',
-                                                                outlineOffset: '-1px',
-                                                                transition: 'all 0.2s ease',
-                                                                boxShadow: category === cat.id ? '0 4px 16px rgba(0,0,0,0.08)' : 'none',
-                                                            }}
-                                                        >
-                                                            {/* Icon and Title Row */}
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-                                                                <div style={{
-                                                                    width: '36px', height: '36px', borderRadius: '10px',
-                                                                    background: category === cat.id ? `${selectedColor}15` : '#f1f5f9',
-                                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                    color: category === cat.id ? selectedColor : '#64748b',
-                                                                    transition: 'all 0.2s ease',
-                                                                }}>
-                                                                    {cat.icon}
-                                                                </div>
-                                                                <span style={{
-                                                                    fontSize: '14px', fontWeight: 600,
-                                                                    color: category === cat.id ? selectedColor : '#0f172a',
-                                                                }}>
-                                                                    {cat.label}
-                                                                </span>
-                                                            </div>
-                                                            
-                                                            {/* Description */}
-                                                            <p style={{ 
-                                                                margin: '0 0 12px 0', fontSize: '12px', 
-                                                                color: '#334155', lineHeight: 1.5,
-                                                            }}>
-                                                                {cat.longDescription}
-                                                            </p>
-                                                            
-                                                            {/* Benefits Tags */}
-                                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                                                                {cat.benefits.map((benefit, i) => (
-                                                                    <span key={i} style={{
-                                                                        fontSize: '10px', padding: '4px 8px', borderRadius: '6px',
-                                                                        background: category === cat.id ? `${selectedColor}12` : '#f1f5f9',
-                                                                        color: category === cat.id ? selectedColor : '#475569',
-                                                                        fontWeight: 500,
-                                                                        border: `1px solid ${category === cat.id ? `${selectedColor}25` : '#e2e8f0'}`,
-                                                                    }}>
-                                                                        {benefit}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-                                                        </motion.button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    ) : step === 2 ? (
-                                        <motion.div
-                                            key="step2"
-                                            layout
-                                            initial={{ opacity: 0, x: 20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -20 }}
-                                            transition={{ duration: 0.2, layout: { type: 'spring', damping: 25, stiffness: 200 } }}
-                                        >
-                                            {/* Live Preview Card */}
-                                            <div style={{ marginBottom: '24px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="2">
-                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                                        <circle cx="12" cy="12" r="3" />
-                                                    </svg>
-                                                    <label style={{
-                                                        fontSize: '12px', fontWeight: 600,
-                                                        color: '#0f172a',
-                                                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    }}>
-                                                        Live Preview
-                                                    </label>
-                                                    <span style={{
-                                                        fontSize: '9px', padding: '2px 6px', borderRadius: '4px',
-                                                        background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontWeight: 500,
-                                                    }}>
-                                                        Updates in real-time
-                                                    </span>
-                                                </div>
-                                                <motion.div
-                                                    layout
-                                                    style={{
-                                                        background: '#ffffff', borderRadius: '16px',
-                                                        border: '1px solid #e2e8f0', padding: '16px',
-                                                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                                                    }}
-                                                >
-                                                    {/* Preview Header */}
-                                                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
-                                                        <motion.div
-                                                            key={selectedIcon + selectedColor + (groupAvatar ? 'avatar' : '')}
-                                                            initial={{ scale: 0.8, rotate: -10 }}
-                                                            animate={{ scale: 1, rotate: 0 }}
-                                                            transition={{ type: 'spring', stiffness: 400 }}
-                                                            style={{
-                                                                width: 44, height: 44, borderRadius: '12px',
-                                                                background: groupAvatar ? 'transparent' : `linear-gradient(135deg, ${selectedColor}20 0%, ${selectedColor}10 100%)`,
-                                                                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                                                overflow: 'hidden',
-                                                            }}
-                                                        >
-                                                            {groupAvatar ? (
-                                                                <img src={groupAvatar} alt="Group" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                            ) : (
-                                                                <GroupIcon icon={selectedIcon} color={selectedColor} size={22} />
-                                                            )}
-                                                        </motion.div>
-                                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                                                <motion.h3 
-                                                                    key={name}
-                                                                    initial={{ opacity: 0.5 }}
-                                                                    animate={{ opacity: 1 }}
-                                                                    style={{
-                                                                        margin: 0, fontSize: '14px', fontWeight: 600, color: '#0f172a',
-                                                                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                                                    }}
-                                                                >
-                                                                    {name || 'Your Group Name'}
-                                                                </motion.h3>
-                                                                {isPrivate && (
-                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-                                                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                                                                    </svg>
-                                                                )}
-                                                            </div>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                <span style={{
-                                                                    fontSize: '10px', padding: '2px 6px', borderRadius: '4px',
-                                                                    background: `${selectedColor}15`, color: selectedColor, fontWeight: 500,
-                                                                }}>
-                                                                    {categoryOptions.find(c => c.id === category)?.label || 'Study Group'}
-                                                                </span>
-                                                                {selectedCourse && (
-                                                                    <span style={{
-                                                                        fontSize: '10px', padding: '2px 6px', borderRadius: '4px',
-                                                                        background: '#f1f5f9', color: '#64748b', fontWeight: 500,
-                                                                    }}>
-                                                                        {selectedCourse.shortTitle}
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    {/* Preview Description */}
-                                                    <p style={{
-                                                        margin: '0 0 12px 0', fontSize: '12px', color: '#64748b',
-                                                        lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2,
-                                                        WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                                                    }}>
-                                                        {description || 'Your group description will appear here...'}
-                                                    </p>
-                                                    {/* Preview Footer */}
-                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                            <div style={{ display: 'flex' }}>
-                                                                {[0, 1, 2].map((i) => (
-                                                                    <div key={i} style={{
-                                                                        width: 24, height: 24, borderRadius: '50%',
-                                                                        background: `linear-gradient(135deg, ${selectedColor} 0%, ${selectedColor}dd 100%)`,
-                                                                        border: '2px solid white', marginLeft: i > 0 ? -8 : 0,
-                                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                        fontSize: '10px', fontWeight: 600, color: 'white',
-                                                                    }}>
-                                                                        {['Y', 'O', 'U'][i]}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                            <span style={{ fontSize: '11px', fontWeight: 500, color: '#64748b' }}>
-                                                                1/{maxMembers}
-                                                            </span>
-                                                        </div>
-                                                        <span style={{
-                                                            padding: '4px 10px', borderRadius: '6px',
-                                                            background: 'rgba(16, 185, 129, 0.1)', color: '#10b981',
-                                                            fontSize: '10px', fontWeight: 600,
-                                                        }}>
-                                                            Owner
-                                                        </span>
-                                                    </div>
-                                                </motion.div>
-                                            </div>
-
-                                            {/* Course Linking */}
-                                            <div style={{ marginBottom: '24px' }}>
-                                                <label style={{
-                                                    fontSize: '12px', fontWeight: 600, color: '#0f172a',
-                                                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    display: 'block', marginBottom: '10px',
-                                                }}>
-                                                    Link to Course (Optional)
-                                                </label>
-                                                <div style={{ position: 'relative' }}>
-                                                    <motion.button
-                                                        onClick={() => setShowCourseDropdown(!showCourseDropdown)}
-                                                        whileHover={{ scale: 1.01 }}
-                                                        whileTap={{ scale: 0.99 }}
-                                                        style={{
-                                                            width: '100%', padding: '12px 14px', borderRadius: '12px',
-                                                            border: `1px solid ${selectedCourse ? selectedColor : '#e2e8f0'}`,
-                                                            background: selectedCourse ? `${selectedColor}08` : '#f8fafc',
-                                                            cursor: 'pointer', display: 'flex', alignItems: 'center',
-                                                            justifyContent: 'space-between', gap: '10px',
-                                                        }}
-                                                    >
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={selectedCourse ? selectedColor : '#94a3b8'} strokeWidth="2">
-                                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                                                            </svg>
-                                                            <span style={{ fontSize: '13px', fontWeight: 500, color: selectedCourse ? '#0f172a' : '#94a3b8' }}>
-                                                                {selectedCourse ? `${selectedCourse.shortTitle} - ${selectedCourse.title}` : 'Select a course...'}
-                                                            </span>
-                                                        </div>
-                                                        <motion.svg 
-                                                            animate={{ rotate: showCourseDropdown ? 180 : 0 }}
-                                                            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2"
-                                                        >
-                                                            <polyline points="6 9 12 15 18 9" />
-                                                        </motion.svg>
-                                                    </motion.button>
-                                                    
-                                                    <AnimatePresence>
-                                                        {showCourseDropdown && (
-                                                            <motion.div
-                                                                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                                                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                                                                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                                                                style={{
-                                                                    position: 'absolute', top: '100%', left: 0, right: 0,
-                                                                    marginTop: '6px', background: 'white', borderRadius: '12px',
-                                                                    border: '1px solid #e2e8f0', boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-                                                                    zIndex: 50, maxHeight: '200px', overflowY: 'auto',
-                                                                }}
-                                                            >
-                                                                <button
-                                                                    onClick={() => { setSelectedCourse(null); setShowCourseDropdown(false); }}
-                                                                    style={{
-                                                                        width: '100%', padding: '10px 14px', border: 'none',
-                                                                        background: !selectedCourse ? `${selectedColor}08` : 'transparent',
-                                                                        cursor: 'pointer', textAlign: 'left',
-                                                                        fontSize: '12px', color: '#64748b',
-                                                                        borderBottom: '1px solid #f1f5f9',
-                                                                    }}
-                                                                >
-                                                                    No course (General group)
-                                                                </button>
-                                                                {enrolledCourses.map((course) => (
-                                                                    <button
-                                                                        key={course.id}
-                                                                        onClick={() => { setSelectedCourse(course); setShowCourseDropdown(false); }}
-                                                                        style={{
-                                                                            width: '100%', padding: '10px 14px', border: 'none',
-                                                                            background: selectedCourse?.id === course.id ? `${selectedColor}08` : 'transparent',
-                                                                            cursor: 'pointer', textAlign: 'left', display: 'flex',
-                                                                            alignItems: 'center', gap: '10px',
-                                                                        }}
+                                                    <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner w-full">
+                                                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                                                            {iconOptions.map((icon) => {
+                                                                const isSelected = selectedIcon === icon.id;
+                                                                return (
+                                                                    <motion.button
+                                                                        key={icon.id}
+                                                                        type="button"
+                                                                        onClick={() => setSelectedIcon(icon.id)}
+                                                                        whileHover="hover"
+                                                                        className={`h-[48px] px-3 rounded-xl border flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer overflow-hidden relative group hover:shadow-md hover:-translate-y-0.5 ${
+                                                                            isSelected
+                                                                                ? 'shadow-sm'
+                                                                                : 'bg-white dark:bg-zinc-955/60 border-zinc-200/60 dark:border-zinc-800/80 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100'
+                                                                        }`}
+                                                                        style={isSelected ? {
+                                                                            borderColor: selectedColor,
+                                                                            backgroundColor: `${selectedColor}12`,
+                                                                            color: selectedColor,
+                                                                            boxShadow: `0 2px 8px -2px ${selectedColor}25, 0 0 0 1px ${selectedColor}40`
+                                                                        } : {}}
                                                                     >
-                                                                        <span style={{
-                                                                            padding: '2px 6px', borderRadius: '4px',
-                                                                            background: `${selectedColor}15`, color: selectedColor,
-                                                                            fontSize: '10px', fontWeight: 600,
-                                                                        }}>
-                                                                            {course.shortTitle}
+                                                                        {/* Background Glow when selected - REMOVED per user request */}
+                                                                        <motion.div 
+                                                                            variants={{ hover: { scale: 1.1, rotate: -5 } }}
+                                                                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                                                            className={`relative z-10 flex items-center justify-center ${isSelected ? 'scale-110' : ''}`}
+                                                                        >
+                                                                            <GroupIcon 
+                                                                                icon={icon.id} 
+                                                                                color={isSelected ? selectedColor : 'currentColor'} 
+                                                                                size={18} 
+                                                                            />
+                                                                        </motion.div>
+                                                                        <span className="text-[13px] font-bold tracking-wide relative z-10">
+                                                                            {icon.label}
                                                                         </span>
-                                                                        <span style={{ fontSize: '12px', color: '#0f172a' }}>{course.title}</span>
-                                                                    </button>
-                                                                ))}
-                                                            </motion.div>
-                                                        )}
-                                                    </AnimatePresence>
-                                                </div>
-                                            </div>
-
-                                            {/* Group Avatar Upload */}
-                                            <div style={{ marginBottom: '24px' }}>
-                                                <label style={{
-                                                    fontSize: '12px', fontWeight: 600, color: '#0f172a',
-                                                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    display: 'block', marginBottom: '10px',
-                                                }}>
-                                                    Group Avatar (Optional)
-                                                </label>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                                    <motion.div
-                                                        whileHover={{ scale: 1.05 }}
-                                                        onClick={() => avatarInputRef.current?.click()}
-                                                        style={{
-                                                            width: '72px', height: '72px', borderRadius: '16px',
-                                                            border: `2px dashed ${groupAvatar ? selectedColor : '#e2e8f0'}`,
-                                                            background: groupAvatar ? 'transparent' : `${selectedColor}08`,
-                                                            cursor: 'pointer', display: 'flex', alignItems: 'center',
-                                                            justifyContent: 'center', overflow: 'hidden',
-                                                            position: 'relative',
-                                                        }}
-                                                    >
-                                                        {isUploadingAvatar ? (
-                                                            <motion.svg 
-                                                                animate={{ rotate: 360 }} 
-                                                                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="2"
-                                                            >
-                                                                <circle cx="12" cy="12" r="10" strokeOpacity="0.3" />
-                                                                <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round" />
-                                                            </motion.svg>
-                                                        ) : groupAvatar ? (
-                                                            <img src={groupAvatar} alt="Group avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                        ) : (
-                                                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="1.5">
-                                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                                                                <circle cx="8.5" cy="8.5" r="1.5" />
-                                                                <polyline points="21 15 16 10 5 21" />
-                                                            </svg>
-                                                        )}
-                                                    </motion.div>
-                                                    <input
-                                                        ref={avatarInputRef}
-                                                        type="file"
-                                                        accept="image/*"
-                                                        onChange={handleAvatarUpload}
-                                                        style={{ display: 'none' }}
-                                                    />
-                                                    <div>
-                                                        <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#0f172a', fontWeight: 500 }}>
-                                                            {groupAvatar ? 'Change image' : 'Upload an image'}
-                                                        </p>
-                                                        <p style={{ margin: 0, fontSize: '11px', color: '#94a3b8' }}>
-                                                            PNG, JPG up to 2MB
-                                                        </p>
-                                                        {groupAvatar && (
-                                                            <motion.button
-                                                                onClick={(e) => { e.stopPropagation(); setGroupAvatar(null); }}
-                                                                whileHover={{ scale: 1.02 }}
-                                                                style={{
-                                                                    marginTop: '6px', padding: '4px 8px', borderRadius: '6px',
-                                                                    border: 'none', background: 'rgba(239, 68, 68, 0.1)',
-                                                                    color: '#ef4444', fontSize: '10px', fontWeight: 500, cursor: 'pointer',
-                                                                }}
-                                                            >
-                                                                Remove
-                                                            </motion.button>
-                                                        )}
+                                                                    </motion.button>
+                                                                );
+                                                            })}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            {/* Icon Selection */}
-                                            <div style={{ marginBottom: '24px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                                    <label style={{
-                                                        fontSize: '12px', fontWeight: 600,
-                                                        color: '#0f172a',
-                                                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    }}>
-                                                        {groupAvatar ? 'Fallback Icon' : 'Choose Icon'}
-                                                    </label>
-                                                    {groupAvatar && (
-                                                        <span style={{ fontSize: '10px', color: '#94a3b8' }}>(used when image unavailable)</span>
-                                                    )}
-                                                </div>
-                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-                                                    {iconOptions.map((icon) => {
-                                                        const isSelected = selectedIcon === icon.id;
-                                                        const isHovered = hoveredTooltip?.text === icon.tooltip;
-                                                        return (
-                                                            <motion.button
-                                                                key={icon.id}
-                                                                onClick={() => setSelectedIcon(icon.id)}
-                                                                whileHover={{ scale: 1.05, y: -2 }}
-                                                                whileTap={{ scale: 0.95 }}
-                                                                onMouseEnter={(e) => {
-                                                                    const rect = e.currentTarget.getBoundingClientRect();
-                                                                    setHoveredTooltip({
-                                                                        text: icon.tooltip,
-                                                                        x: rect.left + rect.width / 2,
-                                                                        y: rect.top,
-                                                                        color: selectedColor,
-                                                                    });
-                                                                }}
-                                                                onMouseLeave={() => setHoveredTooltip(null)}
-                                                                style={{
-                                                                    width: '100%',
-                                                                    padding: '14px 8px', borderRadius: '12px',
-                                                                    border: isSelected || isHovered ? `2px solid ${selectedColor}` : '1px solid #e2e8f0',
-                                                                    background: isSelected ? `${selectedColor}10` : isHovered ? `${selectedColor}08` : '#f8fafc',
-                                                                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
-                                                                    alignItems: 'center', gap: '8px',
-                                                                    boxShadow: isSelected || isHovered ? `0 4px 12px ${selectedColor}20` : 'none',
-                                                                    transition: 'all 0.2s ease',
-                                                                }}
-                                                            >
-                                                                <GroupIcon icon={icon.id} color={isSelected || isHovered ? selectedColor : '#94a3b8'} size={24} />
-                                                                <span style={{
-                                                                    fontSize: '11px', fontWeight: 500,
-                                                                    color: isSelected || isHovered ? selectedColor : '#64748b',
-                                                                }}>
-                                                                    {icon.label}
-                                                                </span>
-                                                            </motion.button>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-
-                                            {/* Color Selection - Minimalistic */}
-                                            <div style={{ marginBottom: '24px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                                                    <label style={{
-                                                        fontSize: '12px', fontWeight: 600,
-                                                        color: '#0f172a',
-                                                        textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                    }}>
+                                                {/* Theme Colors */}
+                                                <div className="space-y-3">
+                                                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider block text-left">
                                                         Theme Color
                                                     </label>
-                                                </div>
-                                                <div style={{ 
-                                                    display: 'grid', 
-                                                    gridTemplateColumns: 'repeat(8, 1fr)', 
-                                                    gap: '8px',
-                                                }}>
-                                                    {colorOptions.map((c) => {
-                                                        const isSelected = selectedColor === c.color;
-                                                        return (
-                                                            <motion.button
-                                                                key={c.color}
-                                                                onClick={() => setSelectedColor(c.color)}
-                                                                whileHover={{ scale: 1.08 }}
-                                                                whileTap={{ scale: 0.95 }}
-                                                                onMouseEnter={(e) => {
-                                                                    const rect = e.currentTarget.getBoundingClientRect();
-                                                                    setHoveredTooltip({
-                                                                        text: c.name,
-                                                                        x: rect.left + rect.width / 2,
-                                                                        y: rect.top,
-                                                                        color: c.color,
-                                                                    });
-                                                                }}
-                                                                onMouseLeave={() => setHoveredTooltip(null)}
-                                                                style={{
-                                                                    width: '100%',
-                                                                    aspectRatio: '1',
-                                                                    borderRadius: '10px',
-                                                                    border: isSelected ? '2px solid white' : '2px solid transparent',
-                                                                    background: c.color,
-                                                                    cursor: 'pointer',
-                                                                    boxShadow: isSelected
-                                                                        ? `0 0 0 2px ${c.color}, 0 4px 12px ${c.color}40`
-                                                                        : 'none',
-                                                                    display: 'flex', 
-                                                                    alignItems: 'center', 
-                                                                    justifyContent: 'center',
-                                                                    transition: 'box-shadow 0.2s ease',
-                                                                    position: 'relative',
-                                                                }}
-                                                            >
-                                                                {isSelected && (
-                                                                    <motion.svg 
-                                                                        initial={{ scale: 0 }} 
-                                                                        animate={{ scale: 1 }} 
-                                                                        width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"
-                                                                    >
-                                                                        <polyline points="20 6 9 17 4 12" />
-                                                                    </motion.svg>
-                                                                )}
-                                                            </motion.button>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-
-                                            {/* Max Members */}
-                                            <div style={{ marginBottom: '24px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="2">
-                                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
-                                                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                                        </svg>
-                                                        <label style={{
-                                                            fontSize: '12px', fontWeight: 600,
-                                                            color: colors.textSecondary,
-                                                            textTransform: 'uppercase', letterSpacing: '0.5px',
-                                                        }}>
-                                                            Group Size
-                                                        </label>
-                                                    </div>
-                                                    <div style={{
-                                                        padding: '4px 10px', borderRadius: '8px',
-                                                        background: `${selectedColor}15`,
-                                                        display: 'flex', alignItems: 'center', gap: '4px',
-                                                    }}>
-                                                        <span style={{ fontSize: '14px', fontWeight: 700, color: selectedColor }}>{maxMembers}</span>
-                                                        <span style={{ fontSize: '11px', color: colors.textMuted }}>members</span>
-                                                    </div>
-                                                </div>
-                                                <div style={{
-                                                    padding: '16px', borderRadius: '12px', background: colors.cardBg,
-                                                    border: `1px solid ${colors.border}`,
-                                                }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2">
-                                                                <circle cx="12" cy="12" r="10" /><path d="M12 8v8M8 12h8" />
-                                                            </svg>
-                                                            <span style={{ fontSize: '11px', color: colors.textMuted }}>5</span>
-                                                        </div>
-                                                        <input
-                                                            type="range"
-                                                            min="5"
-                                                            max="50"
-                                                            value={maxMembers}
-                                                            onChange={(e) => setMaxMembers(Number(e.target.value))}
-                                                            style={{
-                                                                flex: 1, height: '8px', borderRadius: '4px',
-                                                                appearance: 'none', 
-                                                                background: `linear-gradient(to right, ${selectedColor} 0%, ${selectedColor} ${((maxMembers - 5) / 45) * 100}%, ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'} ${((maxMembers - 5) / 45) * 100}%, ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'} 100%)`,
-                                                                cursor: 'pointer',
-                                                            }}
+                                                    <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner w-full">
+                                                        <ColorPicker 
+                                                            onChange={setSelectedColor} 
+                                                            value={selectedColor} 
+                                                            className="w-full rounded-xl bg-white dark:bg-zinc-950/60 border border-zinc-200/60 dark:border-zinc-800/80 shadow-sm" 
                                                         />
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                            <span style={{ fontSize: '11px', color: colors.textMuted }}>50</span>
-                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2">
-                                                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
-                                                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
-                                                        <span style={{ fontSize: '10px', color: colors.textMuted }}>
-                                                            {maxMembers <= 10 ? '?? Small & focused' : maxMembers <= 25 ? '??????????? Medium group' : '?? Large community'}
-                                                        </span>
-                                                        <span style={{ fontSize: '10px', color: colors.textMuted }}>
-                                                            Recommended: 5-15 for study groups
-                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Privacy Toggle */}
-                                            <div style={{
-                                                padding: '16px', borderRadius: '12px', 
-                                                background: isPrivate ? `${selectedColor}08` : colors.cardBg,
-                                                border: `1px solid ${isPrivate ? `${selectedColor}30` : colors.border}`,
-                                                transition: 'all 0.2s ease',
-                                            }}>
-                                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                                                    <div style={{ flex: 1 }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                                                            <div style={{
-                                                                width: '32px', height: '32px', borderRadius: '8px',
-                                                                background: isPrivate ? `${selectedColor}20` : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'),
-                                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                            }}>
-                                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={isPrivate ? selectedColor : colors.textMuted} strokeWidth="2">
-                                                                    {isPrivate ? (
-                                                                        <><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>
-                                                                    ) : (
-                                                                        <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>
-                                                                    )}
-                                                                </svg>
-                                                            </div>
-                                                            <div>
-                                                                <span style={{ fontSize: '13px', fontWeight: 600, color: isPrivate ? selectedColor : colors.textPrimary }}>
-                                                                    {isPrivate ? 'Private Group' : 'Public Group'}
-                                                                </span>
-                                                                <p style={{ margin: 0, fontSize: '11px', color: colors.textMuted }}>
-                                                                    {isPrivate ? 'Only invited members can join' : 'Anyone can discover and join'}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        {isPrivate && (
-                                                            <motion.div 
-                                                                initial={{ opacity: 0, height: 0 }}
-                                                                animate={{ opacity: 1, height: 'auto' }}
-                                                                style={{ marginTop: '10px', paddingLeft: '42px' }}
-                                                            >
-                                                                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                                                                    {['Invite only', 'Hidden from search', 'Secure'].map((tag, i) => (
-                                                                        <span key={i} style={{
-                                                                            fontSize: '9px', padding: '3px 8px', borderRadius: '4px',
-                                                                            background: `${selectedColor}15`, color: selectedColor, fontWeight: 500,
-                                                                        }}>
-                                                                            {tag}
-                                                                        </span>
-                                                                    ))}
-                                                                </div>
-                                                            </motion.div>
-                                                        )}
-                                                    </div>
-                                                    <motion.button
-                                                        onClick={() => setIsPrivate(!isPrivate)}
-                                                        whileTap={{ scale: 0.95 }}
-                                                        style={{
-                                                            width: '44px', height: '24px', borderRadius: '12px',
-                                                            border: 'none', cursor: 'pointer', position: 'relative',
-                                                            background: isPrivate ? selectedColor : (isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'),
-                                                            transition: 'background 0.2s ease',
-                                                        }}
+                                            {/* Avatar Upload */}
+                                            <div className="pt-2">
+                                                <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner w-full">
+                                                    <div 
+                                                        onClick={() => avatarInputRef.current?.click()}
+                                                        className={`p-4 sm:p-5 rounded-xl border ${imageError.type === 'size' || imageError.type === 'inappropriate' ? 'border-red-500/50 bg-red-50/50 dark:border-red-500/50 dark:bg-red-950/20' : imageError.type === 'warning' ? 'border-yellow-400/80 bg-yellow-50/50 dark:border-yellow-500/50 dark:bg-yellow-900/10' : 'border-zinc-200/60 dark:border-zinc-800/80 bg-white dark:bg-zinc-950/60 hover:bg-zinc-50 dark:hover:bg-zinc-900'} shadow-sm hover:shadow-md ${!imageError.type ? 'hover:border-blue-300/80 dark:hover:border-blue-750/80' : ''} transition-all duration-300 flex items-center gap-4 sm:gap-5 group cursor-pointer relative overflow-hidden`}
                                                     >
-                                                        <motion.div
-                                                            animate={{ x: isPrivate ? 20 : 0 }}
-                                                            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                                                            style={{
-                                                                width: '20px', height: '20px', borderRadius: '10px',
-                                                                background: 'white', position: 'absolute',
-                                                                top: '2px', left: '2px',
-                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                                                            }}
-                                                        />
-                                                    </motion.button>
+                                                        {/* Background ambient glow effect for SaaS feel */}
+                                                        {!imageError.type && <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />}
+                                                        
+                                                        <div className={`w-11 h-11 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl ${!groupAvatar || isUploadingAvatar ? 'border-2 border-dashed' : 'border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm'} ${imageError.type === 'size' || imageError.type === 'inappropriate' ? 'border-red-400 bg-red-100/50 dark:border-red-500/50 dark:bg-red-900/30 text-red-500' : imageError.type === 'warning' ? 'border-yellow-400 bg-yellow-100/50 dark:border-yellow-500/50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-500' : 'border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-400 dark:text-zinc-500 group-hover:border-blue-500 group-hover:bg-blue-50/50 dark:group-hover:border-blue-500 dark:group-hover:bg-blue-900/20 group-hover:text-blue-500 dark:group-hover:text-blue-400'} flex items-center justify-center overflow-hidden transition-all flex-shrink-0 relative z-10`}>
+                                                            {isUploadingAvatar ? (
+                                                                <svg className="h-6 w-6 text-blue-500 dark:text-blue-400 animate-spin" viewBox="0 0 24 24" fill="none">
+                                                                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3.5" className="opacity-20" />
+                                                                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="56" strokeDashoffset="16" />
+                                                                </svg>
+                                                            ) : groupAvatar ? (
+                                                                <img src={groupAvatar} alt="Avatar" className="w-full h-full object-cover rounded-[14px]" />
+                                                            ) : (
+                                                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="transition-colors">
+                                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                                                    <polyline points="21 15 16 10 5 21" />
+                                                                </svg>
+                                                            )}
+                                                            <input 
+                                                                type="file" 
+                                                                ref={avatarInputRef} 
+                                                                onChange={handleAvatarUpload} 
+                                                                accept="image/png, image/jpeg, image/webp" 
+                                                                className="hidden" 
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0 relative z-10 flex items-center justify-between gap-3">
+                                                            <div>
+                                                                <h4 className={`text-[13px] sm:text-[15px] font-bold ${imageError.type === 'size' || imageError.type === 'inappropriate' ? 'text-red-700 dark:text-red-400' : imageError.type === 'warning' ? 'text-yellow-700 dark:text-yellow-500' : 'text-zinc-900 dark:text-zinc-100'} tracking-tight mb-0.5`}>
+                                                                    {isUploadingAvatar ? 'Scanning with MiMo 2.5...' : groupAvatar ? 'Custom Image Uploaded' : 'Upload Custom Image'}
+                                                                </h4>
+                                                                {imageError.type ? (
+                                                                    <p className={`text-[11px] sm:text-[12px] ${imageError.type === 'warning' ? 'text-yellow-600 dark:text-yellow-400/90 font-medium' : 'text-red-600 dark:text-red-400 font-bold'} leading-snug`}>{imageError.message}</p>
+                                                                ) : (
+                                                                    <p className="text-[11px] sm:text-[13px] text-zinc-500 dark:text-zinc-400 font-medium truncate">Recommended: 256×256px. Max: 2MB.</p>
+                                                                )}
+                                                            </div>
+                                                            
+                                                            {/* Change Button */}
+                                                            {groupAvatar && !isUploadingAvatar && imageError.type !== 'size' && imageError.type !== 'inappropriate' && (
+                                                                <div className="flex px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-[11px] sm:text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors shrink-0">
+                                                                    Change
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </motion.div>
-                                    ) : step === 3 ? (
-                                        <motion.div
-                                            key="step3"
-                                            initial={{ opacity: 0, x: 20 }}
+                                     ) : (
+                                         <motion.div
+                                            key="step2"
+                                            initial={{ opacity: 0, x: 12 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -20 }}
+                                            exit={{ opacity: 0, x: -12 }}
                                             transition={{ duration: 0.2 }}
-                                        >
-                                            {/* Invite Friends Header */}
-                                            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                                                <motion.div
-                                                    initial={{ scale: 0 }}
-                                                    animate={{ scale: 1 }}
-                                                    transition={{ type: 'spring', stiffness: 400, delay: 0.1 }}
-                                                    style={{
-                                                        width: '56px', height: '56px', borderRadius: '16px',
-                                                        background: `linear-gradient(135deg, ${selectedColor}20 0%, ${selectedColor}10 100%)`,
-                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                        margin: '0 auto 12px',
-                                                    }}
-                                                >
-                                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="2">
-                                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                                        <circle cx="9" cy="7" r="4" />
-                                                        <line x1="19" y1="8" x2="19" y2="14" />
-                                                        <line x1="22" y1="11" x2="16" y2="11" />
-                                                    </svg>
-                                                </motion.div>
-                                                <h3 style={{ margin: '0 0 4px 0', fontSize: '16px', fontWeight: 600, color: colors.textPrimary }}>
-                                                    Invite Classmates
-                                                </h3>
-                                                <p style={{ margin: 0, fontSize: '12px', color: colors.textMuted }}>
-                                                    Add friends to your group (optional)
-                                                </p>
-                                            </div>
+                                            className="space-y-8 max-w-none p-4 sm:p-6 md:max-w-none md:mx-0 md:p-8 w-full min-w-0"
+                                         >
 
-                                            {/* Invite Link Generation */}
-                                            <div style={{ 
-                                                marginBottom: '20px', padding: '14px', borderRadius: '12px',
-                                                background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                                border: `1px solid ${colors.border}`,
-                                            }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="2">
-                                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                                                    </svg>
-                                                    <span style={{ fontSize: '11px', fontWeight: 600, color: colors.textMuted, textTransform: 'uppercase' }}>
-                                                        Shareable Invite Link
-                                                    </span>
+                                            {/* Invite Members via Search/Email */}
+                                            <div className="space-y-4">
+                                                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider block">
+                                                    Invite Members
+                                                </label>
+                                                <div className="flex gap-2">
+                                                    <div className="relative flex-1">
+                                                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" />
+                                                        <input
+                                                            type="text"
+                                                            value={currentInviteEmail}
+                                                            onChange={(e) => setCurrentInviteEmail(e.target.value)}
+                                                            placeholder="Search name or type @meycauayan.sti.edu.ph email"
+                                                            className={`w-full pl-10 pr-4 py-3 rounded-xl border ${emailError ? 'border-red-500/50 focus:ring-red-500/10' : 'border-zinc-200 dark:border-zinc-800 focus:border-blue-500 focus:ring-blue-500/10'} bg-white dark:bg-zinc-900 text-sm font-medium text-zinc-900 dark:text-zinc-100 outline-none transition-all focus:ring-4 shadow-sm`}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter') {
+                                                                    e.preventDefault();
+                                                                    addInviteEmail(currentInviteEmail);
+                                                                }
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => addInviteEmail(currentInviteEmail)}
+                                                        disabled={!currentInviteEmail.trim() || isCheckingEmail}
+                                                        className="px-5 py-3 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm flex items-center gap-2"
+                                                    >
+                                                        {isCheckingEmail ? (
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="animate-spin">
+                                                                <circle cx="12" cy="12" r="10" strokeOpacity="0.3" />
+                                                                <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round" />
+                                                            </svg>
+                                                        ) : (
+                                                            <>
+                                                                <Plus size={16} strokeWidth={3} />
+                                                                Add
+                                                            </>
+                                                        )}
+                                                    </button>
                                                 </div>
                                                 
-                                                {!inviteLink ? (
-                                                    <motion.button
-                                                        onClick={generateInviteLink}
-                                                        whileHover={{ scale: 1.01 }}
-                                                        whileTap={{ scale: 0.99 }}
-                                                        style={{
-                                                            width: '100%', padding: '10px 14px', borderRadius: '10px',
-                                                            border: `1px dashed ${selectedColor}40`, background: `${selectedColor}05`,
-                                                            cursor: 'pointer', display: 'flex', alignItems: 'center',
-                                                            justifyContent: 'center', gap: '8px',
-                                                            color: selectedColor, fontSize: '12px', fontWeight: 500,
-                                                        }}
-                                                    >
-                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                            <circle cx="12" cy="12" r="10" />
-                                                            <line x1="12" y1="8" x2="12" y2="16" />
-                                                            <line x1="8" y1="12" x2="16" y2="12" />
-                                                        </svg>
-                                                        Generate Invite Link
-                                                    </motion.button>
-                                                ) : (
-                                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                                        <div style={{
-                                                            flex: 1, padding: '10px 12px', borderRadius: '10px',
-                                                            background: colors.cardBg, border: `1px solid ${colors.border}`,
-                                                            fontSize: '11px', color: colors.textSecondary,
-                                                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                                                        }}>
-                                                            {inviteLink}
-                                                        </div>
-                                                        <motion.button
-                                                            onClick={copyInviteLink}
-                                                            whileHover={{ scale: 1.05 }}
-                                                            whileTap={{ scale: 0.95 }}
-                                                            style={{
-                                                                padding: '10px 14px', borderRadius: '10px', border: 'none',
-                                                                background: showInviteLinkCopied ? '#10b981' : selectedColor,
-                                                                color: 'white', cursor: 'pointer', display: 'flex',
-                                                                alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 500,
-                                                            }}
-                                                        >
-                                                            {showInviteLinkCopied ? (
-                                                                <>
-                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                        <polyline points="20 6 9 17 4 12" />
-                                                                    </svg>
-                                                                    Copied!
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                                                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                                                                    </svg>
-                                                                    Copy
-                                                                </>
-                                                            )}
-                                                        </motion.button>
-                                                        <motion.button
-                                                            onClick={() => setInviteLink(null)}
-                                                            whileHover={{ scale: 1.05 }}
-                                                            whileTap={{ scale: 0.95 }}
-                                                            style={{
-                                                                padding: '10px', borderRadius: '10px', border: 'none',
-                                                                background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444',
-                                                                cursor: 'pointer', display: 'flex', alignItems: 'center',
-                                                            }}
-                                                        >
-                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                <path d="M18 6L6 18M6 6l12 12" />
-                                                            </svg>
-                                                        </motion.button>
-                                                    </div>
-                                                )}
-                                                <p style={{ margin: '8px 0 0 0', fontSize: '10px', color: colors.textMuted }}>
-                                                    Share this link with classmates to let them join your group
-                                                </p>
-                                            </div>
-
-                                            {/* Email Input */}
-                                            <div style={{ marginBottom: '16px' }}>
-                                                <motion.div 
-                                                    animate={emailError ? { x: [0, -8, 8, -8, 8, 0] } : {}}
-                                                    transition={{ duration: 0.4 }}
-                                                    style={{ display: 'flex', gap: '8px' }}
-                                                >
-                                                    <input
-                                                        type="email"
-                                                        value={currentInviteEmail}
-                                                        onChange={(e) => {
-                                                            setCurrentInviteEmail(e.target.value);
-                                                            if (emailError) {
-                                                                setEmailError(false);
-                                                                setEmailErrorMessage('');
-                                                            }
-                                                        }}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter' && currentInviteEmail) {
-                                                                e.preventDefault();
-                                                                addInviteEmail(currentInviteEmail);
-                                                            }
-                                                        }}
-                                                        placeholder="Enter email address..."
-                                                        style={{
-                                                            flex: 1, padding: '10px 14px', borderRadius: '10px',
-                                                            border: `1px solid ${emailError ? '#ef4444' : colors.border}`, 
-                                                            background: emailError ? (isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)') : colors.cardBg,
-                                                            color: colors.textPrimary, fontSize: '13px', outline: 'none',
-                                                            transition: 'all 0.2s ease',
-                                                        }}
-                                                    />
-                                                    <motion.button
-                                                        onClick={() => addInviteEmail(currentInviteEmail)}
-                                                        disabled={!currentInviteEmail || showEmailAdded || isCheckingEmail}
-                                                        whileHover={currentInviteEmail && !showEmailAdded && !isCheckingEmail ? { scale: 1.02, boxShadow: `0 4px 12px ${selectedColor}25` } : {}}
-                                                        whileTap={currentInviteEmail && !showEmailAdded && !isCheckingEmail ? { scale: 0.97 } : {}}
-                                                        style={{
-                                                            padding: '10px 16px', 
-                                                            borderRadius: '10px', 
-                                                            border: `1px solid ${showEmailAdded ? '#10b98140' : currentInviteEmail ? (isDarkMode ? `${selectedColor}40` : `${selectedColor}30`) : colors.border}`,
-                                                            background: showEmailAdded 
-                                                                ? (isDarkMode ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.12)')
-                                                                : currentInviteEmail 
-                                                                    ? (isDarkMode ? `${selectedColor}20` : `${selectedColor}12`)
-                                                                    : colors.cardBg,
-                                                            color: showEmailAdded ? '#10b981' : currentInviteEmail ? selectedColor : colors.textMuted,
-                                                            fontSize: '12px', 
-                                                            fontWeight: 500, 
-                                                            cursor: currentInviteEmail && !showEmailAdded && !isCheckingEmail ? 'pointer' : 'not-allowed',
-                                                            transition: 'all 0.2s ease',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            gap: '4px',
-                                                            minWidth: '60px',
-                                                            justifyContent: 'center',
-                                                        }}
-                                                    >
-                                                        <AnimatePresence mode="wait">
-                                                            {isCheckingEmail ? (
-                                                                <motion.span
-                                                                    key="checking"
-                                                                    initial={{ opacity: 0, scale: 0.8 }}
-                                                                    animate={{ opacity: 1, scale: 1 }}
-                                                                    exit={{ opacity: 0, scale: 0.8 }}
-                                                                    style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-                                                                >
-                                                                    <motion.svg
-                                                                        width="12" height="12" viewBox="0 0 16 16" fill="none"
-                                                                        animate={{ rotate: 360 }}
-                                                                        transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                                                                    >
-                                                                        <circle cx="8" cy="8" r="6" stroke={`${selectedColor}30`} strokeWidth="2" fill="none" />
-                                                                        <circle cx="8" cy="8" r="6" stroke={selectedColor} strokeWidth="2" strokeLinecap="round" strokeDasharray="28" strokeDashoffset="21" fill="none" />
-                                                                    </motion.svg>
-                                                                </motion.span>
-                                                            ) : showEmailAdded ? (
-                                                                <motion.span
-                                                                    key="added"
-                                                                    initial={{ opacity: 0, scale: 0.8 }}
-                                                                    animate={{ opacity: 1, scale: 1 }}
-                                                                    exit={{ opacity: 0, scale: 0.8 }}
-                                                                    style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-                                                                >
-                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                                                                        <polyline points="20 6 9 17 4 12" />
-                                                                    </svg>
-                                                                    Added
-                                                                </motion.span>
-                                                            ) : (
-                                                                <motion.span
-                                                                    key="add"
-                                                                    initial={{ opacity: 0, scale: 0.8 }}
-                                                                    animate={{ opacity: 1, scale: 1 }}
-                                                                    exit={{ opacity: 0, scale: 0.8 }}
-                                                                >
-                                                                    Add
-                                                                </motion.span>
-                                                            )}
-                                                        </AnimatePresence>
-                                                    </motion.button>
-                                                </motion.div>
-                                                {/* Error Message */}
                                                 <AnimatePresence>
-                                                    {emailError && emailErrorMessage && (
-                                                        <motion.div
-                                                            initial={{ opacity: 0, y: -5 }}
-                                                            animate={{ opacity: 1, y: 0 }}
-                                                            exit={{ opacity: 0, y: -5 }}
-                                                            transition={{ duration: 0.2 }}
-                                                            style={{
-                                                                marginTop: '6px',
-                                                                fontSize: '11px',
-                                                                color: '#ef4444',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                gap: '4px',
-                                                            }}
-                                                        >
-                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                <circle cx="12" cy="12" r="10" />
-                                                                <line x1="12" y1="8" x2="12" y2="12" />
-                                                                <line x1="12" y1="16" x2="12.01" y2="16" />
-                                                            </svg>
+                                                    {emailError && (
+                                                        <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-red-500 text-[11px] font-bold flex items-center gap-1.5 ml-1">
+                                                            <AlertCircle size={12} strokeWidth={2.5} />
                                                             {emailErrorMessage}
+                                                        </motion.div>
+                                                    )}
+                                                    {showEmailAdded && (
+                                                        <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-emerald-500 text-[11px] font-bold flex items-center gap-1.5 ml-1">
+                                                            <Check size={12} strokeWidth={2.5} />
+                                                            Added successfully!
                                                         </motion.div>
                                                     )}
                                                 </AnimatePresence>
                                             </div>
 
-                                            {/* Added Emails - Detailed Cards Grid with Spring Animation */}
-                                            {inviteEmails.length > 0 && (
-                                                <motion.div 
-                                                    layout
-                                                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                                    style={{ marginBottom: '20px' }}
-                                                >
-                                                    <div style={{ 
-                                                        display: 'flex', 
-                                                        alignItems: 'center', 
-                                                        justifyContent: 'space-between',
-                                                        marginBottom: '10px' 
-                                                    }}>
-                                                        <div style={{ 
-                                                            fontSize: '11px', fontWeight: 600, color: colors.textMuted, 
-                                                            textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' 
-                                                        }}>
-                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={selectedColor} strokeWidth="2">
-                                                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                                                <circle cx="9" cy="7" r="4" />
-                                                                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                                                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                                            </svg>
-                                                            Invites ({inviteEmails.length}{inviteEmails.length >= 80 ? '/80 max' : ''})
-                                                        </div>
-                                                        {inviteEmails.length > 3 && (
-                                                            <motion.button
-                                                                onClick={() => setInviteEmails([])}
-                                                                whileHover={{ scale: 1.02 }}
-                                                                whileTap={{ scale: 0.98 }}
-                                                                style={{
-                                                                    fontSize: '10px', color: '#ef4444', fontWeight: 500,
-                                                                    background: 'rgba(239, 68, 68, 0.1)', border: 'none',
-                                                                    padding: '4px 8px', borderRadius: '6px', cursor: 'pointer',
-                                                                }}
-                                                            >
-                                                                Clear All
-                                                            </motion.button>
-                                                        )}
-                                                    </div>
-                                                    <motion.div 
-                                                        layout
-                                                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                                        style={{ 
-                                                            display: 'grid', 
-                                                            gridTemplateColumns: inviteEmails.length <= 3 
-                                                                ? `repeat(${Math.min(inviteEmails.length, 3)}, 1fr)` 
-                                                                : 'repeat(3, 1fr)',
-                                                            gap: '10px',
-                                                            maxHeight: inviteEmails.length > 9 ? '280px' : 'none',
-                                                            overflowY: inviteEmails.length > 9 ? 'auto' : 'visible',
-                                                            padding: inviteEmails.length > 9 ? '4px' : '0',
-                                                        }}
-                                                    >
-                                                        <AnimatePresence mode="popLayout">
-                                                            {inviteEmails.slice(0, 80).map((invite, i) => {
-                                                                const initial = invite.name?.charAt(0)?.toUpperCase() || invite.email.charAt(0).toUpperCase();
-                                                                const displayName = invite.name || invite.email.split('@')[0].split('.').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
-                                                                
-                                                                return (
-                                                                    <motion.div
-                                                                        key={invite.email}
-                                                                        layout
-                                                                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                                        exit={{ opacity: 0, scale: 0.8, y: -10 }}
-                                                                        transition={{ 
-                                                                            type: 'spring', 
-                                                                            stiffness: 500, 
-                                                                            damping: 30,
-                                                                            delay: i * 0.03 
-                                                                        }}
-                                                                        whileHover={{ scale: 1.02, y: -3 }}
-                                                                        style={{
-                                                                            display: 'flex', flexDirection: 'column', alignItems: 'center',
-                                                                            padding: '14px 10px 12px', borderRadius: '14px',
-                                                                            background: `linear-gradient(135deg, ${selectedColor}08 0%, ${selectedColor}04 100%)`, 
-                                                                            border: `1px solid ${selectedColor}25`,
-                                                                            position: 'relative',
-                                                                            cursor: 'default',
-                                                                            boxShadow: `0 2px 8px ${selectedColor}10`,
-                                                                        }}
-                                                                    >
-                                                                        {/* Remove button */}
-                                                                        <motion.button
-                                                                            onClick={() => removeInviteEmail(invite.email)}
-                                                                            whileHover={{ scale: 1.2, background: 'rgba(239, 68, 68, 0.25)' }}
-                                                                            whileTap={{ scale: 0.9 }}
-                                                                            style={{
-                                                                                position: 'absolute', top: '6px', right: '6px',
-                                                                                width: '18px', height: '18px', borderRadius: '5px',
-                                                                                border: 'none', background: 'rgba(239, 68, 68, 0.1)', 
-                                                                                cursor: 'pointer',
-                                                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                                color: '#ef4444', opacity: 0.8,
-                                                                            }}
-                                                                        >
-                                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                                                <path d="M18 6L6 18M6 6l12 12" />
-                                                                            </svg>
-                                                                        </motion.button>
-                                                                        
-                                                                        {/* Avatar */}
-                                                                        <motion.div 
-                                                                            initial={{ scale: 0 }}
-                                                                            animate={{ scale: 1 }}
-                                                                            transition={{ type: 'spring', stiffness: 500, damping: 25, delay: i * 0.03 + 0.1 }}
-                                                                            style={{
-                                                                                width: '42px', height: '42px', borderRadius: '12px',
-                                                                                background: `linear-gradient(135deg, ${selectedColor}35 0%, ${selectedColor}20 100%)`,
-                                                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                                fontSize: '16px', fontWeight: 700, color: selectedColor,
-                                                                                marginBottom: '8px',
-                                                                                boxShadow: `0 4px 12px ${selectedColor}20`,
-                                                                            }}
-                                                                        >
-                                                                            {initial}
-                                                                        </motion.div>
-                                                                        
-                                                                        {/* Name */}
-                                                                        <span style={{ 
-                                                                            fontSize: '11px', color: colors.textPrimary, fontWeight: 600,
-                                                                            textAlign: 'center', lineHeight: 1.3,
-                                                                            maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis',
-                                                                            whiteSpace: 'nowrap', marginBottom: '6px',
-                                                                        }}>
-                                                                            {displayName.length > 14 ? displayName.slice(0, 12) + '..' : displayName}
-                                                                        </span>
-                                                                        
-                                                                        {/* Badges Row */}
-                                                                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                                                                            {/* Program Badge */}
-                                                                            <span style={{
-                                                                                padding: '2px 6px', borderRadius: '4px',
-                                                                                background: `${selectedColor}18`,
-                                                                                color: selectedColor,
-                                                                                fontSize: '8px', fontWeight: 600,
-                                                                                textTransform: 'uppercase',
-                                                                            }}>
-                                                                                {invite.program || 'BSIT'}
-                                                                            </span>
-                                                                            {/* Section Badge */}
-                                                                            <span style={{
-                                                                                padding: '2px 6px', borderRadius: '4px',
-                                                                                background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                                                                                color: colors.textSecondary,
-                                                                                fontSize: '8px', fontWeight: 500,
-                                                                            }}>
-                                                                                {invite.section || 'BSIT101A'}
-                                                                            </span>
-                                                                        </div>
-                                                                    </motion.div>
-                                                                );
-                                                            })}
-                                                        </AnimatePresence>
-                                                    </motion.div>
-                                                </motion.div>
-                                            )}
-
-                                            {/* Quick Add Classmates */}
-                                            <div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.textMuted} strokeWidth="2">
-                                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                                        <circle cx="9" cy="7" r="4" />
-                                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                                    </svg>
-                                                    <span style={{ fontSize: '11px', fontWeight: 600, color: colors.textMuted, textTransform: 'uppercase' }}>
-                                                        Quick Add Classmates
-                                                    </span>
-                                                </div>
+                                            {/* Suggested Classmates (if enrolled in a course or general search) */}
+                                            <div className="space-y-3">
+                                                <label className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-2">
+                                                    Suggested Classmates
+                                                    {isSearchingClassmates && (
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="animate-spin text-zinc-400">
+                                                            <circle cx="12" cy="12" r="10" strokeOpacity="0.3" /><path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round" />
+                                                        </svg>
+                                                    )}
+                                                </label>
                                                 
-                                                {/* Search Classmates Input */}
-                                                <div style={{ position: 'relative', marginBottom: '12px' }}>
-                                                    <svg
-                                                        width="16"
-                                                        height="16"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke={colors.textMuted}
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        style={{
-                                                            position: 'absolute',
-                                                            left: '12px',
-                                                            top: '50%',
-                                                            transform: 'translateY(-50%)',
-                                                            pointerEvents: 'none',
-                                                            zIndex: 1,
-                                                        }}
-                                                    >
-                                                        <circle cx="11" cy="11" r="8" />
-                                                        <path d="m21 21-4.35-4.35" />
-                                                    </svg>
-                                                    <input
-                                                        ref={classmateSearchRef}
-                                                        type="text"
-                                                        aria-label="Search classmates"
-                                                        value={classmateSearchQuery}
-                                                        onChange={(e) => {
-                                                            setClassmateSearchQuery(e.target.value);
-                                                            // Server-side search is triggered by useEffect with debounce
-                                                        }}
-                                                        onFocus={(e) => {
-                                                            e.target.style.borderColor = `${selectedColor}50`;
-                                                            e.target.style.boxShadow = `0 0 0 3px ${selectedColor}15`;
-                                                        }}
-                                                        onBlur={(e) => {
-                                                            e.target.style.borderColor = colors.border;
-                                                            e.target.style.boxShadow = 'none';
-                                                        }}
-                                                        placeholder="Search by name, email, section..."
-                                                        style={{
-                                                            width: '100%',
-                                                            padding: '10px 36px 10px 38px',
-                                                            borderRadius: '10px',
-                                                            border: `1px solid ${colors.border}`,
-                                                            background: colors.cardBg,
-                                                            color: colors.textPrimary,
-                                                            fontSize: '12px',
-                                                            outline: 'none',
-                                                            transition: 'all 0.2s ease',
-                                                        }}
-                                                    />
-                                                    {/* Right side container for spinner/clear button */}
-                                                    <div style={{
-                                                        position: 'absolute',
-                                                        right: '10px',
-                                                        top: 0,
-                                                        bottom: 0,
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                    }}>
+                                                <motion.div 
+                                                    animate={{ height: classmatesContainerHeight }}
+                                                    transition={{ type: "spring", stiffness: 350, damping: 32 }}
+                                                    style={{ height: classmatesContainerHeight }}
+                                                    className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner relative overflow-hidden flex flex-col w-full"
+                                                >
+                                                    <div ref={classmatesContentRef} className="w-full flex flex-col">
                                                         <AnimatePresence mode="wait">
                                                             {isSearchingClassmates ? (
-                                                                <motion.div 
-                                                                    key="spinner"
-                                                                    initial={{ opacity: 0, scale: 0.5 }} 
-                                                                    animate={{ opacity: 1, scale: 1 }} 
-                                                                    exit={{ opacity: 0, scale: 0.5 }} 
-                                                                    transition={{ duration: 0.15 }}
-                                                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                                >
-                                                                    <motion.svg 
-                                                                        width="14" 
-                                                                        height="14" 
-                                                                        viewBox="0 0 16 16" 
-                                                                        fill="none"
-                                                                        style={{ display: 'block' }}
-                                                                        animate={{ rotate: 360 }} 
-                                                                        transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                                                                    >
-                                                                        <circle cx="8" cy="8" r="6" stroke={`${selectedColor}30`} strokeWidth="2" fill="none" />
-                                                                        <circle cx="8" cy="8" r="6" stroke={selectedColor} strokeWidth="2" strokeLinecap="round" strokeDasharray="28" strokeDashoffset="21" fill="none" />
-                                                                    </motion.svg>
-                                                                </motion.div>
-                                                            ) : classmateSearchQuery ? (
-                                                                <motion.button 
-                                                                    key="clear"
-                                                                    initial={{ opacity: 0, scale: 0.8 }} 
-                                                                    animate={{ opacity: 1, scale: 1 }} 
-                                                                    exit={{ opacity: 0, scale: 0.8 }}
-                                                                    transition={{ duration: 0.15 }}
-                                                                    onClick={() => { setClassmateSearchQuery(''); setClassmatesPage(1); }}
-                                                                    aria-label="Clear search"
-                                                                    style={{ 
-                                                                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)', 
-                                                                        border: 'none', 
-                                                                        borderRadius: '5px', 
-                                                                        width: '18px', 
-                                                                        height: '18px',
-                                                                        cursor: 'pointer',
-                                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                        color: colors.textMuted,
-                                                                        transition: 'all 0.15s ease',
-                                                                    }}
-                                                                    whileHover={{ scale: 1.1, background: isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)' }}
-                                                                    whileTap={{ scale: 0.9 }}
-                                                                >
-                                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                                        <path d="M18 6L6 18M6 6l12 12" />
-                                                                    </svg>
-                                                                </motion.button>
-                                                            ) : null}
-                                                        </AnimatePresence>
-                                                    </div>
-                                                </div>
-
-                                                <motion.div 
-                                                    layout="position"
-                                                    transition={{ 
-                                                        layout: { type: 'spring', stiffness: 300, damping: 30 }
-                                                    }}
-                                                    style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}
-                                                >
-                                                    {isLoadingClassmates || isSearchingClassmates ? (
-                                                        // Loading Skeleton
-                                                        <>
-                                                            {[1, 2, 3, 4, 5].map((i) => (
                                                                 <motion.div
-                                                                    key={i}
+                                                                    key="skeleton"
                                                                     initial={{ opacity: 0 }}
                                                                     animate={{ opacity: 1 }}
-                                                                    transition={{ delay: i * 0.05 }}
-                                                                    style={{
-                                                                        display: 'flex', alignItems: 'center', gap: '12px',
-                                                                        padding: '12px 14px', borderRadius: '12px',
-                                                                        border: `1px solid ${colors.border}`,
-                                                                        background: colors.cardBg,
-                                                                    }}
+                                                                    exit={{ opacity: 0 }}
+                                                                    transition={{ duration: 0.12 }}
+                                                                    className="divide-y divide-zinc-200/50 dark:divide-zinc-800/60 flex flex-col w-full"
                                                                 >
-                                                                    {/* Avatar Skeleton */}
-                                                                    <motion.div
-                                                                        animate={{ opacity: [0.5, 1, 0.5] }}
-                                                                        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                                                                        style={{
-                                                                            width: '40px', height: '40px', borderRadius: '10px',
-                                                                            background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                                                                            flexShrink: 0,
-                                                                        }}
-                                                                    />
-                                                                    {/* Info Skeleton */}
-                                                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                                                        <motion.div
-                                                                            animate={{ opacity: [0.5, 1, 0.5] }}
-                                                                            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.1 }}
-                                                                            style={{
-                                                                                width: '60%', height: '14px', borderRadius: '4px',
-                                                                                background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                                                                                marginBottom: '8px',
-                                                                            }}
-                                                                        />
-                                                                        <div style={{ display: 'flex', gap: '6px' }}>
-                                                                            <motion.div
-                                                                                animate={{ opacity: [0.5, 1, 0.5] }}
-                                                                                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
-                                                                                style={{
-                                                                                    width: '40px', height: '16px', borderRadius: '4px',
-                                                                                    background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                                                                                }}
-                                                                            />
-                                                                            <motion.div
-                                                                                animate={{ opacity: [0.5, 1, 0.5] }}
-                                                                                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
-                                                                                style={{
-                                                                                    width: '50px', height: '16px', borderRadius: '4px',
-                                                                                    background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                                                                                }}
-                                                                            />
-                                                                            <motion.div
-                                                                                animate={{ opacity: [0.5, 1, 0.5] }}
-                                                                                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
-                                                                                style={{
-                                                                                    width: '35px', height: '16px', borderRadius: '4px',
-                                                                                    background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                                                                                }}
-                                                                            />
+                                                                    {Array.from({ length: 4 }).map((_, i) => (
+                                                                        <div key={i} className="p-3 flex items-center justify-between gap-4 first:pt-1 last:pb-1">
+                                                                            <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                                                                                <div className="relative flex-shrink-0">
+                                                                                    <div className="w-14 h-14 rounded-full border-[3px] border-zinc-200/20 dark:border-zinc-800/30 flex items-center justify-center bg-zinc-200/10 dark:bg-zinc-800/20">
+                                                                                        <div className="w-10 h-10 rounded-full relative overflow-hidden bg-zinc-200 dark:bg-zinc-800">
+                                                                                            <div className="absolute inset-0 -translate-x-full animate-skeleton-shimmer bg-gradient-to-r from-transparent via-white/35 dark:via-zinc-700/35 to-transparent" />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-8 h-4 relative overflow-hidden bg-zinc-200 dark:bg-zinc-800 rounded-md border-[2px] border-zinc-150/55 dark:border-zinc-900/55">
+                                                                                        <div className="absolute inset-0 -translate-x-full animate-skeleton-shimmer bg-gradient-to-r from-transparent via-white/35 dark:via-zinc-700/35 to-transparent" />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="flex-1 space-y-2 min-w-0">
+                                                                                    <div className="h-[14px] relative overflow-hidden bg-zinc-200 dark:bg-zinc-800 rounded-[4px] w-[65%]">
+                                                                                        <div className="absolute inset-0 -translate-x-full animate-skeleton-shimmer bg-gradient-to-r from-transparent via-white/35 dark:via-zinc-700/35 to-transparent" />
+                                                                                    </div>
+                                                                                    <div className="h-[10px] relative overflow-hidden bg-zinc-200/60 dark:bg-zinc-800/60 rounded-[3px] w-[40%]">
+                                                                                        <div className="absolute inset-0 -translate-x-full animate-skeleton-shimmer bg-gradient-to-r from-transparent via-white/35 dark:via-zinc-700/35 to-transparent" />
+                                                                                    </div>
+                                                                                    <div className="h-[9px] relative overflow-hidden bg-zinc-200/50 dark:bg-zinc-800/50 rounded-[3px] w-[20%]">
+                                                                                        <div className="absolute inset-0 -translate-x-full animate-skeleton-shimmer bg-gradient-to-r from-transparent via-white/35 dark:via-zinc-700/35 to-transparent" />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="w-9 h-9 rounded-xl relative overflow-hidden bg-zinc-200/40 dark:bg-zinc-850 flex-shrink-0">
+                                                                                <div className="absolute inset-0 -translate-x-full animate-skeleton-shimmer bg-gradient-to-r from-transparent via-white/35 dark:via-zinc-700/35 to-transparent" />
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                    {/* Button Skeleton */}
-                                                                    <motion.div
-                                                                        animate={{ opacity: [0.5, 1, 0.5] }}
-                                                                        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                                                                        style={{
-                                                                            width: '28px', height: '28px', borderRadius: '8px',
-                                                                            background: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                                                                        }}
-                                                                    />
+                                                                    ))}
                                                                 </motion.div>
-                                                            ))}
-                                                        </>
-                                                    ) : classmates.length === 0 ? (
-                                                        <div style={{ 
-                                                            padding: '20px', 
-                                                            textAlign: 'center', 
-                                                            color: colors.textMuted,
-                                                            fontSize: '12px',
-                                                        }}>
-                                                            {classmateSearchQuery.trim() 
-                                                                ? `No classmates match "${classmateSearchQuery.length > 20 ? classmateSearchQuery.slice(0, 20) + '...' : classmateSearchQuery}"`
-                                                                : 'No classmates found'}
-                                                        </div>
-                                                    ) : (() => {
-                                                        const currentUserEmail = getProfile().email.toLowerCase().trim();
-                                                        // Only filter out current user (search is done server-side)
-                                                        const filteredClassmates = classmates.filter((c) => {
-                                                            return c.email.toLowerCase().trim() !== currentUserEmail;
-                                                        });
-                                                        
-                                                        if (filteredClassmates.length === 0) {
-                                                            const truncatedQuery = classmateSearchQuery.length > 20 
-                                                                ? classmateSearchQuery.slice(0, 20) + '...' 
-                                                                : classmateSearchQuery;
-                                                            return (
-                                                                <div style={{ 
-                                                                    padding: '20px', 
-                                                                    textAlign: 'center', 
-                                                                    color: colors.textMuted,
-                                                                    fontSize: '12px',
-                                                                    maxWidth: '100%',
-                                                                    overflow: 'hidden',
-                                                                }}>
-                                                                    No classmates match "{truncatedQuery}"
-                                                                </div>
-                                                            );
-                                                        }
-                                                        
-                                                        // Pagination logic
-                                                        const totalPages = Math.ceil(filteredClassmates.length / classmatesPerPage);
-                                                        const startIndex = (classmatesPage - 1) * classmatesPerPage;
-                                                        const paginatedClassmates = filteredClassmates.slice(startIndex, startIndex + classmatesPerPage);
-                                                        
-                                                        return (
-                                                            <>
-                                                                {paginatedClassmates.map((classmate, index) => {
-                                                                    const isAdded = inviteEmails.some(inv => inv.email === classmate.email);
-                                                                    const isHovered = hoveredClassmateId === classmate.id;
-                                                                    const isRecentlyAdded = recentlyAddedClassmate === classmate.id;
-                                                                    return (
-                                                                        <motion.button
-                                                                            key={classmate.id}
-                                                                            layout="position"
-                                                                            initial={{ opacity: 0, y: 10 }}
-                                                                            animate={{ opacity: 1, y: 0 }}
-                                                                            exit={{ opacity: 0, y: -10 }}
-                                                                            transition={{ 
-                                                                                delay: index * 0.03,
-                                                                                layout: { type: 'spring', stiffness: 300, damping: 30 }
-                                                                            }}
-                                                                            onClick={() => {
-                                                                                if (isAdded) {
-                                                                                    removeInviteEmail(classmate.email);
-                                                                                } else {
-                                                                                    addInviteEmail(classmate.email);
-                                                                                    setRecentlyAddedClassmate(classmate.id);
-                                                                                    setTimeout(() => setRecentlyAddedClassmate(null), 1500);
-                                                                                }
-                                                                            }}
-                                                                            onMouseEnter={() => setHoveredClassmateId(classmate.id)}
-                                                                            onMouseLeave={() => setHoveredClassmateId(null)}
-                                                                            whileTap={{ scale: 0.98 }}
-                                                                            style={{
-                                                                                display: 'flex', alignItems: 'center', gap: '12px',
-                                                                                padding: '12px 14px', borderRadius: '12px',
-                                                                                border: `1px solid ${isAdded ? selectedColor : isHovered ? `${selectedColor}40` : colors.border}`,
-                                                                                background: isAdded ? `${selectedColor}08` : isHovered ? `${selectedColor}05` : colors.cardBg,
-                                                                                cursor: 'pointer', textAlign: 'left',
-                                                                                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                                                                                transform: isHovered ? 'translateX(4px)' : 'translateX(0)',
-                                                                                boxShadow: isHovered ? `0 4px 12px ${selectedColor}15` : 'none',
-                                                                            }}
-                                                                        >
-                                                                            {/* Avatar */}
-                                                                            <div style={{
-                                                                                width: '40px', height: '40px', borderRadius: '10px',
-                                                                                background: `linear-gradient(135deg, ${selectedColor}25 0%, ${selectedColor}10 100%)`,
-                                                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                                fontSize: '15px', fontWeight: 600, color: selectedColor,
-                                                                                flexShrink: 0,
-                                                                                transition: 'all 0.25s ease',
-                                                                                transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-                                                                            }}>
-                                                                                {classmate.avatar}
-                                                                            </div>
-                                                                            
-                                                                            {/* Info */}
-                                                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                                                <div style={{ 
-                                                                                    fontSize: '13px', fontWeight: 600, color: colors.textPrimary,
-                                                                                    marginBottom: '4px',
-                                                                                    transition: 'color 0.2s ease',
-                                                                                }}>
-                                                                                    {classmate.name}
-                                                                                </div>
-                                                                                {/* Badges Row */}
-                                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                                                                                    {/* Program Badge */}
-                                                                                    <span style={{
-                                                                                        padding: '2px 6px', borderRadius: '4px',
-                                                                                        background: `${selectedColor}15`,
-                                                                                        color: selectedColor,
-                                                                                        fontSize: '9px', fontWeight: 600,
-                                                                                        textTransform: 'uppercase',
-                                                                                        letterSpacing: '0.3px',
-                                                                                    }}>
-                                                                                        {classmate.program}
-                                                                                    </span>
-                                                                                    {/* Section Badge */}
-                                                                                    <span style={{
-                                                                                        padding: '2px 6px', borderRadius: '4px',
-                                                                                        background: isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
-                                                                                        color: colors.textSecondary,
-                                                                                        fontSize: '9px', fontWeight: 500,
-                                                                                    }}>
-                                                                                        {classmate.section}
-                                                                                    </span>
-                                                                                    {/* Year Level Badge */}
-                                                                                    <span style={{
-                                                                                        padding: '2px 6px', borderRadius: '4px',
-                                                                                        background: 'rgba(16, 185, 129, 0.1)',
-                                                                                        color: '#10b981',
-                                                                                        fontSize: '9px', fontWeight: 500,
-                                                                                    }}>
-                                                                                        {classmate.yearLevel}
-                                                                                    </span>
-                                                                                </div>
-                                                                            </div>
-                                                                            
-                                                                            {/* Add Button */}
-                                                                            <motion.div 
-                                                                                animate={isRecentlyAdded ? { scale: [1, 1.2, 1] } : {}}
-                                                                                transition={{ duration: 0.3 }}
-                                                                                style={{
-                                                                                    width: '28px', height: '28px', borderRadius: '8px',
-                                                                                    background: isAdded 
-                                                                                        ? (isRecentlyAdded ? '#10b981' : selectedColor)
-                                                                                        : isHovered 
-                                                                                            ? `${selectedColor}20` 
-                                                                                            : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'),
-                                                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                                    transition: 'all 0.25s ease',
-                                                                                    transform: isHovered && !isAdded ? 'scale(1.1)' : 'scale(1)',
-                                                                                }}
-                                                                            >
-                                                                                <AnimatePresence mode="wait">
-                                                                                    {isAdded ? (
-                                                                                        <motion.svg 
-                                                                                            key="check"
-                                                                                            initial={{ opacity: 0, scale: 0.5 }}
-                                                                                            animate={{ opacity: 1, scale: 1 }}
-                                                                                            exit={{ opacity: 0, scale: 0.5 }}
-                                                                                            width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"
-                                                                                        >
-                                                                                            <polyline points="20 6 9 17 4 12" />
-                                                                                        </motion.svg>
-                                                                                    ) : (
-                                                                                        <motion.svg 
-                                                                                            key="plus"
-                                                                                            initial={{ opacity: 0, scale: 0.5 }}
-                                                                                            animate={{ opacity: 1, scale: 1 }}
-                                                                                            exit={{ opacity: 0, scale: 0.5 }}
-                                                                                            width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={isHovered ? selectedColor : colors.textMuted} strokeWidth="2"
-                                                                                        >
-                                                                                            <line x1="12" y1="5" x2="12" y2="19" />
-                                                                                            <line x1="5" y1="12" x2="19" y2="12" />
-                                                                                        </motion.svg>
-                                                                                    )}
-                                                                                </AnimatePresence>
-                                                                            </motion.div>
-                                                                        </motion.button>
-                                                                    );
-                                                                })}
-                                                                
-                                                                {/* Pagination Controls */}
-                                                                {totalPages > 1 && (
-                                                                    <motion.div 
-                                                                        layout="position"
-                                                                        initial={{ opacity: 0, y: 10 }}
-                                                                        animate={{ opacity: 1, y: 0 }}
-                                                                        transition={{ 
-                                                                            delay: 0.15,
-                                                                            layout: { type: 'spring', stiffness: 300, damping: 30 }
-                                                                        }}
-                                                                        style={{
-                                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                            gap: '8px', marginTop: '12px', paddingTop: '12px',
-                                                                            borderTop: `1px solid ${colors.border}`,
-                                                                        }}
+                                                            ) : filteredClassmates.length === 0 ? (
+                                                                <motion.div
+                                                                    key="empty"
+                                                                    initial={{ opacity: 0 }}
+                                                                    animate={{ opacity: 1 }}
+                                                                    exit={{ opacity: 0 }}
+                                                                    transition={{ duration: 0.12 }}
+                                                                    className="text-center py-12 w-full flex flex-col justify-center items-center h-[288px]"
+                                                                >
+                                                                    <p className="text-sm font-medium text-zinc-500">No classmates found or all are added.</p>
+                                                                </motion.div>
+                                                            ) : (
+                                                                <motion.div
+                                                                    key="carousel-content"
+                                                                    initial={{ opacity: 0, x: 10 }}
+                                                                    animate={{ opacity: 1, x: 0 }}
+                                                                    exit={{ opacity: 0, x: -10 }}
+                                                                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                                                    className="w-full"
+                                                                >
+                                                                    <Carousel 
+                                                                        key={filteredClassmates.length} 
+                                                                        index={classmatesPage - 1} 
+                                                                        onIndexChange={(idx) => setClassmatesPage(idx + 1)} 
+                                                                        disableDrag={false}
+                                                                        className="w-full"
                                                                     >
-                                                                        {/* Previous Button */}
-                                                                        <motion.button
-                                                                            onClick={() => setClassmatesPage(Math.max(1, classmatesPage - 1))}
-                                                                            disabled={classmatesPage === 1}
-                                                                            whileHover={classmatesPage !== 1 ? { scale: 1.05 } : {}}
-                                                                            whileTap={classmatesPage !== 1 ? { scale: 0.95 } : {}}
-                                                                            style={{
-                                                                                padding: '6px 10px', borderRadius: '8px',
-                                                                                border: `1px solid ${colors.border}`,
-                                                                                background: classmatesPage === 1 ? 'transparent' : colors.cardBg,
-                                                                                color: classmatesPage === 1 ? colors.textMuted : colors.textSecondary,
-                                                                                fontSize: '11px', fontWeight: 500,
-                                                                                cursor: classmatesPage === 1 ? 'not-allowed' : 'pointer',
-                                                                                opacity: classmatesPage === 1 ? 0.5 : 1,
-                                                                                display: 'flex', alignItems: 'center', gap: '4px',
-                                                                                transition: 'all 0.2s ease',
-                                                                            }}
+                                                                        <CarouselContent className="w-full">
+                                                                            {Array.from({ length: totalPages }).map((_, pageIdx) => {
+                                                                                const pageClassmates = filteredClassmates.slice(
+                                                                                    pageIdx * classmatesPerPage,
+                                                                                    (pageIdx + 1) * classmatesPerPage
+                                                                                );
+                                                                                return (
+                                                                                    <CarouselItem key={pageIdx} className="w-full shrink-0 px-0.5">
+                                                                                        <div className="divide-y divide-zinc-200/50 dark:divide-zinc-800/60 flex flex-col">
+                                                                                            {pageClassmates.map(c => (
+                                                                                                <div key={c.id} className="p-3 hover:bg-white dark:hover:bg-zinc-950/60 transition-colors rounded-[12px] flex items-center justify-between gap-4 group/row first:pt-1 last:pb-1">
+                                                                                                    <div className="flex items-center gap-3.5">
+                                                                                                        <div className="relative flex-shrink-0 group-hover/row:scale-105 transition-transform duration-300">
+                                                                                                            <AnimatedCircularProgressBar
+                                                                                                                max={100}
+                                                                                                                min={0}
+                                                                                                                value={c.progress || 0}
+                                                                                                                gaugePrimaryColor="#3b82f6"
+                                                                                                                gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
+                                                                                                                className="w-14 h-14"
+                                                                                                            >
+                                                                                                                <div className="absolute inset-1.5 rounded-full flex items-center justify-center shadow-sm overflow-hidden z-10 bg-blue-50 dark:bg-blue-900/30">
+                                                                                                                    {c.profile_image ? (
+                                                                                                                        <img src={c.profile_image} alt={c.name} className="w-full h-full object-cover" />
+                                                                                                                    ) : (
+                                                                                                                        <span className="text-[14px] font-extrabold leading-none text-blue-600 dark:text-blue-400">
+                                                                                                                            {c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                                                                                                                        </span>
+                                                                                                                    )}
+                                                                                                                </div>
+
+                                                                                                                <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[9px] font-bold tracking-wider shadow-sm border-[2px] z-20 text-white bg-blue-500 ${isDarkMode ? 'border-zinc-950' : 'border-white'}`}>
+                                                                                                                    LV.{c.level || 1}
+                                                                                                                </div>
+                                                                                                            </AnimatedCircularProgressBar>
+                                                                                                        </div>
+                                                                                                        <div className="overflow-hidden">
+                                                                                                            <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate group-hover/row:text-blue-600 dark:group-hover/row:text-blue-400 transition-colors">{c.name}</p>
+                                                                                                            <p className="text-[10px] font-medium text-zinc-500 truncate mt-0.5">{c.section} &bull; {c.program}</p>
+                                                                                                            <p className="text-[9px] font-semibold text-emerald-500 dark:text-emerald-400 mt-0.5">Online</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <button 
+                                                                                                        type="button"
+                                                                                                        onClick={() => addClassmate(c)}
+                                                                                                        className={`w-9 h-9 rounded-xl border flex items-center justify-center shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 flex-shrink-0 ${
+                                                                                                            isDarkMode 
+                                                                                                                ? 'border-zinc-700 bg-zinc-850/80 text-zinc-300 hover:bg-zinc-700 hover:text-blue-400 hover:border-blue-500/50' 
+                                                                                                                : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-50 hover:text-blue-600 hover:border-blue-300'
+                                                                                                        }`}
+                                                                                                    >
+                                                                                                        <Plus size={16} strokeWidth={2.5} />
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                            ))}
+                                                                                        </div>
+                                                                                    </CarouselItem>
+                                                                                );
+                                                                            })}
+                                                                        </CarouselContent>
+                                                                    </Carousel>
+                                                                    
+                                                                    {totalPages > 1 && (
+                                                                        <div className="w-full pt-2.5 pb-1">
+                                                                            <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-zinc-900/50 p-1.5 rounded-[14px] border border-zinc-200/60 dark:border-zinc-800/50 shadow-sm transition-all duration-300 hover:shadow-md">
+                                                                                <button 
+                                                                                    type="button"
+                                                                                    onClick={() => setClassmatesPage(p => Math.max(1, p - 1))}
+                                                                                    disabled={classmatesPage === 1}
+                                                                                    className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border ${
+                                                                                        classmatesPage === 1
+                                                                                            ? 'bg-zinc-50/50 dark:bg-zinc-800/40 border-zinc-100/30 dark:border-zinc-700/40 text-zinc-300 dark:text-zinc-600 cursor-not-allowed'
+                                                                                            : 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-700/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                                                                    }`}
+                                                                                >
+                                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                                                                </button>
+                                                                                <span className="text-[13px] font-bold text-zinc-700 dark:text-zinc-300 text-center tracking-wide flex-1">
+                                                                                    Page {classmatesPage} <span className="text-zinc-400 dark:text-zinc-500 font-medium mx-0.5">/</span> {totalPages}
+                                                                                </span>
+                                                                                <button 
+                                                                                    type="button"
+                                                                                    onClick={() => setClassmatesPage(p => Math.min(totalPages, p + 1))}
+                                                                                    disabled={classmatesPage === totalPages}
+                                                                                    className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border ${
+                                                                                        classmatesPage === totalPages
+                                                                                            ? 'bg-zinc-50/50 dark:bg-zinc-800/40 border-zinc-100/30 dark:border-zinc-700/40 text-zinc-300 dark:text-zinc-600 cursor-not-allowed'
+                                                                                            : 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-700/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                                                                    }`}
+                                                                                >
+                                                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                        
+                                                        {/* Added Members List (Combined into the same card container) */}
+                                                        {inviteEmails.length > 0 && (
+                                                            <div className="flex flex-col w-full">
+                                                                <div className="w-full h-px bg-zinc-200/80 dark:bg-zinc-800/80 my-2" />
+                                                                <div className="flex flex-col w-full pt-1 pb-1">
+                                                                    <div className="flex items-center justify-between mb-3 px-1">
+                                                                        <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider block">
+                                                                            Added Members ({inviteEmails.length})
+                                                                        </label>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setInviteEmails([])}
+                                                                            title="Clear All"
+                                                                            className="w-[28px] h-[28px] bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
                                                                         >
-                                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                                <path d="M15 18l-6-6 6-6" />
-                                                                            </svg>
-                                                                            Prev
-                                                                        </motion.button>
-                                                                        
-                                                                        {/* Page Info */}
-                                                                        <span style={{
-                                                                            fontSize: '11px', color: colors.textMuted,
-                                                                            padding: '6px 12px', borderRadius: '8px',
-                                                                            background: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                                                                        }}>
-                                                                            {classmatesPage} / {totalPages}
-                                                                        </span>
-                                                                        
-                                                                        {/* Next Button */}
-                                                                        <motion.button
-                                                                            onClick={() => setClassmatesPage(Math.min(totalPages, classmatesPage + 1))}
-                                                                            disabled={classmatesPage === totalPages}
-                                                                            whileHover={classmatesPage !== totalPages ? { scale: 1.05 } : {}}
-                                                                            whileTap={classmatesPage !== totalPages ? { scale: 0.95 } : {}}
-                                                                            style={{
-                                                                                padding: '6px 10px', borderRadius: '8px',
-                                                                                border: `1px solid ${colors.border}`,
-                                                                                background: classmatesPage === totalPages ? 'transparent' : colors.cardBg,
-                                                                                color: classmatesPage === totalPages ? colors.textMuted : colors.textSecondary,
-                                                                                fontSize: '11px', fontWeight: 500,
-                                                                                cursor: classmatesPage === totalPages ? 'not-allowed' : 'pointer',
-                                                                                opacity: classmatesPage === totalPages ? 0.5 : 1,
-                                                                                display: 'flex', alignItems: 'center', gap: '4px',
-                                                                                transition: 'all 0.2s ease',
-                                                                            }}
-                                                                        >
-                                                                            Next
-                                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                                <path d="M9 18l6-6-6-6" />
-                                                                            </svg>
-                                                                        </motion.button>
-                                                                    </motion.div>
-                                                                )}
-                                                            </>
-                                                        );
-                                                    })()}
+                                                                            <Trash2 size={14} strokeWidth={2.5} />
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="flex flex-wrap gap-2 px-1">
+                                                                        <AnimatePresence mode="popLayout">
+                                                                            {visibleMembers.map((inv) => (
+                                                                                <motion.div
+                                                                                    key={inv.email}
+                                                                                    layout
+                                                                                    initial={{ opacity: 0, scale: 0.95 }}
+                                                                                    animate={{ opacity: 1, scale: 1 }}
+                                                                                    exit={{ opacity: 0, scale: 0.95 }}
+                                                                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                                                                    className="bg-blue-50/40 dark:bg-blue-955/20 border border-blue-200/60 dark:border-blue-800/40 rounded-xl p-3 flex items-center justify-between gap-3 shadow-sm w-full sm:w-[calc(50%-0.25rem)]"
+                                                                                >
+                                                                                    <div className="flex items-center gap-3.5 min-w-0">
+                                                                                        <div className="relative flex-shrink-0 scale-95 origin-left">
+                                                                                            <AnimatedCircularProgressBar
+                                                                                                max={100}
+                                                                                                min={0}
+                                                                                                value={inv.progress || 0}
+                                                                                                gaugePrimaryColor="#3b82f6"
+                                                                                                gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
+                                                                                                className="w-12 h-12"
+                                                                                            >
+                                                                                                <div className="absolute inset-1.5 rounded-full flex items-center justify-center shadow-sm overflow-hidden z-10 bg-blue-50 dark:bg-blue-900/30">
+                                                                                                    {inv.profile_image ? (
+                                                                                                        <img src={inv.profile_image} alt={inv.name} className="w-full h-full object-cover" />
+                                                                                                    ) : (
+                                                                                                        <span className="text-[12px] font-extrabold leading-none text-blue-600 dark:text-blue-400">
+                                                                                                            {inv.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                                                                                                        </span>
+                                                                                                    )}
+                                                                                                </div>
+
+                                                                                                <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 min-w-[28px] h-[14px] px-1 rounded-md flex items-center justify-center text-[8px] font-bold tracking-wider shadow-sm border-[2px] z-20 text-white bg-blue-500 ${isDarkMode ? 'border-zinc-950' : 'border-white'}`}>
+                                                                                                    LV.{inv.level || 1}
+                                                                                                </div>
+                                                                                            </AnimatedCircularProgressBar>
+                                                                                        </div>
+                                                                                        <div className="flex flex-col min-w-0">
+                                                                                            <span className="text-sm font-bold text-blue-900 dark:text-blue-100 truncate leading-snug">{inv.name}</span>
+                                                                                            <span className="text-[11px] text-blue-600/70 dark:text-blue-400/70 truncate leading-none mt-0.5">{inv.email}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        onClick={() => removeInviteEmail(inv.email)}
+                                                                                        className="p-1.5 hover:bg-blue-100/50 dark:hover:bg-blue-900/30 rounded-md text-blue-600 dark:text-blue-400 transition-colors flex-shrink-0 cursor-pointer"
+                                                                                    >
+                                                                                        <X size={14} strokeWidth={2.5} />
+                                                                                    </button>
+                                                                                </motion.div>
+                                                                            ))}
+                                                                            
+                                                                            {shouldCollapse && (
+                                                                                <div className="w-full flex justify-center pt-1">
+                                                                                    <motion.button
+                                                                                        key="toggle-show-all-members"
+                                                                                        layout
+                                                                                        type="button"
+                                                                                        onClick={() => setShowAllMembers(!showAllMembers)}
+                                                                                        className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs font-bold text-zinc-650 dark:text-zinc-300 shadow-sm transition-all duration-205 active:scale-95 cursor-pointer"
+                                                                                    >
+                                                                                        {showAllMembers ? 'Show Less' : `+${inviteEmails.length - displayLimit} more`}
+                                                                                    </motion.button>
+                                                                                </div>
+                                                                            )}
+                                                                        </AnimatePresence>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </motion.div>
                                             </div>
-                                        </motion.div>
-                                    ) : null}
+
+                                            <div className="border-t border-zinc-200 dark:border-zinc-800 my-6"></div>
+
+                                            {/* Share Link */}
+                                            <div className="space-y-3">
+                                                <div className="flex items-center justify-between">
+                                                    <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider block">
+                                                        Share Invite Link
+                                                    </label>
+                                                    <span className="text-[10px] font-medium text-zinc-500 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800">Optional</span>
+                                                </div>
+                                                {!inviteLink ? (
+                                                    <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-[1rem] p-2 shadow-inner">
+                                                        <button
+                                                            type="button"
+                                                            onClick={generateInviteLink}
+                                                            className="w-full py-3 hover:bg-white dark:hover:bg-zinc-950/60 transition-colors rounded-[12px] flex items-center justify-center gap-2 text-sm font-bold text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
+                                                        >
+                                                            <LinkIcon size={16} strokeWidth={2.5} />
+                                                            Generate Invite Link
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1rem] p-2 shadow-inner flex items-center gap-3">
+                                                        <div className="flex-1 px-3 py-2 bg-white dark:bg-zinc-950/60 rounded-xl text-sm font-medium text-zinc-650 dark:text-zinc-350 truncate border border-zinc-200/40 dark:border-zinc-800/40">
+                                                            {inviteLink}
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={copyInviteLink}
+                                                            className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all shadow-sm shrink-0 border cursor-pointer ${
+                                                                showInviteLinkCopied 
+                                                                    ? 'bg-emerald-500 border-emerald-600 text-white shadow-emerald-500/20' 
+                                                                    : isDarkMode
+                                                                    ? 'bg-zinc-800 border-zinc-700 text-zinc-200 hover:bg-zinc-700 hover:text-white'
+                                                                    : 'bg-zinc-900 border-zinc-900 text-white hover:bg-zinc-800'
+                                                            }`}
+                                                        >
+                                                            {showInviteLinkCopied ? (
+                                                                <><Check size={14} strokeWidth={3} /> Copied</>
+                                                            ) : (
+                                                                <><Copy size={14} strokeWidth={2.5} /> Copy</>
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Privacy Settings */}
+                                            <div className="space-y-4 pt-2">
+                                                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider block">
+                                                    Privacy & Limits
+                                                </label>
+                                                
+                                                <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1rem] p-2 shadow-inner divide-y divide-zinc-200/50 dark:divide-zinc-800/60 flex flex-col">
+                                                    {/* Private Toggle */}
+                                                    <div className={`p-3.5 hover:bg-white dark:hover:bg-zinc-950/60 transition-colors rounded-[14px] flex items-center justify-between cursor-pointer border border-transparent hover:border-zinc-200/80 dark:hover:border-zinc-800/80 hover:shadow-sm`} onClick={() => setIsPrivate(!isPrivate)}>
+                                                        <div>
+                                                            <div className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-0.5">Private Workspace</div>
+                                                            <div className="text-[12.5px] text-zinc-500 font-medium">Only invited members can view and join.</div>
+                                                        </div>
+                                                        <div style={{ flexShrink: 0, marginLeft: '12px', transform: 'scale(0.85)', transformOrigin: 'right' }}>
+                                                            <UiverseSwitch checked={isPrivate} onChange={setIsPrivate} />
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {/* Max Members */}
+                                                    <div className="p-3 hover:bg-white dark:hover:bg-zinc-950/60 transition-colors rounded-[12px] flex items-center justify-between gap-4 first:pt-3 last:pb-3">
+                                                        <div>
+                                                            <div className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-0.5">Max Members</div>
+                                                            <div className="text-xs text-zinc-500 font-medium">Limit the number of people who can join.</div>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <input 
+                                                                type="range" 
+                                                                min="2" 
+                                                                max="50" 
+                                                                value={maxMembers} 
+                                                                onChange={(e) => setMaxMembers(parseInt(e.target.value))}
+                                                                className="w-24 accent-blue-500 cursor-pointer"
+                                                            />
+                                                            <span className="text-sm font-bold text-zinc-900 dark:text-white w-6 text-center">{maxMembers}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                         </motion.div>
+                                     )}
                                 </AnimatePresence>
-                            </motion.div>
-
-                            {/* Footer */}
-                            <div style={{
-                                padding: '16px 24px', borderTop: `1px solid ${colors.border}`,
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            }}>
-                                {step > 1 ? (
-                                    <motion.button
-                                        onClick={() => setStep(step - 1)}
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        style={{
-                                            padding: '10px 16px', borderRadius: '10px',
-                                            border: `1px solid ${colors.border}`, background: 'transparent',
-                                            color: colors.textSecondary, fontSize: '13px', fontWeight: 500,
-                                            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-                                        }}
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M19 12H5M12 19l-7-7 7-7" />
-                                        </svg>
-                                        Back
-                                    </motion.button>
-                                ) : (
-                                    <div />
-                                )}
-                                
-                                <div style={{ display: 'flex', gap: '10px' }}>
-                                    {step === 2 && (
-                                        <motion.button
-                                            onClick={handleCreate}
-                                            disabled={!canProceed || isCreating}
-                                            whileHover={canProceed ? { scale: 1.02 } : {}}
-                                            whileTap={canProceed ? { scale: 0.98 } : {}}
-                                            style={{
-                                                padding: '10px 16px', borderRadius: '10px',
-                                                border: `1px solid ${colors.border}`, background: 'transparent',
-                                                color: colors.textSecondary, fontSize: '13px', fontWeight: 500,
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            Skip & Create
-                                        </motion.button>
-                                    )}
-                                    <motion.button
-                                        onClick={() => {
-                                            if (step < totalSteps) {
-                                                setStep(step + 1);
-                                            } else {
-                                                handleCreate();
-                                            }
-                                        }}
-                                        disabled={!canProceed || isCreating}
-                                        whileHover={canProceed ? { scale: 1.03, boxShadow: `0 6px 20px ${selectedColor}30` } : {}}
-                                        whileTap={canProceed ? { scale: 0.97 } : {}}
-                                        style={{
-                                            padding: '10px 18px', 
-                                            borderRadius: '10px', 
-                                            border: `1px solid ${canProceed ? (isDarkMode ? `${selectedColor}40` : `${selectedColor}30`) : 'transparent'}`,
-                                            background: canProceed
-                                                ? (isDarkMode ? `${selectedColor}20` : `${selectedColor}12`)
-                                                : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
-                                            color: canProceed ? selectedColor : colors.textMuted,
-                                            fontSize: '13px', 
-                                            fontWeight: 500, 
-                                            cursor: canProceed ? 'pointer' : 'not-allowed',
-                                            display: 'flex', 
-                                            alignItems: 'center', 
-                                            gap: '6px',
-                                            transition: 'all 0.2s ease',
-                                        }}
-                                    >
-                                        {isCreating ? (
-                                            <>
-                                                <motion.svg
-                                                    width="14" height="14" viewBox="0 0 16 16" fill="none"
-                                                    animate={{ rotate: 360 }}
-                                                    transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                                                >
-                                                    <circle cx="8" cy="8" r="6" stroke={`${selectedColor}30`} strokeWidth="2" fill="none" />
-                                                    <circle cx="8" cy="8" r="6" stroke={selectedColor} strokeWidth="2" strokeLinecap="round" strokeDasharray="28" strokeDashoffset="21" fill="none" />
-                                                </motion.svg>
-                                                Creating...
-                                            </>
-                                        ) : step < totalSteps ? (
-                                            <>
-                                                {step === 2 ? 'Invite Friends' : 'Continue'}
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                                </svg>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                                    <line x1="12" y1="5" x2="12" y2="19" />
-                                                    <line x1="5" y1="12" x2="19" y2="12" />
-                                                </svg>
-                                                Create Group{inviteEmails.length > 0 ? ` & Invite ${inviteEmails.length}` : ''}
-                                            </>
-                                        )}
-                                    </motion.button>
-                                </div>
                             </div>
-                        </motion.div>
-                    </div>
 
-                    {/* Portal Tooltip - Renders outside modal to avoid clipping */}
-                    {hoveredTooltip && createPortal(
-                        <motion.div
-                            ref={tooltipRef}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.15 }}
-                            style={{
-                                position: 'fixed',
-                                left: hoveredTooltip.x,
-                                top: hoveredTooltip.y - 10,
-                                x: '-50%',
-                                y: '-100%',
-                                padding: '8px 12px',
-                                background: '#ffffff',
-                                borderRadius: '8px',
-                                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                                fontSize: '11px',
-                                fontWeight: 600,
-                                color: hoveredTooltip.color,
-                                whiteSpace: 'nowrap',
-                                pointerEvents: 'none',
-                                zIndex: 99999,
-                            }}
-                        >
-                            {hoveredTooltip.text}
-                            {/* Tooltip Arrow */}
-                            <div style={{
-                                position: 'absolute',
-                                bottom: '-4px',
-                                left: '50%',
-                                transform: 'translateX(-50%) rotate(45deg)',
-                                width: '8px',
-                                height: '8px',
-                                background: '#ffffff',
-                                boxShadow: '2px 2px 4px rgba(0,0,0,0.08)',
-                            }} />
-                        </motion.div>,
-                        document.body
-                    )}
-                    
-                    {/* Undo Remove Toast */}
-                    {createPortal(
-                        <AnimatePresence>
-                            {showUndoToast && removedInvite && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                                    style={{
-                                        position: 'fixed',
-                                        bottom: '24px',
-                                        left: '50%',
-                                        transform: 'translateX(-50%)',
-                                        padding: '12px 16px',
-                                        background: isDarkMode ? '#1e293b' : '#ffffff',
-                                        borderRadius: '12px',
-                                        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                                        border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'}`,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '12px',
-                                        zIndex: 99999,
-                                    }}
-                                >
-                                    <div style={{
-                                        width: '32px', height: '32px', borderRadius: '8px',
-                                        background: `${selectedColor}15`,
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '13px', fontWeight: 600, color: selectedColor,
-                                    }}>
-                                        {removedInvite.name?.charAt(0)?.toUpperCase() || '?'}
-                                    </div>
-                                    <div>
-                                        <p style={{ margin: 0, fontSize: '12px', fontWeight: 500, color: colors.textPrimary }}>
-                                            Removed {removedInvite.name?.split(' ')[0] || 'invite'}
-                                        </p>
-                                        <p style={{ margin: 0, fontSize: '10px', color: colors.textMuted }}>
-                                            {removedInvite.email}
-                                        </p>
-                                    </div>
-                                    <motion.button
-                                        onClick={undoRemoveInvite}
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        style={{
-                                            padding: '6px 12px', borderRadius: '8px',
-                                            border: 'none', background: selectedColor,
-                                            color: 'white', fontSize: '11px', fontWeight: 600,
-                                            cursor: 'pointer', marginLeft: '8px',
-                                        }}
-                                    >
-                                        Undo
-                                    </motion.button>
-                                    <motion.button
-                                        onClick={() => { setShowUndoToast(false); setRemovedInvite(null); }}
-                                        whileHover={{ scale: 1.1 }}
-                                        whileTap={{ scale: 0.9 }}
-                                        style={{
-                                            width: '20px', height: '20px', borderRadius: '6px',
-                                            border: 'none', background: 'transparent',
-                                            color: colors.textMuted, cursor: 'pointer',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        }}
-                                    >
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M18 6L6 18M6 6l12 12" />
-                                        </svg>
-                                    </motion.button>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>,
-                        document.body
-                    )}
-                </>
+                            {/* Bottom Footer actions (sticky) */}
+                            <motion.div 
+                                animate={{ padding: isMinimized ? '16px 24px' : '20px 32px' }}
+                                className="border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-[#0f172a]/80 backdrop-blur-xl flex items-center justify-between sticky bottom-0 z-20"
+                            >
+                                {step === 1 ? (
+                                    <>
+                                        <button onClick={onClose} className="min-w-[140px] h-[44px] px-6 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-300 rounded-[14px] text-sm font-bold flex items-center justify-center gap-2 transition-all">
+                                            Cancel
+                                        </button>
+                                        <button 
+                                            onClick={() => name.trim().length >= 3 && setStep(2)} 
+                                            disabled={name.trim().length < 3}
+                                            className="min-w-[140px] h-[44px] px-6 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 rounded-[14px] text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            Next Step
+                                            <ChevronRight size={16} strokeWidth={3} />
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button onClick={() => setStep(1)} className="min-w-[140px] h-[44px] px-6 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-300 rounded-[14px] text-sm font-bold flex items-center justify-center gap-2 transition-all">
+                                            Back
+                                        </button>
+                                        <button 
+                                            onClick={handleCreate} 
+                                            disabled={isCreating}
+                                            className="min-w-[140px] h-[44px] px-6 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 rounded-[14px] text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {isCreating ? (
+                                                <>
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="animate-spin">
+                                                        <circle cx="12" cy="12" r="10" strokeOpacity="0.3" />
+                                                        <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round" />
+                                                    </svg>
+                                                    Creating...
+                                                </>
+                                            ) : (
+                                                'Create Group'
+                                            )}
+                                        </button>
+                                    </>
+                                )}
+                            </motion.div>
+                        </div>
+                    </motion.div>
+                </div>
             )}
         </AnimatePresence>,
         document.body
     );
 };
 
-export { CreateGroupModal };
 export default CreateGroupModal;
