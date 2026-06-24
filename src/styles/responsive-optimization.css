@@ -243,8 +243,8 @@ html {
     }
     
     /* Dashboard specific */
-    .sidebar-wrapper:not(.collapsed) {
-        width: 220px !important;
+    :root {
+        --sidebar-width: 220px;
     }
     
     /* Index.html features */
@@ -330,8 +330,8 @@ html {
     }
     
     /* Dashboard optimization */
-    .sidebar-wrapper:not(.collapsed) {
-        width: 220px !important;
+    :root {
+        --sidebar-width: 220px;
     }
     
     .course-grid {
@@ -365,8 +365,8 @@ html {
         grid-template-columns: repeat(3, 1fr) !important;
     }
     
-    .sidebar-wrapper:not(.collapsed) {
-        width: 240px !important;
+    :root {
+        --sidebar-width: 240px;
     }
 }
 
@@ -419,8 +419,8 @@ html {
     }
     
     /* Dashboard */
-    .sidebar-wrapper:not(.collapsed) {
-        width: 300px !important;
+    :root {
+        --sidebar-width: 300px;
     }
     
     .course-grid {

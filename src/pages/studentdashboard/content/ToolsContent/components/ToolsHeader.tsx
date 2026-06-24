@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { motion } from 'motion/react';
-import { Wrench, Zap, ShieldCheck } from 'lucide-react';
+import { Wrench, Zap } from 'lucide-react';
 
 interface ToolsHeaderProps {
     totalTools: number;
@@ -12,7 +12,7 @@ export const ToolsHeader: React.FC<ToolsHeaderProps> = ({ totalTools }) => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring' as const, stiffness: 300, damping: 24 }}
-            className="mt-[72px] md:mt-0 mb-8 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-2xl md:rounded-[24px] p-4 lg:p-7 flex flex-col md:flex-row items-center justify-between gap-5 md:gap-8 group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50"
+            className="mt-4 md:mt-0 mb-8 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-2xl md:rounded-[24px] p-4 lg:p-7 flex flex-col md:flex-row items-center justify-between gap-5 md:gap-8 group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50"
         >
             {/* SaaS Background Accents */}
             <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
@@ -53,16 +53,6 @@ export const ToolsHeader: React.FC<ToolsHeaderProps> = ({ totalTools }) => {
                     </div>
                 </div>
 
-                {/* Privacy Card */}
-                <div className="flex-1 md:flex-none flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-white dark:bg-zinc-800/80 rounded-2xl border border-zinc-200/80 dark:border-zinc-700/80 shadow-sm transition-all duration-300 hover:shadow-md hover:border-emerald-200/80 dark:hover:border-emerald-800/50 group">
-                    <div className="text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-2 md:p-2.5 rounded-lg md:rounded-xl flex-shrink-0 border border-emerald-100 dark:border-emerald-800/50 transition-colors group-hover:bg-emerald-100">
-                        <ShieldCheck className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 dark:text-emerald-400" strokeWidth={2} />
-                    </div>
-                    <div>
-                        <p className="text-[10px] md:text-[12px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-0.5">Data</p>
-                        <p className="text-base md:text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">Local-first</p>
-                    </div>
-                </div>
             </div>
         </motion.div>
     );

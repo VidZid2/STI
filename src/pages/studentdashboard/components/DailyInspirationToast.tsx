@@ -293,15 +293,37 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
                                                 </p>
                                             </div>
                                         </>
+                                    ) : t.type === 'group_created' ? (
+                                        <>
+                                            {/* Group Icon */}
+                                            <div className="w-8 h-8 flex-shrink-0 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                                    <circle cx="9" cy="7" r="4" />
+                                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                                </svg>
+                                            </div>
+                                            
+                                            {/* Group Text */}
+                                            <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
+                                                <h4 className="text-[13px] font-bold text-slate-900 dark:text-slate-100 leading-tight">
+                                                    {t.title || t.data?.title}
+                                                </h4>
+                                                <p className="text-slate-500 dark:text-slate-400 text-[10.5px] font-medium mt-0.5">
+                                                    {t.message || t.data?.message}
+                                                </p>
+                                            </div>
+                                        </>
                                     ) : (
                                         <>
                                             <NotificationIcon type={t.type as any} title={t.title || ''} />
                                             <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
                                                 <h4 className="text-[13px] font-semibold text-slate-800 dark:text-slate-100 leading-tight">
-                                                    {t.title}
+                                                    {t.title || t.data?.title}
                                                 </h4>
                                                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug line-clamp-1">
-                                                    {t.message}
+                                                    {t.message || t.data?.message}
                                                 </p>
                                             </div>
                                             <div className="flex-shrink-0 w-2 h-2 rounded-full" style={{ backgroundColor: t.type === 'warning' ? '#f59e0b' : '#3b82f6' }} />

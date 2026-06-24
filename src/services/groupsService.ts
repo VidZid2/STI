@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Groups Service - Study Groups Management with Supabase integration
  * Matches the design patterns of usersService, goalsService, pathsService
  */
@@ -68,11 +68,36 @@ export const groupCategoryConfig: Record<GroupCategory, { label: string; color: 
     all: { label: 'All Groups', color: '#64748b', icon: 'grid' },
 };
 
+const STORAGE_KEY_GROUPS = 'elms_demo_groups';
+const STORAGE_KEY_MEMBERS = 'elms_demo_members';
+
 // Demo groups data (empty - will be populated from Supabase)
-const DEMO_GROUPS: StudyGroup[] = [];
+let DEMO_GROUPS: StudyGroup[] = (() => {
+    if (typeof window === 'undefined') return [];
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY_GROUPS);
+        if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
+})();
 
 // Demo members data (empty - will be populated from Supabase)
-const DEMO_MEMBERS: GroupMember[] = [];
+let DEMO_MEMBERS: GroupMember[] = (() => {
+    if (typeof window === 'undefined') return [];
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY_MEMBERS);
+        if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [];
+})();
+
+const saveDemoDataToLocal = () => {
+    if (typeof window === 'undefined') return;
+    try {
+        localStorage.setItem(STORAGE_KEY_GROUPS, JSON.stringify(DEMO_GROUPS));
+        localStorage.setItem(STORAGE_KEY_MEMBERS, JSON.stringify(DEMO_MEMBERS));
+    } catch (e) {}
+};
 
 // Current user ID (demo)
 const CURRENT_USER_ID = 'demo-user-1';
@@ -132,7 +157,20 @@ export async function fetchGroups(): Promise<GroupWithMembers[]> {
 
     // Fallback to demo data
     return DEMO_GROUPS.map(group => {
-        const members = DEMO_MEMBERS.filter(m => m.group_id === group.id);
+        // Deduplicate members to prevent StrictMode or double-click bugs creating multiple entries for the same user
+        const rawMembers = DEMO_MEMBERS.filter(m => m.group_id === group.id);
+        const membersMap = new Map();
+        rawMembers.forEach(m => {
+            if (!membersMap.has(m.user_id) || m.role === 'owner') {
+                // If it's the creator, force them to be the owner in the mock data
+                if (m.user_id === CURRENT_USER_ID && group.created_by === CURRENT_USER_ID) {
+                    m.role = 'owner';
+                }
+                membersMap.set(m.user_id, m);
+            }
+        });
+        const members = Array.from(membersMap.values());
+        
         const isMember = members.some(m => m.user_id === CURRENT_USER_ID);
         const userMember = members.find(m => m.user_id === CURRENT_USER_ID);
 
@@ -243,7 +281,18 @@ export async function joinGroup(groupId: string): Promise<boolean> {
         }
     }
 
-    // Demo mode - just return success
+    // Demo mode - add to local memory and save
+    DEMO_MEMBERS.push({
+        id: `member-${Date.now()}`,
+        group_id: groupId,
+        user_id: CURRENT_USER_ID,
+        user_name: 'Josiah P. De Asis',
+        user_email: 'deasis.462124@meycauayan.sti.edu.ph',
+        role: 'member',
+        joined_at: new Date().toISOString(),
+        is_online: true
+    });
+    saveDemoDataToLocal();
     return true;
 }
 
@@ -274,6 +323,7 @@ export async function createGroup(group: Omit<StudyGroup, 'id' | 'created_at' | 
     const newGroup: StudyGroup = {
         ...group,
         id: `group-${Date.now()}`,
+        created_by: group.created_by || CURRENT_USER_ID,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
     };
@@ -283,7 +333,7 @@ export async function createGroup(group: Omit<StudyGroup, 'id' | 'created_at' | 
             const db = supabase;
             const { data, error } = await db
                 .from('study_groups')
-                .insert(newGroup)
+                .insert(group)
                 .select()
                 .single();
 
@@ -299,10 +349,26 @@ export async function createGroup(group: Omit<StudyGroup, 'id' | 'created_at' | 
                 });
 
                 return data;
+            } else if (error) {
+                console.error("Database error creating group:", error);
             }
         } catch (err) {
+            console.error("Exception creating group in database:", err);
         }
     }
+    // Fallback to local memory demo
+    DEMO_GROUPS.unshift(newGroup);
+    DEMO_MEMBERS.push({
+        id: `member-${Date.now()}`,
+        group_id: newGroup.id,
+        user_id: CURRENT_USER_ID,
+        user_name: 'Josiah P. De Asis',
+        user_email: 'deasis.462124@meycauayan.sti.edu.ph',
+        role: 'owner',
+        joined_at: new Date().toISOString(),
+        is_online: true
+    });
+    saveDemoDataToLocal();
 
     return newGroup;
 }
@@ -498,6 +564,12 @@ export async function togglePinGroup(groupId: string, isPinned: boolean): Promis
         } catch (err) {
         }
     }
+    // Fallback to local demo
+    const groupIndex = DEMO_GROUPS.findIndex(g => g.id === groupId);
+    if (groupIndex !== -1) {
+        DEMO_GROUPS[groupIndex].is_pinned = isPinned;
+        saveDemoDataToLocal();
+    }
     return true;
 }
 
@@ -549,6 +621,17 @@ export async function updateOnlineStatus(isOnline: boolean): Promise<void> {
         } catch (err) {
         }
     }
+
+    // Fallback to demo
+    let modified = false;
+    DEMO_MEMBERS = DEMO_MEMBERS.map(m => {
+        if (m.user_id === CURRENT_USER_ID) {
+            modified = true;
+            return { ...m, is_online: isOnline, last_active: new Date().toISOString() };
+        }
+        return m;
+    });
+    if (modified) saveDemoDataToLocal();
 }
 
 /**

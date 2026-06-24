@@ -154,7 +154,7 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({ courseId: _courseI
             animate={{ opacity: 1, y: 0 }}
             whileTap={{ scale: 0.995 }}
             transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
-            className="mx-2 sm:mx-6 mb-4 sm:mb-6 relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] p-3.5 sm:p-5 lg:p-6 pb-4 sm:pb-6 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600"
+            className="mb-4 sm:mb-6 relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] p-3.5 sm:p-5 lg:p-6 pb-4 sm:pb-6 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600"
         >
             {/* Ambient Background Glow */}
             <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-blue-500/5 rounded-full blur-[80px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />

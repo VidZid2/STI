@@ -13,8 +13,6 @@ interface ContactSupportModalProps {
     onClose: () => void;
 }
 
-const BLUE = '#3b82f6';
-
 // SVG Icons
 const EmailIcon: React.FC<{ size?: number }> = ({ size = 20 }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -37,8 +35,8 @@ const PhoneIcon: React.FC<{ size?: number }> = ({ size = 20 }) => (
 
 
 
-const CheckIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+const CheckIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="20 6 9 17 4 12" />
     </svg>
 );
@@ -81,134 +79,51 @@ const supportOptions: SupportOption[] = [
 
 
 
-// Support Option Card with enhanced animations
-const SupportOptionCard: React.FC<{
-    option: SupportOption;
-    index: number;
-    isDarkMode: boolean;
-    onClick: () => void;
-}> = ({ option, index, onClick }) => {
-    // Get corresponding badge content
-    const getBadgeContent = () => {
-        switch (option.id) {
-            case 'email':
-                return {
-                    label: 'RESPONSE',
-                    value: '< 24 Hours',
-                    icon: (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                    ),
-                    badgeBg: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100/50 dark:border-blue-500/20',
-                    labelColor: 'text-blue-500/80 dark:text-blue-400/80'
-                };
-            case 'chat':
-                return {
-                    label: 'STATUS',
-                    value: 'Online Now',
-                    icon: (
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    ),
-                    badgeBg: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-500/20 flex items-center justify-center',
-                    labelColor: 'text-emerald-500/80 dark:text-emerald-400/80'
-                };
-            case 'phone':
-            default:
-                return {
-                    label: 'HOURS',
-                    value: '8AM - 5PM',
-                    icon: (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                            <line x1="16" y1="2" x2="16" y2="6" />
-                            <line x1="8" y1="2" x2="8" y2="6" />
-                            <line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                    ),
-                    badgeBg: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100/50 dark:border-purple-500/20',
-                    labelColor: 'text-purple-500/80 dark:text-purple-400/80'
-                };
-        }
-    };
-
-    const badge = getBadgeContent();
-    
-    // Choose dynamic color schemes
-    const colors = {
-        email: {
-            hoverBorder: 'hover:border-blue-300/80 dark:hover:border-blue-800/60',
-            bg: 'bg-blue-50/80 border border-blue-100/50 dark:bg-blue-500/10 dark:border-blue-500/20 text-blue-600 dark:text-blue-400',
-            accent: 'bg-blue-500/5 dark:bg-blue-500/[0.03]'
-        },
-        chat: {
-            hoverBorder: 'hover:border-emerald-300/80 dark:hover:border-emerald-800/60',
-            bg: 'bg-emerald-50/80 border border-emerald-100/50 dark:bg-emerald-500/10 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400',
-            accent: 'bg-emerald-500/5 dark:bg-emerald-500/[0.03]'
-        },
-        phone: {
-            hoverBorder: 'hover:border-purple-300/80 dark:hover:border-purple-800/60',
-            bg: 'bg-purple-50/80 border border-purple-100/50 dark:bg-purple-500/10 dark:border-purple-500/20 text-purple-600 dark:text-purple-400',
-            accent: 'bg-purple-500/5 dark:bg-purple-500/[0.03]'
-        }
-    }[option.id as 'email' | 'chat' | 'phone'] || {
-        hoverBorder: 'hover:border-blue-300/80 dark:hover:border-blue-800/60',
-        bg: 'bg-blue-50/80 border border-blue-100/50 dark:bg-blue-500/10 dark:border-blue-500/20 text-blue-600 dark:text-blue-400',
-        accent: 'bg-blue-500/5 dark:bg-blue-500/[0.03]'
-    };
-
-    return (
-        <motion.button
-            layout
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ delay: index * 0.06, type: 'spring', damping: 25, stiffness: 300 }}
-            onClick={onClick}
-            className={`relative overflow-hidden w-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-5 group transition-all duration-300 hover:shadow-md text-center sm:text-left ${colors.hoverBorder}`}
-        >
-            {/* SaaS Background Accents */}
-            <div className={`absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 ${colors.accent} rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150`} aria-hidden="true" />
-            <div className={`absolute bottom-0 left-0 -ml-16 -mb-16 w-24 h-24 ${colors.accent} rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150`} aria-hidden="true" />
-
-            {/* Custom Tinted SVG squircle container */}
-            <motion.div
-                whileHover={{ scale: 1.05, rotate: -5 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                className={`w-14 h-14 rounded-[20px] flex items-center justify-center flex-shrink-0 shadow-sm relative z-10 transition-all duration-300 ${colors.bg}`}
-            >
-                {/* Scale up option's main icon a bit for premium UX */}
-                {React.cloneElement(option.icon as React.ReactElement<any>, { size: 24 })}
-            </motion.div>
-
-            {/* Title & Description with premium typography */}
-            <div className="flex-1 min-w-0 pr-2">
-                <h3 className="text-[16px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight m-0 mb-0.5 leading-snug">
-                    {option.title}
-                </h3>
-                <p className="text-[12.5px] text-zinc-500 dark:text-zinc-400 font-normal leading-relaxed m-0">
-                    {option.description}
-                </p>
-            </div>
-
-            {/* Premium status bar mirroring the right side of the Student Tools card */}
-            <div className="flex items-center gap-2.5 bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/60 dark:border-zinc-800/80 shadow-sm rounded-[14px] px-3.5 py-2.5 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-zinc-900">
-                <div className={`p-1.5 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm ${badge.badgeBg}`}>
-                    {badge.icon}
-                </div>
-                <div className="flex flex-col justify-center gap-0.5 min-w-0 text-left">
-                    <p className={`text-[8.5px] font-bold uppercase tracking-widest leading-none ${badge.labelColor}`}>
-                        {badge.label}
-                    </p>
-                    <p className="text-[11.5px] font-extrabold text-zinc-800 dark:text-zinc-200 leading-none">
-                        {badge.value}
-                    </p>
-                </div>
-            </div>
-        </motion.button>
-    );
+/// Helper to get corresponding badge content for support options
+const getBadgeContent = (id: string) => {
+    switch (id) {
+        case 'email':
+            return {
+                label: 'RESPONSE',
+                value: '< 24 Hours',
+                icon: (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                ),
+                badgeBg: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100/50 dark:border-blue-500/20',
+                labelColor: 'text-blue-500/80 dark:text-blue-400/80'
+            };
+        case 'chat':
+            return {
+                label: 'STATUS',
+                value: 'Online Now',
+                icon: (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                ),
+                badgeBg: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-500/20 flex items-center justify-center',
+                labelColor: 'text-emerald-500/80 dark:text-emerald-400/80'
+            };
+        case 'phone':
+        default:
+            return {
+                label: 'HOURS',
+                value: '8AM - 5PM',
+                icon: (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                ),
+                badgeBg: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100/50 dark:border-purple-500/20',
+                labelColor: 'text-purple-500/80 dark:text-purple-400/80'
+            };
+    }
 };
+
 
 
 const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClose }) => {
@@ -470,64 +385,39 @@ const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClo
                                         /* Success State */
                                         <motion.div
                                             key="success"
-                                            initial={{ opacity: 0, scale: 0.9 }}
-                                            animate={{ opacity: 1, scale: 1 }}
+                                            initial={{ opacity: 0, scale: 0.9, y: 15 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0 }}
                                             exit={{ opacity: 0, scale: 0.9 }}
-                                            style={{
-                                                textAlign: 'center',
-                                                padding: '40px 20px',
-                                            }}
+                                            className="relative overflow-hidden w-full max-w-md mx-auto bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] group transition-all duration-300 hover:shadow-md hover:border-emerald-200/80 dark:hover:border-emerald-800/50 text-center flex flex-col items-center justify-center p-8 sm:p-10 my-8"
                                         >
-                                            <motion.div
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                transition={{ type: 'spring', delay: 0.2 }}
-                                                style={{
-                                                    width: '64px',
-                                                    height: '64px',
-                                                    margin: '0 auto 16px',
-                                                    borderRadius: '50%',
-                                                    background: '#10b98120',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    color: '#10b981',
-                                                }}
-                                            >
-                                                <CheckIcon />
-                                            </motion.div>
-                                            <h3 style={{
-                                                margin: '0 0 8px',
-                                                fontSize: '18px',
-                                                fontWeight: 600,
-                                                color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                                            }}>
-                                                Message Sent!
-                                            </h3>
-                                            <p style={{
-                                                margin: '0 0 20px',
-                                                fontSize: '13px',
-                                                color: isDarkMode ? '#64748b' : '#94a3b8',
-                                            }}>
-                                                We'll get back to you within 24 hours.
-                                            </p>
-                                            <motion.button
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                                onClick={onClose}
-                                                style={{
-                                                    padding: '10px 24px',
-                                                    borderRadius: '10px',
-                                                    border: 'none',
-                                                    background: BLUE,
-                                                    color: '#ffffff',
-                                                    fontSize: '13px',
-                                                    fontWeight: 600,
-                                                    cursor: 'pointer',
-                                                }}
-                                            >
-                                                Done
-                                            </motion.button>
+                                            {/* SaaS Background Accents */}
+                                            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-emerald-400/10 dark:bg-emerald-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                            
+                                            <div className="relative z-10 w-full flex flex-col items-center">
+                                                <motion.div
+                                                    initial={{ scale: 0 }}
+                                                    animate={{ scale: 1 }}
+                                                    transition={{ type: 'spring', delay: 0.2 }}
+                                                    className="w-20 h-20 mb-5 rounded-[24px] bg-emerald-50 border border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20 flex items-center justify-center text-emerald-500 shadow-sm"
+                                                >
+                                                    <CheckIcon className="w-10 h-10" />
+                                                </motion.div>
+                                                <h3 className="mb-2 text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+                                                    Message Sent!
+                                                </h3>
+                                                <p className="mb-8 text-[14.5px] text-zinc-600 dark:text-zinc-400 font-medium max-w-[250px]">
+                                                    We'll get back to you within 24 hours.
+                                                </p>
+                                                <motion.button
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    onClick={onClose}
+                                                    className="px-8 py-3 w-full sm:w-auto rounded-[14px] border border-blue-500/10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-[14px] font-extrabold shadow-[0_4px_14px_rgba(59,130,246,0.35)] transition-all"
+                                                >
+                                                    Done
+                                                </motion.button>
+                                            </div>
                                         </motion.div>
                                     ) : (
 
@@ -538,82 +428,111 @@ const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClo
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
                                         >
-                                            {/* Support Options */}
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                style={{ marginBottom: '20px' }}
-                                            >
-                                                <div style={{
-                                                     display: 'flex',
-                                                     alignItems: 'center',
-                                                     justifyContent: 'space-between',
-                                                     marginBottom: '16px',
-                                                     marginTop: '12px',
-                                                     width: '100%',
-                                                     padding: '0 4px',
-                                                 }}>
-                                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                                         {/* Section Title */}
-                                                         <h3 style={{
-                                                             margin: '0 0 3px',
-                                                             fontSize: '17px',
-                                                             fontWeight: 800,
-                                                             color: isDarkMode ? '#f8fafc' : '#0f172a',
-                                                             letterSpacing: '-0.02em',
-                                                             display: 'flex',
-                                                             alignItems: 'center',
-                                                             gap: '8px'
-                                                         }}>
-                                                             {/* Small squircle accent block */}
-                                                             <div style={{
-                                                                 width: '6px',
-                                                                 height: '16px',
-                                                                 borderRadius: '3px',
-                                                                 backgroundColor: '#3b82f6',
-                                                             }} />
-                                                             Support Channels
-                                                         </h3>
-                                                         {/* Description */}
-                                                         <p style={{
-                                                             margin: 0,
-                                                             fontSize: '12.5px',
-                                                             color: isDarkMode ? '#94a3b8' : '#64748b',
-                                                             fontWeight: 400,
-                                                             paddingLeft: '14px', // aligned with the title text
-                                                         }}>
-                                                             Get in touch with our team via these channels
-                                                         </p>
+                                            {/* Support Channels Card (Matches Student Tools Style / UserProfileDropdown) */}
+                                             <motion.div
+                                                 initial={{ opacity: 0, y: 15 }}
+                                                 animate={{ opacity: 1, y: 0 }}
+                                                 transition={{ delay: 0.1, type: 'spring', damping: 25, stiffness: 300 }}
+                                                 className="relative overflow-hidden w-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 text-left mb-6"
+                                             >
+                                                 {/* SaaS Background Accents */}
+                                                 <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                                 <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-48 h-48 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+
+                                                 <div className="p-5 sm:p-6 flex flex-col gap-6 relative z-10">
+                                                     {/* Header matching Student Tools style */}
+                                                     <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4 w-full text-center sm:text-left">
+                                                         <div className="flex flex-col sm:flex-row items-center gap-4">
+                                                             <motion.div
+                                                                 whileHover={{ scale: 1.05, rotate: -5 }}
+                                                                 transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                                                 className="w-14 h-14 rounded-[20px] bg-blue-50 border border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600 dark:text-blue-400"
+                                                             >
+                                                                 <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                                                 </svg>
+                                                             </motion.div>
+                                                             <div>
+                                                                 <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">
+                                                                     Support Channels
+                                                                 </h1>
+                                                                 <p className="text-[13px] sm:text-[14.5px] text-zinc-650 dark:text-zinc-400 leading-relaxed font-medium">
+                                                                     Get in touch with our team via these channels
+                                                                 </p>
+                                                             </div>
+                                                         </div>
+
+                                                         <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-550/10 border border-emerald-100/50 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-450 text-[12px] font-bold shrink-0 shadow-sm">
+                                                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                             Online Now
+                                                         </div>
                                                      </div>
 
-                                                     <div style={{
-                                                         display: 'flex',
-                                                         alignItems: 'center',
-                                                         gap: '6px',
-                                                         padding: '5px 12px',
-                                                         borderRadius: '10px',
-                                                         background: isDarkMode ? `rgba(16, 185, 129, 0.15)` : `rgba(16, 185, 129, 0.1)`,
-                                                         border: `1px solid rgba(16, 185, 129, 0.2)`,
-                                                         color: '#10b981',
-                                                         fontSize: '11px',
-                                                         fontWeight: 600,
-                                                         flexShrink: 0,
-                                                     }}>
-                                                         Online Now
+                                                     {/* Subtle divider before option list */}
+                                                     <div className="w-full h-px bg-zinc-100 dark:bg-zinc-800"></div>
+
+                                                     {/* Inner Gray Inset Container matching UserProfileDropdown */}
+                                                     <div className="bg-zinc-50/50 dark:bg-zinc-950/30 border border-zinc-150/60 dark:border-zinc-800/85 rounded-[1rem] p-2 sm:p-3 shadow-inner divide-y divide-zinc-200/50 dark:divide-zinc-800/60 flex flex-col">
+                                                         {supportOptions.map((option) => {
+                                                             const badge = getBadgeContent(option.id);
+                                                             const colors = {
+                                                                 email: {
+                                                                     hoverText: 'group-hover/row:text-blue-600 dark:group-hover/row:text-blue-400',
+                                                                     bg: 'bg-blue-50/80 border border-blue-100/50 dark:bg-blue-500/10 dark:border-blue-500/20 text-blue-600 dark:text-blue-400'
+                                                                 },
+                                                                 chat: {
+                                                                     hoverText: 'group-hover/row:text-emerald-600 dark:group-hover/row:text-emerald-400',
+                                                                     bg: 'bg-emerald-50/80 border border-emerald-100/50 dark:bg-emerald-500/10 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                                                                 },
+                                                                 phone: {
+                                                                     hoverText: 'group-hover/row:text-purple-600 dark:group-hover/row:text-purple-400',
+                                                                     bg: 'bg-purple-50/80 border border-purple-100/50 dark:bg-purple-500/10 dark:border-purple-500/20 text-purple-600 dark:text-purple-400'
+                                                                 }
+                                                             }[option.id as 'email' | 'chat' | 'phone'] || {
+                                                                 hoverText: 'group-hover/row:text-blue-600 dark:group-hover/row:text-blue-400',
+                                                                 bg: 'bg-blue-50/80 border border-blue-100/50 dark:bg-blue-500/10 dark:border-blue-500/20 text-blue-600 dark:text-blue-400'
+                                                             };
+                                                             return (
+                                                                 <button
+                                                                     key={option.id}
+                                                                     type="button"
+                                                                     onClick={() => handleOptionClick(option.id)}
+                                                                     className="w-full text-left p-3 hover:bg-white dark:hover:bg-zinc-900/60 transition-colors rounded-xl flex items-center justify-between gap-4 group/row first:pt-3 last:pb-3 cursor-pointer"
+                                                                 >
+                                                                     <div className="flex items-center gap-3.5 min-w-0">
+                                                                         <div className={`w-10 h-10 rounded-[12px] flex items-center justify-center flex-shrink-0 shadow-sm transition-all duration-300 ${colors.bg}`}>
+                                                                             {React.cloneElement(option.icon as React.ReactElement<any>, { size: 18 })}
+                                                                         </div>
+                                                                         <div className="min-w-0">
+                                                                             <div className={`text-[14px] font-bold text-zinc-900 dark:text-white truncate transition-colors ${colors.hoverText}`}>
+                                                                                 {option.title}
+                                                                             </div>
+                                                                             <div className="text-[12px] text-zinc-500 dark:text-zinc-400 mt-0.5 truncate font-medium">
+                                                                                 {option.description}
+                                                                             </div>
+                                                                         </div>
+                                                                     </div>
+
+                                                                     {/* Right side badge */}
+                                                                     <div className="flex items-center gap-2.5 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/80 shadow-sm rounded-[14px] px-3.5 py-2 transition-all duration-300 group-hover/row:bg-white dark:group-hover/row:bg-zinc-900 shrink-0">
+                                                                         <div className={`p-1 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm ${badge.badgeBg}`}>
+                                                                             {React.cloneElement(badge.icon as React.ReactElement<any>, { size: 10 })}
+                                                                         </div>
+                                                                         <div className="flex flex-col justify-center gap-0.5 min-w-0 text-left">
+                                                                             <p className={`text-[8.5px] font-bold uppercase tracking-widest leading-none ${badge.labelColor}`}>
+                                                                                 {badge.label}
+                                                                             </p>
+                                                                             <p className="text-[11.5px] font-extrabold text-zinc-850 dark:text-zinc-250 leading-none mt-0.5">
+                                                                                 {badge.value}
+                                                                             </p>
+                                                                         </div>
+                                                                     </div>
+                                                                 </button>
+                                                             );
+                                                         })}
                                                      </div>
                                                  </div>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                    {supportOptions.map((option, index) => (
-                                                        <SupportOptionCard
-                                                            key={option.id}
-                                                            option={option}
-                                                            index={index}
-                                                            isDarkMode={isDarkMode}
-                                                            onClick={() => handleOptionClick(option.id)}
-                                                        />
-                                                    ))}
-                                                </div>
-                                            </motion.div>
+                                             </motion.div>
 
                                             {/* Divider */}
                                             <motion.div 
@@ -668,37 +587,39 @@ const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClo
 
                                                      {/* Form section */}
                                                      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                                                         <div>
-                                                             <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider uppercase flex items-center gap-1.5 mb-2 select-none">
-                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                                                     <polyline points="22,6 12,13 2,6" />
-                                                                 </svg>
-                                                                 Subject
-                                                             </label>
-                                                             <input
-                                                                 type="text"
-                                                                 value={subject}
-                                                                 onChange={(e) => setSubject(e.target.value)}
-                                                                 placeholder="What do you need help with?"
-                                                                 className="w-full px-4 py-3 rounded-[14px] border border-zinc-200/60 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-950/40 text-[13.5px] text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition-all duration-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:bg-white dark:focus:bg-zinc-900"
-                                                             />
-                                                         </div>
+                                                         <div className="bg-zinc-50/50 dark:bg-zinc-950/30 border border-zinc-150/60 dark:border-zinc-800/80 rounded-[1rem] p-4 shadow-inner divide-y divide-zinc-200/50 dark:divide-zinc-800/60 flex flex-col">
+                                                             <div className="pb-4">
+                                                                 <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider uppercase flex items-center gap-1.5 mb-2 select-none">
+                                                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                                                         <polyline points="22,6 12,13 2,6" />
+                                                                     </svg>
+                                                                     Subject
+                                                                 </label>
+                                                                 <input
+                                                                     type="text"
+                                                                     value={subject}
+                                                                     onChange={(e) => setSubject(e.target.value)}
+                                                                     placeholder="What do you need help with?"
+                                                                     className="w-full px-4 py-3 rounded-[14px] border border-zinc-200/60 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 text-[13.5px] text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition-all duration-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:bg-white dark:focus:bg-zinc-900 shadow-sm"
+                                                                 />
+                                                             </div>
 
-                                                         <div>
-                                                             <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider uppercase flex items-center gap-1.5 mb-2 select-none">
-                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                                                 </svg>
-                                                                 Message
-                                                             </label>
-                                                             <textarea
-                                                                 value={message}
-                                                                 onChange={(e) => setMessage(e.target.value)}
-                                                                 placeholder="Describe your issue or question..."
-                                                                 rows={3}
-                                                                 className="w-full px-4 py-3 rounded-[14px] border border-zinc-200/60 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-950/40 text-[13.5px] text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-600 outline-none resize-none min-h-[90px] transition-all duration-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:bg-white dark:focus:bg-zinc-900 font-sans"
-                                                             />
+                                                             <div className="pt-4">
+                                                                 <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wider uppercase flex items-center gap-1.5 mb-2 select-none">
+                                                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                                                     </svg>
+                                                                     Message
+                                                                 </label>
+                                                                 <textarea
+                                                                     value={message}
+                                                                     onChange={(e) => setMessage(e.target.value)}
+                                                                     placeholder="Describe your issue or question..."
+                                                                     rows={3}
+                                                                     className="w-full px-4 py-3 rounded-[14px] border border-zinc-200/60 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 text-[13.5px] text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-600 outline-none resize-none min-h-[90px] transition-all duration-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:bg-white dark:focus:bg-zinc-900 font-sans shadow-sm"
+                                                                 />
+                                                             </div>
                                                          </div>
 
                                                          {/* Character count & Submit Button Row */}

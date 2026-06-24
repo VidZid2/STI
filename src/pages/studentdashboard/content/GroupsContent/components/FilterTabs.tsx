@@ -4,6 +4,7 @@
  * Extracted from GroupsContent.tsx during Phase 8.2
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion } from 'motion/react';
 import type { GroupFilter, GroupStats } from '../../../../../services/groupsService';
 
 // Filter Tabs Component
@@ -69,7 +70,9 @@ const FilterTabs: React.FC<{
     }, [measure]);
 
     return (
-        <div
+        <motion.div
+            layout
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             className="rounded-xl shadow-sm border bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700 w-full sm:w-auto overflow-x-auto"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
         >
@@ -116,7 +119,7 @@ const FilterTabs: React.FC<{
                 );
             })}
             </div>
-        </div>
+        </motion.div>
     );
 };
 

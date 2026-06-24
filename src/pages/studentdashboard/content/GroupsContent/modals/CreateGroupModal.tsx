@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ColorPicker } from '../../../../../components/ui/color-picker';
 import { createPortal } from 'react-dom';
 import { supabase, isSupabaseConfigured } from '../../../../../lib/supabase';
@@ -8,7 +8,7 @@ import { type GroupCategory } from '../../../../../services/groupsService';
 import { getClassmates as getLocalClassmates } from '../../../../../services/usersService';
 import { AnimatedCircularProgressBar } from '../../../../../components/ui/animated-circular-progress-bar';
 import GroupIcon from '../components/GroupIcon';
-import { X, ChevronRight, Check, Users, Link as LinkIcon, Search, AlertCircle, Copy, HelpCircle, Briefcase, Plus, Book, Code, MessagesSquare, BookOpen, GraduationCap, Trash2 } from 'lucide-react';
+import { X, ChevronRight, Check, Link as LinkIcon, Search, AlertCircle, Copy, Briefcase, Plus, Book, MessagesSquare, BookOpen, GraduationCap, Trash2 } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem } from '../../../../../components/ui/carousel';
 import { UiverseSwitch } from '../../../../../components/ui/UiverseSwitch';
 import { triggerGlobalToast } from '../../../components/DailyInspirationToast';
@@ -51,10 +51,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
     const avatarInputRef = useRef<HTMLInputElement>(null);
     const courseDropdownRef = useRef<HTMLDivElement>(null);
     const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
-    const [hoveredCategory, setHoveredCategory] = useState<GroupCategory | null>(null);
-    const [hoveredColor, setHoveredColor] = useState<string | null>(null);
-    const [hoveredIconId, setHoveredIconId] = useState<string | null>(null);
-    const [hoveredPreset, setHoveredPreset] = useState<number | null>(null);
     
     // Teammate Invitation States
     const [inviteEmails, setInviteEmails] = useState<{
@@ -130,16 +126,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
             ? (selectedCourse ? enrolledCourses.findIndex(c => c.id === hoveredCourseId) + 1 : enrolledCourses.findIndex(c => c.id === hoveredCourseId))
             : -1;
 
-    const colorOptions = [
-        { color: '#3b82f6', name: 'Blue' },
-        { color: '#8b5cf6', name: 'Purple' },
-        { color: '#10b981', name: 'Green' },
-        { color: '#f59e0b', name: 'Amber' },
-        { color: '#ef4444', name: 'Red' },
-        { color: '#ec4899', name: 'Pink' },
-        { color: '#06b6d4', name: 'Cyan' },
-        { color: '#84cc16', name: 'Lime' },
-    ];
 
     const iconOptions = [
         { id: 'users', label: 'Team' },
@@ -194,7 +180,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                     
                     if (!error && data) {
                         setClassmates(data.map(student => {
-                            const nameSum = (student.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                            const nameSum = (student.full_name || '').split('').reduce((sum: number, char: string) => sum + char.charCodeAt(0), 0);
                             const calculatedLevel = (nameSum % 10) + 1;
                             const calculatedProgress = (nameSum % 80) + 10;
                             return {
@@ -217,9 +203,9 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                 // Local fallback
                 const localData = await getLocalClassmates();
                 setClassmates(localData.map(c => {
-                    const nameSum = (c.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
-                    const calculatedLevel = c.level || (nameSum % 10) + 1;
-                    const calculatedProgress = c.xp ? (c.xp % 100) : (nameSum % 80) + 10;
+                    const nameSum = (c.full_name || '').split('').reduce((sum: number, char: string) => sum + char.charCodeAt(0), 0);
+                    const calculatedLevel = (c as any).level || (nameSum % 10) + 1;
+                    const calculatedProgress = (c as any).xp ? ((c as any).xp % 100) : (nameSum % 80) + 10;
                     return {
                         id: c.id,
                         name: c.full_name,
@@ -263,7 +249,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                     
                     if (!error && data) {
                         setClassmates(data.map(student => {
-                            const nameSum = (student.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                            const nameSum = (student.full_name || '').split('').reduce((sum: number, char: string) => sum + char.charCodeAt(0), 0);
                             const calculatedLevel = (nameSum % 10) + 1;
                             const calculatedProgress = (nameSum % 80) + 10;
                             return {
@@ -298,9 +284,9 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                 }
                 
                 setClassmates(filtered.map(c => {
-                    const nameSum = (c.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
-                    const calculatedLevel = c.level || (nameSum % 10) + 1;
-                    const calculatedProgress = c.xp ? (c.xp % 100) : (nameSum % 80) + 10;
+                    const nameSum = (c.full_name || '').split('').reduce((sum: number, char: string) => sum + char.charCodeAt(0), 0);
+                    const calculatedLevel = (c as any).level || (nameSum % 10) + 1;
+                    const calculatedProgress = (c as any).xp ? ((c as any).xp % 100) : (nameSum % 80) + 10;
                     return {
                         id: c.id,
                         name: c.full_name,
@@ -417,14 +403,14 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
             setName('');
             setDescription('');
             setCategory(preset.category);
-            setSelectedIcon(preset.icon as GroupIconType);
+            setSelectedIcon(preset.icon);
             setSelectedColor(preset.color);
             return;
         }
         setName(preset.name);
         setDescription(preset.description);
         setCategory(preset.category);
-        setSelectedIcon(preset.icon as GroupIconType);
+        setSelectedIcon(preset.icon);
         setSelectedColor(preset.color);
         setMaxMembers(preset.maxMembers);
     };
@@ -470,15 +456,15 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                     .single();
                 
                 if (!error && data) {
-                    const nameSum = (data.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                    const nameSum = (data.full_name || '').split('').reduce((sum: number, char: string) => sum + char.charCodeAt(0), 0);
                     setInviteEmails(prev => [...prev, {
                         email: normalized,
                         name: data.full_name || 'Classmate',
                         section: data.section || 'N/A',
                         program: data.program || 'N/A',
-                        profile_image: data.profile_image,
-                        level: data.level || (nameSum % 10) + 1,
-                        progress: data.xp ? (data.xp % 100) : (nameSum % 80) + 10
+                        profile_image: (data as any).profile_image,
+                        level: (data as any).level || (nameSum % 10) + 1,
+                        progress: (data as any).xp ? ((data as any).xp % 100) : (nameSum % 80) + 10
                     }]);
                     setCurrentInviteEmail('');
                     setShowEmailAdded(true);
@@ -493,7 +479,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                 const matched = localData.find(c => c.email?.toLowerCase().trim() === normalized);
                 
                 if (matched) {
-                    const nameSum = (matched.full_name || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                    const nameSum = (matched.full_name || '').split('').reduce((sum: number, char: string) => sum + char.charCodeAt(0), 0);
                     setInviteEmails(prev => [...prev, {
                         email: normalized,
                         name: matched.full_name,
@@ -514,7 +500,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                         .join(' ');
                     
-                    const nameSum = capitalized.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+                    const nameSum = capitalized.split('').reduce((sum: number, char: string) => sum + char.charCodeAt(0), 0);
                     setInviteEmails(prev => [...prev, {
                         email: normalized,
                         name: capitalized,
@@ -644,7 +630,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
     // Paginated filtered classmates
     const filteredClassmates = classmates.filter(c => !inviteEmails.some(inv => inv.email === c.email));
     const totalPages = Math.ceil(filteredClassmates.length / classmatesPerPage);
-    const paginatedClassmates = filteredClassmates.slice((classmatesPage - 1) * classmatesPerPage, classmatesPage * classmatesPerPage);
 
     // Added members collapsing logic
     const shouldCollapse = inviteEmails.length > 7;

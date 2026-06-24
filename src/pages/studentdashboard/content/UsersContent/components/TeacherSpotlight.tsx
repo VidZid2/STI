@@ -3,8 +3,9 @@
  * Extracted from UsersContent.tsx during Phase 8.4
  */
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { fetchUsers, getTeacherCourses, type UserAccount, type TeacherCourse } from '../../../../../services/usersService';
+import { Carousel, CarouselContent, CarouselItem } from '../../../../../components/ui/carousel';
 import { SkeletonPulse } from './UsersSkeleton';
 
 // Teacher Spotlight Skeleton
@@ -91,7 +92,6 @@ const TeacherSpotlight: React.FC<{
     const [teachers, setTeachers] = useState<TeacherWithCourses[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [direction, setDirection] = useState(0);
 
 
     // Load teachers and their courses
@@ -117,63 +117,26 @@ const TeacherSpotlight: React.FC<{
     }, []);
 
     const handlePrev = () => {
-        setDirection(-1);
-        setCurrentIndex((prev) => (prev === 0 ? teachers.length - 1 : prev - 1));
+        setCurrentIndex((prev) => Math.max(0, prev - 1));
     };
 
     const handleNext = () => {
-        setDirection(1);
-        setCurrentIndex((prev) => (prev === teachers.length - 1 ? 0 : prev + 1));
+        setCurrentIndex((prev) => Math.min(teachers.length - 1, prev + 1));
     };
 
     // Auto-advance carousel
     useEffect(() => {
         if (teachers.length <= 1) return;
         const interval = setInterval(() => {
-            setDirection(1);
             setCurrentIndex((prev) => (prev === teachers.length - 1 ? 0 : prev + 1));
         }, 5000);
         return () => clearInterval(interval);
     }, [teachers.length]);
 
-    const [isMobile, setIsMobile] = useState(false);
-    useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768);
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
 
 
 
-    // Native touch swipe detection for mobile (bypasses Framer Motion's drag restrictions over scroll areas)
-    const [touchStart, setTouchStart] = useState<{ x: number, y: number } | null>(null);
-    const [touchEnd, setTouchEnd] = useState<{ x: number, y: number } | null>(null);
-
-    const onTouchStart = (e: React.TouchEvent) => {
-        setTouchEnd(null); // Reset
-        setTouchStart({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
-    };
-
-    const onTouchMove = (e: React.TouchEvent) => {
-        setTouchEnd({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
-    };
-
-    const onTouchEndEvent = () => {
-        if (!touchStart || !touchEnd) return;
-        
-        const xDistance = touchStart.x - touchEnd.x;
-        const yDistance = touchStart.y - touchEnd.y;
-        
-        // Ensure it's a horizontal swipe, not a vertical scroll, and distance is enough
-        if (Math.abs(xDistance) > Math.abs(yDistance) && Math.abs(xDistance) > 40) {
-            if (xDistance > 0) {
-                handleNext();
-            } else {
-                handlePrev();
-            }
-        }
-    };
+    // Swipe and animation handled natively by Carousel component
 
     if (isLoading) {
         return <TeacherSpotlightSkeleton   />;
@@ -191,10 +154,7 @@ const TeacherSpotlight: React.FC<{
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.28, duration: 0.4 }}
-            className="flex flex-col group transition-all duration-300 w-full relative h-full touch-pan-y"
-            onTouchStart={isMobile ? onTouchStart : undefined}
-            onTouchMove={isMobile ? onTouchMove : undefined}
-            onTouchEnd={isMobile ? onTouchEndEvent : undefined}
+            className="flex flex-col group transition-all duration-300 w-full relative h-full"
         >
 
             {/* Section Header */}
@@ -230,26 +190,10 @@ const TeacherSpotlight: React.FC<{
 
             {/* Spotlight Content */}
             <div className="relative w-[calc(100%+8px)] -ml-1 flex flex-col flex-1 min-h-0 overflow-hidden px-1">
-                <AnimatePresence mode="wait" custom={direction}>
-                    <motion.div
-                        key={currentIndex}
-                        custom={direction}
-                        variants={{
-                            enter: (dir: number) => ({ opacity: 0, x: dir > 0 ? 30 : -30 }),
-                            center: { opacity: 1, x: 0 },
-                            exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -30 : 30 })
-                        }}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{ type: "tween", ease: "easeInOut", duration: 0.2 }}
-                        className="w-full flex flex-col gap-4 py-1"
-                    >
-                        {(() => {
-                            const currentTeacher = teachers[currentIndex];
-                            if (!currentTeacher) return null;
-                            return (
-                                <>
+                <Carousel index={currentIndex} onIndexChange={setCurrentIndex} className="w-full">
+                    <CarouselContent className="items-start">
+                        {teachers.map((currentTeacher) => (
+                            <CarouselItem key={currentTeacher.teacher.id} className="w-full flex flex-col gap-4 py-1">
                                     {/* Horizontal Teacher Profile Card */}
                                     <motion.div
                                         whileHover={{ scale: 1.01 }}
@@ -351,11 +295,10 @@ const TeacherSpotlight: React.FC<{
                                             })}
                                         </div>
                                     </div>
-                                </>
-                            );
-                        })()}
-                    </motion.div>
-                </AnimatePresence>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                </Carousel>
             </div>
             
             {/* Pagination Controls */}
@@ -365,7 +308,12 @@ const TeacherSpotlight: React.FC<{
                             <button 
                                 type="button"
                                 onClick={handlePrev} 
-                                className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500"
+                                disabled={currentIndex === 0}
+                                className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm border ${
+                                    currentIndex === 0
+                                        ? 'bg-slate-50/50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/50 text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-60'
+                                        : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer'
+                                }`}
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                             </button>
@@ -375,7 +323,12 @@ const TeacherSpotlight: React.FC<{
                             <button 
                                 type="button"
                                 onClick={handleNext} 
-                                className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500"
+                                disabled={currentIndex === teachers.length - 1}
+                                className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm border ${
+                                    currentIndex === teachers.length - 1
+                                        ? 'bg-slate-50/50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/50 text-slate-300 dark:text-slate-600 cursor-not-allowed opacity-60'
+                                        : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-500 hover:text-blue-600 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer'
+                                }`}
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                             </button>

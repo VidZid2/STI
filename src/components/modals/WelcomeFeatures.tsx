@@ -13,10 +13,7 @@ import {
   Check,
   Calendar,
   ChevronRight,
-  Trophy,
-  Sparkles,
 } from "lucide-react";
-import Grainient from "../ui/Grainient";
 import FireIcon from "../../../Fire.png";
 
 // Mockup Previews for each new feature
@@ -26,31 +23,6 @@ function DayStreakPreview() {
     <div 
       className="relative w-full max-w-[380px] sm:w-[380px] h-[310px] bg-transparent rounded-[28px] p-6 shadow-md border border-orange-500/30 flex flex-col justify-between transition-all duration-300 group/card mx-auto overflow-hidden cursor-pointer hover:-translate-y-1 hover:shadow-lg active:-translate-y-1 active:shadow-lg"
     >
-      <Grainient
-        className="absolute inset-0 w-full h-full -z-10 pointer-events-none"
-        color1="#ff6b00"
-        color2="#ff6b00"
-        color3="#ff6b00"
-          timeSpeed={0.25}
-          colorBalance={0.0}
-          warpStrength={1.0}
-          warpFrequency={5.0}
-          warpSpeed={2.0}
-          warpAmplitude={50.0}
-          blendAngle={0.0}
-          blendSoftness={0.05}
-          rotationAmount={500.0}
-          noiseScale={2.0}
-          grainAmount={0.1}
-          grainScale={2.0}
-          grainAnimated={false}
-          contrast={1.5}
-          gamma={1.0}
-          saturation={1.0}
-          centerX={0.0}
-          centerY={0.0}
-          zoom={0.9}
-        />
       {/* Top: Flame Icon & Text */}
       <div className="flex flex-col items-center mt-1 relative z-10">
         <div className="flex h-[60px] w-[60px] items-center justify-center rounded-[20px] bg-gradient-to-tr from-orange-500 to-amber-500 text-white shadow-sm relative overflow-hidden mb-3">

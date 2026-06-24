@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Wrench, FileBox, FileText, ShieldCheck } from 'lucide-react';
+import { Wrench, FileBox, FileText } from 'lucide-react';
 
 import { convertImageToPDF, mergePDFs } from '../../../../lib/pdfUtils';
 
@@ -708,15 +708,13 @@ const ToolsContent: React.FC = () => {
                 aria-label="Tool search and recommended workflow"
             >
                 <div className="relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white p-4 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7">
-                    <div className="absolute -right-20 -top-24 h-56 w-56 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/15" aria-hidden="true" />
-                    <div className="absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl dark:bg-violet-500/15" aria-hidden="true" />
                     <div className="relative z-10 flex flex-col gap-4 sm:gap-6">
                         <div className="min-w-0">
                             <h2 className="text-xl font-black tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-2xl">
                                 Find the right tool before you lose momentum.
                             </h2>
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-600 dark:text-zinc-400 hidden sm:block">
-                                Search by task, file type, or outcome. The page now behaves less like a directory and more like a student workspace.
+                                Search by task, file type, or outcome.
                             </p>
                         </div>
                         <motion.div
@@ -735,9 +733,9 @@ const ToolsContent: React.FC = () => {
                                 value={searchQuery}
                                 onChange={(event) => setSearchQuery(event.target.value)}
                                 placeholder='Try "APA", "compress", "essay"...'
-                                className="h-12 w-full rounded-2xl border border-zinc-200 bg-zinc-50/80 pl-11 pr-12 py-2 text-sm font-semibold text-zinc-900 placeholder-zinc-400 outline-none transition-all duration-300 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-zinc-800 dark:bg-zinc-950/70 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-blue-500 dark:focus:ring-blue-500/10"
+                                className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50/80 pl-11 pr-20 py-2 text-sm font-semibold focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 shadow-sm transition-all duration-300 text-slate-900 placeholder-slate-400 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:ring-blue-500/10"
                             />
-                            <div className="absolute right-2 sm:right-3 top-0 bottom-0 flex items-center z-10">
+                            <div className="absolute right-3 top-0 bottom-0 flex items-center justify-center z-10 w-6">
                                 <AnimatePresence mode="wait">
                                     {isSearching && searchQuery ? (
                                         <motion.div
@@ -755,22 +753,28 @@ const ToolsContent: React.FC = () => {
                                         </motion.div>
                                     ) : searchQuery ? (
                                         <motion.button
-                                            key="close"
+                                            key="clear"
                                             initial={{ opacity: 0, scale: 0.8 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             exit={{ opacity: 0, scale: 0.8 }}
-                                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                                            whileHover={{ scale: 1.15 }}
-                                            whileTap={{ scale: 0.9 }}
                                             onClick={() => setSearchQuery('')}
-                                            aria-label="Clear tool search"
-                                            className="relative w-6 h-6 p-0 rounded-full flex items-center justify-center flex-shrink-0 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors duration-200"
+                                            className="!w-5 !h-5 !min-w-[20px] !min-h-[20px] !p-0 flex items-center justify-center rounded-[6px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
                                         >
-                                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                                                <path d="M18 6L6 18M6 6l12 12" />
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                                             </svg>
                                         </motion.button>
-                                    ) : null}
+                                    ) : (
+                                        <motion.kbd
+                                            key="hint"
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.8 }}
+                                            className="hidden sm:inline-flex items-center justify-center h-5 px-1.5 text-[10px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-500 dark:shadow-none pointer-events-none"
+                                        >
+                                            /
+                                        </motion.kbd>
+                                    )}
                                 </AnimatePresence>
                             </div>
                         </motion.div>
@@ -784,7 +788,7 @@ const ToolsContent: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex gap-3 overflow-x-auto [scrollbar-width:none] sm:grid sm:grid-cols-3 xl:grid-cols-1">
+                <div className="flex gap-3 overflow-x-auto [scrollbar-width:none] sm:grid sm:grid-cols-3 xl:grid-cols-1 p-2 -m-2">
                     {recommendedTools.map((tool, index) => (
                         <motion.button
                             key={tool.id}
@@ -797,13 +801,9 @@ const ToolsContent: React.FC = () => {
                                     setActiveCategory(tool.category);
                                 }
                             }}
-                            className="group relative flex min-w-[260px] shrink-0 sm:min-w-0 sm:shrink items-center gap-4 overflow-hidden rounded-[20px] border border-zinc-200/70 bg-white p-3.5 text-left shadow-sm transition-[border-color] duration-300 ease-out hover:border-blue-200/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-800/70 dark:bg-zinc-900 dark:hover:border-blue-800/50 dark:focus-visible:ring-offset-zinc-950 sm:p-5"
+                            className="group relative flex min-w-[260px] shrink-0 sm:min-w-0 sm:shrink items-center gap-4 sm:gap-5 overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-4 sm:p-5 text-left transition-all duration-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            whileHover={{
-                                y: -2,
-                                boxShadow: '0 12px 28px -12px rgba(59,130,246,0.2), 0 0 0 1px rgba(59,130,246,0.06)',
-                            }}
                             whileTap={{ scale: 0.985 }}
                             transition={{ type: 'tween', ease: [0.25, 0.46, 0.45, 0.94], duration: 0.3, delay: index * 0.04 }}
                         >
@@ -813,30 +813,27 @@ const ToolsContent: React.FC = () => {
                                 aria-hidden="true"
                             />
 
-                            {/* Icon container — matches ToolItem card style */}
-                            <motion.span
-                                className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] border border-blue-100 bg-blue-50 text-blue-600 transition-colors duration-300 dark:border-blue-800/50 dark:bg-blue-900/30 dark:text-blue-400 sm:h-12 sm:w-12"
-                                whileHover={{ scale: 1.05, rotate: 3 }}
-                                transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+                            {/* Icon container — matches Overall Progress card style */}
+                            <motion.div 
+                                whileHover={{ scale: 1.05, rotate: -5 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                className="w-12 h-12 sm:w-14 sm:h-14 rounded-[16px] sm:rounded-[20px] bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative transition-transform duration-300 text-blue-600 dark:text-blue-400"
                                 aria-hidden="true"
                             >
-                                <span className="scale-110">
+                                <div className="scale-110">
                                     {tool.icon}
-                                </span>
-                            </motion.span>
+                                </div>
+                            </motion.div>
 
                             {/* Text */}
-                            <span className="relative min-w-0 flex-1">
-                                <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-[0.16em] text-blue-500 dark:text-blue-400/70 hidden sm:block">
-                                    Step {index + 1}
-                                </span>
-                                <span className="block truncate text-[15px] font-bold leading-snug text-zinc-900 dark:text-zinc-100">
+                            <div className="flex flex-col min-w-0 flex-1">
+                                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-0.5 transition-colors truncate">
                                     {tool.name}
-                                </span>
-                                <span className="block truncate text-[13px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+                                </h2>
+                                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed truncate">
                                     {tool.bestFor}
-                                </span>
-                            </span>
+                                </p>
+                            </div>
 
                             {/* Chevron arrow */}
                             <svg
@@ -890,12 +887,13 @@ const ToolsContent: React.FC = () => {
                 </motion.div>
             ) : (
                 <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="relative overflow-hidden rounded-[28px] border border-zinc-200/80 bg-white p-6 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-8"
+                    initial={{ scale: 0.85, rotateX: -15, y: 20 }}
+                    animate={{ scale: 1, rotateX: 0, y: 0 }}
+                    exit={{ scale: 0.85, rotateX: 15, y: -20 }}
+                    transition={{ type: "spring", bounce: 0.4, duration: 0.6 }}
+                    style={{ perspective: 1200 }}
+                    className="relative overflow-hidden rounded-[28px] border border-zinc-200/80 bg-white p-6 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-8 transform-gpu"
                 >
-                    <div className="absolute -right-24 -top-24 h-56 w-56 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/15" aria-hidden="true" />
-                    <div className="absolute -bottom-28 left-1/3 h-52 w-52 rounded-full bg-violet-500/10 blur-3xl dark:bg-violet-500/15" aria-hidden="true" />
                     <div className="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-start gap-5">
                             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[24px] border border-blue-100 bg-blue-50 text-blue-600 shadow-sm dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-300">
@@ -920,11 +918,11 @@ const ToolsContent: React.FC = () => {
                                 setSearchQuery('');
                                 setActiveCategory('all');
                             }}
-                            className="flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2 text-sm font-bold text-white shadow-md transition-colors hover:bg-emerald-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-zinc-950"
-                            whileHover={{ y: -1, boxShadow: '0 8px 20px rgba(16, 185, 129, 0.35)' }}
-                            whileTap={{ scale: 0.97 }}
+                            className="flex shrink-0 items-center justify-center gap-1.5 rounded-[14px] bg-emerald-100 px-4 py-2.5 text-[13px] font-bold text-emerald-700 shadow-sm transition-colors hover:bg-emerald-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:bg-emerald-900/50 dark:text-emerald-300 dark:hover:bg-emerald-900/70 dark:focus-visible:ring-offset-zinc-950"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                         >
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                 <path d="M3 12a9 9 0 1 0 3-6.7" />
                                 <path d="M3 4v5h5" />
                             </svg>
@@ -934,32 +932,7 @@ const ToolsContent: React.FC = () => {
                 </motion.div>
             )}
 
-            {/* Animated SaaS Trust Banner */}
-            <motion.div
-                className="group relative flex items-center justify-center w-fit mx-auto mt-12"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, type: 'spring', stiffness: 300, damping: 25 }}
-            >
-                {/* Background ambient pulse on hover */}
-                <motion.div
-                    className="absolute inset-0 bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-xl transition-all duration-300 group-hover:bg-blue-500/30"
-                    aria-hidden="true"
-                />
-                
-                <div className="relative flex items-center gap-3 px-6 py-3 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 rounded-full shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
-                    <motion.div
-                        animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
-                        transition={{ duration: 1.5, ease: "easeInOut", repeat: Infinity, repeatDelay: 5 }}
-                        className="flex items-center justify-center p-1.5 bg-blue-50 dark:bg-blue-900/40 rounded-full text-blue-600 dark:text-blue-400"
-                    >
-                        <ShieldCheck className="w-4 h-4" />
-                    </motion.div>
-                    <p className="text-[13px] font-medium text-zinc-600 dark:text-zinc-300 m-0">
-                        Local-first file tools. Connected AI runs only when configured.
-                    </p>
-                </div>
-            </motion.div>
+            {/* Removed Local-first banner */}
 
             <style>{`
                 /* Tool Card - Border hover effect (Framer handles the rest) */

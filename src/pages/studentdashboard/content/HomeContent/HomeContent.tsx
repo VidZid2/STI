@@ -19,6 +19,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
     const [isStatsExpanded, setIsStatsExpanded] = useState(false);
     const [isFullscreenImageOpen, setIsFullscreenImageOpen] = useState(false);
     const [currentCourseIndex, setCurrentCourseIndex] = useState(0);
+    const [slideDirection, setSlideDirection] = useState(1);
     // Bookmark state — initialise from localStorage cache immediately (no flash)
     const [bookmarkedIds, setBookmarkedIds] = useState<string[]>(() => getBookmarksSync());
     const [streakData] = useState<StreakData>(getStreakData());
@@ -121,8 +122,14 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
 
     const courseTag = getCourseTag(currentCourse.id);
 
-    const handlePrevCourse = () => setCurrentCourseIndex(prev => prev === 0 ? sortedCourses.length - 1 : prev - 1);
-    const handleNextCourse = () => setCurrentCourseIndex(prev => prev === sortedCourses.length - 1 ? 0 : prev + 1);
+    const handlePrevCourse = () => {
+        setSlideDirection(-1);
+        setCurrentCourseIndex(prev => prev === 0 ? sortedCourses.length - 1 : prev - 1);
+    };
+    const handleNextCourse = () => {
+        setSlideDirection(1);
+        setCurrentCourseIndex(prev => prev === sortedCourses.length - 1 ? 0 : prev + 1);
+    };
 
     const handleToggleBookmark = (courseId: string) => {
         // Optimistic update first so button reacts instantly
@@ -143,14 +150,26 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
         window.dispatchEvent(event);
     };
 
+    // Dynamic Greeting Badge Logic
+    const hour = new Date().getHours();
+    let greetingText = 'GOOD MORNING';
+    let greetingStyle = 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800/60 dark:bg-blue-900/30 dark:text-blue-400';
+    if (hour >= 12 && hour < 17) {
+        greetingText = 'GOOD AFTERNOON';
+        greetingStyle = 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800/60 dark:bg-amber-900/30 dark:text-amber-400';
+    } else if (hour >= 17 || hour < 5) {
+        greetingText = 'GOOD EVENING';
+        greetingStyle = 'border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-800/60 dark:bg-indigo-900/30 dark:text-indigo-400';
+    }
+
     return (
-        <div className="w-full h-full px-0 pt-20 pb-28 sm:p-6 sm:pb-8 lg:p-8 max-w-[1400px] mx-auto animate-in fade-in duration-500">
+        <div className="w-full h-full px-0 pt-4 pb-28 sm:p-6 sm:pb-8 lg:p-8 max-w-[1400px] mx-auto animate-in fade-in duration-500">
             {/* Welcome Modal Card (SaaS Style) */}
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="relative overflow-hidden bg-transparent sm:bg-white/60 dark:bg-transparent sm:dark:bg-slate-900/50 sm:backdrop-blur-md border-0 sm:border border-slate-200/80 dark:border-slate-800/80 shadow-none sm:shadow-sm sm:hover:shadow-md transition-all duration-300 rounded-none sm:rounded-[28px] p-0 sm:p-6 lg:p-8 flex flex-col gap-4 sm:gap-7 group"
+                className="relative overflow-hidden bg-transparent sm:bg-white/60 dark:bg-transparent sm:dark:bg-slate-900/50 sm:backdrop-blur-md border-0 sm:border border-slate-200/80 dark:border-slate-800/80 shadow-none sm:shadow-sm sm:hover:shadow-md transition-all duration-300 rounded-none sm:rounded-[28px] p-0 sm:p-6 lg:p-8 flex flex-col gap-4 sm:gap-7 group -mt-2 sm:-mt-4 lg:-mt-6 lg:-mx-6 xl:-mx-8"
             >
                 {/* Background ambient glow effect for SaaS feel */}
                 <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none hidden sm:block" />
@@ -212,8 +231,8 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                             {profile.firstName} {profile.lastName}
                                         </h2>
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <span className="w-fit px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                                Good Morning
+                                            <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-extrabold uppercase leading-none tracking-wide shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all ${greetingStyle}`}>
+                                                <span className="truncate translate-y-[0.5px]">{greetingText}</span>
                                             </span>
                                             {/* Weather Badge - Mobile Only */}
                                             {!weatherLoading && weather ? (
@@ -265,9 +284,37 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none transition-colors truncate">
                                             {profile.firstName} {profile.lastName}
                                         </h2>
-                                        <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                            Good Morning
+                                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-extrabold uppercase leading-none tracking-wide shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all ${greetingStyle}`}>
+                                            <span className="truncate translate-y-[0.5px]">{greetingText}</span>
                                         </span>
+                                        {/* Weather Badge - Desktop */}
+                                        {!weatherLoading && weather ? (
+                                            <div className="flex items-center gap-1 px-2 py-0.5 bg-slate-50 dark:bg-slate-800/80 rounded-md border border-slate-200 dark:border-slate-700/60 shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all">
+                                                <div className="w-3.5 h-3.5 flex-shrink-0">
+                                                    {weather.icon === 'sunny' && (
+                                                        <svg className="w-full h-full text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" /></svg>
+                                                    )}
+                                                    {weather.icon === 'night' && (
+                                                        <svg className="w-full h-full text-indigo-400" fill="currentColor" viewBox="0 0 24 24"><path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>
+                                                    )}
+                                                    {weather.icon === 'cloudy' && (
+                                                        <svg className="w-full h-full text-slate-400 dark:text-slate-500" fill="currentColor" viewBox="0 0 24 24"><path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" /></svg>
+                                                    )}
+                                                    {weather.icon === 'partly-cloudy' && (
+                                                        <svg className="w-full h-full text-sky-400" fill="currentColor" viewBox="0 0 24 24"><path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" /></svg>
+                                                    )}
+                                                    {weather.icon === 'rainy' && (
+                                                        <svg className="w-full h-full text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" /></svg>
+                                                    )}
+                                                    {weather.icon === 'stormy' && (
+                                                        <svg className="w-full h-full text-slate-500 dark:text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" /></svg>
+                                                    )}
+                                                </div>
+                                                <span className="text-slate-800 dark:text-slate-200 text-[10px] font-bold leading-none translate-y-[0.5px]">{weather.temperature}°C</span>
+                                            </div>
+                                        ) : weatherLoading ? (
+                                            <div className="w-16 h-[22px] bg-slate-50 dark:bg-slate-750 animate-pulse rounded-md" />
+                                        ) : null}
                                     </div>
                                     <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-[1.4] max-w-xl">
                                         Your learning overview is ready. Track active courses, module progress, and study momentum from one clean dashboard.
@@ -277,52 +324,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
 
                             {/* Right side: Weather Pill & Expand Icon */}
                             <div className="flex items-center gap-3.5 justify-end flex-shrink-0">
-                                {/* Weather Card - Desktop */}
-                                {!weatherLoading && weather ? (
-                                    <div className="hidden md:flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/50 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] rounded-[14px] flex-shrink-0 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-                                        <div className="w-7 h-7 flex-shrink-0">
-                                            {weather.icon === 'sunny' && (
-                                                <svg className="w-full h-full text-amber-500" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
-                                                </svg>
-                                            )}
-                                            {weather.icon === 'night' && (
-                                                <svg className="w-full h-full text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                                                </svg>
-                                            )}
-                                            {weather.icon === 'cloudy' && (
-                                                <svg className="w-full h-full text-slate-400 dark:text-slate-500" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
-                                                </svg>
-                                            )}
-                                            {weather.icon === 'partly-cloudy' && (
-                                                <svg className="w-full h-full text-sky-400" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
-                                                </svg>
-                                            )}
-                                            {weather.icon === 'rainy' && (
-                                                <svg className="w-full h-full text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
-                                                </svg>
-                                            )}
-                                            {weather.icon === 'stormy' && (
-                                                <svg className="w-full h-full text-slate-500 dark:text-slate-400" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M4.5 9.75a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303A4.5 4.5 0 0118 20.25H6.75a5.25 5.25 0 01-2.23-10.004 6.072 6.072 0 01-.02-.496z" />
-                                                </svg>
-                                            )}
-                                        </div>
-                                        <div className="flex flex-col text-left">
-                                            <div className="flex items-baseline gap-0.5">
-                                                <span className="font-extrabold text-slate-800 dark:text-slate-200 text-sm leading-none">{weather.temperature}°</span>
-                                                <span className="text-slate-400 dark:text-slate-500 text-[8px] font-bold">C</span>
-                                            </div>
-                                            <span className="text-slate-500 dark:text-slate-400 text-[9px] font-bold uppercase tracking-wider mt-0.5">{weather.condition}</span>
-                                        </div>
-                                    </div>
-                                ) : weatherLoading ? (
-                                    <div className="hidden md:flex w-24 h-10 bg-slate-50 dark:bg-slate-750 animate-pulse rounded-[14px] border border-slate-100 dark:border-slate-700/50 flex-shrink-0" />
-                                ) : null}
+                                {/* Weather Card removed to favor unified badge */}
 
                                 <motion.div 
                                     animate={{ rotate: isStatsExpanded ? 180 : 0 }}
@@ -659,13 +661,34 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                             
                             <div className="flex flex-col gap-2 p-1 pb-2 flex-1 justify-center">
                                 {/* Empty State */}
-                                <div className="flex flex-col items-center justify-center py-10 text-center px-4">
-                                    <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-4">
-                                        <svg className="w-6 h-6 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                                    className="relative overflow-hidden w-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-[24px] p-8 flex flex-col items-center justify-center text-center group transition-all duration-300 hover:shadow-md"
+                                >
+                                    {/* SaaS Accents */}
+                                    <div className="absolute top-0 right-0 -mr-12 -mt-12 w-28 h-28 bg-zinc-500/5 dark:bg-zinc-500/5 rounded-full blur-2xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />
+                                    
+                                    {/* Tinted Icon Box */}
+                                    <motion.div
+                                        whileHover={{ scale: 1.05, rotate: -5 }}
+                                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                        className="w-16 h-16 rounded-[20px] bg-zinc-50 border border-zinc-200/60 dark:bg-zinc-800/30 dark:border-zinc-850/50 flex items-center justify-center flex-shrink-0 shadow-sm text-zinc-400 dark:text-zinc-500 relative z-10 mb-4"
+                                    >
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                                    </motion.div>
+                                    
+                                    {/* Title & Description with premium typography */}
+                                    <div className="relative z-10">
+                                        <h3 className="text-[17px] font-extrabold text-zinc-800 dark:text-zinc-200 tracking-tight m-0 mb-1 leading-snug">
+                                            You're all caught up!
+                                        </h3>
+                                        <p className="text-[13.5px] text-zinc-500 dark:text-zinc-400 font-normal leading-relaxed m-0 max-w-sm">
+                                            There are no new announcements or updates at this time.
+                                        </p>
                                     </div>
-                                    <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">You're all caught up!</h4>
-                                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400">There are no new announcements or updates at this time.</p>
-                                </div>
+                                </motion.div>
                             </div>
                             
                             {/* Hidden safely until there are actual announcements to show */}
@@ -847,12 +870,18 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                     {/* RIGHT COLUMN (Desktop): Carousel Container — Dynamic Course Card */}
                     <div className="w-full flex-1 flex flex-col items-center pb-2 min-w-0">
 
-                        <AnimatePresence mode="wait">
+                        <AnimatePresence mode="wait" custom={slideDirection}>
                             <motion.div
                                 key={currentCourse.id}
-                                initial={{ opacity: 0, x: 40 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -40 }}
+                                custom={slideDirection}
+                                variants={{
+                                    initial: (direction: number) => ({ opacity: 0, x: direction === 1 ? 40 : -40 }),
+                                    animate: { opacity: 1, x: 0 },
+                                    exit: (direction: number) => ({ opacity: 0, x: direction === 1 ? -40 : 40 })
+                                }}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
                                 transition={{ duration: 0.25, ease: 'easeInOut' }}
                                 className="w-full max-w-4xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[24px] shadow-sm overflow-hidden flex flex-col group/card hover:shadow-md transition-shadow duration-300"
                             >
@@ -924,7 +953,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                         <svg className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
                                                     </motion.div>
                                                     <div className="flex flex-col flex-1 min-w-0">
-                                                        <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight sm:leading-none mb-1 sm:mb-1.5 transition-colors">
+                                                        <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight sm:leading-none mb-1 sm:mb-1.5 transition-colors truncate">
                                                             {currentCourse.title}
                                                         </h2>
                                                         <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-none flex items-center gap-1.5 flex-wrap">
@@ -998,13 +1027,15 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
 
                                             {/* Pagination Controls (Safely Below Badges) */}
                                             <div className="w-full pt-1">
-                                                <div className="flex items-center justify-between w-full gap-2 bg-slate-50 dark:bg-slate-800/80 p-1.5 rounded-[14px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md">
-                                                    <button onClick={handlePrevCourse} className="w-10 h-10 rounded-[10px] flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-white dark:hover:text-indigo-400 dark:hover:bg-slate-700 transition-all shadow-sm cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                                <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-zinc-900 p-1.5 rounded-[14px] border border-zinc-200/60 dark:border-zinc-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+                                                    <button onClick={handlePrevCourse} className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
                                                     </button>
-                                                    <span className="text-sm font-bold text-slate-700 dark:text-slate-200 text-center tracking-wide flex-1">{safeIndex + 1} <span className="text-slate-400 font-medium mx-0.5">/</span> {sortedCourses.length}</span>
-                                                    <button onClick={handleNextCourse} className="w-10 h-10 rounded-[10px] flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-white dark:hover:text-indigo-400 dark:hover:bg-slate-700 transition-all shadow-sm cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-600">
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                    <span className="text-[13px] font-bold text-zinc-700 dark:text-zinc-300 text-center tracking-wide flex-1">
+                                                        Page {safeIndex + 1} <span className="text-zinc-400 dark:text-zinc-500 font-medium mx-0.5">/</span> {sortedCourses.length}
+                                                    </span>
+                                                    <button onClick={handleNextCourse} className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm cursor-pointer border bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                                                     </button>
                                                 </div>
                                             </div>
@@ -1060,10 +1091,10 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
 
                                         {/* Continue Action Card */}
                                         <div 
-                                            className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 shadow-sm rounded-[24px] p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 sm:gap-4 group/action transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer"
+                                            className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 shadow-sm rounded-[24px] p-5 sm:p-6 flex flex-col lg:flex-row flex-wrap items-start lg:items-center justify-between gap-5 sm:gap-4 group/action transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 cursor-pointer"
                                             onClick={handleContinueCourse}
                                         >
-                                            <div className="flex items-center gap-4 sm:gap-5 w-full sm:w-auto">
+                                            <div className="flex items-center gap-4 sm:gap-5 w-full lg:w-auto flex-1 min-w-0">
                                                 <motion.div
                                                     whileHover={{ scale: 1.05, rotate: -5 }}
                                                     transition={{ type: "spring", stiffness: 400, damping: 15 }}
@@ -1080,7 +1111,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div className="flex flex-row items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0 justify-between sm:justify-end">
+                                            <div className="flex flex-row items-center gap-3 w-full lg:w-auto mt-2 lg:mt-0 justify-between lg:justify-end shrink-0">
                                                 <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-[14px] border border-blue-200/60 dark:border-blue-800/40 flex-1 sm:flex-none justify-center">
                                                     <div className="w-7 h-7 rounded-[10px] bg-blue-200 dark:bg-blue-800/50 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
                                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>

@@ -20,18 +20,26 @@ const GroupsSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
     const SkeletonBox: React.FC<{ width?: string; height?: string; borderRadius?: string; style?: React.CSSProperties }> = ({ 
         width = '100%', height = '16px', borderRadius = '6px', style 
     }) => (
-        <motion.div
-            initial={{ backgroundPosition: '-200% 0' }}
-            animate={{ backgroundPosition: '200% 0' }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+        <div
             style={{
                 width, height, borderRadius,
                 background: colors.skeleton,
-                backgroundImage: colors.shimmer,
-                backgroundSize: '200% 100%',
+                position: 'relative',
+                overflow: 'hidden',
                 ...style,
             }}
-        />
+        >
+            <motion.div
+                initial={{ x: '-100%' }}
+                animate={{ x: '200%' }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                style={{
+                    position: 'absolute',
+                    top: 0, bottom: 0, left: 0, right: 0,
+                    backgroundImage: colors.shimmer,
+                }}
+            />
+        </div>
     );
 
     return (
@@ -55,8 +63,8 @@ const GroupsSkeleton: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                     <motion.div
                         key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         transition={{ delay: i * 0.05 }}
                         style={{
                             background: colors.cardBg, borderRadius: '16px',

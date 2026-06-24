@@ -3,9 +3,8 @@
  * PinnedBadgeWithTooltip, MemberAvatarStack)
  * Extracted from GroupsContent.tsx during Phase 8.2
  */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { createPortal } from 'react-dom';
 import {
     groupCategoryConfig,
     getRoleInfo,
@@ -28,9 +27,8 @@ const ActionButtonWithTooltip: React.FC<{
     onClick: (e: React.MouseEvent) => void;
     bgColor: string;
     iconColor: string;
-    isDarkMode: boolean;
     children: React.ReactNode;
-}> = ({ tooltip, label, onClick, bgColor, iconColor, isDarkMode, children }) => {
+}> = ({ tooltip, label, onClick, bgColor, iconColor, children }) => {
     return (
         <Tooltip
             content={tooltip}
@@ -60,46 +58,11 @@ const ActionButtonWithTooltip: React.FC<{
 };
 
 
-// Pinned Badge with Tooltip Component
-const PinnedBadgeWithTooltip: React.FC<{
-    group: GroupWithMembers;
-    isHovered: boolean;
-    isDarkMode: boolean;
-}> = ({ group, isHovered, isDarkMode }) => {
-    if (!group.is_pinned || isHovered) return null;
-
-    return (
-        <Tooltip
-            content="Pinned to top"
-            side="top"
-            className="[--tt-surface:#ffffff] dark:[--tt-surface:#1e293b] border border-slate-200 dark:border-slate-700/50 shadow-sm"
-            style={{ '--tt-foreground': '#f59e0b' } as React.CSSProperties}
-        >
-            <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                style={{
-                    position: 'absolute', top: '10px', right: '10px',
-                    padding: '4px 8px', borderRadius: '6px',
-                    background: isDarkMode ? 'rgba(245, 158, 11, 0.2)' : 'rgba(245, 158, 11, 0.15)',
-                    display: 'flex', alignItems: 'center', gap: '4px',
-                    cursor: 'default',
-                }}
-                className="hidden lg:flex"
-            >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="2">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
-                <span style={{ fontSize: '10px', fontWeight: 600, color: '#f59e0b' }}>Pinned</span>
-            </motion.div>
-        </Tooltip>
-    );
-};
 
 
 // Member Avatar Stack Component
 const MemberAvatarStack: React.FC<{
-    members: { user_name: string; user_avatar?: string; is_online?: boolean }[];
+    members: { user_id: string; user_email?: string; role?: string; user_name: string; user_avatar?: string; is_online?: boolean }[];
     maxShow?: number;
     size?: number;
     color?: string;
@@ -197,7 +160,6 @@ const MemberAvatarStack: React.FC<{
 const GroupCard: React.FC<{
     group: GroupWithMembers;
     index: number;
-    colors: { cardBg: string; border: string; textPrimary: string; textSecondary: string; textMuted: string };
     isDarkMode: boolean;
     onClick: (group: GroupWithMembers) => void;
     onJoin: (groupId: string) => void;
@@ -206,7 +168,7 @@ const GroupCard: React.FC<{
     onInvite: (group: GroupWithMembers) => void;
     reducedMotion: boolean;
     isLoading?: boolean;
-}> = ({ group, index, colors, isDarkMode, onClick, onJoin, onLeave, onPin, onInvite, reducedMotion, isLoading }) => {
+}> = ({ group, index, isDarkMode, onClick, onJoin, onLeave, onPin, onInvite, reducedMotion, isLoading }) => {
     const [isHovered, setIsHovered] = useState(false);
     const categoryConfig = groupCategoryConfig[group.category];
 
@@ -254,7 +216,6 @@ const GroupCard: React.FC<{
                                 onClick={(e) => { e.stopPropagation(); onClick(group); }}
                                 bgColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff'}
                                 iconColor="#3b82f6"
-                                isDarkMode={isDarkMode}
                             >
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
@@ -271,7 +232,6 @@ const GroupCard: React.FC<{
                                     onClick={(e) => { e.stopPropagation(); onInvite(group); }}
                                     bgColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff'}
                                     iconColor="#3b82f6"
-                                    isDarkMode={isDarkMode}
                                 >
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -291,7 +251,6 @@ const GroupCard: React.FC<{
                                     ? (isDarkMode ? 'rgba(245, 158, 11, 0.15)' : '#fffbeb')
                                     : (isDarkMode ? 'rgba(255,255,255,0.05)' : '#f8fafc')}
                                 iconColor={group.is_pinned ? '#f59e0b' : (isDarkMode ? '#94a3b8' : '#64748b')}
-                                isDarkMode={isDarkMode}
                             >
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill={group.is_pinned ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.5">
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />

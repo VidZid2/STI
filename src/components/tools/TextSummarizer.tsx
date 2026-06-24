@@ -451,7 +451,7 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
           
           {/* Inner Header Row (Like Paraphraser) */}
           <div className="border-b border-zinc-100 dark:border-zinc-800">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 py-4 gap-4">
+              <div className="flex items-center justify-between px-4 sm:px-6 py-4 gap-2 sm:gap-4 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <div className="flex items-center justify-between w-full sm:w-auto gap-3 shrink-0 pr-0">
                       <div className="flex items-center gap-3">
                           <div className="flex items-center justify-center w-10 h-10 rounded-[14px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shrink-0">
@@ -470,15 +470,15 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
                   </div>
                   
                   {/* Controls on right for Desktop */}
-                  <div className="hidden sm:flex items-center gap-3 shrink-0">
-                      <div className="flex items-center gap-3">
+                  <div className="hidden sm:flex items-center gap-2 lg:gap-3 shrink-0">
+                      <div className="flex items-center gap-2 lg:gap-3">
                           <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider hidden xl:inline">Length</span>
                           <div className="flex bg-zinc-100/80 dark:bg-zinc-800/80 rounded-lg p-1 border border-zinc-200/50 dark:border-zinc-700/50">
                               {(['short', 'medium', 'long'] as SummaryLength[]).map((len) => (
                                   <button
                                       key={len}
                                       onClick={() => setSummaryLength(len)}
-                                      className={`relative px-3 lg:px-4 py-1.5 text-[11px] lg:text-[12px] font-bold rounded-md transition-colors ${
+                                      className={`relative px-2 sm:px-3 lg:px-4 py-1.5 text-[11px] lg:text-[12px] font-bold rounded-md transition-colors ${
                                           summaryLength === len 
                                               ? 'text-blue-600 dark:text-blue-400' 
                                               : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200'
@@ -512,22 +512,17 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
                           type="button"
                           onClick={handleSummarize}
                           disabled={!inputText.trim() || isSummarizing}
-                          className="flex items-center justify-center gap-2 rounded-[14px] bg-blue-600 hover:bg-blue-700 px-4 lg:px-5 h-[40px] lg:h-[46px] text-[14px] lg:text-[15px] font-bold text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none shadow-sm hover:shadow-md"
+                          className="flex items-center justify-center w-[40px] h-[40px] lg:w-[46px] lg:h-[46px] shrink-0 rounded-[14px] bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none shadow-sm hover:shadow-md"
+                          title="Summarize"
                       >
                           {isSummarizing ? (
-                              <>
-                                  <svg className="animate-spin w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                      <path d="M21 12a9 9 0 11-6.219-8.56"/>
-                                  </svg>
-                                  <span className="whitespace-nowrap tracking-tight hidden lg:inline">Processing...</span>
-                              </>
+                              <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                              </svg>
                           ) : (
-                              <>
-                                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                                  </svg>
-                                  <span className="whitespace-nowrap tracking-tight">Summarize</span>
-                              </>
+                              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                              </svg>
                           )}
                       </button>
                   </div>

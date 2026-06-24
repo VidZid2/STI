@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { SidebarProvider, SidebarInset } from '../../components/ui/sidebar';
 import '../../styles/dashboard.css';
 import '../../styles/intro.css';
 import '../../styles/settings-modal.css';
@@ -65,6 +66,13 @@ import {
 // ============================================================================
 
 const DashboardPage: React.FC = () => {
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        setIsScrolled(e.currentTarget.scrollTop > 10);
+    };
+
     // ========================================================================
     // HOOKS - All state management extracted to custom hooks
     // ========================================================================
@@ -122,7 +130,7 @@ const DashboardPage: React.FC = () => {
             if (course) {
                 // Save scroll position before navigating away from home
                 if (fromView === 'home' || activeView === 'home') {
-                    sessionStorage.setItem('dashboard-scroll-y', window.scrollY.toString());
+                    sessionStorage.setItem('dashboard-scroll-y', scrollContainerRef.current ? scrollContainerRef.current.scrollTop.toString() : '0');
                 }
 
                 // Save the previous view so back button returns to correct page
@@ -159,6 +167,14 @@ const DashboardPage: React.FC = () => {
             window.removeEventListener('navigate-to-tab', handleNavigateToTab as EventListener);
         };
     }, []);
+
+    // Reset scroll position of the inset content when active tab changes
+    useEffect(() => {
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = 0;
+        }
+        setIsScrolled(false);
+    }, [activeView]);
 
     // Notification System - using shared context (synced with ToolbarExpandable)
     const {
@@ -291,19 +307,8 @@ const DashboardPage: React.FC = () => {
     };
 
     return (
-        <div className="dashboard-container">
-            {/* Maintenance countdown banner */}
-            <MaintenanceBanner />
-            {/* Header */}
-            {/* Header — extracted to ./components/DashboardHeader.tsx */}
-            <DashboardHeader
-                setActiveView={setActiveView}
-                isDemoMode={isDemoMode}
-                toggleWidgetsSidebar={toggleWidgetsSidebar}
-                isQuickViewActive={widgetsSidebarActive}
-            />
-
-            {/* Sidebar — extracted to ./components/DashboardSidebar.tsx */}
+        <SidebarProvider open={sidebarActive} onOpenChange={setSidebarActive} className="h-svh overflow-hidden bg-slate-50 dark:bg-slate-950">
+            {/* Sidebar — re-implemented with shadcn primitives */}
             <DashboardSidebar
                 sidebarActive={sidebarActive}
                 setSidebarActive={setSidebarActive}
@@ -312,9 +317,28 @@ const DashboardPage: React.FC = () => {
                 selectedCourse={selectedCourse}
                 setSelectedCourse={setSelectedCourse}
                 openSettingsModal={openSettingsModal}
+                widgetsSidebarActive={widgetsSidebarActive}
             />
-            {/* Main Content */}
-            <main className={`main-content ${!sidebarActive ? 'sidebar-collapsed' : ''} max-md:!mt-0 max-md:!ml-0 max-md:!p-4`}>
+            
+            <SidebarInset className="flex flex-col h-svh md:h-[calc(100svh-16px)] overflow-hidden border-l-0 bg-white dark:bg-slate-900 md:m-2 md:ml-0 md:rounded-xl md:border md:shadow-sm">
+                {/* Maintenance countdown banner */}
+                <MaintenanceBanner />
+                
+                {/* Header — sticky to the top of inset card */}
+                <DashboardHeader
+                    setActiveView={setActiveView}
+                    isDemoMode={isDemoMode}
+                    toggleWidgetsSidebar={toggleWidgetsSidebar}
+                    isQuickViewActive={widgetsSidebarActive}
+                    isScrolled={isScrolled}
+                />
+                
+                {/* Main Content Scrollable Container */}
+                <div
+                    ref={scrollContainerRef}
+                    onScroll={handleScroll}
+                    className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-10 pb-24 minimal-scrollbar"
+                >
                 <React.Suspense fallback={activeView === 'tools' ? <div className="tools-content pb-24"><ToolsSkeleton /></div> : <DashboardSuspenseFallback />}>
                 <AnimatePresence mode="wait">
                     {activeView === 'home' && (
@@ -353,7 +377,6 @@ const DashboardPage: React.FC = () => {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
                             transition={{ duration: 0.3 }}
-                            className="h-full"
                         >
                             <ErrorBoundary name="CourseView">
                                 <CourseViewPage
@@ -366,8 +389,8 @@ const DashboardPage: React.FC = () => {
                                             // Wait for HomeContent to render and animate before scrolling
                                             setTimeout(() => {
                                                 const savedScrollY = sessionStorage.getItem('dashboard-scroll-y');
-                                                if (savedScrollY) {
-                                                    window.scrollTo({
+                                                if (savedScrollY && scrollContainerRef.current) {
+                                                    scrollContainerRef.current.scrollTo({
                                                         top: parseInt(savedScrollY),
                                                         behavior: 'smooth'
                                                     });
@@ -439,7 +462,8 @@ const DashboardPage: React.FC = () => {
                     )}
                 </AnimatePresence>
                 </React.Suspense>
-            </main>
+            </div>
+          </SidebarInset>
 
 
 
@@ -490,7 +514,7 @@ const DashboardPage: React.FC = () => {
 
 
 
-        </div >
+        </SidebarProvider>
     );
 };
 

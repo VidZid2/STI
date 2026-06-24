@@ -1098,7 +1098,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
 
                         {/* Desktop/Tablet: Filter Panels above sidebar */}
-                        <div className="hidden sm:flex flex-col lg:flex-row items-stretch gap-4 w-full max-w-7xl mx-auto">
+                        <div className="hidden sm:flex flex-col lg:flex-row items-stretch gap-4 w-full">
                             {/* Academic Semester Panel */}
                             <div className="w-full lg:w-[320px] xl:w-[380px] relative p-4 rounded-[20px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex-shrink-0">
                                 <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
@@ -1185,7 +1185,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             const paginatedModules = filteredModules.slice(startIndex, startIndex + itemsPerPage);
                             
                             return (
-                                <div className="flex flex-col lg:flex-row items-stretch lg:items-stretch gap-4 w-full max-w-7xl mx-auto">
+                                <div className="flex flex-col lg:flex-row items-stretch lg:items-stretch gap-4 w-full">
                                     {/* Sidebar Navigation */}
                                     <div className="w-full lg:w-[320px] xl:w-[380px] shrink-0 flex flex-col gap-3 p-3.5 sm:p-4 rounded-[20px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm relative">
                                         {/* Semester Filter (mobile only) */}
@@ -2006,7 +2006,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col bg-slate-50">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col">
             {/* Back Navigation — SaaS breadcrumb style, above the card */}
             <motion.button
                 initial={{ opacity: 0, x: -10 }}
@@ -2015,7 +2015,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 whileHover={{ x: -3 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={onBack}
-                className="mx-6 mt-4 mb-2 flex items-center gap-2 text-sm font-medium text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer w-fit group/back"
+                className="mt-4 mb-2 flex items-center gap-2 text-sm font-medium text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer w-fit group/back"
             >
                 <svg className="w-4 h-4 transition-transform duration-200 group-hover/back:-translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                     <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -2029,7 +2029,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 animate={{ opacity: 1, y: 0 }}
                 whileTap={{ scale: 0.99 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-                className="mx-2 sm:mx-6 mb-4 sm:mb-6 relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] p-3.5 sm:p-6 lg:p-8 lg:px-10 flex flex-col gap-3 sm:gap-5 group transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 cursor-default"
+                className="mb-4 sm:mb-6 relative overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] p-3.5 sm:p-6 lg:p-8 lg:px-10 flex flex-col gap-3 sm:gap-5 group transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 cursor-default"
             >
                 {/* Ambient Background Glow */}
                 <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[80px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
@@ -2270,7 +2270,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             </AnimatePresence>
 
             {/* Tabs - Different for Teacher Mode */}
-            <div className="mx-2 sm:mx-6 pt-2 pb-4">
+            <div className="pt-2 pb-4">
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -2456,7 +2456,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden py-6 px-2 sm:px-6">
+            <div className="flex-1 py-4 sm:py-6">
                 <AnimatePresence mode="wait">
                     {isTeacherMode ? (
                         // Teacher Mode Content — extracted to ./components/TeacherModeContent.tsx

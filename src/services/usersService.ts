@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Users Service - Manages user accounts with Supabase integration
  */
 
@@ -19,6 +19,8 @@ export interface UserAccount {
     year_level?: string;
     section?: string;
     profile_image?: string;
+    level?: number;
+    xp?: number;
     is_active: boolean;
     is_online?: boolean;
     last_login?: string;

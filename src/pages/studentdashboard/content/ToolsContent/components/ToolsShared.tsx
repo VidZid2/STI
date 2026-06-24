@@ -19,7 +19,7 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 25 }}
-            className="mb-0 flex w-full gap-2 overflow-x-auto rounded-2xl border border-zinc-200/80 bg-zinc-50/50 p-2 shadow-[inset_0_1px_2px_rgba(0,0,0,0.01)] backdrop-blur-md [scrollbar-width:none] dark:border-zinc-800/80 dark:bg-zinc-950/30"
+            className="mb-0 flex w-full overflow-x-auto rounded-[12px] border border-slate-200/80 bg-slate-50 p-1 dark:border-slate-600/50 dark:bg-slate-700/50 [scrollbar-width:none]"
             role="group"
             aria-label="Tool categories"
         >
@@ -32,12 +32,12 @@ const CategoryTabs: React.FC<CategoryTabsProps> = ({ categories, activeCategory,
                         key={category.id}
                         onClick={() => onCategoryChange(category.id)}
                         aria-pressed={isActive}
-                        className={`relative flex shrink-0 sm:flex-1 items-center justify-center whitespace-nowrap gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:gap-2.5 sm:px-6 sm:py-3 sm:text-base ${isActive ? 'text-white' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700/30'}`}
+                        className={`relative flex shrink-0 sm:flex-1 items-center justify-center whitespace-nowrap gap-1.5 sm:gap-2 rounded-[10px] px-3 py-2 text-xs sm:text-sm font-bold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${isActive ? 'text-blue-700 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}
                     >
                         {isActive && (
                             <motion.div
                                 layoutId="activeCategoryTab"
-                                className="absolute inset-0 bg-blue-600 dark:bg-blue-500 rounded-xl shadow-md"
+                                className="absolute inset-0 bg-white dark:bg-slate-600 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-slate-500/50 z-0"
                                 initial={false}
                                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                             />
@@ -67,9 +67,6 @@ const ToolItemSkeleton: React.FC<ToolItemSkeletonProps> = ({ delay = 0 }) => (
         transition={{ delay, type: 'spring', stiffness: 300 }}
         className="group relative flex h-full min-h-[280px] w-full flex-col items-start overflow-hidden rounded-[20px] border border-zinc-200/70 bg-white p-5 text-left shadow-sm sm:min-h-[300px] sm:p-6 lg:p-7 dark:border-zinc-800/70 dark:bg-zinc-900"
     >
-        {/* Background Ambient Glow Placeholder */}
-        <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full blur-3xl pointer-events-none bg-zinc-100/50 dark:bg-zinc-800/20" />
-
         <div className="relative z-10 flex w-full flex-1 flex-col">
             <div className="flex w-full items-start justify-between gap-4">
                 {/* Icon skeleton */}

@@ -1,5 +1,6 @@
 /* Modern Dashboard CSS - Blue & Gold Theme */
 :root {
+    --sidebar-width: 260px;
     /* Foundation Tokens (Light Mode) */
     --bg-primary: #f8fafc;
     --bg-secondary: #ffffff;
@@ -207,7 +208,7 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: var(--bg-color);
+    background: var(--white);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: 'kern' 1;
@@ -244,7 +245,7 @@ body.modal-open {
 }
 
 .header {
-    background: rgba(255, 255, 255, 0.98);
+    background: var(--white);
     /* Reduced backdrop-filter blur for better performance */
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -258,9 +259,35 @@ body.modal-open {
     left: 0;
     right: 0;
     z-index: 1000;
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.header.inset-header {
+    position: sticky !important;
+    top: 0 !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    z-index: 40 !important;
+    padding: 0 1.5rem !important; /* Reset layout shift padding gap on left */
+    border-bottom: 1px solid transparent !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.header.inset-header::after {
+    display: none !important; /* Hide old offset border line */
+}
+
+.header.inset-header.scrolled {
+    border-bottom: 1px solid var(--border-color) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+}
+
+body.dark-mode .header.inset-header.scrolled {
+    border-bottom-color: #334155 !important;
+}
+
 
 .header.header-hidden {
     transform: translateY(-100%);
@@ -270,6 +297,29 @@ body.modal-open {
 body.dark-mode .header.header-hidden {
     transform: translateY(-100%);
     box-shadow: none;
+}
+
+@media (min-width: 1024px) {
+    .header.header-hidden {
+        transform: translateY(0) !important;
+    }
+    body.dark-mode .header.header-hidden {
+        transform: translateY(0) !important;
+    }
+    .header {
+        padding-left: calc(var(--sidebar-width) + 2rem) !important;
+        border-bottom: none !important;
+    }
+    .header::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: calc(var(--sidebar-width) + 33px) !important;
+        right: 0;
+        height: 1px;
+        background: var(--border-color);
+        pointer-events: none;
+    }
 }
 
 @media (max-width: 640px) {
@@ -764,10 +814,9 @@ body.dark-mode .header.header-hidden {
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-bottom: none;
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
@@ -783,10 +832,10 @@ body.dark-mode .header.header-hidden {
 /* Wrapper — holds sidebar + toggle button, allows button to protrude */
 .sidebar-wrapper {
     position: fixed;
-    top: calc(70px + 12px);
-    left: 12px;
-    width: 220px;
-    height: calc(100vh - 70px - 12px);
+    top: 70px;
+    left: 0;
+    width: 260px;
+    height: calc(100vh - 70px);
     z-index: 100;
     pointer-events: none; /* let clicks pass through the wrapper gap */
     transition: width 0.35s ease-in-out;
@@ -943,8 +992,8 @@ body.dark-mode .header.header-hidden {
     flex-shrink: 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: var(--text-gray);
-    background: transparent;
-    border: 1px solid transparent;
+    background: #f8fafc; /* Soft slate-50 tinted badge */
+    border: 1px solid #f1f5f9; /* Subtle slate-100 border */
     border-radius: 10px;
 }
 
@@ -1117,10 +1166,12 @@ body.dark-mode .sidebar-wrapper.collapsed .nav-item.active .nav-icon {
 .main-content {
     margin-top: 70px;
     margin-right: 0;
-    margin-left: 228px; /* sidebar (220) + minimal gap (8) */
+    margin-left: 260px; /* sidebar width */
     padding: 2.5rem 3rem;
     padding-bottom: 5rem;
     min-height: calc(100vh - 70px);
+    background: var(--bg-color); /* The light gray background */
+    box-shadow: inset 0 4px 15px rgba(0,0,0,0.015);
     transition: margin-left 0.35s ease-in-out;
     will-change: margin-left;
     position: relative;
@@ -1128,11 +1179,72 @@ body.dark-mode .sidebar-wrapper.collapsed .nav-item.active .nav-icon {
 
 /* When sidebar is collapsed */
 .main-content.sidebar-collapsed {
-    margin-left: 96px; /* collapsed sidebar (72) + left margin (12) + gap (12) */
+    margin-left: 72px; /* collapsed sidebar (72) */
 }
 
 .main-content.sidebar-open {
-    margin-left: 228px; /* sidebar (220) + minimal gap (8) */
+    margin-left: 260px; /* sidebar */
+}
+
+@media (min-width: 1024px) {
+    .sidebar-collapse-toggle {
+        display: none !important;
+    }
+    .sidebar-wrapper {
+        width: var(--sidebar-width) !important;
+        top: 0 !important;
+        height: 100vh !important;
+        z-index: 1050 !important;
+    }
+    .sidebar {
+        width: 100% !important;
+    }
+    
+    /* Fixed corner carve */
+    .sidebar-wrapper::after {
+        content: "";
+        position: absolute;
+        top: 69px;
+        right: -33px;
+        width: 33px;
+        height: 33px;
+        background: var(--white);
+        border-bottom-right-radius: 33px;
+        border-bottom: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+        pointer-events: none;
+        box-sizing: border-box;
+    }
+
+    .sidebar-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 102px;
+        bottom: 0;
+        right: 0;
+        width: 1px;
+        background: var(--border-color);
+        pointer-events: none;
+    }
+
+    .sidebar-wrapper.collapsed {
+        width: var(--sidebar-width) !important;
+    }
+    .main-content, .main-content.sidebar-collapsed, .main-content.sidebar-open {
+        margin-left: var(--sidebar-width) !important;
+    }
+    .sidebar-wrapper.collapsed .nav-content {
+        max-width: 200px;
+        opacity: 1;
+        margin-left: 0;
+    }
+    .sidebar-wrapper.collapsed .nav-item {
+        padding: 0.5rem 0.625rem;
+        gap: 0.75rem;
+    }
+    .sidebar-wrapper.collapsed .nav-icon {
+        margin-left: 0;
+    }
 }
 
 .main-content.widgets-open {
@@ -1144,6 +1256,8 @@ body.dark-mode .sidebar-wrapper.collapsed .nav-item.active .nav-icon {
 body.dark-mode .main-content {
     background: #0f172a;
 }
+
+
 
 /* ===== WELCOME BANNER - SIMPLIFIED ===== */
 .welcome-banner {
@@ -5095,7 +5209,7 @@ body.dark-mode {
 
 /* Header Dark Mode */
 body.dark-mode .header {
-    background: rgba(30, 41, 59, 0.98);
+    background: var(--white);
     border-bottom-color: #334155;
 }
 
@@ -5111,7 +5225,7 @@ body.dark-mode .logo-text {
 
 /* Sidebar Dark Mode */
 body.dark-mode .sidebar.persistent {
-    background: #0f172a;
+    background: var(--white);
     border-color: rgba(255, 255, 255, 0.08);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
@@ -5143,14 +5257,15 @@ body.dark-mode .nav-item.active {
 }
 
 body.dark-mode .nav-icon {
-    background: none;
-    border-color: transparent;
-    color: #64748b;
+    background: rgba(30, 41, 59, 0.5); /* slate-800/50 */
+    border: 1px solid rgba(51, 65, 85, 0.6); /* slate-700/60 */
+    color: #94a3b8; /* slate-400 */
 }
 
 body.dark-mode .nav-item:hover .nav-icon {
     color: #e2e8f0;
-    background: none;
+    background: rgba(59, 130, 246, 0.15); /* Soft blue tint on hover */
+    border-color: rgba(59, 130, 246, 0.2);
     box-shadow: none;
 }
 
@@ -6027,7 +6142,7 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
    ========================================================================== */
 @media (max-width: 768px) {
     /* Main wrapper becomes the flat bottom navigation bar */
-    .sidebar-wrapper.mobile-dock {
+    .mobile-dock {
         position: fixed;
         top: auto !important;
         bottom: 0;
@@ -6051,16 +6166,28 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
         overflow: hidden !important; 
         scrollbar-width: none !important; /* Firefox */
         -ms-overflow-style: none !important; /* IE and Edge */
+        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    opacity 0.4s ease, border-radius 0.4s ease !important;
+        will-change: transform, opacity;
+    }
+
+    .mobile-dock.hidden-dock {
+        transform: translateY(120%) scale(0.95) rotateX(10deg) !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        border-radius: 20px !important;
+        transition: transform 0.5s cubic-bezier(0.8, -0.2, 0.2, 1.2), 
+                    opacity 0.3s ease, border-radius 0.3s ease !important;
     }
 
     /* Dark Mode Support for Bottom Nav */
-    body.dark-mode .sidebar-wrapper.mobile-dock {
+    body.dark-mode .mobile-dock {
         background: rgba(15, 23, 42, 0.95); /* Slate 900 glass */
         border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
         box-shadow: 0 -8px 24px -4px rgba(0, 0, 0, 0.4);
     }
 
-    .sidebar-wrapper.mobile-dock .sidebar {
+    .mobile-dock [data-sidebar="sidebar"] {
         width: 100% !important;
         height: 100% !important;
         max-height: 100% !important;
@@ -6081,13 +6208,13 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
     }
 
     /* Hide Desktop specific UI */
-    .sidebar-wrapper.mobile-dock .sidebar-collapse-toggle,
-    .sidebar-wrapper.mobile-dock .sidebar-bottom {
+    .mobile-dock .sidebar-collapse-toggle,
+    .mobile-dock .sidebar-bottom {
         display: none !important;
     }
 
     /* Nav container evenly distributes items */
-    .sidebar-wrapper.mobile-dock .sidebar-nav {
+    .mobile-dock .sidebar-nav {
         display: flex !important;
         flex-direction: row !important;
         width: 100% !important;
@@ -6108,7 +6235,7 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
     }
     
     /* Ensure all wrappers (divs and buttons) stretch equally */
-    .sidebar-wrapper.mobile-dock .sidebar-nav > * {
+    .mobile-dock .sidebar-nav > * {
         flex: 1 1 0 !important;
         height: 100% !important;
         min-width: 0 !important;
@@ -6118,22 +6245,22 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
     }
     
     /* Cross-browser Webkit scrollbar hiding for dock elements */
-    .sidebar-wrapper.mobile-dock::-webkit-scrollbar,
-    .sidebar-wrapper.mobile-dock .sidebar::-webkit-scrollbar,
-    .sidebar-wrapper.mobile-dock .sidebar-nav::-webkit-scrollbar {
+    .mobile-dock::-webkit-scrollbar,
+    .mobile-dock [data-sidebar="sidebar"]::-webkit-scrollbar,
+    .mobile-dock .sidebar-nav::-webkit-scrollbar {
         display: none !important;
         width: 0 !important;
         height: 0 !important;
     }
 
     /* Each nav item takes full width of its wrapper */
-    .sidebar-wrapper.mobile-dock .nav-item {
+    .mobile-dock .nav-item {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 4px !important; 
-        padding: 6px 0 !important;
+        gap: 2px !important; 
+        padding: 4px 0 !important;
         margin: 0 !important;
         width: 100% !important;
         height: 100% !important;
@@ -6144,15 +6271,15 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
     }
 
     /* Tactile press feedback */
-    .sidebar-wrapper.mobile-dock .nav-item:active {
+    .mobile-dock .nav-item:active {
         transform: scale(0.92) !important;
     }
 
-    .sidebar-wrapper.mobile-dock .nav-item.active {
+    .mobile-dock .nav-item.active {
         background: transparent !important; /* Force transparent background, use icon color for active state */
     }
 
-    .sidebar-wrapper.mobile-dock .nav-icon {
+    .mobile-dock .nav-icon {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -6165,20 +6292,20 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
         transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     }
     
-    .sidebar-wrapper.mobile-dock .nav-item.active .nav-icon {
+    .mobile-dock .nav-item.active .nav-icon {
         background: transparent !important;
         color: #3b82f6 !important;
         transform: scale(1.1) !important;
     }
 
-    .sidebar-wrapper.mobile-dock .nav-icon svg {
+    .mobile-dock .nav-icon svg {
         width: 22px;
         height: 22px;
         stroke-width: 2;
     }
 
     /* Bring back the text label but make it tiny */
-    .sidebar-wrapper.mobile-dock .nav-content {
+    .mobile-dock .nav-content {
         max-width: 100px !important;
         opacity: 1 !important;
         margin: 0 !important;
@@ -6187,8 +6314,9 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
         align-items: center;
     }
 
-    .sidebar-wrapper.mobile-dock .nav-text {
-        font-size: 10px !important;
+    .mobile-dock .nav-text {
+        font-size: 9px !important;
+        letter-spacing: -0.03em !important;
         font-weight: 600 !important;
         margin-bottom: 0 !important;
         color: var(--text-gray);
@@ -6199,11 +6327,12 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
         display: block !important;
     }
     
-    .sidebar-wrapper.mobile-dock .nav-item.active .nav-text {
+    .mobile-dock .nav-item.active .nav-text {
         color: #3b82f6 !important;
     }
 
-    .sidebar-wrapper.mobile-dock .nav-description {
+    .mobile-dock .nav-chevron,
+    .mobile-dock .nav-description {
         display: none !important;
     }
     
@@ -6214,13 +6343,13 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
 
     /* Ultra-narrow compact mobile screen optimization (e.g., iPhone SE/mini) */
     @media (max-width: 380px) {
-        .sidebar-wrapper.mobile-dock .nav-item {
+        .mobile-dock .nav-item {
             min-width: 48px !important;
             padding: 6px 8px !important;
             gap: 0 !important;
             justify-content: center !important;
         }
-        .sidebar-wrapper.mobile-dock .nav-content {
+        .mobile-dock .nav-content {
             display: none !important;
         }
     }

@@ -26,8 +26,9 @@ export const CoursesNavItem: React.FC<CoursesNavItemProps> = React.memo(({ onSid
     const coursesWithProgress = useMemo(() => getSidebarCoursesWithProgress(), []);
 
     const handleMouseEnter = useCallback(() => {
-        // Don't open dropdown when sidebar is collapsed
-        if (!isExpanded) return;
+        const isMobile = window.innerWidth <= 768;
+        // Don't open dropdown when sidebar is collapsed or on mobile devices
+        if (!isExpanded || isMobile) return;
         // Clear any pending close
         if (closeTimeoutRef.current) {
             clearTimeout(closeTimeoutRef.current);

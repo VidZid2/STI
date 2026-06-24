@@ -327,11 +327,11 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
             {/* Inner Content Wrapper (Blurred if locked) */}
             <div className={`flex w-full flex-col lg:flex-row items-stretch gap-6 lg:gap-8 ${currentStatus === 'locked' ? 'blur-[8px] opacity-40 pointer-events-none select-none transition-all duration-500' : ''}`}>
 
-            {/* Left Section: Module details & Main Action Button (~40% width on desktop) */}
-            <div className="flex flex-col lg:w-[40%] shrink-0 justify-start gap-6 border-b lg:border-b-0 lg:border-r border-zinc-150 dark:border-zinc-800/60 pb-6 lg:pb-0 lg:pr-6">
-                <div className="flex flex-col gap-4">
+            {/* Left Section: Module details & Main Action Button (~45% width on desktop) */}
+            <div className="flex flex-col lg:w-[45%] shrink-0 justify-start gap-8 border-b lg:border-b-0 lg:border-r border-zinc-150 dark:border-zinc-800/60 pb-6 lg:pb-0 lg:pr-6 xl:pr-8">
+                <div className="flex flex-col gap-6 sm:gap-8">
                     <div className="text-left">
-                        <h3 className="text-[18px] sm:text-[20px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug">
+                        <h3 className="text-[18px] sm:text-[22px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-normal">
                             {module.title}
                         </h3>
                     </div>

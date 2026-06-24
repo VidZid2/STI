@@ -24,6 +24,8 @@
     "@react-bits": "https://reactbits.dev/r/{name}.json",
     "@skiper-ui": "https://skiper-ui.com/registry/{name}.json",
     "@animate-ui": "https://animate-ui.com/r/{name}.json",
-    "@kokonutui": "https://kokonutui.com/r/{name}.json"
+    "@kokonutui": "https://kokonutui.com/r/{name}.json",
+    "@efferd": "https://efferd.com/r/{style}/{name}.json",
+    "@iconiq": "https://iconiqui.com/r/{name}.json"
   }
 }

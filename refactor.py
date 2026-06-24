@@ -1,84 +1,69 @@
-import os
 import re
 
-def refactor_student_card():
-    file_path = r"c:\Users\JOSIAH DE JESUS\Documents\eLMS Website STI - CASE STUDY\elms-react\src\pages\studentdashboard\content\CourseViewPage\components\StudentCard.tsx"
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+with open('src/pages/studentdashboard/content/GroupsContent/modals/InviteModal.tsx', 'r', encoding='utf-8') as f:
+    content = f.read()
 
-    content = re.sub(r'whileHover=\{\{ y: -3, scale: 1\.01 \}\}', '', content)
-    content = re.sub(r'className="group relative flex flex-col', 'className="group relative flex flex-col transition-all duration-200 hover:-translate-y-1 hover:scale-[1.01]', content)
+# Define the start and end of the block we want to replace
+start_marker = r"{/\*\s*Shareable Link Section\s*\*/}"
+end_marker = r"                                </AnimatePresence>\s*</div>\s*</motion\.div>"
 
-    content = re.sub(r'whileHover=\{\{ scale: 1\.1 \}\}\s*whileTap=\{\{ scale: 0\.95 \}\}', '', content)
-    content = re.sub(r'className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 text-blue-600', 'className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 text-blue-600 transition-transform duration-200 hover:scale-110 active:scale-95', content)
-    content = re.sub(r'className="w-8 h-8 rounded-lg flex items-center justify-center bg-zinc-100 text-zinc-600', 'className="w-8 h-8 rounded-lg flex items-center justify-center bg-zinc-100 text-zinc-600 transition-transform duration-200 hover:scale-110 active:scale-95', content)
+# We can find these by splitting
+parts = re.split(start_marker, content, maxsplit=1)
+if len(parts) != 2:
+    print('Failed to find start marker')
+    exit(1)
 
-    content = re.sub(r'whileHover=\{\{ scale: 1\.05 \}\}\s*transition=\{\{ type: \'spring\', stiffness: 400, damping: 15 \}\}', '', content)
-    content = re.sub(r'className="relative mb-3"', 'className="relative mb-3 transition-transform duration-200 hover:scale-105"', content)
+pre_content = parts[0]
+rest_content = parts[1]
 
-    content = re.sub(r'whileHover=\{\{ scale: 1\.05 \}\}', '', content)
-    content = re.sub(r'className="text-xs font-bold text-blue-600 dark:text-blue-400 group-hover:underline"', 'className="text-xs font-bold text-blue-600 dark:text-blue-400 group-hover:underline transition-transform duration-200 hover:scale-105"', content)
+parts2 = re.split(end_marker, rest_content, maxsplit=1)
+if len(parts2) != 2:
+    print('Failed to find end marker')
+    exit(1)
 
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-    print('Done StudentCard')
+middle_content = parts2[0]
+post_content = end_marker + parts2[1]
 
-def refactor_task_card():
-    file_path = r"c:\Users\JOSIAH DE JESUS\Documents\eLMS Website STI - CASE STUDY\elms-react\src\pages\studentdashboard\content\CourseViewPage\components\TaskCard.tsx"
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+# Now we construct the new middle content
+header_footer_code = '''
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <div className={lex items-center gap-2 text-[11.5px] font-bold tracking-wider uppercase }>
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                                                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                                                        </svg>
+                                                        Shareable Invite Link
+                                                    </div>
+                                                    <span className={px-2 py-0.5 rounded-[6px] text-[10px] font-bold uppercase tracking-wider }>
+                                                        Optional
+                                                    </span>
+                                                </div>
+'''
 
-    # Dropdown items
-    content = re.sub(r'whileHover=\{\{ scale: 1\.02 \}\}\n\s*whileTap=\{\{ scale: 0\.98 \}\}', '', content)
-    content = re.sub(r'whileHover=\{\{ scale: 1\.02 \}\}\s*whileTap=\{\{ scale: 0\.98 \}\}', '', content)
-    content = re.sub(r'className="w-full text-left px-3 py-2 text-[13px] font-bold text-slate-700 dark:text-slate-300', 'className="w-full text-left px-3 py-2 text-[13px] font-bold text-slate-700 dark:text-slate-300 transition-transform duration-200 hover:scale-[1.02] active:scale-98', content)
-    
-    # Task Card Container hover
-    content = re.sub(r'whileHover=\{!isLocked \? \{ y: -2, scale: 1\.01, transition: \{ duration: 0\.12, ease: \'easeOut\' \} \} : undefined\}', '', content)
-    content = re.sub(r'whileTap=\{!isLocked \? \{ scale: 0\.99, transition: \{ duration: 0\.08 \} \} : undefined\}', '', content)
-    content = re.sub(r'className={`relative flex flex-col p-4', 'className={`relative flex flex-col p-4 transition-all duration-150 ${!isLocked ? \'hover:-translate-y-0.5 hover:scale-[1.01] active:scale-[0.99]\' : \'\'}', content)
+footer_code = '''
+                                                <p className={mt-3 text-[12.5px] leading-relaxed }>
+                                                    Share this link with classmates to let them join your group.
+                                                </p>
+'''
 
-    # Info Button
-    content = re.sub(r'whileHover=\{!isLocked \? \{ scale: 1\.05, rotate: -5 \} : \{\}\}', '', content)
-    content = re.sub(r'className={`w-10 h-10', 'className={`w-10 h-10 transition-transform duration-200 ${!isLocked ? \'hover:scale-105 hover:-rotate-3\' : \'\'}', content)
+# Extract the generate button block
+gen_btn_match = re.search(r'(<motion\.button\s*key="generate".*?</motion\.button>)', middle_content, re.DOTALL)
+if gen_btn_match:
+    generate_btn_code = gen_btn_match.group(1).replace('key="generate"', '').replace('layout\\n', '').replace('''initial={{ opacity: 0, rotateX: 20, scale: 0.95, y: 8, filter: 'blur(4px)' }}\\n                                                animate={{ opacity: 1, rotateX: 0, scale: 1, y: 0, filter: 'blur(0px)' }}\\n                                                exit={{ opacity: 0, rotateX: -20, scale: 0.95, y: -8, filter: 'blur(4px)' }}\\n                                                transition={{ type: 'spring', stiffness: 300, damping: 25 }}''', '')
+else:
+    generate_btn_code = 'GENERATE BUTTON NOT FOUND'
 
-    # Main Action Button
-    content = re.sub(r'whileHover=\{!isLocked \? \{ scale: 1\.08, y: -1 \} : \{\}\}', '', content)
-    content = re.sub(r'whileTap=\{!isLocked \? \{ scale: 0\.95 \} : \{\}\}', '', content)
-    content = re.sub(r'className={`w-12 h-12', 'className={`w-12 h-12 transition-transform duration-200 ${!isLocked ? \'hover:scale-110 hover:-translate-y-0.5 active:scale-95\' : \'\'}', content)
+# Extract the QR block
+qr_block_match = re.search(r'(<motion\.div\s*key="link".*?</motion\.div>\\s*</motion\.div>)', middle_content, re.DOTALL)
+if qr_block_match:
+    qr_block_code = qr_block_match.group(1).replace('key="link"', '').replace('layout\\n', '').replace('''initial={{ opacity: 0, rotateX: 20, scale: 0.95, y: 8, filter: 'blur(4px)' }}\\n                                                animate={{ opacity: 1, rotateX: 0, scale: 1, y: 0, filter: 'blur(0px)' }}\\n                                                exit={{ opacity: 0, rotateX: -20, scale: 0.95, y: -8, filter: 'blur(4px)' }}\\n                                                transition={{ type: 'spring', stiffness: 300, damping: 25 }}''', '')
+else:
+    # try slightly different regex
+    qr_block_match = re.search(r'(<motion\.div\\s+key="link".*?</div>\\s*</motion\.div>)', middle_content, re.DOTALL)
+    if qr_block_match:
+        qr_block_code = qr_block_match.group(1).replace('key="link"', '').replace('layout\\n', '')
+    else:
+        # manual extraction for qr block since regex is fragile on nested tags
+        pass
 
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-    print('Done TaskCard')
-
-def refactor_module_card():
-    file_path = r"c:\Users\JOSIAH DE JESUS\Documents\eLMS Website STI - CASE STUDY\elms-react\src\pages\studentdashboard\content\CourseViewPage\components\ModuleCard.tsx"
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-
-    # Dropdown items
-    content = re.sub(r'whileHover=\{\{ scale: 1\.02 \}\}\n\s*whileTap=\{\{ scale: 0\.98 \}\}', '', content)
-    
-    # Module Card Container Hover
-    content = re.sub(r'whileHover=\{currentStatus !== \'locked\' \? \{ y: -2, scale: 1\.01, transition: \{ duration: 0\.12, ease: \'easeOut\' \} \} : undefined\}', '', content)
-    content = re.sub(r'whileTap=\{currentStatus !== \'locked\' \? \{ scale: 0\.99, transition: \{ duration: 0\.08 \} \} : undefined\}', '', content)
-    content = re.sub(r'className={`relative flex flex-col p-4 rounded-2xl', 'className={`relative flex flex-col p-4 rounded-2xl transition-all duration-150 ${currentStatus !== \'locked\' ? \'hover:-translate-y-0.5 hover:scale-[1.01] active:scale-[0.99]\' : \'\'}', content)
-
-    # Download Button
-    content = re.sub(r'whileHover=\{currentStatus !== \'locked\' \? \{ scale: 1\.1 \} : \{\}\}', '', content)
-    content = re.sub(r'whileTap=\{currentStatus !== \'locked\' \? \{ scale: 0\.9 \} : \{\}\}', '', content)
-    content = re.sub(r'className="p-1\.5 rounded-md', 'className={`p-1.5 rounded-md transition-transform duration-200 ${currentStatus !== \'locked\' ? \'hover:scale-110 active:scale-90\' : \'\'}`', content)
-
-    # Main Play Button
-    content = re.sub(r'whileHover=\{currentStatus !== \'locked\' && !isDownloading \? \{ scale: 1\.08, y: -1 \} : \{\}\}', '', content)
-    content = re.sub(r'whileTap=\{currentStatus !== \'locked\' && !isDownloading \? \{ scale: 0\.95 \} : \{\}\}', '', content)
-    content = re.sub(r'className={`w-12 h-12', 'className={`w-12 h-12 transition-transform duration-200 ${currentStatus !== \'locked\' && !isDownloading ? \'hover:scale-110 hover:-translate-y-0.5 active:scale-95\' : \'\'}', content)
-
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-    print('Done ModuleCard')
-
-if __name__ == '__main__':
-    refactor_student_card()
-    refactor_task_card()
-    refactor_module_card()
+# Actually, rather than writing a regex script that might fail on nested JSX, I will use a simple multi_replace_file_content!

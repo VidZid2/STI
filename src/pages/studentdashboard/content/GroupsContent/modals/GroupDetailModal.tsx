@@ -29,11 +29,10 @@ interface GroupDetailModalProps {
     onClose: () => void;
     onJoin: (groupId: string) => void;
     onLeave: (groupId: string) => void;
-    onOpenChat: (groupId: string) => void;
 }
 
 const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
-    group, isOpen, onClose, onJoin, onLeave, onOpenChat
+    group, isOpen, onClose, onJoin, onLeave
 }) => {
     const [isDarkMode, setIsDarkMode] = useState(() => document.body.classList.contains('dark-mode') || document.documentElement.classList.contains("dark"));
     
@@ -50,7 +49,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
 
     // Pagination for Teacher's Resources
     const [currentResourcePage, setCurrentResourcePage] = useState(0);
-    const [resourcePageDirection, setResourcePageDirection] = useState(1);
+
     const [downloadProgress, setDownloadProgress] = useState<Record<number, number>>({});
     const [completedResources, setCompletedResources] = useState<number[]>([]);
 

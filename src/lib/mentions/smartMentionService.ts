@@ -4,8 +4,13 @@
  * Suggests relevant users based on message content
  */
 
-import type { MentionUser } from '../../pages/studentdashboard/GroupChatPage/components/MentionAutocomplete';
-
+export interface MentionUser {
+    id: string;
+    name: string;
+    avatar?: string;
+    role?: string;
+    isOnline?: boolean;
+}
 // Subject categories with keywords
 export const SUBJECT_KEYWORDS: Record<string, string[]> = {
     math: [

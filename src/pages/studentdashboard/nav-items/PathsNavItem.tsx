@@ -11,17 +11,19 @@ interface PathsNavItemProps {
     onViewPaths: () => void;
     isActive?: boolean;
     isExpanded?: boolean;
+    onMobilePathsTap?: () => void;
 }
 
-export const PathsNavItem: React.FC<PathsNavItemProps> = React.memo(({ onSidebarClose, onViewPaths, isActive, isExpanded = true }) => {
+export const PathsNavItem: React.FC<PathsNavItemProps> = React.memo(({ onSidebarClose, onViewPaths, isActive, isExpanded = true, onMobilePathsTap }) => {
     const [isOpen, setIsOpen] = useState(false);
     const anchorRef = useRef<HTMLDivElement>(null);
     const closeTimeoutRef = useRef<number | null>(null);
     const openTimeoutRef = useRef<number | null>(null);
 
     const handleMouseEnter = useCallback(() => {
-        // Don't open dropdown when sidebar is collapsed
-        if (!isExpanded) return;
+        const isMobile = window.innerWidth <= 768;
+        // Don't open dropdown when sidebar is collapsed or on mobile devices
+        if (!isExpanded || isMobile) return;
         // Clear any pending close
         if (closeTimeoutRef.current) {
             clearTimeout(closeTimeoutRef.current);
@@ -90,7 +92,11 @@ export const PathsNavItem: React.FC<PathsNavItemProps> = React.memo(({ onSidebar
                 className={`nav-item ${isActive ? 'active' : ''}`}
                 onClick={(e) => {
                     e.preventDefault();
-                    handleViewAllClick();
+                    if (onMobilePathsTap && window.innerWidth <= 768) {
+                        onMobilePathsTap();
+                    } else {
+                        handleViewAllClick();
+                    }
                 }}
                 aria-haspopup="menu"
                 aria-expanded={isOpen}

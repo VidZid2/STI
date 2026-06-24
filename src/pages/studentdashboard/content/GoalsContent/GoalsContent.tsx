@@ -484,7 +484,7 @@ const GoalsContent: React.FC = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-[72px] md:mt-0 mb-7"
+                className="mt-4 md:mt-0 mb-7"
             >
                 <motion.div 
                     initial={{ opacity: 0, y: 12 }}

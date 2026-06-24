@@ -7,7 +7,6 @@ import { SmoothCursor } from '@/components/ui/smooth-cursor'
 import StudentLogin from './pages/studentdashboard/StudentLogin'
 import DashboardPage from './pages/studentdashboard'
 import JoinGroupPage from './pages/studentdashboard/JoinGroupPage'
-import GroupChatPage from './pages/studentdashboard/GroupChatPage'
 import FocusModePage from './pages/studentdashboard/FocusModePage'
 import TeacherDashboard from './pages/teacherdashboard'
 import AdminDashboard from './pages/admindashboard'
@@ -120,7 +119,6 @@ function AppContent() {
         <Route path="/admin-dashboard" element={<AdminRouteGuard><AdminDashboard /></AdminRouteGuard>} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/join/:inviteCode" element={<MaintenanceGuard><JoinGroupPage /></MaintenanceGuard>} />
-        <Route path="/chat/:groupId" element={<MaintenanceGuard><NotificationProvider><QuickViewSettingsProvider><GroupChatPage /></QuickViewSettingsProvider></NotificationProvider></MaintenanceGuard>} />
         <Route path="/focus" element={<MaintenanceGuard><FocusModePage /></MaintenanceGuard>} />
         <Route path="/focus/:groupId" element={<MaintenanceGuard><FocusModePage /></MaintenanceGuard>} />
         <Route path="*" element={<NotFoundPage />} />

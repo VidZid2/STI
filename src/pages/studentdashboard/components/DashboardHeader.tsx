@@ -1,44 +1,34 @@
 /**
  * DashboardHeader — Extracted from StudentDashboard.tsx (Phase 1.4)
- * Pure presentational component — receives all state via props.
- * Zero logic changes from the original.
+ * Modified to support sticky inset card header and scroll-induced outline
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import ToolbarExpandable from '../../../components/ui/toolbar/ToolbarExpandable';
 import UserProfileDropdown from '../../../components/ui/dropdowns/UserProfileDropdown';
-
-
 import StreakDropdown from '../../../components/ui/dropdowns/StreakDropdown';
+import { SidebarTrigger } from '../../../components/ui/sidebar';
 import type { DashboardView } from '../types';
+
 interface DashboardHeaderProps {
     setActiveView: (view: DashboardView) => void;
     isDemoMode: boolean;
     toggleWidgetsSidebar?: () => void;
     isQuickViewActive?: boolean;
+    isScrolled?: boolean;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     setActiveView,
     isDemoMode,
     toggleWidgetsSidebar,
-    isQuickViewActive = false
+    isQuickViewActive: _isQuickViewActive = false,
+    isScrolled = false
 }) => {
     const [isDarkMode, setIsDarkMode] = useState(() => 
         typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
     );
-    const [isHeaderHidden, setIsHeaderHidden] = useState(false);
-    const lastScrollY = useRef(0);
     
-    const isQuickViewActiveRef = useRef(isQuickViewActive);
-    
-    useEffect(() => {
-        isQuickViewActiveRef.current = isQuickViewActive;
-        if (isQuickViewActive) {
-            setIsHeaderHidden(false);
-        }
-    }, [isQuickViewActive]);
-
     useEffect(() => {
         const checkDarkMode = () => {
             setIsDarkMode(document.body.classList.contains('dark-mode'));
@@ -48,41 +38,20 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         const observer = new MutationObserver(checkDarkMode);
         observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         
-        const handleScroll = () => {
-            if (isQuickViewActiveRef.current) return;
-
-            const currentY = window.scrollY;
-            const delta = currentY - lastScrollY.current;
-
-            // Dead-zone: ignore micro-scrolls smaller than 5px
-            if (Math.abs(delta) < 5) return;
-
-            if (delta > 0 && currentY > 60) {
-                // Scrolling DOWN past 60px → hide
-                setIsHeaderHidden(true);
-            } else if (delta < 0) {
-                // Scrolling UP even a little → show
-                setIsHeaderHidden(false);
-            }
-
-            lastScrollY.current = currentY;
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        
         return () => {
             observer.disconnect();
-            window.removeEventListener('scroll', handleScroll);
         };
     }, []);
 
     return (
-    <header className={`header ${isHeaderHidden ? 'header-hidden' : ''}`}>
+    <header className={`header inset-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="header-content w-full flex items-center justify-between px-1 sm:px-4">
             <div className="header-left flex items-center gap-1 sm:gap-2 shrink-0">
+                {/* Tablet Sidebar Trigger (Hidden on Mobile and Desktop) */}
+                <SidebarTrigger className="hidden md:flex lg:hidden mr-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800" />
 
                 <motion.div
-                    className="logo flex items-center gap-1 sm:gap-2.5 shrink-0"
+                    className="logo flex md:!hidden items-center gap-1 sm:gap-2.5 shrink-0"
                     onClick={() => { setActiveView('home'); }}
                     style={{ cursor: 'pointer' }}
                     whileHover={{ scale: 1.01 }}
@@ -96,28 +65,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     >
                         <img src="/file.svg" alt="STI Logo" className="w-full h-full object-cover" />
                     </div>
-                    
-                    {/* Text Content matching Tools Page Cards */}
-                    <div className="flex-1 min-w-0 hidden sm:flex flex-col justify-center text-left">
-                        <div 
-                            className="text-[13px] font-bold leading-tight whitespace-nowrap"
-                            style={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}
-                        >
-                            STI eLMS
-                        </div>
-                        <div 
-                            className="text-[10.5px] font-medium mt-0.5 leading-tight whitespace-nowrap truncate"
-                            style={{ color: isDarkMode ? '#94a3b8' : '#64748b' }}
-                        >
-                            Student Dashboard
-                        </div>
-                    </div>
                 </motion.div>
 
-                <div
-                    className="h-5 w-[1px] mx-1 sm:mx-2 hidden sm:block"
-                    style={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}
-                />
+
                 <StreakDropdown />
                 
                 {/* Demo Mode Indicator */}

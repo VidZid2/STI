@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { motion, AnimatePresence, LayoutGroup } from 'motion/react';
 import {
     fetchGroups,
@@ -28,6 +28,7 @@ import GroupIcon from './components/GroupIcon';
 import GroupDetailModal from './modals/GroupDetailModal';
 import InviteModal from './modals/InviteModal';
 import CreateGroupModal from './modals/CreateGroupModal';
+import JoinGroupModal from './modals/JoinGroupModal';
 import { GroupCard } from './components/GroupCard';
 import { GroupsSkeleton } from './components/GroupsSkeleton';
 import { FilterTabs } from './components/FilterTabs';
@@ -57,7 +58,7 @@ const useReducedMotion = (): boolean => {
 
 // Main GroupsContent Component
 const GroupsContent: React.FC = () => {
-    const navigate = useNavigate();
+
     const [groups, setGroups] = useState<GroupWithMembers[]>([]);
     const [stats, setStats] = useState<GroupStats>({ totalGroups: 0, myGroups: 0, publicGroups: 0, totalMembers: 0, onlineMembers: 0 });
     const [isLoading, setIsLoading] = useState(true);
@@ -65,9 +66,11 @@ const GroupsContent: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState<GroupSortOption>('recent');
     const [showSortDropdown, setShowSortDropdown] = useState(false);
+    const [hoveredSortOption, setHoveredSortOption] = useState<string | null>(null);
     const [selectedGroup, setSelectedGroup] = useState<GroupWithMembers | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [inviteGroup, setInviteGroup] = useState<GroupWithMembers | null>(null);
     const [isSearching, setIsSearching] = useState(false);
@@ -182,7 +185,7 @@ const GroupsContent: React.FC = () => {
     }, [groups, activeFilter, searchQuery, sortBy]);
 
     // Handle join/leave
-    const handleJoin = useCallback(async (groupId: string) => {
+    const handleJoin = async (groupId: string) => {
         const success = await joinGroup(groupId);
         if (success) {
             setGroups(prev => prev.map(g => 
@@ -190,6 +193,14 @@ const GroupsContent: React.FC = () => {
             ));
             setStats(prev => ({ ...prev, myGroups: prev.myGroups + 1 }));
         }
+    };
+
+    const handleJoinSuccess = useCallback(async (_groupId: string) => {
+        // Re-fetch groups to make sure we have the new group in the list
+        const updatedGroups = await fetchGroups();
+        setGroups(updatedGroups);
+        const newStats = await getGroupStats();
+        setStats(newStats);
     }, []);
 
     const handleLeave = useCallback(async (groupId: string) => {
@@ -215,10 +226,6 @@ const GroupsContent: React.FC = () => {
         setInviteGroup(group);
         setIsInviteModalOpen(true);
     }, []);
-
-    const handleOpenChat = useCallback((groupId: string) => {
-        navigate(`/chat/${groupId}`);
-    }, [navigate]);
 
     // Keyboard shortcuts: / to focus search, Esc to clear
     useEffect(() => {
@@ -335,7 +342,7 @@ const GroupsContent: React.FC = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-[72px] md:mt-0 mb-7"
+                className="mt-4 md:mt-0 mb-7"
             >
                 <motion.div 
                     initial={{ opacity: 0, y: 12 }}
@@ -392,7 +399,7 @@ const GroupsContent: React.FC = () => {
                                 transition={{ duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
                                 className="text-2xl sm:text-[28px] font-black text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-2"
                             >
-                                Study Groups
+                                Project Workspaces
                             </motion.h1>
                             <motion.p 
                                 initial={{ opacity: 0, x: -10 }}
@@ -400,7 +407,7 @@ const GroupsContent: React.FC = () => {
                                 transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
                                 className="text-sm sm:text-[15px] font-medium text-slate-500 dark:text-slate-400 max-w-[400px] leading-snug"
                             >
-                                Collaborate with classmates and join study sessions
+                                Manage project tasks, share files, and track progress together.
                             </motion.p>
                         </div>
                     </div>
@@ -495,9 +502,14 @@ const GroupsContent: React.FC = () => {
             >
                 {/* Search Input - matching PathsContent design */}
                 <motion.div 
+                    layout
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3, duration: 0.4 }}
+                    transition={{ 
+                        layout: { type: 'spring', stiffness: 400, damping: 30 },
+                        opacity: { delay: 0.3, duration: 0.4 },
+                        x: { delay: 0.3, duration: 0.4 }
+                    }}
                     className="relative flex-1 min-w-[220px] group/search"
                 >
                     <svg className="absolute left-3.5 top-0 bottom-0 my-auto w-4 h-4 text-slate-400 z-10 transition-colors duration-200 group-focus-within/search:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -716,7 +728,7 @@ const GroupsContent: React.FC = () => {
                 </motion.div>
 
                 {/* Filter & Sort Container */}
-                <motion.div layout="position" transition={{ type: 'spring', stiffness: 500, damping: 40, mass: 0.8 }} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full lg:w-auto relative">
+                <motion.div layout transition={{ type: 'spring', stiffness: 400, damping: 30 }} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full lg:w-auto relative">
                     {/* Filter Tabs */}
                     <div className="w-full sm:w-auto">
                         <FilterTabs
@@ -736,7 +748,7 @@ const GroupsContent: React.FC = () => {
                             opacity: { delay: 0.4, duration: 0.4 }, 
                             x: { delay: 0.4, duration: 0.4 } 
                         }} 
-                        className="w-full sm:w-auto z-[100]"
+                        className="relative w-full sm:w-auto z-[100]"
                     >
                         <motion.button 
                             onClick={() => setShowSortDropdown(!showSortDropdown)} 
@@ -767,7 +779,8 @@ const GroupsContent: React.FC = () => {
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                         transition={{ duration: 0.2, type: 'spring', stiffness: 300, damping: 25 }}
-                                        className="absolute top-full left-0 right-0 mt-2 p-1.5 sm:p-2 rounded-[16px] sm:rounded-[18px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl z-[200] w-full overflow-hidden flex flex-col gap-0.5"
+                                        className="absolute top-full right-0 mt-2 p-1.5 sm:p-2 rounded-[16px] sm:rounded-[18px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl z-[200] w-[220px] sm:w-[240px] overflow-hidden flex flex-col gap-0.5"
+                                        onMouseLeave={() => setHoveredSortOption(null)}
                                     >
                                         {/* Ambient Glow */}
                                         <div className="absolute top-0 right-0 -mr-8 -mt-8 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
@@ -780,21 +793,27 @@ const GroupsContent: React.FC = () => {
                                                 { id: 'activity', label: 'Most Active', description: 'By recent activity', icon: <path d="M22 12h-4l-3 9L9 3l-3 9H2" strokeLinecap="round" strokeLinejoin="round" /> },
                                                 { id: 'name', label: 'Name A-Z', description: 'Alphabetical order', icon: <path d="M4 6h16M4 12h10M4 18h4" strokeLinecap="round" strokeLinejoin="round" /> }
                                             ].map((option, index) => (
-                                                <motion.button
-                                                    key={option.id}
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ delay: index * 0.05, duration: 0.2, type: 'spring', stiffness: 300, damping: 24 }}
-                                                    onClick={() => {
-                                                        setSortBy(option.id as GroupSortOption);
-                                                        setShowSortDropdown(false);
-                                                    }}
-                                                    whileTap={{ scale: 0.97 }}
-                                                    className="w-full text-left p-1.5 sm:p-2 rounded-[12px] flex items-center gap-2.5 sm:gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 group border border-transparent hover:border-slate-200/50 dark:hover:border-slate-700/50"
-                                                    style={{ transition: 'background-color 0.2s ease, border-color 0.2s ease' }}
-                                                >
+                                                <div key={option.id} className="relative" onMouseEnter={() => setHoveredSortOption(option.id)}>
+                                                    {hoveredSortOption === option.id && (
+                                                        <motion.div
+                                                            layoutId="sortHover"
+                                                            className="absolute inset-0 bg-blue-50 dark:bg-blue-500/20 rounded-[12px] pointer-events-none z-0"
+                                                            transition={{ type: 'spring', stiffness: 600, damping: 38 }}
+                                                        />
+                                                    )}
+                                                    <motion.button
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: index * 0.05, duration: 0.2, type: 'spring', stiffness: 300, damping: 24 }}
+                                                        onClick={() => {
+                                                            setSortBy(option.id as GroupSortOption);
+                                                            setShowSortDropdown(false);
+                                                        }}
+                                                        whileTap={{ scale: 0.97 }}
+                                                        className="w-full text-left p-1.5 sm:p-2 rounded-[12px] flex items-center gap-2.5 sm:gap-3 group relative z-10"
+                                                    >
                                                     <div
-                                                        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-[10px] flex items-center justify-center flex-shrink-0 shadow-sm hover:scale-105 hover:-rotate-[5deg] ${sortBy === option.id ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800' : 'bg-blue-50 border border-blue-100 dark:bg-blue-900/30 dark:border-blue-800/50 text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50'}`}
+                                                        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-[10px] flex items-center justify-center flex-shrink-0 shadow-sm hover:scale-105 hover:-rotate-[5deg] relative z-10 ${sortBy === option.id ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800' : 'bg-blue-50 border border-blue-100 dark:bg-blue-900/30 dark:border-blue-800/50 text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50'}`}
                                                         style={{ transition: 'transform 0.2s cubic-bezier(0.22,1,0.36,1), background-color 0.2s ease' }}
                                                     >
                                                         <div className="w-3.5 h-3.5 sm:w-4 sm:h-4">
@@ -803,11 +822,11 @@ const GroupsContent: React.FC = () => {
                                                             </svg>
                                                         </div>
                                                     </div>
-                                                    <div className="flex-1 min-w-0">
+                                                    <div className="flex-1 min-w-0 relative z-10">
                                                         <h3 className={`text-[11px] sm:text-[12px] font-bold truncate ${sortBy === option.id ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-slate-100'}`}>{option.label}</h3>
                                                         <p className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">{option.description}</p>
                                                     </div>
-                                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-300 ${sortBy === option.id ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-500' : 'bg-transparent text-transparent group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 group-hover:text-blue-500'}`}>
+                                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-300 relative z-10 ${sortBy === option.id ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-500' : 'bg-transparent text-transparent group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 group-hover:text-blue-500'}`}>
                                                         {sortBy === option.id ? (
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                                 <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -818,7 +837,8 @@ const GroupsContent: React.FC = () => {
                                                             </svg>
                                                         )}
                                                     </div>
-                                                </motion.button>
+                                                    </motion.button>
+                                                </div>
                                             ))}
                                         </div>
                                     </motion.div>
@@ -828,25 +848,50 @@ const GroupsContent: React.FC = () => {
                     </motion.div>
                 </motion.div>
 
-                {/* Create Group Button - Matching GoalsContent design */}
-                <motion.button
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ 
-                        default: { duration: 0.15, ease: 'easeOut' },
-                        opacity: { delay: 0.4, duration: 0.3 },
-                        x: { delay: 0.4, duration: 0.3 }
-                    }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-bold py-2 px-3 sm:py-2.5 sm:px-4 rounded-[12px] sm:rounded-[14px] transition-colors shadow-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus:outline-none text-[12px] sm:text-[13px] whitespace-nowrap"
-                >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-[18px] sm:h-[18px]">
-                        <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                    </svg>
-                    New Group
-                </motion.button>
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                    {/* Create Group Button - Matching GoalsContent design */}
+                    <motion.button
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ 
+                            default: { duration: 0.15, ease: 'easeOut' },
+                            opacity: { delay: 0.4, duration: 0.3 },
+                            x: { delay: 0.4, duration: 0.3 }
+                        }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-bold py-2 px-3 sm:py-2.5 sm:px-4 rounded-[12px] sm:rounded-[14px] transition-colors shadow-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus:outline-none text-[12px] sm:text-[13px] whitespace-nowrap"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-[18px] sm:h-[18px]">
+                            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        New Project
+                    </motion.button>
+
+                    <div className="hidden sm:block w-[1px] h-[24px] bg-slate-200 dark:bg-slate-700 mx-1" />
+
+                    <motion.button
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ 
+                            default: { duration: 0.15, ease: 'easeOut' },
+                            opacity: { delay: 0.4, duration: 0.3 },
+                            x: { delay: 0.4, duration: 0.3 }
+                        }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setIsJoinModalOpen(true)}
+                        title="Join Project"
+                        className="flex-shrink-0 flex items-center justify-center w-[38px] h-[38px] sm:w-[42px] sm:h-[42px] rounded-[12px] sm:rounded-[14px] transition-colors shadow-sm border border-slate-200 dark:border-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 focus:outline-none"
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-[20px] sm:h-[20px]">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg>
+                    </motion.button>
+                </div>
             </motion.div>
             </motion.div>
             </motion.div>
@@ -854,21 +899,16 @@ const GroupsContent: React.FC = () => {
             {/* Groups Grid */}
             <LayoutGroup>
                 <motion.div
-                    layout
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                        gap: '16px',
-                    }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2 gap-4 sm:gap-5 lg:gap-6 -mx-4 sm:mx-0"
                 >
-                    <AnimatePresence mode="popLayout">
+                    <AnimatePresence mode="wait">
                         {filteredGroups.length > 0 ? (
                             filteredGroups.map((group, index) => (
                                 <GroupCard
                                     key={group.id}
                                     group={group}
                                     index={index}
-                                    colors={colors}
+
                                     isDarkMode={isDarkMode}
                                     onClick={(g) => { setSelectedGroup(g); setIsModalOpen(true); }}
                                     onJoin={handleJoin}
@@ -876,6 +916,7 @@ const GroupsContent: React.FC = () => {
                                     onPin={handlePin}
                                     onInvite={handleInvite}
                                     reducedMotion={reducedMotion}
+                                    isLoading={isSearching}
                                 />
                             ))
                         ) : (
@@ -885,7 +926,7 @@ const GroupsContent: React.FC = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ duration: 0.2 }}
-                                className="col-span-full -mx-4 sm:-mx-6 lg:mx-0 bg-white dark:bg-slate-800 rounded-[24px] border border-slate-200 dark:border-slate-700 shadow-sm text-center"
+                                className="col-span-full sm:-mx-6 lg:mx-0 text-center px-4 sm:px-0"
                             >
                                 <EmptyState
                                     icon={
@@ -914,7 +955,6 @@ const GroupsContent: React.FC = () => {
                 onClose={() => setIsModalOpen(false)}
                 onJoin={handleJoin}
                 onLeave={handleLeave}
-                onOpenChat={handleOpenChat}
             />
 
             {/* Create Group Modal */}
@@ -944,6 +984,13 @@ const GroupsContent: React.FC = () => {
                         setStats(statsData);
                     }
                 }}
+            />
+
+            {/* Join Group Modal */}
+            <JoinGroupModal
+                isOpen={isJoinModalOpen}
+                onClose={() => setIsJoinModalOpen(false)}
+                onJoinSuccess={handleJoinSuccess}
             />
 
             {/* Invite Modal */}

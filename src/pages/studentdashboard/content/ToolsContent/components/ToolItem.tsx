@@ -8,6 +8,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Clock3, Sparkles } from 'lucide-react';
 import { FileUpload } from '../../../../../components/ui/file-upload';
+import { Tooltip, RTooltipProvider } from '../../../../../components/ui/r-tooltip';
 import type { Tool } from '../types';
 
 // Minimalistic Success Confetti Component
@@ -406,29 +407,6 @@ const ToolItem: React.FC<{
                                 )}
                                 <span className="truncate" title={categoryLabel}>{categoryLabel}</span>
                             </span>
-                            <div className="relative group/tip">
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setShowTutorial(true);
-                                        setCurrentStep(0);
-                                    }}
-                                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-gradient-to-b from-blue-50 to-blue-100/50 text-blue-700 shadow-sm transition-all duration-200 hover:from-blue-100 hover:to-blue-200 hover:text-blue-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-blue-800/60 dark:from-blue-900/30 dark:to-blue-900/10 dark:text-blue-400 dark:hover:from-blue-800/50 dark:hover:to-blue-900/40"
-                                    aria-label={`View ${tool.name} tutorial`}
-                                >
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                                        <path d="M12 17h.01" />
-                                    </svg>
-                                </button>
-                                {/* Tooltip */}
-                                <span className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-zinc-600 opacity-0 shadow-md transition-all duration-200 ease-out translate-y-1 group-hover/tip:opacity-100 group-hover/tip:translate-y-0 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 z-20">
-                                    Tutorial
-                                    <span className="absolute -top-1 left-1/2 -translate-x-1/2 h-2 w-2 rotate-45 border-l border-t border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900" />
-                                </span>
-                            </div>
                         </div>
                     </div>
 
@@ -464,11 +442,40 @@ const ToolItem: React.FC<{
                         )}
 
                         {/* Action footer */}
-                        <div className={`flex w-full items-center justify-start gap-1.5 border-t border-zinc-200 pt-4 text-[13.5px] font-bold transition-colors duration-300 dark:border-zinc-700/60 ${accent.action}`}>
-                            <span className="transition-opacity duration-200 group-hover:opacity-100 opacity-85">{tool.onClick ? 'Open workspace' : 'Choose file'}</span>
-                            <motion.span animate={{ x: isHovered ? 4 : 0 }} transition={{ type: 'tween', ease: [0.25, 0.46, 0.45, 0.94], duration: 0.25 }} aria-hidden="true">
-                                <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
-                            </motion.span>
+                        <div className={`flex w-full items-center justify-between border-t border-zinc-200 pt-3 text-[13.5px] font-bold transition-colors duration-300 dark:border-zinc-700/60 ${accent.action}`}>
+                            <div className="flex items-center gap-1.5">
+                                <span className="transition-opacity duration-200 group-hover:opacity-100 opacity-85">{tool.onClick ? 'Open workspace' : 'Choose file'}</span>
+                                <motion.span animate={{ x: isHovered ? 4 : 0 }} transition={{ type: 'tween', ease: [0.25, 0.46, 0.45, 0.94], duration: 0.25 }} aria-hidden="true">
+                                    <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
+                                </motion.span>
+                            </div>
+                            
+                            {/* Tutorial Button */}
+                            <RTooltipProvider delayDuration={150}>
+                                <Tooltip
+                                    content="Tutorial"
+                                    side="top"
+                                    className="[--tt-surface:#ffffff] dark:[--tt-surface:#1e293b] border border-slate-200 dark:border-slate-700/50 shadow-sm text-slate-500 dark:text-slate-400 font-medium px-3 py-1.5 rounded-lg text-[13px]"
+                                    style={{ '--tt-foreground': 'currentColor' } as React.CSSProperties}
+                                >
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setShowTutorial(true);
+                                            setCurrentStep(0);
+                                        }}
+                                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-gradient-to-b from-blue-50 to-blue-100/50 text-blue-700 shadow-sm transition-all duration-200 hover:from-blue-100 hover:to-blue-200 hover:text-blue-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-blue-800/60 dark:from-blue-900/30 dark:to-blue-900/10 dark:text-blue-400 dark:hover:from-blue-800/50 dark:hover:to-blue-900/40"
+                                        aria-label={`View ${tool.name} tutorial`}
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                                            <path d="M12 17h.01" />
+                                        </svg>
+                                    </button>
+                                </Tooltip>
+                            </RTooltipProvider>
                         </div>
                     </div>
                 </div>
