@@ -72,10 +72,10 @@ export const useDashboardState = (): UseDashboardStateReturn => {
         }
     }, [navigate]);
 
-    // Sidebar state — persisted to localStorage, defaults to collapsed
+    // Sidebar state — persisted to localStorage, defaults to expanded
     const [sidebarActive, setSidebarActiveRaw] = useState(() => {
         const saved = localStorage.getItem('sidebar-expanded');
-        return saved !== null ? saved === 'true' : false;
+        return saved !== null ? saved === 'true' : true;
     });
     const setSidebarActive = (active: boolean) => {
         setSidebarActiveRaw(active);
