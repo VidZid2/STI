@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { Toaster } from 'sonner'
-import { HorizontalHome, IntroAnimation } from './components/landing'
+import { HorizontalHome } from './components/landing'
 import { LoginModal } from './components/modals'
 import { SmoothCursor } from '@/components/ui/smooth-cursor'
 import StudentLogin from './pages/studentdashboard/StudentLogin'
@@ -78,7 +78,7 @@ function HomePage() {
           to { opacity: 0; }
         }
       `}</style>
-      <IntroAnimation />
+
       <HorizontalHome onLoginClick={() => setIsLoginOpen(true)} />
       <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
       <audio id="click-sound" src="/sounds/clicksfx.mp3" preload="auto" ref={clickSoundRef}></audio>
