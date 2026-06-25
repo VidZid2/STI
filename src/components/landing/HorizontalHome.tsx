@@ -131,7 +131,7 @@ const HorizontalHome: React.FC<HorizontalHomeProps> = ({ onLoginClick }) => {
 
     const pageContent = (
         <>
-            <StickyBanner id="overhaul-update-v1" className="bg-[#eab308] z-50">
+            <StickyBanner id="overhaul-update-v1" className="bg-[#eab308] z-50" position="bottom">
                 <p className="mx-0 max-w-[90%] text-[#0a0a0a] drop-shadow-sm font-medium">
                     STI eLMS Overhaul Update is officially live!{" "}
                     <a href="#" className="transition duration-200 hover:underline font-bold">

@@ -9,11 +9,13 @@ export const StickyBanner = ({
   children,
   hideOnScroll = false,
   id,
+  position = "top",
 }: {
   className?: string;
   children: React.ReactNode;
   hideOnScroll?: boolean;
   id?: string;
+  position?: "top" | "bottom";
 }) => {
   const [dismissed, setDismissed] = useState(() => {
     if (id) {
@@ -64,7 +66,8 @@ export const StickyBanner = ({
       {open && (
         <motion.div
           className={cn(
-            "sticky inset-x-0 top-0 z-40 flex w-full items-center justify-center bg-transparent px-4",
+            "fixed inset-x-0 z-40 flex w-full items-center justify-center bg-transparent px-4",
+            position === "top" ? "top-0" : "bottom-0",
             className,
           )}
           initial={{
