@@ -13,7 +13,7 @@
 import * as React from "react";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { Save, Download, Trash2, Copy } from "lucide-react";
+import { Save, Download, Trash2, Copy, History } from "lucide-react";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
@@ -628,20 +628,17 @@ ${text}`;
                                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                               </svg>
                           </motion.div>
-                          <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Text Editor</span>
+                          <div className="flex items-center gap-3">
+                              <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Text Editor</span>
+                              <span className="whitespace-nowrap text-[11px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
+                                  {stats.words.toLocaleString()} words
+                              </span>
+                          </div>
                       </div>
-                      
-                      {/* Mobile Words Badge */}
-                      <span className="flex sm:hidden whitespace-nowrap text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-2.5 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
-                          {stats.words.toLocaleString()} words
-                      </span>
                   </div>
                   
-                  {/* Desktop Words Badge & Actions */}
+                  {/* Desktop Actions */}
                   <div className="hidden sm:flex items-center w-auto justify-end gap-3 shrink-0">
-                      <span className="whitespace-nowrap text-[11px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50 mr-2">
-                          {stats.words.toLocaleString()} words
-                      </span>
 
                       <button
                           type="button"
@@ -665,9 +662,10 @@ ${text}`;
                           <button
                               type="button"
                               onClick={handleRestoreSaved}
-                              className="px-4 h-[46px] flex items-center justify-center text-[13px] font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-900/20 hover:bg-cyan-100 dark:hover:bg-cyan-900/40 rounded-[16px] transition-colors focus:outline-none"
+                              className="flex items-center justify-center w-[46px] h-[46px] rounded-[16px] bg-[#e0f2fe] text-cyan-600 transition-colors hover:bg-[#bae6fd] dark:bg-cyan-900/30 dark:hover:bg-cyan-900/50 dark:text-cyan-400 focus:outline-none"
+                              title="Restore saved session"
                           >
-                              Restore
+                              <History className="w-[18px] h-[18px] shrink-0" />
                           </button>
                       )}
 
