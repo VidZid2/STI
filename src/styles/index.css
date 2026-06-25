@@ -23,6 +23,34 @@
   overflow: hidden;
 }
 
+/* Custom shimmer skeleton effect using ::after to avoid extra DOM elements */
+.animate-shimmer-bg {
+  position: relative;
+  overflow: hidden;
+}
+.animate-shimmer-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: skeleton-shimmer 2s infinite ease-in-out;
+  pointer-events: none;
+}
+html.dark .animate-shimmer-bg::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+}
+
 /* ============================================
    ============================================ */
 
@@ -5875,8 +5903,8 @@ html.hide-avatars [class*="avatar-container"] {
         --chart-crosshair: oklch(0.4 0.1828 274.34);
         --chart-grid: oklch(0.9 0 0);
         --chart-tooltip-background: oklch(0.21 0.006 285 / 0.8);
-        --chart-tooltip-foreground: oklch(0.15 0.005 260);
-        --chart-tooltip-muted: oklch(0.5 0.01 260);
+        --chart-tooltip-foreground: oklch(0.985 0 0);
+        --chart-tooltip-muted: oklch(0.65 0.01 260);
         --chart-marker-background: oklch(0.97 0.005 260);
         --chart-marker-border: oklch(0.85 0.01 260);
         --chart-marker-foreground: oklch(0.3 0.01 260);
@@ -5890,6 +5918,18 @@ html.hide-avatars [class*="avatar-container"] {
         --sidebar-accent-foreground: 240 5.9% 10%;
         --sidebar-border: 220 13% 91%;
         --sidebar-ring: 217.2 91.2% 59.8%;
+        --chart-1: oklch(0.32 0 none);
+        --chart-2: oklch(0.41 0 none);
+        --chart-3: oklch(0.54 0 none);
+        --chart-4: oklch(0.71 0 none);
+        --chart-5: oklch(0.89 0 none);
+        --chart-brush-border: var(--chart-grid);
+        --chart-scale-01: oklch(0.98 0.003 106);
+        --chart-scale-02: oklch(0.92 0.008 106);
+        --chart-scale-03: oklch(0.82 0.015 106);
+        --chart-scale-04: oklch(0.68 0.02 106);
+        --chart-scale-05: oklch(0.55 0.025 106);
+        --chart-scale-pattern-color: oklch(0.96 0.005 106);
     }
   .dark {
         --chart-background: oklch(0.145 0 0);
@@ -5913,6 +5953,18 @@ html.hide-avatars [class*="avatar-container"] {
         --sidebar-accent-foreground: 240 4.8% 95.9%;
         --sidebar-border: 215 25% 26.7%;
         --sidebar-ring: 217.2 91.2% 59.8%;
+        --chart-1: oklch(1 0 none);
+        --chart-2: oklch(0.73 0 none);
+        --chart-3: oklch(0.51 0 none);
+        --chart-4: oklch(0.39 0 none);
+        --chart-5: oklch(0.32 0 none);
+        --chart-brush-border: var(--chart-grid);
+        --chart-scale-01: oklch(0.28 0.03 270);
+        --chart-scale-02: oklch(0.38 0.04 270);
+        --chart-scale-03: oklch(0.48 0.05 270);
+        --chart-scale-04: oklch(0.58 0.06 270);
+        --chart-scale-05: oklch(0.68 0.07 270);
+        --chart-scale-pattern-color: oklch(0.145 0 0);
     }
 }
 
@@ -6122,4 +6174,28 @@ html.pink-theme.dark input.color-picker-input-reset:active {
 
 *::-webkit-scrollbar-thumb {
     background: transparent !important;
-}
+}
+
+/* Avatar Uploader Zoom Slider */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
