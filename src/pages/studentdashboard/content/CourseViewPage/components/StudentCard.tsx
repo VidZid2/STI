@@ -4,10 +4,7 @@
  * Extracted from CourseViewPage.tsx during Phase 8.1
  */
 import * as React from 'react';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { createPortal } from 'react-dom';
-import { cn } from '@/lib/utils';
+import { motion } from 'motion/react';
 import { AnimatedCircularProgressBar } from '@/components/ui/animated-circular-progress-bar';
 import Grainient from '@/components/ui/grainient';
 
@@ -26,18 +23,7 @@ interface StudentCardProps {
     index: number;
 }
 
-const getAvatarColor = (name: string): string => {
-    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
-    const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return colors[hash % colors.length];
-};
-
 export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const [showTooltip, setShowTooltip] = useState<string | null>(null);
-    const [tooltipRect, setTooltipRect] = useState<DOMRect | null>(null);
-
-    const avatarColor = getAvatarColor(student.name);
     const isCurrentUser = student.name === 'Josiah P. De Asis';
 
     return (
@@ -46,9 +32,6 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ delay: index * 0.02, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
             className={`relative pt-5 pb-5 px-5 bg-white dark:bg-slate-800 rounded-[14px] border-[2px] border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer flex flex-col items-start w-full overflow-hidden`}
         >
             {isCurrentUser && (
@@ -59,37 +42,6 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                         color3="#3b82f6" 
                     />
                 </div>
-            )}
-            {/* Removed Quick Action Buttons */}
-
-            {/* Tooltip Portal */}
-            {showTooltip && tooltipRect && createPortal(
-                <div
-                    style={{
-                        position: 'fixed',
-                        top: tooltipRect.top - 28,
-                        left: tooltipRect.left + tooltipRect.width / 2,
-                        transform: 'translateX(-50%)',
-                        padding: '4px 8px',
-                        borderRadius: '6px',
-                        background: '#1e293b',
-                        color: 'white',
-                        fontSize: '10px',
-                        fontWeight: 500,
-                        whiteSpace: 'nowrap',
-                        zIndex: 99999,
-                        pointerEvents: 'none',
-                    }}
-                >
-                    {showTooltip === 'chat' ? 'Send Message' : 'More Options'}
-                    <div style={{
-                        position: 'absolute', bottom: -4, left: '50%', transform: 'translateX(-50%)',
-                        width: 0, height: 0,
-                        borderLeft: '4px solid transparent', borderRight: '4px solid transparent',
-                        borderTop: '4px solid #1e293b',
-                    }} />
-                </div>,
-                document.body
             )}
 
             {/* Avatar Profile Section */}

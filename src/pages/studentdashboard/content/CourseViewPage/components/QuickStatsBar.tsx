@@ -10,8 +10,6 @@ import { Area } from "@/components/charts/area";
 import { Grid } from "@/components/charts/grid";
 import { ChartTooltip } from "@/components/charts/tooltip";
 import { XAxis } from "@/components/charts/x-axis";
-import { ScatterChart } from "@/components/charts/scatter-chart";
-import { Scatter } from "@/components/charts/scatter";
 
 interface CourseStats {
     grade: number;
@@ -41,11 +39,12 @@ const defaultStats: CourseStats = {
 
 export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({ 
     courseId: _courseId, 
-    progress,
+    progress: _progress,
     stats: propStats,
     gradeTrendData: propGradeTrendData,
 }) => {
     void _courseId;
+    void _progress;
     const [isExpanded, setIsExpanded] = useState(true);
 
     const stats = propStats ?? defaultStats;
@@ -253,7 +252,7 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({
                                             </div>
                                         </div>
                                         <div className="w-full mt-4 h-[180px] lg:h-[220px] relative z-10">
-                                            <AreaChart data={gradeTrendData} margin={{ top: 20, right: 20, bottom: 40, left: 20 }} aspectRatio="auto" className="absolute inset-0 w-full h-full">
+                                            <AreaChart data={gradeTrendData as unknown as Record<string, unknown>[]} margin={{ top: 20, right: 20, bottom: 40, left: 20 }} aspectRatio="auto" className="absolute inset-0 w-full h-full">
                                                 <Grid horizontal />
                                                 <Area dataKey="grade" fill="var(--chart-line-primary)" fillOpacity={0} strokeWidth={2} showMarkers />
                                                 <XAxis />

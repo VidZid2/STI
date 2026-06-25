@@ -55,16 +55,6 @@ export const DEFAULT_TASKS: CourseTask[] = [];
 
 export const DEFAULT_MODULES: CourseDataType['modules'] = [];
 
-const TASKS_CP1: CourseTask[] = [];
-const TASKS_EUTH1: CourseTask[] = [];
-const TASKS_ITC: CourseTask[] = [];
-const TASKS_NSTP1: CourseTask[] = [];
-const TASKS_PE1: CourseTask[] = [];
-const TASKS_PPC: CourseTask[] = [];
-const TASKS_PURCOM: CourseTask[] = [];
-const TASKS_TCW: CourseTask[] = [];
-const TASKS_UTS: CourseTask[] = [];
-
 export const COURSE_DATA: Record<string, CourseDataType> = {
     "cp1": {
         modules: [],

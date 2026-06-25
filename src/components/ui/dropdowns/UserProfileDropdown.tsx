@@ -74,7 +74,6 @@ export default function UserProfileDropdown() {
     const [isAvatarHovered, setIsAvatarHovered] = useState(false);
     const [showLevelUp, setShowLevelUp] = useState(false);
     const [lastTotalXP, setLastTotalXP] = useState(() => getXPData().totalXP);
-    const lastTotalXPRef = useRef(lastTotalXP); // just replacing the line with something harmless or removing it
     const ref = useRef<HTMLDivElement>(null!);
     const modalRef = useRef<HTMLDivElement>(null);
     const [isScrolled, setIsScrolled] = useState(false);

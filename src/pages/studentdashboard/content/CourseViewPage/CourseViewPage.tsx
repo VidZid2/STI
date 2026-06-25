@@ -5,7 +5,6 @@ import { createPortal } from 'react-dom';
 import { getClassmates, type UserAccount } from '../../../../services/usersService';
 import { useSystemConfig } from '../../../../contexts/SystemConfigContext';
 import { AnimatedCircularProgressBar } from '@/components/ui/animated-circular-progress-bar';
-import { cn } from '@/lib/utils';
 import { InstructionsModal, SubmitModal, AddTaskModal } from './modals';
 import { QuickStatsBar } from './components/QuickStatsBar';
 import { StudentCard } from './components/StudentCard';
