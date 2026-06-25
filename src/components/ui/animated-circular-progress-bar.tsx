@@ -46,7 +46,7 @@ export function AnimatedCircularProgressBar({
     >
       <svg
         fill="none"
-        className="size-full"
+        className="size-full pointer-events-none"
         strokeWidth="2"
         viewBox="0 0 100 100"
       >

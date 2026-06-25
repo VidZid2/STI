@@ -7,6 +7,9 @@ import * as React from 'react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
+import { cn } from '@/lib/utils';
+import { AnimatedCircularProgressBar } from '@/components/ui/animated-circular-progress-bar';
+import Grainient from '@/components/ui/grainient';
 
 interface StudentCardProps {
     student: {
@@ -16,6 +19,9 @@ interface StudentCardProps {
         role: string;
         email: string;
         avatar?: string;
+        section?: string;
+        program?: string;
+        level?: number;
     };
     index: number;
 }
@@ -32,6 +38,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
     const [tooltipRect, setTooltipRect] = useState<DOMRect | null>(null);
 
     const avatarColor = getAvatarColor(student.name);
+    const isCurrentUser = student.name === 'Josiah P. De Asis';
 
     return (
         <motion.div
@@ -42,47 +49,18 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
             
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
-            className={`relative p-4 rounded-xl bg-white border cursor-pointer transition-all duration-200 ${
-                isHovered ? 'border-blue-200 shadow-lg shadow-blue-500/10' : 'border-zinc-100 hover:border-zinc-200'
-            }`}
+            className={`relative pt-5 pb-5 px-5 bg-white dark:bg-slate-800 rounded-[14px] border-[2px] border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer flex flex-col items-start w-full overflow-hidden`}
         >
-            {/* Quick Action Buttons on Hover */}
-            <AnimatePresence>
-                {isHovered && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -5 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-2 right-2 flex gap-1 z-10"
-                    >
-                        <motion.button
-                            
-                            onMouseEnter={(e) => { setTooltipRect(e.currentTarget.getBoundingClientRect()); setShowTooltip('chat'); }}
-                            onMouseLeave={() => { setShowTooltip(null); setTooltipRect(null); }}
-                            onClick={(e) => e.stopPropagation()}
-                            aria-label="Send message"
-                            className="w-7 h-7 rounded-lg bg-blue-50 hover:bg-blue-100 flex items-center justify-center text-blue-600 transition-colors"
-                        >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                            </svg>
-                        </motion.button>
-                        <motion.button
-                            
-                            onMouseEnter={(e) => { setTooltipRect(e.currentTarget.getBoundingClientRect()); setShowTooltip('more'); }}
-                            onMouseLeave={() => { setShowTooltip(null); setTooltipRect(null); }}
-                            onClick={(e) => e.stopPropagation()}
-                            aria-label="More options"
-                            className="w-7 h-7 rounded-lg bg-zinc-50 hover:bg-zinc-100 flex items-center justify-center text-zinc-500 transition-colors"
-                        >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
-                            </svg>
-                        </motion.button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {isCurrentUser && (
+                <div className="absolute inset-0 z-0">
+                    <Grainient 
+                        color1="#ffffff" 
+                        color2="#ffffff" 
+                        color3="#3b82f6" 
+                    />
+                </div>
+            )}
+            {/* Removed Quick Action Buttons */}
 
             {/* Tooltip Portal */}
             {showTooltip && tooltipRect && createPortal(
@@ -114,41 +92,53 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                 document.body
             )}
 
-            {/* Avatar */}
-            <div className="flex flex-col items-center">
-                <motion.div className="relative mb-3 transition-transform duration-200 hover:scale-105" >
-                    <div
-                        className="w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-semibold shadow-md"
-                        style={{
-                            background: student.avatar ? 'transparent' : `linear-gradient(135deg, ${avatarColor} 0%, ${avatarColor}dd 100%)`,
-                            boxShadow: `0 4px 12px ${avatarColor}30`,
-                        }}
+            {/* Avatar Profile Section */}
+            <div className="relative z-10 flex flex-col items-center justify-center gap-3 w-full">
+                <motion.div className="relative flex justify-center shrink-0">
+                    <AnimatedCircularProgressBar
+                        max={100}
+                        min={0}
+                        value={85}
+                        gaugePrimaryColor="#3b82f6"
+                        gaugeSecondaryColor="rgba(219, 234, 254, 0.6)"
+                        className="w-16 h-16 shrink-0 relative z-10"
                     >
-                        {student.avatar ? (
-                            <img src={student.avatar} alt={student.name} className="w-full h-full rounded-full object-cover" />
-                        ) : (
-                            student.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-                        )}
-                    </div>
-                    <motion.div
-                        className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${student.status === 'online' ? 'bg-emerald-500' : 'bg-zinc-300'}`}
-                        animate={student.status === 'online' ? { scale: [1, 1.15, 1] } : {}}
-                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                        role="status"
-                        aria-label={student.status === 'online' ? 'Online' : 'Offline'}
-                    />
+                        <div className="absolute inset-1.5 rounded-full flex items-center justify-center shadow-sm overflow-hidden z-10" style={{ background: 'rgba(219, 234, 254, 0.6)' }}>
+                            {student.avatar ? (
+                                <img src={student.avatar} alt={student.name} className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center font-extrabold text-[16px] text-blue-600">
+                                    {student.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* Level Badge */}
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-20 flex justify-center">
+                            <div 
+                                className={`min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[8.5px] font-bold tracking-wider shadow-sm border-[2px] transition-colors duration-300 bg-blue-500 text-white ${
+                                    student.status.toLowerCase() === 'online' ? 'border-emerald-500 dark:border-emerald-400' : 'border-white dark:border-slate-800'
+                                }`}
+                            >
+                                LV.{student.level || 1}
+                            </div>
+                        </div>
+                    </AnimatedCircularProgressBar>
                 </motion.div>
-                <p className="text-xs font-semibold text-zinc-800 text-center truncate w-full">{student.name}</p>
-                <p className="text-[10px] text-zinc-400 text-center truncate w-full mt-0.5">{student.email.split('@')[0]}</p>
-                <motion.span
-                    className={`inline-flex items-center gap-1 mt-2 px-2 py-0.5 text-[9px] font-medium rounded-full ${
-                        student.status === 'online' ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-50 text-zinc-500'
-                    }`}
-                    
-                >
-                    <span className={`w-1.5 h-1.5 rounded-full ${student.status === 'online' ? 'bg-emerald-500' : 'bg-zinc-400'}`} />
-                    {student.status === 'online' ? 'Online' : 'Offline'}
-                </motion.span>
+                
+                <div className="flex flex-col items-center gap-1.5 overflow-hidden w-full">
+                    <p className="text-[14px] leading-tight font-bold text-slate-800 dark:text-slate-200 truncate text-center w-full">{student.name}</p>
+                    <div className="flex w-full items-center justify-center gap-1 sm:gap-1.5 overflow-hidden">
+                        {student.section && (
+                            <span className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-[4px] text-[8px] sm:text-[8.5px] font-bold tracking-wider uppercase border border-slate-200 dark:border-slate-600 truncate min-w-0 shrink">
+                                {student.section}
+                            </span>
+                        )}
+                        <span className="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-[4px] text-[8px] sm:text-[8.5px] font-bold tracking-wider uppercase border border-blue-100 dark:border-blue-800/50 truncate min-w-0 shrink">
+                            1ST SEM
+                        </span>
+                    </div>
+                </div>
             </div>
         </motion.div>
     );

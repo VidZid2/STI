@@ -33,11 +33,11 @@ import { useQuickViewSettings } from '../../contexts/QuickViewSettingsContext';
 
 // Service imports
 import { getCourseProgressData, formatMinutesToHours } from '../../services/studyTimeService';
-import { formatDaysUntil, getDeadlineTypeColor } from '../../services/deadlinesService';
+import { formatDaysUntil, getDeadlineTypeColor, getDaysUntil } from '../../services/deadlinesService';
 import { formatRelativeTime } from '../../services/activityService';
 
 // Extracted modules from local folder
-import { DashboardIntro, DashboardTutorial, DashboardHeader, DashboardSidebar, DailyInspirationToast } from './components';
+import { DashboardIntro, DashboardTutorial, DashboardHeader, DashboardSidebar, DailyInspirationToast, triggerGlobalToast } from './components';
 import { WidgetSidebar } from './components/WidgetSidebar';
 import { DashboardSuspenseFallback } from './components/DashboardSuspenseFallback';
 import { getSidebarCoursesWithProgress, getTodaysQuote } from './utils';
@@ -206,6 +206,32 @@ const DashboardPage: React.FC = () => {
         recentActivities,
         overallProgress,
         totalCourses } = useDashboardData(refreshTrigger);
+
+    // Trigger deadline warning notifications
+    const hasTriggeredDeadlinesNotification = React.useRef(false);
+    React.useEffect(() => {
+        if (upcomingDeadlines.length > 0 && !hasTriggeredDeadlinesNotification.current) {
+            const todayDeadlines = upcomingDeadlines.filter(d => getDaysUntil(d.dueDate) === 0);
+            const closeDeadlines = upcomingDeadlines.filter(d => {
+                const days = getDaysUntil(d.dueDate);
+                return days > 0 && days <= 3;
+            });
+
+            if (todayDeadlines.length > 0) {
+                hasTriggeredDeadlinesNotification.current = true;
+                triggerGlobalToast('danger', {
+                    title: 'Urgent Deadline Today!',
+                    message: `You have ${todayDeadlines.length} deadline(s) due today. Stay on track!`
+                });
+            } else if (closeDeadlines.length > 0) {
+                hasTriggeredDeadlinesNotification.current = true;
+                triggerGlobalToast('warning', {
+                    title: 'Upcoming Deadlines',
+                    message: `You have ${closeDeadlines.length} deadline(s) due within 3 days. Plan ahead!`
+                });
+            }
+        }
+    }, [upcomingDeadlines]);
 
     // Weather hook
     const {
@@ -511,9 +537,22 @@ const DashboardPage: React.FC = () => {
 
 
 
-
-
-
+            {/* Debug Button to Trigger All Notifications */}
+            <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2">
+                <button 
+                    onClick={() => {
+                        triggerGlobalToast('quote', { title: 'Daily Quote', message: 'You can do it!' });
+                        setTimeout(() => triggerGlobalToast('success', { title: 'Success', message: 'Task completed successfully' }), 1000);
+                        setTimeout(() => triggerGlobalToast('info', { title: 'Information', message: 'New update available' }), 2000);
+                        setTimeout(() => triggerGlobalToast('warning', { title: 'Warning', message: 'Approaching deadline' }), 3000);
+                        setTimeout(() => triggerGlobalToast('danger', { title: 'Danger', message: 'Deadline missed' }), 4000);
+                        setTimeout(() => triggerGlobalToast('urgent', { title: 'Urgent', message: 'Action required immediately' }), 5000);
+                    }}
+                    className="px-4 py-2 bg-indigo-600/80 hover:bg-indigo-700 text-white text-sm font-semibold rounded-full shadow-lg backdrop-blur-sm transition-all z-50"
+                >
+                    Test Notifications
+                </button>
+            </div>
         </SidebarProvider>
     );
 };

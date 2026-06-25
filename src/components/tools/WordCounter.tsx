@@ -679,6 +679,8 @@ ${text}`;
                           <Trash2 className="w-[18px] h-[18px] shrink-0" />
                       </button>
 
+                      <div className="w-[2px] h-8 bg-zinc-200 dark:bg-zinc-800 rounded-full mx-1" />
+
                       <button
                           type="button"
                           onClick={handleLoadSample}

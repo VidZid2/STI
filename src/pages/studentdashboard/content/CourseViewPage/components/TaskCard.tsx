@@ -166,10 +166,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`group relative overflow-hidden flex w-full flex-col lg:flex-row items-stretch gap-6 lg:gap-8 rounded-[20px] border p-5 text-left transition-colors duration-200 sm:p-6 lg:p-7 h-full ${
+            className={`group relative overflow-hidden flex w-full flex-col lg:flex-row items-stretch gap-6 lg:gap-8 p-5 text-left transition-colors duration-200 sm:p-6 lg:p-7 h-full ${
                 isLocked
-                    ? 'bg-zinc-50/50 border-zinc-200/70 opacity-70 dark:bg-zinc-900/40 dark:border-zinc-800/70 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.03)]'
-                    : 'bg-white border-zinc-200/80 dark:bg-zinc-900 dark:border-zinc-800/80 shadow-sm hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 focus-visible:ring-2 focus-visible:ring-blue-500 hover:z-10'
+                    ? 'opacity-70 dark:bg-zinc-900/40 grayscale-[0.2]'
+                    : 'bg-transparent hover:bg-slate-50/30 dark:hover:bg-slate-800/30 focus-visible:ring-2 focus-visible:ring-blue-500'
             }`}
         >
             {/* Left Section: Task info & Submission buttons */}
@@ -235,15 +235,41 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                     {/* Meta rows (Attempts, Penalties, etc.) */}
                     <div className="flex flex-wrap items-center gap-2 w-full">
                         {/* Due Date Tag */}
-                        <div className="flex items-center gap-2.5 px-3 py-2.5 bg-white dark:bg-slate-800 rounded-[12px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default group/tag flex-1 min-w-[150px]">
-                            <div className="w-7 h-7 rounded-[8px] bg-blue-50 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover/tag:scale-110 transition-transform duration-300 flex-shrink-0">
-                                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                            </div>
-                            <div className="flex flex-col flex-1 min-w-0 justify-center">
-                                <span className="text-[9px] font-bold text-blue-600/70 dark:text-blue-400/70 uppercase tracking-wider mb-0.5 leading-none whitespace-nowrap">DUE DATE</span>
-                                <span className="text-[12px] font-bold text-slate-800 dark:text-slate-200 leading-none whitespace-nowrap truncate" title={task.due}>{task.due}</span>
-                            </div>
-                        </div>
+                        {/* Due Date Tag */}
+                        {(() => {
+                            const dueLower = task.due.toLowerCase();
+                            const isDueToday = dueLower.includes('due today') || dueLower === 'today';
+                            const isDueIn3Days = dueLower.includes('3 days') || dueLower.includes('2 days') || dueLower.includes('1 day');
+                            
+                            let containerClasses = "flex items-center gap-2.5 px-3 py-2.5 bg-white dark:bg-slate-800 rounded-[12px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default group/tag flex-1 min-w-[150px]";
+                            let iconContainerClasses = "w-7 h-7 rounded-[8px] bg-blue-50 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover/tag:scale-110 transition-transform duration-300 flex-shrink-0";
+                            let titleClasses = "text-[9px] font-bold text-blue-600/70 dark:text-blue-400/70 uppercase tracking-wider mb-0.5 leading-none whitespace-nowrap";
+                            let valueClasses = "text-[12px] font-bold text-slate-800 dark:text-slate-200 leading-none whitespace-nowrap truncate";
+
+                            if (isDueToday && !isSubmitted) {
+                                containerClasses = "flex items-center gap-2.5 px-3 py-2.5 bg-[#ef4444] rounded-[12px] border border-[#ef4444] shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default group/tag flex-1 min-w-[150px]";
+                                iconContainerClasses = "w-7 h-7 rounded-[8px] bg-black/10 flex items-center justify-center text-white group-hover/tag:scale-110 transition-transform duration-300 flex-shrink-0";
+                                titleClasses = "text-[9px] font-extrabold text-white/90 uppercase tracking-wider mb-0.5 leading-none whitespace-nowrap";
+                                valueClasses = "text-[13px] font-extrabold text-white leading-none whitespace-nowrap truncate";
+                            } else if (isDueIn3Days && !isSubmitted) {
+                                containerClasses = "flex items-center gap-2.5 px-3 py-2.5 bg-[#facc15] rounded-[12px] border border-[#facc15] shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default group/tag flex-1 min-w-[150px]";
+                                iconContainerClasses = "w-7 h-7 rounded-[8px] bg-black/5 flex items-center justify-center text-[#713f12] group-hover/tag:scale-110 transition-transform duration-300 flex-shrink-0";
+                                titleClasses = "text-[9px] font-extrabold text-[#854d0e] uppercase tracking-wider mb-0.5 leading-none whitespace-nowrap";
+                                valueClasses = "text-[13px] font-extrabold text-[#422006] leading-none whitespace-nowrap truncate";
+                            }
+
+                            return (
+                                <div className={containerClasses}>
+                                    <div className={iconContainerClasses}>
+                                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+                                    </div>
+                                    <div className="flex flex-col flex-1 min-w-0 justify-center">
+                                        <span className={titleClasses}>DUE DATE</span>
+                                        <span className={valueClasses} title={task.due}>{task.due}</span>
+                                    </div>
+                                </div>
+                            );
+                        })()}
                         
                         {/* Attempts Tag */}
                         <div className="flex items-center gap-2.5 px-3 py-2.5 bg-white dark:bg-slate-800 rounded-[12px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default group/tag flex-1 min-w-[130px]">

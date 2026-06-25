@@ -1,9 +1,8 @@
-// @ts-nocheck
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
-import './grainient.css';
+import './Grainient.css';
 
-const hexToRgb = (hex) => {
+const hexToRgb = (hex: string) => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) return [1, 1, 1];
   return [parseInt(result[1], 16) / 255, parseInt(result[2], 16) / 255, parseInt(result[3], 16) / 255];
@@ -100,9 +99,33 @@ void main(){
 }
 `;
 
-// Keep renderer/program alive across re-renders so Effect 2 can update
-// uniforms without ever rebuilding the WebGL context.
 const ctxMap = new WeakMap();
+
+interface GrainientProps {
+  timeSpeed?: number;
+  colorBalance?: number;
+  warpStrength?: number;
+  warpFrequency?: number;
+  warpSpeed?: number;
+  warpAmplitude?: number;
+  blendAngle?: number;
+  blendSoftness?: number;
+  rotationAmount?: number;
+  noiseScale?: number;
+  grainAmount?: number;
+  grainScale?: number;
+  grainAnimated?: boolean;
+  contrast?: number;
+  gamma?: number;
+  saturation?: number;
+  centerX?: number;
+  centerY?: number;
+  zoom?: number;
+  color1?: string;
+  color2?: string;
+  color3?: string;
+  className?: string;
+}
 
 const Grainient = ({
   timeSpeed = 0.25,
@@ -128,10 +151,9 @@ const Grainient = ({
   color2 = '#5227FF',
   color3 = '#B497CF',
   className = ''
-}) => {
-  const containerRef = useRef(null);
+}: GrainientProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Effect 1: build WebGL context once, pause when offscreen / tab hidden
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -185,12 +207,10 @@ const Grainient = ({
     ctxMap.set(container, { renderer, program, mesh });
 
     const setSize = () => {
-      const w = Math.max(1, container.clientWidth);
-      const h = Math.max(1, container.clientHeight);
+      const rect = container.getBoundingClientRect();
+      const w = Math.max(1, Math.floor(rect.width));
+      const h = Math.max(1, Math.floor(rect.height));
       renderer.setSize(w, h);
-      // Force style back to 100% since setSize overwrites them with px values
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
       const res = program.uniforms.iResolution.value;
       res[0] = gl.drawingBufferWidth;
       res[1] = gl.drawingBufferHeight;
@@ -206,7 +226,7 @@ const Grainient = ({
     let isPageVisible = !document.hidden;
     const t0 = performance.now();
 
-    const loop = t => {
+    const loop = (t: number) => {
       program.uniforms.iTime.value = (t - t0) * 0.001;
       renderer.render({ scene: mesh });
       raf = requestAnimationFrame(loop);
@@ -241,9 +261,8 @@ const Grainient = ({
       ctxMap.delete(container);
       try { container.removeChild(canvas); } catch { /* ignore */ }
     };
-  }, []); // renderer created once
+  }, []);
 
-  // Effect 2: sync props to uniforms — zero GPU cost, no teardown
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;

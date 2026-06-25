@@ -1,8 +1,12 @@
 import * as React from 'react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { TodoItem } from '../types';
 import CreateGoalModal from '../content/GoalsContent/modals/CreateGoalModal';
+import { fetchGoals, createGoal, updateGoalStatus, syncAllGoalsProgress } from '../../../services/goalsService';
+import type { GoalWithProgress } from '../../../services/goalsService';
+import { AnimatedCircularProgressBar } from '../../../components/ui/animated-circular-progress-bar';
+import { Checkbox } from '../../../components/ui/r-checkbox';
 
 interface TodoWidgetProps {
     todos: TodoItem[];
@@ -17,30 +21,40 @@ interface TodoWidgetProps {
 }
 
 export const TodoWidget = React.memo<TodoWidgetProps>(({
-    todos,
-    addTodo,
-    toggleTodo,
-    deleteTodo,
-    clearAllTodos,
-    completedCount,
-    setNewTodoText,
     compactMode,
     onClose,
 }) => {
-    // Phase 1B: Local input state to prevent parent re-renders while typing
-
+    // Local input state
     const [localIsAdding, setLocalIsAdding] = useState(false);
-    const localInputRef = useRef<HTMLInputElement>(null);
 
-    // Auto-focus input when localIsAdding becomes true
+    // Goals Database State
+    const [goals, setGoals] = useState<GoalWithProgress[]>([]);
+    
+    const loadGoals = useCallback(async () => {
+        const fetchedGoals = await fetchGoals();
+        const syncedGoals = fetchedGoals.length > 0 ? await syncAllGoalsProgress() : [];
+        setGoals(syncedGoals.length > 0 ? syncedGoals : fetchedGoals);
+    }, []);
+
     useEffect(() => {
-        if (localIsAdding && localInputRef.current) {
-            localInputRef.current.focus();
-        }
-    }, [localIsAdding]);
+        loadGoals();
+        const intervalId = setInterval(loadGoals, 3000);
+        return () => clearInterval(intervalId);
+    }, [loadGoals]);
 
+    const handleCreateGoal = async (newGoalData: any) => {
+        await createGoal(newGoalData);
+        await loadGoals();
+        setLocalIsAdding(false);
+    };
 
+    const handleToggleGoal = async (goal: GoalWithProgress) => {
+        const newStatus = goal.status === 'completed' ? 'active' : 'completed';
+        await updateGoalStatus(goal.id, newStatus);
+        await loadGoals();
+    };
 
+    const completedGoalsCount = goals.filter(g => g.status === 'completed').length;
     return (
         <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -64,23 +78,14 @@ export const TodoWidget = React.memo<TodoWidgetProps>(({
                     </motion.div>
                     <span className={`font-bold text-slate-800 dark:text-slate-200 ${compactMode ? 'text-xs' : 'text-sm'}`}>Goal</span>
                     <motion.span
-                        key={todos.length}
+                        key={goals.length}
                         initial={{ scale: 1.3 }}
                         animate={{ scale: 1 }}
                         transition={{ type: 'spring', stiffness: 500 }}
                         className={`px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 font-semibold ${compactMode ? 'text-[9px]' : 'text-[10px]'}`}
                     >
-                        {todos.length}
+                        {goals.length}
                     </motion.span>
-                    {completedCount > 0 && (
-                        <motion.span
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className={`text-emerald-600 dark:text-emerald-450 font-medium ${compactMode ? 'text-[8px]' : 'text-[10px]'}`}
-                        >
-                            {completedCount} done
-                        </motion.span>
-                    )}
                 </div>
                 <div className="flex items-center gap-1">
                     <motion.button
@@ -93,21 +98,6 @@ export const TodoWidget = React.memo<TodoWidgetProps>(({
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                         </svg>
                     </motion.button>
-                    {todos.length > 0 && (
-                        <motion.button
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={clearAllTodos}
-                            className={`flex items-center justify-center rounded-md text-slate-400 hover:text-red-500 dark:text-slate-550 dark:hover:text-red-450 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors ${compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
-                            title="Clear all tasks"
-                        >
-                            <svg className={compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </motion.button>
-                    )}
                     <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
@@ -125,16 +115,12 @@ export const TodoWidget = React.memo<TodoWidgetProps>(({
             <CreateGoalModal
                 isOpen={localIsAdding}
                 onClose={() => setLocalIsAdding(false)}
-                onCreate={(goal) => {
-                    setNewTodoText(goal.title);
-                    addTodo();
-                    setLocalIsAdding(false);
-                }}
+                onCreate={handleCreateGoal}
             />
 
             {/* Todo List */}
             <div className="max-h-64 overflow-y-auto custom-scrollbar">
-                {todos.length === 0 ? (
+                {goals.length === 0 ? (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -150,17 +136,17 @@ export const TodoWidget = React.memo<TodoWidgetProps>(({
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setLocalIsAdding(true)}
-                            className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-450 dark:hover:text-blue-350 transition-colors"
+                            className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-450 dark:hover:text-blue-350 transition-colors font-medium"
                         >
-                            + Create a goal please
+                            + Create New Goal
                         </motion.button>
                     </motion.div>
                 ) : (
                     <motion.ul layout className="p-2 space-y-1">
                         <AnimatePresence mode="popLayout">
-                            {todos.map((todo) => (
+                            {goals.map((goal) => (
                                 <motion.li
-                                    key={todo.id}
+                                    key={goal.id}
                                     layout
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
@@ -168,57 +154,54 @@ export const TodoWidget = React.memo<TodoWidgetProps>(({
                                     transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                                     className="group flex items-center gap-2 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
                                 >
-                                    {/* Checkbox */}
-                                    <motion.button
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        onClick={() => toggleTodo(todo.id)}
-                                        className={`w-5 h-5 rounded-[4px] border-[1.5px] flex items-center justify-center transition-all duration-200 ${todo.completed
-                                                ? 'bg-blue-500 border-blue-500 text-white'
-                                                : 'border-slate-300 dark:border-slate-600 hover:border-blue-400 dark:hover:border-blue-400 focus:ring-2 focus:ring-blue-500/20'
-                                            }`}
-                                    >
+                                    {/* Checkbox and Status */}
+                                    <div className="flex items-center">
+                                        <div className="flex-shrink-0 flex items-center justify-center">
+                                            <Checkbox
+                                                checked={goal.status === 'completed'}
+                                                id={`goal-${goal.id}`}
+                                                onCheckedChange={() => handleToggleGoal(goal)}
+                                            />
+                                        </div>
                                         <AnimatePresence>
-                                            {todo.completed && (
-                                                <motion.svg
-                                                    initial={{ scale: 0, opacity: 0 }}
-                                                    animate={{ scale: 1, opacity: 1 }}
-                                                    exit={{ scale: 0, opacity: 0 }}
-                                                    transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                                                    className="w-3 h-3 text-white"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
+                                            {goal.status === 'completed' && (
+                                                <motion.div
+                                                    initial={{ width: 0, opacity: 0 }}
+                                                    animate={{ width: 'auto', opacity: 1 }}
+                                                    exit={{ width: 0, opacity: 0 }}
+                                                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                                    className="overflow-hidden whitespace-nowrap flex items-center"
                                                 >
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                </motion.svg>
+                                                    <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/20 px-1.5 py-0.5 rounded uppercase tracking-wider ml-2 flex items-center justify-center leading-none mt-[1px]">
+                                                        DONE
+                                                    </span>
+                                                </motion.div>
                                             )}
                                         </AnimatePresence>
-                                    </motion.button>
+                                    </div>
 
                                     {/* Text */}
                                     <motion.span
                                         animate={{
-                                            color: todo.completed ? '#94a3b8' : 'currentColor',
-                                            textDecoration: todo.completed ? 'line-through' : 'none'
+                                            color: goal.status === 'completed' ? '#94a3b8' : 'currentColor',
+                                            textDecoration: goal.status === 'completed' ? 'line-through' : 'none'
                                         }}
                                         transition={{ duration: 0.2 }}
-                                        className={`flex-1 text-[13px] ${todo.completed ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}
+                                        className={`flex-1 text-[13px] truncate ${goal.status === 'completed' ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}
                                     >
-                                        {todo.text}
+                                        {goal.title}
                                     </motion.span>
 
-                                    {/* Delete button */}
+                                    {/* View Full Details Button */}
                                     <motion.button
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        whileHover={{ scale: 1.1 }}
-                                        whileTap={{ scale: 0.9 }}
-                                        onClick={() => deleteTodo(todo.id)}
-                                        className="w-6 h-6 flex items-center justify-center rounded-md text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-450 hover:bg-slate-100 dark:hover:bg-slate-700/50 opacity-0 group-hover:opacity-100 transition-all duration-150"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => {
+                                            window.dispatchEvent(new CustomEvent('navigate-to-tab', { detail: { tab: 'goals' } }));
+                                        }}
+                                        className="text-[10px] font-medium text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
                                     >
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
+                                        View full details
                                     </motion.button>
                                 </motion.li>
                             ))}
@@ -228,18 +211,28 @@ export const TodoWidget = React.memo<TodoWidgetProps>(({
             </div>
 
             {/* Progress Footer */}
-            {todos.length > 0 && (
+            {goals.length > 0 && (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.1 }}
                     className="px-3 py-2.5 border-t border-slate-100 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/30"
                 >
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                            {completedCount} of {todos.length} completed
-                        </span>
-                        {completedCount === todos.length && todos.length > 0 && (
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <AnimatedCircularProgressBar
+                                max={goals.length}
+                                min={0}
+                                value={completedGoalsCount}
+                                gaugePrimaryColor="rgb(59 130 246)"
+                                gaugeSecondaryColor="rgba(148, 163, 184, 0.2)"
+                                className="w-5 h-5 text-[8px]"
+                            />
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                                {completedGoalsCount} of {goals.length} completed
+                            </span>
+                        </div>
+                        {completedGoalsCount === goals.length && goals.length > 0 && (
                             <motion.span
                                 initial={{ opacity: 0, scale: 0.8, y: 5 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -252,14 +245,6 @@ export const TodoWidget = React.memo<TodoWidgetProps>(({
                                 All done!
                             </motion.span>
                         )}
-                    </div>
-                    <div className="h-1.5 bg-slate-200/60 dark:bg-slate-700 rounded-full overflow-hidden">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${todos.length > 0 ? (completedCount / todos.length) * 100 : 0}%` }}
-                            transition={{ type: 'spring', stiffness: 80, damping: 15, delay: 0.1 }}
-                            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-400 dark:to-indigo-400 rounded-full"
-                        />
                     </div>
                 </motion.div>
             )}

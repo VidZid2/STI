@@ -97,9 +97,10 @@ export interface ModuleData {
 }
 
 interface ModuleCardProps {
-    module: ModuleData;
-    index: number;
+    module?: ModuleData;
+    index?: number;
     onUpdate?: (updatedModule: ModuleData) => void;
+    isSearching?: boolean;
 }
 
 export const getLockedReason = (module: ModuleData) => {
@@ -187,8 +188,8 @@ const getContentDescription = (type: ContentType): string => {
     }
 };
 
-export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate }) => {
-    const [contents, setContents] = useState(module.contents);
+export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index = 0, onUpdate, isSearching = false }) => {
+    const [contents, setContents] = useState(module?.contents || []);
     const [downloadingIdx, setDownloadingIdx] = useState<number | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
 
@@ -198,9 +199,11 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
 
     // Keep state in sync if data changes
     useEffect(() => {
-        setContents(module.contents);
-        setCurrentPage(0);
-    }, [module.contents]);
+        if (module) {
+            setContents(module.contents);
+            setCurrentPage(0);
+        }
+    }, [module?.contents]);
 
     const completedContents = contents.filter(c => c.completed).length;
     const progressPercent = contents.length > 0
@@ -210,13 +213,15 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
 
     
     // Dynamic status determination based on completion state
-    const currentStatus = contents.length > 0 && completedContents === contents.length 
-        ? 'completed' 
-        : module.status === 'locked' 
-            ? 'locked' 
-            : 'in-progress';
+    const currentStatus = isSearching
+        ? 'in-progress'
+        : (contents.length > 0 && completedContents === contents.length 
+            ? 'completed' 
+            : module?.status === 'locked' 
+                ? 'locked' 
+                : 'in-progress');
 
-    const lockedReason = currentStatus === 'locked' ? getLockedReason(module) : null;
+    const lockedReason = currentStatus === 'locked' && module ? getLockedReason(module) : null;
 
     const handleDownloadContent = (e: React.MouseEvent, cIndex: number) => {
         e.stopPropagation();
@@ -230,7 +235,9 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
                 const next = prev.map((item, idx) => 
                     idx === cIndex ? { ...item, completed: true } : item
                 );
-                if (onUpdate) onUpdate({ ...module, contents: next });
+                if (module && onUpdate) {
+                    onUpdate({ ...module, id: module.id as number, title: module.title || "Untitled", contents: next } as any);
+                }
                 return next;
             });
             setDownloadingIdx(null);
@@ -245,7 +252,9 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
             // Reset checklist to demo review experience
             setContents(prev => {
                 const next = prev.map(item => ({ ...item, completed: false }));
-                if (onUpdate) onUpdate({ ...module, contents: next });
+                if (module && onUpdate) {
+                    onUpdate({ ...module, id: module.id as number, title: module.title || "Untitled", contents: next } as any);
+                }
                 return next;
             });
             return;
@@ -262,21 +271,80 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            whileHover={currentStatus !== 'locked' ? {
-                y: -2,
+            whileHover={currentStatus !== 'locked' && !isSearching ? {
+                y: -1,
             } : undefined}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className={`group relative overflow-hidden rounded-[24px] border p-5 text-left transition-colors duration-200 sm:p-6 lg:p-7 ${
-                currentStatus === 'locked' 
-                    ? 'bg-zinc-50/80 border-zinc-200/70 dark:bg-zinc-900/60 dark:border-zinc-800/70 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.03)]' 
-                    : 'bg-white border-zinc-200/80 dark:bg-zinc-900 dark:border-zinc-800/80 shadow-sm hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 hover:z-10'
+            className={`group relative overflow-hidden p-5 text-left transition-colors duration-200 sm:p-6 lg:p-7 h-full ${
+                isSearching
+                    ? 'bg-transparent'
+                    : currentStatus === 'locked' 
+                        ? 'bg-zinc-50/40 dark:bg-zinc-900/30' 
+                        : 'bg-transparent hover:bg-slate-50/30 dark:hover:bg-slate-800/30'
             }`}
         >
+            {isSearching ? (
+                <div className="flex w-full flex-col lg:flex-row items-stretch gap-6 lg:gap-8">
+                    {/* Left Section Skeleton */}
+                    <div className="flex flex-col lg:w-[45%] shrink-0 justify-start gap-8 border-b lg:border-b-0 lg:border-r border-zinc-150 dark:border-zinc-800/60 pb-6 lg:pb-0 lg:pr-6 xl:pr-8">
+                        <div className="flex flex-col gap-4 sm:gap-5">
+                            <div className="text-left">
+                                <div className="h-6 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4 mb-2 animate-shimmer-bg" />
+                                <div className="h-4 bg-zinc-100 dark:bg-zinc-800/50 rounded w-1/2 animate-shimmer-bg" />
+                            </div>
 
-            {/* Locked Overlay with Premium White Pill Container imitating Study Tools */}
-            {currentStatus === 'locked' && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-[6px] rounded-[24px]">
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl rounded-[24px] p-5 sm:p-6 lg:p-7 w-full flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 group/locked transition-all duration-300 hover:shadow-2xl hover:border-blue-200/80 dark:hover:border-blue-800/50 relative overflow-hidden">
+                            {/* Module Overview Text Skeleton */}
+                            <div className="flex flex-col sm:flex-row items-start gap-3">
+                                <div className="flex-1 space-y-2 text-left">
+                                    <div className="h-3 bg-zinc-200 dark:bg-zinc-800 rounded w-24 animate-shimmer-bg" />
+                                    <div className="h-3 bg-zinc-100 dark:bg-zinc-800/50 rounded w-full animate-shimmer-bg" />
+                                    <div className="h-3 bg-zinc-100 dark:bg-zinc-800/50 rounded w-5/6 animate-shimmer-bg" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Progress and Continue Button Skeleton */}
+                        <div className="flex flex-col gap-3 sm:gap-4 mt-auto">
+                            <div className="w-full">
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <div className="h-3 bg-zinc-200 dark:bg-zinc-800 rounded w-16 animate-shimmer-bg" />
+                                    <div className="h-3 bg-zinc-200 dark:bg-zinc-800 rounded w-8 animate-shimmer-bg" />
+                                </div>
+                                <div className="w-full h-3 rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden" />
+                            </div>
+                            <div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded-[14px] w-full animate-shimmer-bg" />
+                        </div>
+                    </div>
+
+                    {/* Right Section Skeleton */}
+                    <div className="flex flex-col lg:flex-1 gap-2.5 justify-center lg:justify-start mt-5 lg:mt-0">
+                        <div className="flex items-center justify-between mb-2.5 gap-2">
+                            <div className="h-7 bg-zinc-100 dark:bg-zinc-800 rounded-lg w-32 animate-shimmer-bg" />
+                            <div className="h-7 bg-zinc-100 dark:bg-zinc-800 rounded-lg w-28 animate-shimmer-bg" />
+                        </div>
+                        <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200/80 dark:border-zinc-800/80 rounded-[22px] p-3.5 flex flex-col lg:flex-1 gap-3">
+                            {[0, 1].map((i) => (
+                                <div key={i} className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-800/80">
+                                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                                        <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-[12px] bg-zinc-100 dark:bg-zinc-800 shrink-0 animate-shimmer-bg" />
+                                        <div className="min-w-0 flex-1 space-y-2 text-left flex flex-col items-start justify-center">
+                                            <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-2/3 animate-shimmer-bg" />
+                                            <div className="h-3 bg-zinc-100 dark:bg-zinc-800/50 rounded w-1/3 animate-shimmer-bg" />
+                                            <div className="h-5 bg-zinc-50 dark:bg-zinc-800/30 rounded-md w-20 animate-shimmer-bg" />
+                                        </div>
+                                    </div>
+                                    <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 shrink-0 animate-shimmer-bg" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <>
+                    {/* Locked Overlay with Premium White Pill Container imitating Study Tools */}
+                    {currentStatus === 'locked' && (
+                        <div className="absolute inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-[6px] rounded-[24px]">
+                            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl rounded-[24px] p-5 sm:p-6 lg:p-7 w-full flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 group/locked transition-all duration-300 hover:shadow-2xl hover:border-blue-200/80 dark:hover:border-blue-800/50 relative overflow-hidden">
                         
                         {/* SaaS Background Accents */}
                         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-blue-500/5 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover/locked:scale-150" aria-hidden="true" />
@@ -329,54 +397,23 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
 
             {/* Left Section: Module details & Main Action Button (~45% width on desktop) */}
             <div className="flex flex-col lg:w-[45%] shrink-0 justify-start gap-8 border-b lg:border-b-0 lg:border-r border-zinc-150 dark:border-zinc-800/60 pb-6 lg:pb-0 lg:pr-6 xl:pr-8">
-                <div className="flex flex-col gap-6 sm:gap-8">
+                <div className="flex flex-col gap-4 sm:gap-5">
                     <div className="text-left">
                         <h3 className="text-[18px] sm:text-[22px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-normal">
-                            {module.title}
+                            {module?.title}
                         </h3>
                     </div>
 
-                    {/* Module Overview Card */}
+                    {/* Module Overview Text */}
                     <motion.div 
-                        whileHover={currentStatus !== 'locked' ? { y: -1 } : {}}
-                        className={`relative overflow-hidden border rounded-[14px] p-4 flex flex-col sm:flex-row items-start gap-3 group/overview transition-all duration-300 ${
-                            currentStatus === 'locked'
-                                ? 'bg-slate-50 dark:bg-slate-800/40 border-slate-200/60 dark:border-slate-700/40 opacity-70'
-                                : 'bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/60 shadow-sm hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/40'
+                        className={`relative flex flex-col sm:flex-row items-start gap-3 group/overview transition-all duration-300 ${
+                            currentStatus === 'locked' ? 'opacity-70' : ''
                         }`}
                     >
-                        <div
-                            className={`w-10 h-10 transition-all duration-300 rounded-[12px] flex items-center justify-center flex-shrink-0 group-hover/overview:scale-105 ${
-                                currentStatus === 'completed'
-                                    ? 'bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border border-emerald-100/80 dark:border-emerald-800/30'
-                                    : currentStatus === 'locked'
-                                        ? 'bg-slate-100 dark:bg-slate-700/50 border border-slate-200/60 dark:border-slate-600/30'
-                                        : 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100/80 dark:border-blue-800/30'
-                            }`}
-                        >
-                            {currentStatus === 'completed' ? (
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-emerald-600 dark:text-emerald-400" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                    <polyline points="22 4 12 14.01 9 11.01" />
-                                </svg>
-                            ) : currentStatus === 'locked' ? (
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-slate-400 dark:text-slate-500" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                                </svg>
-                            ) : (
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-blue-400" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="16" x2="12" y2="12" />
-                                    <line x1="12" y1="8" x2="12.01" y2="8" />
-                                </svg>
-                            )}
-                        </div>
-
                         <div className="flex-1 relative z-10 text-left min-w-0">
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">Module Overview</p>
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">Module Overview</p>
                             <p className="text-[13px] sm:text-[13.5px] text-slate-600 dark:text-slate-300 leading-relaxed">
-                                {getModuleDescription(module.title)}
+                                {getModuleDescription(module?.title || '')}
                             </p>
                         </div>
                     </motion.div>
@@ -594,8 +631,8 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
 
                     {/* Pagination Controls */}
                     {totalPages > 1 && (
-                        <div className="w-full pt-2.5 mt-2.5 border-t border-zinc-150 dark:border-zinc-800/80">
-                            <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-zinc-900 p-1.5 rounded-[14px] border border-zinc-200/60 dark:border-zinc-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+                        <div className="w-full pt-4 sm:pt-5 mt-3 sm:mt-4 border-t border-slate-200 dark:border-slate-700/60">
+                            <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-zinc-900 p-1.5 rounded-[14px] border border-slate-200/80 dark:border-zinc-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
                                 <button 
                                     type="button"
                                     onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))} 
@@ -628,8 +665,9 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onUpdate 
                     )}
                 </div>
             </div>
-            
             </div>
+                </>
+            )}
         </motion.div>
     );
 };

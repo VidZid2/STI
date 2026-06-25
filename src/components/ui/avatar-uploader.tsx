@@ -11,7 +11,7 @@ import {
 	ModalTitle,
 	ModalTrigger,
 } from '@/components/ui/modal';
-import { Button } from '@/components/ui/button';
+
 import { Input } from '@/components/ui/input';
 
 interface Props {

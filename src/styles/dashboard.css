@@ -6346,11 +6346,286 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
         .mobile-dock .nav-item {
             min-width: 48px !important;
             padding: 6px 8px !important;
+        max-height: none !important;
+        border-radius: 0;
+        z-index: 9000;
+        background: rgba(255, 255, 255, 0.95); /* Premium glass backdrop */
+        backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
+        border: none !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 -8px 24px -4px rgba(0, 0, 0, 0.05);
+        display: flex !important; /* Overrides hidden */
+        padding: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        overflow: hidden !important; 
+        scrollbar-width: none !important; /* Firefox */
+        -ms-overflow-style: none !important; /* IE and Edge */
+        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    opacity 0.4s ease, border-radius 0.4s ease !important;
+        will-change: transform, opacity;
+    }
+
+    .mobile-dock.hidden-dock {
+        transform: translateY(120%) scale(0.95) rotateX(10deg) !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        border-radius: 20px !important;
+        transition: transform 0.5s cubic-bezier(0.8, -0.2, 0.2, 1.2), 
+                    opacity 0.3s ease, border-radius 0.3s ease !important;
+    }
+
+    /* Dark Mode Support for Bottom Nav */
+    body.dark-mode .mobile-dock {
+        background: rgba(15, 23, 42, 0.95); /* Slate 900 glass */
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 -8px 24px -4px rgba(0, 0, 0, 0.4);
+    }
+
+    .mobile-dock [data-sidebar="sidebar"] {
+        width: 100% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        display: flex !important;
+        flex-direction: row !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        overflow: hidden !important;
+        align-items: center !important;
+        top: 0 !important;
+        scrollbar-width: none !important; /* Firefox */
+        -ms-overflow-style: none !important; /* IE and Edge */
+    }
+
+    /* Hide Desktop specific UI */
+    .mobile-dock .sidebar-collapse-toggle,
+    .mobile-dock .sidebar-bottom {
+        display: none !important;
+    }
+
+    /* Nav container evenly distributes items */
+    .mobile-dock .sidebar-nav {
+        display: flex !important;
+        flex-direction: row !important;
+        width: 100% !important;
+        height: 100% !important;
+        padding: 0 4px !important;
+        margin: 0 !important;
+        gap: 0 !important;
+        overflow-x: visible !important;
+        overflow-y: hidden !important; /* Strictly lock vertical overflow */
+        align-items: center !important;
+        justify-content: space-between !important;
+        scrollbar-width: none !important; /* Firefox */
+        -ms-overflow-style: none !important; /* IE and Edge */
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+    
+    /* Ensure all wrappers (divs and buttons) stretch equally */
+    .mobile-dock .sidebar-nav > * {
+        flex: 1 1 0 !important;
+        height: 100% !important;
+        min-width: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    
+    /* Cross-browser Webkit scrollbar hiding for dock elements */
+    .mobile-dock::-webkit-scrollbar,
+    .mobile-dock [data-sidebar="sidebar"]::-webkit-scrollbar,
+    .mobile-dock .sidebar-nav::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+
+    /* Each nav item takes full width of its wrapper */
+    .mobile-dock .nav-item {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 2px !important; 
+        padding: 4px 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        min-width: 0 !important;
+        border-radius: 8px !important;
+        background: transparent !important;
+        transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    /* Tactile press feedback */
+    .mobile-dock .nav-item:active {
+        transform: scale(0.92) !important;
+    }
+
+    .mobile-dock .nav-item.active {
+        background: transparent !important; /* Force transparent background, use icon color for active state */
+    }
+
+    .mobile-dock .nav-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 26px !important;
+        height: 26px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    }
+    
+    .mobile-dock .nav-item.active .nav-icon {
+        background: transparent !important;
+        color: #3b82f6 !important;
+        transform: scale(1.1) !important;
+    }
+
+    .mobile-dock .nav-icon svg {
+        width: 22px;
+        height: 22px;
+        stroke-width: 2;
+    }
+
+    /* Bring back the text label but make it tiny */
+    .mobile-dock .nav-content {
+        max-width: 100px !important;
+        opacity: 1 !important;
+        margin: 0 !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .mobile-dock .nav-text {
+        font-size: 9px !important;
+        letter-spacing: -0.03em !important;
+        font-weight: 600 !important;
+        margin-bottom: 0 !important;
+        color: var(--text-gray);
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 100% !important;
+        display: block !important;
+    }
+    
+    .mobile-dock .nav-item.active .nav-text {
+        color: #3b82f6 !important;
+    }
+
+    .mobile-dock .nav-chevron,
+    .mobile-dock .nav-description {
+        display: none !important;
+    }
+    
+    /* Ensure dashboard body doesn't hide behind the new dock */
+    .main-content {
+        padding-bottom: 120px !important; 
+    }
+
+    /* Ultra-narrow compact mobile screen optimization (e.g., iPhone SE/mini) */
+    @media (max-width: 380px) {
+        .mobile-dock .nav-item {
+            min-width: 48px !important;
+            padding: 6px 8px !important;
             gap: 0 !important;
             justify-content: center !important;
         }
         .mobile-dock .nav-content {
             display: none !important;
         }
+    }
+}
+}
+
+/* SLEEK DESKTOP SIDEBAR (Linear style) */
+@media (min-width: 1024px) {
+    .desktop-sleek .nav-item {
+        padding: 6px 10px !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 6px !important;
+        min-height: 32px !important;
+        gap: 12px !important;
+        transition: all 0.2s ease !important;
+        margin-bottom: 2px !important;
+        outline: none !important;
+    }
+    
+    .desktop-sleek .nav-item:focus {
+        outline: none !important;
+    }
+    
+    .desktop-sleek .nav-item:hover {
+        background: rgba(59, 130, 246, 0.08) !important;
+        transform: none !important;
+    }
+    body.dark-mode .desktop-sleek .nav-item:hover {
+        background: rgba(59, 130, 246, 0.15) !important;
+    }
+    
+    .desktop-sleek .nav-item.active {
+        background: rgba(59, 130, 246, 0.15) !important;
+    }
+    body.dark-mode .desktop-sleek .nav-item.active {
+        background: rgba(59, 130, 246, 0.25) !important;
+    }
+    
+    .desktop-sleek .nav-item::before {
+        display: none !important; /* Remove the active left border */
+    }
+    
+    .desktop-sleek .nav-description {
+        display: none !important; /* Hide descriptions on desktop completely */
+    }
+    
+    .desktop-sleek .nav-icon {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        color: var(--text-secondary) !important;
+    }
+    
+    .desktop-sleek .nav-icon svg {
+        width: 16px !important;
+        height: 16px !important;
+        color: inherit !important;
+    }
+    
+    .desktop-sleek .nav-text {
+        font-size: 13.5px !important;
+        font-weight: 500 !important;
+        color: var(--text-secondary) !important;
+    }
+    
+    .desktop-sleek .nav-item.active .nav-text,
+    .desktop-sleek .nav-item.active .nav-icon {
+        color: var(--brand-blue) !important;
+        font-weight: 600 !important;
+    }
+    body.dark-mode .desktop-sleek .nav-item.active .nav-text,
+    body.dark-mode .desktop-sleek .nav-item.active .nav-icon {
+        color: var(--lighter-blue) !important;
+    }
+    
+    .desktop-sleek.sidebar-bottom {
+        border-top: none !important;
     }
 }

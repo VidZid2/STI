@@ -77,7 +77,10 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
         }
         
         const timer = setTimeout(() => {
-            setInternalToasts(initialToasts);
+            setInternalToasts(prev => {
+                // Remove any fallback streak/quotes if they were already added, though not strictly necessary since ids are unique
+                return [...prev, ...initialToasts];
+            });
             
             initialToasts.forEach((toast, index) => {
                 setTimeout(() => {
@@ -126,11 +129,22 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
     };
 
     const variants: any = {
-        initial: () => ({
-            opacity: 0, 
-            y: 50, 
-            scale: 0.8
-        }),
+        initial: ({ isMobile, offset }: { isMobile: boolean, offset: number }) => {
+            if (offset > 0) {
+                const yOffset = isMobile ? offset * 12 : -offset * 12;
+                const scale = 1 - (offset * 0.05);
+                return {
+                    opacity: 0,
+                    y: yOffset,
+                    scale: scale
+                };
+            }
+            return {
+                opacity: 0, 
+                y: 50, 
+                scale: 0.8
+            };
+        },
         animate: ({ isMobile, offset }: { isMobile: boolean, offset: number }) => {
             const yOffset = isMobile ? offset * 12 : -offset * 12;
             const scale = 1 - (offset * 0.05);
@@ -183,9 +197,9 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
         <div className={`fixed top-20 left-4 right-4 mx-auto max-w-[450px] lg:top-auto lg:bottom-6 lg:left-6 lg:right-auto lg:mx-0 lg:w-[400px] ${isMobile ? 'z-[999]' : 'z-[10005]'} ${containerPointerEvents}`}>
             <div className="relative w-full h-full">
                 <AnimatePresence mode="popLayout">
-                    {toasts.map((t, index) => {
-                        const isFront = index === toasts.length - 1;
-                        const offset = toasts.length - 1 - index;
+                    {toasts.slice(0, 4).map((t, index) => {
+                        const isFront = index === 0;
+                        const offset = index;
                         
                         return (
                             <motion.div
@@ -209,7 +223,11 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
                                         ${isMobile && isFront ? 'pointer-events-none' : ''}
                                         ${t.type === 'quote' 
                                             ? 'bg-blue-600 dark:bg-blue-900 border border-yellow-400' 
-                                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
+                                            : t.type === 'urgent' || t.type === 'danger'
+                                                ? 'bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 shadow-sm shadow-red-500/10'
+                                                : t.type === 'warning'
+                                                    ? 'bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 shadow-sm shadow-amber-500/10'
+                                                    : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
                                         }`}
                                 >
                                     
@@ -317,7 +335,13 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
                                         </>
                                     ) : (
                                         <>
-                                            <NotificationIcon type={t.type as any} title={t.title || ''} />
+                                            <div className={`flex items-center justify-center w-10 h-10 flex-shrink-0 rounded-full border shadow-sm ${
+                                                t.type === 'urgent' || t.type === 'danger' ? 'bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/40 dark:to-red-900/20 border-red-200/60 dark:border-red-800/50' : 
+                                                t.type === 'warning' ? 'bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950/40 dark:to-amber-900/20 border-amber-200/60 dark:border-amber-800/50' : 
+                                                'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/40 dark:to-blue-900/20 border-blue-200/60 dark:border-blue-800/50'
+                                            }`}>
+                                                <NotificationIcon type={t.type as any} title={t.title || t.data?.title || ''} />
+                                            </div>
                                             <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
                                                 <h4 className="text-[13px] font-semibold text-slate-800 dark:text-slate-100 leading-tight">
                                                     {t.title || t.data?.title}
@@ -326,7 +350,6 @@ export const DailyInspirationToast: React.FC<DailyInspirationToastProps> = ({ qu
                                                     {t.message || t.data?.message}
                                                 </p>
                                             </div>
-                                            <div className="flex-shrink-0 w-2 h-2 rounded-full" style={{ backgroundColor: t.type === 'warning' ? '#f59e0b' : '#3b82f6' }} />
                                         </>
                                     )}
                                 </div>

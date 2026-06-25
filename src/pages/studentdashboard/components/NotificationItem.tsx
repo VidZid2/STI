@@ -6,6 +6,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { NotificationIcon } from './NotificationIcon';
+import { Note, type TNoteType } from '../../../components/ui/Note';
+
 export interface NotificationItemProps {
     notification: any;
     onClose: (id: string) => void;
@@ -37,17 +39,17 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({ notification
         return () => clearInterval(timer);
     }, [notification.id, onClose, isHovered]);
 
-    const getAccentColor = () => {
+    const getNoteType = (): TNoteType => {
         switch (notification.type) {
-            case 'assignment': return '#3b82f6';
-            case 'grade': return '#f59e0b';
-            case 'announcement': return '#8b5cf6';
-            case 'warning': return '#f59e0b';
-            default: return '#71717a';
+            case 'assignment': return 'default';
+            case 'grade': return 'success';
+            case 'announcement': return 'violet';
+            case 'warning': return 'warning';
+            case 'urgent': return 'error';
+            case 'danger': return 'alert';
+            default: return 'secondary';
         }
     };
-
-    const accentColor = getAccentColor();
 
     return (
         <motion.div
@@ -57,57 +59,49 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({ notification
             transition={{ duration: 0.2, ease: 'easeOut' }}
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
-            className="relative bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden cursor-pointer border border-zinc-200/60 dark:border-slate-600/60 transition-shadow duration-150 ease-out"
+            className="w-full relative shadow-sm mb-2"
         >
-            {/* Accent bar on left */}
-            <div
-                className="absolute left-0 top-0 bottom-0 w-1"
-                style={{ backgroundColor: accentColor }}
-            />
-
-            {/* Content */}
-            <div className="flex items-center gap-2.5 pl-4 pr-2.5 py-2.5">
-                <NotificationIcon type={notification.type} title={notification.title} />
-
-                <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-semibold text-zinc-800 dark:text-zinc-100 leading-tight">
-                        {notification.title}
-                    </p>
-                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug line-clamp-1">
-                        {notification.message}
-                    </p>
+            <Note
+                type={getNoteType()}
+                size="medium"
+                className="overflow-hidden relative shadow-none"
+                action={
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onClose(notification.id);
+                        }}
+                        className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded text-current opacity-70 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                    >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                }
+            >
+                <div className="flex items-center gap-2.5">
+                    <NotificationIcon type={notification.type} title={notification.title} />
+                    <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-semibold leading-tight">
+                            {notification.title}
+                        </p>
+                        <p className="text-[11px] mt-0.5 leading-snug line-clamp-1 opacity-80">
+                            {notification.message}
+                        </p>
+                    </div>
                 </div>
 
-                {/* Unread indicator dot */}
-                <div
-                    className="flex-shrink-0 w-2 h-2 rounded-full"
-                    style={{ backgroundColor: notification.type === 'warning' ? '#f59e0b' : '#3b82f6' }}
-                />
-
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onClose(notification.id);
-                    }}
-                    className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-slate-700 dark:hover:text-zinc-300 transition-"
-                >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            {/* Progress bar */}
-            <div className="h-[2px] bg-zinc-100 dark:bg-slate-700">
-                <div
-                    className="h-full origin-left"
-                    style={{
-                        backgroundColor: accentColor,
-                        transform: `scaleX(${progress / 100})`,
-                        transition: 'transform 0.05s linear'
-                    }}
-                />
-            </div>
+                {/* Progress bar inside the note at the bottom */}
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black/5 dark:bg-white/5">
+                    <div
+                        className="h-full origin-left bg-current opacity-50"
+                        style={{
+                            transform: `scaleX(${progress / 100})`,
+                            transition: 'transform 0.05s linear'
+                        }}
+                    />
+                </div>
+            </Note>
         </motion.div>
     );
 };

@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { createPortal } from 'react-dom';
 import { getClassmates, type UserAccount } from '../../../../services/usersService';
 import { useSystemConfig } from '../../../../contexts/SystemConfigContext';
+import { AnimatedCircularProgressBar } from '@/components/ui/animated-circular-progress-bar';
+import { cn } from '@/lib/utils';
 import { InstructionsModal, SubmitModal, AddTaskModal } from './modals';
 import { QuickStatsBar } from './components/QuickStatsBar';
 import { StudentCard } from './components/StudentCard';
@@ -15,6 +17,11 @@ import { TeacherModeContent } from './components/TeacherModeContent';
 import MobileNavModal from './components/MobileNavModal';
 import { CourseAssignmentsTab } from './tabs/CourseAssignmentsTab';
 import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+} from "@/components/ui/carousel";
+import {
     type TaskCategory, getDemoCourseData } from './data/demoCourses';
 
 interface CourseViewPageProps {
@@ -25,6 +32,7 @@ interface CourseViewPageProps {
         image: string;
         progress: number;
         instructor?: string;
+        description?: string;
     };
     onBack: () => void;
 }
@@ -216,7 +224,14 @@ const SAMPLE_SUBMISSIONS: Submission[] = [];
 
 const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const { systemConfig } = useSystemConfig();
-    const [activeTab, setActiveTab] = useState<TabType>('modules');
+    const [activeTab, setActiveTab] = useState<TabType>(() => {
+        const saved = sessionStorage.getItem('defaultCourseTab');
+        if (saved) {
+            sessionStorage.removeItem('defaultCourseTab');
+            return saved as TabType;
+        }
+        return 'modules';
+    });
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -227,19 +242,26 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const submissionsScrollRef = useRef<HTMLDivElement>(null);
     const tabsContainerRef = useRef<HTMLDivElement>(null);
 
-    const [taskFilter, setTaskFilter] = useState<TaskCategory>('all');
+    const [taskStatusFilter, setTaskStatusFilter] = useState<'all' | 'overdue'>('all');
+    const [taskTypeFilter, setTaskTypeFilter] = useState<TaskCategory>('all');
     const [termFilter, setTermFilter] = useState<'all' | 'prelims' | 'midterm' | 'prefinals' | 'finals'>('all');
     const [semesterFilter, setSemesterFilter] = useState<'first' | 'second'>('first');
     const [studentFilter, setStudentFilter] = useState<'all' | 'online' | 'offline'>('all');
     const [selectedModuleId, setSelectedModuleId] = useState<number | null>(null);
     const [tabIndicatorStyle, setTabIndicatorStyle] = useState({ left: 4, width: 80 });
     const [modulesPage, setModulesPage] = useState(1);
+    const [studentsPage, setStudentsPage] = useState(1);
     const [canScrollTabsLeft, setCanScrollTabsLeft] = useState(false);
     const [canScrollTabsRight, setCanScrollTabsRight] = useState(false);
     const [canScrollGradingLeft, setCanScrollGradingLeft] = useState(false);
     const [canScrollGradingRight, setCanScrollGradingRight] = useState(false);
     const gradingTabsRef = useRef<HTMLDivElement>(null);
     const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
+    // Reset pagination when filters change
+    useEffect(() => {
+        setStudentsPage(1);
+    }, [studentFilter, searchQuery]);
 
     // Supabase students data
     const [supabaseStudents, setSupabaseStudents] = useState<UserAccount[]>([]);
@@ -269,6 +291,17 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             courseIds.forEach(id => localStorage.removeItem(`ai-grading-${id}`));
             localStorage.setItem(migrationKey, 'true');
         }
+    }, []);
+
+    // Listen for tab switch events (e.g. from WidgetSidebar deadlines)
+    useEffect(() => {
+        const handleSwitchTab = (e: CustomEvent<{ tab: TabType }>) => {
+            if (e.detail && e.detail.tab) {
+                setActiveTab(e.detail.tab);
+            }
+        };
+        window.addEventListener('switch-course-tab', handleSwitchTab as EventListener);
+        return () => window.removeEventListener('switch-course-tab', handleSwitchTab as EventListener);
     }, []);
 
     // Search debounce effect - show loading spinner briefly when typing
@@ -359,21 +392,19 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         return () => clearTimeout(timer);
     }, []);
 
-    // Simulate loading for smooth transitions
+    // Simulate loading on initial mount only
     useEffect(() => {
-        setIsLoading(true);
         const timer = setTimeout(() => setIsLoading(false), 600);
         return () => clearTimeout(timer);
-    }, [activeTab]);
+    }, []);
 
-    // Simulate loading for teacher mode tabs
+    // Simulate loading for teacher mode tabs on initial mount only
     useEffect(() => {
         if (isTeacherMode) {
-            setIsTeacherLoading(true);
             const timer = setTimeout(() => setIsTeacherLoading(false), 500);
             return () => clearTimeout(timer);
         }
-    }, [teacherTab, isTeacherMode]);
+    }, [isTeacherMode]);
 
     // Close dropdowns when clicking outside
     useEffect(() => {
@@ -739,7 +770,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase());
             let matchesCategory = false;
 
-            if (taskFilter === 'all') {
+            if (taskStatusFilter === 'all') {
                 const taskAny = t as any;
                 // Visual Clutter Rule: Do not show heavily overdue or locked tasks in the 'All' feed
                 if ((t.status === 'overdue' && taskAny._diffDays < -7) || t.status === 'locked') {
@@ -747,7 +778,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 } else {
                     matchesCategory = true;
                 }
-            } else if (taskFilter === 'overdue') {
+            } else if (taskStatusFilter === 'overdue') {
                 const isOverdueDemo = t.due.toLowerCase().includes('overdue');
                 let isRealtimeOverdue = false;
                 // Determine if a supabase task is genuinely overdue by time
@@ -761,8 +792,11 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
                 // If they specifically clicked the Overdue filter, SHOW everything overdue AND locked!
                 matchesCategory = isOverdueDemo || isRealtimeOverdue || t.status === 'locked';
-            } else {
-                matchesCategory = t.category === taskFilter;
+            }
+
+            // Apply taskTypeFilter
+            if (taskTypeFilter !== 'all') {
+                matchesCategory = matchesCategory && (t.category === taskTypeFilter);
             }
 
             const taskAny = t as any;
@@ -770,7 +804,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
             return matchesSearch && matchesCategory && matchesSemester;
         }),
-        [searchQuery, taskFilter, semesterFilter, courseTasks]
+        [searchQuery, taskStatusFilter, taskTypeFilter, semesterFilter, courseTasks]
     );
 
     const filteredNews = useMemo(() =>
@@ -804,20 +838,25 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 role: 'Student',
                 email: s.email,
                 avatar: s.profile_image,
-                lastActive: s.last_active }));
+                lastActive: s.last_active,
+                section: s.section || 'BSIT101A',
+                program: s.program || 'BSIT',
+                level: s.level || 1
+            }));
         }
         return [];
     }, [supabaseStudents]);
 
-    const filteredStudents = useMemo(() =>
-        studentsData.filter((s: { name: string; email: string; status: string }) => {
+    const filteredStudents = useMemo(() => {
+        const filtered = studentsData.filter((s: { name: string; email: string; status: string }) => {
             const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 s.email.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesFilter = studentFilter === 'all' || s.status === studentFilter;
             return matchesSearch && matchesFilter;
-        }),
-        [searchQuery, studentFilter, studentsData]
-    );
+        });
+        // Shuffle the students
+        return filtered.sort(() => Math.random() - 0.5);
+    }, [searchQuery, studentFilter, studentsData]);
 
     // Teachers and AI Grading data moved to Supabase and will be fetched dynamically
 
@@ -1097,83 +1136,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 return (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
 
-                        {/* Desktop/Tablet: Filter Panels above sidebar */}
-                        <div className="hidden sm:flex flex-col lg:flex-row items-stretch gap-4 w-full">
-                            {/* Academic Semester Panel */}
-                            <div className="w-full lg:w-[320px] xl:w-[380px] relative p-4 rounded-[20px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm flex-shrink-0">
-                                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
-                                <div className="relative z-10">
-                                    <h4 className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 px-1">Academic Semester</h4>
-                                    <div className="flex p-1 bg-slate-50 dark:bg-slate-700/50 rounded-[12px] border border-slate-200/80 dark:border-slate-600/50 w-full">
-                                        {[
-                                            { id: 'first' as const, label: '1st Semester' },
-                                            { id: 'second' as const, label: '2nd Semester' }
-                                        ].map((sem) => {
-                                            const isActive = semesterFilter === sem.id;
-                                            return (
-                                                <button
-                                                    key={sem.id}
-                                                    onClick={() => setSemesterFilter(sem.id)}
-                                                    className={`relative flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-[10px] text-sm font-bold transition-colors duration-200 ${
-                                                        isActive
-                                                            ? 'text-blue-700 dark:text-blue-400'
-                                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-                                                    }`}
-                                                >
-                                                    {isActive && (
-                                                        <motion.div
-                                                            layoutId="activeSemesterTabDesktop"
-                                                            className="absolute inset-0 bg-white dark:bg-slate-600 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-slate-500/50 z-0"
-                                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                                        />
-                                                    )}
-                                                    <span className="relative z-10 whitespace-nowrap">{sem.label}</span>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Grading Period Panel */}
-                            <div className="flex-1 min-w-0 relative p-4 rounded-[20px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
-                                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
-                                <div className="relative z-10">
-                                    <h4 className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 px-1">Grading Period</h4>
-                                    <div className="flex flex-wrap p-1 bg-slate-50 dark:bg-slate-700/50 rounded-[12px] border border-slate-200/80 dark:border-slate-600/50 w-full">
-                                        {[
-                                            { id: 'all' as const, label: 'All' },
-                                            { id: 'prelims' as const, label: 'Prelims' },
-                                            { id: 'midterm' as const, label: 'Midterm' },
-                                            { id: 'prefinals' as const, label: 'Pre-Finals' },
-                                            { id: 'finals' as const, label: 'Finals' },
-                                        ].map((term) => {
-                                            const isActive = termFilter === term.id;
-                                            return (
-                                                <button
-                                                    key={term.id}
-                                                    onClick={() => setTermFilter(term.id)}
-                                                    className={`relative flex-auto flex items-center justify-center gap-2 py-2 px-3 rounded-[10px] text-sm font-bold transition-colors duration-200 ${
-                                                        isActive
-                                                            ? 'text-blue-700 dark:text-blue-400'
-                                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-                                                    }`}
-                                                >
-                                                    {isActive && (
-                                                        <motion.div
-                                                            layoutId="activeTermTabDesktop"
-                                                            className="absolute inset-0 bg-white dark:bg-slate-600 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-slate-500/50 z-0"
-                                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                                        />
-                                                    )}
-                                                    <span className="relative z-10 whitespace-nowrap">{term.label}</span>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         {/* Sidebar-Detail Navigation Layout */}
                         {(() => {
@@ -1185,82 +1147,27 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             const paginatedModules = filteredModules.slice(startIndex, startIndex + itemsPerPage);
                             
                             return (
-                                <div className="flex flex-col lg:flex-row items-stretch lg:items-stretch gap-4 w-full">
+                                <motion.div 
+                                    layout
+                                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                                    className="flex flex-col lg:flex-row items-stretch lg:items-stretch w-full bg-white dark:bg-slate-800 rounded-[24px] border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden"
+                                >
                                     {/* Sidebar Navigation */}
-                                    <div className="w-full lg:w-[320px] xl:w-[380px] shrink-0 flex flex-col gap-3 p-3.5 sm:p-4 rounded-[20px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm relative">
-                                        {/* Semester Filter (mobile only) */}
-                                        <div className="flex-shrink-0 sm:hidden">
-                                            <h4 className="text-[10px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5 px-0.5">Semester</h4>
-                                            <div className="flex p-1 bg-slate-50 dark:bg-slate-700/50 rounded-[12px] border border-slate-200/80 dark:border-slate-600/50 w-full">
+                                    <div className="w-full lg:w-[320px] xl:w-[380px] shrink-0 flex flex-col gap-3 p-3.5 sm:p-5 relative border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-900/20">
+                                        {/* Academic Semester Panel (Desktop) */}
+                                        <div className="hidden sm:block relative z-10 pb-4 mb-2 border-b border-slate-200/80 dark:border-slate-700/80 -mx-3.5 px-3.5 sm:-mx-5 sm:px-5">
+                                            <h4 className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 px-1">Academic Semester</h4>
+                                            <div className="flex p-1 bg-slate-50 dark:bg-slate-900/50 rounded-[12px] border border-slate-200/80 dark:border-slate-700/50 w-full">
                                                 {[
-                                                    { id: 'first' as const, label: '1st Sem' },
-                                                    { id: 'second' as const, label: '2nd Sem' }
+                                                    { id: 'first' as const, label: '1st Semester' },
+                                                    { id: 'second' as const, label: '2nd Semester' }
                                                 ].map((sem) => {
                                                     const isActive = semesterFilter === sem.id;
                                                     return (
                                                         <button
                                                             key={sem.id}
                                                             onClick={() => setSemesterFilter(sem.id)}
-                                                            className={`relative flex-1 flex items-center justify-center gap-1.5 py-1.5 sm:py-2 px-2 sm:px-3 rounded-[9px] sm:rounded-[10px] text-xs sm:text-xs font-bold transition-colors duration-200 ${
-                                                                isActive
-                                                                    ? 'text-blue-700 dark:text-blue-400'
-                                                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-                                                            }`}
-                                                        >
-                                                             {isActive && (
-                                                                <motion.div
-                                                                    layoutId="activeSemesterTab"
-                                                                    className="absolute inset-0 bg-white dark:bg-slate-600 rounded-[9px] sm:rounded-[10px] shadow-sm border border-slate-200/50 dark:border-slate-500/50 z-0"
-                                                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                                                />
-                                                             )}
-                                                            <span className="relative z-10 whitespace-nowrap">{sem.label}</span>
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-
-                                        {/* Divider (mobile only) */}
-                                        <hr className="border-t border-slate-100 dark:border-slate-700/50 sm:hidden" />
-
-                                        {/* Grading Period Filter (mobile only) */}
-                                        <div className="flex-shrink-0 sm:hidden">
-                                            <h4 className="text-[10px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5 px-0.5">Grading Period</h4>
-                                            <div className="relative">
-                                                {/* Left Fade */}
-                                                {canScrollGradingLeft && (
-                                                    <div className="absolute left-0 top-0 bottom-0 w-5 bg-gradient-to-r from-white dark:from-slate-800 to-transparent pointer-events-none z-20 rounded-l-[12px]" />
-                                                )}
-                                                {/* Right Fade */}
-                                                {canScrollGradingRight && (
-                                                    <div className="absolute right-0 top-0 bottom-0 w-5 bg-gradient-to-l from-white dark:from-slate-800 to-transparent pointer-events-none z-20 rounded-r-[12px]" />
-                                                )}
-                                                <div 
-                                                    ref={gradingTabsRef}
-                                                    onScroll={() => {
-                                                        const el = gradingTabsRef.current;
-                                                        if (!el) return;
-                                                        const threshold = 5;
-                                                        setCanScrollGradingLeft(el.scrollLeft > threshold);
-                                                        setCanScrollGradingRight(el.scrollLeft < el.scrollWidth - el.clientWidth - threshold);
-                                                    }}
-                                                    className="flex gap-1.5 p-1.5 overflow-x-auto bg-slate-50 dark:bg-slate-700/50 rounded-[12px] border border-slate-200/80 dark:border-slate-600/50 w-full relative"
-                                                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                                                >
-                                                    {[
-                                                        { id: 'all' as const, label: 'All' },
-                                                        { id: 'prelims' as const, label: 'Prelims' },
-                                                        { id: 'midterm' as const, label: 'Midterm' },
-                                                        { id: 'prefinals' as const, label: 'Pre-Finals' },
-                                                        { id: 'finals' as const, label: 'Finals' },
-                                                    ].map((term) => {
-                                                        const isActive = termFilter === term.id;
-                                                        return (
-                                                            <button
-                                                                key={term.id}
-                                                                onClick={() => setTermFilter(term.id)}
-                                                                className={`relative shrink-0 flex items-center justify-center gap-1.5 py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-lg text-sm sm:text-xs font-bold whitespace-nowrap transition-colors duration-200 ${
+                                                            className={`relative flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-[10px] text-sm font-bold transition-colors duration-200 ${
                                                                 isActive
                                                                     ? 'text-blue-700 dark:text-blue-400'
                                                                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
@@ -1268,246 +1175,409 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                         >
                                                             {isActive && (
                                                                 <motion.div
-                                                                    layoutId="activeTermTab"
-                                                                    className="absolute inset-0 bg-white dark:bg-slate-600 rounded-lg shadow-sm border border-slate-200/50 dark:border-slate-500/50 z-0"
+                                                                    layoutId="activeSemesterTabDesktop"
+                                                                    className="absolute inset-0 bg-white dark:bg-slate-600 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-slate-500/50 z-0"
                                                                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                                                 />
                                                             )}
-                                                            <span className="relative z-10 whitespace-nowrap truncate">{term.label}</span>
+                                                            <span className="relative z-10 whitespace-nowrap">{sem.label}</span>
                                                         </button>
                                                     );
                                                 })}
-                                                </div>
                                             </div>
                                         </div>
 
-                                        {/* Divider (mobile only) */}
-                                        <hr className="border-t border-slate-100 dark:border-slate-700/50 sm:hidden" />
-
-                                        {/* Module List */}
-                                        <div className="flex flex-col gap-2.5 py-1 min-h-0 sm:flex-1">
-                                            <AnimatePresence mode="wait">
-                                                {filteredModules.length === 0 ? (
-                                                    <motion.div 
-                                                        key="empty-sidebar-modules"
-                                                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                                        transition={{ duration: 0.2, ease: "easeOut" }}
-                                                        className="flex flex-col items-center justify-center h-full text-center py-10 px-4"
+                                        {isSearching ? (
+                                            /* Sidebar Skeleton Loading */
+                                            <div className="flex flex-col gap-3 py-1 min-h-0 sm:flex-1 justify-center">
+                                                {[0, 1, 2].map((i) => (
+                                                    <div
+                                                        key={i}
+                                                        className="relative overflow-hidden flex items-center justify-between p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-800/80 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.04)] w-full"
                                                     >
-                                                        <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-zinc-800/50 flex items-center justify-center text-slate-400 dark:text-zinc-500 mb-3 border border-slate-100 dark:border-zinc-800 shadow-sm">
-                                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                                                                <path d="M8 7h8M8 11h6M8 15h4" />
-                                                            </svg>
+                                                        <div className="flex items-center gap-3.5 min-w-0 flex-1 relative z-10">
+                                                            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-[10px] sm:rounded-[12px] bg-zinc-100 dark:bg-zinc-800 shrink-0 animate-shimmer-bg" />
+                                                            <div className="min-w-0 flex-1 space-y-2 text-left flex flex-col items-start justify-center">
+                                                                <div className="h-3 bg-zinc-200 dark:bg-zinc-800 rounded w-16 animate-shimmer-bg" />
+                                                                <div className="h-4 bg-zinc-100 dark:bg-zinc-800/50 rounded w-5/6 animate-shimmer-bg" />
+                                                            </div>
                                                         </div>
-                                                        <h3 className="text-[13px] font-bold text-slate-700 dark:text-zinc-300 mb-1">
-                                                            {searchQuery ? `No modules match "${searchQuery}"` : termFilter !== 'all' ? `No modules in ${termFilter === 'prelims' ? 'Preliminaries' : termFilter === 'midterm' ? 'Midterm' : termFilter === 'prefinals' ? 'Pre-Finals' : 'Finals'}` : "No modules found"}
-                                                        </h3>
-                                                        <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-500 tracking-wide">
-                                                            Nothing yet, so be ready!
-                                                        </p>
-                                                    </motion.div>
-                                                ) : (
-                                                    <motion.div
-                                                        key={paginatedModules.map(m => m.id).join('-')}
-                                                        initial={{ opacity: 0, x: -10 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        exit={{ opacity: 0, x: 10 }}
-                                                        transition={{ duration: 0.2, ease: "easeOut" }}
-                                                        className="flex flex-col gap-3"
-                                                    >
-                                                        {paginatedModules.map((m, index) => {
-                                                            const globalIndex = startIndex + index;
-                                                            const isSelected = m.id === selectedModuleId;
-                                                            const completedCount = m.contents.filter((c: any) => c.completed).length;
-                                                            const progress = m.contents.length > 0 ? Math.round((completedCount / m.contents.length) * 100) : 0;
-                                                            
-                                                            let statusIcon;
-                                                            if (m.status === 'locked') {
-                                                                statusIcon = (
-                                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-80">
-                                                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                                                    </svg>
-                                                                );
-                                                            } else if (progress === 100) {
-                                                                statusIcon = (
-                                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                                                    </svg>
-                                                                );
-                                                            } else {
-                                                                statusIcon = (
-                                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                                        <circle cx="12" cy="12" r="10"></circle>
-                                                                        <polygon points="10 8 16 12 10 16 10 8"></polygon>
-                                                                    </svg>
-                                                                );
-                                                            }
-
+                                                        <div className="w-12 h-8 sm:h-10 bg-zinc-100 dark:bg-zinc-800 rounded-[10px] sm:rounded-[12px] shrink-0 animate-shimmer-bg ml-2" />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <>
+                                                {/* Semester Filter (mobile only) */}
+                                                <div className="flex-shrink-0 sm:hidden">
+                                                    <h4 className="text-[10px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5 px-0.5">Semester</h4>
+                                                    <div className="flex p-1 bg-slate-50 dark:bg-slate-700/50 rounded-[12px] border border-slate-200/80 dark:border-slate-600/50 w-full">
+                                                        {[
+                                                            { id: 'first' as const, label: '1st Sem' },
+                                                            { id: 'second' as const, label: '2nd Sem' }
+                                                        ].map((sem) => {
+                                                            const isActive = semesterFilter === sem.id;
                                                             return (
-                                                                <motion.button
-                                                                    key={m.id}
-                                                                    onClick={() => setSelectedModuleId(m.id)}
-                                                                    whileHover={m.status !== 'locked' ? { scale: 1.02, y: -2 } : {}}
-                                                                    whileTap={m.status !== 'locked' ? { scale: 0.98 } : {}}
-                                                                    className={`relative overflow-hidden flex items-center justify-between p-4 rounded-2xl border transition-colors duration-200 min-w-[250px] lg:min-w-0 w-full sm:flex-1 ${
-                                                                        isSelected 
-                                                                            ? 'bg-white border-blue-200/80 shadow-sm dark:bg-zinc-900 dark:border-blue-800/50 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 group' 
-                                                                            : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/60 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.04)] hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 group'
-                                                                    } ${m.status === 'locked' ? 'opacity-70 grayscale-[0.2]' : ''}`}
+                                                                <button
+                                                                    key={sem.id}
+                                                                    onClick={() => setSemesterFilter(sem.id)}
+                                                                    className={`relative flex-1 flex items-center justify-center gap-1.5 py-1.5 sm:py-2 px-2 sm:px-3 rounded-[9px] sm:rounded-[10px] text-xs sm:text-xs font-bold transition-colors duration-200 ${
+                                                                        isActive
+                                                                            ? 'text-blue-700 dark:text-blue-400'
+                                                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                                                    }`}
                                                                 >
-                                                                    {/* SaaS Background Accents */}
-                                                                    {isSelected && (
-                                                                        <>
-                                                                            <div className="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-300 group-hover:scale-150" aria-hidden="true" />
-                                                                            <div className="absolute bottom-0 left-0 -ml-12 -mb-12 w-24 h-24 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-300 group-hover:scale-150" aria-hidden="true" />
-                                                                        </>
-                                                                    )}
-
-                                                                    <div className="flex items-center gap-3.5 min-w-0 flex-1 relative z-10">
-                                                                        {/* Custom Icon Container */}
+                                                                    {isActive && (
                                                                         <motion.div
-                                                                            whileHover={m.status !== 'locked' ? { scale: 1.05, rotate: -5 } : {}}
-                                                                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                                                            className={`w-9 h-9 sm:w-11 sm:h-11 rounded-[10px] sm:rounded-[12px] flex items-center justify-center border shrink-0 shadow-sm relative transition-colors duration-200 ${
-                                                                                m.status === 'locked'
-                                                                                    ? 'border-zinc-200/40 dark:border-zinc-800/40 bg-zinc-50/50 dark:bg-zinc-900/30 text-zinc-400 dark:text-zinc-500'
-                                                                                    : isSelected
-                                                                                        ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-950/30 dark:border-blue-800 dark:text-blue-400'
-                                                                                        : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/20 group-hover:border-blue-200 dark:group-hover:border-blue-800/50 group-hover:text-blue-500 dark:group-hover:text-blue-400'
-                                                                            }`}
-                                                                        >
-                                                                            {statusIcon}
-                                                                        </motion.div>
-
-                                                                        <div className="min-w-0 flex-1 text-left flex flex-col items-start justify-center pr-2">
-                                                                            <p className={`text-[10px] sm:text-[11px] font-bold tracking-wider uppercase mb-0.5 ${isSelected ? 'text-blue-500' : 'text-slate-400'}`}>
-                                                                                Module {globalIndex + 1}
-                                                                            </p>
-                                                                            <p className={`text-[13px] sm:text-[14px] font-bold leading-snug tracking-tight transition-colors line-clamp-2 w-full ${isSelected ? 'text-blue-700 dark:text-blue-400' : 'text-slate-800 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400'}`} title={m.title}>
-                                                                                {m.title.replace(/^Module \d+:\s*/i, '').replace(/^Chapter \d+:\s*/i, '').replace(/^Unit \d+:\s*/i, '')}
-                                                                            </p>
-                                                                            {m.status === 'locked' && (
-                                                                                <p className="text-[11px] font-semibold text-rose-500 dark:text-rose-400 leading-normal mt-1 truncate w-full">
-                                                                                    {getLockedReason(m).short}
-                                                                                </p>
-                                                                            )}
-                                                                        </div>
-                                                                    </div>
-                                                                    {/* Action / Percentage Badge Redesign */}
-                                                                    {(() => {
-                                                                        const radius = 10;
-                                                                        const circumference = 2 * Math.PI * radius;
-                                                                        const strokeDashoffset = circumference - (progress / 100) * circumference;
-
-                                                                        return (
-                                                                            <div className="relative w-auto h-8 sm:h-10 px-2 sm:px-3 flex items-center justify-center shrink-0 ml-2 sm:ml-3 z-10 bg-zinc-50 dark:bg-zinc-800/50 rounded-[10px] sm:rounded-[12px] border border-zinc-200/80 dark:border-zinc-700 shadow-sm transition-all duration-300 group-hover:border-blue-200 dark:group-hover:border-blue-700/50 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-900/20">
-                                                                                {progress === 100 ? (
-                                                                                    <div className="flex items-center gap-1 sm:gap-1.5">
-                                                                                        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                                                                                            <polyline points="20 6 9 17 4 12" />
-                                                                                        </svg>
-                                                                                        <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 dark:text-emerald-400">DONE</span>
-                                                                                    </div>
-                                                                                ) : m.status === 'locked' ? (
-                                                                                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                                                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                                                                    </svg>
-                                                                                ) : (
-                                                                                    <div className="flex items-center gap-1.5 sm:gap-2">
-                                                                                        <svg className="-rotate-90 w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24">
-                                                                                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" className="text-zinc-200/50 dark:text-zinc-700/50" />
-                                                                                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" className="text-blue-500 dark:text-blue-400 transition-all duration-500" style={{ strokeDasharray: circumference, strokeDashoffset }} strokeLinecap="round" />
-                                                                                        </svg>
-                                                                                        <span className="text-[10px] sm:text-[12px] font-bold text-blue-600 dark:text-blue-400 w-7 sm:w-9 text-right">{Math.round(progress)}%</span>
-                                                                                    </div>
-                                                                                )}
-                                                                            </div>
-                                                                        );
-                                                                    })()}
-                                                                </motion.button>
+                                                                            layoutId="activeSemesterTab"
+                                                                            className="absolute inset-0 bg-white dark:bg-slate-600 rounded-[9px] sm:rounded-[10px] shadow-sm border border-slate-200/50 dark:border-slate-500/50 z-0"
+                                                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                                        />
+                                                                    )}
+                                                                    <span className="relative z-10 whitespace-nowrap">{sem.label}</span>
+                                                                </button>
                                                             );
                                                         })}
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
-
-                                        {/* Pagination Controls */}
-                                        {filteredModules.length > itemsPerPage && (
-                                            <div className="w-full pt-2.5 mt-auto border-t border-zinc-100 dark:border-zinc-800/80">
-                                                <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-zinc-900 p-1.5 rounded-[14px] border border-zinc-200/60 dark:border-zinc-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
-                                                    <motion.button 
-                                                        type="button"
-                                                        onClick={() => setModulesPage(prev => Math.max(prev - 1, 1))}
-                                                        disabled={currentPage === 1}
-                                                        whileHover={currentPage > 1 ? { scale: 1.05 } : {}}
-                                                        whileTap={currentPage > 1 ? { scale: 0.95 } : {}}
-                                                        className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors duration-150 shadow-sm cursor-pointer border ${
-                                                            currentPage === 1
-                                                                ? 'bg-zinc-50/50 dark:bg-zinc-900/20 border-zinc-100 dark:border-zinc-800/40 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
-                                                                : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500'
-                                                        }`}
-                                                    >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-                                                    </motion.button>
-                                                    <span className="text-[13px] font-bold text-zinc-700 dark:text-zinc-300 text-center tracking-wide flex-1">
-                                                        Page {currentPage} <span className="text-zinc-400 dark:text-zinc-500 font-medium mx-0.5">/</span> {totalPages}
-                                                    </span>
-                                                    <motion.button 
-                                                        type="button"
-                                                        onClick={() => setModulesPage(prev => Math.min(prev + 1, totalPages))}
-                                                        disabled={currentPage === totalPages}
-                                                        whileHover={currentPage < totalPages ? { scale: 1.05 } : {}}
-                                                        whileTap={currentPage < totalPages ? { scale: 0.95 } : {}}
-                                                        className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors duration-150 shadow-sm cursor-pointer border ${
-                                                            currentPage === totalPages
-                                                                ? 'bg-zinc-50/50 dark:bg-zinc-900/20 border-zinc-100 dark:border-zinc-800/40 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
-                                                                : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500'
-                                                        }`}
-                                                    >
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-                                                    </motion.button>
+                                                    </div>
                                                 </div>
-                                            </div>
+
+                                                {/* Divider (mobile only) */}
+                                                <hr className="border-t border-slate-100 dark:border-slate-700/50 sm:hidden" />
+
+                                                {/* Grading Period Filter (mobile only) */}
+                                                <div className="flex-shrink-0 sm:hidden">
+                                                    <h4 className="text-[10px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5 px-0.5">Grading Period</h4>
+                                                    <div className="relative">
+                                                        {/* Left Fade */}
+                                                        {canScrollGradingLeft && (
+                                                            <div className="absolute left-0 top-0 bottom-0 w-5 bg-gradient-to-r from-white dark:from-slate-800 to-transparent pointer-events-none z-20 rounded-l-[12px]" />
+                                                        )}
+                                                        {/* Right Fade */}
+                                                        {canScrollGradingRight && (
+                                                            <div className="absolute right-0 top-0 bottom-0 w-5 bg-gradient-to-l from-white dark:from-slate-800 to-transparent pointer-events-none z-20 rounded-r-[12px]" />
+                                                        )}
+                                                        <div 
+                                                            ref={gradingTabsRef}
+                                                            onScroll={() => {
+                                                                const el = gradingTabsRef.current;
+                                                                if (!el) return;
+                                                                const threshold = 5;
+                                                                setCanScrollGradingLeft(el.scrollLeft > threshold);
+                                                                setCanScrollGradingRight(el.scrollLeft < el.scrollWidth - el.clientWidth - threshold);
+                                                            }}
+                                                            className="flex gap-1.5 p-1.5 overflow-x-auto bg-slate-50 dark:bg-slate-700/50 rounded-[12px] border border-slate-200/80 dark:border-slate-600/50 w-full relative"
+                                                            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                                                        >
+                                                            {[
+                                                                { id: 'all' as const, label: 'All' },
+                                                                { id: 'prelims' as const, label: 'Prelims' },
+                                                                { id: 'midterm' as const, label: 'Midterm' },
+                                                                { id: 'prefinals' as const, label: 'Pre-Finals' },
+                                                                { id: 'finals' as const, label: 'Finals' },
+                                                            ].map((term) => {
+                                                                const isActive = termFilter === term.id;
+                                                                return (
+                                                                    <button
+                                                                        key={term.id}
+                                                                        onClick={() => setTermFilter(term.id)}
+                                                                        className={`relative shrink-0 flex items-center justify-center gap-1.5 py-2.5 sm:py-2.5 px-4 sm:px-4 rounded-lg text-sm sm:text-xs font-bold whitespace-nowrap transition-colors duration-200 ${
+                                                                            isActive
+                                                                                ? 'text-blue-700 dark:text-blue-400'
+                                                                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                                                        }`}
+                                                                    >
+                                                                        {isActive && (
+                                                                            <motion.div
+                                                                                layoutId="activeTermTab"
+                                                                                className="absolute inset-0 bg-white dark:bg-slate-600 rounded-lg shadow-sm border border-slate-200/50 dark:border-slate-500/50 z-0"
+                                                                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                                            />
+                                                                        )}
+                                                                        <span className="relative z-10 whitespace-nowrap truncate">{term.label}</span>
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Divider (mobile only) */}
+                                                <hr className="border-t border-slate-100 dark:border-slate-700/50 sm:hidden" />
+
+                                                {/* Module List */}
+                                                <div className="flex flex-col gap-2.5 py-1 min-h-0 sm:flex-1">
+                                                    <AnimatePresence mode="wait">
+                                                        {filteredModules.length === 0 ? (
+                                                            <motion.div 
+                                                                key="empty-sidebar-modules"
+                                                                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                                exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                                transition={{ duration: 0.2, ease: "easeOut" }}
+                                                                className="flex flex-col items-center justify-center h-full text-center py-10 px-4"
+                                                            >
+                                                                <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-zinc-800/50 flex items-center justify-center text-slate-400 dark:text-zinc-500 mb-3 border border-slate-100 dark:border-zinc-800 shadow-sm">
+                                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                        <path d="M9 11l3 3L22 4" />
+                                                                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                                                                    </svg>
+                                                                </div>
+                                                                <h3 className="text-[13px] font-bold text-slate-700 dark:text-zinc-300 mb-1">
+                                                                    {searchQuery ? `No modules match "${searchQuery}"` : termFilter !== 'all' ? `No modules in ${termFilter === 'prelims' ? 'Preliminaries' : termFilter === 'midterm' ? 'Midterm' : termFilter === 'prefinals' ? 'Pre-Finals' : 'Finals'}` : "No modules found"}
+                                                                </h3>
+                                                                <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-500 tracking-wide">
+                                                                    Nothing yet, so be ready!
+                                                                </p>
+                                                            </motion.div>
+                                                        ) : (
+                                                            <motion.div
+                                                                key={paginatedModules.map(m => m.id).join('-')}
+                                                                initial={{ opacity: 0, x: -10 }}
+                                                                animate={{ opacity: 1, x: 0 }}
+                                                                exit={{ opacity: 0, x: 10 }}
+                                                                transition={{ duration: 0.2, ease: "easeOut" }}
+                                                                className="flex flex-col gap-3"
+                                                            >
+                                                                {paginatedModules.map((m, index) => {
+                                                                    const globalIndex = startIndex + index;
+                                                                    const isSelected = m.id === selectedModuleId;
+                                                                    const completedCount = m.contents.filter((c: any) => c.completed).length;
+                                                                    const progress = m.contents.length > 0 ? Math.round((completedCount / m.contents.length) * 100) : 0;
+                                                                    
+                                                                    let statusIcon;
+                                                                    if (m.status === 'locked') {
+                                                                        statusIcon = (
+                                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-80">
+                                                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                                            </svg>
+                                                                        );
+                                                                    } else if (progress === 100) {
+                                                                        statusIcon = (
+                                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                                                            </svg>
+                                                                        );
+                                                                    } else {
+                                                                        statusIcon = (
+                                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                                <circle cx="12" cy="12" r="10"></circle>
+                                                                                <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                                                            </svg>
+                                                                        );
+                                                                    }
+
+                                                                    return (
+                                                                        <motion.button
+                                                                            key={m.id}
+                                                                            onClick={() => setSelectedModuleId(m.id)}
+                                                                            whileHover={m.status !== 'locked' ? { scale: 1.02, y: -2 } : {}}
+                                                                            whileTap={m.status !== 'locked' ? { scale: 0.98 } : {}}
+                                                                            className={`relative overflow-hidden flex items-center justify-between p-4 rounded-2xl border transition-colors duration-200 min-w-[250px] lg:min-w-0 w-full sm:flex-1 ${
+                                                                                isSelected 
+                                                                                    ? 'bg-white border-blue-200/80 shadow-sm dark:bg-zinc-900 dark:border-blue-800/50 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50 group' 
+                                                                                    : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/60 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.04)] hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 group'
+                                                                            } ${m.status === 'locked' ? 'opacity-70 grayscale-[0.2]' : ''}`}
+                                                                        >
+                                                                            {/* SaaS Background Accents */}
+                                                                            {isSelected && (
+                                                                                <>
+                                                                                    <div className="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-300 group-hover:scale-150" aria-hidden="true" />
+                                                                                    <div className="absolute bottom-0 left-0 -ml-12 -mb-12 w-24 h-24 bg-blue-400/10 dark:bg-blue-400/5 rounded-full blur-3xl pointer-events-none transition-transform duration-300 group-hover:scale-150" aria-hidden="true" />
+                                                                                </>
+                                                                            )}
+
+                                                                            <div className="flex items-center gap-3.5 min-w-0 flex-1 relative z-10">
+                                                                                {/* Custom Icon Container */}
+                                                                                <motion.div
+                                                                                    whileHover={m.status !== 'locked' ? { scale: 1.05, rotate: -5 } : {}}
+                                                                                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                                                                    className={`w-9 h-9 sm:w-11 sm:h-11 rounded-[10px] sm:rounded-[12px] flex items-center justify-center border shrink-0 shadow-sm relative transition-colors duration-200 ${
+                                                                                        m.status === 'locked'
+                                                                                            ? 'border-zinc-200/40 dark:border-zinc-800/40 bg-zinc-50/50 dark:bg-zinc-900/30 text-zinc-400 dark:text-zinc-500'
+                                                                                            : isSelected
+                                                                                                ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-950/30 dark:border-blue-800 dark:text-blue-400'
+                                                                                                : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/20 group-hover:border-blue-200 dark:group-hover:border-blue-800/50 group-hover:text-blue-500 dark:group-hover:text-blue-400'
+                                                                                    }`}
+                                                                                >
+                                                                                    {statusIcon}
+                                                                                </motion.div>
+
+                                                                                <div className="min-w-0 flex-1 text-left flex flex-col items-start justify-center pr-2">
+                                                                                    <p className={`text-[10px] sm:text-[11px] font-bold tracking-wider uppercase mb-0.5 ${isSelected ? 'text-blue-500' : 'text-slate-400'}`}>
+                                                                                        Module {globalIndex + 1}
+                                                                                    </p>
+                                                                                    <p className={`text-[13px] sm:text-[14px] font-bold leading-snug tracking-tight transition-colors line-clamp-2 w-full ${isSelected ? 'text-blue-700 dark:text-blue-400' : 'text-slate-800 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400'}`} title={m.title}>
+                                                                                        {m.title.replace(/^Module \d+:\s*/i, '').replace(/^Chapter \d+:\s*/i, '').replace(/^Unit \d+:\s*/i, '')}
+                                                                                    </p>
+                                                                                    {m.status === 'locked' && (
+                                                                                        <p className="text-[11px] font-semibold text-rose-500 dark:text-rose-400 leading-normal mt-1 truncate w-full">
+                                                                                            {getLockedReason(m).short}
+                                                                                        </p>
+                                                                                    )}
+                                                                                </div>
+                                                                            </div>
+                                                                            {/* Action / Percentage Badge Redesign */}
+                                                                            {(() => {
+                                                                                const radius = 10;
+                                                                                const circumference = 2 * Math.PI * radius;
+                                                                                const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+                                                                                return (
+                                                                                    <div className="relative w-auto h-8 sm:h-10 px-2 sm:px-3 flex items-center justify-center shrink-0 ml-2 sm:ml-3 z-10 bg-zinc-50 dark:bg-zinc-800/50 rounded-[10px] sm:rounded-[12px] border border-zinc-200/80 dark:border-zinc-700 shadow-sm transition-all duration-300 group-hover:border-blue-200 dark:group-hover:border-blue-700/50 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-900/20">
+                                                                                        {progress === 100 ? (
+                                                                                            <div className="flex items-center gap-1 sm:gap-1.5">
+                                                                                                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                                                                                                    <polyline points="20 6 9 17 4 12" />
+                                                                                                </svg>
+                                                                                                <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 dark:text-emerald-400">DONE</span>
+                                                                                            </div>
+                                                                                        ) : m.status === 'locked' ? (
+                                                                                            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                                                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                                                            </svg>
+                                                                                        ) : (
+                                                                                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                                                                                <svg className="-rotate-90 w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24">
+                                                                                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" className="text-zinc-200/50 dark:text-zinc-700/50" />
+                                                                                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" className="text-blue-500 dark:text-blue-400 transition-all duration-500" style={{ strokeDasharray: circumference, strokeDashoffset }} strokeLinecap="round" />
+                                                                                                </svg>
+                                                                                                <span className="text-[10px] sm:text-[12px] font-bold text-blue-600 dark:text-blue-400 w-7 sm:w-9 text-right">{Math.round(progress)}%</span>
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                );
+                                                                            })()}
+                                                                        </motion.button>
+                                                                    );
+                                                                })}
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </div>
+
+                                                {/* Pagination Controls */}
+                                                {filteredModules.length > itemsPerPage && (
+                                                    <div className="w-full pt-4 sm:pt-5 mt-auto border-t border-slate-200 dark:border-slate-700/60">
+                                                        <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-zinc-900 p-1.5 rounded-[14px] border border-slate-200/80 dark:border-zinc-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+                                                            <motion.button 
+                                                                type="button"
+                                                                onClick={() => setModulesPage(prev => Math.max(prev - 1, 1))}
+                                                                disabled={currentPage === 1}
+                                                                whileHover={currentPage > 1 ? { scale: 1.05 } : {}}
+                                                                whileTap={currentPage > 1 ? { scale: 0.95 } : {}}
+                                                                className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors duration-150 shadow-sm cursor-pointer border ${
+                                                                    currentPage === 1
+                                                                        ? 'bg-zinc-50/50 dark:bg-zinc-900/20 border-zinc-100 dark:border-zinc-800/40 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
+                                                                        : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                                                }`}
+                                                            >
+                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                                            </motion.button>
+                                                            <span className="text-[13px] font-bold text-zinc-700 dark:text-zinc-300 text-center tracking-wide flex-1">
+                                                                Page {currentPage} <span className="text-zinc-400 dark:text-zinc-500 font-medium mx-0.5">/</span> {totalPages}
+                                                            </span>
+                                                            <motion.button 
+                                                                type="button"
+                                                                onClick={() => setModulesPage(prev => Math.min(prev + 1, totalPages))}
+                                                                disabled={currentPage === totalPages}
+                                                                whileHover={currentPage < totalPages ? { scale: 1.05 } : {}}
+                                                                whileTap={currentPage < totalPages ? { scale: 0.95 } : {}}
+                                                                className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-colors duration-150 shadow-sm cursor-pointer border ${
+                                                                    currentPage === totalPages
+                                                                        ? 'bg-zinc-50/50 dark:bg-zinc-900/20 border-zinc-100 dark:border-zinc-800/40 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
+                                                                        : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500'
+                                                                }`}
+                                                            >
+                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                            </motion.button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
                                     </div>
 
                                     {/* Detail Panel */}
-                                    <div className="flex-1 min-w-0" ref={modulesScrollRef}>
-                                        <AnimatePresence mode="wait">
-                                            {filteredModules.length === 0 ? (
+                                    <div className="flex-1 min-w-0 flex flex-col" ref={modulesScrollRef}>
+                                        {/* Grading Period Panel (Desktop) */}
+                                        <div className="hidden sm:block relative z-10 w-full px-5 sm:px-6 lg:px-7 pt-3.5 sm:pt-5 pb-4 border-b border-slate-200/80 dark:border-slate-700/80">
+                                            <h4 className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 px-1">Grading Period</h4>
+                                            <div className="flex flex-wrap p-1 bg-slate-50 dark:bg-slate-900/50 rounded-[12px] border border-slate-200/80 dark:border-slate-700/50 w-full">
+                                                {[
+                                                    { id: 'all' as const, label: 'All' },
+                                                    { id: 'prelims' as const, label: 'Prelims' },
+                                                    { id: 'midterm' as const, label: 'Midterm' },
+                                                    { id: 'prefinals' as const, label: 'Pre-Finals' },
+                                                    { id: 'finals' as const, label: 'Finals' },
+                                                ].map((term) => {
+                                                    const isActive = termFilter === term.id;
+                                                    return (
+                                                        <button
+                                                            key={term.id}
+                                                            onClick={() => setTermFilter(term.id)}
+                                                            className={`relative flex-auto flex items-center justify-center gap-2 py-2 px-3 rounded-[10px] text-sm font-bold transition-colors duration-200 ${
+                                                                isActive
+                                                                    ? 'text-blue-700 dark:text-blue-400'
+                                                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                                            }`}
+                                                        >
+                                                            {isActive && (
+                                                                <motion.div
+                                                                    layoutId="activeTermTabDesktop"
+                                                                    className="absolute inset-0 bg-white dark:bg-slate-600 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-slate-500/50 z-0"
+                                                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                                />
+                                                            )}
+                                                            <span className="relative z-10 whitespace-nowrap">{term.label}</span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+
+                                        <AnimatePresence mode="popLayout">
+                                            {isSearching ? (
                                                 <motion.div
-                                                    key="empty-detail-modules"
+                                                    key="searching-detail-modules"
                                                     initial={{ opacity: 0, x: 20 }}
                                                     animate={{ opacity: 1, x: 0 }}
                                                     exit={{ opacity: 0, x: -20 }}
                                                     transition={{ duration: 0.25, ease: 'easeOut' }}
                                                     className="h-full"
                                                 >
-                                                    <EmptyState
-                                                        icon={
-                                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                                                                <path d="M8 7h8M8 11h6M8 15h4" />
-                                                            </svg>
-                                                        }
-                                                        title={searchQuery ? `No modules match "${searchQuery}"` : termFilter !== 'all' ? `No modules in ${termFilter === 'prelims' ? 'Preliminaries' : termFilter === 'midterm' ? 'Midterm' : termFilter === 'prefinals' ? 'Pre-Finals' : 'Finals'}` : "No modules found"}
-                                                        description="Nothing yet, so be ready!"
-                                                        className="h-full min-h-[380px]"
-                                                        action={(searchQuery || termFilter !== 'all') ? {
-                                                            label: searchQuery ? 'Clear search' : 'Show all',
-                                                            onClick: () => { setSearchQuery(''); setTermFilter('all'); }
-                                                        } : undefined}
+                                                    <ModuleCard 
+                                                        isSearching={true}
                                                     />
                                                 </motion.div>
+                                            ) : filteredModules.length === 0 ? (
+                                                <motion.div
+                                                        key="empty-detail-modules"
+                                                        initial={{ opacity: 0, x: 20 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        exit={{ opacity: 0, x: -20 }}
+                                                        transition={{ duration: 0.25, ease: 'easeOut' }}
+                                                        className="flex flex-col items-center justify-center h-full min-h-[380px]"
+                                                    >
+                                                        <EmptyState
+                                                            icon={
+                                                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                                                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                                                    <path d="M8 7h8M8 11h6M8 15h4" />
+                                                                </svg>
+                                                            }
+                                                            title={searchQuery ? `No modules match "${searchQuery}"` : termFilter !== 'all' ? `No modules in ${termFilter === 'prelims' ? 'Preliminaries' : termFilter === 'midterm' ? 'Midterm' : termFilter === 'prefinals' ? 'Pre-Finals' : 'Finals'}` : "No modules found"}
+                                                            description="Nothing yet, so be ready!"
+                                                            className="!bg-transparent dark:!bg-transparent !border-transparent dark:!border-transparent !shadow-none"
+                                                            action={(searchQuery || termFilter !== 'all') ? {
+                                                                label: searchQuery ? 'Clear search' : 'Show all',
+                                                                onClick: () => { setSearchQuery(''); setTermFilter('all'); }
+                                                            } : undefined}
+                                                        />
+                                                    </motion.div>
                                             ) : selectedModule && (
                                                 <motion.div
                                                     key={selectedModule.id}
@@ -1515,6 +1585,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                     animate={{ opacity: 1, x: 0 }}
                                                     exit={{ opacity: 0, x: -20 }}
                                                     transition={{ duration: 0.25, ease: 'easeOut' }}
+                                                    className="h-full"
                                                 >
                                                     <ModuleCard 
                                                         module={selectedModule} 
@@ -1522,12 +1593,13 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                                         onUpdate={(updatedModule) => {
                                                             setCourseModules(prev => prev.map(m => m.id === updatedModule.id ? updatedModule : m));
                                                         }}
+                                                        isSearching={false}
                                                     />
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
                                     </div>
-                                </div>
+                                </motion.div>
                             );
                         })()}
                     </motion.div>
@@ -1540,8 +1612,10 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         course={course}
                         isLoading={isLoading}
                         courseTasks={courseTasks}
-                        taskFilter={taskFilter}
-                        setTaskFilter={setTaskFilter}
+                        taskStatusFilter={taskStatusFilter}
+                        setTaskStatusFilter={setTaskStatusFilter}
+                        taskTypeFilter={taskTypeFilter}
+                        setTaskTypeFilter={setTaskTypeFilter}
                         searchQuery={searchQuery}
                         setSearchQuery={setSearchQuery}
                         isSearching={isSearching}
@@ -1677,15 +1751,15 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             <div className="mb-4 p-4 bg-white rounded-xl border border-zinc-100">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-zinc-100 animate-pulse" />
+                                        <div className="w-10 h-10 rounded-xl bg-zinc-100 animate-shimmer-bg" />
                                         <div>
-                                            <div className="h-4 bg-zinc-200 rounded w-32 mb-2 animate-pulse" />
-                                            <div className="h-3 bg-zinc-100 rounded w-24 animate-pulse" />
+                                            <div className="h-4 bg-zinc-200 rounded w-32 mb-2 animate-shimmer-bg" />
+                                            <div className="h-3 bg-zinc-100 rounded w-24 animate-shimmer-bg" />
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
-                                        <div className="h-8 w-20 bg-zinc-100 rounded-lg animate-pulse" />
-                                        <div className="h-8 w-20 bg-zinc-100 rounded-lg animate-pulse" />
+                                        <div className="h-8 w-20 bg-zinc-100 rounded-lg animate-shimmer-bg" />
+                                        <div className="h-8 w-20 bg-zinc-100 rounded-lg animate-shimmer-bg" />
                                     </div>
                                 </div>
                             </div>
@@ -1700,9 +1774,9 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                         transition={{ delay: i * 0.05 }}
                                     >
                                         <div className="flex flex-col items-center">
-                                            <div className="w-14 h-14 rounded-full bg-zinc-100 mb-3 animate-pulse" />
-                                            <div className="h-3 bg-zinc-200 rounded w-20 mb-2 animate-pulse" />
-                                            <div className="h-2 bg-zinc-100 rounded w-16 animate-pulse" />
+                                            <div className="w-14 h-14 rounded-full bg-zinc-100 mb-3 animate-shimmer-bg" />
+                                            <div className="h-3 bg-zinc-200 rounded w-20 mb-2 animate-shimmer-bg" />
+                                            <div className="h-2 bg-zinc-100 rounded w-16 animate-shimmer-bg" />
                                         </div>
                                     </motion.div>
                                 ))}
@@ -1746,39 +1820,39 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                 ];
 
                 return (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                        {/* Split Cards matching the Academic Semester / Grading Period layout */}
-                        <div className="mb-4 flex flex-col md:flex-row gap-4">
-                            {/* Section Info Card */}
-                            <div className="flex-1 p-5 rounded-[20px] bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-sm flex flex-col justify-center transition-all duration-300 hover:shadow-md">
-                                <span className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">CURRENT SECTION</span>
-                                <div className="flex items-center gap-3.5">
-                                    <div className="w-12 h-12 rounded-[14px] bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0 shadow-sm border border-blue-100/50 dark:border-blue-800/30">
-                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                            <circle cx="9" cy="7" r="4" />
-                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-[16px] font-extrabold text-slate-800 dark:text-slate-200 leading-tight">BSIT101-A</h3>
-                                        <p className="text-[13px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">
-                                            {filteredStudents.length} {filteredStudents.length === 1 ? 'student' : 'students'} {searchQuery || studentFilter !== 'all' ? 'found' : 'enrolled'}
-                                        </p>
-                                    </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        exit={{ opacity: 0, y: -10 }}
+                        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 rounded-2xl shadow-sm flex flex-col"
+                    >
+                        {/* Header Section: Section Info & Status Tabs */}
+                        <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-700/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                            {/* Section Info */}
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-[14px] bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0 shadow-sm border border-blue-100/50 dark:border-blue-800/30">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <span className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5 block">CURRENT SECTION</span>
+                                    <h3 className="text-[16px] font-extrabold text-slate-800 dark:text-slate-200 leading-tight">BSIT101-A</h3>
                                 </div>
                             </div>
 
-                            {/* Status Filter Card */}
-                            <div className="flex-[2] p-5 rounded-[20px] bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-sm flex flex-col justify-center transition-all duration-300 hover:shadow-md">
-                                <span className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">STUDENT STATUS</span>
-                                <div className="inline-flex items-center p-1.5 rounded-[16px] bg-slate-50/80 dark:bg-zinc-800/50 border border-slate-200/60 dark:border-zinc-700/50 w-full sm:w-auto overflow-x-auto">
+                            {/* Status Filter Tabs */}
+                            <div className="w-full md:w-auto overflow-hidden">
+                                <span className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 block md:hidden">STUDENT STATUS</span>
+                                <div className="flex items-center p-1 sm:p-1.5 rounded-[12px] sm:rounded-[16px] bg-slate-50/80 dark:bg-zinc-800/50 border border-slate-200/60 dark:border-zinc-700/50 w-full md:w-auto overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                                     {studentFilterTabs.map((tab) => (
                                         <button
                                             key={tab.id}
-                                            onClick={() => setStudentFilter(tab.id)}
-                                            className={`relative flex items-center justify-center gap-2 px-5 py-2.5 rounded-[12px] text-[13px] font-bold transition-colors duration-200 outline-none flex-1 sm:flex-none whitespace-nowrap ${
+                                            onClick={() => { setStudentFilter(tab.id); setStudentsPage(1); }}
+                                            className={`relative flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-[10px] sm:rounded-[12px] text-[12px] sm:text-[13px] font-bold transition-colors duration-200 outline-none flex-1 md:flex-none whitespace-nowrap min-w-min ${
                                                 studentFilter === tab.id
                                                     ? 'text-blue-700 dark:text-blue-400'
                                                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
@@ -1787,14 +1861,14 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             {studentFilter === tab.id && (
                                                 <motion.div
                                                     layoutId="studentFilterTabIndicator"
-                                                    className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-[12px] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.08)] border border-slate-200/60 dark:border-zinc-600/50"
+                                                    className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-[10px] sm:rounded-[12px] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.08)] border border-slate-200/60 dark:border-zinc-600/50"
                                                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                                 />
                                             )}
                                             <span className="relative z-10 flex items-center gap-1.5">
                                                 <span className={studentFilter === tab.id ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}>{tab.icon}</span>
                                                 {tab.label}
-                                                <span className={`ml-1 px-2 py-0.5 rounded-[8px] text-[11px] font-extrabold leading-none ${
+                                                <span className={`ml-1 px-1.5 sm:px-2 py-0.5 rounded-[6px] sm:rounded-[8px] text-[10px] sm:text-[11px] font-extrabold leading-none ${
                                                     studentFilter === tab.id 
                                                         ? 'bg-blue-100/70 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400' 
                                                         : 'bg-slate-200/60 text-slate-500 dark:bg-zinc-800 dark:text-slate-400'
@@ -1807,6 +1881,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 </div>
                             </div>
                         </div>
+                        
+                        <div className="p-5 sm:p-6 flex flex-col gap-6">
 
                         {filteredStudents.length === 0 && !isSearching ? (
                             <EmptyState
@@ -1851,20 +1927,60 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             </motion.div>
                         ) : (
                             <motion.div
-                                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3"
+                                className="flex flex-col gap-6 w-full"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.1 }}
                             >
-                                {filteredStudents.map((student: { id: number; name: string; status: string; role: string; email: string; avatar?: string }, index: number) => (
-                                    <StudentCard
-                                        key={student.id}
-                                        student={student}
-                                        index={index}
-                                    />
-                                ))}
+                                <Carousel 
+                                    index={studentsPage - 1} 
+                                    onIndexChange={(newIndex) => setStudentsPage(newIndex + 1)} 
+                                    className="w-full"
+                                >
+                                    <CarouselContent>
+                                        {Array.from({ length: Math.ceil(filteredStudents.length / 10) || 1 }).map((_, pageIndex) => (
+                                            <CarouselItem key={pageIndex}>
+                                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                                                    {filteredStudents.slice(pageIndex * 10, (pageIndex + 1) * 10).map((student: { id: number; name: string; status: string; role: string; email: string; avatar?: string }, index: number) => (
+                                                        <StudentCard
+                                                            key={student.id}
+                                                            student={student}
+                                                            index={index}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </CarouselItem>
+                                        ))}
+                                    </CarouselContent>
+                                </Carousel>
+                                
+                                {/* Pagination Controls */}
+                                {filteredStudents.length > 10 && (
+                                    <div className="w-full pt-2 mt-auto">
+                                        <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-zinc-900 p-1.5 rounded-[14px] border border-zinc-200/60 dark:border-zinc-700/50 shadow-sm transition-all duration-300 hover:shadow-md max-w-sm mx-auto">
+                                            <button 
+                                                onClick={() => setStudentsPage(Math.max(1, studentsPage - 1))}
+                                                disabled={studentsPage === 1}
+                                                className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm border bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 ${studentsPage === 1 ? 'opacity-50 cursor-not-allowed text-zinc-400' : 'cursor-pointer text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500'}`}
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                            </button>
+                                            <span className="text-[13px] font-bold text-zinc-700 dark:text-zinc-300 text-center tracking-wide flex-1">
+                                                Page {studentsPage} <span className="text-zinc-400 dark:text-zinc-500 font-medium mx-0.5">/</span> {Math.ceil(filteredStudents.length / 10)}
+                                            </span>
+                                            <button 
+                                                onClick={() => setStudentsPage(Math.min(Math.ceil(filteredStudents.length / 10), studentsPage + 1))}
+                                                disabled={studentsPage >= Math.ceil(filteredStudents.length / 10)}
+                                                className={`w-9 h-9 rounded-[10px] flex items-center justify-center transition-all shadow-sm border bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-600 ${studentsPage >= Math.ceil(filteredStudents.length / 10) ? 'opacity-50 cursor-not-allowed text-zinc-400' : 'cursor-pointer text-zinc-500 hover:text-blue-600 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 hover:border-blue-300 dark:hover:border-blue-500'}`}
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
+                        </div>
                     </motion.div>
                 );
 
@@ -2037,36 +2153,65 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
                 {/* Top Row: Icon, Title & Section */}
                 <div className="flex items-center gap-3 sm:gap-5 w-full relative z-10">
-                    <motion.div
-                        whileHover={{ scale: 1.05, rotate: -5 }}
-                        whileTap={{ scale: 0.95 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                        className="w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-[14px] sm:rounded-[20px] lg:rounded-[22px] bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 flex items-center justify-center flex-shrink-0 shadow-sm relative overflow-hidden"
-                    >
-                        {course.image ? (
-                            <img src={course.image} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                            <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                            </svg>
-                        )}
-                    </motion.div>
+                    <div className="relative flex-shrink-0">
+                        <div className="relative w-14 h-14 sm:w-[72px] sm:h-[72px] lg:w-[84px] lg:h-[84px]">
+                            <AnimatedCircularProgressBar
+                                max={100} min={0} value={course.progress || 0}
+                                gaugePrimaryColor="rgb(59, 130, 246)"
+                                gaugeSecondaryColor="rgba(156, 163, 175, 0.2)"
+                                className="w-full h-full text-blue-500"
+                                hideText={true}
+                            >
+                                <motion.div
+                                    whileHover={{ scale: 1.05, rotate: -5 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                    className="absolute inset-[6px] sm:inset-[8px] rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 flex items-center justify-center shadow-sm overflow-hidden m-auto"
+                                >
+                                    {course.image ? (
+                                        <img src={course.image} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                        </svg>
+                                    )}
+                                </motion.div>
+                            </AnimatedCircularProgressBar>
+                        </div>
+                        
+                        {/* Overlapping Custom Badge */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 10, x: "-50%", scale: 0.8 }}
+                            animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+                            transition={{ duration: 0.4, delay: 0.2, type: "spring", stiffness: 300, damping: 20 }}
+                            className="absolute -bottom-1.5 sm:-bottom-2 left-1/2 px-1.5 sm:px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 border-[2px] sm:border-[2.5px] border-white dark:border-slate-800 shadow-sm flex items-center justify-center whitespace-nowrap z-10 min-w-[36px] sm:min-w-[40px]"
+                        >
+                            <span className="text-[11px] sm:text-[13px] font-black text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
+                                {course.progress || 0}%
+                            </span>
+                        </motion.div>
+                    </div>
                     <div className="flex flex-col flex-1 min-w-0">
-                        <h1 className="text-base sm:text-xl lg:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight sm:leading-none mb-1 sm:mb-1.5 transition-colors truncate">
-                            {displayTitle}
-                        </h1>
-                        <p className="leading-none mt-0.5">
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-[12px] border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default">
-                                <span className="w-6 h-6 rounded-[8px] bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center flex-shrink-0">
-                                    <svg className="w-3 h-3 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                            <h1 className="text-base sm:text-xl lg:text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight sm:leading-none transition-colors truncate">
+                                {displayTitle}
+                            </h1>
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 bg-white dark:bg-slate-800 rounded-[8px] sm:rounded-[10px] border border-slate-200 dark:border-slate-700/50 shadow-sm transition-all duration-300 cursor-default">
+                                <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-[5px] sm:rounded-[6px] bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-3 h-3 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                                     </svg>
                                 </span>
-                                <span className="text-[11px] sm:text-xs font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">Section BSIT101-A</span>
+                                <span className="text-[10px] sm:text-xs font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">Section BSIT101-A</span>
                             </span>
-                        </p>
+                        </div>
+                        {course.description && (
+                            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-3xl">
+                                {course.description}
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -2272,11 +2417,12 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             {/* Tabs - Different for Teacher Mode */}
             <div className="pt-2 pb-4">
                 <motion.div
+                    layout
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     whileTap={{ scale: 0.995 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-                    className="relative z-40 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] p-3.5 sm:p-5 lg:p-6 flex flex-col gap-3 sm:gap-5 group transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600"
+                    className="relative z-40 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] p-3.5 sm:p-5 lg:p-6 flex flex-col gap-3 sm:gap-5 group transition-shadow duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 overflow-hidden"
                 >
                     {/* Ambient Background Glow */}
                     <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-blue-500/5 rounded-full blur-[80px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
@@ -2313,7 +2459,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                     </div>
 
                     {/* Bottom Row: Tabs, Search Bar & Actions */}
-                    <div className={`flex flex-col lg:flex-row items-start lg:items-center w-full relative z-10 pt-2.5 sm:pt-3 border-t border-slate-100 dark:border-slate-700/50 gap-3 sm:gap-4 ${!isTeacherMode && activeTab === 'teachers' ? 'lg:justify-center' : 'lg:justify-between'}`}>
+                    <motion.div layout transition={{ type: 'spring', stiffness: 400, damping: 30 }} className={`flex flex-col lg:flex-row items-start lg:items-center w-full relative z-10 pt-2.5 sm:pt-3 border-t border-slate-100 dark:border-slate-700/50 gap-3 sm:gap-4 ${!isTeacherMode && activeTab === 'teachers' ? 'lg:justify-center' : 'lg:justify-between'}`}>
 
                         {/* Tabs Pill Container — visible on all screens */}
                         <motion.div layout transition={{ type: 'spring', stiffness: 400, damping: 30 }} className="flex items-center gap-4 relative z-10 w-full lg:w-auto min-w-0 flex-shrink-0">
@@ -2417,7 +2563,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         </motion.div>
 
                         {/* Search Bar & Actions */}
-                        <AnimatePresence mode="popLayout">
+                        <AnimatePresence mode="wait">
                             {!isTeacherMode && activeTab !== 'teachers' && (
                                 <motion.div 
                                     layout
@@ -2451,7 +2597,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                    </div>
+                    </motion.div>
                 </motion.div>
             </div>
 

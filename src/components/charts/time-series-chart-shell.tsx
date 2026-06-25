@@ -610,6 +610,7 @@ const TimeSeriesChartCore = memo(function TimeSeriesChartCore({
       duration: animationDuration / 1000,
     } satisfies Transition);
 
+  // @ts-ignore
   const revealClipPadding = useMemo(() => {
     if (!composedBarDataKeys?.length) {
       return 0;

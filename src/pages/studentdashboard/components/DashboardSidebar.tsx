@@ -137,10 +137,13 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
                 </div>
             </SidebarHeader>
 
-            <SidebarContent className="px-3 py-4 flex flex-col gap-1.5 overflow-y-auto select-none">
-                <nav className="flex flex-col gap-1.5 w-full sidebar-nav">
+            <SidebarContent className="px-3 py-4 flex flex-col gap-1 lg:gap-0.5 overflow-y-auto select-none">
+                <nav className="flex flex-col gap-1 lg:gap-0.5 w-full sidebar-nav desktop-sleek">
+                    <div className="hidden lg:block text-[11px] font-semibold text-slate-500/70 dark:text-slate-400/70 uppercase tracking-wider px-3 mb-1 mt-2">Overview</div>
                     <NavItemButton id="home" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Home />} label="Home" description="Dashboard overview" />
 
+                    <hr className="hidden lg:block border-t-2 border-slate-200/80 dark:border-slate-800/60 mx-2 mt-3 mb-1" />
+                    <div className="hidden lg:block text-[11px] font-semibold text-slate-500/70 dark:text-slate-400/70 uppercase tracking-wider px-3 mb-1 mt-2">Learning</div>
                     <CoursesNavItem
                         onSidebarClose={() => {/* no-op */}}
                         onCourseSelect={handleCourseSelect}
@@ -158,6 +161,9 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
                     />
 
                     <NavItemButton id="goals" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Goals />} label="Goals" description="Track progress" />
+
+                    <hr className="hidden lg:block border-t-2 border-slate-200/80 dark:border-slate-800/60 mx-2 mt-3 mb-1" />
+                    <div className="hidden lg:block text-[11px] font-semibold text-slate-500/70 dark:text-slate-400/70 uppercase tracking-wider px-3 mb-1 mt-2">Collaboration</div>
                     <NavItemButton id="groups" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Groups />} label="Workspaces" description="Manage group projects" />
                     <NavItemButton id="users" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Users />} label="Community" description="Connect with peers" />
 
@@ -169,7 +175,8 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
                 </nav>
             </SidebarContent>
 
-            <SidebarFooter className="px-3 py-4 border-t border-slate-100 dark:border-slate-800/50 mt-auto flex flex-col gap-1.5 sidebar-bottom">
+            <SidebarFooter className="px-3 py-4 border-none mt-auto flex flex-col gap-1 lg:gap-0.5 sidebar-bottom desktop-sleek">
+                <hr className="hidden lg:block border-t-2 border-slate-200/80 dark:border-slate-800/60 mx-2 mb-1" />
                 <button type="button" className="nav-item" id="settingsButton" onClick={openSettingsModal}>
                     <div className="nav-icon"><Icons.Settings /></div>
                     <div className="nav-content">

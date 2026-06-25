@@ -17,6 +17,7 @@ export interface CourseData {
     image: string;
     progress: number;
     instructor?: string;
+    description?: string;
 }
 
 // Tab types

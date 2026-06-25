@@ -13,7 +13,7 @@ import HelpDropdown from '../../../components/ui/dropdowns/HelpDropdown';
 
 
 import type { CalendarData, WeatherData, WidgetVisibility, AchievementStats, TodoItem, GradePrediction, StudyInsights } from '../types';
-import type { Deadline } from '../../../services/deadlinesService';
+import { getDaysUntil, type Deadline } from '../../../services/deadlinesService';
 import type { ActivityItem } from '../../../services/activityService';
 import type { CourseProgressData } from '../../../services/studyTimeService';
 
@@ -135,6 +135,37 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
     const [activeTab, setActiveTab] = React.useState<'Overview' | 'Academics'>('Overview');
     const scrollRef = React.useRef<HTMLDivElement>(null);
     const [showScrollIndicator, setShowScrollIndicator] = React.useState(false);
+
+    // Compute deadline urgencies for highlighting
+    const hasDeadlineToday = upcomingDeadlines.some(d => getDaysUntil(d.dueDate) === 0);
+    const hasDeadlineClose = !hasDeadlineToday && upcomingDeadlines.some(d => {
+        const days = getDaysUntil(d.dueDate);
+        return days > 0 && days <= 3;
+    });
+
+    const upcomingContainerBorderClass = hasDeadlineToday 
+        ? 'border-red-500 dark:border-red-500/80 shadow-[0_0_12px_rgba(239,68,68,0.15)] hover:border-red-600 dark:hover:border-red-400 hover:shadow-[0_0_16px_rgba(239,68,68,0.25)]' 
+        : hasDeadlineClose 
+            ? 'border-amber-400 dark:border-amber-400/80 shadow-[0_0_12px_rgba(245,158,11,0.12)] hover:border-amber-500 dark:hover:border-amber-400 hover:shadow-[0_0_16px_rgba(245,158,11,0.22)]' 
+            : 'border-slate-200/80 dark:border-slate-700/80 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md';
+
+    const upcomingContainerBgClass = hasDeadlineToday
+        ? 'bg-red-50/10 dark:bg-red-950/5'
+        : hasDeadlineClose
+            ? 'bg-amber-50/5 dark:bg-amber-950/2'
+            : 'bg-white dark:bg-slate-800/80';
+
+    const upcomingHeaderIconStyle = hasDeadlineToday
+        ? 'bg-red-50 dark:bg-red-950/40 border-red-100 dark:border-red-900/40 text-red-500 dark:text-red-400'
+        : hasDeadlineClose
+            ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-100 dark:border-amber-900/40 text-amber-500 dark:text-amber-400'
+            : 'bg-orange-50 dark:bg-orange-950/40 border-orange-100 dark:border-orange-900/40 text-orange-500 dark:text-orange-400';
+
+    const upcomingHeaderBadgeStyle = hasDeadlineToday
+        ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'
+        : hasDeadlineClose
+            ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400'
+            : 'bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400';
 
     React.useEffect(() => {
         if (!isInline && widgetsSidebarActive) {
@@ -358,29 +389,29 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                     animate={{ opacity: 1, y: 0 }}
                                                     exit={{ opacity: 0, y: -10, transition: { duration: 0.2 } }}
                                                     transition={{ duration: 0.3, ease: 'easeOut', delay: 0.05 }}
-                                                    className={`${isInline ? '' : 'mx-1'} mt-3 bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-sm rounded-[20px] overflow-hidden transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 ${quickViewSettings.compactMode ? 'compact-widget' : ''}`}
+                                                    className={`${isInline ? '' : 'mx-1'} mt-3 ${upcomingContainerBgClass} border ${upcomingContainerBorderClass} shadow-sm rounded-[20px] overflow-hidden transition-all duration-300 ${quickViewSettings.compactMode ? 'compact-widget' : ''}`}
                                                 >
                                                     <div className={`flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700/50 ${quickViewSettings.compactMode ? 'px-3 py-2.5' : 'px-4 py-3.5'}`}>
                                                         <div className="flex items-center gap-2.5 min-w-0">
-                                                            <div className={`shrink-0 rounded-[12px] bg-orange-50 dark:bg-orange-950/40 border border-orange-100 dark:border-orange-900/40 flex items-center justify-center text-orange-500 dark:text-orange-400 ${quickViewSettings.compactMode ? 'w-7 h-7' : 'w-8 h-8'}`}>
+                                                            <div className={`shrink-0 rounded-[12px] border flex items-center justify-center ${upcomingHeaderIconStyle} ${quickViewSettings.compactMode ? 'w-7 h-7' : 'w-8 h-8'}`}>
                                                                 <svg className={quickViewSettings.compactMode ? 'w-4 h-4' : 'w-5 h-5'} fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                                 </svg>
                                                             </div>
                                                             <span className={`font-extrabold text-slate-900 dark:text-slate-100 tracking-tight truncate ${quickViewSettings.compactMode ? 'text-[13px]' : 'text-[15px]'}`}>Upcoming</span>
                                                             {upcomingDeadlines.length > 0 && (
-                                                                <span className={`shrink-0 px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 font-bold ${quickViewSettings.compactMode ? 'text-[9px]' : 'text-[10px]'}`}>
+                                                                <span className={`shrink-0 px-2 py-0.5 rounded-full font-bold ${upcomingHeaderBadgeStyle} ${quickViewSettings.compactMode ? 'text-[9px]' : 'text-[10px]'}`}>
                                                                     {upcomingDeadlines.length}
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div className={`shrink-0 flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-sm rounded-full ${quickViewSettings.compactMode ? 'p-0.5 pr-2' : 'p-1 pr-2.5'}`}>
+                                                        <div className={`shrink-0 flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-sm rounded-md ${quickViewSettings.compactMode ? 'p-0.5 pr-2' : 'p-1 pr-2.5'}`}>
                                                             <div className={`flex items-center justify-center bg-blue-50 dark:bg-blue-900/30 rounded-[6px] sm:rounded-[8px] text-blue-600 dark:text-blue-400 ${quickViewSettings.compactMode ? 'w-[18px] h-[18px]' : 'w-6 h-6'}`}>
                                                                 <svg className={quickViewSettings.compactMode ? 'w-[10px] h-[10px]' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                                 </svg>
                                                             </div>
-                                                            <span className={`font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider ${quickViewSettings.compactMode ? 'text-[8px]' : 'text-[9px]'}`}>NEXT 7 DAYS</span>
+                                                            <span className={`font-bold text-slate-900 dark:text-slate-100 tracking-tight ${quickViewSettings.compactMode ? 'text-[9px]' : 'text-[10px]'}`}>Next 7 Days</span>
                                                         </div>
                                                     </div>
                                                     <div className={`space-y-1 ${quickViewSettings.compactMode ? 'p-2' : 'p-3 space-y-2'}`}>
@@ -431,7 +462,6 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                             <AnimatePresence mode="popLayout">
                                                                 {upcomingDeadlines.slice(0, 3).map((deadline, index) => {
                                                                     const dueInfo = formatDaysUntil(deadline.dueDate);
-                                                                    const typeColor = getDeadlineTypeColor(deadline.type);
                                                                     const isRed = dueInfo.color?.includes('red') || dueInfo.color?.includes('rose');
                                                                     const isOrange = dueInfo.color?.includes('orange') || dueInfo.color?.includes('amber');
                                                                     const badgeStyle = isRed 
@@ -439,9 +469,23 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                                         : isOrange 
                                                                             ? 'bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-900/30' 
                                                                             : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200/50 dark:border-slate-700';
+                                                                    const titleColorClass = isRed 
+                                                                        ? 'text-red-600 dark:text-red-400' 
+                                                                        : isOrange 
+                                                                            ? 'text-amber-500 dark:text-amber-400' 
+                                                                            : 'text-slate-700 dark:text-slate-200';
+
                                                                     return (
                                                                         <motion.div
                                                                             key={deadline.id}
+                                                                            onClick={() => {
+                                                                                sessionStorage.setItem('defaultCourseTab', 'assignments');
+                                                                                sessionStorage.setItem('targetTaskId', deadline.id.toString());
+                                                                                window.dispatchEvent(new CustomEvent('switch-course-tab', { detail: { tab: 'assignments' } }));
+                                                                                window.dispatchEvent(new CustomEvent('navigate-to-course', { 
+                                                                                    detail: { courseId: deadline.courseId, fromView: 'home' } 
+                                                                                }));
+                                                                            }}
                                                                             initial={{ opacity: 0, x: -10 }}
                                                                             animate={{ opacity: 1, x: 0 }}
                                                                             exit={{ opacity: 0, x: 10 }}
@@ -449,16 +493,15 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                                             whileHover={{ x: 4 }}
                                                                             className={`flex items-center gap-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/40 cursor-pointer transition-all duration-200 ${quickViewSettings.compactMode ? 'p-1.5' : 'p-2'}`}
                                                                         >
-                                                                            <div className={`w-2.5 h-2.5 rounded-full ${typeColor} flex-shrink-0`} />
                                                                             <div className="flex-1 min-w-0">
-                                                                                <p className={`font-bold text-slate-700 dark:text-slate-200 truncate ${quickViewSettings.compactMode ? 'text-[10px]' : 'text-xs'}`}>
+                                                                                <p className={`font-bold ${titleColorClass} truncate ${quickViewSettings.compactMode ? 'text-[10px]' : 'text-xs'}`}>
                                                                                     {deadline.title}
                                                                                 </p>
                                                                                 <p className={`text-slate-400 dark:text-slate-500 mt-0.5 truncate ${quickViewSettings.compactMode ? 'text-[8px]' : 'text-[10px]'}`}>
                                                                                     {deadline.courseName}
                                                                                 </p>
                                                                             </div>
-                                                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold flex-shrink-0 ${badgeStyle}`}>
+                                                                            <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold flex-shrink-0 ${badgeStyle}`}>
                                                                                 {dueInfo.text}
                                                                             </span>
                                                                         </motion.div>
@@ -467,15 +510,27 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                             </AnimatePresence>
                                                         )}
                                                     </div>
-                                                    <a
-                                                        href="#"
-                                                        className={`flex items-center justify-center gap-1.5 border-t border-slate-100 dark:border-slate-700/50 text-blue-600 dark:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all font-bold ${quickViewSettings.compactMode ? 'py-2.5 text-[10px]' : 'py-3 text-xs'}`}
-                                                    >
-                                                        <span>View all deadlines</span>
-                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                                                        </svg>
-                                                    </a>
+                                                    <div className={`border-t border-slate-100 dark:border-slate-700/50 ${quickViewSettings.compactMode ? 'p-2' : 'p-3'}`}>
+                                                        <motion.button
+                                                            onClick={() => {
+                                                                if (upcomingDeadlines.length > 0) {
+                                                                    sessionStorage.setItem('defaultCourseTab', 'assignments');
+                                                                    window.dispatchEvent(new CustomEvent('switch-course-tab', { detail: { tab: 'assignments' } }));
+                                                                    window.dispatchEvent(new CustomEvent('navigate-to-course', { 
+                                                                        detail: { courseId: upcomingDeadlines[0].courseId, fromView: 'home' } 
+                                                                    }));
+                                                                }
+                                                            }}
+                                                            whileHover={{ scale: 1.02 }}
+                                                            whileTap={{ scale: 0.98 }}
+                                                            className={`w-full ${quickViewSettings.compactMode ? 'py-2 px-3 text-[10px]' : 'py-2.5 px-4 text-[12px]'} font-bold rounded-[14px] transition-colors shadow-sm flex items-center justify-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus-visible:ring-blue-500`}
+                                                        >
+                                                            <span>Go to tasks</span>
+                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                                            </svg>
+                                                        </motion.button>
+                                                    </div>
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>

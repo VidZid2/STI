@@ -50,6 +50,7 @@ export interface CourseInfo {
     category: 'major' | 'ge' | 'pe' | 'nstp';
     instructor: string;
     image: string;
+    description?: string;
 }
 
 // All available courses in the system (synced with HomeContent.tsx)
@@ -63,7 +64,8 @@ export const COURSES_DATA: Record<string, CourseInfo> = {
         modules: 1, 
         category: 'major',
         instructor: 'David Clarence Del Mundo',
-        image: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=300&h=200&fit=crop&crop=center'
+        image: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=300&h=200&fit=crop&crop=center',
+        description: 'Learn the fundamentals of programming using C++ and Java, covering basic syntax, control structures, and algorithms.'
     },
     'itc': { 
         id: 'itc', 
@@ -73,7 +75,8 @@ export const COURSES_DATA: Record<string, CourseInfo> = {
         modules: 1, 
         category: 'major',
         instructor: 'Psalmmiracle Mariano',
-        image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center'
+        image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center',
+        description: 'Explore the basics of computer hardware, software, networking, and the internet in this foundational computing course.'
     },
     'euth1': { 
         id: 'euth1', 
@@ -83,7 +86,8 @@ export const COURSES_DATA: Record<string, CourseInfo> = {
         modules: 1, 
         category: 'ge',
         instructor: 'Claire Maurillo',
-        image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop&crop=center'
+        image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop&crop=center',
+        description: 'Develop personal effectiveness and adapt to college life with focus on study habits, time management, and core values.'
     },
     'purcom': { 
         id: 'purcom', 
@@ -93,7 +97,8 @@ export const COURSES_DATA: Record<string, CourseInfo> = {
         modules: 1, 
         category: 'ge',
         instructor: 'John Denielle San Martin',
-        image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=300&h=200&fit=crop&crop=center'
+        image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=300&h=200&fit=crop&crop=center',
+        description: 'Enhance your writing, speaking, and presenting skills to effectively communicate your purpose to diverse audiences.'
     },
     'tcw': { 
         id: 'tcw', 
@@ -103,7 +108,8 @@ export const COURSES_DATA: Record<string, CourseInfo> = {
         modules: 1, 
         category: 'ge',
         instructor: 'Claire Maurillo',
-        image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center'
+        image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&crop=center',
+        description: 'Analyze globalization and its impact on the economic, social, and political landscapes of modern societies.'
     },
     'uts': { 
         id: 'uts', 
@@ -113,7 +119,8 @@ export const COURSES_DATA: Record<string, CourseInfo> = {
         modules: 1, 
         category: 'ge',
         instructor: 'Claire Maurillo',
-        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center'
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center',
+        description: 'Discover the different aspects of your identity from philosophical, sociological, and psychological perspectives.'
     },
     'ppc': { 
         id: 'ppc', 
@@ -123,7 +130,8 @@ export const COURSES_DATA: Record<string, CourseInfo> = {
         modules: 1, 
         category: 'ge',
         instructor: 'Claire Maurillo',
-        image: 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=300&h=200&fit=crop&crop=center'
+        image: 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=300&h=200&fit=crop&crop=center',
+        description: 'Study the evolution of Filipino popular culture, analyzing media, arts, and modern societal trends.'
     },
     'pe1': { 
         id: 'pe1', 
@@ -133,7 +141,8 @@ export const COURSES_DATA: Record<string, CourseInfo> = {
         modules: 1, 
         category: 'pe',
         instructor: 'Mark Joseph Danoy',
-        image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&h=200&fit=crop&crop=center'
+        image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=300&h=200&fit=crop&crop=center',
+        description: 'Engage in physical activities to improve your fitness, health, and holistic well-being.'
     },
     'nstp1': { 
         id: 'nstp1', 
@@ -143,7 +152,8 @@ export const COURSES_DATA: Record<string, CourseInfo> = {
         modules: 1, 
         category: 'nstp',
         instructor: 'Dan Risty Montojo',
-        image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=200&fit=crop&crop=center'
+        image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=200&fit=crop&crop=center',
+        description: 'Participate in civic and community service programs to foster patriotism and national pride.'
     },
     'artapp': { id: 'artapp', title: 'Art Appreciation', shortTitle: 'ARTAPP', subtitle: 'GEDC1010', modules: 1, category: 'ge', instructor: 'Dr. Jane Smith', image: '' },
     'comprog2': { id: 'comprog2', title: 'Computer Programming 2', shortTitle: 'CP2', subtitle: 'CITE1006', modules: 1, category: 'major', instructor: 'John Doe', image: '' },

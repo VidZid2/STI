@@ -11,11 +11,11 @@ interface NotificationIconProps {
 }
 
 export const NotificationIcon: React.FC<NotificationIconProps> = ({ type, title }) => {
-    const iconColor = type === 'warning' ? '#f59e0b' : '#71717a';
+    const iconColor = type === 'urgent' || type === 'danger' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#71717a';
 
     const getIcon = () => {
-        // Warning icon - exclamation triangle (yellow)
-        if (type === 'warning') {
+        // Warning icon - exclamation triangle (yellow or red)
+        if (type === 'warning' || type === 'urgent' || type === 'danger') {
             return (
                 <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
                     <path

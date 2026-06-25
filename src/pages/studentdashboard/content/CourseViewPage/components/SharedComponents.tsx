@@ -128,7 +128,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, description
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={action.onClick}
-                    className="px-6 py-2.5 text-[13px] font-bold text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 rounded-xl transition-all shadow-sm shadow-blue-500/20 hover:shadow-blue-500/40"
+                    className="px-6 py-2.5 text-[13px] font-bold text-white bg-gradient-to-r from-blue-600 to-blue-500 rounded-[14px] transition-all shadow-sm hover:shadow-blue-500/25 flex items-center justify-center gap-2"
                 >
                     {action.label}
                 </motion.button>

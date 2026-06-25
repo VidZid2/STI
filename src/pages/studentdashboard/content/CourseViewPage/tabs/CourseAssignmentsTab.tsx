@@ -23,8 +23,10 @@ export interface CourseAssignmentsTabProps {
     course: { id: string; title: string; subtitle: string; image: string; progress: number; instructor?: string };
     isLoading: boolean;
     courseTasks: CourseTask[];
-    taskFilter: TaskCategory;
-    setTaskFilter: (f: TaskCategory) => void;
+    taskStatusFilter: 'all' | 'overdue';
+    setTaskStatusFilter: (f: 'all' | 'overdue') => void;
+    taskTypeFilter: TaskCategory | 'all';
+    setTaskTypeFilter: (f: TaskCategory | 'all') => void;
     searchQuery: string;
     setSearchQuery: (q: string) => void;
     isSearching: boolean;
@@ -40,10 +42,12 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
     course,
     isLoading,
     courseTasks,
-    taskFilter,
-    setTaskFilter,
+    taskStatusFilter,
+    setTaskStatusFilter,
+    taskTypeFilter,
+    setTaskTypeFilter,
     searchQuery,
-    setSearchQuery,
+    setSearchQuery: _setSearchQuery,
     isSearching: _isSearching,
     systemConfig,
     showAddTaskModal: _showAddTaskModal,
@@ -53,6 +57,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
     setInstructionsModalTask
 }) => {
     const [selectedTaskId, setSelectedTaskId] = React.useState<string | number | null>(null);
+    const [activeTabGroup, setActiveTabGroup] = React.useState<'status' | 'type'>('status');
     const [tasksPage, setTasksPage] = React.useState(1);
     const tasksScrollRef = React.useRef<HTMLDivElement>(null);
     const [canScrollTypeLeft, setCanScrollTypeLeft] = React.useState(false);
@@ -62,24 +67,46 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
     // Filter tasks
     const filteredTasks = React.useMemo(() => {
         let tasks = courseTasks;
-        if (taskFilter !== 'all' && taskFilter !== 'overdue') {
-            tasks = tasks.filter(t => t.category === taskFilter);
-        } else if (taskFilter === 'overdue') {
-            tasks = tasks.filter(t => t.status === 'overdue' || t.due?.toLowerCase().includes('overdue'));
+        
+        // Status Filter
+        if (taskStatusFilter === 'overdue') {
+            tasks = tasks.filter(t => {
+                const due = t.due?.toLowerCase() || '';
+                return t.status === 'overdue' || 
+                       due.includes('overdue') || 
+                       due.includes('today') || 
+                       due.includes('1 day') || 
+                       due.includes('2 days') || 
+                       due.includes('3 days');
+            });
         }
+        
+        // Type Filter
+        if (taskTypeFilter !== 'all') {
+            tasks = tasks.filter(t => t.category === taskTypeFilter);
+        }
+
         if (searchQuery) {
             const q = searchQuery.toLowerCase();
             tasks = tasks.filter(t => t.title.toLowerCase().includes(q));
         }
         return tasks;
-    }, [courseTasks, taskFilter, searchQuery]);
+    }, [courseTasks, taskStatusFilter, taskTypeFilter, searchQuery]);
 
     // Keep selectedTaskId in sync with filteredTasks
     React.useEffect(() => {
         if (filteredTasks.length > 0) {
             const exists = filteredTasks.some(t => t.id === selectedTaskId);
             if (!exists) {
-                setSelectedTaskId(filteredTasks[0].id);
+                const targetId = sessionStorage.getItem('targetTaskId');
+                if (targetId && filteredTasks.some(t => String(t.id) === targetId)) {
+                    // Try to match the type (it might be number or string)
+                    const matchedTask = filteredTasks.find(t => String(t.id) === targetId);
+                    setSelectedTaskId(matchedTask ? matchedTask.id : filteredTasks[0].id);
+                    sessionStorage.removeItem('targetTaskId');
+                } else {
+                    setSelectedTaskId(filteredTasks[0].id);
+                }
             }
         } else {
             setSelectedTaskId(null);
@@ -89,7 +116,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
     // Reset pagination when filter or search changes
     React.useEffect(() => {
         setTasksPage(1);
-    }, [taskFilter, searchQuery]);
+    }, [taskStatusFilter, taskTypeFilter, searchQuery]);
 
     if (isLoading) {
         return (
@@ -129,7 +156,8 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
         }
         if (cat === 'overdue') {
             return courseTasks.filter((t: CourseTask) => {
-                const isOverdueDemo = t.due?.toLowerCase().includes('overdue');
+                const due = t.due?.toLowerCase() || '';
+                const isOverdueDemo = due.includes('overdue') || due.includes('today') || due.includes('1 day') || due.includes('2 days') || due.includes('3 days');
                 let isRealtimeOverdue = false;
                 if (t.id && t.dueDate) {
                     const dueDate = new Date(t.dueDate);
@@ -147,120 +175,7 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
 
 
-            {/* 2. Filter Cards - Desktop/Tablet only (hidden on mobile, shown inside sidebar) */}
-            <div className="hidden lg:flex flex-col lg:flex-row items-stretch gap-6 w-full max-w-7xl mx-auto">
-                {/* Status Panel */}
-                <div className="w-full lg:w-[320px] xl:w-[380px] shrink-0 relative p-4 rounded-[20px] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
-                    <div className="relative z-10">
-                        <h4 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">Task Status</h4>
-                        <div className="flex p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-[12px] border border-slate-100 dark:border-zinc-800 w-full">
-                            {TASK_CATEGORIES.filter(c => ['all', 'overdue'].includes(c.id)).map((cat) => {
-                                const count = getTaskCategoryCount(cat.id);
-                                const isActive = taskFilter === cat.id;
-
-                                return (
-                                    <button
-                                        key={cat.id}
-                                        onClick={() => setTaskFilter(cat.id)}
-                                        className={`relative flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-[10px] text-sm font-bold transition-colors duration-200 ${
-                                            isActive 
-                                                ? 'text-blue-700 dark:text-blue-400' 
-                                                : 'text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-300'
-                                        }`}
-                                    >
-                                        {isActive && (
-                                            <motion.div
-                                                layoutId="activeStatusTab"
-                                                className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-zinc-600/50 z-0"
-                                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                            />
-                                        )}
-                                        <span className="relative z-10 whitespace-nowrap">{cat.label}</span>
-                                        {count > 0 && (
-                                            <motion.span layout className={`relative flex items-center z-10 px-1.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap overflow-hidden ${
-                                                isActive
-                                                    ? 'bg-blue-50/80 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400'
-                                                    : 'bg-slate-200/50 text-slate-500 dark:bg-zinc-700/50 dark:text-zinc-400'
-                                            }`}>
-                                                <motion.span layout>{count}</motion.span>
-                                                <motion.span
-                                                    initial={false}
-                                                    animate={{ 
-                                                        width: isActive ? "auto" : 0, 
-                                                        opacity: isActive ? 1 : 0,
-                                                        marginLeft: isActive ? 4 : 0
-                                                    }}
-                                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                                    className="overflow-hidden block"
-                                                >
-                                                    {cat.id === 'all' ? 'total' : cat.id === 'overdue' ? 'overdue' : 'to do'}
-                                                </motion.span>
-                                            </motion.span>
-                                        )}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Type Panel */}
-                <div className="flex-1 min-w-0 relative p-4 rounded-[20px] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
-                    <div className="relative z-10">
-                        <h4 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">Task Type</h4>
-                        <div className="flex flex-wrap p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-[12px] border border-slate-100 dark:border-zinc-800 w-full">
-                            {TASK_CATEGORIES.filter(c => !['all', 'overdue'].includes(c.id)).map((cat) => {
-                                const count = getTaskCategoryCount(cat.id);
-                                const isActive = taskFilter === cat.id;
-
-                                return (
-                                    <button
-                                        key={cat.id}
-                                        onClick={() => setTaskFilter(cat.id)}
-                                        className={`relative flex-auto flex items-center justify-center gap-2 py-2 px-3 rounded-[10px] text-sm font-bold transition-colors duration-200 ${
-                                            isActive 
-                                                ? 'text-blue-700 dark:text-blue-400' 
-                                                : 'text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-300'
-                                        }`}
-                                    >
-                                        {isActive && (
-                                            <motion.div
-                                                layoutId="activeTypeTab"
-                                                className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-zinc-600/50 z-0"
-                                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                            />
-                                        )}
-                                        <span className="relative z-10 whitespace-nowrap">{cat.label}</span>
-                                        {count > 0 && (
-                                            <motion.span layout className={`relative flex items-center z-10 px-1.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap overflow-hidden ${
-                                                isActive
-                                                    ? 'bg-blue-50/80 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400'
-                                                    : 'bg-slate-200/50 text-slate-500 dark:bg-zinc-700/50 dark:text-zinc-400'
-                                            }`}>
-                                                <motion.span layout>{count}</motion.span>
-                                                <motion.span
-                                                    initial={false}
-                                                    animate={{ 
-                                                        width: isActive ? "auto" : 0, 
-                                                        opacity: isActive ? 1 : 0,
-                                                        marginLeft: isActive ? 4 : 0
-                                                    }}
-                                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                                    className="overflow-hidden block"
-                                                >
-                                                    {cat.id === 'all' ? 'total' : cat.id === 'overdue' ? 'overdue' : 'to do'}
-                                                </motion.span>
-                                            </motion.span>
-                                        )}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Task List */}
+            {/* 2. Filter Cards & Task List - Unified Master-Detail Layout */}
             {(() => {
                 const selectedTask = filteredTasks.length > 0 ? (filteredTasks.find(t => t.id === selectedTaskId) || filteredTasks[0]) : null;
                 const itemsPerPage = 3;
@@ -270,142 +185,156 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                 const paginatedTasks = filteredTasks.slice(startIndex, startIndex + itemsPerPage);
 
                 return (
-                    <div className="flex flex-col lg:flex-row items-stretch gap-6 w-full max-w-7xl mx-auto mt-2">
+                    <div className="flex flex-col lg:flex-row items-stretch w-full max-w-7xl mx-auto mt-2 bg-white dark:bg-slate-800 rounded-[24px] border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         {/* Sidebar Navigation */}
-                        <div className="w-full lg:w-[320px] xl:w-[380px] shrink-0 flex flex-col justify-between p-4 rounded-[20px] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm relative">
-                            {/* Filter Cards - Mobile only (hidden on desktop/tablet) */}
-                            <div className="flex flex-col gap-3 mb-3 lg:hidden">
-                                {/* Status Panel */}
-                                <div className="relative p-4 rounded-[20px] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
-                                    <div className="relative z-10">
-                                        <h4 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">Task Status</h4>
-                                        <div className="flex p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-[12px] border border-slate-100 dark:border-zinc-800 w-full">
-                                            {TASK_CATEGORIES.filter(c => ['all', 'overdue'].includes(c.id)).map((cat) => {
-                                                const count = getTaskCategoryCount(cat.id);
-                                                const isActive = taskFilter === cat.id;
+                        <div className="w-full lg:w-[320px] xl:w-[380px] shrink-0 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-700/60 relative bg-zinc-50/50 dark:bg-zinc-900/30">
+                            
+                            {/* Status Filter */}
+                            <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-700/60 bg-white dark:bg-zinc-900">
+                                <h4 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">Task Status</h4>
+                                <div className="flex p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-[12px] border border-slate-100 dark:border-zinc-800 w-full">
+                                    {TASK_CATEGORIES.filter(c => ['all', 'overdue'].includes(c.id)).map((cat) => {
+                                        const count = getTaskCategoryCount(cat.id);
+                                        const isActive = taskStatusFilter === cat.id;
+                                        const isTabHighlighted = isActive && activeTabGroup === 'status';
 
-                                                return (
-                                                    <button
-                                                        key={cat.id}
-                                                        onClick={() => setTaskFilter(cat.id)}
-                                                        className={`relative flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-[10px] text-sm font-bold transition-colors duration-200 ${
-                                                            isActive 
-                                                                ? 'text-blue-700 dark:text-blue-400' 
-                                                                : 'text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-300'
-                                                        }`}
-                                                    >
-                                                        {isActive && (
+                                        return (
+                                            <button
+                                                key={cat.id}
+                                                onClick={() => {
+                                                    setTaskStatusFilter(cat.id as 'all' | 'overdue');
+                                                    setTaskTypeFilter('all');
+                                                    setActiveTabGroup('status');
+                                                }}
+                                                className={`relative flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-[10px] text-sm font-bold transition-colors duration-200 ${
+                                                    isTabHighlighted 
+                                                        ? 'text-blue-700 dark:text-blue-400' 
+                                                        : 'text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-300'
+                                                }`}
+                                            >
+                                                <AnimatePresence>
+                                                    {isTabHighlighted && (
+                                                        <motion.div
+                                                            layoutId="activeStatusTab"
+                                                            initial={{ opacity: 0, scale: 0.95 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            exit={{ opacity: 0, scale: 0.95 }}
+                                                            className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-zinc-600/50 z-0"
+                                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                        />
+                                                    )}
+                                                </AnimatePresence>
+                                                <span className="relative z-10 whitespace-nowrap">{cat.label}</span>
+                                                {count > 0 && (
+                                                    <motion.span layout className={`relative flex items-center z-10 px-1.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap overflow-hidden ${
+                                                        isTabHighlighted
+                                                            ? 'bg-blue-50/80 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400'
+                                                            : 'bg-slate-200/50 text-slate-500 dark:bg-zinc-700/50 dark:text-zinc-400'
+                                                    }`}>
+                                                        <motion.span layout>{count}</motion.span>
+                                                        <motion.span
+                                                            initial={false}
+                                                            animate={{ 
+                                                                width: isTabHighlighted ? "auto" : 0, 
+                                                                opacity: isTabHighlighted ? 1 : 0,
+                                                                marginLeft: isTabHighlighted ? 4 : 0
+                                                            }}
+                                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                            className="overflow-hidden block"
+                                                        >
+                                                            {cat.id === 'all' ? 'total' : cat.id === 'overdue' ? 'overdue' : 'to do'}
+                                                        </motion.span>
+                                                    </motion.span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Type Filter - Mobile Only (Desktop shows it on the Detail Panel) */}
+                            <div className="p-4 border-b border-slate-200 dark:border-slate-700/60 lg:hidden bg-white dark:bg-zinc-900">
+                                <h4 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">Task Type</h4>
+                                <div className="relative">
+                                    {canScrollTypeLeft && (
+                                        <div className="absolute left-0 top-0 bottom-0 w-5 bg-gradient-to-r from-white dark:from-zinc-900 to-transparent pointer-events-none z-20 rounded-l-[12px]" />
+                                    )}
+                                    {canScrollTypeRight && (
+                                        <div className="absolute right-0 top-0 bottom-0 w-5 bg-gradient-to-l from-white dark:from-zinc-900 to-transparent pointer-events-none z-20 rounded-r-[12px]" />
+                                    )}
+                                    <div
+                                        ref={taskTypeTabsRef}
+                                        onScroll={() => {
+                                            const el = taskTypeTabsRef.current;
+                                            if (!el) return;
+                                            const threshold = 5;
+                                            setCanScrollTypeLeft(el.scrollLeft > threshold);
+                                            setCanScrollTypeRight(el.scrollLeft < el.scrollWidth - el.clientWidth - threshold);
+                                        }}
+                                        className="flex gap-1.5 p-1.5 overflow-x-auto bg-slate-50 dark:bg-zinc-800/50 rounded-[12px] border border-slate-100 dark:border-zinc-800 w-full relative"
+                                        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                                    >
+                                        {TASK_CATEGORIES.filter(c => !['all', 'overdue'].includes(c.id)).map((cat) => {
+                                            const count = getTaskCategoryCount(cat.id);
+                                            const isActive = taskTypeFilter === cat.id;
+                                            const isTabHighlighted = isActive && activeTabGroup === 'type';
+
+                                            return (
+                                                <button
+                                                    key={cat.id}
+                                                    onClick={() => {
+                                                        setTaskTypeFilter(isActive ? 'all' : cat.id);
+                                                        setTaskStatusFilter('all');
+                                                        setActiveTabGroup('type');
+                                                    }}
+                                                    className={`relative shrink-0 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-bold whitespace-nowrap transition-colors duration-200 ${
+                                                        isTabHighlighted 
+                                                            ? 'text-blue-700 dark:text-blue-400' 
+                                                            : 'text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-300'
+                                                    }`}
+                                                >
+                                                    <AnimatePresence>
+                                                        {isTabHighlighted && (
                                                             <motion.div
-                                                                layoutId="activeStatusTab"
-                                                                className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-zinc-600/50 z-0"
+                                                                layoutId="activeTypeTabMobile"
+                                                                initial={{ opacity: 0, scale: 0.95 }}
+                                                                animate={{ opacity: 1, scale: 1 }}
+                                                                exit={{ opacity: 0, scale: 0.95 }}
+                                                                className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-lg shadow-sm border border-slate-200/50 dark:border-zinc-600/50 z-0"
                                                                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                                             />
                                                         )}
-                                                        <span className="relative z-10 whitespace-nowrap">{cat.label}</span>
-                                                        {count > 0 && (
-                                                            <motion.span layout className={`relative flex items-center z-10 px-1.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap overflow-hidden ${
-                                                                isActive
-                                                                    ? 'bg-blue-50/80 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400'
-                                                                    : 'bg-slate-200/50 text-slate-500 dark:bg-zinc-700/50 dark:text-zinc-400'
-                                                            }`}>
-                                                                <motion.span layout>{count}</motion.span>
-                                                                <motion.span
-                                                                    initial={false}
-                                                                    animate={{ 
-                                                                        width: isActive ? "auto" : 0, 
-                                                                        opacity: isActive ? 1 : 0,
-                                                                        marginLeft: isActive ? 4 : 0
-                                                                    }}
-                                                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                                                    className="overflow-hidden block"
-                                                                >
-                                                                    {cat.id === 'all' ? 'total' : cat.id === 'overdue' ? 'overdue' : 'to do'}
-                                                                </motion.span>
+                                                    </AnimatePresence>
+                                                    <span className="relative z-10 whitespace-nowrap">{cat.label}</span>
+                                                    {count > 0 && (
+                                                        <motion.span layout className={`relative flex items-center z-10 px-1.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap overflow-hidden ${
+                                                            isTabHighlighted
+                                                                ? 'bg-blue-50/80 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400'
+                                                                : 'bg-slate-200/50 text-slate-500 dark:bg-zinc-700/50 dark:text-zinc-400'
+                                                        }`}>
+                                                            <motion.span layout>{count}</motion.span>
+                                                            <motion.span
+                                                                initial={false}
+                                                                animate={{ 
+                                                                    width: isTabHighlighted ? "auto" : 0, 
+                                                                    opacity: isTabHighlighted ? 1 : 0,
+                                                                    marginLeft: isTabHighlighted ? 4 : 0
+                                                                }}
+                                                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                                className="overflow-hidden block"
+                                                            >
+                                                                {cat.id === 'all' ? 'total' : cat.id === 'overdue' ? 'overdue' : 'to do'}
                                                             </motion.span>
-                                                        )}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Type Panel */}
-                                <div className="relative p-4 rounded-[20px] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm">
-                                    <div className="relative z-10">
-                                        <h4 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">Task Type</h4>
-                                        <div className="relative">
-                                            {canScrollTypeLeft && (
-                                                <div className="absolute left-0 top-0 bottom-0 w-5 bg-gradient-to-r from-white dark:from-zinc-900 to-transparent pointer-events-none z-20 rounded-l-[12px]" />
-                                            )}
-                                            {canScrollTypeRight && (
-                                                <div className="absolute right-0 top-0 bottom-0 w-5 bg-gradient-to-l from-white dark:from-zinc-900 to-transparent pointer-events-none z-20 rounded-r-[12px]" />
-                                            )}
-                                            <div
-                                                ref={taskTypeTabsRef}
-                                                onScroll={() => {
-                                                    const el = taskTypeTabsRef.current;
-                                                    if (!el) return;
-                                                    const threshold = 5;
-                                                    setCanScrollTypeLeft(el.scrollLeft > threshold);
-                                                    setCanScrollTypeRight(el.scrollLeft < el.scrollWidth - el.clientWidth - threshold);
-                                                }}
-                                                className="flex gap-1.5 p-1.5 overflow-x-auto bg-slate-50 dark:bg-zinc-800/50 rounded-[12px] border border-slate-100 dark:border-zinc-800 w-full relative"
-                                                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                                            >
-                                                {TASK_CATEGORIES.filter(c => !['all', 'overdue'].includes(c.id)).map((cat) => {
-                                                    const count = getTaskCategoryCount(cat.id);
-                                                    const isActive = taskFilter === cat.id;
-
-                                                    return (
-                                                        <button
-                                                            key={cat.id}
-                                                            onClick={() => setTaskFilter(cat.id)}
-                                                            className={`relative shrink-0 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-bold whitespace-nowrap transition-colors duration-200 ${
-                                                                isActive 
-                                                                    ? 'text-blue-700 dark:text-blue-400' 
-                                                                    : 'text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-300'
-                                                            }`}
-                                                        >
-                                                            {isActive && (
-                                                                <motion.div
-                                                                    layoutId="activeTypeTab"
-                                                                    className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-lg shadow-sm border border-slate-200/50 dark:border-zinc-600/50 z-0"
-                                                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                                                />
-                                                            )}
-                                                            <span className="relative z-10 whitespace-nowrap">{cat.label}</span>
-                                                            {count > 0 && (
-                                                                <motion.span layout className={`relative flex items-center z-10 px-1.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap overflow-hidden ${
-                                                                    isActive
-                                                                        ? 'bg-blue-50/80 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400'
-                                                                        : 'bg-slate-200/50 text-slate-500 dark:bg-zinc-700/50 dark:text-zinc-400'
-                                                                }`}>
-                                                                    <motion.span layout>{count}</motion.span>
-                                                                    <motion.span
-                                                                        initial={false}
-                                                                        animate={{ 
-                                                                            width: isActive ? "auto" : 0, 
-                                                                            opacity: isActive ? 1 : 0,
-                                                                            marginLeft: isActive ? 4 : 0
-                                                                        }}
-                                                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                                                        className="overflow-hidden block"
-                                                                    >
-                                                                        {cat.id === 'all' ? 'total' : cat.id === 'overdue' ? 'overdue' : 'to do'}
-                                                                    </motion.span>
-                                                                </motion.span>
-                                                            )}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
+                                                        </motion.span>
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-3 flex-1 py-1">
+                            <div className="flex flex-col gap-3 flex-1 p-4 sm:p-5 min-h-[400px]">
                                 <AnimatePresence mode="wait">
                                     {filteredTasks.length === 0 ? (
                                         <motion.div 
@@ -423,7 +352,11 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                                 </svg>
                                             </div>
                                             <h3 className="text-[13px] font-bold text-slate-700 dark:text-zinc-300 mb-1">
-                                                {taskFilter !== 'all' ? `No ${TASK_CATEGORIES.find(c => c.id === taskFilter)?.label.toLowerCase()} found` : "No tasks found"}
+                                                {taskTypeFilter !== 'all' 
+                                                    ? `No ${TASK_CATEGORIES.find(c => c.id === taskTypeFilter)?.label.toLowerCase()} found` 
+                                                    : taskStatusFilter === 'overdue' 
+                                                        ? 'No overdue tasks found'
+                                                        : "No tasks found"}
                                             </h3>
                                             <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-500 tracking-wide">
                                                 Nothing yet, so be ready!
@@ -634,9 +567,10 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
 
                             {/* Pagination Controls */}
                             {filteredTasks.length > 3 && (
-                                <div className="w-full pt-2.5 mt-2.5 border-t border-zinc-100 dark:border-zinc-800/80">
-                                    <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-zinc-900 p-1.5 rounded-[14px] border border-zinc-200/60 dark:border-zinc-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
-                                        <motion.button
+                                <div className="w-full px-4 pb-4 sm:px-5 sm:pb-5">
+                                    <div className="pt-4 sm:pt-5 border-t border-slate-200 dark:border-slate-700/60">
+                                        <div className="flex items-center justify-between w-full gap-2 bg-white dark:bg-zinc-900 p-1.5 rounded-[14px] border border-slate-200/80 dark:border-zinc-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+                                            <motion.button
                                             type="button"
                                             onClick={() => setTasksPage(prev => Math.max(prev - 1, 1))}
                                             disabled={currentPage === 1}
@@ -669,12 +603,76 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                         </motion.button>
                                     </div>
                                 </div>
+                                </div>
                             )}
                         </div>
 
                         {/* Detail Panel */}
-                        <div className="flex-1 min-w-0" ref={tasksScrollRef}>
-                            <AnimatePresence mode="wait">
+                        <div className="flex-1 min-w-0 flex flex-col" ref={tasksScrollRef}>
+                            {/* Desktop Task Type Filter */}
+                            <div className="hidden lg:block p-4 sm:p-5 border-b border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-900">
+                                <h4 className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 px-1">Task Type</h4>
+                                <div className="flex flex-wrap p-1 bg-slate-50 dark:bg-zinc-800/50 rounded-[12px] border border-slate-100 dark:border-zinc-800 w-full">
+                                    {TASK_CATEGORIES.filter(c => !['all', 'overdue'].includes(c.id)).map((cat) => {
+                                        const count = getTaskCategoryCount(cat.id);
+                                        const isActive = taskTypeFilter === cat.id;
+                                        const isTabHighlighted = isActive && activeTabGroup === 'type';
+
+                                        return (
+                                            <button
+                                                key={cat.id}
+                                                onClick={() => {
+                                                    setTaskTypeFilter(isActive ? 'all' : cat.id);
+                                                    setTaskStatusFilter('all');
+                                                    setActiveTabGroup('type');
+                                                }}
+                                                className={`relative flex-auto flex items-center justify-center gap-2 py-2 px-3 rounded-[10px] text-sm font-bold transition-colors duration-200 ${
+                                                    isTabHighlighted 
+                                                        ? 'text-blue-700 dark:text-blue-400' 
+                                                        : 'text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-300'
+                                                }`}
+                                            >
+                                                <AnimatePresence>
+                                                    {isTabHighlighted && (
+                                                        <motion.div
+                                                            layoutId="activeTypeTabDesktop"
+                                                            initial={{ opacity: 0, scale: 0.95 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            exit={{ opacity: 0, scale: 0.95 }}
+                                                            className="absolute inset-0 bg-white dark:bg-zinc-700 rounded-[10px] shadow-sm border border-slate-200/50 dark:border-zinc-600/50 z-0"
+                                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                        />
+                                                    )}
+                                                </AnimatePresence>
+                                                <span className="relative z-10 whitespace-nowrap">{cat.label}</span>
+                                                {count > 0 && (
+                                                    <motion.span layout className={`relative flex items-center z-10 px-1.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap overflow-hidden ${
+                                                        isTabHighlighted
+                                                            ? 'bg-blue-50/80 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400'
+                                                            : 'bg-slate-200/50 text-slate-500 dark:bg-zinc-700/50 dark:text-zinc-400'
+                                                    }`}>
+                                                        <motion.span layout>{count}</motion.span>
+                                                        <motion.span
+                                                            initial={false}
+                                                            animate={{ 
+                                                                width: isTabHighlighted ? "auto" : 0, 
+                                                                opacity: isTabHighlighted ? 1 : 0,
+                                                                marginLeft: isTabHighlighted ? 4 : 0
+                                                            }}
+                                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                            className="overflow-hidden block"
+                                                        >
+                                                            {cat.id === 'all' ? 'total' : cat.id === 'overdue' ? 'overdue' : 'to do'}
+                                                        </motion.span>
+                                                    </motion.span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                            
+                            <AnimatePresence mode="popLayout">
                                 {filteredTasks.length === 0 ? (
                                     <motion.div
                                         key="empty-detail"
@@ -691,12 +689,16 @@ export const CourseAssignmentsTab: React.FC<CourseAssignmentsTabProps> = ({
                                                     <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                                                 </svg>
                                             }
-                                            title={taskFilter !== 'all' ? `No ${TASK_CATEGORIES.find(c => c.id === taskFilter)?.label.toLowerCase()} found` : "No tasks found"}
-                                            description="Nothing yet, so be ready!"
-                                            className="h-full min-h-[480px]"
-                                            action={(searchQuery || taskFilter !== 'all') ? {
-                                                label: searchQuery ? 'Clear search' : 'Show all',
-                                                onClick: () => { setSearchQuery(''); setTaskFilter('all'); }
+                                            title="No information available"
+                                            description="The task details you're looking for cannot be found or may have been removed."
+                                            className="h-full min-h-[480px] !bg-transparent dark:!bg-transparent !border-transparent dark:!border-transparent !shadow-none"
+                                            action={(searchQuery || taskTypeFilter !== 'all' || taskStatusFilter !== 'all') ? {
+                                                label: "Clear Filters",
+                                                onClick: () => {
+                                                    _setSearchQuery('');
+                                                    setTaskTypeFilter('all');
+                                                    setTaskStatusFilter('all');
+                                                }
                                             } : undefined}
                                         />
                                     </motion.div>

@@ -49,7 +49,9 @@ export interface DashboardCourse {
   image: string;
 }
 
-export type SidebarCourse = DashboardCourse;
+export interface SidebarCourse extends DashboardCourse {
+  description?: string;
+}
 
 export interface CalendarData {
   days: {

@@ -49,6 +49,8 @@ import {
 } from '@/services/studyTimeService';
 import { LevelJourneyModal } from '@/components/ui/modals';
 import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
+import { AvatarUploader } from "@/components/ui/avatar-uploader";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
 type ProfileTab = 'profile' | 'settings';
@@ -72,7 +74,7 @@ export default function UserProfileDropdown() {
     const [isAvatarHovered, setIsAvatarHovered] = useState(false);
     const [showLevelUp, setShowLevelUp] = useState(false);
     const [lastTotalXP, setLastTotalXP] = useState(() => getXPData().totalXP);
-    const profileInputRef = useRef<HTMLInputElement>(null);
+    const lastTotalXPRef = useRef(lastTotalXP); // just replacing the line with something harmless or removing it
     const ref = useRef<HTMLDivElement>(null!);
     const modalRef = useRef<HTMLDivElement>(null);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -212,22 +214,26 @@ export default function UserProfileDropdown() {
         }
     };
 
-    const handleProfileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            try {
-                // Compress profile image: max 200x200, 70% quality
-                const compressedImage = await compressImage(file, 200, 200, 0.7);
-                setProfileImage(compressedImage);
-                await saveProfileImage(compressedImage);
-            } catch (error) {
-                console.error('Error compressing profile image:', error);
-            }
+
+    const handleProfileUploadFile = async (file: File) => {
+        try {
+            // Compress profile image: max 200x200, 70% quality
+            const compressedImage = await compressImage(file, 200, 200, 0.7);
+            setProfileImage(compressedImage);
+            await saveProfileImage(compressedImage);
+            return { success: true };
+        } catch (error) {
+            console.error('Error compressing profile image:', error);
+            return { success: false };
         }
     };
 
     useClickOutside(ref, (event) => {
         if (isOpen && modalRef.current && modalRef.current.contains(event.target as Node)) {
+            return;
+        }
+        // Don't close if the avatar uploader modal is open
+        if (document.querySelector('[data-avatar-uploader-open]')) {
             return;
         }
         setIsOpen(false);
@@ -416,7 +422,7 @@ export default function UserProfileDropdown() {
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.3 }}
                                 className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-                                onClick={() => setIsOpen(false)}
+                                onClick={() => { if (!document.querySelector('[data-avatar-uploader-open]')) setIsOpen(false); }}
                             />
 
                             {/* Modal Card - Responsive layout that works on Mobile and Desktop */}
@@ -475,29 +481,38 @@ export default function UserProfileDropdown() {
                                         <div className="relative flex flex-col items-center sm:flex-row sm:items-end justify-between mb-6 gap-4 sm:gap-6 w-full z-10 pointer-events-none">
                                             <div className="flex flex-col items-center sm:flex-row sm:items-end gap-3 sm:gap-5 w-full pointer-events-auto">
                                                 {/* Avatar */}
-                                                <div className="relative z-10 p-1.5 bg-white dark:bg-slate-900 rounded-[2rem] sm:rounded-[2.5rem] shrink-0 w-max inline-block shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
-                                                    <div 
-                                                        className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-[1.75rem] sm:rounded-[2.25rem] overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer border border-slate-200 dark:border-slate-700 hover:opacity-90 transition-opacity flex items-center justify-center text-blue-600 dark:text-blue-400 font-extrabold text-2xl sm:text-4xl shadow-inner group/avatar relative"
-                                                        onClick={() => profileInputRef.current?.click()}
+                                                <div className="relative z-10 p-1.5 bg-white dark:bg-slate-900 rounded-full shrink-0 w-max inline-block shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+                                                    <AnimatedCircularProgressBar
+                                                        max={100}
+                                                        min={0}
+                                                        value={xpProgress}
+                                                        gaugePrimaryColor="#3b82f6"
+                                                        gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
+                                                        className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32"
                                                     >
-                                                        {profileImage ? <img src={profileImage} className="w-full h-full object-cover" alt="Profile" /> : getInitials(profile.firstName, profile.lastName)}
+                                                        <AvatarUploader onUpload={handleProfileUploadFile}>
+                                                            <div className="absolute inset-1.5 sm:inset-2 md:inset-2.5 rounded-full z-10 cursor-pointer overflow-hidden border-4 border-transparent hover:border-blue-500/50 transition-all">
+                                                                <Avatar className="w-full h-full rounded-full cursor-pointer hover:opacity-80 transition-opacity">
+                                                                    <AvatarImage src={profileImage || ''} className="object-cover w-full h-full" />
+                                                                    <AvatarFallback className="bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400 font-extrabold text-2xl sm:text-4xl shadow-inner w-full h-full">
+                                                                        {getInitials(profile.firstName, profile.lastName)}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                            </div>
+                                                        </AvatarUploader>
                                                         
-                                                        {/* Avatar Upload Affordance (Hover) */}
-                                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-200 flex items-center justify-center backdrop-blur-[2px]">
-                                                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                                        <div className={cn(
+                                                            "absolute -bottom-1 sm:-bottom-1.5 left-1/2 -translate-x-1/2 min-w-[40px] sm:min-w-[50px] md:min-w-[56px] h-[20px] sm:h-[24px] md:h-[26px] px-2 rounded-md sm:rounded-lg flex items-center justify-center text-[10px] sm:text-[12px] md:text-[13px] font-bold tracking-wider shadow-sm border-[2px] z-20 transition-colors duration-300 text-white bg-blue-500",
+                                                            isDarkMode ? (showOnlineStatus ? 'border-emerald-400' : 'border-slate-800') : (showOnlineStatus ? 'border-emerald-500' : 'border-white')
+                                                        )}>
+                                                            LV.{level}
                                                         </div>
-                                                    </div>
-                                                    <input type="file" ref={profileInputRef} className="hidden" accept="image/*,.gif" onChange={handleProfileUpload} />
-                                                    
-                                                    {/* Mobile persistent edit badge */}
-                                                    <div className="sm:hidden absolute bottom-2 right-2 w-7 h-7 bg-blue-600 text-white rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center shadow-md pointer-events-none z-20">
-                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                                                    </div>
 
-                                                    {/* Online Status Dot */}
-                                                    {showOnlineStatus && (
-                                                        <div className="absolute top-2 right-2 sm:bottom-3 sm:right-3 sm:top-auto w-4 h-4 sm:w-5 sm:h-5 bg-emerald-500 rounded-full border-[3px] border-white dark:border-slate-900 shadow-sm z-20" />
-                                                    )}
+                                                        {/* Mobile persistent edit badge */}
+                                                        <div className="sm:hidden absolute bottom-1 right-0 w-7 h-7 bg-blue-600 text-white rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center shadow-md pointer-events-none z-20">
+                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                                        </div>
+                                                    </AnimatedCircularProgressBar>
                                                 </div>
                                                 
                                                 {/* Name & Basic Info */}
