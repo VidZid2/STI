@@ -1,4 +1,5 @@
 import React from 'react';
+import { IconWorld, IconBrandFacebook, IconBrandTwitter } from "@tabler/icons-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHorizontalScroll } from '../../hooks/useHorizontalScroll';
 import WhyPanel from './panels/WhyPanel';
@@ -106,26 +107,17 @@ const HorizontalHome: React.FC<HorizontalHomeProps> = ({ onLoginClick }) => {
         { 
             label: 'STI Official', 
             link: 'https://www.sti.edu',
-            icon: 'https://cdn.lordicon.com/vvyxyrur.json',
-            trigger: 'hover',
-            state: '',
-            colors: 'primary:#1e40af,secondary:#3b82f6'
+            iconNode: <IconWorld className="w-7 h-7 text-blue-600 dark:text-blue-400" />
         },
         { 
             label: 'Facebook', 
             link: 'https://facebook.com/stiofficial',
-            icon: 'https://cdn.lordicon.com/lplofcfe.json',
-            trigger: 'hover',
-            state: 'hover-draw',
-            colors: 'primary:#1e40af,secondary:#3b82f6'
+            iconNode: <IconBrandFacebook className="w-7 h-7 text-blue-600 dark:text-blue-400" />
         },
         { 
             label: 'Twitter', 
             link: 'https://twitter.com/sticollege',
-            icon: 'https://cdn.lordicon.com/vnvsnvov.json',
-            trigger: 'hover',
-            state: 'hover-fly',
-            colors: 'primary:#1e40af,secondary:#3b82f6'
+            iconNode: <IconBrandTwitter className="w-7 h-7 text-blue-600 dark:text-blue-400" />
         }
     ];
 

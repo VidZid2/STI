@@ -13,6 +13,7 @@ export interface StaggeredSocialItem {
   label: string;
   link: string;
   icon?: string;
+  iconNode?: React.ReactNode;
   trigger?: string;
   state?: string;
   colors?: string;
@@ -491,7 +492,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                 {socialItems.map((s, i) => (
                   <li key={s.label + i} className="sm-socials-item">
                     <a href={s.link} target="_blank" rel="noopener noreferrer" className="sm-socials-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {s.icon && (
+                      {s.iconNode ? (
+                        s.iconNode
+                      ) : s.icon && (
                         <lord-icon
                           src={s.icon}
                           trigger={s.trigger || 'hover'}
@@ -500,7 +503,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                           style={{ width: '28px', height: '28px' }}
                         />
                       )}
-                      {s.label}
+                      <span>{s.label}</span>
                     </a>
                   </li>
                 ))}
