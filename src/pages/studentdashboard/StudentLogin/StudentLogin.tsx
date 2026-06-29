@@ -106,9 +106,10 @@ const StudentLogin: React.FC = () => {
                     setPasswordErrorMessage(result.error || "Your account or password is incorrect. If you don't remember your password, ");
                 }
             }
-        } catch {
+        } catch (err: any) {
+            console.error("Login exception:", err);
             setIsLoading(false);
-            setPasswordErrorMessage('An error occurred. Please try again.');
+            setPasswordErrorMessage(err?.message || 'An error occurred. Please try again.');
         }
     };
 
