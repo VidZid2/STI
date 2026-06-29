@@ -2,15 +2,7 @@
 
 import React from 'react';
 import Cropper, { type Area, type Point } from 'react-easy-crop';
-import {
-	Modal,
-	ModalBody,
-	ModalContent,
-	ModalFooter,
-	ModalHeader,
-	ModalTitle,
-	ModalTrigger,
-} from '@/components/ui/modal';
+import { MorphingModal } from '@/components/ui/morphing-modal';
 
 import { Input } from '@/components/ui/input';
 
@@ -109,82 +101,97 @@ export function AvatarUploader({
 	};
 
 	return (
-		<Modal
-			open={open}
-			onOpenChange={onOpenChange}
-			drawerProps={{
-				dismissible: photo?.file ? false : true,
-			}}
-		>
-			<ModalTrigger asChild>{children}</ModalTrigger>
-			<ModalContent className="h-max md:max-w-md">
-				<ModalHeader className="flex flex-row items-start gap-4 text-left sm:text-left bg-transparent border-b-0 p-6 pb-4 relative z-10">
-					<div className="w-[52px] h-[52px] rounded-[16px] flex items-center justify-center flex-shrink-0 shadow-sm border bg-blue-50 border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20">
-						<svg className="w-6 h-6 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-							<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-							<circle cx="8.5" cy="8.5" r="1.5" />
-							<polyline points="21 15 16 10 5 21" />
-						</svg>
-					</div>
-					<div className="flex-1 min-w-0 pt-0.5">
-						<div className="flex items-center gap-2 mb-1">
-							<ModalTitle className="text-[20px] font-extrabold tracking-tight leading-none text-zinc-900 dark:text-zinc-100">
-								Upload Image
-							</ModalTitle>
-						</div>
-						<p className="text-[12.5px] font-medium leading-[1.4] text-zinc-500 dark:text-zinc-400">
-							Choose and customize your profile picture
-						</p>
-					</div>
-				</ModalHeader>
-				<ModalBody className="space-y-2">
-					<Input
-						disabled={isPending}
-						onChange={handleFileChange}
-						type="file"
-						accept="image/*"
-					/>
-					{photo?.file && (
-						<div className="bg-accent relative aspect-square w-full overflow-hidden rounded-lg">
-							<Cropper
-								image={photo.url}
-								crop={crop}
-								zoom={zoom}
-								aspect={aspect}
-								onCropChange={setCrop}
-								onZoomChange={setZoom}
-								onCropComplete={handleCropComplete}
-								classes={{
-									containerClassName: isPending
-										? 'opacity-80 pointer-events-none'
-										: '',
-								}}
-							/>
-						</div>
-					)}
-				</ModalBody>
+		<>
+			{React.isValidElement(children) ? (
+				React.cloneElement(children as React.ReactElement, {
+					onClick: (e: any) => {
+						if ((children as any).props.onClick) {
+							(children as any).props.onClick(e);
+						}
+						onOpenChange(true);
+					}
+				})
+			) : (
+				<span onClick={() => onOpenChange(true)}>{children}</span>
+			)}
 
-				<ModalFooter className="grid w-full grid-cols-2 gap-3 mt-4">
-					<button
-						className="w-full flex items-center justify-center gap-1.5 font-bold py-2.5 px-4 rounded-[14px] shadow-sm border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 focus:outline-none text-[13px] whitespace-nowrap hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
-						type="button"
-						disabled={isPending}
-						onClick={() => onOpenChange(false)}
-					>
-						Cancel
-					</button>
+			<MorphingModal
+				viewId={open ? "avatar-uploader" : null}
+				onClose={() => {
+					if (!photo?.file) onOpenChange(false);
+				}}
+				placement="center"
+				className="max-w-[400px] sm:max-w-md"
+			>
+				<div className="flex flex-col w-full">
+					<div className="flex flex-row items-start gap-4 text-left sm:text-left bg-transparent border-b-0 p-6 pb-4 relative z-10">
+						<div className="w-[52px] h-[52px] rounded-[16px] flex items-center justify-center flex-shrink-0 shadow-sm border bg-blue-50 border-blue-100 dark:bg-blue-500/10 dark:border-blue-500/20">
+							<svg className="w-6 h-6 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+								<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+								<circle cx="8.5" cy="8.5" r="1.5" />
+								<polyline points="21 15 16 10 5 21" />
+							</svg>
+						</div>
+						<div className="flex-1 min-w-0 pt-0.5">
+							<div className="flex items-center gap-2 mb-1">
+								<h2 className="text-[20px] font-extrabold tracking-tight leading-none text-zinc-900 dark:text-zinc-100">
+									Upload Image
+								</h2>
+							</div>
+							<p className="text-[12.5px] font-medium leading-[1.4] text-zinc-500 dark:text-zinc-400">
+								Choose and customize your profile picture
+							</p>
+						</div>
+					</div>
+					<div className="px-4 py-2 space-y-2 overflow-y-auto max-h-[50vh] overscroll-contain">
+						<Input
+							disabled={isPending}
+							onChange={handleFileChange}
+							type="file"
+							accept="image/*"
+						/>
+						{photo?.file && (
+							<div className="bg-accent relative w-full h-[300px] sm:h-[400px] overflow-hidden rounded-lg">
+								<Cropper
+									image={photo.url}
+									crop={crop}
+									zoom={zoom}
+									aspect={aspect}
+									onCropChange={setCrop}
+									onZoomChange={setZoom}
+									onCropComplete={handleCropComplete}
+									classes={{
+										containerClassName: isPending
+											? 'opacity-80 pointer-events-none'
+											: '',
+									}}
+								/>
+							</div>
+						)}
+					</div>
 
-					<button
-						className="w-full flex items-center justify-center gap-1.5 font-bold py-2.5 px-4 rounded-[14px] shadow-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus:outline-none text-[13px] whitespace-nowrap hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
-						type="button"
-						onClick={handleUpdate}
-						disabled={isPending}
-					>
-						{isPending ? 'Uploading...' : 'Update'}
-					</button>
-				</ModalFooter>
-			</ModalContent>
-		</Modal>
+					<div className="grid w-full grid-cols-2 gap-3 mt-4 pb-6 px-4">
+						<button
+							className="w-full flex items-center justify-center gap-1.5 font-bold py-2.5 px-4 rounded-[14px] shadow-sm border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 focus:outline-none text-[13px] whitespace-nowrap hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
+							type="button"
+							disabled={isPending}
+							onClick={() => onOpenChange(false)}
+						>
+							Cancel
+						</button>
+
+						<button
+							className="w-full flex items-center justify-center gap-1.5 font-bold py-2.5 px-4 rounded-[14px] shadow-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus:outline-none text-[13px] whitespace-nowrap hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
+							type="button"
+							onClick={handleUpdate}
+							disabled={isPending}
+						>
+							{isPending ? 'Uploading...' : 'Update'}
+						</button>
+					</div>
+				</div>
+			</MorphingModal>
+		</>
 	);
 }
 

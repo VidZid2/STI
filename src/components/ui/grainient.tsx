@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Triangle } from 'ogl';
-import './grainient.css';
+import './Grainient.css';
 
 const hexToRgb = (hex: string) => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -99,9 +99,9 @@ void main(){
 }
 `;
 
-const ctxMap = new WeakMap();
+const ctxMap = new WeakMap<HTMLElement, { renderer: Renderer, program: Program, mesh: Mesh }>();
 
-interface GrainientProps {
+export interface GrainientProps {
   timeSpeed?: number;
   colorBalance?: number;
   warpStrength?: number;
@@ -127,7 +127,7 @@ interface GrainientProps {
   className?: string;
 }
 
-const Grainient = ({
+const Grainient: React.FC<GrainientProps> = ({
   timeSpeed = 0.25,
   colorBalance = 0.0,
   warpStrength = 1.0,
@@ -151,7 +151,7 @@ const Grainient = ({
   color2 = '#5227FF',
   color3 = '#B497CF',
   className = ''
-}: GrainientProps) => {
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

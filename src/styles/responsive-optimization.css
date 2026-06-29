@@ -1634,4 +1634,22 @@ body.sidebar-open .sidebar-overlay {
 
 /* Sidebar styling moved to dashboard.css */
 
+/* ===== RENDER OPTIMIZATION (PHASE 6) ===== */
+
+/* Containment for layout isolation */
+.widget {
+    contain: layout style paint;
+}
+
+/* Pause animations when dashboard is loading */
+body.intro-active .main-content-wrapper * {
+    animation-play-state: paused !important;
+}
+
+/* content-visibility for off-screen sections */
+body.intro-active .main-content-wrapper {
+    content-visibility: auto;
+    contain-intrinsic-size: 1000px;
+}
+
 /* ===== END OF RESPONSIVE OPTIMIZATION ===== */

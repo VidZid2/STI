@@ -14,8 +14,11 @@ const Confetti: React.FC<{ active: boolean }> = ({ active }) => {
 
         const duration = 4000;
         const end = Date.now() + duration;
+        let isMounted = true;
 
         const frame = () => {
+            if (!isMounted) return;
+            
             myConfetti({
                 particleCount: 5,
                 angle: 60,
@@ -39,6 +42,7 @@ const Confetti: React.FC<{ active: boolean }> = ({ active }) => {
         frame();
 
         return () => {
+            isMounted = false;
             myConfetti.reset();
         };
     }, [active]);

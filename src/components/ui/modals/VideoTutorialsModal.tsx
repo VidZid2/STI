@@ -5,7 +5,10 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+
+const EASE_OUT = [0.32, 0.72, 0, 1] as const;
+const SPRING_PANEL = { type: 'spring', bounce: 0, duration: 0.4 } as const;
 
 interface VideoTutorialsModalProps {
     isOpen: boolean;
@@ -263,6 +266,9 @@ const VideoCard: React.FC<{
 
 
 const VideoTutorialsModal: React.FC<VideoTutorialsModalProps> = ({ isOpen, onClose }) => {
+    const reduce = useReducedMotion();
+    const enterY = reduce ? 0 : 40;
+    const enterScale = reduce ? 1 : 0.97;
     const [isDarkMode, setIsDarkMode] = useState(() => document.body.classList.contains('dark-mode'));
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
@@ -397,6 +403,7 @@ const VideoTutorialsModal: React.FC<VideoTutorialsModalProps> = ({ isOpen, onClo
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2, ease: EASE_OUT }}
                         onClick={() => selectedVideo ? setSelectedVideo(null) : onClose()}
                         style={{
                             position: 'absolute',
@@ -429,6 +436,21 @@ const VideoTutorialsModal: React.FC<VideoTutorialsModalProps> = ({ isOpen, onClo
                             flexDirection: 'column',
                         }}
                     >
+                        <motion.div
+                            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
+                            animate={
+                                reduce
+                                    ? { opacity: 1, transition: { duration: 0.18, ease: EASE_OUT } }
+                                    : { opacity: 1, y: 0, transition: { duration: 0.24, ease: EASE_OUT } }
+                            }
+                            exit={
+                                reduce
+                                    ? { opacity: 0, transition: { duration: 0.14, ease: EASE_OUT } }
+                                    : { opacity: 0, y: -8, transition: { duration: 0.16, ease: EASE_OUT } }
+                            }
+                            className="pointer-events-auto"
+                            style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}
+                        >
                         <AnimatePresence mode="wait">
                             {selectedVideo ? (
                                 <VideoPlayer
@@ -759,9 +781,10 @@ const VideoTutorialsModal: React.FC<VideoTutorialsModalProps> = ({ isOpen, onClo
                             )}
                         </AnimatePresence>
                     </motion.div>
-                </div>
-            )}
-        </AnimatePresence>,
+                    </motion.div>
+            </div>
+        )}
+    </AnimatePresence>,
         document.body
     );
 };

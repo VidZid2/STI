@@ -11,6 +11,16 @@ import RoleIcon from '../components/RoleIcon';
 import { SkeletonPulse } from '../components/UsersSkeleton';
 import { getLastSeenText } from '../utils';
 import { AnimatedCircularProgressBar } from '../../../../../components/ui/animated-circular-progress-bar';
+import { getCurrentUser } from '../../../../../services/authService';
+
+const maskEmail = (email: string) => {
+    if (!email) return '';
+    const parts = email.split('@');
+    if (parts.length !== 2) return email;
+    const [name, domain] = parts;
+    if (name.length <= 3) return name[0] + '***@' + domain;
+    return name.substring(0, 3) + '***@' + domain;
+};
 
 export interface UserDetailModalProps {
     user: UserAccount | null;
@@ -33,6 +43,9 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
         textSecondary: isDarkMode ? '#94a3b8' : '#64748b',
         textMuted: isDarkMode ? '#64748b' : '#94a3b8',
     };
+
+    const currentUser = getCurrentUser();
+    const isCurrentUser = currentUser && user && (currentUser.email === user.email || currentUser.id === user.id);
 
     // Load courses and office hours when modal opens
     useEffect(() => {
@@ -151,7 +164,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                             max={100}
                                             min={0}
                                             value={user.email === 'halili.andrei@meycauayan.sti.edu.ph' ? 75 : 0}
-                                            gaugePrimaryColor="#3b82f6"
+                                            gaugePrimaryColor={(user.level || 1) >= 20 ? '#eab308' : '#3b82f6'}
                                             gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
                                             className="w-[48px] h-[48px] sm:w-[52px] sm:h-[52px]"
                                         >
@@ -165,8 +178,8 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                                 )}
                                             </div>
 
-                                            <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 min-w-[32px] sm:min-w-[36px] h-[16px] sm:h-[18px] px-1.5 rounded-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold tracking-wider shadow-sm border-[2px] z-20 transition-colors duration-300 text-white bg-blue-500 ${isDarkMode ? (user.is_online ? 'border-emerald-400' : 'border-slate-800') : (user.is_online ? 'border-emerald-500' : 'border-white')}`}>
-                                                LV.1
+                                            <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 min-w-[32px] sm:min-w-[36px] h-[16px] sm:h-[18px] px-1.5 rounded-md flex items-center justify-center text-[9px] sm:text-[10px] font-bold tracking-wider shadow-sm border-[2px] z-20 transition-colors duration-300 ${(user.level || 1) >= 20 ? 'bg-yellow-400 text-blue-800' : 'text-white bg-blue-500'} ${isDarkMode ? (user.is_online ? 'border-emerald-400' : 'border-slate-800') : (user.is_online ? 'border-emerald-500' : 'border-white')}`}>
+                                                <span className="ml-[0.05em]">{(user.level || 1) >= 20 ? 'MAX' : `LV.${user.level || 1}`}</span>
                                             </div>
                                         </AnimatedCircularProgressBar>
                                     </div>
@@ -220,10 +233,10 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                     
                                     {/* Email */}
                                     <div
-                                        onClick={() => copyToClipboard(user.email, 'email')}
-                                        className="group flex items-center gap-3.5 p-3 sm:p-3.5 rounded-[14px] sm:rounded-[16px] border border-zinc-200/80 dark:border-zinc-800/80 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200/80 dark:hover:border-blue-800/50 transition-all duration-300 cursor-pointer mb-2.5 bg-white dark:bg-zinc-900/50"
+                                        onClick={() => isCurrentUser ? copyToClipboard(user.email, 'email') : undefined}
+                                        className={`group flex items-center gap-3.5 p-3 sm:p-3.5 rounded-[14px] sm:rounded-[16px] border border-zinc-200/80 dark:border-zinc-800/80 mb-2.5 bg-white dark:bg-zinc-900/50 ${isCurrentUser ? 'hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200/80 dark:hover:border-blue-800/50 transition-all duration-300 cursor-pointer' : ''}`}
                                     >
-                                        <div className="w-10 h-10 rounded-[12px] bg-blue-50/80 dark:bg-blue-900/30 border border-blue-100/50 dark:border-blue-800/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-105 group-hover:rotate-[-5deg] transition-transform duration-300 shrink-0 shadow-sm">
+                                        <div className={`w-10 h-10 rounded-[12px] border flex items-center justify-center shrink-0 shadow-sm ${isCurrentUser ? 'bg-blue-50/80 dark:bg-blue-900/30 border-blue-100/50 dark:border-blue-800/30 text-blue-600 dark:text-blue-400 group-hover:scale-105 group-hover:rotate-[-5deg] transition-transform duration-300' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400'}`}>
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                                                 <polyline points="22,6 12,13 2,6" />
@@ -232,25 +245,27 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                         <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
                                             <div className="text-[11.5px] font-semibold text-zinc-500 dark:text-zinc-400 mb-0.5 tracking-wide">Email</div>
                                             <div className="text-[13px] sm:text-[14px] font-bold text-zinc-900 dark:text-zinc-100 truncate">
-                                                {user.email}
+                                                {isCurrentUser ? user.email : maskEmail(user.email)}
                                             </div>
                                         </div>
-                                        <motion.div
-                                            initial={false}
-                                            animate={{ scale: copiedField === 'email' ? [1, 1.15, 1] : 1 }}
-                                            className={`flex items-center justify-center rounded-xl border p-2 shadow-sm transition-all duration-300 ${copiedField === 'email' ? 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-900/20 dark:border-emerald-800/50 dark:text-emerald-400' : 'bg-zinc-50 border-zinc-200/80 text-zinc-500 group-hover:bg-blue-50 group-hover:border-blue-200 group-hover:text-blue-600 dark:bg-zinc-800/80 dark:border-zinc-700/80 dark:text-zinc-400 dark:group-hover:bg-blue-900/30 dark:group-hover:border-blue-800/50 dark:group-hover:text-blue-400'}`}
-                                        >
-                                            {copiedField === 'email' ? (
-                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                    <polyline points="20 6 9 17 4 12" />
-                                                </svg>
-                                            ) : (
-                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                                                </svg>
-                                            )}
-                                        </motion.div>
+                                        {isCurrentUser && (
+                                            <motion.div
+                                                initial={false}
+                                                animate={{ scale: copiedField === 'email' ? [1, 1.15, 1] : 1 }}
+                                                className={`flex items-center justify-center rounded-xl border p-2 shadow-sm transition-all duration-300 ${copiedField === 'email' ? 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-900/20 dark:border-emerald-800/50 dark:text-emerald-400' : 'bg-zinc-50 border-zinc-200/80 text-zinc-500 group-hover:bg-blue-50 group-hover:border-blue-200 group-hover:text-blue-600 dark:bg-zinc-800/80 dark:border-zinc-700/80 dark:text-zinc-400 dark:group-hover:bg-blue-900/30 dark:group-hover:border-blue-800/50 dark:group-hover:text-blue-400'}`}
+                                            >
+                                                {copiedField === 'email' ? (
+                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                        <polyline points="20 6 9 17 4 12" />
+                                                    </svg>
+                                                ) : (
+                                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                                    </svg>
+                                                )}
+                                            </motion.div>
+                                        )}
                                     </div>
 
                                     {/* Campus */}

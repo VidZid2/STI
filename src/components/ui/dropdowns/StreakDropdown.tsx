@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { getStreakData, getStreakTier, type StreakData } from '../../../services/studyTimeService';
 import { DailyStreakModal } from '../../modals/DailyStreakModal';
-import { Flame, Target } from 'lucide-react';
+import { Flame, Target, Trophy } from 'lucide-react';
 
 
 interface StreakDropdownProps {
@@ -79,7 +79,7 @@ const DropdownWrapper: React.FC<DropdownWrapperProps> = ({ isMobile, isOpen, set
             {isOpen && (
                 <motion.div 
                     key="desktop-dropdown-wrapper"
-                    className="absolute top-full mt-2 z-50 -left-6 sm:left-1/2 sm:-translate-x-1/2"
+                    className="absolute top-full mt-2 z-50 left-0 right-0"
                 >
                     <motion.div
                         ref={dropdownRef}
@@ -87,7 +87,7 @@ const DropdownWrapper: React.FC<DropdownWrapperProps> = ({ isMobile, isOpen, set
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 4 }}
                         transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-                        className="w-[340px] max-w-[calc(100vw-16px)] rounded-2xl overflow-hidden origin-top"
+                        className="w-full min-w-[280px] rounded-2xl overflow-hidden origin-top"
                         style={{
                             backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc',
                             border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
@@ -120,28 +120,32 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     const [tutorialsCompleted, setTutorialsCompleted] = useState(false);
+    const [introCompleted, setIntroCompleted] = useState(false);
     const [componentReady, setComponentReady] = useState(false);
     const shouldReduceMotion = useReducedMotion();
     const [isHovered, setIsHovered] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
-    // Check if tutorials are completed (welcome modal + dashboard tutorial)
+    // Check if tutorials and intro are completed
     useEffect(() => {
-        const checkTutorials = () => {
+        const checkStatus = () => {
             const welcomeCompleted = localStorage.getItem('welcome-modal-completed') === 'true';
             const tutorialCompleted = localStorage.getItem('tutorial-completed') === 'true';
             setTutorialsCompleted(welcomeCompleted && tutorialCompleted);
+            
+            const introStored = sessionStorage.getItem('dashboardIntroShown');
+            setIntroCompleted(introStored === 'true' || introStored === 'done');
         };
         
-        checkTutorials();
+        checkStatus();
         
         // Listen for storage changes (in case tutorial completes while component is mounted)
-        const handleStorageChange = () => checkTutorials();
+        const handleStorageChange = () => checkStatus();
         window.addEventListener('storage', handleStorageChange);
         
-        // Also poll periodically in case localStorage changes in same tab
-        const pollInterval = setInterval(checkTutorials, 1000);
+        // Also poll periodically in case localStorage/sessionStorage changes in same tab
+        const pollInterval = setInterval(checkStatus, 1000);
         
         return () => {
             window.removeEventListener('storage', handleStorageChange);
@@ -174,6 +178,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
     // Shows immediately if tutorials are completed, or after a delay if not
     useEffect(() => {
         if (!componentReady) return;
+        if (!introCompleted) return; // Wait for intro curtain animation to finish
         
         // Check if modal was already shown today
         const today = new Date().toDateString();
@@ -197,7 +202,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
         }, delay);
         
         return () => clearTimeout(timer);
-    }, [componentReady, tutorialsCompleted]);
+    }, [componentReady, tutorialsCompleted, introCompleted]);
 
 
 
@@ -219,6 +224,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
     }, []);
 
     const tier = getStreakTier(streakData.currentStreak);
+    const bestTier = getStreakTier(streakData.bestStreak);
 
     // Generate calendar days for current week + some context
     const generateCalendarDays = useCallback(() => {
@@ -370,7 +376,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
     };
 
     return (
-        <div className={`relative ${className || ''}`}>
+        <div className={`${className || ''}`}>
             {/* Daily Streak Modal - shows on first visit of the day */}
             <DailyStreakModal
                 isOpen={showStreakModal}
@@ -386,17 +392,17 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                 onClick={() => setIsOpen(!isOpen)}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className={`relative flex items-center sm:gap-3 sm:p-1.5 sm:pr-4 sm:rounded-2xl cursor-pointer text-left transition-all duration-300 ${
+                className={`relative flex items-center sm:gap-2.5 sm:p-1 sm:pr-3.5 sm:rounded-[14px] cursor-pointer text-left transition-all duration-300 ${
                     isDarkMode 
-                        ? 'sm:border sm:border-slate-700/60 sm:bg-slate-800/40 sm:hover:bg-slate-800/80 sm:shadow-[0_2px_8px_rgba(0,0,0,0.2)]' 
-                        : 'sm:border sm:border-zinc-200/80 sm:bg-white/60 sm:hover:bg-white sm:hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)] sm:backdrop-blur-md'
+                        ? 'sm:bg-slate-800/80 sm:border sm:border-slate-700/50 sm:shadow-sm sm:hover:bg-slate-700' 
+                        : 'sm:bg-white sm:border sm:border-slate-200 sm:shadow-sm sm:hover:bg-slate-50'
                 }`}
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.98 }}
             >
                 {/* Tools Page Style SVG Icon Container */}
                 <div 
-                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
+                    className="w-8 h-8 sm:w-[32px] sm:h-[32px] rounded-[10px] flex items-center justify-center shrink-0 shadow-sm"
                     style={{ background: isDarkMode ? 'rgba(249, 115, 22, 0.15)' : 'rgba(255, 237, 213, 0.6)' }}
                 >
                     <motion.div
@@ -566,79 +572,136 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                                 }}
                             >
                                 <div className="flex items-center justify-between mb-4">
-                                    <span
-                                        className="text-[11px] font-bold uppercase tracking-wider"
-                                        style={{ color: isDarkMode ? '#64748b' : '#94a3b8' }}
+                                    {/* XP Style Activity Badge */}
+                                    <div className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800/50 flex items-center justify-center">
+                                        <span className="text-[12px] font-bold uppercase tracking-wide text-blue-600 dark:text-blue-400">
+                                            Activity
+                                        </span>
+                                    </div>
+                                    
+                                    {/* Tier System Best Streak Badge */}
+                                    <div 
+                                        className="px-3 py-1 rounded-lg border flex items-center gap-1.5 justify-center shadow-sm"
+                                        style={{ background: bestTier.bgGradient, borderColor: bestTier.borderColor }}
                                     >
-                                        Activity
-                                    </span>
-                                    <span
-                                        className="text-[11px] font-semibold"
-                                        style={{ color: isDarkMode ? '#94a3b8' : '#64748b' }}
-                                    >
-                                        Best {streakData.bestStreak}d
-                                    </span>
+                                        <Trophy className="w-3.5 h-3.5" style={{ color: bestTier.textColor }} strokeWidth={3} />
+                                        <span className="text-[12px] font-bold uppercase tracking-wide" style={{ color: bestTier.textColor }}>
+                                            Best {streakData.bestStreak}d
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <div className="flex justify-between items-end px-1">
-                                    {calendarDays.map((day, index) => {
-                                        const stableKey = day.date.toISOString().split('T')[0];
+                                <div className="relative flex w-full pt-8 pb-6 items-center">
+                                    {/* Curved Connecting Path */}
+                                    <svg className="absolute inset-0 w-full h-full z-0 pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 84">
+                                        {calendarDays.slice(0, -1).map((day, i) => {
+                                            const nextDay = calendarDays[i + 1];
+                                            const isActiveSegment = day.isActive && nextDay.isActive;
+                                            const x1 = ((i + 0.5) / 7) * 100;
+                                            const x2 = ((i + 1.5) / 7) * 100;
+                                            const waveOffsets = [0, 14, 2, -14, -4, 14, 4];
+                                            const y1 = 42 + waveOffsets[i];
+                                            const y2 = 42 + waveOffsets[i + 1];
+                                            
+                                            // Control points for smooth horizontal S-curve
+                                            const cp1x = x1 + 6.5;
+                                            const cp2x = x2 - 6.5;
+                                            const d = `M ${x1} ${y1} C ${cp1x} ${y1}, ${cp2x} ${y2}, ${x2} ${y2}`;
+                                            return (
+                                                <g key={`path-${i}`}>
+                                                    <path 
+                                                        d={d} 
+                                                        fill="none" 
+                                                        stroke={isDarkMode ? 'rgba(30,41,59,0.8)' : '#f1f5f9'} 
+                                                        strokeWidth="12" 
+                                                        strokeLinecap="round"
+                                                        vectorEffect="non-scaling-stroke"
+                                                    />
+                                                    {isActiveSegment && (
+                                                        <path 
+                                                            d={d} 
+                                                            fill="none" 
+                                                            stroke="#3b82f6" 
+                                                            strokeWidth="12" 
+                                                            strokeLinecap="round"
+                                                            vectorEffect="non-scaling-stroke"
+                                                            className="transition-all duration-500"
+                                                        />
+                                                    )}
+                                                </g>
+                                            );
+                                        })}
+                                    </svg>
+
+                                    {(() => {
+                                        let currentDayCount = 0;
+                                        return calendarDays.map((day, index) => {
+                                            if (day.isActive) currentDayCount++;
+                                            else currentDayCount = 0;
+                                            
+                                            const stableKey = day.date.toISOString().split('T')[0];
+                                        // Winding path vertical offsets for the 7 days (matches the SVG exactly)
+                                        const waveOffsets = [0, 14, 2, -14, -4, 14, 4];
+                                        const yOffset = waveOffsets[index];
+                                        
                                         return (
-                                            <motion.div
-                                                key={stableKey}
-                                                className="flex flex-col items-center gap-1.5"
-                                                initial={{ opacity: 0, scale: 0.8 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                transition={{ delay: index * 0.04, duration: 0.2 }}
-                                            >
+                                            <div key={stableKey} className="flex-1 flex justify-center items-center z-10">
+                                                <motion.div
+                                                    className="relative flex flex-col items-center gap-2"
+                                                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                                    animate={{ opacity: 1, scale: 1, y: yOffset }}
+                                                    transition={{ delay: index * 0.05, type: 'spring', stiffness: 300, damping: 20 }}
+                                                >
+                                                {/* Day Name Above */}
                                                 <span
-                                                    className="text-[10px] font-bold uppercase"
+                                                    className="text-[10px] font-black uppercase absolute -top-5"
                                                     style={{
                                                         color: day.isToday
                                                             ? '#3b82f6'
                                                             : (isDarkMode ? '#64748b' : '#94a3b8')
                                                     }}
                                                 >
-                                                {day.dayName.charAt(0)}
-                                            </span>
-                                            <div
-                                                className="relative flex items-center justify-center shadow-sm"
-                                                style={{
-                                                    width: 30,
-                                                    height: 30,
-                                                    borderRadius: '50%',
-                                                    background: day.isActive
-                                                        ? (isDarkMode ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)')
-                                                        : (isDarkMode ? 'rgba(255,255,255,0.03)' : '#f8fafc'),
-                                                    border: day.isActive 
-                                                        ? 'none' 
-                                                        : `1px solid ${isDarkMode ? 'rgba(255,255,255,0.05)' : '#e2e8f0'}`,
-                                                    color: day.isActive
-                                                        ? '#ffffff'
-                                                        : (isDarkMode ? '#475569' : '#94a3b8'),
-                                                    fontSize: 12,
-                                                    fontWeight: day.isActive ? 700 : 600,
-                                                    transition: 'all 0.2s ease',
-                                                }}
-                                            >
-                                                {day.isActive ? (
-                                                    <motion.svg
-                                                        width="13" height="13" viewBox="0 0 24 24"
-                                                        fill="none" stroke="currentColor" strokeWidth="3"
-                                                        strokeLinecap="round" strokeLinejoin="round"
-                                                        initial={{ scale: 0 }}
-                                                        animate={{ scale: 1 }}
-                                                        transition={{ type: 'spring', delay: index * 0.04 + 0.1 }}
-                                                    >
-                                                        <polyline points="20 6 9 17 4 12" />
-                                                    </motion.svg>
-                                                ) : (
-                                                    <span>{day.date.getDate()}</span>
-                                                )}
+                                                    {day.dayName.charAt(0)}
+                                                </span>
+
+                                                <div
+                                                    className={`relative w-[34px] h-[28px] rounded-[50%] flex items-center justify-center transition-all duration-200 outline-none ${
+                                                        day.isActive
+                                                            ? "bg-[#fbbf24] bg-[linear-gradient(140deg,rgba(255,255,255,0.4)_0%,rgba(255,255,255,0.15)_35%,transparent_50%,rgba(0,0,0,0.06)_80%,rgba(0,0,0,0.1)_100%)] text-blue-700 shadow-[0_4px_0_0_#d97706,inset_0_-1px_0_0_rgba(0,0,0,0.12),inset_0_1px_0_0_rgba(255,255,255,0.45)]"
+                                                            : "bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 shadow-[0_4px_0_0_#cbd5e1,inset_0_1px_0_0_rgba(255,255,255,0.5)] dark:shadow-[0_4px_0_0_#0f172a,inset_0_1px_0_0_rgba(255,255,255,0.05)]"
+                                                    }`}
+                                                >
+                                                    <div className="relative z-10 flex items-center justify-center">
+                                                        {day.isActive ? (
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-sm">
+                                                                <polyline points="20 6 9 17 4 12" />
+                                                            </svg>
+                                                        ) : (
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Crown/Date Badge */}
+                                                <div className="absolute -bottom-2 -right-1 z-20">
+                                                    {day.isActive ? (
+                                                        <div className="relative flex justify-center">
+                                                            <svg width="18" height="15" viewBox="0 0 32 26" className="w-[18px] h-auto drop-shadow-sm">
+                                                                <g transform="translate(1, 1)">
+                                                                    <path d="M7.756,6.993 L12.632,1.882 C13.2378543,1.2469304 14.0729018,0.881084131 14.9504851,0.866238503 C15.8280684,0.851392876 16.6750122,1.18878575 17.302,1.803 L22.594,6.989 L25.437,4.728 C26.2761293,4.06050369 27.4491145,4.00759997 28.3449252,4.59684738 C29.2407359,5.1860948 29.656646,6.28414389 29.376,7.319 L25.67,20.971 C25.3391114,22.1908879 24.2319674,23.0380001 22.968,23.0380001 L6.908,23.0380001 C5.64366103,23.0382922 4.53598585,22.1912465 4.205,20.971 L0.555,7.518 C0.260731262,6.43355938 0.685695545,5.28174032 1.61378175,4.64828824 C2.54186795,4.01483615 3.76934805,4.03880272 4.672,4.708 L7.755,6.993 L7.756,6.993 Z" stroke="#FFFFFF" strokeWidth="2" fill="#FFC800" />
+                                                                    <path d="M6.16,9.002 L7.259,9.944 C7.44099992,10.1000604 7.6777443,10.1770545 7.91672577,10.157906 C8.15570725,10.1387574 8.37717145,10.025049 8.532,9.842 L11.249,6.63 C11.5471503,6.27645891 12.0293501,6.13807859 12.4696049,6.27971432 C12.9098596,6.42135006 13.22092,6.81493261 13.257,7.276 L14.193,19.063 C14.218112,19.3800921 14.1096022,19.6932559 13.893686,19.9268329 C13.6777697,20.1604098 13.3740849,20.2931557 13.056,20.2930001 L8.576,20.2930001 C8.05674812,20.2927533 7.60326841,19.9416457 7.473,19.439 L4.965,9.747 C4.88514303,9.43484923 5.016732,9.10693867 5.29021683,8.93658232 C5.56370166,8.76622597 5.91603726,8.79269522 6.161,9.002 L6.16,9.002 Z" fill="#FFDE00" />
+                                                                    <text x="15" y="17.5" textAnchor="middle" fill="#b45309" fontSize="11.5" fontWeight="900" fontFamily="sans-serif">
+                                                                        {currentDayCount}
+                                                                    </text>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                    ) : null}
+                                                </div>
+                                            </motion.div>
                                             </div>
-                                        </motion.div>
                                         );
-                                    })}
+                                    })})()}
                                 </div>
                             </div>
 
@@ -654,11 +717,11 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                                     }}
                                     whileHover={{ y: -2, boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 6px 16px -4px rgba(0,0,0,0.08)' }}
                                 >
-                                    <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2 shadow-sm" style={{ background: isDarkMode ? 'rgba(249, 115, 22, 0.15)' : 'rgba(255, 237, 213, 0.6)' }}>
+                                    <div className="px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800/50 flex items-center gap-1.5 justify-center shadow-sm mb-1.5">
                                         <Flame className="w-4 h-4 text-orange-500" fill="currentColor" />
-                                    </div>
-                                    <div className="text-[15px] font-bold leading-none mb-1" style={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}>
-                                        {streakData.currentStreak}
+                                        <span className="text-[14px] font-black tracking-wide text-orange-600 dark:text-orange-400">
+                                            {streakData.currentStreak}
+                                        </span>
                                     </div>
                                     <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: isDarkMode ? '#64748b' : '#94a3b8' }}>
                                         Days
@@ -675,13 +738,11 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                                     }}
                                     whileHover={{ y: -2, boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 6px 16px -4px rgba(0,0,0,0.08)' }}
                                 >
-                                    <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2 shadow-sm" style={{ background: isDarkMode ? 'rgba(234, 179, 8, 0.15)' : 'rgba(254, 240, 138, 0.6)' }}>
-                                        <svg className="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M8 21h8M12 17v4M7 4h10M6 4h12a2 2 0 0 1 2 2v2a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6V6a2 2 0 0 1 2-2z" />
-                                        </svg>
-                                    </div>
-                                    <div className="text-[15px] font-bold leading-none mb-1" style={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}>
-                                        {streakData.bestStreak}
+                                    <div className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/50 flex items-center gap-1.5 justify-center shadow-sm mb-1.5">
+                                        <Trophy className="w-4 h-4 text-slate-500 dark:text-slate-400" strokeWidth={2.5} />
+                                        <span className="text-[14px] font-black tracking-wide text-slate-700 dark:text-slate-300">
+                                            {streakData.bestStreak}
+                                        </span>
                                     </div>
                                     <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: isDarkMode ? '#64748b' : '#94a3b8' }}>
                                         Best
@@ -698,14 +759,15 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                                     }}
                                     whileHover={{ y: -2, boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.4)' : '0 6px 16px -4px rgba(0,0,0,0.08)' }}
                                 >
-                                    <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2 shadow-sm" style={{ background: isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)' }}>
-                                        <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                                        </svg>
-                                    </div>
-                                    <div className="text-[15px] font-bold leading-none mb-1" style={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}>
-                                        {streakData.currentStreak * tier.xpBonus}
-                                    </div>
+                                    <motion.div 
+                                        className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800/50 flex items-center justify-center shadow-sm mb-1.5"
+                                        animate={{ scale: [1, 1.04, 1] }}
+                                        transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                                    >
+                                        <span className="text-[14px] font-black tracking-wide text-blue-600 dark:text-blue-400">
+                                            +{streakData.currentStreak * tier.xpBonus} XP
+                                        </span>
+                                    </motion.div>
                                     <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: isDarkMode ? '#64748b' : '#94a3b8' }}>
                                         Earned
                                     </div>

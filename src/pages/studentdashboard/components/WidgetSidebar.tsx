@@ -10,6 +10,11 @@ import { StreakWidget } from './index';
 import { WidgetContainer } from './WidgetContainer';
 import QuickSettingsDropdown from '../../../components/ui/dropdowns/QuickSettingsDropdown';
 import HelpDropdown from '../../../components/ui/dropdowns/HelpDropdown';
+import ToolbarExpandable from '../../../components/ui/toolbar/ToolbarExpandable';
+import { Drawer, DrawerContent, DrawerTitle } from '../../../components/ui/drawer';
+import { AnimatedCircularProgressBar } from '../../../components/ui/animated-circular-progress-bar';
+import { Badge } from '../../../components/ui/badge';
+import { Skeleton } from '../../../components/ui/skeleton';
 
 
 import type { CalendarData, WeatherData, WidgetVisibility, AchievementStats, TodoItem, GradePrediction, StudyInsights } from '../types';
@@ -59,6 +64,7 @@ export interface WidgetSidebarProps {
     achievements: AchievementStats;
     // Dashboard data
     refreshTrigger: number;
+    triggerRefresh?: () => void;
     totalCourses: number;
     upcomingDeadlines: Deadline[];
     overallProgress: number;
@@ -118,6 +124,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
     getCourseProgressData,
     formatMinutesToHours,
     refreshTrigger,
+    triggerRefresh,
     totalCourses,
     upcomingDeadlines,
     overallProgress,
@@ -135,6 +142,17 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
     const [activeTab, setActiveTab] = React.useState<'Overview' | 'Academics'>('Overview');
     const scrollRef = React.useRef<HTMLDivElement>(null);
     const [showScrollIndicator, setShowScrollIndicator] = React.useState(false);
+    const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+    const handleManualRefresh = () => {
+        if (isRefreshing) return;
+        setIsRefreshing(true);
+        if (triggerRefresh) triggerRefresh();
+        
+        setTimeout(() => {
+            setIsRefreshing(false);
+        }, 1500); // 1.5 seconds shimmer
+    };
 
     // Compute deadline urgencies for highlighting
     const hasDeadlineToday = upcomingDeadlines.some(d => getDaysUntil(d.dueDate) === 0);
@@ -262,7 +280,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
                         </div>
-                        <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Quick View</h2>
+                        <DrawerTitle className="text-base font-semibold text-zinc-900 dark:text-zinc-100 m-0">Quick View</DrawerTitle>
                     </div>
                     <motion.button
                         whileHover={{ scale: 1.1 }}
@@ -280,6 +298,18 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
 
 
             {/* Restore Widgets Button - Minimalistic */}
+
+            {/* Mobile Nav Tools */}
+            {!isInline && (
+                <div className="lg:hidden mx-3 mt-4 mb-2 p-1.5 flex flex-col justify-center rounded-[20px] bg-white dark:bg-slate-800/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)] border border-slate-200/80 dark:border-slate-700/80 overflow-hidden">
+                    <ToolbarExpandable className="!shadow-none !border-none !bg-transparent w-full flex justify-between" hideCloseButton isMobile={true} />
+                    <div className="px-2 pb-1 pt-2 border-t border-slate-100 dark:border-slate-700/50 mt-1">
+                        {renderTabs('small')}
+                    </div>
+                </div>
+            )}
+            
+            {/* Restore Widgets Button - Minimalistic */}
             <AnimatePresence>
                 {!isInline && (
                     Object.values(widgetVisibility).some(v => !v) && (
@@ -290,7 +320,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                             onClick={() => {
                                 restoreAllWidgets();
                             }}
-                            className="mx-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/50 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300 rounded-lg text-xs font-medium transition-colors border border-dashed border-zinc-200 dark:border-zinc-700 shrink-0"
+                            className="mx-3 mb-2 flex items-center justify-center gap-1.5 py-2 px-3 bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-800/50 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300 rounded-lg text-xs font-medium transition-colors border border-dashed border-zinc-200 dark:border-zinc-700 shrink-0"
                         >
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -301,10 +331,12 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                 )}
             </AnimatePresence>
 
-            {/* Filter Tabs */}
-            <div className={`${isInline ? 'px-0' : 'mx-1'} mb-2`}>
-                {renderTabs('normal')}
-            </div>
+            {/* Desktop / Inline Filter Tabs */}
+            {isInline && (
+                <div className="px-0 mb-2 mt-2">
+                    {renderTabs('normal')}
+                </div>
+            )}
 
             <div ref={isInline ? scrollRef : undefined} className={`flex-1 overflow-y-auto overflow-x-hidden min-h-0 ${isInline ? 'pl-1 -ml-1 pr-0 -mr-0' : 'px-1'} pb-4 pt-1 flex flex-col gap-2.5`} style={isInline ? { scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties : {}}>
                 {/* Hide webkit scrollbar on PC inline mode */}
@@ -328,7 +360,6 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
 
                                         {/* Quick Stats Card - Student Overview */}
                                         <motion.div
-                                            key={`stats-${refreshTrigger}`}
                                             initial={{ opacity: 0, y: -10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{ duration: 0.3, ease: 'easeOut' }}
@@ -347,34 +378,80 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                     whileHover={{ rotate: 180, scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
                                                     transition={{ duration: 0.3 }}
-                                                    className={`rounded-lg bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer text-slate-500 dark:text-slate-400 ${quickViewSettings.compactMode ? 'w-5 h-5' : 'w-6 h-6'}`}
+                                                    onClick={handleManualRefresh}
+                                                    disabled={isRefreshing}
+                                                    className={`rounded-lg bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer text-slate-500 dark:text-slate-400 flex-shrink-0 !min-w-0 !min-h-0 !p-0 ${quickViewSettings.compactMode ? '!w-6 !h-6' : '!w-7 !h-7'} ${isRefreshing ? 'opacity-70' : ''}`}
                                                 >
-                                                    <svg className={quickViewSettings.compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                    <svg className={`${quickViewSettings.compactMode ? 'w-3.5 h-3.5' : 'w-4 h-4'} ${isRefreshing ? 'animate-spin text-blue-500' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                                                     </svg>
                                                 </motion.button>
                                             </div>
-                                            <div className={`grid grid-cols-3 ${quickViewSettings.compactMode ? 'gap-2' : 'gap-3'}`}>
+                                            <div className={`grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800/50`}>
                                                 <motion.div
-                                                    whileHover={{ scale: 1.05, y: -2 }}
-                                                    className={`flex flex-col items-center justify-center rounded-[16px] bg-white dark:bg-slate-800 border border-slate-100/80 dark:border-slate-700/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none transition-all duration-300 ${quickViewSettings.compactMode ? 'p-2.5' : 'p-3.5'}`}
+                                                    whileHover={!isRefreshing ? { scale: 1.05, y: -2 } : {}}
+                                                    className={`flex flex-col items-center justify-center transition-all duration-300 ${quickViewSettings.compactMode ? 'p-1' : 'p-2'}`}
                                                 >
-                                                    <div className={`font-black text-blue-600 dark:text-blue-400 leading-none mb-1 ${quickViewSettings.compactMode ? 'text-xl' : 'text-3xl'}`}>{totalCourses}</div>
-                                                    <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em]">Courses</div>
+                                                    <AnimatePresence mode="wait">
+                                                        {isRefreshing ? (
+                                                            <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
+                                                                <Skeleton className={`rounded-md ${quickViewSettings.compactMode ? 'h-6 w-8' : 'h-10 w-12'} mb-1 bg-slate-200/80 dark:bg-slate-700/80`} />
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Courses</div>
+                                                            </motion.div>
+                                                        ) : (
+                                                            <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
+                                                                <div className={`font-black text-blue-600 dark:text-blue-400 leading-none mb-1 ${quickViewSettings.compactMode ? 'text-2xl' : 'text-4xl'}`}>{totalCourses}</div>
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Courses</div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
                                                 </motion.div>
                                                 <motion.div
-                                                    whileHover={{ scale: 1.05, y: -2 }}
-                                                    className={`flex flex-col items-center justify-center rounded-[16px] bg-white dark:bg-slate-800 border border-slate-100/80 dark:border-slate-700/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none transition-all duration-300 ${quickViewSettings.compactMode ? 'p-2.5' : 'p-3.5'}`}
+                                                    whileHover={!isRefreshing ? { scale: 1.05, y: -2 } : {}}
+                                                    className={`flex flex-col items-center justify-center transition-all duration-300 ${quickViewSettings.compactMode ? 'p-1' : 'p-2'}`}
                                                 >
-                                                    <div className={`font-black text-amber-500 dark:text-amber-400 leading-none mb-1 ${quickViewSettings.compactMode ? 'text-xl' : 'text-3xl'}`}>{upcomingDeadlines.length}</div>
-                                                    <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em]">Due Soon</div>
+                                                    <AnimatePresence mode="wait">
+                                                        {isRefreshing ? (
+                                                            <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
+                                                                <Skeleton className={`rounded-md ${quickViewSettings.compactMode ? 'h-6 w-8' : 'h-10 w-12'} mb-1 bg-slate-200/80 dark:bg-slate-700/80`} />
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Due Soon</div>
+                                                            </motion.div>
+                                                        ) : (
+                                                            <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
+                                                                <div className={`font-black text-amber-500 dark:text-amber-400 leading-none mb-1 ${quickViewSettings.compactMode ? 'text-2xl' : 'text-4xl'}`}>{upcomingDeadlines.length}</div>
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Due Soon</div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
                                                 </motion.div>
                                                 <motion.div
-                                                    whileHover={{ scale: 1.05, y: -2 }}
-                                                    className={`flex flex-col items-center justify-center rounded-[16px] bg-white dark:bg-slate-800 border border-slate-100/80 dark:border-slate-700/50 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none transition-all duration-300 ${quickViewSettings.compactMode ? 'p-2.5' : 'p-3.5'}`}
+                                                    whileHover={!isRefreshing ? { scale: 1.05, y: -2 } : {}}
+                                                    className={`flex flex-col items-center justify-center transition-all duration-300 ${quickViewSettings.compactMode ? 'p-1' : 'p-2'}`}
                                                 >
-                                                    <div className={`font-black text-emerald-500 dark:text-emerald-400 leading-none mb-1 ${quickViewSettings.compactMode ? 'text-xl' : 'text-3xl'}`}>{overallProgress}%</div>
-                                                    <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em]">Progress</div>
+                                                    <AnimatePresence mode="wait">
+                                                        {isRefreshing ? (
+                                                            <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
+                                                                <Skeleton className={`rounded-full ${quickViewSettings.compactMode ? 'size-10' : 'size-14'} mb-1 bg-slate-200/80 dark:bg-slate-700/80`} />
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Progress</div>
+                                                            </motion.div>
+                                                        ) : (
+                                                            <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
+                                                                <AnimatedCircularProgressBar
+                                                                    max={100}
+                                                                    min={0}
+                                                                    value={overallProgress}
+                                                                    gaugePrimaryColor="rgb(16 185 129)"
+                                                                    gaugeSecondaryColor="rgba(148, 163, 184, 0.2)"
+                                                                    className={`mb-1 ${quickViewSettings.compactMode ? '!size-10' : '!size-14'}`}
+                                                                >
+                                                                    <Badge variant="secondary" className={`font-black bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-none px-1.5 py-0.5 rounded-md ${quickViewSettings.compactMode ? 'text-[10px]' : 'text-sm'}`}>
+                                                                        {overallProgress}%
+                                                                    </Badge>
+                                                                </AnimatedCircularProgressBar>
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Progress</div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
                                                 </motion.div>
                                             </div>
                                         </motion.div>
@@ -646,27 +723,21 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
     }
 
     return (
-        <AnimatePresence mode="wait">
-            {widgetsSidebarActive && (
-                <motion.aside
-                    className="widgets-sidebar active"
-                    id="widgets-sidebar"
-                    initial={{ x: '100%', opacity: 0.5 }}
-                    animate={{
-                        x: 0,
-                        opacity: 1,
-                        transition: { type: 'spring', stiffness: 300, damping: 30, mass: 0.8 }
-                    }}
-                    exit={{
-                        x: '100%',
-                        opacity: 0,
-                        transition: { type: 'spring', stiffness: 400, damping: 35, mass: 0.6 }
-                    }}
-                >
+        <Drawer 
+            open={widgetsSidebarActive} 
+            onOpenChange={(open) => {
+                if (widgetsSidebarActive !== open) {
+                    toggleWidgetsSidebar();
+                }
+            }} 
+            direction="right"
+        >
+            <DrawerContent className="!w-[100vw] md:!w-[360px] !max-w-[100vw] h-full rounded-none p-0 border-none bg-white dark:bg-slate-900 md:border-l md:border-slate-100 dark:md:border-slate-800">
+                <div className="h-full w-full overflow-hidden flex flex-col relative z-50">
                     {innerContent}
-                </motion.aside>
-            )}
-        </AnimatePresence>
+                </div>
+            </DrawerContent>
+        </Drawer>
     );
 };
 

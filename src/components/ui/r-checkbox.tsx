@@ -103,7 +103,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
                 : "var(--color-border)",
             }}
             aria-labelledby={labelId}
-            className="relative flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="relative flex h-5 w-5 !min-w-5 !min-h-5 shrink-0 cursor-pointer items-center justify-center rounded border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             initial={false}
             ref={(node) => {
               buttonRef.current = node;

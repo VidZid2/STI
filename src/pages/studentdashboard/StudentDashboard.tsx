@@ -68,6 +68,17 @@ import {
 const DashboardPage: React.FC = () => {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [showDebugButtons, setShowDebugButtons] = useState(false);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === '-' && e.target instanceof Element && !['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                setShowDebugButtons(prev => !prev);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         setIsScrolled(e.currentTarget.scrollTop > 10);
@@ -103,6 +114,7 @@ const DashboardPage: React.FC = () => {
         setSelectedCourse,
         showConfetti,
         setShowConfetti: _setShowConfetti,
+        isDashboardReady,
         showIntro,
         setShowIntro,
         isDemoMode } = useDashboardState();
@@ -119,6 +131,13 @@ const DashboardPage: React.FC = () => {
         toggleSidebar,
         isModalOpen: settingsModalActive || welcomeModalActive,
     });
+
+    // Global listener for Settings
+    useEffect(() => {
+        const handleOpenSettings = () => openSettingsModal();
+        document.addEventListener('open:settings', handleOpenSettings);
+        return () => document.removeEventListener('open:settings', handleOpenSettings);
+    }, [openSettingsModal]);
 
     // Listen for navigate-to-course events from PathsContent
     useEffect(() => {
@@ -184,7 +203,7 @@ const DashboardPage: React.FC = () => {
     } = useNotifications();
 
     // Quick View Settings - controls sidebar widget visibility and behavior
-    const { settings: quickViewSettings, refreshTrigger } = useQuickViewSettings();
+    const { settings: quickViewSettings, refreshTrigger, triggerRefresh } = useQuickViewSettings();
 
     // addNotification can be called to add new notifications dynamically
     void addNotification; // Suppress unused warning - available for dynamic use
@@ -210,7 +229,7 @@ const DashboardPage: React.FC = () => {
     // Trigger deadline warning notifications
     const hasTriggeredDeadlinesNotification = React.useRef(false);
     React.useEffect(() => {
-        if (upcomingDeadlines.length > 0 && !hasTriggeredDeadlinesNotification.current) {
+        if (!showIntro && upcomingDeadlines.length > 0 && !hasTriggeredDeadlinesNotification.current) {
             const todayDeadlines = upcomingDeadlines.filter(d => getDaysUntil(d.dueDate) === 0);
             const closeDeadlines = upcomingDeadlines.filter(d => {
                 const days = getDaysUntil(d.dueDate);
@@ -231,13 +250,42 @@ const DashboardPage: React.FC = () => {
                 });
             }
         }
-    }, [upcomingDeadlines]);
+    }, [upcomingDeadlines, showIntro]);
 
     // Weather hook
     const {
         weather,
         weatherLoading,
-        weatherError } = useWeather();
+        weatherError } = useWeather(showIntro);
+
+    // Handle intro-active CSS class and pre-warm lazy routes
+    React.useEffect(() => {
+        if (showIntro) {
+            document.body.classList.add('intro-active');
+        } else {
+            document.body.classList.remove('intro-active');
+            
+            // Pre-warm secondary tabs
+            if (typeof window.requestIdleCallback === 'function') {
+                window.requestIdleCallback(() => {
+                    import('./content/ToolsContent').catch(() => {});
+                    import('./content/PathsContent').catch(() => {});
+                    import('./content/GroupsContent').catch(() => {});
+                    import('./content/GoalsContent').catch(() => {});
+                    import('./content/UsersContent').catch(() => {});
+                });
+            } else {
+                setTimeout(() => {
+                    import('./content/ToolsContent').catch(() => {});
+                    import('./content/PathsContent').catch(() => {});
+                    import('./content/GroupsContent').catch(() => {});
+                    import('./content/GoalsContent').catch(() => {});
+                    import('./content/UsersContent').catch(() => {});
+                }, 1000);
+            }
+        }
+        return () => document.body.classList.remove('intro-active');
+    }, [showIntro]);
 
     // Todos hook
     const {
@@ -316,6 +364,7 @@ const DashboardPage: React.FC = () => {
         getCourseProgressData,
         formatMinutesToHours,
         refreshTrigger,
+        triggerRefresh,
         totalCourses,
         upcomingDeadlines,
         overallProgress,
@@ -352,6 +401,7 @@ const DashboardPage: React.FC = () => {
                 
                 {/* Header — sticky to the top of inset card */}
                 <DashboardHeader
+                    activeView={activeView}
                     setActiveView={setActiveView}
                     isDemoMode={isDemoMode}
                     toggleWidgetsSidebar={toggleWidgetsSidebar}
@@ -379,6 +429,8 @@ const DashboardPage: React.FC = () => {
                                 <HomeContent 
                                     onShowWelcomeModal={showWelcomeModal} 
                                     quickViewSlot={<WidgetSidebar isInline={true} {...widgetSidebarProps} />}
+                                    weather={weather}
+                                    weatherLoading={weatherLoading}
                                 />
                             </ErrorBoundary>
                         </motion.div>
@@ -517,7 +569,9 @@ const DashboardPage: React.FC = () => {
             <Confetti active={showConfetti} />
 
             {/* Dashboard Intro - shows only once per session */}
-            {showIntro && <DashboardIntro onComplete={() => {
+            {showIntro && <DashboardIntro 
+                isLoading={!isDashboardReady}
+                onComplete={() => {
                 setShowIntro(false);
                 // Show welcome modal after intro if it hasn't been completed
                 if (localStorage.getItem('welcome-modal-completed') !== 'true') {
@@ -538,21 +592,33 @@ const DashboardPage: React.FC = () => {
 
 
             {/* Debug Button to Trigger All Notifications */}
-            <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2">
-                <button 
-                    onClick={() => {
-                        triggerGlobalToast('quote', { title: 'Daily Quote', message: 'You can do it!' });
-                        setTimeout(() => triggerGlobalToast('success', { title: 'Success', message: 'Task completed successfully' }), 1000);
-                        setTimeout(() => triggerGlobalToast('info', { title: 'Information', message: 'New update available' }), 2000);
-                        setTimeout(() => triggerGlobalToast('warning', { title: 'Warning', message: 'Approaching deadline' }), 3000);
-                        setTimeout(() => triggerGlobalToast('danger', { title: 'Danger', message: 'Deadline missed' }), 4000);
-                        setTimeout(() => triggerGlobalToast('urgent', { title: 'Urgent', message: 'Action required immediately' }), 5000);
-                    }}
-                    className="px-4 py-2 bg-indigo-600/80 hover:bg-indigo-700 text-white text-sm font-semibold rounded-full shadow-lg backdrop-blur-sm transition-all z-50"
-                >
-                    Test Notifications
-                </button>
-            </div>
+            {showDebugButtons && (
+                <div className="hidden sm:flex fixed bottom-4 right-4 z-[100] flex-col gap-2">
+                    <button 
+                        onClick={() => {
+                            sessionStorage.removeItem('dashboardIntroShown');
+                            setShowIntro(true);
+                            setWelcomeModalActive(false);
+                        }}
+                        className="px-4 py-2 bg-yellow-500/80 hover:bg-yellow-600 text-white text-sm font-semibold rounded-full shadow-lg backdrop-blur-sm transition-all z-50"
+                    >
+                        Replay Intro
+                    </button>
+                    <button 
+                        onClick={() => {
+                            triggerGlobalToast('quote', { title: 'Daily Quote', message: 'You can do it!' });
+                            setTimeout(() => triggerGlobalToast('success', { title: 'Success', message: 'Task completed successfully' }), 1000);
+                            setTimeout(() => triggerGlobalToast('info', { title: 'Information', message: 'New update available' }), 2000);
+                            setTimeout(() => triggerGlobalToast('warning', { title: 'Warning', message: 'Approaching deadline' }), 3000);
+                            setTimeout(() => triggerGlobalToast('danger', { title: 'Danger', message: 'Deadline missed' }), 4000);
+                            setTimeout(() => triggerGlobalToast('urgent', { title: 'Urgent', message: 'Action required immediately' }), 5000);
+                        }}
+                        className="px-4 py-2 bg-indigo-600/80 hover:bg-indigo-700 text-white text-sm font-semibold rounded-full shadow-lg backdrop-blur-sm transition-all z-50"
+                    >
+                        Test Notifications
+                    </button>
+                </div>
+            )}
         </SidebarProvider>
     );
 };

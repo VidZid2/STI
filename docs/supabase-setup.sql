@@ -44,50 +44,42 @@ CREATE POLICY "Allow all operations on users" ON users
     USING (true)
     WITH CHECK (true);
 
--- Insert all 41 BSIT101A students
+-- Insert all 30 BSIT101A students
 -- Using ON CONFLICT (student_id) to handle re-runs safely
+DELETE FROM users WHERE role = 'student';
+
 INSERT INTO users (student_id, email, password_hash, full_name, first_name, last_name, role, campus, program, year_level, section)
 VALUES 
     ('02000543210', 'deasis.462124@meycauayan.sti.edu.ph', 'testing101', 'Josiah P. De Asis', 'Josiah', 'De Asis', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543211', 'acorda.divine@meycauayan.sti.edu.ph', 'student123', 'Divine Maureen Acorda', 'Divine Maureen', 'Acorda', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543212', 'adel.rogini@meycauayan.sti.edu.ph', 'student123', 'Rogini Adel', 'Rogini', 'Adel', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543213', 'agao.justin@meycauayan.sti.edu.ph', 'student123', 'Justin Dominick Agao', 'Justin Dominick', 'Agao', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543214', 'antolin.donbenn@meycauayan.sti.edu.ph', 'student123', 'Don Benn Federico Antolin', 'Don Benn Federico', 'Antolin', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543215', 'baldivas.blake@meycauayan.sti.edu.ph', 'student123', 'Blake Cedrick Baldivas', 'Blake Cedrick', 'Baldivas', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543216', 'bendolo.mark@meycauayan.sti.edu.ph', 'student123', 'Mark Lawrence Bendolo', 'Mark Lawrence', 'Bendolo', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543217', 'bergania.jai@meycauayan.sti.edu.ph', 'student123', 'Jai Brielle Bergania', 'Jai Brielle', 'Bergania', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543218', 'buenaflor.bradley@meycauayan.sti.edu.ph', 'student123', 'Bradley Buenaflor', 'Bradley', 'Buenaflor', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543219', 'camacho.karl@meycauayan.sti.edu.ph', 'student123', 'Karl Benedict Camacho', 'Karl Benedict', 'Camacho', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543220', 'canta.ismael@meycauayan.sti.edu.ph', 'student123', 'Ismael June Canta', 'Ismael June', 'Canta', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543221', 'cariso.cristy@meycauayan.sti.edu.ph', 'student123', 'Cristy Shane Cariso', 'Cristy Shane', 'Cariso', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543222', 'carlos.ayanamei@meycauayan.sti.edu.ph', 'student123', 'Ayanamei Carlos', 'Ayanamei', 'Carlos', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543223', 'colambo.john@meycauayan.sti.edu.ph', 'student123', 'John Aldred Colambo', 'John Aldred', 'Colambo', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543224', 'dagohoy.sophia@meycauayan.sti.edu.ph', 'student123', 'Sophia Lorraine Dagohoy', 'Sophia Lorraine', 'Dagohoy', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543225', 'delacruz.kevin@meycauayan.sti.edu.ph', 'student123', 'Kevin Dela Cruz', 'Kevin', 'Dela Cruz', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543226', 'evangelista.lance@meycauayan.sti.edu.ph', 'student123', 'Lance Michael Evangelista', 'Lance Michael', 'Evangelista', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543227', 'fajardo.althea@meycauayan.sti.edu.ph', 'student123', 'Althea Fajardo', 'Althea', 'Fajardo', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543228', 'halili.andrei@meycauayan.sti.edu.ph', 'student123', 'Andrei Jiroh Halili', 'Andrei Jiroh', 'Halili', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543229', 'japsay.jetro@meycauayan.sti.edu.ph', 'student123', 'Jetro Josef Japsay', 'Jetro Josef', 'Japsay', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543230', 'juban.jasper@meycauayan.sti.edu.ph', 'student123', 'Jasper Juban', 'Jasper', 'Juban', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543231', 'lim.renato@meycauayan.sti.edu.ph', 'student123', 'Renato Lim', 'Renato', 'Lim', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543232', 'macotulad.renzo@meycauayan.sti.edu.ph', 'student123', 'Renzo Macotulad', 'Renzo', 'Macotulad', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543233', 'marfil.christopher@meycauayan.sti.edu.ph', 'student123', 'Christopher Jann Marfil', 'Christopher Jann', 'Marfil', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543234', 'orlanda.denmart@meycauayan.sti.edu.ph', 'student123', 'Denmart Airon Orlanda', 'Denmart Airon', 'Orlanda', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543235', 'pagdanganan.jan@meycauayan.sti.edu.ph', 'student123', 'Jan Mark Pagdanganan', 'Jan Mark', 'Pagdanganan', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543236', 'paguirigan.mary@meycauayan.sti.edu.ph', 'student123', 'Mary Chris Ann Paguirigan', 'Mary Chris Ann', 'Paguirigan', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543237', 'paras.romeo@meycauayan.sti.edu.ph', 'student123', 'Romeo Paras', 'Romeo', 'Paras', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543238', 'ravela.fontleroy@meycauayan.sti.edu.ph', 'student123', 'Fontleroy Ravela', 'Fontleroy', 'Ravela', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543239', 'rodriguez.carl@meycauayan.sti.edu.ph', 'student123', 'Carl Aaron Rodriguez', 'Carl Aaron', 'Rodriguez', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543240', 'rodriguez.joel@meycauayan.sti.edu.ph', 'student123', 'Joel Rodriguez', 'Joel', 'Rodriguez', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543241', 'sanvicente.luigie@meycauayan.sti.edu.ph', 'student123', 'Luigie San Vicente', 'Luigie', 'San Vicente', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543242', 'santos.king@meycauayan.sti.edu.ph', 'student123', 'King Cyrhon Santos', 'King Cyrhon', 'Santos', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543243', 'sausa.rashae@meycauayan.sti.edu.ph', 'student123', 'Rashae Gavin Sausa', 'Rashae Gavin', 'Sausa', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543244', 'segismundo.jerome@meycauayan.sti.edu.ph', 'student123', 'Jerome Segismundo', 'Jerome', 'Segismundo', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543245', 'solanoy.clariza@meycauayan.sti.edu.ph', 'student123', 'Clariza Solanoy', 'Clariza', 'Solanoy', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543246', 'staana.benz@meycauayan.sti.edu.ph', 'student123', 'Benz Joshua Sta. Ana', 'Benz Joshua', 'Sta. Ana', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543247', 'surigao.arian@meycauayan.sti.edu.ph', 'student123', 'Arian Marie Surigao', 'Arian Marie', 'Surigao', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543248', 'tejada.james@meycauayan.sti.edu.ph', 'student123', 'James Ian Alexander Tejada', 'James Ian Alexander', 'Tejada', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
-    ('02000543249', 'tobias.jessiephine@meycauayan.sti.edu.ph', 'student123', 'Ma. Jessiephine Tobias', 'Ma. Jessiephine', 'Tobias', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A')
+    ('02000543211', 'delacruz.juan@meycauayan.sti.edu.ph', 'student123', 'Juan Dela Cruz', 'Juan', 'Dela Cruz', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543212', 'santos.maria@meycauayan.sti.edu.ph', 'student123', 'Maria Santos', 'Maria', 'Santos', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543213', 'reyes.pedro@meycauayan.sti.edu.ph', 'student123', 'Pedro Reyes', 'Pedro', 'Reyes', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543214', 'cruz.ana@meycauayan.sti.edu.ph', 'student123', 'Ana Cruz', 'Ana', 'Cruz', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543215', 'mendoza.jose@meycauayan.sti.edu.ph', 'student123', 'Jose Mendoza', 'Jose', 'Mendoza', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543216', 'bautista.luz@meycauayan.sti.edu.ph', 'student123', 'Luz Bautista', 'Luz', 'Bautista', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543217', 'torres.miguel@meycauayan.sti.edu.ph', 'student123', 'Miguel Torres', 'Miguel', 'Torres', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543218', 'villanueva.rosa@meycauayan.sti.edu.ph', 'student123', 'Rosa Villanueva', 'Rosa', 'Villanueva', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543219', 'navarro.carlos@meycauayan.sti.edu.ph', 'student123', 'Carlos Navarro', 'Carlos', 'Navarro', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543220', 'ramos.elena@meycauayan.sti.edu.ph', 'student123', 'Elena Ramos', 'Elena', 'Ramos', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543221', 'mercado.luis@meycauayan.sti.edu.ph', 'student123', 'Luis Mercado', 'Luis', 'Mercado', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543222', 'castro.carmen@meycauayan.sti.edu.ph', 'student123', 'Carmen Castro', 'Carmen', 'Castro', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543223', 'deleon.manuel@meycauayan.sti.edu.ph', 'student123', 'Manuel De Leon', 'Manuel', 'De Leon', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543224', 'gonzales.teresa@meycauayan.sti.edu.ph', 'student123', 'Teresa Gonzales', 'Teresa', 'Gonzales', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543225', 'aquino.antonio@meycauayan.sti.edu.ph', 'student123', 'Antonio Aquino', 'Antonio', 'Aquino', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543226', 'fernandez.clara@meycauayan.sti.edu.ph', 'student123', 'Clara Fernandez', 'Clara', 'Fernandez', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543227', 'morales.francisco@meycauayan.sti.edu.ph', 'student123', 'Francisco Morales', 'Francisco', 'Morales', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543228', 'perez.isabel@meycauayan.sti.edu.ph', 'student123', 'Isabel Perez', 'Isabel', 'Perez', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543229', 'gomez.vicente@meycauayan.sti.edu.ph', 'student123', 'Vicente Gomez', 'Vicente', 'Gomez', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543230', 'domingo.sofia@meycauayan.sti.edu.ph', 'student123', 'Sofia Domingo', 'Sofia', 'Domingo', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543231', 'pascual.ramon@meycauayan.sti.edu.ph', 'student123', 'Ramon Pascual', 'Ramon', 'Pascual', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543232', 'tolentino.beatriz@meycauayan.sti.edu.ph', 'student123', 'Beatriz Tolentino', 'Beatriz', 'Tolentino', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543233', 'garcia.eduardo@meycauayan.sti.edu.ph', 'student123', 'Eduardo Garcia', 'Eduardo', 'Garcia', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543234', 'ocampo.leonor@meycauayan.sti.edu.ph', 'student123', 'Leonor Ocampo', 'Leonor', 'Ocampo', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543235', 'lopez.arturo@meycauayan.sti.edu.ph', 'student123', 'Arturo Lopez', 'Arturo', 'Lopez', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543236', 'martinez.rosalinda@meycauayan.sti.edu.ph', 'student123', 'Rosalinda Martinez', 'Rosalinda', 'Martinez', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543237', 'cruz.ricardo@meycauayan.sti.edu.ph', 'student123', 'Ricardo Cruz', 'Ricardo', 'Cruz', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543238', 'santiago.magdalena@meycauayan.sti.edu.ph', 'student123', 'Magdalena Santiago', 'Magdalena', 'Santiago', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A'),
+    ('02000543239', 'flores.fernando@meycauayan.sti.edu.ph', 'student123', 'Fernando Flores', 'Fernando', 'Flores', 'student', 'Meycauayan', 'BSIT', '1st Year', 'BSIT101A')
 ON CONFLICT (student_id) DO NOTHING;
 
 -- Insert all 8 teachers (from courses)
@@ -572,60 +564,40 @@ CREATE TRIGGER update_students_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 
 -- =====================================================
--- Insert BSIT101A Students (36 students)
--- =====================================================
+-- Insert all 30 BSIT101A students
+DELETE FROM students;
 
 INSERT INTO students (student_id, full_name, first_name, last_name, section, email) VALUES
-    -- Row 1 (from image 2)
-    ('BSIT101A-001', 'Acorda, Divine Maureen', 'Divine Maureen', 'Acorda', 'BSIT101A', 'acorda.divine@meycauayan.sti.edu.ph'),
-    ('BSIT101A-002', 'Adel, Rogini', 'Rogini', 'Adel', 'BSIT101A', 'adel.rogini@meycauayan.sti.edu.ph'),
-    ('BSIT101A-003', 'Agao, Justin Dominick', 'Justin Dominick', 'Agao', 'BSIT101A', 'agao.justin@meycauayan.sti.edu.ph'),
-    ('BSIT101A-004', 'Antolin, Don Benn Federico', 'Don Benn Federico', 'Antolin', 'BSIT101A', 'antolin.donbenn@meycauayan.sti.edu.ph'),
-    ('BSIT101A-005', 'Baldivas, Blake Cedrick', 'Blake Cedrick', 'Baldivas', 'BSIT101A', 'baldivas.blake@meycauayan.sti.edu.ph'),
-    -- Row 2
-    ('BSIT101A-006', 'Bendolo, Mark Lawrence', 'Mark Lawrence', 'Bendolo', 'BSIT101A', 'bendolo.mark@meycauayan.sti.edu.ph'),
-    ('BSIT101A-007', 'Bergania, Jai Brielle', 'Jai Brielle', 'Bergania', 'BSIT101A', 'bergania.jai@meycauayan.sti.edu.ph'),
-    ('BSIT101A-008', 'Buenaflor, Bradley', 'Bradley', 'Buenaflor', 'BSIT101A', 'buenaflor.bradley@meycauayan.sti.edu.ph'),
-    ('BSIT101A-009', 'Camacho, Karl Benedict', 'Karl Benedict', 'Camacho', 'BSIT101A', 'camacho.karl@meycauayan.sti.edu.ph'),
-    ('BSIT101A-010', 'Canta, Ismael June', 'Ismael June', 'Canta', 'BSIT101A', 'canta.ismael@meycauayan.sti.edu.ph'),
-    -- Row 3
-    ('BSIT101A-011', 'Cariso, Cristy Shane', 'Cristy Shane', 'Cariso', 'BSIT101A', 'cariso.cristy@meycauayan.sti.edu.ph'),
-    ('BSIT101A-012', 'Carlos, Ayanamei', 'Ayanamei', 'Carlos', 'BSIT101A', 'carlos.ayanamei@meycauayan.sti.edu.ph'),
-    ('BSIT101A-013', 'Colambo, John Aldred', 'John Aldred', 'Colambo', 'BSIT101A', 'colambo.john@meycauayan.sti.edu.ph'),
-    ('BSIT101A-014', 'Dagohoy, Sophia Lorraine', 'Sophia Lorraine', 'Dagohoy', 'BSIT101A', 'dagohoy.sophia@meycauayan.sti.edu.ph'),
-    ('BSIT101A-015', 'De Asis, Josiah', 'Josiah', 'De Asis', 'BSIT101A', 'deasis.462124@meycauayan.sti.edu.ph'),
-    -- Row 4
-    ('BSIT101A-016', 'Del Mundo, David Clarence', 'David Clarence', 'Del Mundo', 'BSIT101A', 'delmundo.david@meycauayan.sti.edu.ph'),
-    ('BSIT101A-017', 'Dela Cruz, Kevin', 'Kevin', 'Dela Cruz', 'BSIT101A', 'delacruz.kevin@meycauayan.sti.edu.ph'),
-    ('BSIT101A-018', 'Evangelista, Lance Michael', 'Lance Michael', 'Evangelista', 'BSIT101A', 'evangelista.lance@meycauayan.sti.edu.ph'),
-    ('BSIT101A-019', 'Fajardo, Althea', 'Althea', 'Fajardo', 'BSIT101A', 'fajardo.althea@meycauayan.sti.edu.ph'),
-    ('BSIT101A-020', 'Halili, Andrei Jiroh', 'Andrei Jiroh', 'Halili', 'BSIT101A', 'halili.andrei@meycauayan.sti.edu.ph'),
-    -- Row 5
-    ('BSIT101A-021', 'Japsay, Jetro Josef', 'Jetro Josef', 'Japsay', 'BSIT101A', 'japsay.jetro@meycauayan.sti.edu.ph'),
-    ('BSIT101A-022', 'Juban, Jasper', 'Jasper', 'Juban', 'BSIT101A', 'juban.jasper@meycauayan.sti.edu.ph'),
-    ('BSIT101A-023', 'Lim, Renato', 'Renato', 'Lim', 'BSIT101A', 'lim.renato@meycauayan.sti.edu.ph'),
-    ('BSIT101A-024', 'Macatulad, Renzo', 'Renzo', 'Macatulad', 'BSIT101A', 'macatulad.renzo@meycauayan.sti.edu.ph'),
-    ('BSIT101A-025', 'Marfil, Christopher Jann', 'Christopher Jann', 'Marfil', 'BSIT101A', 'marfil.christopher@meycauayan.sti.edu.ph'),
-    -- Row 1 (from image 1)
-    ('BSIT101A-026', 'Orianda, Denmart Airon', 'Denmart Airon', 'Orianda', 'BSIT101A', 'orianda.denmart@meycauayan.sti.edu.ph'),
-    ('BSIT101A-027', 'Pagdanganan, Jan Mark', 'Jan Mark', 'Pagdanganan', 'BSIT101A', 'pagdanganan.jan@meycauayan.sti.edu.ph'),
-    ('BSIT101A-028', 'Paguirigan, Mary Chris Angelene', 'Mary Chris Angelene', 'Paguirigan', 'BSIT101A', 'paguirigan.mary@meycauayan.sti.edu.ph'),
-    ('BSIT101A-029', 'Paras, Romeo', 'Romeo', 'Paras', 'BSIT101A', 'paras.romeo@meycauayan.sti.edu.ph'),
-    ('BSIT101A-030', 'Ravela, Fontleroy', 'Fontleroy', 'Ravela', 'BSIT101A', 'ravela.fontleroy@meycauayan.sti.edu.ph'),
-    -- Row 2
-    ('BSIT101A-031', 'Rodriguez, Carl Aaron', 'Carl Aaron', 'Rodriguez', 'BSIT101A', 'rodriguez.carl@meycauayan.sti.edu.ph'),
-    ('BSIT101A-032', 'Rodriguez, Joel', 'Joel', 'Rodriguez', 'BSIT101A', 'rodriguez.joel@meycauayan.sti.edu.ph'),
-    ('BSIT101A-033', 'San Vicente, Luigie', 'Luigie', 'San Vicente', 'BSIT101A', 'sanvicente.luigie@meycauayan.sti.edu.ph'),
-    ('BSIT101A-034', 'Santos, King Cyrhon', 'King Cyrhon', 'Santos', 'BSIT101A', 'santos.king@meycauayan.sti.edu.ph'),
-    ('BSIT101A-035', 'Sausa, Rashae Gavin', 'Rashae Gavin', 'Sausa', 'BSIT101A', 'sausa.rashae@meycauayan.sti.edu.ph'),
-    -- Row 3
-    ('BSIT101A-036', 'Segismundo, Jerome', 'Jerome', 'Segismundo', 'BSIT101A', 'segismundo.jerome@meycauayan.sti.edu.ph'),
-    ('BSIT101A-037', 'Solanoy, Clariza', 'Clariza', 'Solanoy', 'BSIT101A', 'solanoy.clariza@meycauayan.sti.edu.ph'),
-    ('BSIT101A-038', 'Sta. Ana, Benz Joshua', 'Benz Joshua', 'Sta. Ana', 'BSIT101A', 'staana.benz@meycauayan.sti.edu.ph'),
-    ('BSIT101A-039', 'Surigao, Arian Marie', 'Arian Marie', 'Surigao', 'BSIT101A', 'surigao.arian@meycauayan.sti.edu.ph'),
-    ('BSIT101A-040', 'Tejada, James Ian Alexander', 'James Ian Alexander', 'Tejada', 'BSIT101A', 'tejada.james@meycauayan.sti.edu.ph'),
-    -- Row 4
-    ('BSIT101A-041', 'Tobias, Ma. Jessiephine', 'Ma. Jessiephine', 'Tobias', 'BSIT101A', 'tobias.jessiephine@meycauayan.sti.edu.ph')
+    ('02000543210', 'De Asis, Josiah', 'Josiah', 'De Asis', 'BSIT101A', 'deasis.462124@meycauayan.sti.edu.ph'),
+    ('02000543211', 'Dela Cruz, Juan', 'Juan', 'Dela Cruz', 'BSIT101A', 'delacru.juan@meycauayan.sti.edu.ph'),
+    ('02000543212', 'Santos, Maria', 'Maria', 'Santos', 'BSIT101A', 'santos.maria@meycauayan.sti.edu.ph'),
+    ('02000543213', 'Reyes, Pedro', 'Pedro', 'Reyes', 'BSIT101A', 'reyes.pedro@meycauayan.sti.edu.ph'),
+    ('02000543214', 'Cruz, Ana', 'Ana', 'Cruz', 'BSIT101A', 'cruz.ana@meycauayan.sti.edu.ph'),
+    ('02000543215', 'Mendoza, Jose', 'Jose', 'Mendoza', 'BSIT101A', 'mendoza.jose@meycauayan.sti.edu.ph'),
+    ('02000543216', 'Bautista, Luz', 'Luz', 'Bautista', 'BSIT101A', 'bautista.luz@meycauayan.sti.edu.ph'),
+    ('02000543217', 'Torres, Miguel', 'Miguel', 'Torres', 'BSIT101A', 'torres.miguel@meycauayan.sti.edu.ph'),
+    ('02000543218', 'Villanueva, Rosa', 'Rosa', 'Villanueva', 'BSIT101A', 'villanueva.rosa@meycauayan.sti.edu.ph'),
+    ('02000543219', 'Navarro, Carlos', 'Carlos', 'Navarro', 'BSIT101A', 'navarro.carlos@meycauayan.sti.edu.ph'),
+    ('02000543220', 'Ramos, Elena', 'Elena', 'Ramos', 'BSIT101A', 'ramos.elena@meycauayan.sti.edu.ph'),
+    ('02000543221', 'Mercado, Luis', 'Luis', 'Mercado', 'BSIT101A', 'mercado.luis@meycauayan.sti.edu.ph'),
+    ('02000543222', 'Castro, Carmen', 'Carmen', 'Castro', 'BSIT101A', 'castro.carmen@meycauayan.sti.edu.ph'),
+    ('02000543223', 'De Leon, Manuel', 'Manuel', 'De Leon', 'BSIT101A', 'deleon.manuel@meycauayan.sti.edu.ph'),
+    ('02000543224', 'Gonzales, Teresa', 'Teresa', 'Gonzales', 'BSIT101A', 'gonzales.teresa@meycauayan.sti.edu.ph'),
+    ('02000543225', 'Aquino, Antonio', 'Antonio', 'Aquino', 'BSIT101A', 'aquino.antonio@meycauayan.sti.edu.ph'),
+    ('02000543226', 'Fernandez, Clara', 'Clara', 'Fernandez', 'BSIT101A', 'fernandez.clara@meycauayan.sti.edu.ph'),
+    ('02000543227', 'Morales, Francisco', 'Francisco', 'Morales', 'BSIT101A', 'morales.francisco@meycauayan.sti.edu.ph'),
+    ('02000543228', 'Perez, Isabel', 'Isabel', 'Perez', 'BSIT101A', 'perez.isabel@meycauayan.sti.edu.ph'),
+    ('02000543229', 'Gomez, Vicente', 'Vicente', 'Gomez', 'BSIT101A', 'gomez.vicente@meycauayan.sti.edu.ph'),
+    ('02000543230', 'Domingo, Sofia', 'Sofia', 'Domingo', 'BSIT101A', 'domingo.sofia@meycauayan.sti.edu.ph'),
+    ('02000543231', 'Pascual, Ramon', 'Ramon', 'Pascual', 'BSIT101A', 'pascual.ramon@meycauayan.sti.edu.ph'),
+    ('02000543232', 'Tolentino, Beatriz', 'Beatriz', 'Tolentino', 'BSIT101A', 'tolentino.beatriz@meycauayan.sti.edu.ph'),
+    ('02000543233', 'Garcia, Eduardo', 'Eduardo', 'Garcia', 'BSIT101A', 'garcia.eduardo@meycauayan.sti.edu.ph'),
+    ('02000543234', 'Ocampo, Leonor', 'Leonor', 'Ocampo', 'BSIT101A', 'ocampo.leonor@meycauayan.sti.edu.ph'),
+    ('02000543235', 'Lopez, Arturo', 'Arturo', 'Lopez', 'BSIT101A', 'lopez.arturo@meycauayan.sti.edu.ph'),
+    ('02000543236', 'Martinez, Rosalinda', 'Rosalinda', 'Martinez', 'BSIT101A', 'martinez.rosalinda@meycauayan.sti.edu.ph'),
+    ('02000543237', 'Cruz, Ricardo', 'Ricardo', 'Cruz', 'BSIT101A', 'cruz.ricardo@meycauayan.sti.edu.ph'),
+    ('02000543238', 'Santiago, Magdalena', 'Magdalena', 'Santiago', 'BSIT101A', 'santiago.magdalena@meycauayan.sti.edu.ph'),
+    ('02000543239', 'Flores, Fernando', 'Fernando', 'Flores', 'BSIT101A', 'flores.fernando@meycauayan.sti.edu.ph')
 ON CONFLICT (student_id) DO UPDATE SET email = EXCLUDED.email;
 
 -- =====================================================
@@ -634,8 +606,8 @@ ON CONFLICT (student_id) DO UPDATE SET email = EXCLUDED.email;
 
 ALTER TABLE learning_paths ADD COLUMN IF NOT EXISTS enrolled_count INTEGER DEFAULT 0;
 
--- Update enrolled count for Full 1st Semester (all 41 students)
-UPDATE learning_paths SET enrolled_count = 41 WHERE id = 'path-full-semester';
+-- Update enrolled count for Full 1st Semester (all 30 students)
+UPDATE learning_paths SET enrolled_count = 30 WHERE id = 'path-full-semester';
 
 -- =====================================================
 -- Auto-enroll all BSIT101A students in Full 1st Semester
@@ -660,7 +632,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- =====================================================
 -- SUCCESS! Students and Learning Paths tables are ready.
--- Total: 41 students in BSIT101A section
+-- Total: 30 students in BSIT101A section
 -- All BSIT101A students are auto-enrolled in Full 1st Semester
 -- =====================================================
 
@@ -2803,3 +2775,285 @@ DROP POLICY IF EXISTS "Users update own notifications" ON notifications;
 CREATE POLICY "Users update own notifications" ON notifications
     FOR UPDATE USING (true) WITH CHECK (true);
 
+
+-- ==========================================
+-- ROW LEVEL SECURITY (SECURITY AUDIT FIX)
+-- ==========================================
+-- Note: This was added to secure the users table against unauthorized access.
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can only read their own profile" ON users;
+CREATE POLICY "Users can only read their own profile" ON users
+  FOR SELECT USING (auth.uid() = id);
+
+-- =====================================================
+-- CONSOLIDATED DATABASE SCHEMAS & POLICIES
+-- =====================================================
+
+-- =====================================================
+-- student_bookmarks table
+-- =====================================================
+CREATE TABLE IF NOT EXISTS student_bookmarks (
+    student_id  TEXT        NOT NULL,
+    course_id   TEXT        NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    created_at  TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY (student_id, course_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_student_bookmarks_student_id ON student_bookmarks(student_id);
+CREATE INDEX IF NOT EXISTS idx_student_bookmarks_course_id  ON student_bookmarks(course_id);
+
+ALTER TABLE student_bookmarks ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow all operations on student_bookmarks" ON student_bookmarks;
+CREATE POLICY "Allow all operations on student_bookmarks"
+ON student_bookmarks FOR ALL
+USING (true)
+WITH CHECK (true);
+
+
+-- =====================================================
+-- SUPABASE COMPLETE AUTH MIGRATION & STRICT RLS
+-- =====================================================
+
+-- =====================================================
+-- Create auth.users for all existing public.users
+-- =====================================================
+DO $auth_sync$
+DECLARE
+    user_record RECORD;
+    auth_uid UUID;
+BEGIN
+    FOR user_record IN
+        SELECT id, email, password_hash, full_name
+        FROM public.users
+        WHERE is_active = true
+    LOOP
+        SELECT id INTO auth_uid
+        FROM auth.users
+        WHERE email = lower(user_record.email);
+
+        IF auth_uid IS NULL THEN
+            INSERT INTO auth.users (
+                instance_id,
+                id,
+                aud,
+                role,
+                email,
+                encrypted_password,
+                email_confirmed_at,
+                raw_app_meta_data,
+                raw_user_meta_data,
+                created_at,
+                updated_at,
+                confirmation_token,
+                email_change,
+                email_change_token_new,
+                recovery_token
+            ) VALUES (
+                '00000000-0000-0000-0000-000000000000',
+                user_record.id,
+                'authenticated',
+                'authenticated',
+                lower(user_record.email),
+                crypt(user_record.password_hash, gen_salt('bf')),
+                NOW(),
+                '{"provider": "email", "providers": ["email"]}',
+                json_build_object('full_name', user_record.full_name),
+                NOW(),
+                NOW(),
+                '', '', '', ''
+            );
+        END IF;
+    END LOOP;
+END $auth_sync$;
+
+
+-- =====================================================
+-- Create course_enrollments table + enroll teachers
+-- =====================================================
+CREATE TABLE IF NOT EXISTS course_enrollments (
+    id          TEXT        PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    course_id   TEXT        NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    user_id     UUID        NOT NULL REFERENCES users(id)   ON DELETE CASCADE,
+    role        TEXT        NOT NULL DEFAULT 'student'
+                            CHECK (role IN ('teacher', 'student')),
+    enrolled_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (course_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_course_enrollments_user_id   ON course_enrollments(user_id);
+CREATE INDEX IF NOT EXISTS idx_course_enrollments_course_id ON course_enrollments(course_id);
+CREATE INDEX IF NOT EXISTS idx_course_enrollments_role      ON course_enrollments(role);
+
+ALTER TABLE course_enrollments ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow all operations on course_enrollments" ON course_enrollments;
+CREATE POLICY "Allow all operations on course_enrollments"
+ON course_enrollments FOR ALL
+USING (true)
+WITH CHECK (true);
+
+INSERT INTO course_enrollments (course_id, user_id, role)
+SELECT
+    c.id   AS course_id,
+    u.id   AS user_id,
+    'teacher' AS role
+FROM courses c
+JOIN users u ON u.full_name = c.instructor
+WHERE u.role = 'teacher'
+ON CONFLICT (course_id, user_id) DO NOTHING;
+
+
+-- =====================================================
+-- Scoped RLS Policies: users table
+-- =====================================================
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow all operations on users"      ON public.users;
+DROP POLICY IF EXISTS "users_read_own_profile"             ON public.users;
+DROP POLICY IF EXISTS "users_read_by_email"                ON public.users;
+DROP POLICY IF EXISTS "admins_read_all_profiles"           ON public.users;
+DROP POLICY IF EXISTS "teachers_read_student_profiles"     ON public.users;
+DROP POLICY IF EXISTS "users_update_own"                   ON public.users;
+
+CREATE POLICY "users_read_own_profile"
+ON public.users FOR SELECT TO authenticated
+USING ((SELECT auth.uid()) = id);
+
+CREATE POLICY "users_read_by_email"
+ON public.users FOR SELECT TO authenticated
+USING (email = (SELECT auth.jwt() ->> 'email'));
+
+CREATE POLICY "admins_read_all_profiles"
+ON public.users FOR SELECT TO authenticated
+USING (
+    EXISTS (
+        SELECT 1 FROM public.users
+        WHERE id = (SELECT auth.uid())
+          AND role IN ('admin', 'dean')
+    )
+);
+
+CREATE POLICY "teachers_read_student_profiles"
+ON public.users FOR SELECT TO authenticated
+USING (
+    EXISTS (
+        SELECT 1 FROM public.users
+        WHERE id = (SELECT auth.uid())
+          AND role = 'teacher'
+    )
+);
+
+CREATE POLICY "users_update_own"
+ON public.users FOR UPDATE TO authenticated
+USING ((SELECT auth.uid()) = id)
+WITH CHECK ((SELECT auth.uid()) = id);
+
+
+-- =====================================================
+-- Scoped RLS Policies: course_tasks + student_submissions
+-- =====================================================
+ALTER TABLE course_tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE student_submissions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow all operations on tasks"  ON course_tasks;
+DROP POLICY IF EXISTS "authenticated_read_tasks"       ON course_tasks;
+DROP POLICY IF EXISTS "teachers_write_tasks"           ON course_tasks;
+DROP POLICY IF EXISTS "teachers_update_tasks"          ON course_tasks;
+
+CREATE POLICY "authenticated_read_tasks"
+ON course_tasks FOR SELECT TO authenticated
+USING (true);
+
+CREATE POLICY "teachers_write_tasks"
+ON course_tasks FOR INSERT TO authenticated
+WITH CHECK (
+    EXISTS (
+        SELECT 1 FROM course_enrollments ce
+        WHERE ce.user_id = (SELECT auth.uid())
+          AND ce.course_id = course_tasks.course_id
+          AND ce.role = 'teacher'
+    )
+    OR EXISTS (
+        SELECT 1 FROM users
+        WHERE id = (SELECT auth.uid())
+          AND role IN ('admin', 'dean')
+    )
+);
+
+CREATE POLICY "teachers_update_tasks"
+ON course_tasks FOR UPDATE TO authenticated
+USING (
+    EXISTS (
+        SELECT 1 FROM course_enrollments ce
+        WHERE ce.user_id = (SELECT auth.uid())
+          AND ce.course_id = course_tasks.course_id
+          AND ce.role = 'teacher'
+    )
+    OR EXISTS (
+        SELECT 1 FROM users
+        WHERE id = (SELECT auth.uid())
+          AND role IN ('admin', 'dean')
+    )
+);
+
+DROP POLICY IF EXISTS "Allow all operations on submissions" ON student_submissions;
+DROP POLICY IF EXISTS "students_own_submissions"            ON student_submissions;
+DROP POLICY IF EXISTS "teachers_course_submissions"         ON student_submissions;
+DROP POLICY IF EXISTS "teachers_grade_submissions"          ON student_submissions;
+DROP POLICY IF EXISTS "students_submit"                     ON student_submissions;
+
+CREATE POLICY "students_own_submissions"
+ON student_submissions FOR SELECT TO authenticated
+USING (
+    student_id = (
+        SELECT student_id FROM users WHERE id = (SELECT auth.uid())
+    )
+);
+
+CREATE POLICY "teachers_course_submissions"
+ON student_submissions FOR SELECT TO authenticated
+USING (
+    EXISTS (
+        SELECT 1 FROM users
+        WHERE id = (SELECT auth.uid())
+          AND role IN ('admin', 'dean')
+    )
+    OR task_id IN (
+        SELECT ct.id
+        FROM course_tasks ct
+        JOIN course_enrollments ce ON ce.course_id = ct.course_id
+        WHERE ce.user_id = (SELECT auth.uid())
+          AND ce.role = 'teacher'
+    )
+);
+
+CREATE POLICY "teachers_grade_submissions"
+ON student_submissions FOR UPDATE TO authenticated
+USING (
+    task_id IN (
+        SELECT ct.id
+        FROM course_tasks ct
+        JOIN course_enrollments ce ON ce.course_id = ct.course_id
+        WHERE ce.user_id = (SELECT auth.uid())
+          AND ce.role = 'teacher'
+    )
+    OR EXISTS (
+        SELECT 1 FROM users
+        WHERE id = (SELECT auth.uid())
+          AND role IN ('admin', 'dean')
+    )
+);
+
+CREATE POLICY "students_submit"
+ON student_submissions FOR INSERT TO authenticated
+WITH CHECK (
+    student_id = (
+        SELECT student_id FROM users WHERE id = (SELECT auth.uid())
+    )
+);
+
+-- =====================================================
+-- SUCCESS CONFIRMATION
+-- =====================================================
+SELECT 'Database is running properly!' AS status;

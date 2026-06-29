@@ -6,7 +6,6 @@ import {
   AnimatePresence,
   motion,
   useMotionValue,
-  useReducedMotion,
   useTransform,
 } from "framer-motion"; // Note: using framer-motion as it's typically aliased or used interchangeably, but motion/react is newer. Given we installed motion, I'll stick to framer-motion if possible, but let me use 'motion/react' if that's what was requested, wait let me check the package installed.
 import { cn } from "@/lib/utils";
@@ -42,6 +41,10 @@ export interface ArcRevealHeroProps {
   storageKey?: string;
   /** Content shown after the curtain reveal (the "landing"). */
   children?: React.ReactNode;
+  /** Callback fired when the reveal animation finishes */
+  onComplete?: () => void;
+  /** If true, the intro will wait on the last phrase or loop until false */
+  isLoading?: boolean;
 }
 
 /* ── defaults ────────────────────────────────────────────────── */
@@ -71,48 +74,63 @@ export function ArcRevealHero({
   revealClassName,
   storageKey,
   children,
+  onComplete,
+  isLoading = false,
 }: ArcRevealHeroProps) {
-  const prefersReducedMotion = useReducedMotion();
-
   const [phase, setPhase] = React.useState<Phase>("intro");
   const [index, setIndex] = React.useState(0);
 
-  // Drive the arc shape from a single 0→1 progress.
+  // Drive the arc shape from a single 0→1 progress, scaled for objectBoundingBox.
   const progress = useMotionValue(0);
-  const arcPath = useTransform(progress, (p: number) => {
-    const edge = 110 - p * 140;
-    const control = edge + 25;
-    return `M 0 ${edge} Q 50 ${control} 100 ${edge} L 100 110 L 0 110 Z`;
+  const clipPathD = useTransform(progress, (p: number) => {
+    const edge = 1.1 - p * 1.4;
+    const control = edge + 0.25;
+    return `M 0 0 L 1 0 L 1 ${edge} Q 0.5 ${control} 0 ${edge} Z`;
   });
 
-  // Honor reduced-motion + replay-suppression on mount.
+  // Honor replay-suppression on mount.
   React.useEffect(() => {
-    if (prefersReducedMotion) {
-      setPhase("done");
-      return;
-    }
     if (storageKey && typeof window !== "undefined") {
       try {
-        if (window.sessionStorage.getItem(storageKey) === "done") {
+        const stored = window.sessionStorage.getItem(storageKey);
+        if (stored === "done" || stored === "true") {
           setPhase("done");
+          onComplete?.();
         }
       } catch {
         /* sessionStorage can throw in private mode — fall through */
       }
     }
-  }, [prefersReducedMotion, storageKey]);
+  }, [storageKey, onComplete]);
 
   // Greeting cycle.
   React.useEffect(() => {
     if (phase !== "intro") return;
     const isLast = index >= greetings.length - 1;
-    if (isLast) {
+    
+    // If it's the last greeting and we are NOT loading, proceed to reveal
+    if (isLast && !isLoading) {
       const t = window.setTimeout(() => setPhase("reveal"), greetingHold + 220);
       return () => window.clearTimeout(t);
     }
+    
+    // If it's the last greeting but we ARE loading, stay on the last phrase
+    if (isLast && isLoading) {
+      return; // Do nothing, just wait on the last phrase
+    }
+
+    // If we are NOT loading, and we've shown at least a couple of phrases, we can skip the rest and reveal early!
+    // This prevents the user from being forced to watch 20 loading phrases on a fast connection.
+    const minGreetings = Math.min(2, greetings.length);
+    if (!isLoading && index >= minGreetings - 1) {
+      const t = window.setTimeout(() => setPhase("reveal"), greetingHold + 220);
+      return () => window.clearTimeout(t);
+    }
+
+    // Move to next greeting
     const t = window.setTimeout(() => setIndex((i) => i + 1), greetingHold);
     return () => window.clearTimeout(t);
-  }, [phase, index, greetingHold, greetings.length]);
+  }, [phase, index, greetingHold, greetings.length, isLoading]);
 
   // Drive the curtain reveal.
   React.useEffect(() => {
@@ -129,6 +147,7 @@ export function ArcRevealHero({
           }
         }
         setPhase("done");
+        onComplete?.();
       },
     });
     return () => controls.stop();
@@ -154,6 +173,7 @@ export function ArcRevealHero({
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+            style={{ clipPath: "url(#yellow-curtain-clip)", willChange: "clip-path, transform, opacity" }}
             className={cn(
               "absolute inset-x-0 top-0 z-[9999] h-screen overflow-hidden bg-[#eab308]",
               introClassName,
@@ -181,14 +201,11 @@ export function ArcRevealHero({
               </AnimatePresence>
             </div>
 
-            {/* Rising curved curtain */}
-            <svg
-              className="pointer-events-none absolute inset-0 h-full w-full"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              aria-hidden
-            >
-              <motion.path d={arcPath} style={{ fill: "#ffffff" }} />
+            {/* Rising curved curtain mask */}
+            <svg width="0" height="0" className="absolute">
+              <clipPath id="yellow-curtain-clip" clipPathUnits="objectBoundingBox">
+                <motion.path d={clipPathD} />
+              </clipPath>
             </svg>
           </motion.div>
         )}

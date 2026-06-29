@@ -1,4 +1,4 @@
-﻿/**
+/**
  * useGradePredictor Hook
  * Handles grade prediction loading and calculation
  */
@@ -23,15 +23,27 @@ export const useGradePredictor = (refreshTrigger: number): UseGradePredictorRetu
     });
 
     const loadGradePrediction = async () => {
-        try {
-            // Import the service dynamically to avoid circular dependencies
-            const { getGradePrediction } = await import('../../../services/gradePredictorService');
-            const prediction = await getGradePrediction();
-            setGradePredictor(prediction);
-        } catch (err) {
-            // Fallback to local calculation
-            calculateLocalPrediction();
-        }
+        return new Promise<void>((resolve) => {
+            const fetchAndSet = async () => {
+                try {
+                    // Import the service dynamically to avoid circular dependencies
+                    const { getGradePrediction } = await import('../../../services/gradePredictorService');
+                    const prediction = await getGradePrediction();
+                    setGradePredictor(prediction);
+                } catch (err) {
+                    // Fallback to local calculation
+                    calculateLocalPrediction();
+                } finally {
+                    resolve();
+                }
+            };
+
+            if (typeof window.requestIdleCallback === 'function') {
+                window.requestIdleCallback(() => { fetchAndSet(); });
+            } else {
+                setTimeout(fetchAndSet, 100);
+            }
+        });
     };
 
     const calculateLocalPrediction = () => {

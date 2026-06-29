@@ -458,14 +458,23 @@ const ToolItem: React.FC<{
                                     className="[--tt-surface:#ffffff] dark:[--tt-surface:#1e293b] border border-slate-200 dark:border-slate-700/50 shadow-sm text-slate-500 dark:text-slate-400 font-medium px-3 py-1.5 rounded-lg text-[13px]"
                                     style={{ '--tt-foreground': 'currentColor' } as React.CSSProperties}
                                 >
-                                    <button
-                                        type="button"
+                                    <div
+                                        role="button"
+                                        tabIndex={0}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             setShowTutorial(true);
                                             setCurrentStep(0);
                                         }}
-                                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-gradient-to-b from-blue-50 to-blue-100/50 text-blue-700 shadow-sm transition-all duration-200 hover:from-blue-100 hover:to-blue-200 hover:text-blue-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-blue-800/60 dark:from-blue-900/30 dark:to-blue-900/10 dark:text-blue-400 dark:hover:from-blue-800/50 dark:hover:to-blue-900/40"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setShowTutorial(true);
+                                                setCurrentStep(0);
+                                            }
+                                        }}
+                                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-gradient-to-b from-blue-50 to-blue-100/50 text-blue-700 shadow-sm transition-all duration-200 hover:from-blue-100 hover:to-blue-200 hover:text-blue-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-blue-800/60 dark:from-blue-900/30 dark:to-blue-900/10 dark:text-blue-400 dark:hover:from-blue-800/50 dark:hover:to-blue-900/40 cursor-pointer"
                                         aria-label={`View ${tool.name} tutorial`}
                                     >
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -473,7 +482,7 @@ const ToolItem: React.FC<{
                                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                                             <path d="M12 17h.01" />
                                         </svg>
-                                    </button>
+                                    </div>
                                 </Tooltip>
                             </RTooltipProvider>
                         </div>

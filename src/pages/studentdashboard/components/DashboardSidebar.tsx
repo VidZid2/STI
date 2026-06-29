@@ -6,8 +6,13 @@ import ToolsNavTooltip from '../../../components/ui/misc/ToolsNavTooltip';
 import { CoursesNavItem, HelpNavItem, PathsNavItem } from '../nav-items';
 import MobileCoursesSheet from './MobileCoursesSheet';
 import MobilePathsSheet from './MobilePathsSheet';
+import { DockMenu } from './DockMenu';
 import type { SidebarCourse, DashboardView } from '../types';
+import { getSidebarCoursesWithProgress } from '../utils';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '../../../components/ui/sidebar';
+import { ExpandableTabs } from '../../../components/motion/expandable-tabs';
+import { Lock } from 'lucide-react';
+import { getXPData, calculateLevel } from '../../../services/studyTimeService';
 
 interface DashboardSidebarProps {
     sidebarActive: boolean;
@@ -49,6 +54,18 @@ const Icons = {
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
         </svg>
     ),
+    Courses: () => (
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+        </svg>
+    ),
+    Paths: () => (
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 3v18h18"></path>
+            <path d="m19 9-5 5-4-4-3 3"></path>
+        </svg>
+    ),
     Settings: () => (
         <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
@@ -64,21 +81,47 @@ interface NavItemProps {
     icon: React.ReactNode;
     label: string;
     description: string;
+    isLocked?: boolean;
 }
 
-const NavItemButton = React.memo(({ id, activeView, setActiveView, icon, label, description }: NavItemProps) => {
+const NavItemButton = React.memo(({ id, activeView, setActiveView, icon, label, description, isLocked }: NavItemProps) => {
     const isActive = activeView === id;
+    const [shake, setShake] = React.useState(false);
+
+    const handleClick = (e: React.MouseEvent) => {
+        if (isLocked) {
+            e.preventDefault();
+            setShake(true);
+            setTimeout(() => setShake(false), 500);
+            return;
+        }
+        setActiveView(id);
+    };
+
     return (
         <button
             type="button"
-            className={`nav-item ${isActive ? 'active' : ''}`}
-            onClick={() => setActiveView(id)}
+            className={`nav-item ${isActive ? 'active' : ''} ${isLocked ? 'opacity-80 grayscale-[20%]' : ''} ${shake ? 'animate-[shake_0.4s_ease-in-out]' : ''}`}
+            onClick={handleClick}
             aria-current={isActive ? 'page' : undefined}
+            title={isLocked ? 'Unlocks at Level 2' : undefined}
         >
-            <div className="nav-icon">{icon}</div>
-            <div className="nav-content">
-                <span className="nav-text">{label}</span>
-                <span className="nav-description">{description}</span>
+            <div className="nav-icon relative">
+                {icon}
+                {isLocked && (
+                    <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-900 rounded-full p-[2px] shadow-sm border border-slate-200 dark:border-slate-700">
+                        <Lock className="w-2.5 h-2.5 text-slate-400" />
+                    </div>
+                )}
+            </div>
+            <div className="nav-content flex-1 text-left">
+                <span className="nav-text flex items-center justify-between w-full">
+                    {label}
+                    {isLocked && <Lock className="w-3 h-3 text-slate-400 mr-2" />}
+                </span>
+                <span className={`nav-description ${isLocked ? 'text-amber-600 dark:text-amber-500 font-medium' : ''}`}>
+                    {isLocked ? 'Unlocks at Level 2' : description}
+                </span>
             </div>
         </button>
     );
@@ -96,6 +139,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
     widgetsSidebarActive }) => {
     const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
     const [isMobilePathsOpen, setIsMobilePathsOpen] = useState(false);
+    const [activeDockMenu, setActiveDockMenu] = useState<string | null>(null);
+    const [xpData] = useState(() => getXPData());
+    const level = calculateLevel(xpData.totalXP).level;
+    const courses = React.useMemo(() => getSidebarCoursesWithProgress(), []);
 
     const handleCourseSelect = useCallback((course: SidebarCourse) => {
         setSelectedCourse(course);
@@ -116,7 +163,8 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
     }, []);
 
     return (
-        <Sidebar collapsible="icon" variant="inset" className={`border-r-0 mobile-dock ${widgetsSidebarActive ? 'hidden-dock' : ''}`}>
+        <>
+        <Sidebar collapsible="icon" variant="inset" className={`border-r-0 hidden lg:flex ${widgetsSidebarActive ? 'hidden-dock' : ''}`}>
             {/* Desktop Logo in Sidebar */}
             <SidebarHeader 
                 className="hidden lg:flex flex-row items-center gap-2.5 px-6 pt-4 pb-6 cursor-pointer shrink-0"
@@ -169,7 +217,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
 
                     <ToolsNavTooltip isExpanded={true}>
                         <div>
-                            <NavItemButton id="tools" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Tools />} label="Tools" description="Productivity utilities" />
+                            <NavItemButton id="tools" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Tools />} label="Tools" description="Productivity utilities" isLocked={level < 2} />
                         </div>
                     </ToolsNavTooltip>
                 </nav>
@@ -200,6 +248,52 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
                 onPathSelect={() => setActiveView('paths')}
             />
         </Sidebar>
+        
+        {/* Mobile Dock using ExpandableTabs */}
+        <div className={`flex lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[9000] transition-transform duration-300 ${widgetsSidebarActive ? 'translate-y-[150%]' : 'translate-y-0'} w-full max-w-[calc(100%-32px)] sm:max-w-md justify-center`}>
+            <ExpandableTabs
+                fullWidth
+                value={activeDockMenu}
+                selected={activeView}
+                onValueChange={(val) => {
+                    setActiveDockMenu(val);
+                    if (val && !['course', 'paths'].includes(val)) {
+                        setActiveView(val as DashboardView);
+                        setActiveDockMenu(null);
+                    }
+                }}
+                items={[
+                    { id: 'home', label: 'Home', icon: <Icons.Home />, content: null },
+                    { 
+                        id: 'course', 
+                        label: 'Courses', 
+                        icon: <Icons.Courses />, 
+                        content: <DockMenu rows={courses.map(course => ({
+                            icon: Icons.Courses,
+                            label: course.title.split(' - ')[0],
+                            onClick: () => {
+                                setActiveDockMenu(null);
+                                handleCourseSelect(course);
+                            }
+                        }))} /> 
+                    },
+                    { 
+                        id: 'paths', 
+                        label: 'Paths', 
+                        icon: <Icons.Paths />, 
+                        content: <DockMenu rows={[
+                            { icon: Icons.Paths, label: 'My Learning Paths', onClick: () => { setActiveDockMenu(null); setIsMobilePathsOpen(true); } },
+                            { icon: Icons.Tools, label: 'Explore Paths', onClick: () => { setActiveDockMenu(null); setIsMobilePathsOpen(true); } }
+                        ]} /> 
+                    },
+                    { id: 'goals', label: 'Goals', icon: <Icons.Goals />, content: null },
+                    { id: 'groups', label: 'Workspaces', icon: <Icons.Groups />, content: null },
+                    { id: 'users', label: 'Community', icon: <Icons.Users />, content: null },
+                    { id: 'tools', label: 'Tools', icon: <Icons.Tools />, content: null, isLocked: level < 2 },
+                ]}
+            />
+        </div>
+        </>
     );
 });
 

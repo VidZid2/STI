@@ -1,48 +1,10 @@
 /**
- * LanguageTool API Service
+ * AI Grammar Checker Service (Powered by MiMo / OpenAI Compatible API)
  * 
- * Free grammar checking API with:
- * - 20 requests per minute
- * - 75,000 characters per minute
- * - 20,000 characters per request
- * - No API key required for basic usage!
+ * Replaces the traditional LanguageTool with a powerful LLM-based grammar checker.
  */
 
 // ==================== TYPES ====================
-
-export interface LanguageToolMatch {
-    message: string;
-    shortMessage: string;
-    offset: number;
-    length: number;
-    replacements: { value: string }[];
-    context: {
-        text: string;
-        offset: number;
-        length: number;
-    };
-    rule: {
-        id: string;
-        description: string;
-        issueType: string;
-        category: {
-            id: string;
-            name: string;
-        };
-    };
-}
-
-export interface LanguageToolResponse {
-    software: {
-        name: string;
-        version: string;
-    };
-    language: {
-        name: string;
-        code: string;
-    };
-    matches: LanguageToolMatch[];
-}
 
 // Issue types for color coding
 export const IssueCategory = {
@@ -67,173 +29,121 @@ export interface GrammarIssue {
     ruleDescription: string;
 }
 
-// ==================== API CONFIGURATION ====================
-
-const LANGUAGETOOL_API_URL = 'https://api.languagetool.org/v2/check';
-
-// Rate limiting tracker
-let lastRequestTime = 0;
-let requestsThisMinute = 0;
-let minuteStartTime = Date.now();
-
-const REQUESTS_PER_MINUTE = 20;
-const MIN_REQUEST_INTERVAL = 3000; // 3 seconds between requests
-
-/**
- * Check if we can make a request (rate limiting)
- */
-const canMakeRequest = (): boolean => {
-    const now = Date.now();
-
-    // Reset counter every minute
-    if (now - minuteStartTime > 60000) {
-        minuteStartTime = now;
-        requestsThisMinute = 0;
-    }
-
-    // Check if we've exceeded the rate limit
-    if (requestsThisMinute >= REQUESTS_PER_MINUTE) {
-        return false;
-    }
-
-    // Check minimum interval between requests
-    if (now - lastRequestTime < MIN_REQUEST_INTERVAL) {
-        return false;
-    }
-
-    return true;
-};
-
-/**
- * Wait for rate limit to clear
- */
-const waitForRateLimit = async (): Promise<void> => {
-    const now = Date.now();
-
-    // If we've exceeded requests this minute, wait for next minute
-    if (requestsThisMinute >= REQUESTS_PER_MINUTE) {
-        const waitTime = 60000 - (now - minuteStartTime) + 1000;
-        console.log(`Rate limited, waiting ${waitTime}ms...`);
-        await new Promise(resolve => setTimeout(resolve, waitTime));
-        minuteStartTime = Date.now();
-        requestsThisMinute = 0;
-    }
-
-    // Wait for minimum interval
-    const timeSinceLastRequest = now - lastRequestTime;
-    if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
-        const waitTime = MIN_REQUEST_INTERVAL - timeSinceLastRequest;
-        await new Promise(resolve => setTimeout(resolve, waitTime));
-    }
-};
-
-// ==================== CATEGORY MAPPING ====================
-
-/**
- * Map LanguageTool category to our issue category
- */
-const mapCategory = (categoryId: string, issueType: string): IssueCategoryType => {
-    // Spelling and grammar errors = Red
-    if (categoryId === 'TYPOS' ||
-        categoryId === 'MISSPELLING' ||
-        categoryId === 'GRAMMAR' ||
-        issueType === 'misspelling' ||
-        issueType === 'grammar') {
-        return IssueCategory.Error;
-    }
-
-    // Style and improvements = Yellow
-    if (categoryId === 'STYLE' ||
-        categoryId === 'REDUNDANCY' ||
-        categoryId === 'CONFUSED_WORDS' ||
-        categoryId === 'CASING' ||
-        issueType === 'style' ||
-        issueType === 'locale-violation') {
-        return IssueCategory.Warning;
-    }
-
-    // Punctuation and typography = Blue
-    if (categoryId === 'PUNCTUATION' ||
-        categoryId === 'TYPOGRAPHY' ||
-        categoryId === 'COMPOUNDING' ||
-        issueType === 'typographical') {
-        return IssueCategory.Info;
-    }
-
-    // Default to warning
-    return IssueCategory.Warning;
-};
-
 // ==================== MAIN API FUNCTION ====================
 
 /**
- * Check text for grammar issues using LanguageTool API
+ * Check text for grammar issues using AI
  */
 export const checkGrammar = async (
     text: string,
-    language: string = 'en-US'
+    _language: string = 'en-US'
 ): Promise<GrammarIssue[]> => {
     if (!text.trim()) {
         return [];
     }
 
-    // Enforce character limit (20,000 chars max)
-    const truncatedText = text.slice(0, 20000);
+    const apiKey = import.meta.env.VITE_OPENCODE_API_KEY || '';
+    const configuredUrl = import.meta.env.VITE_AI_BASE_URL;
+    
+    // If the URL is missing, or is OpenAI/Opencode directly, we must use the proxy to avoid CORS
+    const baseUrl = configuredUrl && configuredUrl !== 'https://api.openai.com/v1/chat/completions' && configuredUrl !== 'https://opencode.ai/zen/v1/chat/completions'
+        ? configuredUrl
+        : '/api/ai/zen/v1/chat/completions';
 
-    // Wait for rate limit if needed
-    await waitForRateLimit();
+    if (!apiKey) {
+        throw new Error('API Key missing. Please set VITE_OPENCODE_API_KEY in .env.local');
+    }
 
-    // Track request
-    lastRequestTime = Date.now();
-    requestsThisMinute++;
-
-    console.log(`LanguageTool: Checking ${truncatedText.length} characters...`);
+    const systemPrompt = `You are an expert English grammar checker. Find all spelling, grammar, and style errors in the user's text.
+You MUST respond with a JSON object containing an "issues" array.
+Format:
+{
+  "issues": [
+    {
+      "original": "wrong word or phrase",
+      "replacements": ["corrected text"],
+      "message": "Brief explanation of the error",
+      "category": "error"
+    }
+  ]
+}
+Rules:
+1. 'original' MUST be the exact case-sensitive substring from the user's text.
+2. 'category' must be either "error" or "warning".
+3. Keep 'message' under 12 words.
+4. If there are absolutely no errors, return {"issues": []}.`;
 
     try {
-        const formData = new URLSearchParams();
-        formData.append('text', truncatedText);
-        formData.append('language', language);
-        formData.append('enabledOnly', 'false');
-
-        const response = await fetch(LANGUAGETOOL_API_URL, {
+        const response = await fetch(baseUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
             },
-            body: formData,
+            body: JSON.stringify({
+                model: 'mimo-v2.5-free', // Using the free tier MiMo model
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: text }
+                ],
+                response_format: { type: 'json_object' },
+                temperature: 0.1,
+                max_tokens: 1500 // Increased slightly to allow for multiple issues
+            })
         });
 
         if (!response.ok) {
-            if (response.status === 429) {
-                throw new Error('Rate limit exceeded. Please wait a moment and try again.');
-            }
-            throw new Error(`LanguageTool API error: ${response.status}`);
+            throw new Error(`AI API error: ${response.status}`);
         }
 
-        const data: LanguageToolResponse = await response.json();
+        const data = await response.json();
+        let content = data.choices[0]?.message?.content || '{"issues": []}';
+        
+        // Strip markdown if the model hallucinated it
+        if (content.startsWith('```json')) {
+            content = content.replace(/^```json\n/, '').replace(/\n```$/, '');
+        } else if (content.startsWith('```')) {
+            content = content.replace(/^```\n/, '').replace(/\n```$/, '');
+        }
 
-        console.log(`LanguageTool: Found ${data.matches.length} issues`);
+        const parsed = JSON.parse(content);
+        const aiIssues = parsed.issues || [];
 
-        // Map to our issue format
-        const issues: GrammarIssue[] = data.matches.map((match, index) => ({
-            id: `lt-${index}-${match.offset}`,
-            message: match.message,
-            shortMessage: match.shortMessage || match.rule.description,
-            original: truncatedText.slice(match.offset, match.offset + match.length),
-            offset: match.offset,
-            length: match.length,
-            replacements: match.replacements.slice(0, 5).map(r => r.value),
-            category: mapCategory(match.rule.category.id, match.rule.issueType),
-            categoryName: match.rule.category.name,
-            ruleId: match.rule.id,
-            ruleDescription: match.rule.description,
-        }));
+        const issues: GrammarIssue[] = [];
+        const usedOffsets = new Set<number>();
 
-        return issues;
+        for (const issue of aiIssues) {
+            if (!issue.original) continue;
+
+            // Find the offset of the 'original' string in the text.
+            // We loop to find an occurrence that hasn't been mapped yet to handle duplicate words.
+            let offset = text.indexOf(issue.original, 0);
+            while (offset !== -1 && usedOffsets.has(offset)) {
+                offset = text.indexOf(issue.original, offset + 1);
+            }
+
+            if (offset !== -1) {
+                usedOffsets.add(offset);
+                issues.push({
+                    id: `ai-${offset}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    message: issue.message || 'Suggested improvement',
+                    shortMessage: issue.shortMessage || 'AI Suggestion',
+                    original: issue.original,
+                    offset: offset,
+                    length: issue.original.length,
+                    replacements: issue.replacements || [],
+                    category: issue.category as IssueCategoryType || IssueCategory.Warning,
+                    categoryName: issue.category === 'error' ? 'Spelling & Grammar' : 'Style & Clarity',
+                    ruleId: issue.ruleId || 'AI_SUGGESTION',
+                    ruleDescription: issue.ruleDescription || 'AI Grammar Analysis'
+                });
+            }
+        }
+
+        return issues.sort((a, b) => a.offset - b.offset);
 
     } catch (error) {
-        console.error('LanguageTool API error:', error);
+        console.error('AI Grammar API error:', error);
         throw error;
     }
 };
@@ -252,17 +162,14 @@ export const applyFix = (
 };
 
 /**
- * Get API status
+ * Get API status (Mocked for AI readiness)
  */
 export const getLanguageToolStatus = () => {
-    const now = Date.now();
-    const timeUntilReset = Math.max(0, 60000 - (now - minuteStartTime));
-
     return {
-        requestsThisMinute,
-        maxRequestsPerMinute: REQUESTS_PER_MINUTE,
-        timeUntilReset: Math.ceil(timeUntilReset / 1000),
-        canRequest: canMakeRequest(),
+        requestsThisMinute: 0,
+        maxRequestsPerMinute: 9999,
+        timeUntilReset: 0,
+        canRequest: true,
     };
 };
 

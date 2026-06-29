@@ -15,6 +15,7 @@ interface QuickViewSettingsContextType {
     toggleCompactMode: () => void;
     toggleAutoRefresh: () => void;
     refreshTrigger: number; // Increments to trigger refresh
+    triggerRefresh: () => void; // Manually trigger refresh
 }
 
 const defaultSettings: QuickViewSettings = {
@@ -93,6 +94,10 @@ export const QuickViewSettingsProvider: React.FC<{ children: React.ReactNode }> 
         setSettings(prev => ({ ...prev, autoRefresh: !prev.autoRefresh }));
     }, []);
 
+    const triggerRefresh = useCallback(() => {
+        setRefreshTrigger(prev => prev + 1);
+    }, []);
+
     return (
         <QuickViewSettingsContext.Provider
             value={{
@@ -102,6 +107,7 @@ export const QuickViewSettingsProvider: React.FC<{ children: React.ReactNode }> 
                 toggleCompactMode,
                 toggleAutoRefresh,
                 refreshTrigger,
+                triggerRefresh,
             }}
         >
             {children}

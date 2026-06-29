@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { UiverseSwitch } from '../ui/UiverseSwitch';
 import { ThemeSwitch } from '../ui/ThemeSwitch';
+
+import { createPortal } from 'react-dom';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -77,6 +79,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     const [eyeProtectionEnabled, setEyeProtectionEnabled] = useState(false);
     const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 
+    const reduce = useReducedMotion();
+    const enterY = reduce ? 0 : 20;
+    const enterScale = reduce ? 1 : 0.97;
+
     // Check for dark mode on mount and listen for changes
     useEffect(() => {
         const checkDarkMode = () => {
@@ -108,6 +114,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
             if (isEnabled) document.body.classList.add('dark-mode');
         }
     }, []);
+
+    // Lock body scroll when modal is open to prevent iOS Safari from swallowing touch events as scroll intents
+    useEffect(() => {
+        if (!isOpen) return;
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = prev;
+        };
+    }, [isOpen]);
 
 
 
@@ -150,38 +166,90 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         playSound();
     };
 
+    if (typeof document === 'undefined') return null;
 
-    return (
-        <AnimatePresence>
-            {isOpen && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    onClick={onClose}
-                    style={{
-                        position: 'fixed',
-                        inset: 0,
-                        backgroundColor: darkModeEnabled ? 'rgba(0, 0, 0, 0.6)' : 'rgba(15, 23, 42, 0.4)',
-                        backdropFilter: 'blur(4px)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 9999,
-                        padding: '20px',
-                    }}
-                >
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-                        onClick={(e) => e.stopPropagation()}
-                        className={`w-full max-w-[420px] rounded-[24px] overflow-hidden relative shadow-2xl border ${
+    return createPortal(
+        <div
+            aria-hidden={!isOpen}
+            className={`fixed inset-0 z-[999999] ${isOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+        >
+            <motion.div
+                initial={false}
+                animate={{ opacity: isOpen ? 1 : 0 }}
+                transition={{ duration: 0.2, ease: [0.32, 0.72, 0, 1] }}
+                onClick={onClose}
+                className={`absolute inset-0 ${isOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+                style={{
+                    backgroundColor: darkModeEnabled ? 'rgba(0, 0, 0, 0.6)' : 'rgba(15, 23, 42, 0.4)',
+                    backdropFilter: 'blur(4px)',
+                }}
+            />
+            <div className="pointer-events-none absolute inset-0 flex justify-center items-center px-4 sm:px-6">
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div
+                            key="panel"
+                        layout
+                        initial={{ opacity: 0, y: enterY, scale: enterScale }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{
+                            opacity: 0,
+                            y: enterY,
+                            scale: reduce ? 1 : 0.98,
+                            transition: { duration: 0.18, ease: [0.32, 0.72, 0, 1] },
+                        }}
+                        transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
+                        
+                        className={`pointer-events-auto w-full max-w-[420px] rounded-[24px] overflow-hidden relative shadow-2xl border will-change-transform ${
                             darkModeEnabled ? 'bg-zinc-950 border-zinc-800/80 shadow-zinc-900/50' : 'bg-white border-zinc-200/80'
                         }`}
                     >
+                        <motion.div layout="position">
+                            <AnimatePresence mode="popLayout" initial={false}>
+                                <motion.div
+                                    key="content"
+                                    initial={
+                                        reduce
+                                            ? { opacity: 0 }
+                                            : { opacity: 0, y: 8, filter: "blur(4px)" }
+                                    }
+                                    animate={
+                                        reduce
+                                            ? {
+                                                opacity: 1,
+                                                transition: { duration: 0.18, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                            : {
+                                                opacity: 1,
+                                                y: 0,
+                                                filter: "blur(0px)",
+                                                transition: { duration: 0.24, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                    }
+                                    exit={
+                                        reduce
+                                            ? {
+                                                opacity: 0,
+                                                transition: { duration: 0.14, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                            : {
+                                                opacity: 0,
+                                                y: -8,
+                                                filter: "blur(4px)",
+                                                transition: { duration: 0.16, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                    }
+                                    onAnimationComplete={(definition) => {
+                                        // Workaround for iOS Safari bug with CSS filters
+                                        // Once animation enters (opacity: 1), we remove the filter completely
+                                        const el = document.getElementById('settings-content-wrapper');
+                                        if (el && definition.opacity === 1) {
+                                            el.style.filter = 'none';
+                                        }
+                                    }}
+                                    id="settings-content-wrapper"
+                                    className="pointer-events-auto"
+                                >
                         {/* SaaS Background Accents */}
                         <div className="absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
                         
@@ -189,13 +257,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                         <div className="p-6 pb-4 relative z-10">
                             <motion.button
                                 onClick={onClose}
+                                onPointerDown={(e) => { e.stopPropagation(); onClose(); }}
                                 initial={{ opacity: 0, scale: 0.5 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.5 }}
                                 transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.1 }}
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.95 }}
-                                className={`absolute right-5 top-5 z-20 flex items-center justify-center rounded-xl border p-2 shadow-sm transition-colors ${
+                                className={`absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-xl border shadow-sm transition-colors ${
                                     darkModeEnabled 
                                         ? 'border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700' 
                                         : 'border-zinc-200 bg-white text-zinc-500 hover:bg-zinc-50'
@@ -339,11 +408,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                 </div>
                             </motion.div>
                         </motion.div>
+                                </motion.div>
+                            </AnimatePresence>
+                        </motion.div>
                     </motion.div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
+                )}
+            </AnimatePresence>
+        </div>
+    </div>,
+    document.body
+);
 };
 
 export default SettingsModal;

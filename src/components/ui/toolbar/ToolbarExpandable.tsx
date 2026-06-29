@@ -1,21 +1,12 @@
 'use client';
 
-import { useRef, useState, useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
-import useMeasure from 'react-use-measure';
-import { AnimatePresence, motion, MotionConfig } from 'motion/react';
-import { cn } from '@/lib/utils';
-import { useNotifications, type Notification as SharedNotification, type NotificationCategory } from '@/contexts/NotificationContext';
-import { ViewerCounter } from '../misc/ViewerCounter';
-// MorphingDialog removed - mail is now inside the toolbar
+import { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { cn } from '../../../lib/utils';
+import { useNotifications, type Notification as SharedNotification, type NotificationCategory } from '../../../contexts/NotificationContext';
+import { ExpandableTabs, type ExpandableTabsItem } from '../../motion/expandable-tabs';
+import SidebarHelpDropdown from '../dropdowns/SidebarHelpDropdown';
 
-const transition = {
-    type: 'spring' as const,
-    bounce: 0.1,
-    duration: 0.25,
-};
-
-// Hook to detect dark mode
 function useDarkMode() {
     const [isDark, setIsDark] = useState(() => 
         typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
@@ -36,7 +27,6 @@ function useDarkMode() {
     return isDark;
 }
 
-// Skeleton Loading Component
 function Skeleton({ className, isDark }: { className?: string; isDark?: boolean }) {
     return (
         <motion.div
@@ -47,7 +37,6 @@ function Skeleton({ className, isDark }: { className?: string; isDark?: boolean 
     );
 }
 
-// Notification Skeleton
 function NotificationSkeleton() {
     return (
         <div className='space-y-2'>
@@ -65,7 +54,6 @@ function NotificationSkeleton() {
     );
 }
 
-// Mail Skeleton
 function MailSkeleton() {
     return (
         <div className='space-y-2'>
@@ -86,26 +74,6 @@ function MailSkeleton() {
     );
 }
 
-// Course Progress Skeleton
-function CourseSkeleton({ isDark }: { isDark?: boolean }) {
-    return (
-        <div className='flex flex-col space-y-4'>
-            <Skeleton className='h-4 w-32' isDark={isDark} />
-            <div className='space-y-3'>
-                {[1, 2, 3].map((i) => (
-                    <div key={i} className='flex flex-col space-y-1.5'>
-                        <Skeleton className='h-3.5 w-3/4' isDark={isDark} />
-                        <Skeleton className='h-2 w-full rounded-full' isDark={isDark} />
-                        <Skeleton className='h-2.5 w-20' isDark={isDark} />
-                    </div>
-                ))}
-            </div>
-            <Skeleton className='h-8 w-full rounded-lg' isDark={isDark} />
-        </div>
-    );
-}
-
-// Search Results Skeleton
 function SearchSkeleton({ isDark }: { isDark?: boolean }) {
     return (
         <div className={cn(
@@ -133,8 +101,6 @@ function SearchSkeleton({ isDark }: { isDark?: boolean }) {
     );
 }
 
-// Enrolled courses data - synced with "Your Courses" section
-// Progress starts at 0 and is loaded from studyTimeService/database
 const ENROLLED_COURSES = [
     { id: 'cp1', title: "Computer Programming 1", subtitle: "CITE1003 · BSIT101A", image: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=300&h=200&fit=crop&crop=center", progress: 0 },
     { id: 'euth1', title: "Euthenics 1", subtitle: "STIC1002 · BSIT101A", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop&crop=center", progress: 0 },
@@ -147,7 +113,6 @@ const ENROLLED_COURSES = [
     { id: 'uts', title: "Understanding the Self", subtitle: "GEDC1008 · BSIT101A", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center", progress: 0 },
 ];
 
-// Transform enrolled courses to searchable items format
 const SEARCHABLE_ITEMS = ENROLLED_COURSES.map((course, index) => ({
     id: index + 1,
     title: course.title,
@@ -159,10 +124,8 @@ const SEARCHABLE_ITEMS = ENROLLED_COURSES.map((course, index) => ({
     courseId: course.id,
 }));
 
-// Using shared Notification type from context
 type Notification = SharedNotification;
 
-// Helper function to format relative time
 const formatRelativeTime = (date: Date): string => {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -177,8 +140,6 @@ const formatRelativeTime = (date: Date): string => {
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
-
-// INITIAL_NOTIFICATIONS moved to NotificationContext
 
 const NOTIFICATION_CATEGORIES: { id: NotificationCategory; label: string }[] = [
     { id: 'all', label: 'All' },
@@ -216,7 +177,6 @@ function NotificationContent({
     const [activeCategory, setActiveCategory] = useState<NotificationCategory>('all');
     const isDarkMode = useDarkMode();
     
-    // Use context functions for persistence
     const { dismissNotification: contextDismiss, markAllAsRead: contextMarkAllAsRead, clearAllNotifications: contextClearAll } = useNotifications();
 
     const filteredNotifications = activeCategory === 'all' 
@@ -233,7 +193,6 @@ function NotificationContent({
 
     const clearAllNotifications = () => {
         setIsClearing(true);
-        // Small delay to let exit animations play
         setTimeout(() => {
             contextClearAll();
             setIsClearing(false);
@@ -262,7 +221,6 @@ function NotificationContent({
                 )}
             </div>
 
-            {/* Category Filter Tabs */}
             <div className={cn('flex gap-1 p-1 rounded-xl shadow-sm border', isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200')}>
                 {NOTIFICATION_CATEGORIES.map((cat) => {
                     const count = cat.id === 'all' 
@@ -359,7 +317,6 @@ function NotificationContent({
                                     : (isDarkMode ? 'bg-slate-800/80 border-slate-600 shadow-sm' : 'bg-white border-blue-200 shadow-sm')
                             )}
                         >
-                            {/* Avatar or Icon container - SaaS styled */}
                             {notif.teacher ? (
                                 <motion.div
                                     whileHover={{ scale: 1.05, rotate: -5 }}
@@ -390,7 +347,6 @@ function NotificationContent({
                                 </motion.div>
                             )}
 
-                            {/* Content */}
                             <div className='flex-1 min-w-0 flex flex-col justify-center h-full'>
                                 <div className='flex items-start gap-2'>
                                     <h4 className={cn('text-[12px] sm:text-[13px] font-bold leading-tight flex-1', isDarkMode ? 'text-slate-100' : 'text-slate-900')}>{notif.title}</h4>
@@ -402,7 +358,6 @@ function NotificationContent({
                                 <span className={cn('text-[9px] font-bold mt-1 block', isDarkMode ? 'text-slate-500' : 'text-slate-400')}>{formatRelativeTime(notif.timestamp)}</span>
                             </div>
 
-                            {/* Dismiss X Button */}
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -468,7 +423,6 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
 
-    // Debounce search input
     useEffect(() => {
         if (!searchQuery.trim()) {
             setDebouncedQuery('');
@@ -498,7 +452,6 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
 
     return (
         <div className='flex flex-col gap-3 sm:gap-3.5 w-[288px]'>
-            {/* Header */}
             <div className='flex items-center justify-between px-1'>
                 <div className='flex items-center gap-2'>
                     <div className={cn(
@@ -533,7 +486,6 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
                 </div>
             </div>
 
-            {/* Search Input */}
             <div className='relative w-full'>
                 <svg className='absolute left-3 top-0 bottom-0 my-auto w-4 h-4 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
@@ -550,7 +502,6 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
                             : 'border-blue-200/60 bg-white text-slate-900 placeholder-slate-400 focus:border-blue-400'
                     )}
                 />
-                {/* Loading Spinner */}
                 <AnimatePresence>
                     {isSearching && (
                         <motion.div
@@ -568,7 +519,6 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
                 </AnimatePresence>
             </div>
 
-            {/* Mail List */}
             <div className='space-y-2 max-h-56 overflow-y-auto'>
                 {isLoading || isSearching ? (
                     <MailSkeleton />
@@ -630,7 +580,6 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
                                         <p className={cn('text-[11px] font-bold truncate', mail.isRead ? (isDarkMode ? 'text-slate-400' : 'text-slate-500') : (isDarkMode ? 'text-blue-300' : 'text-blue-700'))}>{mail.subject}</p>
                                         <p className={cn('text-[10px] sm:text-[11px] font-medium truncate mt-0.5', isDarkMode ? 'text-slate-500' : 'text-slate-500')}>{mail.preview}</p>
                                     </div>
-                                    {/* Action Buttons */}
                                     <div className='flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity justify-center items-center h-full'>
                                         {!mail.isRead && (
                                             <div className='w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)] flex-shrink-0'></div>
@@ -688,16 +637,22 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
     const [activeFilter, setActiveFilter] = useState<SearchFilter>('all');
     const [recentSearches, setRecentSearches] = useState<string[]>(() => {
         const saved = localStorage.getItem('recentSearches');
-        // If key exists (even if empty array), use saved value; otherwise use defaults for first-time users
         if (saved !== null) {
             const parsed = JSON.parse(saved);
             return Array.isArray(parsed) ? parsed : [];
         }
-        // First time user - no localStorage key exists yet
         return [];
     });
 
-    // Debounce search input
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            inputRef.current?.focus({ preventScroll: true });
+        }, 50);
+        return () => clearTimeout(timer);
+    }, []);
+
     useEffect(() => {
         if (!query.trim()) {
             setDebouncedQuery('');
@@ -742,7 +697,6 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
 
     const clearAllRecent = () => {
         setRecentSearches([]);
-        // Save empty array instead of removing - this persists the "cleared" state
         localStorage.setItem('recentSearches', JSON.stringify([]));
     };
 
@@ -755,7 +709,6 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
     const handleSelectItem = (item: typeof SEARCHABLE_ITEMS[0]) => {
         setQuery(item.title);
         addToRecentSearches(item.title);
-        console.log('Selected:', item);
     };
 
     const handleRecentClick = (searchTerm: string) => {
@@ -765,7 +718,6 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
 
     return (
         <div className='flex flex-col gap-3 sm:gap-3.5 w-[288px]'>
-            {/* Search Input with Loading Indicator */}
             <div className='relative w-full'>
                 <svg className='absolute left-3 top-0 bottom-0 my-auto w-4 h-4 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
@@ -777,12 +729,11 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                             ? 'border-slate-600 bg-slate-800 text-slate-100 placeholder-slate-400 focus:bg-slate-700/50' 
                             : 'border-blue-200/60 bg-white text-slate-900 placeholder-slate-400 focus:border-blue-400'
                     )}
-                    autoFocus
+                    ref={inputRef}
                     placeholder='Search courses, modules, assignments...'
                     value={query}
                     onChange={handleInputChange}
                 />
-                {/* Loading Spinner */}
                 <AnimatePresence>
                     {isLoading && (
                         <motion.div
@@ -800,7 +751,6 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                 </AnimatePresence>
             </div>
 
-            {/* Search Filter Tabs - Show when typing */}
             <AnimatePresence>
                 {showSuggestions && (
                     <motion.div
@@ -845,7 +795,6 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                 )}
             </AnimatePresence>
 
-            {/* Recent Searches or Helper Text - Show when no query */}
             <AnimatePresence mode='wait'>
                 {!query.trim() && recentSearches.length > 0 ? (
                     <motion.div
@@ -935,7 +884,6 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                 ) : null}
             </AnimatePresence>
 
-            {/* Search Results Dropdown - Inline below input */}
             <AnimatePresence mode='wait'>
                 {showSuggestions && isLoading && (
                     <motion.div
@@ -990,7 +938,6 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                         isDarkMode ? 'bg-slate-800/80 border-slate-600 shadow-sm hover:border-slate-500' : 'bg-white border-blue-200 shadow-sm hover:bg-slate-50/50 hover:border-blue-300'
                                     )}
                                 >
-                                    {/* Course Image */}
                                     <motion.div 
                                         whileHover={{ scale: 1.05, rotate: -5 }}
                                         transition={{ type: 'spring', stiffness: 400, damping: 15 }}
@@ -1004,7 +951,6 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                             alt={item.title}
                                             className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-300'
                                         />
-                                        {/* Progress bar overlay */}
                                         <div className='absolute bottom-0 left-0 right-0 h-1 bg-black/40'>
                                             <motion.div 
                                                 className='h-full shadow-[0_0_8px_rgba(59,130,246,0.5)]'
@@ -1028,7 +974,6 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
                                             isDarkMode ? 'text-slate-400' : 'text-slate-500'
                                         )}>{item.subtitle}</div>
                                     </div>
-                                    {/* Progress indicator */}
                                     <div className='flex-shrink-0 flex items-center gap-1.5'>
                                         {item.progress === 100 ? (
                                             <span className={cn(
@@ -1102,246 +1047,26 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
     );
 }
 
-// Course Progress Content with dark mode support
-function CourseProgressContent({ isLoading }: { isLoading: boolean }) {
+
+
+export default function ToolbarExpandable({ className, hideCloseButton, isMobile = false, barHeight }: { className?: string; hideCloseButton?: boolean; isMobile?: boolean; barHeight?: number }) {
     const isDarkMode = useDarkMode();
-    
-    if (isLoading) {
-        return <CourseSkeleton isDark={isDarkMode} />;
-    }
-    
-    const continueCourse = ENROLLED_COURSES.find(c => c.progress > 0 && c.progress < 100);
-    
-    return (
-        <div className='flex flex-col gap-3 sm:gap-3.5 w-[288px]'>
-            {/* Continue Where You Left Off */}
-            {continueCourse && (
-                <motion.div 
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={cn(
-                        'rounded-[14px] p-3 shadow-sm border transition-all duration-300',
-                        isDarkMode 
-                            ? 'bg-slate-800 border-slate-700' 
-                            : 'bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border-blue-200'
-                    )}
-                >
-                    <div className='flex items-center gap-2 mb-1.5'>
-                        <div className={cn(
-                            'w-6 h-6 rounded-lg flex items-center justify-center border shadow-sm',
-                            isDarkMode ? 'bg-slate-700 border-slate-600 text-blue-400' : 'bg-white border-blue-100 text-blue-500'
-                        )}>
-                            <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z' />
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-                            </svg>
-                        </div>
-                        <span className={cn(
-                            'text-[10px] sm:text-[11px] font-bold uppercase tracking-widest',
-                            isDarkMode ? 'text-blue-400' : 'text-blue-600'
-                        )}>Continue Learning</span>
-                    </div>
-                    <div className={cn(
-                        'text-[12px] sm:text-[13px] font-bold leading-tight mt-1 truncate',
-                        isDarkMode ? 'text-slate-100' : 'text-slate-900'
-                    )}>{continueCourse.title}</div>
-                    <div className={cn(
-                        'text-[10px] sm:text-[11px] font-medium mt-0.5 truncate',
-                        isDarkMode ? 'text-slate-400' : 'text-slate-500'
-                    )}>{continueCourse.subtitle}</div>
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className='mt-3 w-full py-1.5 text-[11px] sm:text-[12px] font-bold text-white bg-blue-500 hover:bg-blue-600 shadow-sm rounded-lg transition-colors flex items-center justify-center'
-                    >
-                        Resume
-                    </motion.button>
-                </motion.div>
-            )}
+    const [isHelpOpen, setIsHelpOpen] = useState(false);
+    const helpAnchorRef = useRef<HTMLDivElement>(null);
 
-            {/* Course List */}
-            <div className='max-h-56 overflow-y-auto p-1 -mx-1 flex flex-col gap-2'>
-                {ENROLLED_COURSES.filter(c => c.progress < 100).slice(0, 5).map((course, index) => (
-                    <motion.div
-                        key={course.id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className={cn(
-                            'flex gap-2.5 sm:gap-3 items-center w-full text-left p-2 sm:p-2.5 rounded-[14px] transition-all duration-300 border hover:shadow-md cursor-pointer group',
-                            isDarkMode ? 'bg-slate-800/80 border-slate-600 shadow-sm hover:border-slate-500' : 'bg-white border-transparent hover:bg-slate-50/50 hover:border-slate-200'
-                        )}
-                    >
-                        <motion.div 
-                            whileHover={{ scale: 1.1, rotate: -5 }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                            className={cn(
-                                'relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-[10px] sm:rounded-[12px] overflow-hidden border shadow-sm flex items-center justify-center',
-                                isDarkMode ? 'border-slate-700 bg-slate-800' : 'border-slate-200 bg-slate-100/50 group-hover:border-blue-200 group-hover:bg-blue-50/50'
-                            )}
-                        >
-                            <img 
-                                src={course.image} 
-                                alt={course.title}
-                                className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-300'
-                            />
-                            <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300"></div>
-                        </motion.div>
-
-                        <div className="flex-1 min-w-0 flex flex-col justify-center">
-                            <div className={cn(
-                                "text-[12px] sm:text-[13px] font-bold leading-tight truncate",
-                                isDarkMode ? 'text-slate-100' : 'text-zinc-900'
-                            )}>
-                                {course.title.replace(' - SY2526-1T', '')}
-                            </div>
-                            <div className="flex items-center gap-2 mt-0.5">
-                                <span className={cn(
-                                    "text-[11px] font-medium truncate",
-                                    isDarkMode ? 'text-slate-400' : 'text-zinc-500'
-                                )}>
-                                    {course.progress}% • {course.subtitle.split(' · ')[0]}
-                                </span>
-                                {course.progress < 100 && (
-                                    <span className={cn(
-                                        "flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-md",
-                                        isDarkMode ? 'text-blue-400 bg-blue-900/30' : 'text-blue-500 bg-blue-50'
-                                    )}>
-                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                                            <circle cx="12" cy="12" r="10" />
-                                            <polyline points="12 6 12 12 16 14" />
-                                        </svg>
-                                        {Math.round((100 - course.progress) * 0.5)}h left
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
-
-            <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={cn(
-                    'w-full py-1.5 px-2 text-[11px] sm:text-[12px] font-bold rounded-lg transition-all duration-300 border',
-                    isDarkMode ? 'text-blue-400 bg-blue-900/20 border-blue-800/30 hover:bg-blue-900/40' : 'text-blue-600 bg-blue-50/50 border-blue-100 hover:bg-blue-100'
-                )}
-            >
-                View All Courses
-            </motion.button>
-        </div>
-    );
-}
-
-export default function ToolbarExpandable() {
-    const [active, setActive] = useState<number | null>(null);
-    const [contentRef, { height: heightContent }] = useMeasure();
-    const [menuRef, { width: widthContainer }] = useMeasure();
-    const ref = useRef<HTMLDivElement>(null!);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const [isOpen, setIsOpen] = useState(false);
-    const isDarkMode = useDarkMode();
-
-    // Mobile detection for hiding Course Progress toolbar item
-    const [isMobile, setIsMobile] = useState(false);
-    useEffect(() => {
-        const query = window.matchMedia('(max-width: 640px)');
-        const sync = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile(e.matches);
-        sync(query);
-        if (query.addEventListener) {
-            query.addEventListener('change', sync as EventListener);
-            return () => query.removeEventListener('change', sync as EventListener);
-        } else {
-            query.addListener(sync as any);
-            return () => query.removeListener(sync as any);
-        }
-    }, []);
-    
-    // Show hint only after 10 page visits, and only if not dismissed before
-    const [showSearchHint, setShowSearchHint] = useState(() => {
-        // Check if user has already dismissed the hint permanently
-        if (localStorage.getItem('search-hint-dismissed') === 'true') {
-            return false;
-        }
-        
-        // Get current visit count and increment it
-        const visitCount = parseInt(localStorage.getItem('search-hint-visits') || '0', 10) + 1;
-        localStorage.setItem('search-hint-visits', visitCount.toString());
-        
-        // Show hint only on the 10th visit and beyond
-        return visitCount >= 10;
-    });
-
-    // Custom click-outside that checks both the toolbar buttons AND the portaled dropdown
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-            const target = event.target as Node;
-            // If click is inside the toolbar buttons, ignore
-            if (ref.current && ref.current.contains(target)) return;
-            // If click is inside the portaled dropdown, ignore
-            if (dropdownRef.current && dropdownRef.current.contains(target)) return;
-            // Otherwise close
-            setIsOpen(false);
-            setActive(null);
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        document.addEventListener('touchstart', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('touchstart', handleClickOutside);
-        };
-    }, []);
-
-    // Dismiss search hint permanently when user clicks search
-    const dismissSearchHint = useCallback(() => {
-        setShowSearchHint(false);
-        localStorage.setItem('search-hint-dismissed', 'true');
-    }, []);
-
-    // Keyboard shortcuts: Ctrl+K or / to open search, ESC to close
-    const openSearch = useCallback(() => {
-        setIsOpen(true);
-        setActive(2); // 2 is the Search item id
-    }, []);
-
-    const closePanel = useCallback(() => {
-        setIsOpen(false);
-        setActive(null);
-    }, []);
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            // Ctrl+K or Cmd+K to open search
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                openSearch();
-            }
-            // ESC to close panel
-            if (e.key === 'Escape' && isOpen) {
-                e.preventDefault();
-                closePanel();
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, openSearch, closePanel]);
+    // Disable keyboard shortcuts for search since it's now handled natively by the tab component or needs to be adapted
 
     // Loading states for skeleton display
     const [isNotificationsLoading, setIsNotificationsLoading] = useState(true);
     const [isMailsLoading, setIsMailsLoading] = useState(true);
-    const [isCoursesLoading, setIsCoursesLoading] = useState(true);
 
     // Simulate initial data loading
     useEffect(() => {
         const notifTimer = setTimeout(() => setIsNotificationsLoading(false), 800);
         const mailTimer = setTimeout(() => setIsMailsLoading(false), 1000);
-        const courseTimer = setTimeout(() => setIsCoursesLoading(false), 900);
         return () => {
             clearTimeout(notifTimer);
             clearTimeout(mailTimer);
-            clearTimeout(courseTimer);
         };
     }, []);
 
@@ -1395,21 +1120,32 @@ export default function ToolbarExpandable() {
 
     const unreadMailCount = mails.filter(m => !m.isRead).length;
 
-    const getIconColor = (itemId: number) => {
-        return active === itemId ? 'var(--accent-primary, #3b82f6)' : '#71717a'; // accent : zinc-500
-    };
-
-    const ITEMS = [
+    const ITEMS: ExpandableTabsItem[] = [
         {
-            id: 1,
+            id: 'search',
+            label: 'Search',
+            icon: (
+                <div className='relative flex items-center justify-center'>
+                    <lord-icon
+                        src="https://cdn.lordicon.com/xaekjsls.json"
+                        trigger="hover"
+                        colors={`primary:currentColor`}
+                        style={{ width: '20px', height: '20px', transition: 'all 0.3s ease' }}
+                    />
+                </div>
+            ),
+            content: <SearchContent onSearchChange={(query) => console.log('Searching:', query)} />,
+        },
+        {
+            id: 'notification',
             label: 'Notifications',
-            title: (
+            icon: (
                 <div className='relative flex items-center justify-center'>
                     <lord-icon
                         src="https://cdn.lordicon.com/ahxaipjb.json"
                         trigger="hover"
-                        colors={`primary:${getIconColor(1)}`}
-                        style={{ width: '24px', height: '24px', transition: 'all 0.3s ease' }}
+                        colors={`primary:currentColor`}
+                        style={{ width: '20px', height: '20px', transition: 'all 0.3s ease' }}
                     />
                     <AnimatePresence mode='wait'>
                         {unreadNotificationCount > 0 && (
@@ -1446,65 +1182,15 @@ export default function ToolbarExpandable() {
             content: <NotificationContent notifications={notifications} isLoading={isNotificationsLoading} />,
         },
         {
-            id: 2,
-            label: 'Search',
-            title: (
-                <div className='relative flex items-center justify-center'>
-                    <lord-icon
-                        src="https://cdn.lordicon.com/axroojxh.json"
-                        trigger="hover"
-                        colors={`primary:${getIconColor(2)}`}
-                        style={{ width: '24px', height: '24px', transition: 'all 0.3s ease' }}
-                    />
-                    {/* Search Shortcut Hint Tooltip */}
-                    <AnimatePresence>
-                        {showSearchHint && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 5, scale: 0.9 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 5, scale: 0.9 }}
-                                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                                className='hidden md:block absolute top-full mt-3 px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-50 text-[11px] font-medium bg-white text-zinc-700 border border-zinc-200'
-                                style={{ left: '-95px' }}
-                            >
-                                <div className='flex items-center gap-2'>
-                                    <span>💡</span>
-                                    <span>Press</span>
-                                    <kbd className='px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-100 text-blue-600 border border-blue-200'>Ctrl+K</kbd>
-                                    <span>for quick search</span>
-                                </div>
-                                {/* Arrow pointing up - positioned over search icon */}
-                                <div className='absolute -top-1.5 w-3 h-3 rotate-45 bg-white border-l border-t border-zinc-200' style={{ left: '107px' }} />
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-            ),
-            content: <SearchContent onSearchChange={(query) => console.log('Searching:', query)} />,
-        },
-        {
-            id: 3,
-            label: 'Course Progress',
-            title: (
-                <lord-icon
-                    src="https://cdn.lordicon.com/hjrbjhnq.json"
-                    trigger="hover"
-                    colors={`primary:${getIconColor(3)}`}
-                    style={{ width: '24px', height: '24px', transition: 'all 0.3s ease' }}
-                />
-            ),
-            content: <CourseProgressContent isLoading={isCoursesLoading} />,
-        },
-        {
-            id: 4,
-            label: 'Mail',
-            title: (
+            id: 'inbox',
+            label: 'Inbox',
+            icon: (
                 <div className='relative flex items-center justify-center'>
                     <lord-icon
                         src="https://cdn.lordicon.com/bimokqfw.json"
                         trigger="hover"
-                        colors={`primary:${getIconColor(4)}`}
-                        style={{ width: '24px', height: '24px', transition: 'all 0.3s ease' }}
+                        colors={`primary:currentColor`}
+                        style={{ width: '20px', height: '20px', transition: 'all 0.3s ease' }}
                     />
                     <AnimatePresence mode='wait'>
                         {unreadMailCount > 0 && (
@@ -1542,136 +1228,56 @@ export default function ToolbarExpandable() {
         },
     ];
 
-    return (
-        <MotionConfig transition={transition}>
-            {/* Mobile/Tablet Backdrop Overlay - portaled to body so it blurs everything including the dock */}
-            {createPortal(
-                <AnimatePresence>
-                    {isOpen && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            onClick={closePanel}
-                            className={cn(
-                                'fixed inset-0 block sm:hidden',
-                                isDarkMode ? 'bg-slate-900/50 backdrop-blur-sm' : 'bg-black/25 backdrop-blur-sm'
-                            )}
-                            style={{ zIndex: 999 }}
-                        />
-                    )}
-                </AnimatePresence>,
-                document.body
-            )}
+    if (isMobile) {
+        ITEMS.push({
+            id: 'separator',
+            label: '',
+            icon: null,
+            isSeparator: true,
+        });
 
-            <div className='flex items-center gap-3 relative z-50'>
-                {/* Viewer Counter */}
-                <ViewerCounter />
-                
-                <div ref={ref} className='relative'>
-                    <div className='h-full w-full'>
-                        {/* Buttons at the top */}
-                        <div className='flex items-center gap-0.5 sm:gap-2 lg:gap-3' ref={menuRef}>
-                            {ITEMS.filter(item => !(item.id === 3 && isMobile)).map((item) => (
-                                <motion.button
-                                    key={item.id}
-                                    aria-label={item.label}
-                                    whileHover={{ scale: 1.05, rotate: -5 }}
-                                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                                    className={cn(
-                                        'relative flex shrink-0 select-none appearance-none items-center justify-center transition-all duration-300 focus-visible:ring-2 shadow-sm border w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-xl sm:rounded-[12px] lg:rounded-[14px]',
-                                        active === item.id
-                                            ? isDarkMode ? 'bg-slate-700 border-slate-600 text-slate-100 shadow-md' : 'bg-blue-50 border-blue-200 text-blue-600 shadow-md'
-                                            : isDarkMode ? 'bg-slate-800/80 border-slate-700/60 hover:border-slate-500 hover:text-slate-200 hover:bg-slate-700' : 'bg-slate-50/50 border-slate-200/60 hover:border-slate-300 hover:bg-white hover:text-slate-700'
-                                    )}
-                                    type='button'
-                                    onClick={() => {
-                                        if (!isOpen) setIsOpen(true);
-                                        if (active === item.id) {
-                                            setIsOpen(false);
-                                            setActive(null);
-                                            return;
-                                        }
-
-                                        // Dismiss search hint when clicking search button
-                                        if (item.id === 2 && showSearchHint) {
-                                            dismissSearchHint();
-                                        }
-
-                                        setActive(item.id);
-                                    }}
-                                >
-                                    {item.title}
-                                </motion.button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Dropdown content below - responsive positioning */}
-                    {/* Portaled to body so it renders above the backdrop overlay on mobile */}
-                    {(() => {
-                        const dropdownContent = (
-                            <AnimatePresence initial={false} mode='sync'>
-                                {isOpen ? (
-                                    <motion.div
-                                        key='dropdown'
-                                        initial={{ height: 0, width: widthContainer || 150 }}
-                                        animate={{
-                                            height: heightContent || 0,
-                                            width: Math.max(widthContainer || 150, 320)
-                                        }}
-                                        exit={{ height: 0, width: widthContainer || 150 }}
-                                        className={cn(
-                                            'overflow-hidden rounded-xl border',
-                                            // Mobile: fixed, centered horizontally
-                                            'fixed left-1/2 -translate-x-1/2 top-[60px] w-[calc(100vw-2rem)] max-w-[400px]',
-                                            // Desktop: absolute relative to container, centered horizontally
-                                            'sm:absolute sm:top-full sm:mt-3 sm:w-auto sm:max-w-none',
-                                            isDarkMode
-                                                ? 'border-slate-700/60 bg-slate-800 shadow-[0_12px_40px_rgba(0,0,0,0.4)]'
-                                                : 'border-black/[0.08] bg-white shadow-[0_12px_40px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.04)]'
-                                        )}
-                                        ref={dropdownRef}
-                                        style={{
-                                            originY: 0,
-                                            zIndex: 9999,
-                                        }}
-                                    >
-                                        <div ref={contentRef} className='p-4'>
-                                            {ITEMS.map((item) => {
-                                                const isSelected = active === item.id;
-
-                                                return (
-                                                    <motion.div
-                                                        key={item.id}
-                                                        initial={{ opacity: 0 }}
-                                                        animate={{ opacity: isSelected ? 1 : 0 }}
-                                                        exit={{ opacity: 0 }}
-                                                    >
-                                                        <div
-                                                            className={cn(
-                                                                'text-sm',
-                                                                isSelected ? 'block' : 'hidden'
-                                                            )}
-                                                        >
-                                                            {item.content}
-                                                        </div>
-                                                    </motion.div>
-                                                );
-                                            })}
-                                        </div>
-                                    </motion.div>
-                                ) : null}
-                            </AnimatePresence>
-                        );
-
-                        return isMobile && typeof document !== 'undefined'
-                            ? createPortal(dropdownContent, document.body)
-                            : dropdownContent;
-                    })()}
+        ITEMS.push({
+            id: 'settings',
+            label: 'Settings',
+            icon: (
+                <div className='relative flex items-center justify-center'>
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
                 </div>
-            </div>
-        </MotionConfig>
+            ),
+            onClick: () => {
+                document.dispatchEvent(new CustomEvent('open:settings'));
+            }
+        });
+
+        ITEMS.push({
+            id: 'help',
+            label: 'Help',
+            icon: (
+                <div ref={helpAnchorRef} className='relative flex items-center justify-center'>
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <path d="M12 17h.01"></path>
+                    </svg>
+                </div>
+            ),
+            onClick: () => {
+                setIsHelpOpen(!isHelpOpen);
+            }
+        });
+    }
+
+    return (
+        <div className={cn('flex items-center relative z-50', className)}>
+            <ExpandableTabs items={ITEMS} expandDirection="down" className={className} hideCloseButton={hideCloseButton} fullWidth={isMobile} barHeight={barHeight} />
+            <SidebarHelpDropdown 
+                isOpen={isHelpOpen} 
+                onClose={() => setIsHelpOpen(false)} 
+                anchorRef={helpAnchorRef} 
+            />
+        </div>
     );
 }

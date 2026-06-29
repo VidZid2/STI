@@ -6198,4 +6198,26 @@ input[type="range"]::-moz-range-thumb {
     border: 2px solid white;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
-
+
+
+
+@layer utilities {
+  .fade-top-lg {
+    mask-image: linear-gradient(to bottom, 
+      transparent, 
+      rgba(0, 0, 0, 1) 8rem
+    );
+  }
+}
+
+@layer base {
+  :root {
+    --brand: 221, 83%, 53%;
+    --brand-foreground: 213, 94%, 68%;
+  }
+ 
+  .dark {
+    --brand: 213, 94%, 68%;
+    --brand-foreground: 221, 83%, 53%;
+  }
+}

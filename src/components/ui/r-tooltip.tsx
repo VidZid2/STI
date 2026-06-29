@@ -28,7 +28,7 @@ type TooltipTriggerElement = React.ReactElement<{
 
 export interface TooltipProps {
   children: TooltipTriggerElement;
-  content: string;
+  content: React.ReactNode;
   side?: Side;
   delay?: number;
   className?: string;
@@ -59,7 +59,8 @@ export function Tooltip({
 }: TooltipProps) {
   const [open, setOpen] = React.useState(false);
   const tooltipId = React.useId();
-  const normalizedContent = content.trim();
+  const isString = typeof content === "string";
+  const normalizedContent = isString ? content.trim() : content;
 
   if (!isTooltipTriggerElement(children)) {
     throw new Error(
@@ -70,21 +71,25 @@ export function Tooltip({
   React.useEffect(() => {
     if (
       process.env.NODE_ENV !== "production" &&
-      (normalizedContent.length > MAX_TOOLTIP_CHARACTERS ||
-        normalizedContent.includes("\n"))
+      isString &&
+      ((normalizedContent as string).length > MAX_TOOLTIP_CHARACTERS ||
+        (normalizedContent as string).includes("\n"))
     ) {
       console.warn(
         "Tooltip content should stay short, single-line, and non-interactive. Use Popover for longer or multiline content."
       );
     }
-  }, [normalizedContent]);
+  }, [normalizedContent, isString]);
 
   const childAriaDescribedBy = children.props["aria-describedby"];
   const triggerDescription = open
     ? mergeDescribedBy(childAriaDescribedBy, tooltipId)
     : childAriaDescribedBy;
 
-  if (normalizedContent.length === 0) {
+  if (isString && (normalizedContent as string).length === 0) {
+    return children;
+  }
+  if (!isString && !content) {
     return children;
   }
 
@@ -143,6 +148,7 @@ export function Tooltip({
                     stiffness: 400,
                     damping: 24,
                     mass: 0.6,
+                    filter: { type: "tween", ease: "easeOut", duration: 0.2 }
                   }}
                 >
                   <motion.span

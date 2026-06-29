@@ -160,8 +160,6 @@ const int   MAX_CLICKS = 10;
 uniform vec2  uClickPos  [MAX_CLICKS];
 uniform float uClickTimes[MAX_CLICKS];
 
-out vec4 fragColor;
-
 float Bayer2(vec2 a) {
   a = floor(a);
   return fract(a.x / 2. + a.y * a.y * .75);
@@ -296,7 +294,7 @@ void main(){
     step(0.0031308, color)
   );
 
-  fragColor = vec4(srgbColor, M);
+  gl_FragColor = vec4(srgbColor, M);
 }
 `;
 
@@ -427,7 +425,9 @@ export const PixelBlast: React.FC<PixelBlastProps> = ({
         transparent: true,
         depthTest: false,
         depthWrite: false,
-        glslVersion: THREE.GLSL3
+        extensions: {
+          derivatives: true
+        }
       });
       const quadGeom = new THREE.PlaneGeometry(2, 2);
       const quad = new THREE.Mesh(quadGeom, material);

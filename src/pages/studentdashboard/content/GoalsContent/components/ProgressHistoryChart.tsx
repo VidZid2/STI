@@ -6,7 +6,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { getAggregatedProgressHistory, getRealTimeProgress } from '../../../../../services/goalsService';
-import { BarChart, Bar, ChartTooltip, Grid, BarXAxis } from '../../../../../components/ui/bar-chart';
+import { BarChart } from '../../../../../components/charts/bar-chart';
+import { Bar } from '../../../../../components/charts/bar';
+import { ChartTooltip } from '../../../../../components/charts/tooltip/chart-tooltip';
+import { Grid } from '../../../../../components/charts/grid';
+import { BarXAxis } from '../../../../../components/charts/bar-x-axis';
 
 const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({ goals = [] }) => {
     const [historyData, setHistoryData] = useState<{ date: string; completed: number; active: number; totalProgress: number }[]>([]);
@@ -64,7 +68,7 @@ const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({ goals = [] }) => {
                 updatedEntry = { ...entry, ...currentStats };
             }
             const dateObj = new Date(entry.date);
-            const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             return {
                 ...updatedEntry,
                 date: formattedDate
@@ -82,7 +86,7 @@ const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({ goals = [] }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 shadow-sm rounded-[20px] p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default overflow-hidden h-full flex flex-col"
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 shadow-sm rounded-[20px] p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default overflow-hidden flex flex-col"
         >
             {/* Header */}
             <div className="flex items-start justify-between pb-4 group">
@@ -114,7 +118,7 @@ const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({ goals = [] }) => {
             </div>
 
             {/* Chart Content */}
-            <div className="w-full flex-1 flex flex-col min-h-0">
+            <div className="w-full flex flex-col min-h-0">
                             {isLoading ? (
                                 <div className="flex items-center justify-center h-[200px]">
                                     <motion.svg width="28" height="28" viewBox="0 0 24 24" fill="none" animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
@@ -136,7 +140,7 @@ const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({ goals = [] }) => {
 
                                     {/* Main Chart Area */}
 
-                                    <div className="relative flex-1 min-h-[130px] sm:min-h-[140px] xl:min-h-[200px]">
+                                    <div className="relative h-[180px] sm:h-[220px] mt-2">
                                         {/* Chart Container */}
                                         <div className="relative h-full w-full bg-slate-50/50 dark:bg-slate-800/50 rounded-[16px] border border-slate-100 dark:border-slate-700/50 overflow-visible py-4 pb-12">
                                             {chartData.length > 0 && (
@@ -146,11 +150,11 @@ const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({ goals = [] }) => {
                                                     margin={{ top: 0, right: 12, bottom: 40, left: 12 }}
                                                     aspectRatio="auto"
                                                     className="h-full w-full"
-                                                    barGap={0.05}
+                                                    barGap={0.4}
                                                 >
                                                     <Grid horizontal={true} strokeDasharray="4,4" fadeHorizontal={true} />
                                                     <Bar dataKey="totalProgress" fill="#3b82f6" />
-                                                    <BarXAxis showAllLabels={false} maxLabels={7} tickFormat={formatDateLabel} />
+                                                    <BarXAxis showAllLabels={false} maxLabels={7} />
                                                     <ChartTooltip 
                                                         showDots={false}
                                                         rows={(point) => [{

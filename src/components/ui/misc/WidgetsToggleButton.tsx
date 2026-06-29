@@ -118,7 +118,13 @@ const WidgetsToggleButton: React.FC<WidgetsToggleButtonProps> = memo(({
                     background: isWidgetsSidebarActive 
                         ? (isDarkMode ? '#334155' : 'white') 
                         : '#1d4ed8',
-                    border: isWidgetsSidebarActive 
+                    borderTop: isWidgetsSidebarActive 
+                        ? `2px solid ${isDarkMode ? '#60a5fa' : '#1d4ed8'}` 
+                        : 'none',
+                    borderBottom: isWidgetsSidebarActive 
+                        ? `2px solid ${isDarkMode ? '#60a5fa' : '#1d4ed8'}` 
+                        : 'none',
+                    borderLeft: isWidgetsSidebarActive 
                         ? `2px solid ${isDarkMode ? '#60a5fa' : '#1d4ed8'}` 
                         : 'none',
                     borderRight: 'none',

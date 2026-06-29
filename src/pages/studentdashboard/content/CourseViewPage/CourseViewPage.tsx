@@ -2421,11 +2421,13 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                     animate={{ opacity: 1, y: 0 }}
                     whileTap={{ scale: 0.995 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-                    className="relative z-40 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] p-3.5 sm:p-5 lg:p-6 flex flex-col gap-3 sm:gap-5 group transition-shadow duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 overflow-hidden"
+                    className="relative z-40 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] p-3.5 sm:p-5 lg:p-6 flex flex-col gap-3 sm:gap-5 group transition-shadow duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600"
                 >
-                    {/* Ambient Background Glow */}
-                    <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-blue-500/5 rounded-full blur-[80px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 w-[180px] h-[180px] bg-indigo-500/5 rounded-full blur-[60px] -translate-x-1/3 translate-y-1/3 pointer-events-none" />
+                    {/* Ambient Background Glow (Isolated to prevent clipping dropdowns) */}
+                    <div className="absolute inset-0 overflow-hidden rounded-[20px] sm:rounded-[24px] pointer-events-none">
+                        <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-blue-500/5 rounded-full blur-[80px] translate-x-1/3 -translate-y-1/3" />
+                        <div className="absolute bottom-0 left-0 w-[180px] h-[180px] bg-indigo-500/5 rounded-full blur-[60px] -translate-x-1/3 translate-y-1/3" />
+                    </div>
 
                     {/* Top Row: Icon & Title */}
                     <div className="flex items-center gap-3 sm:gap-4 w-full relative z-10">
@@ -2562,7 +2564,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                         </motion.div>
 
                         {/* Search Bar & Actions */}
-                        <AnimatePresence mode="wait">
+                        <AnimatePresence mode="popLayout">
                             {!isTeacherMode && activeTab !== 'teachers' && (
                                 <motion.div 
                                     layout

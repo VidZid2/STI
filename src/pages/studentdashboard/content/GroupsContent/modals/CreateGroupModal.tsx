@@ -1439,7 +1439,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                                                                                                                 max={100}
                                                                                                                 min={0}
                                                                                                                 value={c.progress || 0}
-                                                                                                                gaugePrimaryColor="#3b82f6"
+                                                                                                                gaugePrimaryColor={(c.level || 1) >= 20 ? '#eab308' : '#3b82f6'}
                                                                                                                 gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
                                                                                                                 className="w-14 h-14"
                                                                                                             >
@@ -1453,8 +1453,8 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                                                                                                                     )}
                                                                                                                 </div>
 
-                                                                                                                <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[9px] font-bold tracking-wider shadow-sm border-[2px] z-20 text-white bg-blue-500 ${isDarkMode ? 'border-zinc-950' : 'border-white'}`}>
-                                                                                                                    LV.{c.level || 1}
+                                                                                                                <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[9px] font-bold tracking-wider shadow-sm border-[2px] z-20 ${(c.level || 1) >= 20 ? 'bg-yellow-400 text-blue-800' : 'text-white bg-blue-500'} ${isDarkMode ? 'border-zinc-950' : 'border-white'}`}>
+                                                                                                                    <span className="ml-[0.05em]">{(c.level || 1) >= 20 ? 'MAX' : `LV.${c.level || 1}`}</span>
                                                                                                                 </div>
                                                                                                             </AnimatedCircularProgressBar>
                                                                                                         </div>
@@ -1557,7 +1557,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                                                                                                 max={100}
                                                                                                 min={0}
                                                                                                 value={inv.progress || 0}
-                                                                                                gaugePrimaryColor="#3b82f6"
+                                                                                                gaugePrimaryColor={(inv.level || 1) >= 20 ? '#eab308' : '#3b82f6'}
                                                                                                 gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
                                                                                                 className="w-12 h-12"
                                                                                             >
@@ -1571,8 +1571,8 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                                                                                                     )}
                                                                                                 </div>
 
-                                                                                                <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 min-w-[28px] h-[14px] px-1 rounded-md flex items-center justify-center text-[8px] font-bold tracking-wider shadow-sm border-[2px] z-20 text-white bg-blue-500 ${isDarkMode ? 'border-zinc-950' : 'border-white'}`}>
-                                                                                                    LV.{inv.level || 1}
+                                                                                                <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 min-w-[28px] h-[14px] px-1 rounded-md flex items-center justify-center text-[8px] font-bold tracking-wider shadow-sm border-[2px] z-20 ${(inv.level || 1) >= 20 ? 'bg-yellow-400 text-blue-800' : 'text-white bg-blue-500'} ${isDarkMode ? 'border-zinc-950' : 'border-white'}`}>
+                                                                                                    <span className="ml-[0.05em]">{(inv.level || 1) >= 20 ? 'MAX' : `LV.${inv.level || 1}`}</span>
                                                                                                 </div>
                                                                                             </AnimatedCircularProgressBar>
                                                                                         </div>

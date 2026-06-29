@@ -1,4 +1,4 @@
-﻿/**
+/**
  * useWeather Hook
  * Handles weather data fetching and state management
  */
@@ -14,13 +14,48 @@ interface UseWeatherReturn {
     refreshWeather: () => Promise<void>;
 }
 
-export const useWeather = (): UseWeatherReturn => {
-    const [weather, setWeather] = useState<WeatherData | null>(null);
-    const [weatherLoading, setWeatherLoading] = useState(true);
+export const useWeather = (skipGeolocation: boolean = false): UseWeatherReturn => {
+    const [weather, setWeather] = useState<WeatherData | null>(() => {
+        try {
+            const cached = sessionStorage.getItem('dashboard_weather_cache');
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Date.now() - parsed.timestamp < 30 * 60 * 1000) {
+                    return parsed.data;
+                }
+            }
+        } catch {}
+        return null;
+    });
+    const [weatherLoading, setWeatherLoading] = useState(() => {
+        try {
+            const cached = sessionStorage.getItem('dashboard_weather_cache');
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Date.now() - parsed.timestamp < 30 * 60 * 1000) {
+                    return false;
+                }
+            }
+        } catch {}
+        return true;
+    });
     const [weatherError, setWeatherError] = useState<string | null>(null);
 
-    const fetchWeather = async () => {
+    const fetchWeather = async (force: boolean = false) => {
         try {
+            if (!force) {
+                // Check cache first
+                const cached = sessionStorage.getItem('dashboard_weather_cache');
+                if (cached) {
+                    const parsed = JSON.parse(cached);
+                    if (Date.now() - parsed.timestamp < 30 * 60 * 1000) {
+                        setWeather(parsed.data);
+                        setWeatherLoading(false);
+                        return;
+                    }
+                }
+            }
+
             setWeatherLoading(true);
             setWeatherError(null);
 
@@ -29,8 +64,8 @@ export const useWeather = (): UseWeatherReturn => {
             let lon = DEFAULT_LOCATION.lon;
             let locationName = DEFAULT_LOCATION.name;
 
-            // Try to get user's location
-            if (navigator.geolocation) {
+            // Try to get user's location, skip if requested (e.g. during intro)
+            if (navigator.geolocation && !skipGeolocation) {
                 try {
                     const position = await new Promise<GeolocationPosition>((resolve, reject) => {
                         navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
@@ -56,13 +91,27 @@ export const useWeather = (): UseWeatherReturn => {
             // Map weather code to condition and icon
             const { condition, icon } = mapWeatherCode(current.weather_code);
 
-            setWeather({
+            const newWeatherData = {
                 temperature: Math.round(current.temperature_2m),
                 condition,
                 humidity: current.relative_humidity_2m,
                 windSpeed: Math.round(current.wind_speed_10m),
                 location: locationName,
-                icon });
+                icon 
+            };
+            
+            setWeather(newWeatherData);
+
+            // Save to cache ONLY if we didn't skip geolocation
+            // (so that when intro completes and skipGeolocation=false, it re-fetches with real location)
+            if (!skipGeolocation) {
+                try {
+                    sessionStorage.setItem('dashboard_weather_cache', JSON.stringify({
+                        data: newWeatherData,
+                        timestamp: Date.now()
+                    }));
+                } catch {}
+            }
         } catch (err) {
             setWeatherError('Unable to load weather');
         } finally {
@@ -73,15 +122,16 @@ export const useWeather = (): UseWeatherReturn => {
     useEffect(() => {
         fetchWeather();
         // Refresh weather every 30 minutes
-        const interval = setInterval(fetchWeather, WEATHER_REFRESH_INTERVAL);
+        const interval = setInterval(() => fetchWeather(true), WEATHER_REFRESH_INTERVAL);
         return () => clearInterval(interval);
-    }, []);
+    }, [skipGeolocation]);
 
     return {
         weather,
         weatherLoading,
         weatherError,
-        refreshWeather: fetchWeather };
+        refreshWeather: () => fetchWeather(true) 
+    };
 };
 
 export default useWeather;

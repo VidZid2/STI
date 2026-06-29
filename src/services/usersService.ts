@@ -4,6 +4,7 @@
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getProfile, getImages, getSettings } from './profileService';
+import { getCurrentLevel } from './studyTimeService';
 
 // User types
 export interface UserAccount {
@@ -44,7 +45,7 @@ export type UserRole = 'student' | 'teacher' | 'admin' | 'dean';
 export type UserFilter = 'all' | UserRole;
 
 // Demo users for fallback - includes all teachers from courses
-const DEMO_USERS: UserAccount[] = [
+export const DEMO_USERS: UserAccount[] = [
 
     // Teachers (from courses) - All offline
     {
@@ -237,11 +238,15 @@ const enhanceWithCurrentUserProfile = (users: UserAccount[]): UserAccount[] => {
         if (isCurrentUser) {
             return {
                 ...user,
-                full_name: `${profile.firstName} ${profile.middleName ? profile.middleName + '. ' : ''}${profile.lastName}`.trim() || user.full_name,
+                full_name: `${profile.firstName} ${profile.lastName}`.trim() || user.full_name,
                 first_name: profile.firstName || user.first_name,
                 last_name: profile.lastName || user.last_name,
                 profile_image: images.profileImage || user.profile_image,
                 is_online: settings.showOnlineStatus, // Respect user's online status setting
+                level: getCurrentLevel() || user.level || 1,
+                program: profile.course || user.program,
+                section: profile.section || user.section,
+                year_level: profile.yearLevel || user.year_level,
                 last_active: new Date().toISOString(),
             };
         }
@@ -262,42 +267,77 @@ export const fetchUsers = async (filter: UserFilter = 'all'): Promise<UserAccoun
     }
 
     try {
-        let query = supabase
-            .from('users')
-            .select('*')
-            .order('full_name', { ascending: true });
+        let dbStudents: UserAccount[] = [];
+        let dbOthers: UserAccount[] = [];
 
-        if (filter !== 'all') {
-            query = query.eq('role', filter);
-        }
+        // Fetch students from 'students' table if filter is 'all' or 'student'
+        if (filter === 'all' || filter === 'student') {
+            const { data, error } = await supabase
+                .from('students')
+                .select('*')
+                .order('full_name', { ascending: true });
 
-        const { data, error } = await query;
-
-        if (error) {
-            return filter === 'all'
-                ? DEMO_USERS
-                : DEMO_USERS.filter(u => u.role === filter);
-        }
-
-        // If database has users, merge with DEMO_USERS that might be missing
-        if (data && data.length > 0) {
-            // Filter out example/demo emails from database results
-            const exampleEmails = ['teacher@meycauayan.sti.edu.ph', 'student@meycauayan.sti.edu.ph', 'admin@meycauayan.sti.edu.ph'];
-            const filteredData = data.filter((u: UserAccount) => !exampleEmails.includes(u.email.toLowerCase()));
-
-            const dbStudentIds = new Set(filteredData.map((u: UserAccount) => u.student_id.toLowerCase()));
-
-            // Add all DEMO_USERS that aren't in the database (both students and teachers)
-            const missingUsers = DEMO_USERS.filter(u => !dbStudentIds.has(u.student_id.toLowerCase()));
-
-            const mergedUsers = [...filteredData, ...missingUsers];
-
-            // Apply filter if needed
-            if (filter !== 'all') {
-                return enhanceWithCurrentUserProfile(mergedUsers.filter(u => u.role === filter));
+            if (data && !error) {
+                dbStudents = data.map(s => ({
+                    id: s.id,
+                    student_id: s.student_id,
+                    email: s.email || '',
+                    full_name: s.full_name.includes(',') 
+                        ? `${s.first_name} ${s.last_name}` 
+                        : s.full_name, // Handle comma separated database name values gracefully
+                    first_name: s.first_name,
+                    last_name: s.last_name,
+                    role: 'student',
+                    campus: s.campus || 'Meycauayan',
+                    program: s.program || 'BSIT',
+                    year_level: s.year_level || '1st Year',
+                    section: s.section || 'BSIT101A',
+                    is_active: s.is_active,
+                    profile_image: s.avatar_url || '',
+                    is_online: false,
+                    last_active: new Date().toISOString(),
+                    created_at: s.created_at || new Date().toISOString(),
+                }));
             }
+        }
 
-            return enhanceWithCurrentUserProfile(mergedUsers.sort((a, b) => a.full_name.localeCompare(b.full_name)));
+        // Fetch others (teachers, admins) from 'users' table
+        if (filter === 'all' || filter !== 'student') {
+            let query = supabase.from('users').select('*');
+            if (filter !== 'all') {
+                query = query.eq('role', filter);
+            } else {
+                query = query.neq('role', 'student');
+            }
+            const { data, error } = await query;
+            if (data && !error) {
+                dbOthers = data;
+            }
+        }
+
+        // If we found database records, merge them with fallbacks
+        if (dbStudents.length > 0 || dbOthers.length > 0) {
+            const dbStudentIds = new Set(dbStudents.map(u => u.student_id.toLowerCase()));
+            const dbStudentEmails = new Set(dbStudents.map(u => u.email.toLowerCase()));
+            const dbOtherEmails = new Set(dbOthers.map(u => u.email.toLowerCase()));
+
+            const missingDemoUsers = DEMO_USERS.filter(u => {
+                if (u.role === 'student') {
+                    return !dbStudentIds.has(u.student_id.toLowerCase()) && 
+                           !dbStudentEmails.has(u.email.toLowerCase());
+                } else {
+                    return !dbOtherEmails.has(u.email.toLowerCase());
+                }
+            });
+
+            const mergedUsers = [...dbStudents, ...dbOthers, ...missingDemoUsers];
+
+            // Apply filter
+            const filteredUsers = filter === 'all' 
+                ? mergedUsers 
+                : mergedUsers.filter(u => u.role === filter);
+
+            return enhanceWithCurrentUserProfile(filteredUsers.sort((a, b) => a.full_name.localeCompare(b.full_name)));
         }
 
         const fallbackUsers = filter === 'all'
@@ -362,10 +402,9 @@ export const getClassmates = async (section: string = 'BSIT101A'): Promise<UserA
 
     try {
         const { data, error } = await supabase
-            .from('users')
+            .from('students')
             .select('*')
             .eq('section', section)
-            .eq('role', 'student')
             .order('full_name', { ascending: true });
 
         if (error) {
@@ -375,7 +414,27 @@ export const getClassmates = async (section: string = 'BSIT101A'): Promise<UserA
 
         // If database has classmates, use them; otherwise use demo data
         if (data && data.length > 0) {
-            return enhanceWithCurrentUserProfile(data);
+            const mapped = data.map(s => ({
+                id: s.id,
+                student_id: s.student_id,
+                email: s.email || '',
+                full_name: s.full_name.includes(',') 
+                    ? `${s.first_name} ${s.last_name}` 
+                    : s.full_name,
+                first_name: s.first_name,
+                last_name: s.last_name,
+                role: 'student',
+                campus: s.campus || 'Meycauayan',
+                program: s.program || 'BSIT',
+                year_level: s.year_level || '1st Year',
+                section: s.section || 'BSIT101A',
+                is_active: s.is_active,
+                profile_image: s.avatar_url || '',
+                is_online: false,
+                last_active: new Date().toISOString(),
+                created_at: s.created_at || new Date().toISOString(),
+            }));
+            return enhanceWithCurrentUserProfile(mapped);
         }
 
         const allClassmates = DEMO_USERS.filter(u => u.role === 'student' && u.section === section);

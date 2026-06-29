@@ -13,7 +13,7 @@
 import * as React from "react";
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { Save, FileSpreadsheet, Trash2 } from "lucide-react";
+import { Save, FileSpreadsheet, Trash2, Copy, RotateCcw } from "lucide-react";
 import {
     checkGrammar,
     getLanguageToolStatus,
@@ -281,16 +281,8 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
             return "Punctuation indicates structural pauses and separates introductory clauses. Precision in comma placement clarifies sentence transitions and list groupings.";
         }
         
-        // 2. Fallback to using the rule description returned by LanguageTool
-        if (issue.ruleDescription && issue.ruleDescription.length > 5) {
-            return `${issue.ruleDescription}. ${issue.message}`;
-        }
-        
-        if (issue.category === 'error') {
-            return `Spelling or structural correction: ${issue.message}`;
-        }
-        
-        return `Stylistic suggestion: ${issue.message}`;
+        // 2. Fallback to using the explanation returned by the AI
+        return issue.message;
     };
 
     // Loading Skeleton
@@ -507,19 +499,32 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                       {hasSavedSession && (
                           <div className="flex items-center gap-2 shrink-0 pr-4 border-r border-zinc-100 dark:border-zinc-800/60">
                               <button
+                                type="button"
                                 onClick={handleRestoreSaved}
-                                className="flex whitespace-nowrap text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg border border-blue-200/50 dark:border-blue-800/50 transition-colors shrink-0"
+                                className="flex items-center justify-center w-[46px] h-[46px] rounded-[16px] bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 focus:outline-none"
+                                title="Restore saved draft"
                               >
-                                Restore
+                                <RotateCcw className="w-[18px] h-[18px] shrink-0" />
                               </button>
                               <button
+                                type="button"
                                 onClick={handleClearSaved}
-                                className="flex whitespace-nowrap text-[11px] font-bold text-rose-500 hover:text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/20 px-3 py-1.5 rounded-lg border border-rose-200/50 dark:border-rose-800/50 transition-colors shrink-0"
+                                className="flex items-center justify-center w-[46px] h-[46px] rounded-[16px] bg-[#fff0f0] text-red-500 transition-colors hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 focus:outline-none"
+                                title="Delete saved draft"
                               >
-                                Clear
+                                <Trash2 className="w-[18px] h-[18px] shrink-0" />
                               </button>
                           </div>
                       )}
+                      <button
+                          type="button"
+                          onClick={() => navigator.clipboard.writeText(text)}
+                          disabled={!text.trim()}
+                          className="flex items-center justify-center w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Copy text"
+                      >
+                          <Copy className="w-[18px] h-[18px] shrink-0" />
+                      </button>
                       <button
                           type="button"
                           onClick={handleExportDocx}
@@ -578,23 +583,42 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
           </div>
 
           {/* Action Footer (Mobile) */}
-          <div className="flex sm:hidden bg-zinc-50/50 dark:bg-zinc-800/20 border-t border-zinc-100 dark:border-zinc-800 px-4 py-4 items-center justify-between gap-3 relative z-10">
-              <button
-                  type="button"
-                  onClick={handleExportDocx}
-                  disabled={!text.trim()}
-                  className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                  <FileSpreadsheet className="w-[18px] h-[18px] shrink-0" />
-              </button>
-              <button
-                  type="button"
-                  onClick={handleClear}
-                  disabled={!text}
-                  className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-[#fff0f0] text-red-500 transition-colors hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                  <Trash2 className="w-[18px] h-[18px] shrink-0" />
-              </button>
+          <div className="flex sm:hidden bg-zinc-50/50 dark:bg-zinc-800/20 border-t border-zinc-100 dark:border-zinc-800 px-4 py-4 items-center justify-between gap-3 relative z-10 overflow-x-auto">
+              <div className="flex items-center gap-2 shrink-0">
+                  {hasSavedSession && (
+                      <button
+                          type="button"
+                          onClick={handleRestoreSaved}
+                          className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 focus:outline-none"
+                      >
+                          <RotateCcw className="w-[18px] h-[18px] shrink-0" />
+                      </button>
+                  )}
+                  <button
+                      type="button"
+                      onClick={() => navigator.clipboard.writeText(text)}
+                      disabled={!text.trim()}
+                      className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                      <Copy className="w-[18px] h-[18px] shrink-0" />
+                  </button>
+                  <button
+                      type="button"
+                      onClick={handleExportDocx}
+                      disabled={!text.trim()}
+                      className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-[#f4f5f7] text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                      <FileSpreadsheet className="w-[18px] h-[18px] shrink-0" />
+                  </button>
+                  <button
+                      type="button"
+                      onClick={handleClear}
+                      disabled={!text}
+                      className="flex items-center justify-center shrink-0 w-[46px] h-[46px] rounded-[16px] bg-[#fff0f0] text-red-500 transition-colors hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                      <Trash2 className="w-[18px] h-[18px] shrink-0" />
+                  </button>
+              </div>
               <button
                   type="button"
                   onClick={performAnalysis}

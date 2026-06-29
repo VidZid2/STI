@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Database Service for Study Statistics
  * 
  * Syncs study time, streak, and course progress data to Supabase.

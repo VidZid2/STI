@@ -5,7 +5,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+
+const EASE_OUT = [0.32, 0.72, 0, 1] as const;
+const SPRING_PANEL = { type: 'spring', bounce: 0, duration: 0.4 } as const;
 
 interface GettingStartedModalProps {
     isOpen: boolean;
@@ -156,6 +159,9 @@ const LightbulbIcon: React.FC = () => (
 
 
 const GettingStartedModal: React.FC<GettingStartedModalProps> = ({ isOpen, onClose }) => {
+    const reduce = useReducedMotion();
+    const enterY = reduce ? 0 : 40;
+    const enterScale = reduce ? 1 : 0.97;
     const [currentStep, setCurrentStep] = useState(0);
     const [isDarkMode, setIsDarkMode] = useState(() => 
         document.body.classList.contains('dark-mode')
@@ -192,38 +198,36 @@ const GettingStartedModal: React.FC<GettingStartedModalProps> = ({ isOpen, onClo
     const progress = ((currentStep + 1) / steps.length) * 100;
 
     return createPortal(
-        <AnimatePresence>
-            {isOpen && (
-                <div style={{
-                    position: 'fixed',
-                    inset: 0,
-                    zIndex: 99998,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '20px',
-                }}>
-                    {/* Backdrop */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={onClose}
-                        style={{
-                            position: 'absolute',
-                            inset: 0,
-                            background: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(0, 0, 0, 0.5)',
-                            backdropFilter: 'blur(8px)',
+        <div
+            aria-hidden={!isOpen}
+            className={`fixed inset-0 z-[999999] ${isOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+        >
+            <motion.div
+                initial={false}
+                animate={{ opacity: isOpen ? 1 : 0 }}
+                transition={{ duration: 0.2, ease: [0.32, 0.72, 0, 1] }}
+                onClick={onClose}
+                className={`absolute inset-0 ${isOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+                style={{
+                    backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(0, 0, 0, 0.5)',
+                    backdropFilter: 'blur(8px)',
+                }}
+            />
+            <div className="pointer-events-none absolute inset-0 flex justify-center items-center px-4 sm:px-6">
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div
+                            key="panel"
+                        layout
+                        initial={{ opacity: 0, y: enterY, scale: enterScale }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{
+                            opacity: 0,
+                            y: enterY,
+                            scale: reduce ? 1 : 0.98,
+                            transition: { duration: 0.18, ease: [0.32, 0.72, 0, 1] },
                         }}
-                    />
-
-
-                    {/* Modal */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                        transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+                        transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
                         style={{
                             position: 'relative',
                             width: '100%',
@@ -236,6 +240,51 @@ const GettingStartedModal: React.FC<GettingStartedModalProps> = ({ isOpen, onClo
                             overflow: 'hidden',
                         }}
                     >
+                                                <motion.div layout="position">
+                            <AnimatePresence mode="popLayout" initial={false}>
+                                <motion.div
+                                    key="content"
+                                    initial={
+                                        reduce
+                                            ? { opacity: 0 }
+                                            : { opacity: 0, y: 8, filter: "blur(4px)" }
+                                    }
+                                    animate={
+                                        reduce
+                                            ? {
+                                                opacity: 1,
+                                                transition: { duration: 0.18, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                            : {
+                                                opacity: 1,
+                                                y: 0,
+                                                filter: "blur(0px)",
+                                                transition: { duration: 0.24, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                    }
+                                    exit={
+                                        reduce
+                                            ? {
+                                                opacity: 0,
+                                                transition: { duration: 0.14, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                            : {
+                                                opacity: 0,
+                                                y: -8,
+                                                filter: "blur(4px)",
+                                                transition: { duration: 0.16, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                    }
+                                    onAnimationComplete={(definition) => {
+                                        const el = document.getElementById('settings-content-wrapper');
+                                        if (el && definition.opacity === 1) {
+                                            el.style.filter = 'none';
+                                        }
+                                    }}
+                                    id="settings-content-wrapper"
+                                    className="pointer-events-auto"
+                            style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}
+                        >
                         {/* Progress bar */}
                         <div style={{
                             height: '4px',
@@ -442,10 +491,16 @@ const GettingStartedModal: React.FC<GettingStartedModalProps> = ({ isOpen, onClo
                                 {currentStep === steps.length - 1 ? 'Get Started' : 'Next'}
                             </motion.button>
                         </div>
+                        </motion.div>
+                            </AnimatePresence>
+
+                        </motion.div>
+
                     </motion.div>
-                </div>
-            )}
-        </AnimatePresence>,
+                )}
+            </AnimatePresence>
+        </div>
+    </div>,
         document.body
     );
 };

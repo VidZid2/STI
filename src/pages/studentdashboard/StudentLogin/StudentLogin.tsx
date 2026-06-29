@@ -4,12 +4,14 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import msLoginCss from './ms-login.css?raw';
-import { loginUser, saveAccount, checkEmailExists, getSavedAccounts, removeSavedAccount } from '../../../services/authService';
+import { loginUser, saveAccount, getSavedAccounts, removeSavedAccount } from '../../../services/authService';
 import type { SavedAccount } from './types';
 import { User, Plus } from 'lucide-react';
+import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 const StudentLogin: React.FC = () => {
     const navigate = useNavigate();
+    const { executeRecaptcha } = useGoogleReCaptcha();
     const initialAccounts = getSavedAccounts();
     const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>(initialAccounts);
     const [showForgetDropdown, setShowForgetDropdown] = useState<string | null>(null);
@@ -58,20 +60,10 @@ const StudentLogin: React.FC = () => {
             return;
         }
 
-        setIsLoading(true);
-        try {
-            const result = await checkEmailExists(emailValue);
-            setIsLoading(false);
-            if (result.exists) {
-                setEnteredEmail(emailValue);
-                switchToPassword('email');
-            } else {
-                setErrorMessage("You can\u2019t sign in here with a personal account. Use your work or school account instead.");
-            }
-        } catch {
-            setIsLoading(false);
-            setErrorMessage('An error occurred. Please try again.');
-        }
+        // Skip backend check to prevent user enumeration. 
+        // We will validate the email + password together on the next screen.
+        setEnteredEmail(emailValue);
+        switchToPassword('email');
     };
 
     const handlePasswordSignIn = async (e: React.FormEvent) => {
@@ -83,9 +75,17 @@ const StudentLogin: React.FC = () => {
         const currentPassword = pwdInput ? pwdInput.value : '';
 
         setPasswordErrorMessage('');
+
+        if (!executeRecaptcha) {
+            setPasswordErrorMessage("Security check not ready. Please wait.");
+            return;
+        }
+
         setIsLoading(true);
 
         try {
+            // Generate reCAPTCHA token silently before login
+            await executeRecaptcha('login_submit');
             const result = await loginUser(enteredEmail, currentPassword);
             setIsLoading(false);
             if (result.success && result.user) {
@@ -1305,4 +1305,15 @@ const StudentLogin: React.FC = () => {
     );
 };
 
-export default StudentLogin;
+const StudentLoginWrapper = () => {
+    const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
+    if (!siteKey) return <StudentLogin />;
+    
+    return (
+        <GoogleReCaptchaProvider reCaptchaKey={siteKey}>
+            <StudentLogin />
+        </GoogleReCaptchaProvider>
+    );
+};
+
+export default StudentLoginWrapper;

@@ -18,6 +18,8 @@ export default {
     			'border-strong': 'var(--border-strong)',
     			accent: 'var(--accent-primary)',
     			'accent-bg': 'var(--accent-bg)',
+                brand: "hsl(var(--brand))",
+                "brand-foreground": "hsl(var(--brand-foreground))",
     			dashboard: {
     				bg: 'var(--bg-primary)',
     				surface: 'var(--bg-secondary)',
@@ -41,7 +43,41 @@ export default {
     				ring: 'hsl(var(--sidebar-ring))'
     			}
     		},
+            maxWidth: {
+                container: "80rem",
+            },
+            boxShadow: {
+                glow: "0 -16px 128px 0 rgba(96, 165, 250, 0.5) inset, 0 -16px 32px 0 rgba(37, 99, 235, 0.5) inset",
+            },
     		keyframes: {
+                "fade-in-up": {
+                  "0%": { 
+                    opacity: "0",
+                    transform: "translateY(10px)"
+                  },
+                  "100%": {
+                    opacity: "1",
+                    transform: "translateY(0)"
+                  }
+                },
+                "fade-in": {
+                  "0%": {
+                    opacity: "0"
+                  },
+                  "100%": {
+                    opacity: "1"
+                  }
+                },
+                "scale-in": {
+                  "0%": {
+                    opacity: "0",
+                    transform: "scale(0.95)"
+                  },
+                  "100%": {
+                    opacity: "1",
+                    transform: "scale(1)"
+                  }
+                },
     			'skeleton-shimmer': {
     				'0%': {
     					transform: 'translateX(-100%)'
@@ -65,12 +101,21 @@ export default {
     				to: {
     					height: '0'
     				}
+    			},
+    			shake: {
+    				'0%, 100%': { transform: 'translateX(0)' },
+    				'10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-4px)' },
+    				'20%, 40%, 60%, 80%': { transform: 'translateX(4px)' }
     			}
     		},
     		animation: {
+                "fade-in-up": "fade-in-up 0.5s ease-out forwards",
+                "fade-in": "fade-in 0.5s ease-out forwards",
+                "scale-in": "scale-in 0.5s ease-out forwards",
     			'skeleton-shimmer': 'skeleton-shimmer 1.8s ease-in-out infinite',
     			'accordion-down': 'accordion-down 0.2s ease-out',
-    			'accordion-up': 'accordion-up 0.2s ease-out'
+    			'accordion-up': 'accordion-up 0.2s ease-out',
+    			'shake': 'shake 0.4s ease-in-out'
     		}
     	}
     },

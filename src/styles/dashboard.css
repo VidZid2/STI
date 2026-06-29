@@ -3186,8 +3186,8 @@ body.dark-mode .main-content {
     }
 
     .widgets-sidebar {
-        top: 60px;
-        height: calc(100vh - 60px);
+        top: 0;
+        height: 100vh;
         width: 100%;
         max-width: 100%;
     }
@@ -6208,6 +6208,7 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
     }
 
     /* Hide Desktop specific UI */
+    .mobile-dock .hidden,
     .mobile-dock .sidebar-collapse-toggle,
     .mobile-dock .sidebar-bottom {
         display: none !important;
@@ -6235,7 +6236,7 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
     }
     
     /* Ensure all wrappers (divs and buttons) stretch equally */
-    .mobile-dock .sidebar-nav > * {
+    .mobile-dock .sidebar-nav > *:not(.hidden) {
         flex: 1 1 0 !important;
         height: 100% !important;
         min-width: 0 !important;
@@ -6403,6 +6404,7 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
     }
 
     /* Hide Desktop specific UI */
+    .mobile-dock .hidden,
     .mobile-dock .sidebar-collapse-toggle,
     .mobile-dock .sidebar-bottom {
         display: none !important;
@@ -6430,7 +6432,7 @@ body.dark-mode .tools-content [style*="background: linear-gradient(135deg, #cbd5
     }
     
     /* Ensure all wrappers (divs and buttons) stretch equally */
-    .mobile-dock .sidebar-nav > * {
+    .mobile-dock .sidebar-nav > *:not(.hidden) {
         flex: 1 1 0 !important;
         height: 100% !important;
         min-width: 0 !important;

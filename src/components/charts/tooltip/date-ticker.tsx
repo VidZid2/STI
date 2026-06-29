@@ -20,9 +20,9 @@ const DateTickerCompact = memo(function DateTickerCompact({
   const label = labels[currentIndex] ?? labels[0] ?? "";
 
   return (
-    <div className="overflow-hidden rounded-full bg-white px-4 py-1 text-blue-600 shadow-lg border border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-blue-400">
+    <div className="overflow-hidden rounded-full bg-white px-4 py-1 text-blue-600 shadow-md border border-slate-200/60 dark:bg-slate-800 dark:border-slate-700/60 dark:text-blue-400">
       <div className="flex h-6 items-center justify-center">
-        <span className="whitespace-nowrap font-medium text-sm">{label}</span>
+        <span className="whitespace-nowrap font-bold text-sm">{label}</span>
       </div>
     </div>
   );
@@ -93,9 +93,9 @@ const DateTickerInner = memo(function DateTickerInner({
   }
 
   return (
-    <div className="overflow-hidden rounded-full bg-white px-4 py-1 text-blue-600 shadow-lg border border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-blue-400">
+    <div className="overflow-hidden rounded-full bg-white px-4 py-1 text-blue-600 shadow-md border border-slate-200/60 dark:bg-slate-800 dark:border-slate-700/60 dark:text-blue-400">
       <div className="relative h-6 overflow-hidden">
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center gap-1 font-bold">
           {/* Month stack */}
           <div className="relative h-6 overflow-hidden">
             <motion.div className="flex flex-col" style={{ y: monthY }}>

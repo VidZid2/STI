@@ -5,7 +5,7 @@ import { Save, FileText, FileSpreadsheet, AlertCircle, ChevronDown, Copy, BookOp
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
-import { summarizeWithGroq, isSummarizerGroqConfigured } from "../../lib/summarizer/groqSummarizerService";
+import { summarizeWithAI, isSummarizerAIConfigured } from "../../lib/summarizer/aiSummarizerService";
 import { TextSummarizerEmpty } from "./empty-states";
 import { exportSummaryToDocx } from "../../lib/export/docxExport";
 import { exportSummaryToTxt } from "../../lib/export/txtExport";
@@ -167,8 +167,8 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
     setSummary('');
 
     // Try AI summarization if configured
-    if (isSummarizerGroqConfigured()) {
-      const result = await summarizeWithGroq(inputText, summaryLength);
+    if (isSummarizerAIConfigured()) {
+      const result = await summarizeWithAI(inputText, summaryLength);
       if (result.success) {
         setSummary(result.text);
         saveSnapshot({
@@ -180,7 +180,7 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
         return;
       } else {
         console.warn('AI Summary failed, falling back to local heuristic:', result.error);
-        setError(result.error || 'AI Summary failed. Using offline local fallback.');
+        setError(`AI Summary failed: ${result.error || 'No response'}. Please retry as the AI has a busy server.`);
       }
     }
 
@@ -420,24 +420,6 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
           </motion.div>
         </div>
 
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mb-6 p-4 rounded-[20px] bg-amber-50/50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 flex items-start gap-3"
-          >
-            <div className="mt-0.5 text-amber-600 dark:text-amber-400 shrink-0">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
-              </svg>
-            </div>
-            <div>
-              <p className="text-xs font-bold text-amber-800 dark:text-amber-300">
-                {error}
-              </p>
-            </div>
-          </motion.div>
-        )}
 
         {/* Text Area (The "Paper") */}
         <motion.div
@@ -662,6 +644,28 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
              </div>
 
              <div className="flex flex-col flex-1 relative z-10">
+                 <AnimatePresence>
+                    {error && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="mb-4 p-4 rounded-[16px] bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 flex items-start gap-3 shadow-sm relative z-20"
+                      >
+                        <div className="mt-0.5 text-amber-600 dark:text-amber-400 shrink-0">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-[13px] font-bold text-amber-800 dark:text-amber-300 leading-snug">
+                            {error}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                 </AnimatePresence>
+
                  <AnimatePresence mode="wait">
                      {summary ? (
                          <motion.div

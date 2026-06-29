@@ -14,6 +14,9 @@
  */
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import CryptoJS from 'crypto-js';
+
+const ENCRYPTION_KEY = import.meta.env.VITE_STORAGE_KEY || 'sti_secure_fallback_key_2026';
 
 export interface User {
     id: string;
@@ -39,56 +42,12 @@ export interface LoginResult {
 const USER_STORAGE_KEY = 'elms_current_user';
 
 // ============================================
-// EMAIL VALIDATION (check if email exists in users table)
-// ============================================
-
-export interface EmailCheckResult {
-    exists: boolean;
-    isPersonalAccount: boolean; // email exists but not in our system
-}
-
-export const checkEmailExists = async (email: string): Promise<EmailCheckResult> => {
-    const normalizedEmail = email.toLowerCase().trim();
-
-    if (isSupabaseConfigured() && supabase) {
-        try {
-            const { data, error } = await supabase
-                .from('users')
-                .select('email')
-                .eq('email', normalizedEmail)
-                .maybeSingle();
-
-            if (error) {
-                // On query error, fall through to demo check
-            } else {
-                return {
-                    exists: !!data,
-                    isPersonalAccount: !data,
-                };
-            }
-        } catch {
-            // Network error — fall through to demo check
-        }
-    }
-
-    // Demo fallback — check against known demo emails
-    const demoEmails = [
-        'deasis.student1@meycauayan.sti.edu.ph',
-        'deasis.462124@meycauayan.sti.edu.ph',
-        'teacher@meycauayan.sti.edu.ph',
-        'david.teacher1@meycauayan.sti.edu.ph',
-    ];
-    const exists = demoEmails.includes(normalizedEmail);
-    return { exists, isPersonalAccount: !exists };
-};
-
-// ============================================
 // LOGIN
 // ============================================
 
 export const loginUser = async (email: string, password: string): Promise<LoginResult> => {
     if (!isSupabaseConfigured() || !supabase) {
-        return loginDemo(email, password);
+        return { success: false, error: 'System configuration error. Please try again later.' };
     }
 
     try {
@@ -99,42 +58,67 @@ export const loginUser = async (email: string, password: string): Promise<LoginR
         });
 
         if (authError || !authData.user) {
-            // Auth failed — try demo fallback for dev convenience
-            const demoResult = loginDemo(email, password);
-            if (demoResult.success) return demoResult;
             return { success: false, error: 'Invalid email or password' };
         }
 
         // Step 2: Fetch the user's profile from the `users` table
-        // (Supabase Auth only stores email + id; role/section/etc. live in our table)
-        const { data: profile, error: profileError } = await supabase
-            .from('users')
-            .select('id, student_id, email, full_name, first_name, last_name, role, campus, program, year_level, section, profile_image')
-            .eq('id', authData.user.id)
-            .single();
-
-        // Fallback: try matching by email if id lookup fails
-        // (handles edge case where auth.id doesn't match users.id)
-        let finalProfile = profile;
-        if (profileError || !profile) {
-            const { data: profileByEmail } = await supabase
+        let finalProfile = null;
+        try {
+            const { data: profile, error: profileError } = await supabase
                 .from('users')
                 .select('id, student_id, email, full_name, first_name, last_name, role, campus, program, year_level, section, profile_image')
-                .eq('email', authData.user.email?.toLowerCase() ?? '')
+                .eq('id', authData.user.id)
                 .single();
-            finalProfile = profileByEmail;
+
+            finalProfile = profile;
+            
+            if (profileError || !profile) {
+                const { data: profileByEmail } = await supabase
+                    .from('users')
+                    .select('id, student_id, email, full_name, first_name, last_name, role, campus, program, year_level, section, profile_image')
+                    .eq('email', authData.user.email?.toLowerCase() ?? '')
+                    .single();
+                finalProfile = profileByEmail;
+            }
+        } catch (dbErr) {
+            console.warn("Database query failed (possible 500 error), falling back to demo user...", dbErr);
         }
 
         if (!finalProfile) {
-            await supabase.auth.signOut();
-            return { success: false, error: 'Account not found. Please contact your administrator.' };
+            const { DEMO_USERS } = await import('./usersService');
+            const demoUser = DEMO_USERS?.find(u => u.email.toLowerCase() === email.toLowerCase());
+            
+            if (demoUser) {
+                // Return the demo user as a fallback if they exist in our local demo data
+                finalProfile = {
+                    id: demoUser.id,
+                    student_id: demoUser.student_id,
+                    email: demoUser.email,
+                    full_name: demoUser.full_name,
+                    first_name: demoUser.first_name,
+                    last_name: demoUser.last_name,
+                    role: demoUser.role,
+                    campus: demoUser.campus,
+                    program: demoUser.program,
+                    year_level: demoUser.year_level,
+                    section: demoUser.section,
+                    profile_image: demoUser.profile_image
+                };
+            } else {
+                await supabase.auth.signOut();
+                return { success: false, error: 'Account not found. Please contact your administrator.' };
+            }
         }
 
         // Step 3: Update last_login timestamp
-        await supabase
-            .from('users')
-            .update({ last_login: new Date().toISOString() })
-            .eq('id', finalProfile.id);
+        try {
+            await supabase
+                .from('users')
+                .update({ last_login: new Date().toISOString() })
+                .eq('id', finalProfile.id);
+        } catch (updateErr) {
+            console.warn("Could not update last_login timestamp", updateErr);
+        }
 
         const user: User = {
             id: finalProfile.id,
@@ -151,101 +135,17 @@ export const loginUser = async (email: string, password: string): Promise<LoginR
             profile_image: finalProfile.profile_image,
         };
 
-        // Step 4: Cache profile for synchronous reads throughout the app
-        sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-        sessionStorage.setItem('student_id', user.student_id);
+        // Step 4: Cache profile for synchronous reads throughout the app, ENCRYPTED
+        const encryptedUser = CryptoJS.AES.encrypt(JSON.stringify(user), ENCRYPTION_KEY).toString();
+        sessionStorage.setItem(USER_STORAGE_KEY, encryptedUser);
 
         return { success: true, user };
 
-    } catch {
-        // Network error — try demo fallback
-        const demoResult = loginDemo(email, password);
-        if (demoResult.success) return demoResult;
+    } catch (e) {
+        // Network error or other unexpected exception
+        console.error("Login exception:", e);
         return { success: false, error: 'An error occurred during login' };
     }
-};
-
-// ============================================
-// DEMO FALLBACK (when Supabase is not configured or unreachable)
-// ============================================
-
-const loginDemo = (email: string, password: string): LoginResult => {
-    const demoUsers = [
-        {
-            email: 'deasis.student1@meycauayan.sti.edu.ph',
-            password: '123',
-            user: {
-                id: 'demo-student-josiah',
-                student_id: '02000543210',
-                email: 'deasis.student1@meycauayan.sti.edu.ph',
-                full_name: 'Josiah De Asis',
-                first_name: 'Josiah',
-                last_name: 'De Asis',
-                role: 'student' as const,
-                campus: 'Meycauayan',
-                program: 'BSIT',
-                year_level: '1st Year',
-                section: 'BSIT101A',
-            },
-        },
-        {
-            email: 'deasis.462124@meycauayan.sti.edu.ph',
-            password: 'testing101',
-            user: {
-                id: 'demo-user-1',
-                student_id: '02000543210',
-                email: 'deasis.462124@meycauayan.sti.edu.ph',
-                full_name: 'Josiah P. De Asis',
-                first_name: 'Josiah',
-                last_name: 'De Asis',
-                role: 'student' as const,
-                campus: 'Meycauayan',
-                program: 'BSIT',
-                year_level: '1st Year',
-                section: 'BSIT101A',
-            },
-        },
-        {
-            email: 'teacher@meycauayan.sti.edu.ph',
-            password: 'teacher123',
-            user: {
-                id: 'demo-teacher-1',
-                student_id: 'TEACHER001',
-                email: 'teacher@meycauayan.sti.edu.ph',
-                full_name: 'David Clarence Del Mundo',
-                first_name: 'David',
-                last_name: 'Del Mundo',
-                role: 'teacher' as const,
-                campus: 'Meycauayan',
-            },
-        },
-        {
-            email: 'david.teacher1@meycauayan.sti.edu.ph',
-            password: '123',
-            user: {
-                id: 'demo-teacher-david',
-                student_id: 'TEACHER001',
-                email: 'david.teacher1@meycauayan.sti.edu.ph',
-                full_name: 'David Clarence Del Mundo',
-                first_name: 'David Clarence',
-                last_name: 'Del Mundo',
-                role: 'teacher' as const,
-                campus: 'Meycauayan',
-            },
-        },
-    ];
-
-    const found = demoUsers.find(
-        u => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-    );
-
-    if (found) {
-        sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(found.user));
-        sessionStorage.setItem('student_id', found.user.student_id);
-        return { success: true, user: found.user };
-    }
-
-    return { success: false, error: 'Invalid email or password' };
 };
 
 // ============================================
@@ -259,7 +159,13 @@ const loginDemo = (email: string, password: string): LoginResult => {
 export const getCurrentUser = (): User | null => {
     try {
         const saved = sessionStorage.getItem(USER_STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
+        if (saved) {
+            const bytes = CryptoJS.AES.decrypt(saved, ENCRYPTION_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            if (decrypted) {
+                return JSON.parse(decrypted);
+            }
+        }
     } catch {
         // Corrupted storage — clear it
         sessionStorage.removeItem(USER_STORAGE_KEY);
@@ -278,7 +184,6 @@ export const logoutUser = async (): Promise<void> => {
         supabase.auth.signOut().catch(() => {});
     }
     sessionStorage.removeItem(USER_STORAGE_KEY);
-    sessionStorage.removeItem('student_id');
 };
 
 // ============================================

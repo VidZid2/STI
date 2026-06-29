@@ -15,9 +15,10 @@
 import * as React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "motion/react";
-import { BookMarked, BookOpen, Bookmark, CheckCircle2, ClipboardCheck, Globe2, Newspaper, Save, Search, Sparkles, Zap, Type, Layers, FileText, FileSpreadsheet, Trash2 } from "lucide-react";
+import { BookMarked, BookOpen, Bookmark, CheckCircle2, ClipboardCheck, Globe2, Newspaper, Save, Search, Sparkles, Zap, Type, Layers, FileText, FileSpreadsheet, Trash2, AlertCircle, Lightbulb } from "lucide-react";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { formatToolSessionTime, useToolSession } from "./useToolSession";
+import { extractCitationWithAI, isCitationAIConfigured, fetchWebsiteMetadata, extractDOI, fetchDOIMetadata } from '../../lib/converters/aiCitationService';
 import { ToolHeaderBadge } from "./ToolHeaderBadges";
 import ToolMobileSheet from "./ToolMobileSheet";
 import { exportBibliographyToDocx } from "../../lib/export/docxExport";
@@ -134,6 +135,8 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
     // Auto-fill states
     const [autoFillInput, setAutoFillInput] = useState('');
     const [isAutoFilling, setIsAutoFilling] = useState(false);
+    const [autoFillWarning, setAutoFillWarning] = useState<string | null>(null);
+    const [failedUrl, setFailedUrl] = useState<string | null>(null);
 
     const hasAnyInput = useMemo(() => {
         return citationDataHasContent(citationData);
@@ -248,6 +251,9 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
     const handleAutoFill = async () => {
         if (!autoFillInput.trim()) return;
         setIsAutoFilling(true);
+        setAutoFillWarning(null);
+        setFailedUrl(null);
+        
         const input = autoFillInput.trim();
         const today = getTodayFormatted();
 
@@ -380,41 +386,116 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                     publisher: 'Unknown Publisher'
                 });
             }
-            // 3. Generic Website Check
-            else if (input.startsWith('http') || input.startsWith('www')) {
-                setSourceType('website');
-                const urlObj = new URL(input.startsWith('http') ? input : `https://${input}`);
-                const hostParts = urlObj.hostname.replace('www.', '').split('.');
-                const domainName = hostParts[0].charAt(0).toUpperCase() + hostParts[0].slice(1);
-
-                // Attempt to fetch title from page (will fail on CORS most of the time, so we catch and proceed)
-                try {
-                    await fetch(input, { mode: 'no-cors' });
-                    // Since no-cors doesn't allow reading content, we fallback to our smart domain parser
-                } catch (e) {}
-
-                setCitationData({
-                    sourceType: 'website',
-                    authors: 'Smith, J.', // Placeholder academic standard
-                    title: `${domainName} Web Resource`,
-                    publicationYear: new Date().getFullYear().toString(),
-                    url: input,
-                    accessDate: today
-                });
-            }
-            // 4. Simple Text Search Fallback
+            // 3. AI Text Extraction, DOI Fetch, or URL Fallback
             else {
-                setSourceType('book');
-                setCitationData({
-                    sourceType: 'book',
-                    authors: 'Unknown Author',
-                    title: input.charAt(0).toUpperCase() + input.slice(1),
-                    publicationYear: new Date().getFullYear().toString(),
-                    publisher: 'Unknown Publisher'
-                });
+                if (isCitationAIConfigured()) {
+                    let aiInput = input;
+                    
+                    // Check for Academic DOI first (Highest accuracy, bypasses AI)
+                    const doi = extractDOI(input);
+                    if (doi) {
+                        const doiData = await fetchDOIMetadata(doi);
+                        if (doiData) {
+                            const safeData = { ...createEmptyCitationData('journal') };
+                            (Object.keys(doiData) as Array<keyof typeof doiData>).forEach(key => {
+                                if (doiData[key as keyof typeof doiData] !== null && doiData[key as keyof typeof doiData] !== undefined) {
+                                    (safeData as any)[key] = doiData[key as keyof typeof doiData];
+                                }
+                            });
+                            
+                            setSourceType('journal');
+                            setCitationData({
+                                ...safeData,
+                                accessDate: safeData.accessDate || today
+                            });
+                            setAutoFillInput('');
+                            setIsAutoFilling(false);
+                            return;
+                        }
+                    }
+                    
+                    // If it's a URL, attempt to scrape metadata via our CORS proxy first
+                    if (input.startsWith('http') || input.startsWith('www')) {
+                        const targetUrl = input.startsWith('http') ? input : `https://${input}`;
+                        const metadataText = await fetchWebsiteMetadata(targetUrl);
+                        if (metadataText) {
+                            aiInput = metadataText; // Send the extracted metadata to AI instead of raw URL
+                        }
+                    }
+
+                    const aiResult = await extractCitationWithAI(aiInput);
+                    if (aiResult.success && aiResult.data) {
+                        const safeData = { ...createEmptyCitationData(aiResult.data.sourceType) };
+                        // Safely copy string values and avoid null/undefined
+                        (Object.keys(aiResult.data) as Array<keyof typeof aiResult.data>).forEach(key => {
+                            if (aiResult.data![key] !== null && aiResult.data![key] !== undefined) {
+                                (safeData as any)[key] = aiResult.data![key];
+                            }
+                        });
+                        
+                        setSourceType(safeData.sourceType);
+                        setCitationData({
+                            ...safeData,
+                            accessDate: safeData.accessDate || today
+                        });
+                        setAutoFillInput('');
+                        setIsAutoFilling(false);
+                        
+                        // If the AI returned partial data but we failed to scrape the site (meaning it guessed from the URL)
+                        if (aiInput === input && (input.startsWith('http') || input.startsWith('www'))) {
+                            setFailedUrl(input);
+                            setAutoFillWarning('Publisher bot-protection blocked our scanner. Please look for the DOI link on the publisher\'s page (starts with https://doi.org/...) and paste it here for 100% accuracy.');
+                        } else if (!aiResult.data?.authors || aiResult.data.authors === 'Unknown Author') {
+                            setAutoFillWarning('MiMo 2.5 successfully analyzed the link, but could not find a clear Author. Please double-check the source.');
+                        } else if (!aiResult.data?.publicationYear) {
+                            setAutoFillWarning('MiMo 2.5 found the article but could not locate a clear publication date. You may need to enter it manually.');
+                        } else {
+                            setAutoFillWarning(null); // Clear warnings if everything is perfect
+                        }
+                        
+                        return;
+                    } else {
+                        // If the AI failed completely but it was a raw URL that we couldn't scrape, it's definitely a protected site
+                        if (aiInput === input && (input.startsWith('http') || input.startsWith('www'))) {
+                            setFailedUrl(input);
+                            setAutoFillWarning('Publisher bot-protection blocked our scanner. Please look for the DOI link on the publisher\'s page (starts with https://doi.org/...) and paste it here for 100% accuracy.');
+                        } else {
+                            setAutoFillWarning(`MiMo 2.5 failed to analyze this link (${aiResult.error || 'Unknown error'}). Using basic fallback data.`);
+                        }
+                    }
+                }
+                
+                // Fallback to basic URL parsing or simple text fallback if AI fails or is not configured
+                if (input.startsWith('http') || input.startsWith('www')) {
+                    if (!autoFillWarning) setAutoFillWarning('Could not fetch rich metadata for this link. Basic domain details were used.');
+                    setSourceType('website');
+                    const urlObj = new URL(input.startsWith('http') ? input : `https://${input}`);
+                    const hostParts = urlObj.hostname.replace('www.', '').split('.');
+                    const domainName = hostParts[0].charAt(0).toUpperCase() + hostParts[0].slice(1);
+
+                    setCitationData({
+                        sourceType: 'website',
+                        authors: 'Unknown Author',
+                        title: `${domainName} Web Resource`,
+                        publicationYear: new Date().getFullYear().toString(),
+                        url: input,
+                        accessDate: today
+                    });
+                } else {
+                    if (!autoFillWarning) setAutoFillWarning('No specific URL or ISBN detected. Using basic text fallback.');
+                    setSourceType('book');
+                    setCitationData({
+                        sourceType: 'book',
+                        authors: 'Unknown Author',
+                        title: input.charAt(0).toUpperCase() + input.slice(1),
+                        publicationYear: new Date().getFullYear().toString(),
+                        publisher: 'Unknown Publisher'
+                    });
+                }
             }
         } catch (error) {
             console.error('[CitationGenerator] Auto-Fill Error:', error);
+            setAutoFillWarning('An unexpected error occurred while auto-filling. Using fallback data.');
             // Graceful fallback
             setSourceType('website');
             setCitationData({
@@ -582,7 +663,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                     {/* Input Form Column */}
                     <div className="flex min-w-0 flex-1 flex-col">
                         <div className="flex min-h-[540px] flex-1 flex-col gap-7 overflow-hidden rounded-[28px] border border-zinc-200/80 bg-white p-5 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7">
-                            <div className="skeleton-bone rounded-[24px] border border-zinc-200/70 bg-zinc-50/70 p-4 dark:border-zinc-800/70 dark:bg-zinc-950/40 h-28" />
+                            <div className="skeleton-bone rounded-[24px] border border-zinc-200/70 bg-white p-4 dark:border-zinc-800/70 dark:bg-zinc-950/40 h-28" />
                             
                             <div className="flex flex-col gap-2 skeleton-stagger">
                                 <div className="skeleton-bone w-24 h-4 bg-zinc-200 dark:bg-zinc-800 rounded" />
@@ -771,18 +852,18 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
             </motion.section>
 
             <div className="flex flex-col gap-6 lg:flex-row">
-            {/* Main Workspace Column */}
+{/* Main Workspace Column */}
             <div className="flex min-w-0 flex-1 flex-col">
 
                 {/* Main Input Workspace Form */}
-                <motion.div
-                    className="flex min-h-[540px] flex-1 flex-col gap-7 overflow-hidden rounded-[28px] border border-zinc-200/80 bg-white p-5 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+                <motion.div 
+                    className="flex min-w-0 flex-1 flex-col rounded-[32px] border border-zinc-200/70 bg-white shadow-sm dark:border-zinc-800/70 dark:bg-zinc-950/40 overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-800/50"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.1 }}
                 >
                     {/* Auto-Fill / Search Metadata Bar */}
-                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50">
+                    <div className="p-5 sm:p-7 relative overflow-hidden group transition-all duration-300 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/20">
                         <div className="mb-6 flex items-start justify-between relative z-10">
                             <div className="flex items-center gap-5">
                                 <motion.div
@@ -792,8 +873,10 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                                     <Zap className="w-8 h-8" strokeWidth={2} />
                                 </motion.div>
                                 <div>
-                                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Quick Capture</h2>
-                                    <p className="text-[15px] text-zinc-500 dark:text-zinc-400 mt-1">Paste a source and let the form start for you.</p>
+                                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Smart Capture</h2>
+                                    <p className="text-[15px] text-zinc-500 dark:text-zinc-400 mt-1">
+                                        Paste a source URL, ISBN, or raw text and let MiMo 2.5 auto-fill it.
+                                    </p>
                                 </div>
                             </div>
                             
@@ -810,18 +893,19 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                                 <Trash2 className="w-[18px] h-[18px]" strokeWidth={2.5} />
                             </motion.button>
                         </div>
-                        <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center relative z-10">
-                        <div className="flex-1 relative">
-                            <input
-                                type="text"
-                                value={autoFillInput}
-                                onChange={(e) => setAutoFillInput(e.target.value)}
-                                placeholder="Paste website URL or book ISBN to auto-fill..."
-                                className="h-12 w-full rounded-2xl border border-zinc-200 bg-white px-4 pl-11 text-[15px] font-semibold text-zinc-900 outline-none transition-all placeholder:text-zinc-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-500"
-                                disabled={isAutoFilling}
-                            />
-                            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" aria-hidden="true" />
-                        </div>
+                        <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner w-full">
+                            <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center relative z-10">
+                                <div className="flex-1 relative">
+                                    <input
+                                        type="text"
+                                        value={autoFillInput}
+                                        onChange={(e) => setAutoFillInput(e.target.value)}
+                                        placeholder="Paste website URL, book ISBN, or raw reference text to auto-fill..."
+                                        className="h-12 w-full rounded-2xl border border-zinc-200/60 bg-white px-4 pl-11 text-[15px] font-semibold text-zinc-900 outline-none transition-all placeholder:text-zinc-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 dark:border-zinc-800/60 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-500 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm shadow-sm"
+                                        disabled={isAutoFilling}
+                                    />
+                                    <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" aria-hidden="true" />
+                                </div>
                         <motion.button
                             layout
                             onClick={handleAutoFill}
@@ -847,12 +931,63 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                                     Auto-Fill
                                 </>
                             )}
-                        </motion.button>
+                            </motion.button>
+                            </div>
                         </div>
+                        
+                        <div className="mt-4 flex items-start gap-2.5 rounded-xl bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 p-3 relative z-10">
+                            <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                            <p className="text-[13px] font-medium text-amber-700/90 dark:text-amber-400/90 leading-snug">
+                                AI-generated citations may occasionally contain inaccuracies. Please verify the extracted fields.
+                            </p>
+                        </div>
+                        <AnimatePresence>
+                            {autoFillWarning && (
+                                <motion.div 
+                                    initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                                    animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                                    exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    {(() => {
+                                        const isAcademic = autoFillWarning.includes('DOI');
+                                        const bgColor = isAcademic ? 'bg-indigo-50 dark:bg-indigo-900/20' : 'bg-amber-50 dark:bg-amber-900/20';
+                                        const borderColor = isAcademic ? 'border-indigo-200/60 dark:border-indigo-800/40' : 'border-amber-200/60 dark:border-amber-800/40';
+                                        const textColor = isAcademic ? 'text-indigo-800 dark:text-indigo-300' : 'text-amber-800 dark:text-amber-300';
+                                        const iconColor = isAcademic ? 'text-indigo-500' : 'text-amber-500';
+                                        const IconInfo = isAcademic ? Lightbulb : AlertCircle;
+                                        
+                                        return (
+                                            <div className={`flex flex-col gap-3 p-3.5 rounded-xl ${bgColor} border ${borderColor} relative z-10`}>
+                                                <div className="flex items-start gap-3">
+                                                    <IconInfo className={`w-5 h-5 ${iconColor} shrink-0 mt-0.5`} />
+                                                    <p className={`text-sm font-medium ${textColor}`}>
+                                                        {autoFillWarning}
+                                                    </p>
+                                                </div>
+                                                {isAcademic && failedUrl && (
+                                                    <div className="pl-8 flex flex-wrap gap-2">
+                                                        <a 
+                                                            href={`https://scholar.google.com/scholar?q=${encodeURIComponent(failedUrl)}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white dark:bg-zinc-900 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-400 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/50 transition-colors shadow-sm"
+                                                        >
+                                                            <Search className="w-3.5 h-3.5" />
+                                                            Search on Google Scholar
+                                                        </a>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     {/* Citation Style Selector */}
-                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50">
+                    <div className="p-5 sm:p-7 relative overflow-hidden group transition-all duration-300 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/20">
                         <div className="flex items-center gap-5 mb-6 relative z-10">
                             <motion.div
                                 className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 shadow-sm border border-violet-100 dark:border-violet-800/50 shrink-0"
@@ -891,7 +1026,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                     </div>
 
                     {/* Source Type Selector */}
-                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50">
+                    <div className="p-5 sm:p-7 relative overflow-hidden group transition-all duration-300 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/20">
                         <div className="flex items-center gap-5 mb-6 relative z-10">
                             <motion.div
                                 className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 shadow-sm border border-violet-100 dark:border-violet-800/50 shrink-0"
@@ -900,11 +1035,17 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                                 <Layers className="w-8 h-8" strokeWidth={2} />
                             </motion.div>
                             <div>
-                                <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Source Type</h2>
-                                <p className="text-[15px] text-zinc-500 dark:text-zinc-400 mt-1">Choose the type of material you are citing.</p>
+                                <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight flex items-center gap-2">
+                                    Source Type
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-violet-600 bg-violet-100 px-2 py-0.5 rounded-full dark:bg-violet-900/40 dark:text-violet-400">
+                                        <Zap className="w-3 h-3" strokeWidth={3} /> Auto-selected by MiMo 2.5
+                                    </span>
+                                </h2>
+                                <p className="text-[15px] text-zinc-500 dark:text-zinc-400 mt-1">Choose the type of material, or let the AI detect it automatically.</p>
                             </div>
                         </div>
-                        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3 relative z-10">
+                        <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner w-full relative z-10">
+                            <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
                             {[
                                 { type: 'book' as SourceType, label: 'Book', helper: 'Books, ebooks, chapters', icon: BookOpen },
                                 { type: 'website' as SourceType, label: 'Website', helper: 'Pages, articles, online sources', icon: Globe2 },
@@ -932,11 +1073,12 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                                     </div>
                                 </button>
                             ))}
+                            </div>
                         </div>
                     </div>
 
                     {/* Source Details Form Fields */}
-                    <div className="rounded-[28px] border border-zinc-200/70 bg-zinc-50/70 p-5 sm:p-6 dark:border-zinc-800/70 dark:bg-zinc-950/40 shadow-sm relative overflow-hidden group transition-all duration-300 hover:shadow-md hover:border-violet-200/80 dark:hover:border-violet-800/50">
+                    <div className="p-5 sm:p-7 relative overflow-hidden group transition-all duration-300 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/20">
                         <div className="flex items-center gap-5 mb-6 relative z-10">
                             <motion.div
                                 className="flex items-center justify-center w-16 h-16 rounded-[20px] bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 shadow-sm border border-violet-100 dark:border-violet-800/50 shrink-0"
@@ -950,72 +1092,72 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                             </div>
                         </div>
                         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 relative z-10">
-                            <FloatingInput 
-                                label="Author(s) (e.g. Smith, J.)" 
-                                value={citationData.authors} 
-                                onChange={(val) => handleInputChange('authors', val)} 
-                            />
-                            
-                            <FloatingInput 
-                                label="Title" 
-                                value={citationData.title} 
-                                onChange={(val) => handleInputChange('title', val)} 
-                            />
-
-                            <FloatingInput 
-                                label="Publication Year" 
-                                value={citationData.publicationYear} 
-                                onChange={(val) => handleInputChange('publicationYear', val)} 
-                            />
-
-                            {sourceType === 'book' && (
                                 <FloatingInput 
-                                    label="Publisher" 
-                                    value={citationData.publisher || ''} 
-                                    onChange={(val) => handleInputChange('publisher', val)} 
+                                    label="Author(s) (e.g. Smith, J.)" 
+                                    value={citationData.authors} 
+                                    onChange={(val) => handleInputChange('authors', val)} 
                                 />
-                            )}
+                                
+                                <FloatingInput 
+                                    label="Title" 
+                                    value={citationData.title} 
+                                    onChange={(val) => handleInputChange('title', val)} 
+                                />
 
-                            {sourceType === 'website' && (
-                                <>
-                                    <FloatingInput 
-                                        label="URL" 
-                                        value={citationData.url || ''} 
-                                        onChange={(val) => handleInputChange('url', val)} 
-                                    />
-                                    <FloatingInput 
-                                        label="Access Date (e.g. May 27, 2026)" 
-                                        value={citationData.accessDate || ''} 
-                                        onChange={(val) => handleInputChange('accessDate', val)} 
-                                    />
-                                </>
-                            )}
+                                <FloatingInput 
+                                    label="Publication Year" 
+                                    value={citationData.publicationYear} 
+                                    onChange={(val) => handleInputChange('publicationYear', val)} 
+                                />
 
-                            {sourceType === 'journal' && (
-                                <>
+                                {sourceType === 'book' && (
                                     <FloatingInput 
-                                        label="Journal Name" 
-                                        value={citationData.journalName || ''} 
-                                        onChange={(val) => handleInputChange('journalName', val)} 
+                                        label="Publisher" 
+                                        value={citationData.publisher || ''} 
+                                        onChange={(val) => handleInputChange('publisher', val)} 
                                     />
-                                    <FloatingInput 
-                                        label="Volume" 
-                                        value={citationData.volume || ''} 
-                                        onChange={(val) => handleInputChange('volume', val)} 
-                                    />
-                                    <FloatingInput 
-                                        label="Issue" 
-                                        value={citationData.issue || ''} 
-                                        onChange={(val) => handleInputChange('issue', val)} 
-                                    />
-                                    <FloatingInput 
-                                        label="Pages" 
-                                        value={citationData.pages || ''} 
-                                        onChange={(val) => handleInputChange('pages', val)} 
-                                    />
-                                </>
-                            )}
-                        </div>
+                                )}
+
+                                {sourceType === 'website' && (
+                                    <>
+                                        <FloatingInput 
+                                            label="URL" 
+                                            value={citationData.url || ''} 
+                                            onChange={(val) => handleInputChange('url', val)} 
+                                        />
+                                        <FloatingInput 
+                                            label="Access Date (e.g. May 27, 2026)" 
+                                            value={citationData.accessDate || ''} 
+                                            onChange={(val) => handleInputChange('accessDate', val)} 
+                                        />
+                                    </>
+                                )}
+
+                                {sourceType === 'journal' && (
+                                    <>
+                                        <FloatingInput 
+                                            label="Journal Name" 
+                                            value={citationData.journalName || ''} 
+                                            onChange={(val) => handleInputChange('journalName', val)} 
+                                        />
+                                        <FloatingInput 
+                                            label="Volume" 
+                                            value={citationData.volume || ''} 
+                                            onChange={(val) => handleInputChange('volume', val)} 
+                                        />
+                                        <FloatingInput 
+                                            label="Issue" 
+                                            value={citationData.issue || ''} 
+                                            onChange={(val) => handleInputChange('issue', val)} 
+                                        />
+                                        <FloatingInput 
+                                            label="Pages" 
+                                            value={citationData.pages || ''} 
+                                            onChange={(val) => handleInputChange('pages', val)} 
+                                        />
+                                    </>
+                                )}
+                            </div>
                     </div>
                 </motion.div>
             </div>
@@ -1060,7 +1202,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                     {/* Right: Modern Stat Cards */}
                     <div className="flex items-center gap-4 relative z-10 w-full">
                         {/* Score Card combining both text and ring */}
-                        <div className="flex flex-1 items-center gap-3 px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 shadow-sm transition-colors hover:border-violet-300 dark:hover:border-violet-700/50 group/card">
+                        <div className="flex flex-1 items-center gap-3 px-4 py-3 rounded-2xl bg-white dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 shadow-sm transition-colors hover:border-violet-300 dark:hover:border-violet-700/50 group/card">
                             {/* The Ring acts as the icon! */}
                             <div className="w-10 h-10 flex-shrink-0 relative flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 shadow-sm border border-zinc-200/50 dark:border-zinc-700/50">
                                 <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 36 36">
@@ -1294,7 +1436,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                             <motion.div 
                                 key={idx} 
                                 whileHover={{ scale: 1.02 }}
-                                className={`group/tip flex items-center gap-4 px-4 py-3 rounded-[20px] bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700 shadow-sm transition-all ${tip.borderHover}`}
+                                className={`group/tip flex items-center gap-4 px-4 py-3 rounded-[20px] bg-white dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700 shadow-sm transition-all ${tip.borderHover}`}
                             >
                                 <motion.div 
                                     whileHover={{ scale: 1.1, rotate: -5 }}

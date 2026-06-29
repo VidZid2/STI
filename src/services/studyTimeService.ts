@@ -397,7 +397,7 @@ export const updateStreak = (): void => {
 
 // Get streak tier info based on current streak
 export const getStreakTier = (streak: number): {
-    tier: 'starter' | 'warming' | 'blazing' | 'legendary';
+    tier: 'starter' | 'bronze' | 'silver' | 'gold' | 'legendary';
     bgGradient: string;
     borderColor: string;
     textColor: string;
@@ -405,30 +405,52 @@ export const getStreakTier = (streak: number): {
     flameEmoji: string;
     xpBonus: number;
 } => {
-    if (streak >= 10) {
-        // Legendary tier - Yellow and Blue gradient
+    if (streak >= 30) {
+        // Legendary tier - Diamond/Purple
         return {
             tier: 'legendary',
-            bgGradient: 'linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
-            borderColor: 'rgba(251, 191, 36, 0.4)',
+            bgGradient: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+            borderColor: 'rgba(168, 85, 247, 0.4)',
+            textColor: '#7e22ce', // purple-700
+            subTextColor: 'rgba(126, 34, 206, 0.7)',
+            flameEmoji: '💎✨',
+            xpBonus: 100,
+        };
+    } else if (streak >= 14) {
+        // Gold tier
+        return {
+            tier: 'gold',
+            bgGradient: 'linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(250, 204, 21, 0.15) 100%)',
+            borderColor: 'rgba(251, 191, 36, 0.5)',
             textColor: '#b45309', // amber-700
             subTextColor: 'rgba(180, 83, 9, 0.7)',
             flameEmoji: '🔥✨',
             xpBonus: 50,
         };
-    } else if (streak >= 3) {
-        // Warming tier - Default orange/amber
+    } else if (streak >= 7) {
+        // Silver tier
         return {
-            tier: 'warming',
-            bgGradient: 'linear-gradient(to right, rgba(251, 191, 36, 0.1), rgba(249, 115, 22, 0.1))',
-            borderColor: 'rgba(251, 191, 36, 0.5)',
+            tier: 'silver',
+            bgGradient: 'linear-gradient(135deg, rgba(148, 163, 184, 0.15) 0%, rgba(203, 213, 225, 0.15) 100%)',
+            borderColor: 'rgba(148, 163, 184, 0.5)',
+            textColor: '#475569', // slate-600
+            subTextColor: 'rgba(71, 85, 105, 0.7)',
+            flameEmoji: '🔥',
+            xpBonus: 25,
+        };
+    } else if (streak >= 3) {
+        // Bronze tier
+        return {
+            tier: 'bronze',
+            bgGradient: 'linear-gradient(135deg, rgba(180, 83, 9, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%)',
+            borderColor: 'rgba(180, 83, 9, 0.3)',
             textColor: '#92400e', // amber-800
-            subTextColor: 'rgba(146, 64, 14, 0.8)',
+            subTextColor: 'rgba(146, 64, 14, 0.7)',
             flameEmoji: '🔥',
             xpBonus: 15,
         };
     } else {
-        // Starter tier - Blue (days 1-2)
+        // Starter tier - Blue
         return {
             tier: 'starter',
             bgGradient: 'linear-gradient(to right, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1))',
@@ -595,7 +617,7 @@ export const getXPNeededForLevel = (level: number): number => {
 };
 
 const XP_STORAGE_KEY = 'user-xp-data';
-const XP_MIGRATED_KEY = 'xp-migrated-v2'; // Fresh start flag
+const XP_MIGRATED_KEY = 'xp-migrated-v3-max-level'; // Fresh start flag
 const STREAK_XP_AWARDED_KEY = 'streak-xp-awarded-v1'; // Track if we've awarded XP for existing streak
 
 export interface XPData {
@@ -606,16 +628,19 @@ export interface XPData {
 }
 
 // Calculate level from total XP
-const calculateLevel = (totalXP: number): { level: number; xpInLevel: number } => {
+export const calculateLevel = (totalXP: number): { level: number; xpInLevel: number } => {
     let remainingXP = totalXP;
     let currentLevel = 1;
-    while (true) {
+    while (currentLevel < 20) {
         const xpNeeded = getXPNeededForLevel(currentLevel);
         if (remainingXP < xpNeeded) {
             break;
         }
         remainingXP -= xpNeeded;
         currentLevel++;
+    }
+    if (currentLevel >= 20) {
+        return { level: 20, xpInLevel: 0 };
     }
     return { level: currentLevel, xpInLevel: remainingXP };
 };
@@ -662,11 +687,11 @@ const loadXPFromDatabase = async (): Promise<XPData | null> => {
     }
 };
 
-// Get default XP data (fresh start at level 1)
+// Get default XP data (fresh start at level 20)
 const getDefaultXPData = (): XPData => {
     return {
-        totalXP: 0,
-        currentLevel: 1,
+        totalXP: 6175,
+        currentLevel: 20,
         xpInCurrentLevel: 0,
         lastLevelUp: null,
     };
@@ -680,8 +705,8 @@ export const getXPData = (): XPData => {
         localStorage.setItem(XP_MIGRATED_KEY, 'true');
         const freshData = getDefaultXPData();
         localStorage.setItem(XP_STORAGE_KEY, JSON.stringify(freshData));
-        // Save to database async
-        saveXPToDatabase(freshData);
+        // We do NOT save to database here because initializeXP will overwrite 
+        // the local storage if the DB already has their true XP.
         return freshData;
     }
 
@@ -736,6 +761,9 @@ export const addXP = (amount: number): { leveledUp: boolean; newLevel: number } 
 // Get XP progress percentage (0-100)
 export const getXPProgress = (): number => {
     const data = getXPData();
+    if (data.currentLevel >= 20) {
+        return 100;
+    }
     const xpNeeded = getXPNeededForLevel(data.currentLevel);
     return Math.round((data.xpInCurrentLevel / xpNeeded) * 100);
 };

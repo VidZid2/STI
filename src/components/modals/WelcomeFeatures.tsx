@@ -62,7 +62,7 @@ function DayStreakPreview() {
                         src={FireIcon} 
                         alt="Fire" 
                         className="absolute w-[64px] h-[64px] max-w-none object-contain pointer-events-none translate-y-1" 
-                        style={{ filter: "drop-shadow(0.5px 0 0 rgba(255,255,255,0.7)) drop-shadow(-0.5px 0 0 rgba(255,255,255,0.7)) drop-shadow(0 0.5px 0 rgba(255,255,255,0.7)) drop-shadow(0 -0.5px 0 rgba(255,255,255,0.7))" }}
+                        style={{ filter: "drop-shadow(0 0 1.5px rgba(255,255,255,0.9))" }}
                       />
                     ) : (
                       <Check className="w-4 h-4 text-white stroke-[3.5]" />
@@ -90,7 +90,7 @@ function QuickViewWidgetsPreview() {
   return (
     <div className="w-full max-w-[280px] md:max-w-[360px] flex flex-col gap-3">
       {/* Study Insights Widget */}
-      <div className="bg-white/70 dark:bg-[#18181b]/70 backdrop-blur-md rounded-2xl p-4 shadow-md transition-all duration-300 transform-gpu antialiased cursor-pointer hover:-translate-y-1 hover:shadow-lg active:-translate-y-1 active:shadow-lg border border-white/20 dark:border-slate-800/40 flex flex-col gap-3">
+      <div className="bg-white dark:bg-[#18181b] rounded-2xl p-4 shadow-md transition-all duration-300 transform-gpu antialiased cursor-pointer hover:-translate-y-1 hover:shadow-lg active:-translate-y-1 active:shadow-lg border border-white/20 dark:border-slate-800/40 flex flex-col gap-3">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -144,7 +144,7 @@ function QuickViewWidgetsPreview() {
       </div>
 
       {/* Schedule Widget */}
-      <div className="bg-white/70 dark:bg-[#18181b]/70 backdrop-blur-md rounded-2xl p-3 shadow-md transition-all duration-300 transform-gpu antialiased cursor-pointer hover:-translate-y-1 hover:shadow-lg active:-translate-y-1 active:shadow-lg border border-white/20 dark:border-slate-800/40 flex items-center gap-3">
+      <div className="bg-white dark:bg-[#18181b] rounded-2xl p-3 shadow-md transition-all duration-300 transform-gpu antialiased cursor-pointer hover:-translate-y-1 hover:shadow-lg active:-translate-y-1 active:shadow-lg border border-white/20 dark:border-slate-800/40 flex items-center gap-3">
         <div className="h-9 w-9 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-550 flex items-center justify-center shrink-0">
           <Calendar className="size-4.5" />
         </div>
@@ -160,7 +160,7 @@ function QuickViewWidgetsPreview() {
 
 function GroupPagePreview() {
   return (
-    <div className="relative w-full max-w-[280px] md:max-w-[360px] bg-white/70 dark:bg-[#18181b]/70 backdrop-blur-md rounded-2xl p-4 shadow-md transition-all duration-300 transform-gpu antialiased cursor-pointer hover:-translate-y-1 hover:shadow-lg active:-translate-y-1 active:shadow-lg border border-white/20 dark:border-slate-800/40 flex flex-col gap-3">
+    <div className="relative w-full max-w-[280px] md:max-w-[360px] bg-white dark:bg-[#18181b] rounded-2xl p-4 shadow-md transition-all duration-300 transform-gpu antialiased cursor-pointer hover:-translate-y-1 hover:shadow-lg active:-translate-y-1 active:shadow-lg border border-white/20 dark:border-slate-800/40 flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">COLLABORATION</span>
         <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -203,7 +203,7 @@ function GroupPagePreview() {
 
 function GoalsSystemPreview() {
   return (
-    <div className="relative w-full max-w-[280px] md:max-w-[360px] bg-white/80 dark:bg-[#18181b]/80 backdrop-blur-md rounded-[20px] p-4 shadow-md transition-all duration-300 transform-gpu antialiased cursor-pointer hover:-translate-y-1 hover:shadow-lg active:-translate-y-1 active:shadow-lg border border-white/20 dark:border-slate-800/40 flex flex-col overflow-hidden">
+    <div className="relative w-full max-w-[280px] md:max-w-[360px] bg-white dark:bg-[#18181b] rounded-[20px] p-4 shadow-md transition-all duration-300 transform-gpu antialiased cursor-pointer hover:-translate-y-1 hover:shadow-lg active:-translate-y-1 active:shadow-lg border border-white/20 dark:border-slate-800/40 flex flex-col overflow-hidden">
         {/* Action Buttons floating top right */}
         <div className="absolute top-4 right-4 flex items-center gap-1.5 z-20">
             <div className="flex items-center justify-center w-7 h-7 rounded-[10px] bg-[#fff8e6] text-amber-500 dark:bg-amber-900/30 dark:text-amber-400">
@@ -651,6 +651,7 @@ export function WelcomeFeatures() {
                   exit={{ opacity: 0, scale: 0.96, y: -10 }}
                   transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   className="w-full h-full flex flex-col items-center justify-center"
+                  style={{ willChange: "transform, opacity" }}
                 >
                   {/* Mock Widget Preview Area */}
                   <div className="flex flex-col items-center justify-center w-full">
@@ -705,7 +706,7 @@ export function WelcomeFeatures() {
           <div className="w-full bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/80 rounded-2xl p-4 relative overflow-hidden min-h-[300px]">
             {/* Ambient Glow */}
             <div
-              className="absolute inset-0 transition-all duration-1000 -z-10 pointer-events-none"
+              className="absolute inset-0 transition-colors duration-1000 -z-10 pointer-events-none"
               style={{
                 background: `radial-gradient(circle 180px at 50% 50%, ${activeFeature.glowColor}, transparent 80%)`,
               }}
@@ -719,6 +720,7 @@ export function WelcomeFeatures() {
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ duration: 0.25 }}
                 className="w-full flex flex-col items-center gap-4"
+                style={{ willChange: "transform, opacity" }}
               >
                 <div className="flex items-center justify-center w-full min-h-[160px] py-1">
                   {getPreviewComponent(activeId)}

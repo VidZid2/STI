@@ -51,7 +51,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                         max={100}
                         min={0}
                         value={85}
-                        gaugePrimaryColor="#3b82f6"
+                        gaugePrimaryColor={(student.level || 1) >= 20 ? '#eab308' : '#3b82f6'}
                         gaugeSecondaryColor="rgba(219, 234, 254, 0.6)"
                         className="w-16 h-16 shrink-0 relative z-10"
                     >
@@ -68,11 +68,11 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                         {/* Level Badge */}
                         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-20 flex justify-center">
                             <div 
-                                className={`min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[8.5px] font-bold tracking-wider shadow-sm border-[2px] transition-colors duration-300 bg-blue-500 text-white ${
+                                className={`min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[8.5px] font-bold tracking-wider shadow-sm border-[2px] transition-colors duration-300 ${(student.level || 1) >= 20 ? 'bg-yellow-400 text-blue-800' : 'bg-blue-500 text-white'} ${
                                     student.status.toLowerCase() === 'online' ? 'border-emerald-500 dark:border-emerald-400' : 'border-white dark:border-slate-800'
                                 }`}
                             >
-                                LV.{student.level || 1}
+                                <span className="ml-[0.05em]">{(student.level || 1) >= 20 ? 'MAX' : `LV.${student.level || 1}`}</span>
                             </div>
                         </div>
                     </AnimatedCircularProgressBar>

@@ -48,6 +48,9 @@ interface UseDashboardStateReturn {
     showConfetti: boolean;
     setShowConfetti: (show: boolean) => void;
 
+    // Loading state
+    isDashboardReady: boolean;
+
     // Intro state
     showIntro: boolean;
     setShowIntro: (show: boolean) => void;
@@ -72,6 +75,30 @@ export const useDashboardState = (): UseDashboardStateReturn => {
         }
     }, [navigate]);
 
+    // Initial dashboard ready state
+    const [isDashboardReady, setIsDashboardReady] = useState(false);
+    
+    useEffect(() => {
+        // Wait for fonts to load before showing anything
+        // Add a 5s safety timeout just in case fonts API hangs
+        let readySet = false;
+        const setReady = () => {
+            if (!readySet) {
+                readySet = true;
+                setIsDashboardReady(true);
+            }
+        };
+
+        setTimeout(setReady, 5000);
+
+        if (document.fonts) {
+            document.fonts.ready.then(setReady).catch(setReady);
+        } else {
+            // Fallback for older browsers
+            setTimeout(setReady, 100);
+        }
+    }, []);
+
     // Sidebar state — persisted to localStorage, defaults to expanded
     const [sidebarActive, setSidebarActiveRaw] = useState(() => {
         const saved = localStorage.getItem('sidebar-expanded');
@@ -87,7 +114,8 @@ export const useDashboardState = (): UseDashboardStateReturn => {
     const [settingsModalActive, setSettingsModalActive] = useState(false);
     const [welcomeModalActive, setWelcomeModalActive] = useState(() => {
         // Don't show welcome modal if intro hasn't been shown yet
-        const introNotShown = sessionStorage.getItem('dashboardIntroShown') !== 'true';
+        const stored = sessionStorage.getItem('dashboardIntroShown');
+        const introNotShown = stored !== 'true' && stored !== 'done';
         if (introNotShown) return false;
         return localStorage.getItem('welcome-modal-completed') !== 'true';
     });
@@ -118,7 +146,8 @@ export const useDashboardState = (): UseDashboardStateReturn => {
     // Confetti and intro state
     const [showConfetti, setShowConfetti] = useState(false);
     const [showIntro, setShowIntro] = useState(() => {
-        return sessionStorage.getItem('dashboardIntroShown') !== 'true';
+        const stored = sessionStorage.getItem('dashboardIntroShown');
+        return stored !== 'true' && stored !== 'done';
     });
 
     // Persist active view to sessionStorage
@@ -138,7 +167,6 @@ export const useDashboardState = (): UseDashboardStateReturn => {
     // Setup confetti trigger for intro
     useEffect(() => {
         (window as any).triggerConfettiFromIntro = () => {
-            setWelcomeModalActive(true);
             setShowConfetti(true);
         };
 
@@ -208,6 +236,7 @@ export const useDashboardState = (): UseDashboardStateReturn => {
         // Confetti & Intro
         showConfetti,
         setShowConfetti,
+        isDashboardReady,
         showIntro,
         setShowIntro,
 

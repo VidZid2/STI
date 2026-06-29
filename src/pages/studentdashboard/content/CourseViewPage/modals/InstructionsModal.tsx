@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import DOMPurify from 'dompurify';
 
 interface InstructionsModalProps {
     task: {
@@ -337,7 +338,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                         >
                                             <div
                                                 className="text-[14px] sm:text-[15px] text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap prose prose-zinc dark:prose-invert prose-sm max-w-none font-medium"
-                                                dangerouslySetInnerHTML={{ __html: task.instructions }}
+                                                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(task.instructions) }}
                                             />
                                         </motion.div>
                                     </div>

@@ -13,14 +13,16 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-// Create Supabase client (will be null if not configured)
-export const supabase = supabaseUrl && supabaseAnonKey 
+// Create Supabase client (will be null if not configured properly)
+const isValidConfig = supabaseUrl.startsWith('http') && supabaseAnonKey && !supabaseAnonKey.includes('YOUR_');
+
+export const supabase = isValidConfig 
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null;
 
 // Check if Supabase is configured
 export const isSupabaseConfigured = (): boolean => {
-    return !!(supabaseUrl && supabaseAnonKey && supabase);
+    return !!(isValidConfig && supabase);
 };
 
 export default supabase;

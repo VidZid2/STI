@@ -1,14 +1,27 @@
-﻿/**
+/**
  * UserCard + UserListItem + QuickActionButton + HeartIcon
  * Extracted from UsersContent.tsx during Phase 8.4
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { getRoleInfo, getTeacherCourses, type UserAccount } from '../../../../../services/usersService';
+import { getRoleInfo, getTeacherCourses, type UserAccount } from '@/services/usersService';
 import { getLastSeenText } from '../utils';
 import UserAvatar from './UserAvatar';
 import RoleIcon from './RoleIcon';
 import ActionTooltip from './ActionTooltip';
+import { AnimatedCircularProgressBar } from '@/components/ui/animated-circular-progress-bar';
+import Grainient from '@/components/ui/grainient';
+
+import { getCurrentUser } from '@/services/authService';
+
+const maskEmail = (email: string) => {
+    if (!email) return '';
+    const parts = email.split('@');
+    if (parts.length !== 2) return email;
+    const [name, domain] = parts;
+    if (name.length <= 3) return name[0] + '***@' + domain;
+    return name.substring(0, 3) + '***@' + domain;
+};
 
 // Quick Action Button Component
 const QuickActionButton: React.FC<{
@@ -94,9 +107,8 @@ const UserCard: React.FC<{
     const cardRef = useRef<HTMLDivElement>(null);
     
     // Check if this is the current logged-in user (hide quick actions for self)
-    const isCurrentUser = user.id === 'demo-user-1' || 
-                          user.email.toLowerCase().includes('deasis') ||
-                          user.student_id === '02000543210';
+    const currentUser = getCurrentUser();
+    const isCurrentUser = currentUser && (user.id === currentUser.id || user.email === currentUser.email);
     
     // Show quick actions only for other users (not yourself)
     const showQuickActions = !isCurrentUser;
@@ -145,339 +157,100 @@ const UserCard: React.FC<{
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
             animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.95 }}
-            transition={reducedMotion ? { duration: 0.01 } : { delay: index * 0.03, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            whileHover={reducedMotion ? {} : { 
-                y: -3, 
-                scale: 1.01,
-                boxShadow: 'var(--shadow-lg)',
-                transition: { duration: 0.2 }
-            }}
-            whileTap={reducedMotion ? {} : { scale: 0.98 }}
+            transition={reducedMotion ? { duration: 0.01 } : { delay: index * 0.02, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             onClick={() => onClick?.(user)}
             onKeyDown={handleKeyDown}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            style={{
-                background: 'var(--dashboard-surface)',
-                borderRadius: '16px',
-                border: `1px solid ${isFocused ? '#3b82f6' : 'var(--border-color)'}`,
-                padding: '16px',
-                cursor: 'pointer',
-                transition: reducedMotion ? 'none' : 'all 0.2s ease',
-                position: 'relative',
-                outline: 'none',
-                boxShadow: isFocused ? '0 0 0 2px rgba(59, 130, 246, 0.3)' : undefined }}
+            className={`group/card relative pt-5 pb-5 px-5 bg-white dark:bg-slate-800 rounded-[14px] border-[2px] shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer flex flex-col items-center w-full overflow-hidden ${isFocused ? 'border-blue-500' : 'border-slate-200 dark:border-slate-700/50'}`}
         >
-            {/* Card Content */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <UserAvatar user={user} size={44} reducedMotion={reducedMotion} />
-                
-                <div style={{ flex: 1, minWidth: 0 }}>
-                    {/* Name Row with Quick Actions */}
-                    <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'space-between',
-                        gap: '8px', 
-                        marginBottom: '4px',
-                        minHeight: '28px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, minWidth: 0 }}>
-                            <h3 style={{
-                                margin: 0,
-                                fontSize: '14px',
-                                fontWeight: 600,
-                                color: 'var(--text-primary)',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap' }}>
-                                {user.full_name}
-                            </h3>
-                            {!user.is_active && (
-                                <span style={{
-                                    fontSize: '9px',
-                                    padding: '2px 5px',
-                                    borderRadius: '4px',
-                                    background: 'rgba(239, 68, 68, 0.1)',
-                                    color: '#ef4444',
-                                    fontWeight: 600,
-                                    flexShrink: 0 }}>
-                                    Inactive
-                                </span>
-                            )}
+            {isCurrentUser && (
+                <div className="absolute inset-0 z-0">
+                    <Grainient 
+                        color1="#ffffff" 
+                        color2="#ffffff" 
+                        color3="#3b82f6" 
+                    />
+                </div>
+            )}
+
+            {/* Avatar Profile Section */}
+            <div className="relative z-10 flex flex-col items-center justify-center gap-3 w-full">
+                <motion.div className="relative flex justify-center shrink-0 group-hover/card:scale-110 transition-transform duration-300">
+                    {user.role === 'teacher' ? (
+                        <div className={`w-16 h-16 shrink-0 relative z-10 rounded-full flex items-center justify-center shadow-sm overflow-hidden border-[3px] ${user.is_online ? 'border-emerald-500' : 'border-slate-200 dark:border-slate-700'}`}>
+                            <div className="w-full h-full flex items-center justify-center bg-amber-50 dark:bg-amber-900/20">
+                                {user.profile_image ? (
+                                    <img src={user.profile_image} alt={user.full_name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center font-extrabold text-[16px] text-amber-600">
+                                        {user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        
-                        {/* Quick Actions - Only show for other users, not yourself (hidden on mobile - use bottom bar instead) */}
-                        {showQuickActions && !isMobile && (
-                            <div 
-                                role="group"
-                                aria-label="Quick actions"
-                                style={{ 
-                                    display: 'flex', 
-                                    gap: '4px', 
-                                    flexShrink: 0,
-                                    opacity: showActions ? 1 : 0,
-                                    transform: showActions ? 'translateX(0)' : 'translateX(8px)',
-                                    transition: reducedMotion ? 'opacity 0.01s' : 'all 0.2s ease',
-                                    pointerEvents: showActions ? 'auto' : 'none' }}
-                            >
-                                <ActionTooltip label="Send Email">
-                                    <motion.button
-                                        aria-label={`Send email to ${user.full_name}`}
-                                        whileHover={reducedMotion ? {} : { scale: 1.1 }}
-                                        whileTap={reducedMotion ? {} : { scale: 0.9 }}
-                                        onClick={handleEmailClick}
-                                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleEmailClick(e); }}
-                                        style={{
-                                            width: '28px',
-                                            height: '28px',
-                                            borderRadius: '6px',
-                                            border: 'none',
-                                            background: 'var(--bg-hover)',
-                                            color: 'var(--text-secondary)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            cursor: 'pointer' }}
-                                    >
-                                        <EmailIcon />
-                                    </motion.button>
-                                </ActionTooltip>
-                                <ActionTooltip label="View Details">
-                                    <motion.button
-                                        aria-label={`View details of ${user.full_name}`}
-                                        whileHover={reducedMotion ? {} : { scale: 1.1 }}
-                                        whileTap={reducedMotion ? {} : { scale: 0.9 }}
-                                        onClick={handleScheduleClick}
-                                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleScheduleClick(e); }}
-                                        style={{
-                                            width: '28px',
-                                            height: '28px',
-                                            borderRadius: '6px',
-                                            border: 'none',
-                                            background: 'var(--bg-hover)',
-                                            color: 'var(--text-secondary)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            cursor: 'pointer' }}
-                                    >
-                                        <ScheduleIcon />
-                                    </motion.button>
-                                </ActionTooltip>
-                                <ActionTooltip label={isFavorite ? "Remove from Favorites" : "Add to Favorites"}>
-                                    <motion.button
-                                        aria-label={isFavorite ? `Remove ${user.full_name} from favorites` : `Add ${user.full_name} to favorites`}
-                                        aria-pressed={isFavorite}
-                                        whileHover={reducedMotion ? {} : { scale: 1.1 }}
-                                        whileTap={reducedMotion ? {} : { scale: 0.9 }}
-                                        onClick={handleFavoriteClick}
-                                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleFavoriteClick(e); }}
-                                        style={{
-                                            width: '28px',
-                                            height: '28px',
-                                            borderRadius: '6px',
-                                            border: 'none',
-                                            background: isFavorite ? 'rgba(239, 68, 68, 0.1)' : 'var(--bg-hover)',
-                                            color: isFavorite ? '#ef4444' : 'var(--text-secondary)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            cursor: 'pointer' }}
-                                    >
-                                        <HeartIcon filled={isFavorite} />
-                                    </motion.button>
-                                </ActionTooltip>
+                    ) : (
+                        <AnimatedCircularProgressBar
+                            max={100}
+                            min={0}
+                            value={user.is_online ? 100 : 85}
+                            gaugePrimaryColor={(user.level || 1) >= 20 ? '#eab308' : '#3b82f6'}
+                            gaugeSecondaryColor="rgba(219, 234, 254, 0.6)"
+                            className="w-16 h-16 shrink-0 relative z-10"
+                        >
+                            <div className="absolute inset-1.5 rounded-full flex items-center justify-center shadow-sm overflow-hidden z-10" style={{ background: 'rgba(219, 234, 254, 0.6)' }}>
+                                {user.profile_image ? (
+                                    <img src={user.profile_image} alt={user.full_name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center font-extrabold text-[16px] text-blue-600">
+                                        {user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                                    </div>
+                                )}
                             </div>
-                        )}
-                        
-                        {/* Favorite indicator when not hovered/focused (only for other users, hidden on mobile) */}
-                        {showQuickActions && isFavorite && !showActions && !isMobile && (
-                            <div style={{ color: '#ef4444', flexShrink: 0 }} aria-hidden="true">
-                                <HeartIcon filled />
+                            
+                            {/* Level Badge */}
+                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-20 flex justify-center">
+                                <div 
+                                    className={`min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[8.5px] font-bold tracking-wider shadow-sm border-[2px] transition-colors duration-300 ${(user.level || 1) >= 20 ? 'bg-yellow-400 text-blue-800' : 'bg-blue-500 text-white'} ${
+                                        user.is_online ? 'border-emerald-500 dark:border-emerald-400' : 'border-white dark:border-slate-800'
+                                    }`}
+                                >
+                                    <span className="ml-[0.05em]">{(user.level || 1) >= 20 ? 'MAX' : `LV.${user.level || 1}`}</span>
+                                </div>
                             </div>
-                        )}
-                    </div>
-                    
-                    {/* Email & Last Seen */}
-                    <div style={{ marginBottom: '10px' }}>
-                        <p style={{
-                            margin: 0,
-                            fontSize: '12px',
-                            color: 'var(--text-secondary)',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            marginBottom: '2px' }}>
-                            {user.email}
-                        </p>
-                        <p style={{
-                            margin: 0,
-                            fontSize: '10px',
-                            color: user.is_online ? '#10b981' : 'var(--text-muted)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px' }}>
-                            <span style={{
-                                width: '6px',
-                                height: '6px',
-                                borderRadius: '50%',
-                                background: user.is_online ? '#10b981' : '#94a3b8',
-                                flexShrink: 0 }} />
-                            {getLastSeenText(user.last_active, user.is_online || false)}
-                        </p>
-                    </div>
-                    
-                    {/* Role & Section Tags */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                        <span style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            padding: '3px 8px',
-                            borderRadius: '6px',
-                            background: roleInfo.bgColor,
-                            fontSize: '11px',
-                            fontWeight: 500,
-                            color: roleInfo.color }}>
-                            <RoleIcon role={user.role} size={11} />
-                            {roleInfo.label}
-                        </span>
-                        
-                        {user.section && (
-                            <span style={{
-                                fontSize: '11px',
-                                color: 'var(--text-muted)',
-                                padding: '3px 7px',
-                                borderRadius: '5px',
-                                background: 'var(--bg-hover)' }}>
-                                {user.section}
-                            </span>
-                        )}
-                        
-                        {/* Quick Stats */}
-                        {user.role === 'teacher' && courseCount > 0 && (
-                            <span style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '3px',
-                                fontSize: '10px',
-                                color: '#10b981',
-                                padding: '3px 7px',
-                                borderRadius: '5px',
-                                background: 'rgba(16, 185, 129, 0.1)',
-                                fontWeight: 500 }}>
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                                </svg>
-                                {courseCount} course{courseCount !== 1 ? 's' : ''}
-                            </span>
-                        )}
-                        
-                        {user.role === 'student' && user.year_level && (
-                            <span style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '3px',
-                                fontSize: '10px',
-                                color: '#3b82f6',
-                                padding: '3px 7px',
-                                borderRadius: '5px',
-                                background: 'rgba(59, 130, 246, 0.1)',
-                                fontWeight: 500 }}>
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
-                                </svg>
-                                {user.year_level}
-                            </span>
+                        </AnimatedCircularProgressBar>
+                    )}
+                </motion.div>
+                
+                <div className="flex flex-col items-center gap-1.5 overflow-hidden w-full">
+                    <p className="text-[14px] leading-tight font-bold text-slate-800 dark:text-slate-200 truncate text-center w-full">{user.full_name}</p>
+                    <div className="flex w-full items-center justify-center gap-1 sm:gap-1.5 overflow-hidden">
+                        {user.role === 'teacher' ? (
+                            <>
+                                <span className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-[4px] text-[8px] sm:text-[8.5px] font-bold tracking-wider uppercase border border-slate-200 dark:border-slate-600 truncate min-w-0 shrink">
+                                    INSTRUCTOR
+                                </span>
+                                <span className="px-1.5 py-0.5 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-[4px] text-[8px] sm:text-[8.5px] font-bold tracking-wider uppercase border border-amber-100 dark:border-amber-800/50 truncate min-w-0 shrink">
+                                    FACULTY
+                                </span>
+                            </>
+                        ) : (
+                            <>
+                                {user.section && (
+                                    <span className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-[4px] text-[8px] sm:text-[8.5px] font-bold tracking-wider uppercase border border-slate-200 dark:border-slate-600 truncate min-w-0 shrink">
+                                        {user.section}
+                                    </span>
+                                )}
+                                <span className="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-[4px] text-[8px] sm:text-[8.5px] font-bold tracking-wider uppercase border border-blue-100 dark:border-blue-800/50 truncate min-w-0 shrink">
+                                    1ST SEM
+                                </span>
+                            </>
                         )}
                     </div>
                 </div>
             </div>
-            
-            {/* Mobile Quick Actions Bar - Always visible on mobile for easy touch access */}
-            {isMobile && showQuickActions && (
-                <div 
-                    role="group"
-                    aria-label="Quick actions"
-                    style={{
-                        display: 'flex',
-                        gap: '8px',
-                        marginTop: '12px',
-                        paddingTop: '12px',
-                        borderTop: `1px solid var(--border-color)` }}
-                >
-                    <motion.button
-                        aria-label={`Send email to ${user.full_name}`}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleEmailClick}
-                        style={{
-                            flex: 1,
-                            height: '40px',
-                            borderRadius: '10px',
-                            border: 'none',
-                            background: 'rgba(59, 130, 246, 0.1)',
-                            color: '#3b82f6',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '6px',
-                            cursor: 'pointer',
-                            fontSize: '12px',
-                            fontWeight: 500 }}
-                    >
-                        <EmailIcon />
-                        Email
-                    </motion.button>
-                    <motion.button
-                        aria-label={`View details of ${user.full_name}`}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleScheduleClick}
-                        style={{
-                            flex: 1,
-                            height: '40px',
-                            borderRadius: '10px',
-                            border: 'none',
-                            background: 'rgba(16, 185, 129, 0.1)',
-                            color: '#10b981',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '6px',
-                            cursor: 'pointer',
-                            fontSize: '12px',
-                            fontWeight: 500 }}
-                    >
-                        <ScheduleIcon />
-                        Details
-                    </motion.button>
-                    <motion.button
-                        aria-label={isFavorite ? `Remove ${user.full_name} from favorites` : `Add ${user.full_name} to favorites`}
-                        aria-pressed={isFavorite}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleFavoriteClick}
-                        style={{
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: '10px',
-                            border: 'none',
-                            background: isFavorite 
-                                ? 'rgba(239, 68, 68, 0.1)' 
-                                : 'var(--bg-hover)',
-                            color: isFavorite ? '#ef4444' : 'var(--text-muted)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            flexShrink: 0 }}
-                    >
-                        <HeartIcon filled={isFavorite} />
-                    </motion.button>
-                </div>
-            )}
         </motion.div>
     );
 };
@@ -598,7 +371,7 @@ const UserListItem: React.FC<{
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap' }}>
-                        {user.email}
+                        {isCurrentUser ? user.email : maskEmail(user.email)}
                     </p>
                 </div>
 

@@ -5,9 +5,12 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { supabase, isSupabaseConfigured } from '../../../lib/supabase';
 import { getStudentId } from '../../../services/databaseService';
+
+const EASE_OUT = [0.32, 0.72, 0, 1] as const;
+const SPRING_PANEL = { type: 'spring', bounce: 0, duration: 0.4 } as const;
 
 interface FAQsModalProps {
     isOpen: boolean;
@@ -437,6 +440,9 @@ const loadReadFAQsFromSupabase = async (): Promise<string[]> => {
 };
 
 const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
+    const reduce = useReducedMotion();
+    const enterY = reduce ? 0 : 40;
+    const enterScale = reduce ? 1 : 0.97;
     const [isDarkMode, setIsDarkMode] = useState(() => document.body.classList.contains('dark-mode'));
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
@@ -581,6 +587,7 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2, ease: EASE_OUT }}
                         onClick={onClose}
                         style={{
                             position: 'absolute',
@@ -618,6 +625,51 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
                             flexDirection: 'column',
                         }}
                     >
+                                                <motion.div layout="position" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%' }}>
+                            <AnimatePresence mode="popLayout" initial={false}>
+                                <motion.div
+                                    key="content"
+                                    initial={
+                                        reduce
+                                            ? { opacity: 0 }
+                                            : { opacity: 0, y: 8, filter: "blur(4px)" }
+                                    }
+                                    animate={
+                                        reduce
+                                            ? {
+                                                opacity: 1,
+                                                transition: { duration: 0.18, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                            : {
+                                                opacity: 1,
+                                                y: 0,
+                                                filter: "blur(0px)",
+                                                transition: { duration: 0.24, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                    }
+                                    exit={
+                                        reduce
+                                            ? {
+                                                opacity: 0,
+                                                transition: { duration: 0.14, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                            : {
+                                                opacity: 0,
+                                                y: -8,
+                                                filter: "blur(4px)",
+                                                transition: { duration: 0.16, ease: [0.32, 0.72, 0, 1] },
+                                            }
+                                    }
+                                    onAnimationComplete={(definition) => {
+                                        const el = document.getElementById('settings-content-wrapper');
+                                        if (el && definition.opacity === 1) {
+                                            el.style.filter = 'none';
+                                        }
+                                    }}
+                                    id="settings-content-wrapper"
+                                    className="pointer-events-auto"
+                            style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, width: '100%' }}
+                        >
                         {/* Header */}
                         <motion.div 
                             animate={{
@@ -981,9 +1033,12 @@ const FAQsModal: React.FC<FAQsModalProps> = ({ isOpen, onClose }) => {
                             </motion.div>
                         </motion.div>
                     </motion.div>
-                </div>
-            )}
-        </AnimatePresence>,
+                </AnimatePresence>
+                </motion.div>
+            </motion.div>
+        </div>
+    )}
+</AnimatePresence>,
         document.body
     );
 };

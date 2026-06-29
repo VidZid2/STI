@@ -1,4 +1,4 @@
-﻿/**
+/**
  * useAchievements Hook
  * Handles achievement loading and state
  */
@@ -20,25 +20,37 @@ export const useAchievements = (refreshTrigger: number): UseAchievementsReturn =
     });
 
     const loadAchievements = async () => {
-        try {
-            const { getAchievementStats, getUnlockedAchievements } = await import('../../../services/achievementsService');
-            const stats = getAchievementStats();
-            const unlocked = getUnlockedAchievements();
+        return new Promise<void>((resolve) => {
+            const fetchAndSet = async () => {
+                try {
+                    const { getAchievementStats, getUnlockedAchievements } = await import('../../../services/achievementsService');
+                    const stats = getAchievementStats();
+                    const unlocked = getUnlockedAchievements();
 
-            // Get 3 most recent unlocked achievements
-            const recent = unlocked
-                .filter(a => a.unlockedAt)
-                .sort((a, b) => new Date(b.unlockedAt!).getTime() - new Date(a.unlockedAt!).getTime())
-                .slice(0, 3)
-                .map(a => ({ id: a.id, name: a.name, icon: a.icon, rarity: a.rarity }));
+                    // Get 3 most recent unlocked achievements
+                    const recent = unlocked
+                        .filter(a => a.unlockedAt)
+                        .sort((a, b) => new Date(b.unlockedAt!).getTime() - new Date(a.unlockedAt!).getTime())
+                        .slice(0, 3)
+                        .map(a => ({ id: a.id, name: a.name, icon: a.icon, rarity: a.rarity }));
 
-            setAchievements({
-                total: stats.total,
-                unlocked: stats.unlocked,
-                percentage: stats.percentage,
-                recent });
-        } catch (err) {
-        }
+                    setAchievements({
+                        total: stats.total,
+                        unlocked: stats.unlocked,
+                        percentage: stats.percentage,
+                        recent });
+                } catch (err) {
+                } finally {
+                    resolve();
+                }
+            };
+
+            if (typeof window.requestIdleCallback === 'function') {
+                window.requestIdleCallback(() => { fetchAndSet(); });
+            } else {
+                setTimeout(fetchAndSet, 100);
+            }
+        });
     };
 
     useEffect(() => {

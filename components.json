@@ -27,6 +27,7 @@
     "@kokonutui": "https://kokonutui.com/r/{name}.json",
     "@efferd": "https://efferd.com/r/{style}/{name}.json",
     "@iconiq": "https://iconiqui.com/r/{name}.json",
-    "@bklit": "https://ui.bklit.com/r/{name}.json"
+    "@bklit": "https://ui.bklit.com/r/{name}.json",
+    "@beui": "https://beui.dev/r/{name}.json"
   }
 }

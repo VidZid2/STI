@@ -7,6 +7,9 @@ import FAQsModal from '../modals/FAQsModal';
 import KeyboardShortcutsModal from '../modals/KeyboardShortcutsModal';
 import ContactSupportModal from '../modals/ContactSupportModal';
 import HelpCenterModal from '../modals/HelpCenterModal';
+import { cn } from '../../../lib/utils';
+import { BottomSheet } from '../bottom-sheet';
+
 
 interface SidebarHelpDropdownProps {
     isOpen: boolean;
@@ -63,7 +66,7 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
     anchorRef,
 }) => {
     const [cardHeight, setCardHeight] = useState(484);
-    const [position, setPosition] = useState({ top: 0, left: 0, arrowTop: 30 });
+    const [position, setPosition] = useState({ top: 0, left: 0, arrowTop: 30, arrowLeft: -7 });
     const [isDarkMode, setIsDarkMode] = useState(() => 
         typeof document !== 'undefined' && document.body.classList.contains('dark-mode')
     );
@@ -130,31 +133,50 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
     const updatePosition = useCallback(() => {
         if (anchorRef?.current) {
             const rect = anchorRef.current.getBoundingClientRect();
-            const anchorCenter = rect.top + rect.height / 2;
-            
-            // Set vertical center/bottom of the card relative to anchor center
-            // Arrow is designed to sit near the bottom of the card, say 30px offset.
-            const arrowOffsetFromBottom = 30;
-            let cardTop = anchorCenter + arrowOffsetFromBottom - cardHeight;
-            
-            // Clamp to viewport
-            if (cardTop < 16) cardTop = 16;
-            if (cardTop + cardHeight > window.innerHeight - 16) {
-                cardTop = window.innerHeight - cardHeight - 16;
+            const isMobile = window.innerWidth < 640;
+
+            if (isMobile) {
+                // Mobile: Position below the anchor
+                const cardTop = rect.bottom + 12;
+                // Center horizontally relative to screen
+                const cardLeft = 12; 
+                // Arrow points up to the anchor
+                const arrowLeft = rect.left + rect.width / 2 - cardLeft;
+
+                setPosition({
+                    top: cardTop,
+                    left: cardLeft,
+                    arrowTop: -7, // indicating it's pointing up, we'll handle this in render
+                    arrowLeft: arrowLeft
+                });
+            } else {
+                // Desktop: Position to the right of the anchor
+                const anchorCenter = rect.top + rect.height / 2;
+                
+                // Set vertical center/bottom of the card relative to anchor center
+                const arrowOffsetFromBottom = 30;
+                let cardTop = anchorCenter + arrowOffsetFromBottom - cardHeight;
+                
+                // Clamp to viewport
+                if (cardTop < 16) cardTop = 16;
+                if (cardTop + cardHeight > window.innerHeight - 16) {
+                    cardTop = window.innerHeight - cardHeight - 16;
+                }
+                
+                // Calculate where the arrow should be vertically relative to the card's top
+                let arrowTop = anchorCenter - cardTop;
+                
+                // Clamp arrow position safely inside the card bounds
+                if (arrowTop < 16) arrowTop = 16;
+                if (arrowTop > cardHeight - 16) arrowTop = cardHeight - 16;
+                
+                setPosition({
+                    top: cardTop,
+                    left: rect.right + 12,
+                    arrowTop: arrowTop,
+                    arrowLeft: -7 // indicating pointing left
+                });
             }
-            
-            // Calculate where the arrow should be vertically relative to the card's top
-            let arrowTop = anchorCenter - cardTop;
-            
-            // Clamp arrow position safely inside the card bounds
-            if (arrowTop < 16) arrowTop = 16;
-            if (arrowTop > cardHeight - 16) arrowTop = cardHeight - 16;
-            
-            setPosition({
-                top: cardTop,
-                left: rect.right + 12,
-                arrowTop: arrowTop,
-            });
         }
     }, [anchorRef, cardHeight]);
 
@@ -199,36 +221,11 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
     // Don't show dropdown when any modal is open
     const shouldShowDropdown = isOpen && !showGettingStarted && !showVideoTutorials && !showFAQs && !showKeyboardShortcuts && !showContactSupport && !showHelpCenter;
 
-    return [
-        createPortal(
-        <AnimatePresence>
-            {shouldShowDropdown && (
-                <motion.div
-                    className="flex relative"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
-                    onMouseEnter={cancelClose}
-                    onMouseLeave={scheduleClose}
-                    style={{
-                        position: 'fixed',
-                        top: position.top,
-                        left: position.left,
-                        zIndex: 99999,
-                    }}
-                >
-                    {/* Left Arrow — positioned to point at Help */}
-                    <div
-                        className={`w-0 h-0 border-t-[7px] border-t-transparent border-b-[7px] border-b-transparent border-r-[7px] relative z-20 -mr-[1px] ${isDarkMode ? 'border-r-zinc-950' : 'border-r-white'}`}
-                        style={{ position: 'absolute', left: 0, top: position.arrowTop - 7 }}
-                    />
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
 
-                    {/* Premium 350px Card (matching ToolsNavTooltip) */}
-                    <div ref={cardRef} className={`w-[calc(100vw-24px)] sm:w-[350px] max-w-[360px] sm:max-w-none ml-[6px] p-4 sm:p-5 shadow-2xl rounded-[20px] overflow-hidden relative flex flex-col gap-3.5 sm:gap-4 border ${
-                        isDarkMode ? 'bg-zinc-950 border-zinc-800/80' : 'bg-white border-zinc-200/80'
-                    }`}>
-                        {/* SaaS Background Accents */}
+    const cardContent = (
+        <>
+            {/* SaaS Background Accents */}
                         <div className={`absolute top-0 right-0 -mr-12 -mt-12 w-32 h-32 rounded-full blur-3xl pointer-events-none ${
                             isDarkMode ? 'bg-blue-500/5' : 'bg-blue-500/10'
                         }`} aria-hidden="true" />
@@ -237,7 +234,7 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
                         }`} aria-hidden="true" />
 
                         {/* Upper Section: Hero Icon & Text */}
-                        <div className="flex gap-4 relative z-10">
+                        <div className="flex gap-4 relative z-10 mt-2 sm:mt-0">
                             {/* Bouncy Help Icon */}
                             <motion.div
                                 whileHover={{ scale: 1.05, rotate: -5 }}
@@ -412,12 +409,66 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
                                 </span>
                             </div>
                         </motion.a>
-                    </div>
-                </motion.div>
-            )}
-        </AnimatePresence>,
-        document.body
-    ),
+        </>
+    );
+
+    return [
+        isMobile ? (
+            <BottomSheet key="mobile-bottom-sheet" snapPoints={["auto"]} open={shouldShowDropdown} onOpenChange={(open) => { if (!open) onClose(); }}>
+                <div className={cn(
+                    "overflow-hidden relative flex flex-col gap-3.5 w-full pt-1 pb-4",
+                    isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
+                )}>
+                    {cardContent}
+                </div>
+            </BottomSheet>
+        ) : (
+            createPortal(
+                <AnimatePresence>
+                    {shouldShowDropdown && (
+                        <motion.div
+                            key="help-panel"
+                            className="flex relative"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            transition={{ duration: 0.2, ease: 'easeOut' }}
+                            onMouseEnter={cancelClose}
+                            onMouseLeave={scheduleClose}
+                            style={{
+                                position: 'fixed',
+                                top: position.top,
+                                left: position.left,
+                                zIndex: 99999,
+                            }}
+                        >
+                            {/* Arrow */}
+                            <div
+                                className={cn(
+                                    "w-0 h-0 relative z-20 border-t-[7px] border-t-transparent border-b-[7px] border-b-transparent border-r-[7px] -mr-[1px]",
+                                    isDarkMode ? 'border-r-zinc-950' : 'border-r-white'
+                                )}
+                                style={{ 
+                                    position: 'absolute', 
+                                    left: 0, 
+                                    top: position.arrowTop - 7
+                                }}
+                            />
+                            
+                            {/* Premium Card */}
+                            <div ref={cardRef} className={cn(
+                                "overflow-hidden relative flex flex-col gap-3.5 sm:gap-4 border",
+                                isDarkMode ? 'bg-zinc-950 border-zinc-800/80' : 'bg-white border-zinc-200/80',
+                                "w-[350px] p-4 sm:p-5 shadow-2xl rounded-[20px] ml-[6px]"
+                            )}>
+                                {cardContent}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )
+        ),
         // Getting Started Modal
         <GettingStartedModal 
             key="getting-started-modal"

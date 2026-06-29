@@ -47,9 +47,10 @@ import {
     getXPData,
     getXPNeededForLevel,
 } from '@/services/studyTimeService';
-import { LevelJourneyModal } from '@/components/ui/modals';
+
 import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
 import { AvatarUploader } from "@/components/ui/avatar-uploader";
+import { CoverUploader } from "@/components/ui/cover-uploader";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
@@ -77,8 +78,7 @@ export default function UserProfileDropdown() {
     const ref = useRef<HTMLDivElement>(null!);
     const modalRef = useRef<HTMLDivElement>(null);
     const [isScrolled, setIsScrolled] = useState(false);
-    const [isXpExpanded, setIsXpExpanded] = useState(false);
-    const [showLevelJourney, setShowLevelJourney] = useState(false);
+
 
     // Check for level up
     useEffect(() => {
@@ -199,17 +199,16 @@ export default function UserProfileDropdown() {
         });
     };
 
-    const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            try {
-                // Compress cover image: max 800x300, 70% quality
-                const compressedImage = await compressImage(file, 800, 300, 0.7);
-                setCoverImage(compressedImage);
-                await saveCoverImage(compressedImage);
-            } catch (error) {
-                console.error('Error compressing cover image:', error);
-            }
+    const handleCoverUploadFile = async (file: File) => {
+        try {
+            // Compress cover image: max 800x300, 70% quality
+            const compressedImage = await compressImage(file, 800, 300, 0.7);
+            setCoverImage(compressedImage);
+            await saveCoverImage(compressedImage);
+            return { success: true };
+        } catch (error) {
+            console.error('Error compressing cover image:', error);
+            return { success: false };
         }
     };
 
@@ -231,10 +230,11 @@ export default function UserProfileDropdown() {
         if (isOpen && modalRef.current && modalRef.current.contains(event.target as Node)) {
             return;
         }
-        // Don't close if the avatar uploader modal is open
-        if (document.querySelector('[data-avatar-uploader-open]')) {
+        // Don't close if the avatar or cover uploader modal is open
+        if (document.querySelector('[data-avatar-uploader-open]') || document.querySelector('[data-cover-uploader-open]')) {
             return;
         }
+
         setIsOpen(false);
         setIsEditing(false);
     });
@@ -301,18 +301,18 @@ export default function UserProfileDropdown() {
                     onMouseEnter={() => setIsAvatarHovered(true)}
                     onMouseLeave={() => setIsAvatarHovered(false)}
                     className={cn(
-                        'relative flex items-center gap-2.5 px-1.5 py-1 rounded-xl transition-all duration-150',
+                        'relative flex items-center gap-2.5 px-0 sm:px-1.5 py-1 rounded-xl transition-all duration-150',
                         isDarkMode ? 'hover:bg-slate-700/50' : 'hover:bg-zinc-50'
                     )}
                 >
                     {/* Premium SaaS Avatar Container */}
-                    <div className="relative shrink-0 w-8 h-8 sm:w-10 sm:h-10 mr-0.5 sm:mr-1.5 flex items-center justify-center">
+                    <div className="relative shrink-0 w-8 h-8 sm:w-10 sm:h-10 sm:mr-1.5 flex items-center justify-center">
                         {/* Circular Level Gauge */}
                         <AnimatedCircularProgressBar
                             max={100}
                             min={0}
                             value={xpProgress}
-                            gaugePrimaryColor="#3b82f6"
+                            gaugePrimaryColor={level >= 20 ? '#eab308' : '#3b82f6'}
                             gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
                             className="w-8 h-8 sm:w-10 sm:h-10 shrink-0"
                         >
@@ -326,17 +326,17 @@ export default function UserProfileDropdown() {
                                 )}
                             </div>
                             
-                            {/* Level Badge overlapping bottom center */}
-                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 z-20 flex justify-center">
+                            {/* Level Badge overlapping bottom center (Hidden on mobile to reduce clutter) */}
+                            <div className="hidden sm:flex absolute -bottom-1 left-1/2 -translate-x-1/2 z-20 justify-center">
                                 <motion.div 
                                     className={cn(
-                                        'min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[8.5px] font-bold tracking-wider shadow-sm border-[2px] transition-colors duration-300 bg-blue-500 text-white',
+                                        `min-w-[32px] h-[16px] px-1 rounded-md flex items-center justify-center text-[8.5px] font-bold tracking-wider shadow-sm border-[2px] transition-colors duration-300 ${level >= 20 ? 'bg-yellow-400 text-blue-800' : 'bg-blue-500 text-white'}`,
                                         isDarkMode ? (showOnlineStatus ? 'border-emerald-400' : 'border-slate-800') : (showOnlineStatus ? 'border-emerald-500' : 'border-white')
                                     )}
                                     animate={showLevelUp ? { scale: [1, 1.3, 1] } : {}}
                                     transition={{ duration: 0.5 }}
                                 >
-                                    LV.{level}
+                                    <span className="ml-[0.05em]">{level >= 20 ? 'MAX' : `LV.${level}`}</span>
                                 </motion.div>
                             </div>
                         </AnimatedCircularProgressBar>
@@ -358,10 +358,14 @@ export default function UserProfileDropdown() {
                 {isAvatarHovered && !isOpen && (
                     <div className="absolute top-full mt-2 right-[-22px] z-50 pointer-events-none">
                         <motion.div
-                            initial={{ opacity: 0, y: 6 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 4 }}
-                            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                            initial={{ opacity: 0, scale: 0.92, filter: "blur(4px)" }}
+                            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                            exit={{ opacity: 0, scale: 0.92, filter: "blur(4px)" }}
+                            transition={{ 
+                                type: "spring", stiffness: 400, damping: 24, mass: 0.6, 
+                                filter: { type: "tween", ease: "easeOut", duration: 0.2 } 
+                            }}
+                            style={{ transformOrigin: 'top center' }}
                         >
                             <div className={cn(
                                 "w-[250px] sm:w-[260px] rounded-[20px] border p-4 flex flex-col gap-3.5 relative transition-all duration-300",
@@ -374,27 +378,61 @@ export default function UserProfileDropdown() {
                                 )} />
                                 
                                 <div className="flex items-center gap-3 relative z-10">
-                                    <div className={cn("w-11 h-11 rounded-[14px] flex items-center justify-center shrink-0 shadow-sm border", isDarkMode ? "bg-blue-500/10 border-blue-500/20" : "bg-blue-50 border-blue-100")}>
-                                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#60a5fa' : '#3b82f6'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M12 2a10 10 0 1 0 10 10H12V2z" />
-                                        </svg>
+                                    <div className={cn("w-11 h-11 rounded-[14px] flex items-center justify-center shrink-0 shadow-sm border", 
+                                        level >= 20 
+                                            ? (isDarkMode ? "bg-yellow-500/10 border-yellow-500/20" : "bg-yellow-50 border-yellow-200") 
+                                            : (isDarkMode ? "bg-blue-500/10 border-blue-500/20" : "bg-blue-50 border-blue-100")
+                                    )}>
+                                        {level >= 20 ? (
+                                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#facc15' : '#eab308'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                            </svg>
+                                        ) : (
+                                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke={isDarkMode ? '#60a5fa' : '#3b82f6'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M12 2a10 10 0 1 0 10 10H12V2z" />
+                                            </svg>
+                                        )}
                                     </div>
                                     <div className="flex flex-col text-left">
-                                        <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">Level {level}</h1>
-                                        <span className={cn("text-[11px] font-bold leading-none mt-0.5", isDarkMode ? "text-blue-400" : "text-blue-600")}>{getLevelTitle(level)}</span>
+                                        <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">
+                                            {level >= 20 ? 'MAX Level' : `Level ${level}`}
+                                        </h1>
+                                        <span className={cn("text-[11px] font-bold leading-none mt-0.5", 
+                                            level >= 20 ? (isDarkMode ? "text-yellow-400" : "text-yellow-600") : (isDarkMode ? "text-blue-400" : "text-blue-600")
+                                        )}>{getLevelTitle(level)}</span>
                                     </div>
                                 </div>
-                                <div className={cn("flex items-center gap-3 p-3 rounded-[16px] border transition-colors relative z-10", isDarkMode ? "bg-slate-800/40 border-slate-800/80" : "bg-slate-50/50 border-slate-100")}>
+                                <div className={cn("flex items-center gap-3 p-3 rounded-[16px] border transition-colors relative z-10", 
+                                    level >= 20 
+                                        ? (isDarkMode ? "bg-slate-800/40 border-yellow-500/30" : "bg-yellow-50/50 border-yellow-200") 
+                                        : (isDarkMode ? "bg-slate-800/40 border-slate-800/80" : "bg-slate-50/50 border-slate-100")
+                                )}>
                                     <div className="flex flex-col text-left">
-                                        <p className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-0.5">Almost There!</p>
+                                        <p className={cn("text-[9px] font-bold uppercase tracking-wider mb-0.5", 
+                                            level >= 20 ? (isDarkMode ? "text-yellow-400" : "text-yellow-600") : (isDarkMode ? "text-blue-400" : "text-blue-600")
+                                        )}>
+                                            {level >= 20 ? 'LEGENDARY STATUS' : 'Almost There!'}
+                                        </p>
                                         <p className="text-[12.5px] font-black text-slate-900 dark:text-slate-100 leading-none">
-                                            {getXPNeededForLevel(level) - getXPData().xpInCurrentLevel} <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">XP to Lv.{level + 1}</span>
+                                            {level >= 20 ? (
+                                                <>{getXPData().totalXP.toLocaleString()} <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">Total XP Earned</span></>
+                                            ) : (
+                                                <>{getXPNeededForLevel(level) - getXPData().xpInCurrentLevel} <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">XP to Lv.{level + 1}</span></>
+                                            )}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-1.5 relative z-10">
-                                    <div className="h-2.5 w-full rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden">
-                                        <motion.div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400" initial={{ width: 0 }} animate={{ width: `${xpProgress}%` }} />
+                                    <div className={cn("h-2.5 w-full rounded-full overflow-hidden", 
+                                        level >= 20 ? (isDarkMode ? "bg-yellow-900/30" : "bg-yellow-100") : (isDarkMode ? "bg-slate-700" : "bg-slate-200/80")
+                                    )}>
+                                        <motion.div 
+                                            className={cn("h-full rounded-full", 
+                                                level >= 20 ? "bg-gradient-to-r from-yellow-400 to-yellow-300" : "bg-gradient-to-r from-blue-500 to-blue-400"
+                                            )} 
+                                            initial={{ width: 0 }} 
+                                            animate={{ width: level >= 20 ? '100%' : `${xpProgress}%` }} 
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -421,7 +459,7 @@ export default function UserProfileDropdown() {
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.3 }}
                                 className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-                                onClick={() => { if (!document.querySelector('[data-avatar-uploader-open]')) setIsOpen(false); }}
+                                onClick={() => { if (!document.querySelector('[data-avatar-uploader-open]') && !document.querySelector('[data-cover-uploader-open]')) setIsOpen(false); }}
                             />
 
                             {/* Modal Card - Responsive layout that works on Mobile and Desktop */}
@@ -465,29 +503,30 @@ export default function UserProfileDropdown() {
                                     </div>
                                     
                                     {/* Edit Banner Button (Premium Glassmorphic) */}
-                                    <input type="file" id="cover-upload-new" accept="image/*,.gif" onChange={handleCoverUpload} className="hidden" />
-                                    <label htmlFor="cover-upload-new" className="absolute top-24 sm:top-32 md:top-40 right-4 sm:right-6 px-3 py-1.5 sm:px-4 sm:py-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-slate-700 dark:text-slate-200 text-[11px] sm:text-xs font-bold rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:bg-white dark:hover:bg-slate-800 transition-all cursor-pointer z-20 flex items-center gap-1.5 sm:gap-2 border border-slate-200/50 dark:border-slate-700/50 pointer-events-auto group/edit">
-                                        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover/edit:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                        <span className="hidden sm:inline-block tracking-wide">Edit Cover</span>
-                                    </label>
+                                    <CoverUploader onUpload={handleCoverUploadFile}>
+                                        <div className="absolute top-24 sm:top-32 md:top-40 right-4 sm:right-6 px-3 py-1.5 sm:px-4 sm:py-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md text-slate-700 dark:text-slate-200 text-[11px] sm:text-xs font-bold rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:bg-white dark:hover:bg-slate-800 transition-all cursor-pointer z-20 flex items-center gap-1.5 sm:gap-2 border border-slate-200/50 dark:border-slate-700/50 pointer-events-auto group/edit">
+                                            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover/edit:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            <span className="hidden sm:inline-block tracking-wide">Edit Cover</span>
+                                        </div>
+                                    </CoverUploader>
 
                                     <div className="px-4 sm:px-8 pb-8 pt-20 sm:pt-24 md:pt-32 relative z-10">
                                         
                                         {/* 2. Avatar & Info Section */}
-                                        <div className="relative flex flex-col items-center sm:flex-row sm:items-end justify-between mb-6 gap-4 sm:gap-6 w-full z-10 pointer-events-none">
-                                            <div className="flex flex-col items-center sm:flex-row sm:items-end gap-3 sm:gap-5 w-full pointer-events-auto">
+                                        <div className="relative flex flex-col items-center sm:flex-row sm:items-end justify-between mb-6 gap-4 sm:gap-6 w-full z-10 pointer-events-none flex-wrap">
+                                            <div className="flex flex-col items-center sm:flex-row sm:items-end gap-3 sm:gap-5 min-w-0 max-w-full pointer-events-auto">
                                                 {/* Avatar */}
-                                                <div className="relative z-10 p-1.5 bg-white dark:bg-slate-900 rounded-full shrink-0 w-max inline-block shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
+                                                <div className="relative z-10 p-1.5 bg-white dark:bg-slate-900 rounded-full shrink-0 inline-block shadow-[0_8px_30px_rgba(0,0,0,0.12)]">
                                                     <AnimatedCircularProgressBar
                                                         max={100}
                                                         min={0}
                                                         value={xpProgress}
-                                                        gaugePrimaryColor="#3b82f6"
+                                                        gaugePrimaryColor={level >= 20 ? '#eab308' : '#3b82f6'}
                                                         gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
-                                                        className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32"
+                                                        className="!w-20 !h-20 sm:!w-28 sm:!h-28 md:!w-32 md:!h-32"
                                                     >
                                                         <AvatarUploader onUpload={handleProfileUploadFile}>
                                                             <div className="absolute inset-1.5 sm:inset-2 md:inset-2.5 rounded-full z-10 cursor-pointer overflow-hidden border-4 border-transparent hover:border-blue-500/50 transition-all">
@@ -501,10 +540,10 @@ export default function UserProfileDropdown() {
                                                         </AvatarUploader>
                                                         
                                                         <div className={cn(
-                                                            "absolute -bottom-1 sm:-bottom-1.5 left-1/2 -translate-x-1/2 min-w-[40px] sm:min-w-[50px] md:min-w-[56px] h-[20px] sm:h-[24px] md:h-[26px] px-2 rounded-md sm:rounded-lg flex items-center justify-center text-[10px] sm:text-[12px] md:text-[13px] font-bold tracking-wider shadow-sm border-[2px] z-20 transition-colors duration-300 text-white bg-blue-500",
+                                                            `absolute -bottom-1 sm:-bottom-1.5 left-1/2 -translate-x-1/2 min-w-[40px] sm:min-w-[50px] md:min-w-[56px] h-[20px] sm:h-[24px] md:h-[26px] px-2 rounded-md sm:rounded-lg flex items-center justify-center text-[10px] sm:text-[12px] md:text-[13px] font-bold tracking-wider shadow-sm border-[2px] z-20 transition-colors duration-300 ${level >= 20 ? 'bg-yellow-400 text-blue-800' : 'bg-blue-500 text-white'}`,
                                                             isDarkMode ? (showOnlineStatus ? 'border-emerald-400' : 'border-slate-800') : (showOnlineStatus ? 'border-emerald-500' : 'border-white')
                                                         )}>
-                                                            LV.{level}
+                                                            <span className="ml-[0.05em]">{level >= 20 ? 'MAX' : `LV.${level}`}</span>
                                                         </div>
 
                                                         {/* Mobile persistent edit badge */}
@@ -517,153 +556,40 @@ export default function UserProfileDropdown() {
                                                 {/* Name & Basic Info */}
                                                 <div className="pb-1 sm:pb-3 flex flex-col items-center sm:items-start text-center sm:text-left mt-2 sm:mt-0 w-full sm:w-auto">
                                                     
-                                                    {/* NEW STUDENT ID BADGE */}
-                                                    <div className="flex items-center gap-2 mb-3 bg-slate-50/80 dark:bg-slate-800/80 rounded-[12px] py-1 pl-2.5 pr-1 w-max mx-auto sm:mx-0 shadow-sm border border-slate-200/80 dark:border-slate-700/80 backdrop-blur-sm">
-                                                        <div className="flex items-center gap-2 pl-1">
-                                                            <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none mt-[1px]">Student ID</span>
-                                                            <div className="w-[1.5px] h-3 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
-                                                            <span className="text-[12.5px] font-black text-slate-800 dark:text-slate-200 leading-none tracking-wide">{profile.studentId}</span>
-                                                        </div>
-                                                        
-                                                        {/* Copy Button */}
-                                                        <button 
-                                                            onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(profile.studentId); }}
-                                                            className="w-[26px] h-[26px] flex items-center justify-center rounded-lg bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all active:scale-95 ml-1"
-                                                            title="Copy ID"
-                                                        >
-                                                            <svg className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                                <rect x="9" y="9" width="13" height="13" rx="3" ry="3" />
-                                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-
                                                     <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
                                                         {profile.firstName} {profile.lastName}
                                                     </h1>
                                                     <p className="text-[13px] sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
                                                         {profile.email}
                                                     </p>
+
+                                                    {/* NEW STUDENT ID BADGE */}
+                                                    <div className="flex items-center gap-1.5 mt-2 bg-slate-50/80 dark:bg-slate-800/80 rounded-[8px] py-[3px] pl-2.5 pr-[3px] w-max mx-auto sm:mx-0 shadow-sm border border-slate-200/80 dark:border-slate-700/80 backdrop-blur-sm h-[28px]">
+                                                        <div className="flex items-center gap-1.5 pl-0.5">
+                                                            <span className="text-[9.5px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none mt-[1px]">Student ID</span>
+                                                            <div className="w-[1.5px] h-3 bg-slate-300 dark:bg-slate-600 rounded-full shrink-0"></div>
+                                                            <span className="text-[13px] font-black text-slate-800 dark:text-slate-200 leading-none tracking-wide truncate max-w-[120px] sm:max-w-none">{profile.studentId}</span>
+                                                        </div>
+                                                        
+                                                        {/* Copy Button */}
+                                                        <div 
+                                                            onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(profile.studentId); }}
+                                                            className="w-[22px] min-w-[22px] h-[22px] min-h-[22px] flex items-center justify-center rounded-md bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all active:scale-95 ml-1 cursor-pointer shrink-0"
+                                                            title="Copy ID"
+                                                            role="button"
+                                                            tabIndex={0}
+                                                        >
+                                                            <svg className="w-3 h-3 text-slate-600 dark:text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                <rect x="9" y="9" width="13" height="13" rx="3" ry="3" />
+                                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                                            </svg>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* 3. Compact XP Widget (Redesigned) */}
-                                        <div className="mb-6 p-4 sm:p-5 rounded-[20px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 flex flex-col gap-5 relative overflow-hidden group cursor-default">
-                                            {/* Glow effect */}
-                                            <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-transform duration-700 group-hover:scale-125" />
 
-                                            {/* Gamification Content */}
-                                            <div className="flex flex-col gap-5 relative z-10 w-full">
-                                                {/* Top Row: Gamification Rank & Quick Stats */}
-                                                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 w-full">
-                                                    {/* Left: Gamification Rank - Clickable to open Level Journey */}
-                                                    <button 
-                                                        onClick={() => setShowLevelJourney(true)}
-                                                        className="flex flex-col sm:flex-row items-center sm:items-center gap-3.5 sm:gap-4 group/rank hover:bg-slate-50 dark:hover:bg-slate-700/50 p-4 sm:p-3.5 rounded-[20px] sm:rounded-[20px] sm:-mx-2 sm:-my-2 transition-all duration-300 text-center sm:text-left focus:outline-none flex-1 min-w-0 w-full"
-                                                    >
-                                                        <div className="w-[56px] h-[56px] rounded-[18px] bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0 group-hover/rank:scale-105 group-hover/rank:bg-blue-600 group-hover/rank:text-white text-blue-600 dark:text-blue-400 transition-all duration-300">
-                                                            <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                                                        </div>
-                                                        <div className="flex flex-col min-w-0 flex-1 justify-center items-center sm:items-start w-full">
-                                                            <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2.5 sm:gap-2 mb-2 sm:mb-1.5 w-full">
-                                                                <h3 className="text-[18px] sm:text-[19px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight group-hover/rank:text-blue-600 dark:group-hover/rank:text-blue-400 transition-colors truncate">
-                                                                    {getLevelTitle(level)}
-                                                                </h3>
-                                                                <span className="flex items-center gap-1 text-[10px] sm:text-[9px] font-bold uppercase tracking-widest text-white sm:text-blue-600 bg-blue-600 sm:bg-blue-100/80 dark:bg-blue-600 sm:dark:bg-blue-900/50 dark:text-white sm:dark:text-blue-400 px-4 py-2 sm:px-2.5 sm:py-1 rounded-md sm:group-hover/rank:bg-blue-600 group-hover/rank:text-white transition-colors shrink-0 shadow-sm sm:shadow-none">
-                                                                    View Journey
-                                                                    <svg className="w-3.5 h-3.5 sm:w-3 sm:h-3 group-hover/rank:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-[13px] text-slate-500 dark:text-slate-400 font-medium leading-tight truncate w-full">
-                                                                Keep studying to reach Level {level + 1}
-                                                            </p>
-                                                        </div>
-                                                    </button>
-
-                                                    {/* Right: Quick Stats Badges */}
-                                                    <div className="flex flex-row items-center gap-2.5 sm:justify-end w-full sm:w-auto mt-2 sm:mt-0">
-                                                        {/* Old Student ID Badge Removed - Moved Above Username */}
-
-                                                        {/* Level Badge */}
-                                                        <div className="flex-1 sm:flex-none flex items-center gap-2 px-2.5 py-1.5 rounded-[12px] bg-blue-50/80 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 shadow-sm overflow-hidden">
-                                                            <div className="w-6 h-6 rounded-[8px] bg-white dark:bg-blue-800/50 flex items-center justify-center text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-700 shadow-sm shrink-0">
-                                                                <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' strokeWidth={2.5} viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' d='M13 10V3L4 14h7v7l9-11h-7z' /></svg>
-                                                            </div>
-                                                            <div className="flex flex-col text-left min-w-0">
-                                                                <span className="text-[8.5px] font-bold text-blue-500 dark:text-blue-400 uppercase tracking-widest leading-none mb-0.5 truncate">Level</span>
-                                                                <span className="text-[11.5px] font-bold text-blue-900 dark:text-blue-100 leading-none truncate">{level}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Bottom Row: Full-width XP Progress Bar */}
-                                                <div className="w-full flex flex-col gap-2 pt-1 relative z-10">
-                                                    <div className="flex justify-between items-center px-1">
-                                                        <span className="text-[13px] sm:text-[14px] font-black text-blue-600 dark:text-blue-400 tracking-tight">{getXPData().xpInCurrentLevel} XP</span>
-                                                        <span className="text-[13px] sm:text-[14px] font-black text-slate-500 dark:text-slate-400 tracking-tight">{getXPNeededForLevel(level)} XP</span>
-                                                    </div>
-                                                    <div className="h-3 sm:h-3.5 w-full rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.15)] border border-black/5 dark:border-white/5 relative">
-                                                        <motion.div
-                                                            className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400"
-                                                            initial={{ width: 0 }}
-                                                            animate={{ width: `${xpProgress}%` }}
-                                                            transition={{ duration: 1.2, ease: "easeOut" }}
-                                                        >
-                                                            {/* CSS Shimmer Effect inside progress bar */}
-                                                            <div className="absolute top-0 inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                                                        </motion.div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            {/* Expandable "How to Earn XP" section */}
-                                            {/* Expandable "How to Earn XP" section (Animated) */}
-                                            <div className="border-t border-slate-200 dark:border-slate-700/60 pt-3 relative z-10 flex flex-col">
-                                                <button 
-                                                    onClick={() => setIsXpExpanded(!isXpExpanded)}
-                                                    className="w-full flex items-center justify-between text-[12px] font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 transition-colors focus:outline-none"
-                                                >
-                                                    <div className="flex items-center gap-1.5">
-                                                        <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                                                        How do I earn XP?
-                                                    </div>
-                                                    <motion.div 
-                                                        animate={{ rotate: isXpExpanded ? 180 : 0 }}
-                                                        transition={{ duration: 0.3 }}
-                                                    >
-                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                                                    </motion.div>
-                                                </button>
-                                                
-                                                <AnimatePresence initial={false}>
-                                                    {isXpExpanded && (
-                                                        <motion.div
-                                                            initial={{ height: 0, opacity: 0 }}
-                                                            animate={{ height: "auto", opacity: 1 }}
-                                                            exit={{ height: 0, opacity: 0 }}
-                                                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                                                            className="overflow-hidden"
-                                                        >
-                                                            <div className="pt-4 pb-1 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                                                                {[
-                                                                    { label: 'Assignments', xp: '+50' },
-                                                                    { label: 'Study Tools', xp: '+10' },
-                                                                    { label: 'Daily Streak', xp: '+20' },
-                                                                    { label: 'Reading', xp: '+5/m' }
-                                                                ].map(item => (
-                                                                    <div key={item.label} className="bg-white dark:bg-slate-800/80 rounded-[14px] p-2.5 sm:p-3 border border-slate-200/80 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center text-center transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800/60 cursor-default group/xp">
-                                                                        <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1 leading-none">{item.label}</span>
-                                                                        <span className="text-[13px] sm:text-[14px] font-black text-blue-600 dark:text-blue-400 leading-none group-hover/xp:scale-110 transition-transform duration-300">{item.xp}</span>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
-                                            </div>
-                                        </div>
 
                                         {/* Save Message Toast */}
                                         <AnimatePresence>
@@ -742,23 +668,25 @@ export default function UserProfileDropdown() {
                                             
                                             <button 
                                                 onClick={handleSignOut}
-                                                className="px-3 sm:px-5 py-2.5 sm:py-3 rounded-[12px] text-[13px] sm:text-[14px] font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 whitespace-nowrap transition-colors flex items-center justify-center gap-1.5 shrink-0"
+                                                className="px-3 sm:px-5 py-2.5 sm:py-3 rounded-[12px] text-[13px] sm:text-[14px] font-bold text-red-600 dark:text-red-400 bg-white sm:bg-transparent dark:bg-slate-700 sm:dark:bg-transparent shadow-sm sm:shadow-none hover:bg-white dark:hover:bg-slate-700 whitespace-nowrap transition-colors flex items-center justify-center gap-1.5 shrink-0"
                                             >
                                                 <svg className='w-4 h-4 sm:w-4 sm:h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1' /></svg>
                                                 <span className="hidden sm:inline">Sign Out</span>
                                             </button>
-                                            </div>
                                             
-                                            {/* Sticky Close Button (All Devices) */}
+                                            <div className="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 mx-1 shrink-0"></div>
+
+                                            {/* Close Button Inside Container */}
                                             <button 
                                                 onClick={() => setIsOpen(false)} 
-                                                className="shrink-0 flex items-center justify-center w-11 h-11 sm:w-[46px] sm:h-[46px] bg-white dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 rounded-[14px] transition-colors border border-slate-200/60 dark:border-slate-700/60 shadow-sm group/close"
+                                                className="shrink-0 flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 text-slate-500 bg-white sm:bg-transparent dark:bg-slate-700 sm:dark:bg-transparent shadow-sm sm:shadow-none hover:bg-white hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100 rounded-[12px] transition-colors group/close"
                                                 title="Close Profile"
                                             >
-                                                <svg className="w-5 h-5 sm:w-5 sm:h-5 transition-transform duration-300 group-hover/close:rotate-90 group-hover/close:scale-110" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                                                <svg className="w-5 h-5 transition-transform duration-300 group-hover/close:rotate-90 group-hover/close:scale-110" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                                 </svg>
                                             </button>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -794,7 +722,7 @@ export default function UserProfileDropdown() {
                 document.body
             )}
         </div>
-        <LevelJourneyModal isOpen={showLevelJourney} onClose={() => setShowLevelJourney(false)} currentLevel={level} />
+
         </>
     );
 }

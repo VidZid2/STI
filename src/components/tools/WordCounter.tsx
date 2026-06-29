@@ -679,16 +679,7 @@ ${text}`;
                           <Trash2 className="w-[18px] h-[18px] shrink-0" />
                       </button>
 
-                      <div className="w-[2px] h-8 bg-zinc-200 dark:bg-zinc-800 rounded-full mx-1" />
 
-                      <button
-                          type="button"
-                          onClick={handleLoadSample}
-                          disabled={!!text}
-                          className="flex items-center justify-center gap-2 rounded-[16px] bg-cyan-600 hover:bg-cyan-700 px-5 h-[46px] text-[15px] font-bold text-white transition-all duration-300 shadow-sm hover:shadow-[0_8px_20px_rgba(8,145,178,0.35)] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
-                      >
-                          Load Sample
-                      </button>
                   </div>
               </div>
           </div>

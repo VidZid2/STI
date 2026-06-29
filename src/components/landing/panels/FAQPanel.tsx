@@ -77,7 +77,7 @@ const FAQPanel: React.FC<FAQPanelProps> = ({ isActive }) => {
                 >
                   FAQs
                 </motion.h2>
-                <motion.p 
+                <motion.div 
                   className="mt-2 md:mt-3 text-[16px] md:text-[18px] text-zinc-600 max-w-3xl"
                   initial={{ opacity: 0, y: -20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -85,7 +85,7 @@ const FAQPanel: React.FC<FAQPanelProps> = ({ isActive }) => {
                   transition={{ duration: 0.5, delay: 0.1 }}
                 >
                   Everything you need to know about the platform. Can't find the answer you're looking for? Please <LinkPreview url="https://helpdesk.sti.edu/User/Login?ReturnUrl=%2f" className="underline text-blue-600 hover:text-blue-700 transition-colors">chat to our friendly team</LinkPreview>.
-                </motion.p>
+                </motion.div>
               </>
           </AnimatePresence>
         </div>

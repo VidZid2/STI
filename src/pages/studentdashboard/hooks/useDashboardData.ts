@@ -11,6 +11,7 @@ import {
 } from '../../../services/studyTimeService';
 import {
     getUpcomingDeadlines,
+    initializeDeadlines,
     type Deadline
 } from '../../../services/deadlinesService';
 import {
@@ -32,11 +33,20 @@ export const useDashboardData = (refreshTrigger: number): UseDashboardDataReturn
     const [overallProgress, setOverallProgress] = useState(() => calculateOverallProgress());
     const [totalCourses, setTotalCourses] = useState(() => getTotalEnrolledCoursesCount());
 
-    // Initialize study time tracking on mount
+    // Initialize study time tracking and deadlines on mount
     useEffect(() => {
-        initializeTracking().then(() => {
-        }).catch(() => {
-        });
+        const initializeData = async () => {
+            try {
+                await Promise.all([
+                    initializeTracking(),
+                    initializeDeadlines()
+                ]);
+            } catch (error) {
+                console.error('Failed to initialize dashboard data:', error);
+            }
+        };
+        
+        initializeData();
 
         return () => {
         };

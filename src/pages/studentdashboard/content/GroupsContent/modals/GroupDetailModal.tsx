@@ -680,7 +680,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                                             max={100}
                                                             min={0}
                                                             value={userProgress}
-                                                            gaugePrimaryColor={themeColor}
+                                                            gaugePrimaryColor={userLevel >= 20 ? '#eab308' : themeColor}
                                                             gaugeSecondaryColor={isDarkMode ? `${themeColor}25` : `${themeColor}40`}
                                                             className="w-11 h-11"
                                                         >
@@ -694,8 +694,8 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                                                 )}
                                                             </div>
 
-                                                            <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 min-w-[28px] h-[14px] px-1 rounded-md flex items-center justify-center text-[8px] font-bold tracking-wider shadow-sm border-[2px] z-20 transition-colors duration-300 text-white ${isDarkMode ? (member.is_online ? 'border-emerald-400' : 'border-slate-800/40') : (member.is_online ? 'border-emerald-500' : 'border-white')}`} style={{ backgroundColor: themeColor }}>
-                                                                LV.{userLevel}
+                                                            <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 min-w-[28px] h-[14px] px-1 rounded-md flex items-center justify-center text-[8px] font-bold tracking-wider shadow-sm border-[2px] z-20 transition-colors duration-300 ${userLevel >= 20 ? 'text-blue-800' : 'text-white'} ${isDarkMode ? (member.is_online ? 'border-emerald-400' : 'border-slate-800/40') : (member.is_online ? 'border-emerald-500' : 'border-white')}`} style={{ backgroundColor: userLevel >= 20 ? '#eab308' : themeColor }}>
+                                                                <span className="ml-[0.05em]">{userLevel >= 20 ? 'MAX' : `LV.${userLevel}`}</span>
                                                             </div>
                                                         </AnimatedCircularProgressBar>
                                                     </div>

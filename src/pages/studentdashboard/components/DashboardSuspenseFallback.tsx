@@ -1,7 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 
 export const DashboardSuspenseFallback: React.FC = () => {
+    // Optimization: avoid running expensive framer-motion animations while intro curtain is covering the screen
+    const [isIntroActive, setIsIntroActive] = useState(() => document.body.classList.contains('intro-active'));
+
+    useEffect(() => {
+        if (!isIntroActive) return;
+        
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class' && !document.body.classList.contains('intro-active')) {
+                    setIsIntroActive(false);
+                }
+            });
+        });
+        
+        observer.observe(document.body, { attributes: true });
+        return () => observer.disconnect();
+    }, [isIntroActive]);
+
+    const renderSkeletonBox = (width: string | number, height: string | number, borderRadius: string, delay: number = 0) => {
+        const baseStyle = { width, height, borderRadius, background: 'var(--shimmer-bg)' };
+        
+        if (isIntroActive) {
+            return <div style={{ ...baseStyle, opacity: 0.5 }} />;
+        }
+        
+        return (
+            <motion.div
+                animate={{ opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay }}
+                style={baseStyle}
+            />
+        );
+    };
+
     return (
         <div style={{
             flex: 1,
@@ -15,16 +49,8 @@ export const DashboardSuspenseFallback: React.FC = () => {
             overflow: 'hidden' }}>
             {/* Header Area */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <motion.div
-                    animate={{ opacity: [0.5, 0.8, 0.5] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                    style={{ width: 250, height: 32, borderRadius: '8px', background: 'var(--shimmer-bg)' }}
-                />
-                <motion.div
-                    animate={{ opacity: [0.5, 0.8, 0.5] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
-                    style={{ width: 120, height: 32, borderRadius: '8px', background: 'var(--shimmer-bg)' }}
-                />
+                {renderSkeletonBox(250, 32, '8px', 0)}
+                {renderSkeletonBox(120, 32, '8px', 0.2)}
             </div>
 
             {/* Content Grid */}
@@ -40,29 +66,13 @@ export const DashboardSuspenseFallback: React.FC = () => {
                         gap: '16px'
                     }}>
                         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                            <motion.div
-                                animate={{ opacity: [0.5, 0.8, 0.5] }}
-                                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.1 }}
-                                style={{ width: 48, height: 48, borderRadius: '12px', background: 'var(--shimmer-bg)' }}
-                            />
+                            {renderSkeletonBox(48, 48, '12px', i * 0.1)}
                             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <motion.div
-                                    animate={{ opacity: [0.5, 0.8, 0.5] }}
-                                    transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.1 + 0.1 }}
-                                    style={{ width: '80%', height: 16, borderRadius: '4px', background: 'var(--shimmer-bg)' }}
-                                />
-                                <motion.div
-                                    animate={{ opacity: [0.5, 0.8, 0.5] }}
-                                    transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.1 + 0.2 }}
-                                    style={{ width: '40%', height: 12, borderRadius: '4px', background: 'var(--shimmer-bg)' }}
-                                />
+                                {renderSkeletonBox('80%', 16, '4px', i * 0.1 + 0.1)}
+                                {renderSkeletonBox('40%', 12, '4px', i * 0.1 + 0.2)}
                             </div>
                         </div>
-                        <motion.div
-                            animate={{ opacity: [0.5, 0.8, 0.5] }}
-                            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.1 + 0.3 }}
-                            style={{ width: '100%', height: 60, borderRadius: '8px', background: 'var(--shimmer-bg)' }}
-                        />
+                        {renderSkeletonBox('100%', 60, '8px', i * 0.1 + 0.3)}
                     </div>
                 ))}
             </div>
