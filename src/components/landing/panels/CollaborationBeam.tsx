@@ -4,6 +4,7 @@ import React, { forwardRef, useRef } from "react"
 
 import { cn } from "@/lib/utils"
 import { AnimatedBeam } from "@/components/ui/animated-beam"
+import { IconUser, IconMessages, IconUsersGroup, IconVideo, IconFileText } from "@tabler/icons-react"
 
 
 
@@ -42,49 +43,23 @@ export function CollaborationBeam({ isActive = true }: { isActive?: boolean }) {
       <div className="flex size-full max-h-[140px] md:max-h-[150px] max-w-lg flex-row items-stretch justify-between">
         <div className="flex flex-col items-center justify-between">
           <Circle ref={div1Ref}>
-            <lord-icon
-              src="https://cdn.lordicon.com/fozsorqm.json"
-              trigger="hover"
-              colors="primary:#1e3a8a,secondary:#3b82f6"
-              style={{ width: "32px", height: "32px" }}
-            />
+            <IconUser className="w-6 h-6 text-blue-800 dark:text-blue-400" />
           </Circle>
           <Circle ref={div2Ref}>
-            <lord-icon
-              src="https://cdn.lordicon.com/dhzbkemf.json"
-              trigger="hover"
-              colors="primary:#1e3a8a,secondary:#3b82f6"
-              style={{ width: "32px", height: "32px" }}
-            />
+            <IconMessages className="w-6 h-6 text-blue-800 dark:text-blue-400" />
           </Circle>
         </div>
         <div className="flex flex-col items-center justify-center">
           <Circle ref={div4Ref} className="size-16 p-2 border-blue-200 dark:border-blue-500/30">
-            <lord-icon
-              src="https://cdn.lordicon.com/shcfcebj.json"
-              trigger="hover"
-              state="hover-nodding"
-              colors="primary:#1e3a8a,secondary:#3b82f6"
-              style={{ width: "48px", height: "48px" }}
-            />
+            <IconUsersGroup className="w-10 h-10 text-blue-800 dark:text-blue-400" />
           </Circle>
         </div>
         <div className="flex flex-col items-center justify-between">
           <Circle ref={div5Ref}>
-            <lord-icon
-              src="https://cdn.lordicon.com/rrbmabsx.json"
-              trigger="hover"
-              colors="primary:#1e3a8a,secondary:#3b82f6"
-              style={{ width: "32px", height: "32px" }}
-            />
+            <IconVideo className="w-6 h-6 text-blue-800 dark:text-blue-400" />
           </Circle>
           <Circle ref={div6Ref}>
-            <lord-icon
-              src="https://cdn.lordicon.com/cfoaotmk.json"
-              trigger="hover"
-              colors="primary:#1e3a8a,secondary:#3b82f6"
-              style={{ width: "32px", height: "32px" }}
-            />
+            <IconFileText className="w-6 h-6 text-blue-800 dark:text-blue-400" />
           </Circle>
         </div>
       </div>
