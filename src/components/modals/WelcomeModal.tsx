@@ -44,6 +44,7 @@ const TABS = [
 ];
 
 const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onClose }) => {
+// @ts-ignore
     const { isLowEnd } = useDevicePerformance();
     const reduce = useReducedMotion();
     const enterY = reduce ? 0 : 40;

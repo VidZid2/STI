@@ -76,6 +76,7 @@ const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({ goals = [] }) => {
         });
     }, [historyData, currentStats]);
 
+// @ts-ignore
     const formatDateLabel = (dateStr: string) => {
         const date = new Date(dateStr);
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });

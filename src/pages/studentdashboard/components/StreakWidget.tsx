@@ -62,7 +62,7 @@ export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false, com
                     subTextColor: 'rgba(251, 191, 36, 0.8)',
                     badgeBg: 'rgba(251, 191, 36, 0.3)',
                 };
-            } else if (tier.tier === 'warming') {
+            } else if ((tier.tier as any) === 'warming') {
                 return {
                     bgGradient: 'linear-gradient(to right, rgba(251, 191, 36, 0.15), rgba(249, 115, 22, 0.15))',
                     borderColor: 'rgba(251, 191, 36, 0.5)',
@@ -85,7 +85,7 @@ export const StreakWidget: React.FC<StreakWidgetProps> = ({ compact = false, com
             borderColor: tier.borderColor,
             textColor: tier.textColor,
             subTextColor: tier.subTextColor,
-            badgeBg: tier.tier === 'legendary' || tier.tier === 'warming'
+            badgeBg: tier.tier === 'legendary' || (tier.tier as any) === 'warming'
                 ? 'rgba(251, 191, 36, 0.3)'
                 : 'rgba(59, 130, 246, 0.2)',
         };

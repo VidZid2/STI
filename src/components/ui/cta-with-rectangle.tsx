@@ -14,7 +14,7 @@ interface CTAProps {
   action: {
     text: string
     onClick?: () => void
-    variant?: "default" | "glow" | "outline" | "secondary"
+    variant?: "default" | "outline" | "secondary"
   }
   withGlow?: boolean
   className?: string

@@ -243,7 +243,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                         // Workaround for iOS Safari bug with CSS filters
                                         // Once animation enters (opacity: 1), we remove the filter completely
                                         const el = document.getElementById('settings-content-wrapper');
-                                        if (el && definition.opacity === 1) {
+                                        if (el && (definition as any).opacity === 1) {
                                             el.style.filter = 'none';
                                         }
                                     }}

@@ -103,7 +103,7 @@ export function CoverUploader({
 	return (
 		<>
 			{React.isValidElement(children) ? (
-				React.cloneElement(children as React.ReactElement, {
+				React.cloneElement(children as React.ReactElement<any>, {
 					onClick: (e: any) => {
 						if ((children as any).props.onClick) {
 							(children as any).props.onClick(e);

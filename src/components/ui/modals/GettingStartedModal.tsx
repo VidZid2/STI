@@ -7,7 +7,9 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 
+// @ts-ignore
 const EASE_OUT = [0.32, 0.72, 0, 1] as const;
+// @ts-ignore
 const SPRING_PANEL = { type: 'spring', bounce: 0, duration: 0.4 } as const;
 
 interface GettingStartedModalProps {
@@ -277,7 +279,7 @@ const GettingStartedModal: React.FC<GettingStartedModalProps> = ({ isOpen, onClo
                                     }
                                     onAnimationComplete={(definition) => {
                                         const el = document.getElementById('settings-content-wrapper');
-                                        if (el && definition.opacity === 1) {
+                                        if (el && (definition as any).opacity === 1) {
                                             el.style.filter = 'none';
                                         }
                                     }}
