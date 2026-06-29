@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { TextAnimate } from "@/components/ui/text-animate";
 import {
   IconClipboardCopy,
-  IconFileBroken,
+  IconUsersGroup,
   IconSignature,
   IconTableColumn,
 } from "@tabler/icons-react";
@@ -85,7 +85,7 @@ const FeaturesPanel: React.FC<FeaturesPanelProps> = ({ isActive }) => {
           title: "Real-time Collaboration",
           description: "Connect seamlessly with peers and instructors via live chat and whiteboards.",
           header: <CollaborationBeam isActive={active} />,
-          icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
+          icon: <IconUsersGroup className="h-4 w-4 text-neutral-500" />,
           className: "md:col-span-2",
         },
         {
