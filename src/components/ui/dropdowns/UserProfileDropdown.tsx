@@ -320,7 +320,7 @@ export default function UserProfileDropdown() {
                                 {profileImage ? (
                                     <img src={profileImage} alt="Profile" className='w-full h-full object-cover' />
                                 ) : (
-                                    <div className={cn('w-full h-full flex items-center justify-center font-extrabold text-[15px]', isDarkMode ? 'text-blue-400' : 'text-blue-600')}>
+                                    <div className={cn('w-full h-full flex items-center justify-center font-bold text-[15px]', isDarkMode ? 'text-blue-400' : 'text-blue-600')}>
                                         {getInitials(profile.firstName, profile.lastName)}
                                     </div>
                                 )}
@@ -413,7 +413,7 @@ export default function UserProfileDropdown() {
                                         )}>
                                             {level >= 20 ? 'LEGENDARY STATUS' : 'Almost There!'}
                                         </p>
-                                        <p className="text-[12.5px] font-black text-slate-900 dark:text-slate-100 leading-none">
+                                        <p className="text-[12.5px] font-bold text-slate-900 dark:text-slate-100 leading-none">
                                             {level >= 20 ? (
                                                 <>{getXPData().totalXP.toLocaleString()} <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">Total XP Earned</span></>
                                             ) : (
@@ -532,7 +532,7 @@ export default function UserProfileDropdown() {
                                                             <div className="absolute inset-1.5 sm:inset-2 md:inset-2.5 rounded-full z-10 cursor-pointer overflow-hidden border-4 border-transparent hover:border-blue-500/50 transition-all">
                                                                 <Avatar className="w-full h-full rounded-full cursor-pointer hover:opacity-80 transition-opacity">
                                                                     <AvatarImage src={profileImage || ''} className="object-cover w-full h-full" />
-                                                                    <AvatarFallback className="bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400 font-extrabold text-2xl sm:text-4xl shadow-inner w-full h-full">
+                                                                    <AvatarFallback className="bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400 font-bold text-2xl sm:text-4xl shadow-inner w-full h-full">
                                                                         {getInitials(profile.firstName, profile.lastName)}
                                                                     </AvatarFallback>
                                                                 </Avatar>
@@ -556,7 +556,7 @@ export default function UserProfileDropdown() {
                                                 {/* Name & Basic Info */}
                                                 <div className="pb-1 sm:pb-3 flex flex-col items-center sm:items-start text-center sm:text-left mt-2 sm:mt-0 w-full sm:w-auto">
                                                     
-                                                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                                                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
                                                         {profile.firstName} {profile.lastName}
                                                     </h1>
                                                     <p className="text-[13px] sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
@@ -568,7 +568,7 @@ export default function UserProfileDropdown() {
                                                         <div className="flex items-center gap-1.5 pl-0.5">
                                                             <span className="text-[9.5px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none mt-[1px]">Student ID</span>
                                                             <div className="w-[1.5px] h-3 bg-slate-300 dark:bg-slate-600 rounded-full shrink-0"></div>
-                                                            <span className="text-[13px] font-black text-slate-800 dark:text-slate-200 leading-none tracking-wide truncate max-w-[120px] sm:max-w-none">{profile.studentId}</span>
+                                                            <span className="text-[13px] font-bold text-slate-800 dark:text-slate-200 leading-none tracking-wide truncate max-w-[120px] sm:max-w-none">{profile.studentId}</span>
                                                         </div>
                                                         
                                                         {/* Copy Button */}
@@ -773,7 +773,7 @@ function ProfileContent({ profile, isEditing, isSaving, onEdit, onSave, onCancel
                         <svg className="w-6 h-6 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" /></svg>
                     </div>
                     <div>
-                        <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">Profile Details</h2>
+                        <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">Profile Details</h2>
                         <p className="text-[13px] sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Manage your personal and academic information.</p>
                     </div>
                 </div>
@@ -883,7 +883,7 @@ function SettingsContent({ onShowOnlineStatusChange, isDarkMode: _isDarkMode }: 
     return (
         <motion.div key="settings" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }} transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1.0] }} className='space-y-6 pb-4'>
             <div className="mt-2 mb-6">
-                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">App Settings</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">App Settings</h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Customize your app experience.</p>
             </div>
 
