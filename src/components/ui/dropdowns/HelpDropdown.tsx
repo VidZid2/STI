@@ -188,7 +188,7 @@ const HelpDropdown: React.FC = () => {
                                     </motion.div>
                                     
                                     <div className="flex-1 min-w-0 pr-1 text-left">
-                                        <div className={`text-[11.5px] font-extrabold tracking-tight leading-none mb-0.5 ${
+                                        <div className={`text-[11.5px] font-bold tracking-tight leading-none mb-0.5 ${
                                             isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
                                         }`}>
                                             {link.label}

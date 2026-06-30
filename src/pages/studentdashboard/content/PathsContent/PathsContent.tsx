@@ -373,7 +373,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                     transition={{ duration: 0.4, delay: 0.4, type: "spring", stiffness: 300, damping: 20 }}
                                     className="absolute -bottom-1.5 sm:-bottom-2 left-1/2 px-1.5 sm:px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 border-[2px] sm:border-[2.5px] border-white dark:border-slate-800 shadow-sm flex items-center justify-center whitespace-nowrap z-10 min-w-[36px] sm:min-w-[40px]"
                                 >
-                                    <span className="text-[11px] sm:text-[13px] font-black text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
+                                    <span className="text-[11px] sm:text-[13px] font-bold text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
                                         {stats.enrolledPaths > 0 ? Math.round((stats.completedPaths / stats.enrolledPaths) * 100) : 0}%
                                     </span>
                                 </motion.div>
@@ -1156,7 +1156,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                 </div>
 
                                                 <div className="flex flex-wrap items-center justify-end gap-2">
-                                                    <span className="inline-flex h-[24px] items-center gap-1.5 rounded-full border px-2.5 text-[10.5px] font-extrabold uppercase leading-none tracking-wide shadow-sm border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-800/60 dark:bg-orange-900/30 dark:text-orange-400">
+                                                    <span className="inline-flex h-[24px] items-center gap-1.5 rounded-full border px-2.5 text-[10.5px] font-bold uppercase leading-none tracking-wide shadow-sm border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-800/60 dark:bg-orange-900/30 dark:text-orange-400">
                                                         <span className="truncate">{difficultyInfo.label}</span>
                                                     </span>
                                                     <span className="inline-flex h-[24px] items-center gap-1.5 rounded-md px-2 text-[10.5px] font-bold uppercase leading-none tracking-wide bg-slate-100/80 text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
@@ -1232,21 +1232,21 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                 <div className="flex flex-col items-center justify-center rounded-xl bg-zinc-50/80 px-2 py-3 dark:bg-zinc-800/40 border border-zinc-200/60 dark:border-zinc-700/50 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-zinc-800/80 group-hover:shadow-sm">
                                                     <div className="flex items-center gap-1.5 mb-1">
                                                         <svg className="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                                                        <span className="text-[16px] font-black text-zinc-900 dark:text-zinc-100 leading-none">{path.courses.length}</span>
+                                                        <span className="text-[16px] font-bold text-zinc-900 dark:text-zinc-100 leading-none">{path.courses.length}</span>
                                                     </div>
                                                     <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-zinc-500">Courses</span>
                                                 </div>
                                                 <div className="flex flex-col items-center justify-center rounded-xl bg-zinc-50/80 px-2 py-3 dark:bg-zinc-800/40 border border-zinc-200/60 dark:border-zinc-700/50 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-zinc-800/80 group-hover:shadow-sm">
                                                     <div className="flex items-center gap-1.5 mb-1">
                                                         <svg className="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-                                                        <span className="text-[16px] font-black text-zinc-900 dark:text-zinc-100 leading-none">{getPathTotalModules(path)}</span>
+                                                        <span className="text-[16px] font-bold text-zinc-900 dark:text-zinc-100 leading-none">{getPathTotalModules(path)}</span>
                                                     </div>
                                                     <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-zinc-500">Modules</span>
                                                 </div>
                                                 <div className="flex flex-col items-center justify-center rounded-xl bg-emerald-50/50 px-2 py-3 dark:bg-emerald-500/10 border border-emerald-100/50 dark:border-emerald-800/30 transition-all duration-300 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-500/20 group-hover:shadow-sm">
                                                     <div className="flex items-center gap-1.5 mb-1">
                                                         <svg className="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                                                        <span className="text-[16px] font-black text-emerald-600 dark:text-emerald-400 leading-none">{path.enrolled_count}</span>
+                                                        <span className="text-[16px] font-bold text-emerald-600 dark:text-emerald-400 leading-none">{path.enrolled_count}</span>
                                                     </div>
                                                     <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-emerald-600/80 dark:text-emerald-400/80">Enrolled</span>
                                                 </div>
@@ -1258,7 +1258,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
 
                                         {/* Section 2: Courses Included */}
                                         <div className="relative z-10 flex w-full xl:w-[26%] flex-col">
-                                            <span className="mb-3 flex shrink-0 items-center gap-1.5 text-[10.5px] font-extrabold uppercase tracking-[0.16em] text-zinc-600 dark:text-zinc-400">
+                                            <span className="mb-3 flex shrink-0 items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.16em] text-zinc-600 dark:text-zinc-400">
                                                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -1287,11 +1287,11 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                                     value={Math.round(progress)}
                                                                     gaugePrimaryColor="rgb(59 130 246)"
                                                                     gaugeSecondaryColor="rgba(0, 0, 0, 0.05)"
-                                                                    className="h-10 w-10 sm:h-12 sm:w-12 text-[10px] text-blue-600 dark:text-blue-400 font-extrabold"
+                                                                    className="h-10 w-10 sm:h-12 sm:w-12 text-[10px] text-blue-600 dark:text-blue-400 font-bold"
                                                                 />
                                                             </div>
                                                             <div className="flex flex-col min-w-0">
-                                                                <span className="text-[14px] sm:text-[15px] font-black text-slate-900 dark:text-slate-100 tracking-tight truncate">
+                                                                <span className="text-[14px] sm:text-[15px] font-bold text-slate-900 dark:text-slate-100 tracking-tight truncate">
                                                                     {progress === 100 ? 'Completed!' : progress === 0 ? 'Not Started' : 'In Progress'}
                                                                 </span>
                                                                 <span className="text-[11.5px] sm:text-[12px] font-semibold text-slate-500 dark:text-slate-400 truncate mt-0.5">
@@ -1343,7 +1343,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                                 <svg className="h-3.5 w-3.5 xl:h-3 xl:w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m9 11 3 3L22 4"/></svg>
                                                                 Course Progress
                                                             </span>
-                                                            <span className="text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20 px-2 py-1 xl:px-1.5 xl:py-0.5 rounded-[6px] text-[9px] xl:text-[8px] font-extrabold">{path.courses.length} Steps</span>
+                                                            <span className="text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20 px-2 py-1 xl:px-1.5 xl:py-0.5 rounded-[6px] text-[9px] xl:text-[8px] font-bold">{path.courses.length} Steps</span>
                                                         </div>
                                                         <div className="flex items-center gap-1 relative w-full">
                                                             {getPathCourses(path).map((course, courseIndex) => {
@@ -1381,7 +1381,7 @@ const PathsContent: React.FC<PathsContentProps> = ({ onPathSelect: _onPathSelect
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                                         </svg>
                                                     </div>
-                                                    <span className="text-[14px] font-black text-zinc-800 dark:text-zinc-200">Ready to start?</span>
+                                                    <span className="text-[14px] font-bold text-zinc-800 dark:text-zinc-200">Ready to start?</span>
                                                     <span className="text-center text-[11.5px] font-medium text-zinc-500 mt-1 max-w-[80%]">Enroll to track your progress and earn certificates.</span>
                                                 </div>
                                             )}

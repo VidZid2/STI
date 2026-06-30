@@ -654,7 +654,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                                                 >
                                                 {/* Day Name Above */}
                                                 <span
-                                                    className="text-[10px] font-black uppercase absolute -top-5"
+                                                    className="text-[10px] font-bold uppercase absolute -top-5"
                                                     style={{
                                                         color: day.isToday
                                                             ? '#3b82f6'
@@ -719,7 +719,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                                 >
                                     <div className="px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800/50 flex items-center gap-1.5 justify-center shadow-sm mb-1.5">
                                         <Flame className="w-4 h-4 text-orange-500" fill="currentColor" />
-                                        <span className="text-[14px] font-black tracking-wide text-orange-600 dark:text-orange-400">
+                                        <span className="text-[14px] font-bold tracking-wide text-orange-600 dark:text-orange-400">
                                             {streakData.currentStreak}
                                         </span>
                                     </div>
@@ -740,7 +740,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                                 >
                                     <div className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/50 flex items-center gap-1.5 justify-center shadow-sm mb-1.5">
                                         <Trophy className="w-4 h-4 text-slate-500 dark:text-slate-400" strokeWidth={2.5} />
-                                        <span className="text-[14px] font-black tracking-wide text-slate-700 dark:text-slate-300">
+                                        <span className="text-[14px] font-bold tracking-wide text-slate-700 dark:text-slate-300">
                                             {streakData.bestStreak}
                                         </span>
                                     </div>
@@ -764,7 +764,7 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                                         animate={{ scale: [1, 1.04, 1] }}
                                         transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
                                     >
-                                        <span className="text-[14px] font-black tracking-wide text-blue-600 dark:text-blue-400">
+                                        <span className="text-[14px] font-bold tracking-wide text-blue-600 dark:text-blue-400">
                                             +{streakData.currentStreak * tier.xpBonus} XP
                                         </span>
                                     </motion.div>

@@ -552,7 +552,7 @@ const GoalsContent: React.FC = () => {
                                         transition={{ duration: 0.4, delay: 0.4, type: "spring", stiffness: 300, damping: 20 }}
                                         className="absolute -bottom-1.5 sm:-bottom-2 left-1/2 px-1.5 sm:px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 border-[2px] sm:border-[2.5px] border-white dark:border-slate-800 shadow-sm flex items-center justify-center whitespace-nowrap z-10 min-w-[36px] sm:min-w-[40px]"
                                     >
-                                        <span className="text-[11px] sm:text-[13px] font-black text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
+                                        <span className="text-[11px] sm:text-[13px] font-bold text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
                                             {Math.round((stats.completed / stats.total) * 100)}%
                                         </span>
                                     </motion.div>
@@ -975,7 +975,7 @@ const GoalsContent: React.FC = () => {
                                         </motion.div>
                                         
                                         <div className="flex flex-col flex-1 min-w-0">
-                                            <h3 className="text-[16px] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight truncate mb-1.5"
+                                            <h3 className="text-[16px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight truncate mb-1.5"
                                                 style={{ textDecoration: goal.status === 'completed' ? 'line-through' : 'none', opacity: goal.status === 'completed' ? 0.7 : 1 }}>
                                                 {goal.title}
                                             </h3>
@@ -1030,11 +1030,11 @@ const GoalsContent: React.FC = () => {
                                                         value={goal.progress_percentage}
                                                         gaugePrimaryColor={goal.status === 'completed' ? '#10b981' : config.color}
                                                         gaugeSecondaryColor={isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'}
-                                                        className="h-10 w-10 sm:h-11 sm:w-11 text-[10px] text-slate-800 dark:text-slate-200 font-extrabold"
+                                                        className="h-10 w-10 sm:h-11 sm:w-11 text-[10px] text-slate-800 dark:text-slate-200 font-bold"
                                                     />
                                                 </div>
                                                 <div className="flex flex-col min-w-0">
-                                                    <span className="text-[13px] sm:text-[14px] font-black text-slate-900 dark:text-slate-100 tracking-tight truncate">
+                                                    <span className="text-[13px] sm:text-[14px] font-bold text-slate-900 dark:text-slate-100 tracking-tight truncate">
                                                         {goal.status === 'completed' ? 'Goal Reached!' : goal.status === 'paused' ? 'Paused' : 'In Progress'}
                                                     </span>
                                                     <div className="flex items-center gap-1.5 mt-1">
@@ -1174,7 +1174,7 @@ const GoalsContent: React.FC = () => {
                                                                         <p className="text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase tracking-widest leading-none mb-1 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-300">
                                                                             {goal.type.replace('_', ' ')}
                                                                         </p>
-                                                                        <p className="text-[14px] font-extrabold text-slate-800 dark:text-slate-200 leading-snug truncate w-full transition-colors group-hover:text-blue-700 dark:group-hover:text-blue-400">
+                                                                        <p className="text-[14px] font-bold text-slate-800 dark:text-slate-200 leading-snug truncate w-full transition-colors group-hover:text-blue-700 dark:group-hover:text-blue-400">
                                                                             {goal.title}
                                                                         </p>
                                                                     </div>

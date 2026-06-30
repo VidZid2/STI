@@ -193,7 +193,7 @@ const UserCard: React.FC<{
                                 {user.profile_image ? (
                                     <img src={user.profile_image} alt={user.full_name} className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center font-extrabold text-[16px] text-amber-600">
+                                    <div className="w-full h-full flex items-center justify-center font-bold text-[16px] text-amber-600">
                                         {user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                                     </div>
                                 )}
@@ -212,7 +212,7 @@ const UserCard: React.FC<{
                                 {user.profile_image ? (
                                     <img src={user.profile_image} alt={user.full_name} className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center font-extrabold text-[16px] text-blue-600">
+                                    <div className="w-full h-full flex items-center justify-center font-bold text-[16px] text-blue-600">
                                         {user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                                     </div>
                                 )}

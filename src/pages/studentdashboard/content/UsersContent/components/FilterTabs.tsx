@@ -1,4 +1,4 @@
-﻿/**
+/**
  * FilterTabs
  * Filter tabs for UsersContent (All / Student / Teacher / Admin).
  * Extracted from UsersContent.tsx during Phase 8.4
@@ -127,7 +127,7 @@ const FilterTabs: React.FC<{
 };
 
 
-// ActionTooltip — extracted to ./components/ActionTooltip.tsx
+// ActionTooltip � extracted to ./components/ActionTooltip.tsx
 
 
 export { FilterTabs };

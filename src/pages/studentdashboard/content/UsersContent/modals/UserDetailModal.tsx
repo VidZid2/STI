@@ -172,7 +172,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                                 {user.profile_image ? (
                                                     <img src={user.profile_image} alt={user.full_name} className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <span className="text-[16px] sm:text-[18px] font-extrabold leading-none text-blue-600 dark:text-blue-400">
+                                                    <span className="text-[16px] sm:text-[18px] font-bold leading-none text-blue-600 dark:text-blue-400">
                                                         {user.first_name?.[0] || ''}{user.last_name?.[0] || ''}
                                                     </span>
                                                 )}

@@ -432,7 +432,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                 <div className="bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/80 rounded-[1.25rem] p-2 shadow-inner w-full mb-6">
                                     <div className="flex items-stretch justify-between">
                                         <div className="flex-1 bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 rounded-[0.85rem] p-3 shadow-sm flex flex-col items-center justify-center transition-all hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800/60">
-                                            <div className="text-[20px] sm:text-[24px] font-extrabold text-blue-600 dark:text-blue-400 leading-none mb-1">{group.member_count}</div>
+                                            <div className="text-[20px] sm:text-[24px] font-bold text-blue-600 dark:text-blue-400 leading-none mb-1">{group.member_count}</div>
                                             <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Members</div>
                                         </div>
                                         
@@ -441,7 +441,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                         </div>
 
                                         <div className="flex-1 bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 rounded-[0.85rem] p-3 shadow-sm flex flex-col items-center justify-center transition-all hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-800/60">
-                                            <div className="text-[20px] sm:text-[24px] font-extrabold text-emerald-500 dark:text-emerald-400 leading-none mb-1">{group.online_count}</div>
+                                            <div className="text-[20px] sm:text-[24px] font-bold text-emerald-500 dark:text-emerald-400 leading-none mb-1">{group.online_count}</div>
                                             <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Online</div>
                                         </div>
 
@@ -450,7 +450,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                         </div>
 
                                         <div className="flex-1 bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 rounded-[0.85rem] p-3 shadow-sm flex flex-col items-center justify-center transition-all hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600/60">
-                                            <div className="text-[20px] sm:text-[24px] font-extrabold text-slate-800 dark:text-slate-200 leading-none mb-1">{group.max_members}</div>
+                                            <div className="text-[20px] sm:text-[24px] font-bold text-slate-800 dark:text-slate-200 leading-none mb-1">{group.max_members}</div>
                                             <div className="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Max</div>
                                         </div>
                                     </div>
@@ -688,7 +688,7 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
                                                                 {userAvatar ? (
                                                                     <img src={userAvatar} alt={member.user_name} className="w-full h-full object-cover" />
                                                                 ) : (
-                                                                    <span className="text-[12px] font-extrabold leading-none" style={{ color: themeColor }}>
+                                                                    <span className="text-[12px] font-bold leading-none" style={{ color: themeColor }}>
                                                                         {member.user_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                                                                     </span>
                                                                 )}

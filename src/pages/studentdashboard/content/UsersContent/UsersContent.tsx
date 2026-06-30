@@ -553,10 +553,10 @@ const UsersContent: React.FC = () => {
                             </div>
                         </motion.button>
                         <div>
-                            <span className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5 block transition-colors duration-300">
+                            <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5 block transition-colors duration-300">
                                 {viewRole === 'student' ? 'CURRENT SECTION' : 'FACULTY'}
                             </span>
-                            <h1 className="text-[16px] font-extrabold text-slate-800 dark:text-slate-200 leading-tight transition-colors duration-300">
+                            <h1 className="text-[16px] font-bold text-slate-800 dark:text-slate-200 leading-tight transition-colors duration-300">
                                 {viewRole === 'student' ? 'BSIT101-A' : 'Instructors'}
                             </h1>
                         </div>
@@ -565,7 +565,7 @@ const UsersContent: React.FC = () => {
                     <motion.div layout className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
                         {/* Status Filters - Styled like CourseViewPage */}
                         <motion.div layout className="w-full md:w-auto overflow-hidden">
-                            <motion.span layout className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 block md:hidden">USER STATUS</motion.span>
+                            <motion.span layout className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 block md:hidden">USER STATUS</motion.span>
                             <motion.div layout className="flex items-center p-1 sm:p-1.5 rounded-[12px] sm:rounded-[16px] bg-slate-50/80 dark:bg-zinc-800/50 border border-slate-200/60 dark:border-zinc-700/50 w-full md:w-auto overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                                 {[
                                     { id: 'all', label: 'All', count: viewRole === 'student' ? stats.students : stats.teachers, icon: (

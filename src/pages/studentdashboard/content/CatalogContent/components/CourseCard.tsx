@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CourseCard + CourseListItem
  * Course display components for CatalogContent.
  * Extracted from CatalogContent.tsx during Phase 8.7
@@ -635,7 +635,7 @@ const CourseListItem: React.FC<{
                 <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)', marginBottom: '6px' }}>{course.subtitle}</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ fontSize: '11px', color: blueAccent, fontWeight: 500 }}>{categoryInfo[course.category].label}</span>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>•</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>�</span>
                     <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{course.instructor}</span>
                 </div>
             </div>

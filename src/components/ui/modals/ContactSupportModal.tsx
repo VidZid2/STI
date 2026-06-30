@@ -468,7 +468,7 @@ const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClo
                                                     whileHover={{ scale: 1.02 }}
                                                     whileTap={{ scale: 0.98 }}
                                                     onClick={onClose}
-                                                    className="px-8 py-3 w-full sm:w-auto rounded-[14px] border border-blue-500/10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-[14px] font-extrabold shadow-[0_4px_14px_rgba(59,130,246,0.35)] transition-all"
+                                                    className="px-8 py-3 w-full sm:w-auto rounded-[14px] border border-blue-500/10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-[14px] font-bold shadow-[0_4px_14px_rgba(59,130,246,0.35)] transition-all"
                                                 >
                                                     Done
                                                 </motion.button>
@@ -577,7 +577,7 @@ const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClo
                                                                              <p className={`text-[8.5px] font-bold uppercase tracking-widest leading-none ${badge.labelColor}`}>
                                                                                  {badge.label}
                                                                              </p>
-                                                                             <p className="text-[11.5px] font-extrabold text-zinc-850 dark:text-zinc-250 leading-none mt-0.5">
+                                                                             <p className="text-[11.5px] font-bold text-zinc-850 dark:text-zinc-250 leading-none mt-0.5">
                                                                                  {badge.value}
                                                                              </p>
                                                                          </div>
@@ -692,7 +692,7 @@ const ContactSupportModal: React.FC<ContactSupportModalProps> = ({ isOpen, onClo
                                                                   disabled={isSubmitting || !subject.trim() || !message.trim()}
                                                                   whileHover={subject.trim() && message.trim() ? { scale: 1.02, y: -1 } : {}}
                                                              whileTap={subject.trim() && message.trim() ? { scale: 0.98 } : {}}
-                                                             className={`px-6 py-2.5 rounded-[14px] text-[13.5px] font-extrabold flex items-center gap-2 border shadow-sm transition-all duration-300 ${
+                                                             className={`px-6 py-2.5 rounded-[14px] text-[13.5px] font-bold flex items-center gap-2 border shadow-sm transition-all duration-300 ${
                                                                  (!subject.trim() || !message.trim())
                                                                      ? 'bg-zinc-50 dark:bg-zinc-800/40 border-zinc-200/50 dark:border-zinc-850/50 text-zinc-400 dark:text-zinc-600 cursor-not-allowed shadow-none'
                                                                      : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-blue-500/10 text-white shadow-[0_4px_14px_rgba(59,130,246,0.35)] cursor-pointer'

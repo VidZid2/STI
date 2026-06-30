@@ -26,7 +26,7 @@ const KpiCard: React.FC<KpiProps> = ({ label, value, sub, icon: Icon, color, bgC
             <Icon size={18} color={color} />
         </div>
         <div>
-            <div className="text-2xl font-black text-slate-900 dark:text-slate-100 leading-none">{value}</div>
+            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 leading-none">{value}</div>
             <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-0.5">{label}</div>
             <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{sub}</div>
         </div>

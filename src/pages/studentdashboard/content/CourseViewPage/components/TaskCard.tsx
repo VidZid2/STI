@@ -194,7 +194,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                             </span>
                         </div>
 
-                        <h3 className="text-[18px] sm:text-[20px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug">
+                        <h3 className="text-[18px] sm:text-[20px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug">
                             {task.title}
                         </h3>
                         <p className="text-[11px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider mt-1">
@@ -214,7 +214,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                     <div className="w-full">
                         <div className="flex items-center justify-between mb-1.5">
                             <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Score</span>
-                            <span className={`text-[13px] font-extrabold ${isSubmitted ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400'}`}>
+                            <span className={`text-[13px] font-bold ${isSubmitted ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400'}`}>
                                 {task.score !== null ? `${task.score} / ${maxPoints} pts` : `Not graded / ${maxPoints} pts`}
                             </span>
                         </div>
@@ -249,13 +249,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                             if (isDueToday && !isSubmitted) {
                                 containerClasses = "flex items-center gap-2.5 px-3 py-2.5 bg-[#ef4444] rounded-[12px] border border-[#ef4444] shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default group/tag flex-1 min-w-[150px]";
                                 iconContainerClasses = "w-7 h-7 rounded-[8px] bg-black/10 flex items-center justify-center text-white group-hover/tag:scale-110 transition-transform duration-300 flex-shrink-0";
-                                titleClasses = "text-[9px] font-extrabold text-white/90 uppercase tracking-wider mb-0.5 leading-none whitespace-nowrap";
-                                valueClasses = "text-[13px] font-extrabold text-white leading-none whitespace-nowrap truncate";
+                                titleClasses = "text-[9px] font-bold text-white/90 uppercase tracking-wider mb-0.5 leading-none whitespace-nowrap";
+                                valueClasses = "text-[13px] font-bold text-white leading-none whitespace-nowrap truncate";
                             } else if (isDueIn3Days && !isSubmitted) {
                                 containerClasses = "flex items-center gap-2.5 px-3 py-2.5 bg-[#facc15] rounded-[12px] border border-[#facc15] shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default group/tag flex-1 min-w-[150px]";
                                 iconContainerClasses = "w-7 h-7 rounded-[8px] bg-black/5 flex items-center justify-center text-[#713f12] group-hover/tag:scale-110 transition-transform duration-300 flex-shrink-0";
-                                titleClasses = "text-[9px] font-extrabold text-[#854d0e] uppercase tracking-wider mb-0.5 leading-none whitespace-nowrap";
-                                valueClasses = "text-[13px] font-extrabold text-[#422006] leading-none whitespace-nowrap truncate";
+                                titleClasses = "text-[9px] font-bold text-[#854d0e] uppercase tracking-wider mb-0.5 leading-none whitespace-nowrap";
+                                valueClasses = "text-[13px] font-bold text-[#422006] leading-none whitespace-nowrap truncate";
                             }
 
                             return (
@@ -391,7 +391,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                     {task.attachments && task.attachments.length > 0 && (
                         <div className="flex flex-col gap-2">
                             <div className="flex-1 min-w-0 px-1 mb-2 mt-1">
-                                <h3 className="m-0 mb-[3px] text-[17px] font-extrabold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
+                                <h3 className="m-0 mb-[3px] text-[17px] font-bold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
                                     <div className="w-[6px] h-[16px] rounded-[3px] bg-blue-500" />
                                     Reference Attachments
                                 </h3>
@@ -462,7 +462,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                     {task.rubricEnabled && task.rubricCriteria && task.rubricCriteria.length > 0 && (
                         <div className="flex flex-col gap-2">
                             <div className="flex-1 min-w-0 px-1 mb-2 mt-1">
-                                <h3 className="m-0 mb-[3px] text-[17px] font-extrabold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
+                                <h3 className="m-0 mb-[3px] text-[17px] font-bold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2">
                                     <div className="w-[6px] h-[16px] rounded-[3px] bg-blue-500" />
                                     Grading Rubric
                                 </h3>

@@ -190,7 +190,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   className="bg-[url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif)] w-full h-[200px] sm:h-[250px] md:h-[300px] bg-center bg-no-repeat bg-contain"
                   aria-hidden="true"
                 >
-                  <h1 className="text-center font-extrabold text-5xl sm:text-6xl md:text-7xl pt-6 sm:pt-8 md:pt-10 tracking-tighter text-slate-900 dark:text-white drop-shadow-sm">
+                  <h1 className="text-center font-bold text-5xl sm:text-6xl md:text-7xl pt-6 sm:pt-8 md:pt-10 tracking-tighter text-slate-900 dark:text-white drop-shadow-sm">
                     Oops!
                   </h1>
                 </div>
@@ -198,7 +198,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
               {/* Middle: Subtitles & Primary Action */}
               <div className="-mt-10 sm:-mt-16 md:-mt-12 w-full flex flex-col items-center relative z-10">
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mb-3">
+                <h3 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight mb-3">
                   Looks like something broke
                 </h3>
                 <p className="mb-6 text-slate-500 dark:text-slate-400 text-sm sm:text-base font-medium max-w-sm mx-auto leading-relaxed">
@@ -295,7 +295,7 @@ export class ErrorBoundary extends Component<Props, State> {
                               <div className="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20 shadow-sm">
                                   <svg className="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>
                               </div>
-                              <span className="text-[11.5px] font-extrabold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest flex items-center gap-2">
+                              <span className="text-[11.5px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest flex items-center gap-2">
                                   Suggested Fix
                                   {this.state.aiSuggestion && (
                                     <span className="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full dark:bg-emerald-900/50 dark:text-emerald-300 font-bold tracking-normal normal-case border border-emerald-200 dark:border-emerald-700/50">

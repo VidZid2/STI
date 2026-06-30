@@ -253,7 +253,7 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
                             {/* Text Info */}
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-0.5">
-                                    <h2 className={`text-[18px] font-extrabold tracking-tight leading-none ${
+                                    <h2 className={`text-[18px] font-bold tracking-tight leading-none ${
                                         isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
                                     }`}>
                                         Help & Support
@@ -347,7 +347,7 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
                                     </div>
                                     {/* Text */}
                                     <div className="flex-1 min-w-0">
-                                        <p className={`text-[13px] font-extrabold leading-none mb-0.5 ${
+                                        <p className={`text-[13px] font-bold leading-none mb-0.5 ${
                                             isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
                                         }`} style={{ margin: 0 }}>
                                             {item.label}
@@ -402,7 +402,7 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
                                 }`}>
                                     Explore
                                 </span>
-                                <span className={`text-[12px] font-extrabold leading-none ${
+                                <span className={`text-[12px] font-bold leading-none ${
                                     isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
                                 }`}>
                                     Visit Help Center

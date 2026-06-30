@@ -248,7 +248,7 @@ const SystemUptimeTracker: React.FC = () => {
                     </div>
                 </div>
                 <div className="text-right">
-                    <div className="text-2xl font-black text-emerald-500 leading-none">100.00%</div>
+                    <div className="text-2xl font-bold text-emerald-500 leading-none">100.00%</div>
                     <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5 uppercase tracking-wider">Overall Uptime</div>
                 </div>
             </div>

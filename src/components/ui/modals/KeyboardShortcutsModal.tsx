@@ -1110,7 +1110,7 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ isOpen,
                                                                     }`}>
                                                                         Category
                                                                     </p>
-                                                                    <p className={`text-[12px] font-extrabold leading-none truncate ${
+                                                                    <p className={`text-[12px] font-bold leading-none truncate ${
                                                                         isActive ? 'text-blue-700 dark:text-blue-400' : 'text-zinc-700 dark:text-zinc-300'
                                                                     }`}>
                                                                         {cat.name}
@@ -1214,7 +1214,7 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ isOpen,
                                             
                                             {/* Title & Description with premium typography */}
                                             <div className="relative z-10">
-                                                <h3 className="text-[17px] font-extrabold text-zinc-800 dark:text-zinc-200 tracking-tight m-0 mb-1 leading-snug">
+                                                <h3 className="text-[17px] font-bold text-zinc-800 dark:text-zinc-200 tracking-tight m-0 mb-1 leading-snug">
                                                     No Shortcuts Found
                                                 </h3>
                                                 <p className="text-[13.5px] text-zinc-500 dark:text-zinc-400 font-normal leading-relaxed m-0 max-w-sm">
@@ -1270,7 +1270,7 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ isOpen,
                                                 </motion.p>
                                             )}
                                         </AnimatePresence>
-                                        <p className="text-[12px] font-extrabold text-zinc-800 dark:text-zinc-200 leading-none">
+                                        <p className="text-[12px] font-bold text-zinc-800 dark:text-zinc-200 leading-none">
                                             23 Shortcuts
                                         </p>
                                     </div>
@@ -1303,7 +1303,7 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ isOpen,
                                                     </motion.p>
                                                 )}
                                             </AnimatePresence>
-                                            <p className="text-[12px] font-extrabold text-zinc-800 dark:text-zinc-200 leading-none">
+                                            <p className="text-[12px] font-bold text-zinc-800 dark:text-zinc-200 leading-none">
                                                 Esc to Close
                                             </p>
                                         </div>

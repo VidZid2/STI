@@ -216,7 +216,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                 {profileImage ? (
                                                     <img src={profileImage} alt="Profile" className='w-full h-full object-cover' />
                                                 ) : (
-                                                    <div className={`w-full h-full flex items-center justify-center font-extrabold text-[18px] ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                                    <div className={`w-full h-full flex items-center justify-center font-bold text-[18px] ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                                                         {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
                                                     </div>
                                                 )}
@@ -254,7 +254,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                             {profile.firstName} {profile.lastName}
                                         </h2>
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-extrabold uppercase leading-none tracking-wide shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all ${greetingStyle}`}>
+                                            <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-bold uppercase leading-none tracking-wide shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all ${greetingStyle}`}>
                                                 <span className="truncate translate-y-[0.5px]">{greetingText}</span>
                                             </span>
                                             {/* Weather Badge - Mobile Only */}
@@ -307,7 +307,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none transition-colors truncate">
                                             {profile.firstName} {profile.lastName}
                                         </h2>
-                                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-extrabold uppercase leading-none tracking-wide shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all ${greetingStyle}`}>
+                                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-bold uppercase leading-none tracking-wide shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05)] transition-all ${greetingStyle}`}>
                                             <span className="truncate translate-y-[0.5px]">{greetingText}</span>
                                         </span>
                                         {/* Weather Badge - Desktop */}
@@ -446,7 +446,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                         <Clock3 className="w-7 h-7 text-purple-600 dark:text-purple-400" strokeWidth={2.5} />
                                                     </motion.div>
                                                     <div className="flex flex-col text-left w-full">
-                                                        <h2 className="text-[19px] sm:text-[21px] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-1.5">
+                                                        <h2 className="text-[19px] sm:text-[21px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-1.5">
                                                             4.5 Hours Learned
                                                         </h2>
                                                         <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400 leading-[1.5] mb-4">
@@ -471,7 +471,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                         </div>
                                                         <div className="flex flex-col text-left justify-center">
                                                             <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-1">AVERAGE</span>
-                                                            <span className="text-[13px] font-extrabold text-slate-900 dark:text-slate-100 leading-none">High</span>
+                                                            <span className="text-[13px] font-bold text-slate-900 dark:text-slate-100 leading-none">High</span>
                                                         </div>
                                                     </div>
                                                     
@@ -481,7 +481,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                         </div>
                                                         <div className="flex flex-col text-left justify-center">
                                                             <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-1">WEEKLY TARGET</span>
-                                                            <span className="text-[13px] font-extrabold text-slate-900 dark:text-slate-100 leading-none">4.5 / 10 Hrs</span>
+                                                            <span className="text-[13px] font-bold text-slate-900 dark:text-slate-100 leading-none">4.5 / 10 Hrs</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -501,7 +501,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                         <GraduationCap className="w-7 h-7 text-blue-600 dark:text-blue-400" strokeWidth={2.5} />
                                                     </motion.div>
                                                     <div className="flex flex-col text-left w-full">
-                                                        <h2 className="text-[19px] sm:text-[21px] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-1.5">
+                                                        <h2 className="text-[19px] sm:text-[21px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-1.5">
                                                             {totalCompletedAcrossAllCourses} Modules Done
                                                         </h2>
                                                         <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400 leading-[1.5] mb-4">
@@ -526,7 +526,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                         </div>
                                                         <div className="flex flex-col text-left justify-center">
                                                             <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-1">OVERALL</span>
-                                                            <span className="text-[13px] font-extrabold text-slate-900 dark:text-slate-100 leading-none">Progress</span>
+                                                            <span className="text-[13px] font-bold text-slate-900 dark:text-slate-100 leading-none">Progress</span>
                                                         </div>
                                                     </div>
                                                     
@@ -536,7 +536,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                         </div>
                                                         <div className="flex flex-col text-left justify-center">
                                                             <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-1">CURRICULUM</span>
-                                                            <span className="text-[13px] font-extrabold text-slate-900 dark:text-slate-100 leading-none">{totalCompletedAcrossAllCourses} / {totalCompletedAcrossAllCourses + totalNotStartedAcrossAllCourses}</span>
+                                                            <span className="text-[13px] font-bold text-slate-900 dark:text-slate-100 leading-none">{totalCompletedAcrossAllCourses} / {totalCompletedAcrossAllCourses + totalNotStartedAcrossAllCourses}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -556,7 +556,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                         <BookOpen className="w-7 h-7 text-slate-600 dark:text-slate-300" strokeWidth={2.5} />
                                                     </motion.div>
                                                     <div className="flex flex-col text-left w-full">
-                                                        <h2 className="text-[19px] sm:text-[21px] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-1.5">
+                                                        <h2 className="text-[19px] sm:text-[21px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-1.5">
                                                             {totalNotStartedAcrossAllCourses} Modules Left
                                                         </h2>
                                                         <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400 leading-[1.5] mb-4">
@@ -581,7 +581,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                         </div>
                                                         <div className="flex flex-col text-left justify-center">
                                                             <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-1">PENDING</span>
-                                                            <span className="text-[13px] font-extrabold text-slate-900 dark:text-slate-100 leading-none">Tasks</span>
+                                                            <span className="text-[13px] font-bold text-slate-900 dark:text-slate-100 leading-none">Tasks</span>
                                                         </div>
                                                     </div>
                                                     
@@ -591,7 +591,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                         </div>
                                                         <div className="flex flex-col text-left justify-center">
                                                             <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-1">WORKLOAD</span>
-                                                            <span className="text-[13px] font-extrabold text-slate-900 dark:text-slate-100 leading-none">{totalNotStartedAcrossAllCourses} Left</span>
+                                                            <span className="text-[13px] font-bold text-slate-900 dark:text-slate-100 leading-none">{totalNotStartedAcrossAllCourses} Left</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -704,7 +704,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                     
                                     {/* Title & Description with premium typography */}
                                     <div className="relative z-10">
-                                        <h3 className="text-[17px] font-extrabold text-zinc-800 dark:text-zinc-200 tracking-tight m-0 mb-1 leading-snug">
+                                        <h3 className="text-[17px] font-bold text-zinc-800 dark:text-zinc-200 tracking-tight m-0 mb-1 leading-snug">
                                             You're all caught up!
                                         </h3>
                                         <p className="text-[13.5px] text-zinc-500 dark:text-zinc-400 font-normal leading-relaxed m-0 max-w-sm">
@@ -931,7 +931,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                                     {instructorInitial}
                                                 </div>
                                                 <div className="flex flex-col justify-center">
-                                                    <span className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-[0.1em] leading-none mb-0.5">
+                                                    <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.1em] leading-none mb-0.5">
                                                         Instructor
                                                     </span>
                                                     <span className="text-[13px] font-bold text-slate-900 dark:text-slate-100 leading-none">
@@ -950,7 +950,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                         </div>
                                         {/* Text Container */}
                                         <div className="flex flex-col justify-center">
-                                            <span className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-[0.1em] leading-none mb-1">
+                                            <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.1em] leading-none mb-1">
                                                 Course Type
                                             </span>
                                             <span className="text-[13px] font-bold text-slate-900 dark:text-slate-100 leading-none">

@@ -280,7 +280,7 @@ const LevelDropdown: React.FC<LevelDropdownProps> = ({ className }) => {
                                             {profileImage ? (
                                                 <img src={profileImage} alt="Profile" className='w-full h-full object-cover' />
                                             ) : (
-                                                <div className={`w-full h-full flex items-center justify-center font-extrabold text-[15px] ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                                <div className={`w-full h-full flex items-center justify-center font-bold text-[15px] ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                                                     {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
                                                 </div>
                                             )}
@@ -297,7 +297,7 @@ const LevelDropdown: React.FC<LevelDropdownProps> = ({ className }) => {
                                 </div>
                                 
                                 <div className="flex flex-col items-start flex-1 justify-center w-full">
-                                    <h3 className="text-[15px] sm:text-[16px] font-extrabold text-slate-900 dark:text-white tracking-tight break-words whitespace-normal w-full">
+                                    <h3 className="text-[15px] sm:text-[16px] font-bold text-slate-900 dark:text-white tracking-tight break-words whitespace-normal w-full">
                                         {getLevelTitle(level)}
                                     </h3>
                                     <p className="text-[12px] sm:text-[13px] text-slate-500 dark:text-slate-400 font-medium leading-snug mt-0.5 break-words whitespace-normal w-full">
@@ -313,10 +313,10 @@ const LevelDropdown: React.FC<LevelDropdownProps> = ({ className }) => {
 
                         <div className="w-full flex flex-col gap-2 pt-1 relative z-10">
                             <div className="flex justify-between items-center px-1">
-                                <span className="px-2 py-0.5 rounded-md bg-blue-100/80 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 text-[11px] sm:text-[12px] font-black tracking-widest uppercase">
+                                <span className="px-2 py-0.5 rounded-md bg-blue-100/80 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 text-[11px] sm:text-[12px] font-bold tracking-widest uppercase">
                                     {level >= 20 ? 'MAX' : `${getXPData().xpInCurrentLevel} XP`}
                                 </span>
-                                <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[11px] sm:text-[12px] font-black tracking-widest uppercase">
+                                <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[11px] sm:text-[12px] font-bold tracking-widest uppercase">
                                     {level >= 20 ? 'MAX' : `${getXPNeededForLevel(level)} XP`}
                                 </span>
                             </div>
@@ -368,7 +368,7 @@ const LevelDropdown: React.FC<LevelDropdownProps> = ({ className }) => {
                                         ].map(item => (
                                             <div key={item.label} className="bg-white dark:bg-slate-800/80 rounded-[14px] p-2.5 border border-slate-200/80 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center text-center transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800/60 cursor-default group/xp">
                                                 <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 leading-none">{item.label}</span>
-                                                <span className="text-[13px] font-black text-blue-600 dark:text-blue-400 leading-none group-hover/xp:scale-110 transition-transform duration-300">{item.xp}</span>
+                                                <span className="text-[13px] font-bold text-blue-600 dark:text-blue-400 leading-none group-hover/xp:scale-110 transition-transform duration-300">{item.xp}</span>
                                             </div>
                                         ))}
                                     </div>

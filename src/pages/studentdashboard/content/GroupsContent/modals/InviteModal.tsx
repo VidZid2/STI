@@ -181,7 +181,7 @@ const InviteModal: React.FC<{
                                     {/* Text Info */}
                                     <div className="flex-1 min-w-0 pt-0.5">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <h2 className={`text-[20px] font-extrabold tracking-tight leading-none truncate ${
+                                            <h2 className={`text-[20px] font-bold tracking-tight leading-none truncate ${
                                                 isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
                                             }`}>
                                                 Invite to {group.name}

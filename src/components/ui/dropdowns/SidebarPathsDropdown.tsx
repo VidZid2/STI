@@ -153,13 +153,13 @@ const PathItem = React.memo<{
 
                 {/* Path Info */}
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <div className="text-[13.5px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <div className="text-[13.5px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {path.title}
                     </div>
                     
                     {/* Detail tags row */}
                     <div className="flex items-center gap-1.5 mt-1 text-[10.5px] text-zinc-500 dark:text-zinc-400 leading-none flex-wrap font-medium">
-                        <span style={{ color: difficultyInfo.color, background: `${difficultyInfo.color}15` }} className="text-[8.5px] font-black px-1.5 py-0.5 rounded-[4px] leading-none uppercase">
+                        <span style={{ color: difficultyInfo.color, background: `${difficultyInfo.color}15` }} className="text-[8.5px] font-bold px-1.5 py-0.5 rounded-[4px] leading-none uppercase">
                             {difficultyInfo.label}
                         </span>
                         <span className="text-zinc-300 dark:text-zinc-700">•</span>
@@ -185,7 +185,7 @@ const PathItem = React.memo<{
                                 </svg>
                             </div>
                         )}
-                        <span className={`text-[11px] font-black leading-none ${
+                        <span className={`text-[11px] font-bold leading-none ${
                             progress === 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'
                         }`}>
                             {progress}%
@@ -278,17 +278,17 @@ const ContinuePathCard: React.FC<{
             {/* Text Info */}
             <div className="min-w-0 flex-1 relative z-10">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none">
+                    <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none">
                         Continue Path
                     </span>
                     
                     {/* Compact, elegant inline progress badge */}
-                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100/60 dark:border-blue-800/30 leading-none">
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100/60 dark:border-blue-800/30 leading-none">
                         {progress}% PROGRESS
                     </span>
                 </div>
                 
-                <h3 className="text-[14px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+                <h3 className="text-[14px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                     {path.title}
                 </h3>
                 
@@ -437,8 +437,8 @@ const SidebarPathsDropdown: React.FC<SidebarPathsDropdownProps> = ({
                                         </svg>
                                     </div>
                                     <div className="leading-none">
-                                        <p className="text-[9px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Active</p>
-                                        <p className="text-[12px] font-black text-zinc-900 dark:text-zinc-100 leading-none">{stats.inProgressPaths}</p>
+                                        <p className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Active</p>
+                                        <p className="text-[12px] font-bold text-zinc-900 dark:text-zinc-100 leading-none">{stats.inProgressPaths}</p>
                                     </div>
                                 </div>
                             </div>

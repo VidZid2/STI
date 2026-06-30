@@ -1,4 +1,4 @@
-﻿import { motion } from 'motion/react';
+import { motion } from 'motion/react';
 import { Database, HardDrive, Zap, AlertTriangle } from 'lucide-react';
 import type { AdminStats } from '../../../../services/adminService';
 
@@ -57,7 +57,7 @@ const StorageHeatmap: React.FC<Props> = ({ stats, isLoading }) => {
             {/* Heavy Hitters */}
             <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
                 <h4 className="text-[10px] font-bold text-slate-400 mb-2.5 uppercase tracking-wider flex items-center gap-1.5">
-                    <span className="text-rose-500 text-xs">🔥</span> Storage "Heavy Hitters" Heatmap
+                    <span className="text-rose-500 text-xs">??</span> Storage "Heavy Hitters" Heatmap
                 </h4>
                 <div className="space-y-2">
                     {!isLoading && stats?.storageHeavyHitters?.length === 0 && (
@@ -73,7 +73,7 @@ const StorageHeatmap: React.FC<Props> = ({ stats, isLoading }) => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 lg:gap-3 shrink-0">
-                                <span className="text-sm font-black tracking-tight text-slate-700 dark:text-slate-300 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">{formatBytes(hitter.bytes)}</span>
+                                <span className="text-sm font-bold tracking-tight text-slate-700 dark:text-slate-300 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">{formatBytes(hitter.bytes)}</span>
                                 <button className="opacity-0 group-hover:opacity-100 px-2 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-bold rounded flex items-center gap-1 transition-all">
                                     <AlertTriangle size={10} /> <span className="hidden lg:inline">Alert</span>
                                 </button>

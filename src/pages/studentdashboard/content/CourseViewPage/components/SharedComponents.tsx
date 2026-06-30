@@ -114,7 +114,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, description
         </motion.div>
 
         <div className="relative z-10 flex flex-col items-center">
-            <motion.h3 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="text-[17px] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight m-0 mb-1.5 leading-snug">
+            <motion.h3 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="text-[17px] font-bold text-slate-900 dark:text-slate-100 tracking-tight m-0 mb-1.5 leading-snug">
                 {title}
             </motion.h3>
             <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-[13.5px] text-slate-500 dark:text-slate-400 font-normal leading-relaxed m-0 max-w-[280px] mb-6">

@@ -67,7 +67,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">To-Do List Widget:</strong> Manage study tasks and set school goals directly on the sidebar.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">To-Do List Widget:</strong> Manage study tasks and set school goals directly on the sidebar.
                     </span>
                 ), 
                 icon: Bookmark,
@@ -76,7 +76,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Course Progress Tracker:</strong> Monitor module completion percentages for all active subjects.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Course Progress Tracker:</strong> Monitor module completion percentages for all active subjects.
                     </span>
                 ), 
                 icon: BookOpen,
@@ -85,7 +85,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Default Profile Avatars:</strong> Access a set of starter avatars to customize your student identity.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Default Profile Avatars:</strong> Access a set of starter avatars to customize your student identity.
                     </span>
                 ), 
                 icon: User,
@@ -103,7 +103,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Productivity Tools:</strong> Unlocks essential tools like the <strong className="text-blue-600 dark:text-blue-400 font-black">Grammar Checker</strong>, <strong className="text-blue-600 dark:text-blue-400 font-black">Text Summarizer</strong>, and <strong className="text-blue-600 dark:text-blue-400 font-black">Word Counter</strong> to assist your studies.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Productivity Tools:</strong> Unlocks essential tools like the <strong className="text-blue-600 dark:text-blue-400 font-bold">Grammar Checker</strong>, <strong className="text-blue-600 dark:text-blue-400 font-bold">Text Summarizer</strong>, and <strong className="text-blue-600 dark:text-blue-400 font-bold">Word Counter</strong> to assist your studies.
                     </span>
                 ), 
                 icon: Sparkles,
@@ -112,7 +112,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Calendar Widget:</strong> View upcoming class events, deadlines, and schedule entries.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Calendar Widget:</strong> View upcoming class events, deadlines, and schedule entries.
                     </span>
                 ), 
                 icon: Calendar,
@@ -121,7 +121,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Class Announcements:</strong> Access critical bulletins posted by course instructors.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Class Announcements:</strong> Access critical bulletins posted by course instructors.
                     </span>
                 ), 
                 icon: Bell,
@@ -139,7 +139,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Focus Mode Timer:</strong> Use the full-screen Pomodoro tool to structure study intervals.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Focus Mode Timer:</strong> Use the full-screen Pomodoro tool to structure study intervals.
                     </span>
                 ), 
                 icon: Clock,
@@ -148,7 +148,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Ambient Alarms:</strong> Custom notification sounds and focus soundscapes.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Ambient Alarms:</strong> Custom notification sounds and focus soundscapes.
                     </span>
                 ), 
                 icon: Sparkles,
@@ -166,7 +166,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Activity Tracker Widget:</strong> Log your daily study durations and review historic study trends.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Activity Tracker Widget:</strong> Log your daily study durations and review historic study trends.
                     </span>
                 ), 
                 icon: TrendingUp,
@@ -175,7 +175,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Grade Predictor Widget:</strong> Project your semester GPA using tentative grade inputs.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Grade Predictor Widget:</strong> Project your semester GPA using tentative grade inputs.
                     </span>
                 ), 
                 icon: Target,
@@ -193,7 +193,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Study Groups Lobby:</strong> Join virtual group rooms, coordinate study meets, and view member progress.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Study Groups Lobby:</strong> Join virtual group rooms, coordinate study meets, and view member progress.
                     </span>
                 ), 
                 icon: Users,
@@ -202,7 +202,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Peer Chat Room:</strong> Talk with classmates and study partners in dedicated group chats.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Peer Chat Room:</strong> Talk with classmates and study partners in dedicated group chats.
                     </span>
                 ), 
                 icon: MessageSquare,
@@ -220,7 +220,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Daily Streak Bonus (+1.10x XP):</strong> Increases active study session XP rewards by 10%.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Daily Streak Bonus (+1.10x XP):</strong> Increases active study session XP rewards by 10%.
                     </span>
                 ), 
                 icon: Flame,
@@ -238,7 +238,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Study Insights Widget:</strong> Review detailed analytics and charts of your study distribution.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Study Insights Widget:</strong> Review detailed analytics and charts of your study distribution.
                     </span>
                 ), 
                 icon: Brain,
@@ -247,7 +247,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Daily Motivation Cards:</strong> Inspirational quote cards right on your overview tab.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Daily Motivation Cards:</strong> Inspirational quote cards right on your overview tab.
                     </span>
                 ), 
                 icon: Image,
@@ -265,7 +265,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Weather Forecast Widget:</strong> Stay updated on local campus weather during study sessions.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Weather Forecast Widget:</strong> Stay updated on local campus weather during study sessions.
                     </span>
                 ), 
                 icon: Sparkles,
@@ -283,7 +283,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Study Streak multiplier (+1.15x XP):</strong> Permanent upgrade to your streak XP multiplier.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Study Streak multiplier (+1.15x XP):</strong> Permanent upgrade to your streak XP multiplier.
                     </span>
                 ), 
                 icon: Flame,
@@ -301,7 +301,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Dashboard Layout Editor:</strong> Rearrange, hide, or resize sidebar widgets to fit your needs.
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Dashboard Layout Editor:</strong> Rearrange, hide, or resize sidebar widgets to fit your needs.
                     </span>
                 ), 
                 icon: Layers,
@@ -310,7 +310,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Silver Level Ring:</strong> Unlocks the metallic silver progress ring around your profile avatar.
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Silver Level Ring:</strong> Unlocks the metallic silver progress ring around your profile avatar.
                     </span>
                 ), 
                 icon: Gem,
@@ -328,7 +328,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Study Streak multiplier (+1.20x XP):</strong> Permanent upgrade to your streak XP multiplier.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Study Streak multiplier (+1.20x XP):</strong> Permanent upgrade to your streak XP multiplier.
                     </span>
                 ), 
                 icon: Flame,
@@ -346,7 +346,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Group Focus sessions:</strong> Join shared focus rooms with a synchronized study clock.
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Group Focus sessions:</strong> Join shared focus rooms with a synchronized study clock.
                     </span>
                 ), 
                 icon: Users,
@@ -355,7 +355,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Compact Mode View:</strong> A tighter, dense dashboard layout option in your settings.
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Compact Mode View:</strong> A tighter, dense dashboard layout option in your settings.
                     </span>
                 ), 
                 icon: Layers,
@@ -373,7 +373,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Premium Soundscapes:</strong> Unlocks exclusive white noise tracks (Rain, Forest, Cafe).
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Premium Soundscapes:</strong> Unlocks exclusive white noise tracks (Rain, Forest, Cafe).
                     </span>
                 ), 
                 icon: Sparkles,
@@ -391,7 +391,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Animated Profile Border:</strong> A glowing neon animated border for your profile display card.
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Animated Profile Border:</strong> A glowing neon animated border for your profile display card.
                     </span>
                 ), 
                 icon: Zap,
@@ -409,7 +409,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Gold Level Ring:</strong> Unlocks the metallic gold progress ring around your avatar.
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Gold Level Ring:</strong> Unlocks the metallic gold progress ring around your avatar.
                     </span>
                 ), 
                 icon: Gem,
@@ -418,7 +418,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Theme Accent Selection:</strong> Customize the dashboard primary color in display settings.
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Theme Accent Selection:</strong> Customize the dashboard primary color in display settings.
                     </span>
                 ), 
                 icon: Image,
@@ -436,7 +436,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Peer tutor badge:</strong> Mark yourself as available to help other students on the peer list.
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Peer tutor badge:</strong> Mark yourself as available to help other students on the peer list.
                     </span>
                 ), 
                 icon: User,
@@ -454,7 +454,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Create Custom Groups:</strong> Invite peers by sharing dynamic join codes.
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Create Custom Groups:</strong> Invite peers by sharing dynamic join codes.
                     </span>
                 ), 
                 icon: Users,
@@ -472,7 +472,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-black">Study Streak multiplier (+1.25x XP):</strong> Permanent upgrade to your streak XP multiplier.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Study Streak multiplier (+1.25x XP):</strong> Permanent upgrade to your streak XP multiplier.
                     </span>
                 ), 
                 icon: Flame,
@@ -490,7 +490,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Premium Theme Pack:</strong> Unlock dark mode theme variations (Slate, Charcoal, Deep Ocean).
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Premium Theme Pack:</strong> Unlock dark mode theme variations (Slate, Charcoal, Deep Ocean).
                     </span>
                 ), 
                 icon: Image,
@@ -508,7 +508,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Legendary Crown Icon:</strong> The ultimate golden crown badge next to your profile.
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Legendary Crown Icon:</strong> The ultimate golden crown badge next to your profile.
                     </span>
                 ), 
                 icon: Crown,
@@ -517,7 +517,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-black">Peer Mentor Badge:</strong> Marks you as a mentor in study groups so peers can seek guidance.
+                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Peer Mentor Badge:</strong> Marks you as a mentor in study groups so peers can seek guidance.
                     </span>
                 ), 
                 icon: Shield,
@@ -648,8 +648,8 @@ const LevelJourneyModal: React.FC<LevelJourneyModalProps> = ({ isOpen, onClose, 
                 <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg relative z-10">
                     <Icon className="w-8 h-8 text-white drop-shadow-md" />
                 </div>
-                <span className="text-white/80 text-[9px] font-extrabold uppercase tracking-widest mt-3 relative z-10 leading-none">{subtitle}</span>
-                <span className="text-white text-base font-black tracking-tight mt-1 relative z-10 leading-none">{title}</span>
+                <span className="text-white/80 text-[9px] font-bold uppercase tracking-widest mt-3 relative z-10 leading-none">{subtitle}</span>
+                <span className="text-white text-base font-bold tracking-tight mt-1 relative z-10 leading-none">{title}</span>
             </div>
         );
     };
@@ -665,19 +665,19 @@ const LevelJourneyModal: React.FC<LevelJourneyModalProps> = ({ isOpen, onClose, 
         let statusBadge = null;
         if (isCurrent) {
             statusBadge = (
-                <span className="px-2.5 py-0.5 text-[9.5px] font-black uppercase tracking-wider bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 rounded-md">
+                <span className="px-2.5 py-0.5 text-[9.5px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 rounded-md">
                     In Progress
                 </span>
             );
         } else if (isReached) {
             statusBadge = (
-                <span className="px-2.5 py-0.5 text-[9.5px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 rounded-md">
+                <span className="px-2.5 py-0.5 text-[9.5px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 rounded-md">
                     Completed
                 </span>
             );
         } else {
             statusBadge = (
-                <span className="px-2.5 py-0.5 text-[9.5px] font-black uppercase tracking-wider bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400 rounded-md flex items-center gap-1 border border-zinc-200/50 dark:border-zinc-700">
+                <span className="px-2.5 py-0.5 text-[9.5px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400 rounded-md flex items-center gap-1 border border-zinc-200/50 dark:border-zinc-700">
                     <Lock className="w-2.5 h-2.5" /> Locked
                 </span>
             );
@@ -711,8 +711,8 @@ const LevelJourneyModal: React.FC<LevelJourneyModalProps> = ({ isOpen, onClose, 
                     <motion.div variants={itemVariants} className="p-5 rounded-[20px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col gap-4">
                         {/* Tier Title Header */}
                         <div className="flex items-center justify-between gap-4">
-                            <h3 className="text-[22px] leading-tight font-black text-slate-900 dark:text-slate-100 tracking-tight">{tier.name}</h3>
-                            <span className="px-2.5 py-1 text-[11px] font-extrabold text-blue-600 bg-blue-50 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30 rounded-lg shrink-0">
+                            <h3 className="text-[22px] leading-tight font-bold text-slate-900 dark:text-slate-100 tracking-tight">{tier.name}</h3>
+                            <span className="px-2.5 py-1 text-[11px] font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30 rounded-lg shrink-0">
                                 {tier.levelRange}
                             </span>
                         </div>
@@ -722,7 +722,7 @@ const LevelJourneyModal: React.FC<LevelJourneyModalProps> = ({ isOpen, onClose, 
 
                         {/* Status Section */}
                         <div className="flex items-center justify-between gap-3">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Tier Status</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Tier Status</span>
                             {statusBadge}
                         </div>
 
@@ -741,7 +741,7 @@ const LevelJourneyModal: React.FC<LevelJourneyModalProps> = ({ isOpen, onClose, 
                             <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30 flex items-center justify-center shadow-[0_1.5px_4px_rgba(59,130,246,0.08)] shrink-0">
                                 <Award className="w-4.5 h-4.5" />
                             </div>
-                            <h4 className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest text-center">Unlocked Rewards</h4>
+                            <h4 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest text-center">Unlocked Rewards</h4>
                         </div>
                         <div className="flex flex-col gap-2.5">
                             {tier.rewards.map((reward, rIdx) => {
@@ -758,11 +758,11 @@ const LevelJourneyModal: React.FC<LevelJourneyModalProps> = ({ isOpen, onClose, 
                                     >
                                         {/* Unlocked / Locked Badge in Top Right */}
                                         {isReached ? (
-                                            <span className="absolute top-2.5 right-2.5 px-2 py-0.5 text-[8.5px] font-black uppercase tracking-wider bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 rounded-md border border-blue-100 dark:border-blue-900/30">
+                                            <span className="absolute top-2.5 right-2.5 px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 rounded-md border border-blue-100 dark:border-blue-900/30">
                                                 Unlocked!
                                             </span>
                                         ) : (
-                                            <span className="absolute top-2.5 right-2.5 px-2 py-0.5 text-[8.5px] font-black uppercase tracking-wider bg-slate-100 text-slate-500 dark:bg-slate-800/80 dark:text-slate-450 rounded-md flex items-center gap-1 border border-slate-200/50 dark:border-slate-700/30">
+                                            <span className="absolute top-2.5 right-2.5 px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 dark:bg-slate-800/80 dark:text-slate-450 rounded-md flex items-center gap-1 border border-slate-200/50 dark:border-slate-700/30">
                                                 <Lock className="w-2.5 h-2.5" /> Locked
                                             </span>
                                         )}
@@ -840,7 +840,7 @@ const LevelJourneyModal: React.FC<LevelJourneyModalProps> = ({ isOpen, onClose, 
                                     <Trophy size={20} />
                                 </div>
                                 <div className="text-left">
-                                    <h2 className="font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight text-[17px] leading-tight">
+                                    <h2 className="font-bold text-zinc-900 dark:text-zinc-100 tracking-tight text-[17px] leading-tight">
                                         Level Journey
                                     </h2>
                                     <p className="text-xs text-zinc-500 dark:text-zinc-450 leading-none mt-0.5">
@@ -877,7 +877,7 @@ const LevelJourneyModal: React.FC<LevelJourneyModalProps> = ({ isOpen, onClose, 
                                         <div className="text-left">
                                             <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-1">Your Status</p>
                                             <div className="flex items-baseline gap-1">
-                                                <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-none">Level {currentLevel}</span>
+                                                <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-none">Level {currentLevel}</span>
                                                 <span className="text-[10.5px] font-medium text-zinc-550 dark:text-zinc-400">/ Max 20</span>
                                             </div>
                                         </div>

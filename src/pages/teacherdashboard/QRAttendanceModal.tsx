@@ -99,7 +99,7 @@ const QRAttendanceModal: React.FC<QRAttendanceModalProps> = ({ isOpen, onClose }
 
                             <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 mb-6">
                                 <div className="flex justify-between items-end mb-2">
-                                    <span className="text-5xl font-black text-slate-900 font-mono tracking-tighter">{scannedCount}</span>
+                                    <span className="text-5xl font-bold text-slate-900 font-mono tracking-tighter">{scannedCount}</span>
                                     <span className="text-md font-bold text-slate-400 mb-1">/ {totalStudents}</span>
                                 </div>
                                 <div className="text-sm font-semibold text-slate-500 flex items-center gap-2 uppercase tracking-wider">

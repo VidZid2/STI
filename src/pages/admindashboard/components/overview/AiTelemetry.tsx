@@ -33,14 +33,14 @@ const AiTelemetry: React.FC<Props> = ({ stats, isLoading }) => {
 
                 <div className="flex flex-wrap gap-6 mb-4">
                     <div>
-                        <div className="text-2xl font-black font-mono text-emerald-400">
+                        <div className="text-2xl font-bold font-mono text-emerald-400">
                             {isLoading ? '...' : stats?.aiHoursSaved?.toLocaleString() || 0}
                             <span className="text-sm font-medium text-emerald-500/60 ml-1">hrs</span>
                         </div>
                         <div className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mt-0.5">Human Grading Saved</div>
                     </div>
                     <div>
-                        <div className="text-2xl font-black font-mono">
+                        <div className="text-2xl font-bold font-mono">
                             {isLoading ? '...' : `≈ ${formatAiTokens(stats?.aiTokensProcessed)}`}
                             <span className="text-sm font-medium text-slate-500 ml-1">{isMillions ? 'M' : ''}</span>
                         </div>
@@ -49,7 +49,7 @@ const AiTelemetry: React.FC<Props> = ({ stats, isLoading }) => {
                         </div>
                     </div>
                     <div>
-                        <div className="text-2xl font-black font-mono text-rose-300">
+                        <div className="text-2xl font-bold font-mono text-rose-300">
                             {isLoading ? '...' : `≈ $${stats?.aiEstimatedCost?.toFixed(2) || '0.00'}`}
                         </div>
                         <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mt-0.5">

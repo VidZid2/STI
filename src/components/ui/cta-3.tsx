@@ -44,7 +44,7 @@ export function CallToAction({
       <div className="-z-10 absolute top-0 left-1/2 h-full border-l border-dashed border-slate-200 dark:border-slate-800" />
 
       <div className="space-y-2 z-10 relative bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-4 rounded-xl border border-transparent">
-        <h2 className="text-center font-extrabold text-2xl text-slate-900 dark:text-white tracking-tight">
+        <h2 className="text-center font-bold text-2xl text-slate-900 dark:text-white tracking-tight">
           {title}
         </h2>
         <p className="text-center text-slate-600 dark:text-slate-400 text-[13px] max-w-lg mx-auto leading-relaxed">

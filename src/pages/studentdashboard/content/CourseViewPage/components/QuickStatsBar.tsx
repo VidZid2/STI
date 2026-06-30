@@ -238,9 +238,9 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({
                                     <>
                                         <div className="flex justify-between items-start mb-4 relative z-10">
                                             <div>
-                                                <span className={`text-[11px] font-extrabold uppercase tracking-[0.15em] mb-1.5 block ${gradeColor.label}`}>Current Grade</span>
+                                                <span className={`text-[11px] font-bold uppercase tracking-[0.15em] mb-1.5 block ${gradeColor.label}`}>Current Grade</span>
                                                 <div className="flex items-center gap-3">
-                                                    <h3 className={`text-5xl font-black ${gradeColor.letter} leading-none tracking-tight`}>{gradeLetter}</h3>
+                                                    <h3 className={`text-5xl font-bold ${gradeColor.letter} leading-none tracking-tight`}>{gradeLetter}</h3>
                                                     <span className={`px-2.5 py-1 rounded-md text-sm font-bold ${gradeColor.iconBg} ${gradeColor.iconText}`}>
                                                         {getGPA(stats.grade)}
                                                     </span>
@@ -306,9 +306,9 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({
                                 {stats.totalSessions === 0 ? (
                                     <div className="w-full flex items-center justify-between">
                                         <div className="min-w-0 flex-1 pr-3">
-                                            <span className="text-[10px] font-extrabold uppercase tracking-widest mb-1 block truncate text-blue-500 dark:text-blue-400">Attendance</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest mb-1 block truncate text-blue-500 dark:text-blue-400">Attendance</span>
                                             <div className="flex items-baseline gap-1">
-                                                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-none tracking-tight">Welcome!</h3>
+                                                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-none tracking-tight">Welcome!</h3>
                                             </div>
                                             <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium truncate">New semester started</p>
                                         </div>
@@ -319,9 +319,9 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({
                                 ) : (
                                     <>
                                         <div className="min-w-0 flex-1 pr-3">
-                                            <span className={`text-[10px] font-extrabold uppercase tracking-widest mb-1 block truncate ${attendanceColor.label}`}>Attendance</span>
+                                            <span className={`text-[10px] font-bold uppercase tracking-widest mb-1 block truncate ${attendanceColor.label}`}>Attendance</span>
                                             <div className="flex items-baseline gap-1">
-                                                <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-none">{stats.attendance}%</h3>
+                                                <h3 className="text-2xl font-bold text-slate-900 dark:text-white leading-none">{stats.attendance}%</h3>
                                             </div>
                                             <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium truncate">Present across all sessions</p>
                                         </div>
@@ -353,8 +353,8 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({
                                 {stats.nextDeadline?.title ? (
                                     <>
                                         <div className="min-w-0 flex-1 pr-3 relative z-10">
-                                            <span className={`text-[10px] font-extrabold uppercase tracking-widest mb-1 block truncate ${deadlineColor.label}`}>Next Deadline</span>
-                                            <h3 className={`text-xl font-black leading-tight line-clamp-1 truncate ${deadlineColor.title}`}>{stats.nextDeadline.title}</h3>
+                                            <span className={`text-[10px] font-bold uppercase tracking-widest mb-1 block truncate ${deadlineColor.label}`}>Next Deadline</span>
+                                            <h3 className={`text-xl font-bold leading-tight line-clamp-1 truncate ${deadlineColor.title}`}>{stats.nextDeadline.title}</h3>
                                             <p className={`text-[11px] mt-1 font-bold tracking-wide truncate ${deadlineColor.due}`}>{stats.nextDeadline.days <= 0 ? 'DUE TODAY!' : `DUE IN ${stats.nextDeadline.days} DAYS`}</p>
                                         </div>
                                         <div className={`w-12 h-12 rounded-[12px] flex flex-col items-center justify-center flex-shrink-0 shadow-sm relative z-10 ${deadlineColor.iconBg} ${deadlineColor.iconText}`}>
@@ -364,8 +364,8 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({
                                 ) : (
                                     <>
                                         <div className="min-w-0 flex-1 pr-3 relative z-10">
-                                            <span className="text-[10px] font-extrabold text-emerald-500 dark:text-emerald-400 uppercase tracking-widest mb-1 block">All Tasks Done</span>
-                                            <h3 className="text-xl font-black text-slate-800 dark:text-white leading-tight">All caught up! 🎉</h3>
+                                            <span className="text-[10px] font-bold text-emerald-500 dark:text-emerald-400 uppercase tracking-widest mb-1 block">All Tasks Done</span>
+                                            <h3 className="text-xl font-bold text-slate-800 dark:text-white leading-tight">All caught up! 🎉</h3>
                                             <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 font-medium">No upcoming deadlines</p>
                                         </div>
                                         <div className="w-12 h-12 rounded-[12px] bg-emerald-50 dark:bg-emerald-900/30 flex flex-col items-center justify-center text-emerald-500 dark:text-emerald-400 flex-shrink-0 shadow-sm relative z-10">

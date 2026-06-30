@@ -67,7 +67,7 @@ const CourseItem: React.FC<{
 
             {/* Course Info */}
             <div className="flex-1 min-w-0 flex flex-col justify-center">
-                <div className="text-[13.5px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <div className="text-[13.5px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {displayTitle}
                 </div>
                 
@@ -78,11 +78,11 @@ const CourseItem: React.FC<{
                     </span>
                     <span className="text-zinc-300 dark:text-zinc-700">•</span>
                     {course.progress === 100 ? (
-                        <span className="text-emerald-600 dark:text-emerald-400 font-extrabold flex items-center gap-0.5 uppercase tracking-wider">
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-0.5 uppercase tracking-wider">
                             Completed
                         </span>
                     ) : (
-                        <span className="flex items-center gap-1 uppercase tracking-wider font-extrabold text-zinc-400 dark:text-zinc-500">
+                        <span className="flex items-center gap-1 uppercase tracking-wider font-bold text-zinc-400 dark:text-zinc-500">
                             <svg className="w-3 h-3 text-zinc-400 dark:text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                                 <circle cx="12" cy="12" r="10" />
                                 <polyline points="12 6 12 12 16 14" />
@@ -111,7 +111,7 @@ const CourseItem: React.FC<{
                             </svg>
                         </div>
                     )}
-                    <span className={`text-[11px] font-black leading-none ${
+                    <span className={`text-[11px] font-bold leading-none ${
                         course.progress === 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-zinc-100'
                     }`}>
                         {course.progress}%
@@ -152,17 +152,17 @@ const ContinueLearningCard: React.FC<{
             {/* Text Info */}
             <div className="min-w-0 flex-1 relative z-10">
                 <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none">
+                    <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none">
                         Continue Learning
                     </span>
                     
                     {/* Compact, elegant inline progress badge */}
-                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100/60 dark:border-blue-800/30 leading-none">
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100/60 dark:border-blue-800/30 leading-none">
                         {course.progress}% PROGRESS
                     </span>
                 </div>
                 
-                <h3 className="text-[14px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h3 className="text-[14px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {displayTitle}
                 </h3>
                 
@@ -319,8 +319,8 @@ const SidebarCoursesDropdown: React.FC<SidebarCoursesDropdownProps> = ({
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-[9px] font-extrabold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Progress</p>
-                                        <p className="text-[12px] font-black text-zinc-900 dark:text-zinc-100 leading-none">{completedCount}/{courses.length}</p>
+                                        <p className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-0.5">Progress</p>
+                                        <p className="text-[12px] font-bold text-zinc-900 dark:text-zinc-100 leading-none">{completedCount}/{courses.length}</p>
                                     </div>
                                 </div>
                             </div>

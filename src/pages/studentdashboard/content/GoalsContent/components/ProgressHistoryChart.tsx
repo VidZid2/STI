@@ -103,7 +103,7 @@ const ProgressHistoryChart: React.FC<{ goals?: any[] }> = ({ goals = [] }) => {
                         </svg>
                     </motion.div>
                     <div className="flex flex-col min-w-0 pt-0.5">
-                        <h2 className="text-[16px] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-1.5">Progress Overview</h2>
+                        <h2 className="text-[16px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-1.5">Progress Overview</h2>
                         <p className="text-[13px] font-bold text-slate-500 dark:text-slate-400 leading-tight">Your learning journey</p>
                     </div>
                 </div>

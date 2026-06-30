@@ -1,4 +1,4 @@
-﻿/**
+/**
  * UsersSkeleton components (SkeletonPulse, UserCardSkeleton)
  * Extracted from UsersContent.tsx during Phase 8.4
  */

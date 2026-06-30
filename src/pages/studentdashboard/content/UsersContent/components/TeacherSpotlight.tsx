@@ -239,7 +239,7 @@ const TeacherSpotlight: React.FC<{
 
                                     {/* Courses List - Compact */}
                                     <div className="w-full flex flex-col mt-2">
-                                        <p className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 px-1">
+                                        <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 px-1">
                                             Teaching This Semester
                                         </p>
                                         <div className="flex flex-col gap-2.5 max-h-[180px] overflow-y-auto overflow-x-hidden px-1.5 -mx-1.5 pb-2 custom-scrollbar">
@@ -282,7 +282,7 @@ const TeacherSpotlight: React.FC<{
                                                                 {course.title}
                                                             </h5>
                                                             <div className="flex items-center gap-2 flex-wrap">
-                                                                <span className={`px-2 py-[2px] rounded-[6px] text-[10px] font-extrabold uppercase tracking-wider leading-none ${badgeColorClass}`}>
+                                                                <span className={`px-2 py-[2px] rounded-[6px] text-[10px] font-bold uppercase tracking-wider leading-none ${badgeColorClass}`}>
                                                                     {course.category}
                                                                 </span>
                                                                 <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate leading-none mt-px">

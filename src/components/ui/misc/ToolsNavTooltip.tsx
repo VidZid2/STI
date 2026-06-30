@@ -85,7 +85,7 @@ const ToolsNavTooltip: React.FC<ToolsNavTooltipProps> = ({ children, isExpanded 
                                     {/* Text Info */}
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-0.5">
-                                            <h2 className="text-[18px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-none">
+                                            <h2 className="text-[18px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-none">
                                                 Student Tools
                                             </h2>
                                         </div>
@@ -106,7 +106,7 @@ const ToolsNavTooltip: React.FC<ToolsNavTooltipProps> = ({ children, isExpanded 
                                         </div>
                                         <div className="flex flex-col justify-center gap-0.5">
                                             <p className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Available</p>
-                                            <p className="text-[12px] font-extrabold text-zinc-900 dark:text-zinc-100 leading-none">11 Tools</p>
+                                            <p className="text-[12px] font-bold text-zinc-900 dark:text-zinc-100 leading-none">11 Tools</p>
                                         </div>
                                     </div>
 
@@ -119,7 +119,7 @@ const ToolsNavTooltip: React.FC<ToolsNavTooltipProps> = ({ children, isExpanded 
                                         </div>
                                         <div className="flex flex-col justify-center gap-0.5">
                                             <p className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest leading-none">Data</p>
-                                            <p className="text-[12px] font-extrabold text-zinc-900 dark:text-zinc-100 leading-none">Local-first</p>
+                                            <p className="text-[12px] font-bold text-zinc-900 dark:text-zinc-100 leading-none">Local-first</p>
                                         </div>
                                     </div>
                                 </div>

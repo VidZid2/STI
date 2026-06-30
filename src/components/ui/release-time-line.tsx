@@ -124,8 +124,8 @@ export default function TimeLine_01({
     if (isReached) {
       return (
         <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-        <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{cleanSubtitle}</span>
-        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[8.5px] font-extrabold bg-zinc-100 dark:bg-zinc-800/80 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700/50 leading-none">
+        <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{cleanSubtitle}</span>
+        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[8.5px] font-bold bg-zinc-100 dark:bg-zinc-800/80 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700/50 leading-none">
           <svg className="w-2 h-2" fill="none" stroke="currentColor" strokeWidth={3.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
         </span>
         </div>
@@ -135,8 +135,8 @@ export default function TimeLine_01({
     if (isNext) {
       return (
         <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-          <span className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">{cleanSubtitle}</span>
-          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8.5px] font-extrabold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 leading-none">
+          <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">{cleanSubtitle}</span>
+          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8.5px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 leading-none">
             Next Tier
           </span>
         </div>
@@ -145,8 +145,8 @@ export default function TimeLine_01({
 
     return (
       <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-        <span className="text-[10px] font-black text-slate-450 dark:text-slate-500 uppercase tracking-wider">{cleanSubtitle}</span>
-        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[8.5px] font-extrabold bg-slate-100 dark:bg-slate-800 text-slate-450 dark:text-slate-550 border border-slate-200 dark:border-slate-700/50 leading-none">
+        <span className="text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-wider">{cleanSubtitle}</span>
+        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[8.5px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-450 dark:text-slate-550 border border-slate-200 dark:border-slate-700/50 leading-none">
           Locked
         </span>
       </div>
@@ -288,7 +288,7 @@ export default function TimeLine_01({
                     <div className="space-y-2 relative z-10">
                       <h2
                         className={
-                          "text-lg md:text-xl font-extrabold leading-tight tracking-tight transition-colors duration-200 " +
+                          "text-lg md:text-xl font-bold leading-tight tracking-tight transition-colors duration-200 " +
                           (isActive ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-700 dark:text-zinc-300")
                         }
                       >
@@ -394,22 +394,22 @@ export default function TimeLine_01({
                                     <div className="flex-1 space-y-1.5 min-w-0">
                                       <div className="flex flex-wrap items-center gap-2">
                                         {/* Reward Type Pill Badge */}
-                                        <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border leading-none ${typeClass}`}>
+                                        <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border leading-none ${typeClass}`}>
                                           {typeLabel}
                                         </span>
 
                                         {/* Unlock status indicator */}
                                         {isReached ? (
-                                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 leading-none">
+                                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 leading-none">
                                             <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                                             Unlocked
                                           </span>
                                         ) : isNext ? (
-                                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 leading-none">
+                                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 leading-none">
                                             Up Next
                                           </span>
                                         ) : (
-                                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700/50 leading-none">
+                                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700/50 leading-none">
                                             Locked
                                           </span>
                                         )}

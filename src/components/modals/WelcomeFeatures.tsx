@@ -28,7 +28,7 @@ function DayStreakPreview() {
         <div className="flex h-[60px] w-[60px] items-center justify-center rounded-[20px] bg-gradient-to-tr from-orange-500 to-amber-500 text-white shadow-sm relative overflow-hidden mb-3">
           <Flame className="w-8 h-8 fill-white" />
         </div>
-        <h4 className="font-extrabold text-[22px] text-white drop-shadow-sm tracking-tight leading-none mb-1.5">12 Days Streak</h4>
+        <h4 className="font-bold text-[22px] text-white drop-shadow-sm tracking-tight leading-none mb-1.5">12 Days Streak</h4>
         <p className="text-[13px] text-white/90 drop-shadow-sm font-medium text-center px-2 leading-snug">
           You're doing really great, on fire, Student!
         </p>
@@ -152,7 +152,7 @@ function QuickViewWidgetsPreview() {
           <h5 className="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate">STI Web Dev 2 Lab</h5>
           <p className="text-[9px] text-slate-400 dark:text-slate-500">Rm 402 • 1:00 PM</p>
         </div>
-        <span className="text-[8px] font-extrabold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded-md uppercase tracking-wider">IN 10m</span>
+        <span className="text-[8px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded-md uppercase tracking-wider">IN 10m</span>
       </div>
     </div>
   );
@@ -170,7 +170,7 @@ function GroupPagePreview() {
       <div className="bg-slate-50 dark:bg-[#27272a]/40 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/40 flex flex-col gap-1.5">
         <div className="flex items-center justify-between text-[10px]">
           <span className="text-slate-800 dark:text-slate-200 font-bold truncate">Research Proposal</span>
-          <span className="text-emerald-500 font-black">85%</span>
+          <span className="text-emerald-500 font-bold">85%</span>
         </div>
         <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
           <motion.div
@@ -222,7 +222,7 @@ function GoalsSystemPreview() {
             </div>
             
             <div className="flex flex-col flex-1 min-w-0">
-                <h3 className="text-[13px] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-tight truncate mb-1">
+                <h3 className="text-[13px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight truncate mb-1">
                     Read Normalization Guide
                 </h3>
                 <div className="flex items-center gap-1.5 flex-wrap">
@@ -254,11 +254,11 @@ function GoalsSystemPreview() {
                 <div className="relative shrink-0 flex items-center justify-center bg-slate-50 dark:bg-slate-800/50 rounded-full border border-slate-100 dark:border-slate-700/50 shadow-sm p-1">
                     {/* Simulated circular progress */}
                     <div className="w-8 h-8 rounded-full border-[3px] border-indigo-500 border-t-indigo-100 dark:border-indigo-500 dark:border-t-slate-700 flex items-center justify-center">
-                       <span className="text-[9px] font-extrabold text-slate-800 dark:text-slate-200">66%</span>
+                       <span className="text-[9px] font-bold text-slate-800 dark:text-slate-200">66%</span>
                     </div>
                 </div>
                 <div className="flex flex-col min-w-0">
-                    <span className="text-[11px] font-black text-slate-900 dark:text-slate-100 tracking-tight truncate">
+                    <span className="text-[11px] font-bold text-slate-900 dark:text-slate-100 tracking-tight truncate">
                         In Progress
                     </span>
                     <div className="flex items-center gap-1 mt-0.5">
@@ -281,7 +281,7 @@ function CourseSystemPreview() {
       {/* Title & Course Name */}
       <div className="flex flex-col gap-0.5">
         <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Information Management</span>
-        <h3 className="text-[13px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug">
+        <h3 className="text-[13px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug">
           1. Normalization Rules (1NF)
         </h3>
       </div>
@@ -310,7 +310,7 @@ function CourseSystemPreview() {
                 <div className="w-full">
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Progress</span>
-                    <span className="text-[10px] font-extrabold text-blue-600 dark:text-blue-400">50%</span>
+                    <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400">50%</span>
                   </div>
                   <div className="w-full h-1.5 rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.15)] border border-black/5 dark:border-white/5">
                      <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400 w-1/2" />
@@ -616,7 +616,7 @@ export function WelcomeFeatures() {
                       )}
                     >
                       {item.title}
-                      <span className="text-[8px] font-black uppercase tracking-widest text-blue-500 bg-blue-50 dark:bg-blue-950/40 px-1 py-0.5 rounded scale-90">
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-blue-500 bg-blue-50 dark:bg-blue-950/40 px-1 py-0.5 rounded scale-90">
                         NEW
                       </span>
                     </h4>
@@ -660,7 +660,7 @@ export function WelcomeFeatures() {
 
                   {/* Copy Description Panel */}
                   <div className="text-center mt-5 max-w-sm">
-                    <h3 className="text-[14px] font-black text-slate-800 dark:text-slate-100 flex items-center justify-center gap-1.5">
+                    <h3 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 flex items-center justify-center gap-1.5">
                       <activeFeature.icon className={cn("size-4.5", activeFeature.textColor)} />
                       {activeFeature.title}
                     </h3>
@@ -726,7 +726,7 @@ export function WelcomeFeatures() {
                   {getPreviewComponent(activeId)}
                 </div>
                 <div className="text-center">
-                  <h4 className="text-[13px] font-extrabold text-slate-800 dark:text-slate-100 flex items-center justify-center gap-1.5">
+                  <h4 className="text-[13px] font-bold text-slate-800 dark:text-slate-100 flex items-center justify-center gap-1.5">
                     <activeFeature.icon className={cn("size-4", activeFeature.textColor)} />
                     {activeFeature.title}
                   </h4>

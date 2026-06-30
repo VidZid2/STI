@@ -387,7 +387,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
 
                                                         {/* Percentage Badge */}
                                                         {(!isLocked || progress > 0) && (
-                                                            <div className="absolute -bottom-1.5 sm:-bottom-2 left-1/2 -translate-x-1/2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 rounded-full px-1.5 sm:px-2 py-[1px] sm:py-0.5 shadow-[0_1px_3px_rgba(0,0,0,0.1)] text-[8px] sm:text-[10px] font-extrabold text-slate-700 dark:text-slate-200 z-20 whitespace-nowrap flex items-center justify-center leading-none">
+                                                            <div className="absolute -bottom-1.5 sm:-bottom-2 left-1/2 -translate-x-1/2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50 rounded-full px-1.5 sm:px-2 py-[1px] sm:py-0.5 shadow-[0_1px_3px_rgba(0,0,0,0.1)] text-[8px] sm:text-[10px] font-bold text-slate-700 dark:text-slate-200 z-20 whitespace-nowrap flex items-center justify-center leading-none">
                                                                 {progress}%
                                                             </div>
                                                         )}
@@ -397,7 +397,7 @@ const PathDetailModal: React.FC<PathDetailModalProps> = ({
                                                     <div className="flex flex-col min-w-0 py-1">
                                                         <div className="flex items-center gap-2.5 mb-1.5">
                                                             <h3 
-                                                                className={`text-[15px] sm:text-[16px] font-extrabold truncate tracking-tight ${!isCurrent ? 'text-slate-900 dark:text-slate-100' : ''}`}
+                                                                className={`text-[15px] sm:text-[16px] font-bold truncate tracking-tight ${!isCurrent ? 'text-slate-900 dark:text-slate-100' : ''}`}
                                                                 style={{ color: isCurrent ? path.color : undefined }}
                                                             >
                                                                 {course.title}

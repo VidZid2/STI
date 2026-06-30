@@ -422,7 +422,7 @@ const StudentLogin: React.FC = () => {
     className="fixed bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-auto md:max-w-sm z-[100] bg-[#fefce8]/95 backdrop-blur-sm border border-[#fde047] rounded-xl p-4 shadow-xl"
 >
     <div className="leading-relaxed text-left text-[#a16207] text-sm tracking-wide">
-        <strong className="font-extrabold block mb-1.5 text-base text-[#854d0e]">Development Showcase (eLMS Project)</strong> 
+        <strong className="font-bold block mb-1.5 text-base text-[#854d0e]">Development Showcase (eLMS Project)</strong> 
         This is <strong className="font-bold text-[#854d0e]">just a prototype</strong> for <strong className="font-semibold">testing designs</strong>. We <strong className="font-bold text-red-700">do not collect or store</strong> any real credentials. So <strong className="font-bold text-[#854d0e]">hindi siya yung as in Microsoft talaga</strong> nirecreate kolang from animation hanggang sa layouts etc so ayon lang naman.
     </div>
 </motion.div>

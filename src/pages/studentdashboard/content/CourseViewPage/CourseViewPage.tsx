@@ -1838,14 +1838,14 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     </svg>
                                 </div>
                                 <div>
-                                    <span className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5 block">CURRENT SECTION</span>
-                                    <h3 className="text-[16px] font-extrabold text-slate-800 dark:text-slate-200 leading-tight">BSIT101-A</h3>
+                                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5 block">CURRENT SECTION</span>
+                                    <h3 className="text-[16px] font-bold text-slate-800 dark:text-slate-200 leading-tight">BSIT101-A</h3>
                                 </div>
                             </div>
 
                             {/* Status Filter Tabs */}
                             <div className="w-full md:w-auto overflow-hidden">
-                                <span className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 block md:hidden">STUDENT STATUS</span>
+                                <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 block md:hidden">STUDENT STATUS</span>
                                 <div className="flex items-center p-1 sm:p-1.5 rounded-[12px] sm:rounded-[16px] bg-slate-50/80 dark:bg-zinc-800/50 border border-slate-200/60 dark:border-zinc-700/50 w-full md:w-auto overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                                     {studentFilterTabs.map((tab) => (
                                         <button
@@ -1867,7 +1867,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                             <span className="relative z-10 flex items-center gap-1.5">
                                                 <span className={studentFilter === tab.id ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}>{tab.icon}</span>
                                                 {tab.label}
-                                                <span className={`ml-1 px-1.5 sm:px-2 py-0.5 rounded-[6px] sm:rounded-[8px] text-[10px] sm:text-[11px] font-extrabold leading-none ${
+                                                <span className={`ml-1 px-1.5 sm:px-2 py-0.5 rounded-[6px] sm:rounded-[8px] text-[10px] sm:text-[11px] font-bold leading-none ${
                                                     studentFilter === tab.id 
                                                         ? 'bg-blue-100/70 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400' 
                                                         : 'bg-slate-200/60 text-slate-500 dark:bg-zinc-800 dark:text-slate-400'
@@ -2020,7 +2020,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     whileHover={{ scale: 1.05 }}
                                     className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/10 border-4 border-white dark:border-zinc-800 shadow-[0_4px_14px_-4px_rgba(0,0,0,0.1)] flex items-center justify-center relative"
                                 >
-                                    <span className="text-3xl font-black md:text-4xl md:font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
+                                    <span className="text-3xl font-bold md:text-4xl md:font-bold text-blue-600 dark:text-blue-400 tracking-tight">
                                         {instructor.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                                     </span>
                                     <div className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-emerald-500 border-[3px] border-white dark:border-zinc-900 shadow-sm" />
@@ -2052,7 +2052,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                                     </span>
                                 </div>
 
-                                <h3 className="text-[20px] sm:text-[22px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug truncate">
+                                <h3 className="text-[20px] sm:text-[22px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug truncate">
                                     {instructor.name}
                                 </h3>
                                 <p className="text-[11px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider mt-1 truncate">
@@ -2186,7 +2186,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
                             transition={{ duration: 0.4, delay: 0.2, type: "spring", stiffness: 300, damping: 20 }}
                             className="absolute -bottom-1.5 sm:-bottom-2 left-1/2 px-1.5 sm:px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 border-[2px] sm:border-[2.5px] border-white dark:border-slate-800 shadow-sm flex items-center justify-center whitespace-nowrap z-10 min-w-[36px] sm:min-w-[40px]"
                         >
-                            <span className="text-[11px] sm:text-[13px] font-black text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
+                            <span className="text-[11px] sm:text-[13px] font-bold text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
                                 {course.progress || 0}%
                             </span>
                         </motion.div>

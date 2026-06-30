@@ -769,7 +769,7 @@ const VideoTutorialsModal: React.FC<VideoTutorialsModalProps> = ({ isOpen, onClo
                                                     
                                                     {/* Title & Description with premium typography */}
                                                     <div className="relative z-10">
-                                                        <h3 className="text-[17px] font-extrabold text-zinc-800 dark:text-zinc-200 tracking-tight m-0 mb-1 leading-snug">
+                                                        <h3 className="text-[17px] font-bold text-zinc-800 dark:text-zinc-200 tracking-tight m-0 mb-1 leading-snug">
                                                             No Tutorials Found
                                                         </h3>
                                                         <p className="text-[13.5px] text-zinc-500 dark:text-zinc-400 font-normal leading-relaxed m-0 max-w-sm">

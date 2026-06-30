@@ -419,7 +419,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                                     </div>
                                                     <div className="flex flex-col text-left justify-center min-w-0">
                                                         <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-1.5">LATE POLICY</span>
-                                                        <span className="text-[14px] font-extrabold text-slate-900 dark:text-slate-100 leading-none truncate">
+                                                        <span className="text-[14px] font-bold text-slate-900 dark:text-slate-100 leading-none truncate">
                                                             {task.allowLateSubmission ? 'Allowed' : 'No late submissions'}
                                                         </span>
                                                         {task.allowLateSubmission && (task.latePenalty ?? 0) > 0 && (
@@ -441,7 +441,7 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ task, onClose }) 
                                                         </div>
                                                         <div className="flex flex-col text-left justify-center min-w-0">
                                                             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-1.5">ATTEMPTS</span>
-                                                            <span className="text-[14px] font-extrabold text-slate-900 dark:text-slate-100 leading-none truncate">
+                                                            <span className="text-[14px] font-bold text-slate-900 dark:text-slate-100 leading-none truncate">
                                                                 {task.maxAttempts} allowed
                                                             </span>
                                                             <span className="text-[11.5px] font-medium text-blue-600 dark:text-blue-400 leading-none mt-1.5 truncate">

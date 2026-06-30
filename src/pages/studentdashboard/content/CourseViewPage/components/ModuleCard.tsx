@@ -384,7 +384,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index = 0, onUpd
                                 </div>
                                 <div className="flex flex-col justify-center">
                                     <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-0.5 sm:mb-1">STATUS</span>
-                                    <span className="text-[13px] sm:text-[15px] font-extrabold text-slate-700 dark:text-slate-200 leading-none tracking-wide">Locked</span>
+                                    <span className="text-[13px] sm:text-[15px] font-bold text-slate-700 dark:text-slate-200 leading-none tracking-wide">Locked</span>
                                 </div>
                             </div>
                         </div>
@@ -399,7 +399,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index = 0, onUpd
             <div className="flex flex-col lg:w-[45%] shrink-0 justify-start gap-8 border-b lg:border-b-0 lg:border-r border-zinc-150 dark:border-zinc-800/60 pb-6 lg:pb-0 lg:pr-6 xl:pr-8">
                 <div className="flex flex-col gap-4 sm:gap-5">
                     <div className="text-left">
-                        <h3 className="text-[18px] sm:text-[22px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-normal">
+                        <h3 className="text-[18px] sm:text-[22px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-normal">
                             {module?.title}
                         </h3>
                     </div>
@@ -426,7 +426,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index = 0, onUpd
                     <div className="w-full">
                         <div className="flex items-center justify-between mb-1.5">
                             <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Progress</span>
-                            <span className={`text-[13px] font-extrabold ${currentStatus === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400'}`}>
+                            <span className={`text-[13px] font-bold ${currentStatus === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400'}`}>
                                 {progressPercent}%
                             </span>
                         </div>

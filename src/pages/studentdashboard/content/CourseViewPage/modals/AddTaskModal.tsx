@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AddTaskModal
  * Extracted from CourseViewPage.tsx during Phase 1.1
  * Teacher-mode modal for creating new course tasks.

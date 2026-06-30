@@ -59,7 +59,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                             {student.avatar ? (
                                 <img src={student.avatar} alt={student.name} className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center font-extrabold text-[16px] text-blue-600">
+                                <div className="w-full h-full flex items-center justify-center font-bold text-[16px] text-blue-600">
                                     {student.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                                 </div>
                             )}

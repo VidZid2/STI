@@ -135,7 +135,7 @@ export function AvatarUploader({
 						</div>
 						<div className="flex-1 min-w-0 pt-0.5">
 							<div className="flex items-center gap-2 mb-1">
-								<h2 className="text-[20px] font-extrabold tracking-tight leading-none text-zinc-900 dark:text-zinc-100">
+								<h2 className="text-[20px] font-bold tracking-tight leading-none text-zinc-900 dark:text-zinc-100">
 									Upload Image
 								</h2>
 							</div>

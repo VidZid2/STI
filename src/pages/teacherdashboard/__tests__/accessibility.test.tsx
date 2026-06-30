@@ -1,5 +1,5 @@
-﻿/**
- * Accessibility Audit â€” Teacher Dashboard
+/**
+ * Accessibility Audit — Teacher Dashboard
  * Uses axe-core via vitest-axe to catch automated WCAG violations.
  *
  * Scope: components that are rendered to the DOM and have interactive elements.
@@ -14,8 +14,8 @@ import { render } from '@testing-library/react';
 import { axe } from 'vitest-axe';
 import '@testing-library/jest-dom';
 
-// â”€â”€â”€ Custom matcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// vitest-axe doesn't ship toHaveNoViolations â€” we assert directly.
+// ─── Custom matcher ───────────────────────────────────────────────────────────
+// vitest-axe doesn't ship toHaveNoViolations — we assert directly.
 const assertNoViolations = (results: Awaited<ReturnType<typeof axe>>) => {
     if (results.violations.length > 0) {
         const messages = results.violations.map(v =>
@@ -25,7 +25,7 @@ const assertNoViolations = (results: Awaited<ReturnType<typeof axe>>) => {
     }
 };
 
-// â”€â”€â”€ Global mocks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Global mocks ─────────────────────────────────────────────────────────────
 vi.mock('motion/react', () => {
     const forwardRef = (fn: (props: Record<string, unknown>, ref: unknown) => React.ReactNode) =>
         React.forwardRef((props: Record<string, unknown>, ref) => fn(props, ref));
@@ -87,7 +87,7 @@ vi.mock('../hooks', () => ({
     useDashboardData: vi.fn(),
 }));
 
-// â”€â”€â”€ Component imports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Component imports ────────────────────────────────────────────────────────
 import StatCard from '../components/StatCard';
 import ErrorDisplay from '../components/ErrorDisplay';
 import GradeConfirmDialog from '../grading/components/GradeConfirmDialog';
@@ -99,7 +99,7 @@ import { AtRiskFilterTabs } from '../atrisk';
 import { ActivityFilterTabs } from '../activity';
 import type { Submission, Task } from '../grading/types';
 
-// â”€â”€â”€ Test data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Test data ────────────────────────────────────────────────────────────────
 const mockSubmission: Submission = {
     id: 'sub-1',
     task_id: 'task-1',
@@ -121,9 +121,9 @@ const mockTask: Task = {
     points: 100,
 };
 
-// â”€â”€â”€ Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Tests ────────────────────────────────────────────────────────────────────
 
-describe('Teacher Dashboard â€” Accessibility Audit (axe-core)', () => {
+describe('Teacher Dashboard — Accessibility Audit (axe-core)', () => {
 
     describe('StatCard', () => {
         it('has no axe violations', async () => {

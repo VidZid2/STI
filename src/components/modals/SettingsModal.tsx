@@ -50,7 +50,7 @@ const SettingItem: React.FC<SettingItemProps> = ({ icon, title, description, ena
             </motion.div>
             
             <div className="flex-1 min-w-0 pr-2">
-                <div className={`text-[13px] font-extrabold tracking-tight leading-none mb-1 ${
+                <div className={`text-[13px] font-bold tracking-tight leading-none mb-1 ${
                     isDark ? 'text-zinc-100' : 'text-zinc-900'
                 }`}>
                     {title}
@@ -309,7 +309,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                 {/* Text Info */}
                                 <div className="flex-1 min-w-0 pt-0.5">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <h2 className={`text-[20px] font-extrabold tracking-tight leading-none ${
+                                        <h2 className={`text-[20px] font-bold tracking-tight leading-none ${
                                             darkModeEnabled ? 'text-zinc-100' : 'text-zinc-900'
                                         }`}>
                                             Preferences
@@ -400,7 +400,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                                     }`}>
                                         Status
                                     </span>
-                                    <span className={`text-[12px] font-extrabold leading-none ${
+                                    <span className={`text-[12px] font-bold leading-none ${
                                         darkModeEnabled ? 'text-zinc-100' : 'text-zinc-900'
                                     }`}>
                                         Saved automatically

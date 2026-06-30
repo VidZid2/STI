@@ -42,7 +42,7 @@ const Stat: React.FC<{ label: string; value: string | number; icon: React.Elemen
         <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
             <Icon size={10} color={color} /> {label}
         </div>
-        <div className="text-base font-black text-slate-900 dark:text-slate-100">{value}</div>
+        <div className="text-base font-bold text-slate-900 dark:text-slate-100">{value}</div>
     </div>
 );
 
@@ -72,12 +72,12 @@ const TeacherRow: React.FC<RowProps> = ({ teacher, rank, onEncourage, onFlag, ac
             {/* Main row */}
             <div className="p-4 flex items-center gap-4">
                 {/* Rank */}
-                <div className="w-7 h-7 rounded-full bg-white/60 dark:bg-slate-800/60 flex items-center justify-center text-xs font-black text-slate-500 dark:text-slate-400 shrink-0">
+                <div className="w-7 h-7 rounded-full bg-white/60 dark:bg-slate-800/60 flex items-center justify-center text-xs font-bold text-slate-500 dark:text-slate-400 shrink-0">
                     {rank}
                 </div>
 
                 {/* Avatar initial */}
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black text-white shrink-0"
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white shrink-0"
                     style={{ background: cfg.color }}>
                     {teacher.teacherName.charAt(0)}
                 </div>
@@ -164,19 +164,19 @@ const TeacherRow: React.FC<RowProps> = ({ teacher, rank, onEncourage, onFlag, ac
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                                 <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60">
                                     <div className="text-[10px] text-slate-400 dark:text-slate-500 mb-0.5">Avg Grade</div>
-                                    <div className="text-lg font-black text-slate-900 dark:text-slate-100">{teacher.avgStudentGrade}%</div>
+                                    <div className="text-lg font-bold text-slate-900 dark:text-slate-100">{teacher.avgStudentGrade}%</div>
                                 </div>
                                 <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60">
                                     <div className="text-[10px] text-slate-400 dark:text-slate-500 mb-0.5">Engagement</div>
-                                    <div className="text-lg font-black text-slate-900 dark:text-slate-100">{teacher.studentEngagementRate}%</div>
+                                    <div className="text-lg font-bold text-slate-900 dark:text-slate-100">{teacher.studentEngagementRate}%</div>
                                 </div>
                                 <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60">
                                     <div className="text-[10px] text-slate-400 dark:text-slate-500 mb-0.5">Assignments</div>
-                                    <div className="text-lg font-black text-slate-900 dark:text-slate-100">{teacher.totalAssignments}</div>
+                                    <div className="text-lg font-bold text-slate-900 dark:text-slate-100">{teacher.totalAssignments}</div>
                                 </div>
                                 <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60">
                                     <div className="text-[10px] text-slate-400 dark:text-slate-500 mb-0.5">Turnaround</div>
-                                    <div className="text-lg font-black text-slate-900 dark:text-slate-100">
+                                    <div className="text-lg font-bold text-slate-900 dark:text-slate-100">
                                         {teacher.avgTurnaroundHours > 0 ? `${teacher.avgTurnaroundHours}h` : '—'}
                                     </div>
                                 </div>
@@ -192,7 +192,7 @@ const TeacherRow: React.FC<RowProps> = ({ teacher, rank, onEncourage, onFlag, ac
                                                     <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{a.title}</div>
                                                     <div className="text-[10px] text-slate-400 dark:text-slate-500">{a.submissionCount} submission{a.submissionCount !== 1 ? 's' : ''}</div>
                                                 </div>
-                                                <div className="text-sm font-black shrink-0" style={{ color: cfg.color }}>
+                                                <div className="text-sm font-bold shrink-0" style={{ color: cfg.color }}>
                                                     {a.avgScore > 0 ? `${a.avgScore}%` : '—'}
                                                 </div>
                                             </div>
@@ -354,7 +354,7 @@ const TabTeacherPerformance: React.FC = () => {
                                 <div className={`w-2 h-2 rounded-full ${cfg.dot}`} />
                                 <span className={`text-[10px] font-bold uppercase tracking-wider ${cfg.badge.split(' ').slice(-2).join(' ')}`}>{cfg.label}</span>
                             </div>
-                            <div className="text-2xl font-black text-slate-900 dark:text-slate-100">{counts[key as keyof typeof counts]}</div>
+                            <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{counts[key as keyof typeof counts]}</div>
                             <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">teacher{counts[key as keyof typeof counts] !== 1 ? 's' : ''}</div>
                         </button>
                     ))}

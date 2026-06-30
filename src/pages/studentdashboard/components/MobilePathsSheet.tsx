@@ -202,10 +202,10 @@ const MobilePathsSheet: React.FC<MobilePathsSheetProps> = ({
 
                                     {/* Text */}
                                     <div className="min-w-0 flex-1 relative z-10">
-                                        <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none">
+                                        <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none">
                                             Continue Path
                                         </span>
-                                        <h3 className="text-[14px] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-snug mt-1 truncate">
+                                        <h3 className="text-[14px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-snug mt-1 truncate">
                                             {mostRecentPath.title}
                                         </h3>
                                         <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">
@@ -261,7 +261,7 @@ const MobilePathsSheet: React.FC<MobilePathsSheetProps> = ({
                                                             {difficultyInfo.label}
                                                         </span>
                                                     </div>
-                                                    <div className="text-[13px] font-extrabold text-slate-900 dark:text-slate-100 tracking-tight leading-snug truncate">
+                                                    <div className="text-[13px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-snug truncate">
                                                         {path.title}
                                                     </div>
                                                     <div className="flex items-center gap-1.5 mt-1 text-[10px] text-slate-500 dark:text-slate-400 font-medium">
@@ -302,7 +302,7 @@ const MobilePathsSheet: React.FC<MobilePathsSheetProps> = ({
                                                                 </svg>
                                                             </div>
                                                         )}
-                                                        <span className={`text-[11px] font-black leading-none ${
+                                                        <span className={`text-[11px] font-bold leading-none ${
                                                             progress === 100
                                                                 ? 'text-emerald-600 dark:text-emerald-400'
                                                                 : 'text-slate-900 dark:text-slate-100'

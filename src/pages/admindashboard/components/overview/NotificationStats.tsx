@@ -32,7 +32,7 @@ const NotificationStats: React.FC = () => {
                 {items.map(({ label, value, icon: Icon, colorClass, bgClass }) => (
                     <div key={label} className={`flex flex-col items-center p-3 rounded-xl ${bgClass}`}>
                         <Icon size={14} className={`mb-1.5 ${colorClass}`} />
-                        <span className={`text-lg font-black ${colorClass}`}>
+                        <span className={`text-lg font-bold ${colorClass}`}>
                             {loading ? '—' : value}
                         </span>
                         <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mt-0.5 text-center">{label}</span>

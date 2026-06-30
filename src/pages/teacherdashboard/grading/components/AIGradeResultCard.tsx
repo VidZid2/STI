@@ -63,7 +63,7 @@ const AIGradeResultCard: React.FC<AIGradeResultCardProps> = ({ result, task, onA
                                             </span>
                                         </div>
                                         <div className="flex items-baseline gap-1">
-                                            <span className="font-extrabold leading-none tracking-[-1px]"
+                                            <span className="font-bold leading-none tracking-[-1px]"
                                                 style={{ fontSize: isMobile ? '26px' : '32px', color: 'var(--text-primary)' }}>
                                                 {result.suggestedScore}
                                             </span>

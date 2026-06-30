@@ -110,7 +110,7 @@ export const WeatherWidget = React.memo<WeatherWidgetProps>(({
                                 <motion.span
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className={`font-black text-slate-800 dark:text-slate-100 ${compactMode ? 'text-2xl' : 'text-3xl'}`}
+                                    className={`font-bold text-slate-800 dark:text-slate-100 ${compactMode ? 'text-2xl' : 'text-3xl'}`}
                                 >
                                     {weather.temperature}°
                                 </motion.span>
