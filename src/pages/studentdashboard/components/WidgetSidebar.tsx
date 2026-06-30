@@ -436,18 +436,33 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                             </motion.div>
                                                         ) : (
                                                             <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
-                                                                <AnimatedCircularProgressBar
-                                                                    max={100}
-                                                                    min={0}
-                                                                    value={overallProgress}
-                                                                    gaugePrimaryColor="rgb(16 185 129)"
-                                                                    gaugeSecondaryColor="rgba(148, 163, 184, 0.2)"
-                                                                    className={`mb-1 ${quickViewSettings.compactMode ? '!size-10' : '!size-14'}`}
-                                                                >
-                                                                    <Badge variant="secondary" className={`font-black bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-none px-1.5 py-0.5 rounded-md ${quickViewSettings.compactMode ? 'text-[10px]' : 'text-sm'}`}>
-                                                                        {overallProgress}%
-                                                                    </Badge>
-                                                                </AnimatedCircularProgressBar>
+                                                                <div className="relative mb-1">
+                                                                    <AnimatedCircularProgressBar
+                                                                        max={100}
+                                                                        min={0}
+                                                                        value={overallProgress}
+                                                                        gaugePrimaryColor="rgb(16 185 129)"
+                                                                        gaugeSecondaryColor="rgba(148, 163, 184, 0.2)"
+                                                                        className={quickViewSettings.compactMode ? '!size-10' : '!size-14'}
+                                                                        hideText={true}
+                                                                    >
+                                                                        <div className="absolute inset-[6px] rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+                                                                            <svg className={`text-emerald-500 ${quickViewSettings.compactMode ? 'w-4 h-4' : 'w-5 h-5'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                                                            </svg>
+                                                                        </div>
+                                                                    </AnimatedCircularProgressBar>
+                                                                    <motion.div 
+                                                                        initial={{ opacity: 0, y: 5, x: "-50%", scale: 0.8 }}
+                                                                        animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+                                                                        transition={{ duration: 0.4, delay: 0.2, type: "spring" }}
+                                                                        className={`absolute -bottom-1.5 left-1/2 px-1.5 py-0.5 rounded-full bg-white dark:bg-slate-800 border-[2px] border-white dark:border-slate-800 shadow-sm flex items-center justify-center whitespace-nowrap z-10 ${quickViewSettings.compactMode ? 'min-w-[28px]' : 'min-w-[34px]'}`}
+                                                                    >
+                                                                        <span className={`font-black text-slate-700 dark:text-slate-200 leading-none ${quickViewSettings.compactMode ? 'text-[8.5px]' : 'text-[10px]'}`} style={{ paddingTop: '1px' }}>
+                                                                            {overallProgress}%
+                                                                        </span>
+                                                                    </motion.div>
+                                                                </div>
                                                                 <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Progress</div>
                                                             </motion.div>
                                                         )}

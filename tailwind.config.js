@@ -8,6 +8,9 @@ export default {
     ],
     theme: {
     	extend: {
+            fontFamily: {
+                sans: ['Outfit', 'sans-serif'],
+            },
     		colors: {
     			canvas: 'var(--bg-canvas)',
     			surface: 'var(--bg-surface)',
