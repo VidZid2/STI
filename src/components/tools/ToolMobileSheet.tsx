@@ -153,8 +153,8 @@ const ToolMobileSheet: React.FC<ToolMobileSheetProps> = ({
                             <PanelBottomOpen className="h-5 w-5" />
                         </span>
                         <span className="min-w-0">
-                            <span className="block text-[11px] font-black uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Tool Panel</span>
-                            <span className="block truncate text-sm font-black text-zinc-900 dark:text-zinc-100">{title}</span>
+                            <span className="block text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Tool Panel</span>
+                            <span className="block truncate text-sm font-bold text-zinc-900 dark:text-zinc-100">{title}</span>
                             {summary && (
                                 <span className="block truncate text-xs font-semibold text-zinc-500 dark:text-zinc-400">{summary}</span>
                             )}
@@ -236,14 +236,14 @@ const ToolMobileSheet: React.FC<ToolMobileSheetProps> = ({
                                                 fontSize: isMinimized ? '9px' : '10px',
                                                 marginBottom: isMinimized ? '0px' : '2px'
                                             }}
-                                            className="font-black uppercase tracking-wider text-zinc-400 dark:text-zinc-500 m-0"
+                                            className="font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 m-0"
                                         >
                                             Tool Panel
                                         </motion.p>
                                         <motion.h2 
                                             id={titleId}
                                             animate={{ fontSize: isMinimized ? '16px' : '18px' }}
-                                            className="font-black text-zinc-950 dark:text-zinc-50 tracking-tight m-0 truncate leading-none"
+                                            className="font-bold text-zinc-950 dark:text-zinc-50 tracking-tight m-0 truncate leading-none"
                                         >
                                             {title}
                                         </motion.h2>

@@ -750,7 +750,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                             {(['APA', 'MLA', 'Chicago'] as CitationStyle[]).map(style => (
                                 <button
                                     key={style}
-                                    className={`relative z-10 flex-1 rounded-xl py-3 text-center text-[15px] font-black transition-colors ${
+                                    className={`relative z-10 flex-1 rounded-xl py-3 text-center text-[15px] font-bold transition-colors ${
                                         citationStyle === style ? 'text-violet-700 dark:text-violet-300' : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200'
                                     }`}
                                     onClick={() => setCitationStyle(style)}
@@ -789,7 +789,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                     </span>
                                 </div>
                                 <div className="bg-violet-50/50 dark:bg-violet-900/10 rounded-[16px] p-4 border border-violet-100/50 dark:border-violet-800/30">
-                                    <p className="text-[11px] font-black tracking-wider text-violet-500 uppercase mb-2">Example</p>
+                                    <p className="text-[11px] font-bold tracking-wider text-violet-500 uppercase mb-2">Example</p>
                                     <p className="text-[14px] text-zinc-700 dark:text-zinc-300 font-serif leading-relaxed">
                                         {citationStyle === 'APA' && <>Smith, J. (2023). <em>Book Title</em>. Publisher.</>}
                                         {citationStyle === 'MLA' && <>Smith, John. <em>Book Title</em>. Publisher, 2023.</>}
@@ -996,7 +996,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                         {/* Formatted Citation block */}
                                         <div className="relative z-10 bg-zinc-50/50 dark:bg-zinc-950/20 border border-zinc-200/50 dark:border-zinc-800/50 rounded-[14px] p-4 sm:p-5 mb-5 group/citation transition-colors duration-250 hover:bg-zinc-50 dark:hover:bg-zinc-800/35">
                                             <div className="flex items-center justify-between mb-3">
-                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-violet-50 text-violet-700 text-[10px] font-black dark:bg-violet-950/40 dark:text-violet-400 border border-violet-100 dark:border-violet-900/50 uppercase tracking-wider shadow-sm">
+                                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-violet-50 text-violet-700 text-[10px] font-bold dark:bg-violet-950/40 dark:text-violet-400 border border-violet-100 dark:border-violet-900/50 uppercase tracking-wider shadow-sm">
                                                     <svg className="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
                                                     {citationStyle} Format
                                                 </span>
@@ -1166,13 +1166,13 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                                 fontSize: isModalMinimized ? '9px' : '10px',
                                                 marginBottom: isModalMinimized ? '0px' : '2px'
                                             }}
-                                            className="font-black uppercase tracking-wider text-zinc-400 dark:text-zinc-500 m-0"
+                                            className="font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 m-0"
                                         >
                                             REFERENCE EDITOR
                                         </motion.p>
                                         <motion.h2 
                                             animate={{ fontSize: isModalMinimized ? '16px' : '18px' }}
-                                            className="font-black text-zinc-950 dark:text-zinc-50 tracking-tight m-0 truncate leading-none"
+                                            className="font-bold text-zinc-950 dark:text-zinc-50 tracking-tight m-0 truncate leading-none"
                                         >
                                             {editingId ? 'Edit Reference' : 'Add Reference'}
                                         </motion.h2>
@@ -1227,7 +1227,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                 
                                 {/* Source Type Toggle */}
                                 <div className="mb-8">
-                                    <label className="flex items-center gap-2 text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3 ml-1">
+                                    <label className="flex items-center gap-2 text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3 ml-1">
                                         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                                         Source Type
                                     </label>
@@ -1255,7 +1255,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                 <div className="space-y-5">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                         <div className="flex flex-col">
-                                            <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Author(s) <span className="text-red-500">*</span></label>
+                                            <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Author(s) <span className="text-red-500">*</span></label>
                                             <input
                                                 type="text"
                                                 placeholder="e.g., Smith, J. & Doe, A."
@@ -1265,7 +1265,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                             />
                                         </div>
                                         <div className="flex flex-col">
-                                            <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Year <span className="text-red-500">*</span></label>
+                                            <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Year <span className="text-red-500">*</span></label>
                                             <input
                                                 type="text"
                                                 placeholder="e.g., 2023"
@@ -1277,7 +1277,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                     </div>
  
                                     <div className="flex flex-col">
-                                        <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Title <span className="text-red-500">*</span></label>
+                                        <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Title <span className="text-red-500">*</span></label>
                                         <input
                                             type="text"
                                             placeholder="Enter the title of the work"
@@ -1289,7 +1289,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
  
                                     {formSourceType === 'book' && (
                                         <div className="flex flex-col">
-                                            <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Publisher</label>
+                                            <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Publisher</label>
                                             <input
                                                 type="text"
                                                 placeholder="e.g., Oxford University Press"
@@ -1303,7 +1303,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                     {formSourceType === 'website' && (
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                             <div className="flex flex-col">
-                                                <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">URL</label>
+                                                <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">URL</label>
                                                 <input
                                                     type="text"
                                                     placeholder="https://..."
@@ -1313,7 +1313,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                                 />
                                             </div>
                                             <div className="flex flex-col">
-                                                <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Access Date</label>
+                                                <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Access Date</label>
                                                 <input
                                                     type="text"
                                                     placeholder="e.g., December 9, 2025"
@@ -1328,7 +1328,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                     {formSourceType === 'journal' && (
                                         <>
                                             <div className="flex flex-col">
-                                                <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Journal Name</label>
+                                                <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Journal Name</label>
                                                 <input
                                                     type="text"
                                                     placeholder="e.g., Nature"
@@ -1339,7 +1339,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                             </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                                                 <div className="flex flex-col">
-                                                    <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Volume</label>
+                                                    <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Volume</label>
                                                     <input
                                                         type="text"
                                                         placeholder="e.g., 12"
@@ -1349,7 +1349,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                                     />
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Issue</label>
+                                                    <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Issue</label>
                                                     <input
                                                         type="text"
                                                         placeholder="e.g., 3"
@@ -1359,7 +1359,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                                     />
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Pages</label>
+                                                    <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Pages</label>
                                                     <input
                                                         type="text"
                                                         placeholder="e.g., 45-67"
@@ -1373,7 +1373,7 @@ const ReferenceManager: React.FC<ReferenceManagerProps> = ({ onBack }) => {
                                     )}
  
                                     <div className="flex flex-col">
-                                        <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Tags (comma separated)</label>
+                                        <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 ml-1">Tags (comma separated)</label>
                                         <input
                                             type="text"
                                             placeholder="e.g., research, psychology, 2023"

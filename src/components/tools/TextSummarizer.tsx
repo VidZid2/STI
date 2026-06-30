@@ -444,7 +444,7 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
                                   <line x1="16" y1="17" x2="8" y2="17" />
                               </svg>
                           </div>
-                          <span className="text-[17px] sm:text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Original Document</span>
+                          <span className="text-[17px] sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Original Document</span>
                           <span className="whitespace-nowrap text-[11px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
                               {inputWordCount} words
                           </span>
@@ -719,8 +719,8 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
                                          </svg>
                                      </div>
                                      <div className="flex flex-col">
-                                         <span className="text-[11px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-0.5">Words</span>
-                                         <span className="text-2xl font-black text-zinc-900 dark:text-zinc-100 leading-none tracking-tight">{summaryWordCount}</span>
+                                         <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-0.5">Words</span>
+                                         <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 leading-none tracking-tight">{summaryWordCount}</span>
                                      </div>
                                  </div>
                                  <div className="w-px h-10 bg-zinc-200 dark:bg-zinc-700"></div>
@@ -732,8 +732,8 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
                                          </svg>
                                      </div>
                                      <div className="flex flex-col text-right">
-                                         <span className="text-[11px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-0.5">Reduced</span>
-                                         <span className="text-2xl font-black text-blue-600 dark:text-blue-400 leading-none tracking-tight">{reductionPercent}%</span>
+                                         <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-0.5">Reduced</span>
+                                         <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 leading-none tracking-tight">{reductionPercent}%</span>
                                      </div>
                                  </div>
                              </div>
@@ -830,7 +830,7 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onBack, initialText = '
                   </motion.div>
                   
                   <div className="flex flex-col">
-                      <h2 className="text-base sm:text-lg font-black tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
+                      <h2 className="text-base sm:text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
                           Saved summaries
                       </h2>
                       <p className="text-[11px] sm:text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mt-0.5">

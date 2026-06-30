@@ -841,8 +841,8 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                                     <Icon className="h-6 w-6" strokeWidth={2} aria-hidden="true" />
                                 </motion.div>
                                 <div className="min-w-0 flex flex-col">
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-400 mb-1">{item.label}</p>
-                                    <p className={`truncate text-[16px] font-black text-zinc-900 dark:text-zinc-100 leading-none transition-colors mb-1 ${item.textHover}`}>{item.title}</p>
+                                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-500 dark:text-zinc-400 mb-1">{item.label}</p>
+                                    <p className={`truncate text-[16px] font-bold text-zinc-900 dark:text-zinc-100 leading-none transition-colors mb-1 ${item.textHover}`}>{item.title}</p>
                                     <p className="truncate text-[13px] font-medium text-zinc-500 dark:text-zinc-400 leading-tight">{item.detail}</p>
                                 </div>
                             </motion.div>
@@ -1005,7 +1005,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                                 <button
                                     key={style}
                                     onClick={() => setCitationStyle(style)}
-                                    className={`relative z-10 flex-1 rounded-xl py-3.5 text-center text-[15px] font-black transition-colors ${
+                                    className={`relative z-10 flex-1 rounded-xl py-3.5 text-center text-[15px] font-bold transition-colors ${
                                         citationStyle === style 
                                             ? 'text-violet-700 dark:text-violet-300' 
                                             : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -1037,7 +1037,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                             <div>
                                 <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight flex items-center gap-2">
                                     Source Type
-                                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-violet-600 bg-violet-100 px-2 py-0.5 rounded-full dark:bg-violet-900/40 dark:text-violet-400">
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-violet-600 bg-violet-100 px-2 py-0.5 rounded-full dark:bg-violet-900/40 dark:text-violet-400">
                                         <Zap className="w-3 h-3" strokeWidth={3} /> Auto-selected by MiMo 2.5
                                     </span>
                                 </h2>
@@ -1068,7 +1068,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                                         <Icon className="h-5 w-5" aria-hidden="true" />
                                     </div>
                                     <div className="min-w-0">
-                                        <span className="block text-[15px] font-black">{label}</span>
+                                        <span className="block text-[15px] font-bold">{label}</span>
                                         <span className="mt-0.5 block text-[13px] font-medium opacity-75">{helper}</span>
                                     </div>
                                 </button>
@@ -1228,7 +1228,7 @@ const CitationGenerator: React.FC<CitationGeneratorProps> = ({ onBack, onGoToRef
                             
                             <div>
                                 <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 group-hover/card:text-violet-600 dark:group-hover/card:text-violet-400 transition-colors">Score</p>
-                                <div className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none flex items-baseline gap-1">
+                                <div className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none flex items-baseline gap-1">
                                     <NumberTicker value={completenessScore} className="tracking-tight" />
                                     <span className="text-xs font-semibold text-zinc-500">/ 100</span>
                                 </div>

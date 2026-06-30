@@ -629,7 +629,7 @@ ${text}`;
                               </svg>
                           </motion.div>
                           <div className="flex items-center gap-3">
-                              <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Text Editor</span>
+                              <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Text Editor</span>
                               <span className="whitespace-nowrap text-[11px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
                                   {stats.words.toLocaleString()} words
                               </span>
@@ -787,7 +787,7 @@ ${text}`;
                       </div>
                       <div className="flex flex-col overflow-hidden w-full">
                           <span className="text-[10px] sm:text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 truncate">{stat.label}</span>
-                          <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none truncate">{stat.value.toLocaleString()}</span>
+                          <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none truncate">{stat.value.toLocaleString()}</span>
                       </div>
                   </div>
               ))}
@@ -840,7 +840,7 @@ ${text}`;
                             </div>
                             <div className="flex flex-col">
                                 <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Reading</p>
-                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">{stats.readingTime}</p>
+                                <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none">{stats.readingTime}</p>
                             </div>
                         </div>
                     </div>
@@ -860,7 +860,7 @@ ${text}`;
                             </div>
                             <div className="flex flex-col">
                                 <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Speaking</p>
-                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">{stats.speakingTime}</p>
+                                <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none">{stats.speakingTime}</p>
                             </div>
                         </div>
                     </div>
@@ -915,7 +915,7 @@ ${text}`;
                             </div>
                             <div className="flex flex-col">
                                 <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Readability (ARI)</p>
-                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">{stats.ariScore || "0"}</p>
+                                <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none">{stats.ariScore || "0"}</p>
                             </div>
                         </div>
                         {stats.words > 0 ? (
@@ -942,7 +942,7 @@ ${text}`;
                             </div>
                             <div className="flex flex-col">
                                 <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Formal Tone</p>
-                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">{stats.toneScore}%</p>
+                                <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none">{stats.toneScore}%</p>
                             </div>
                         </div>
                         {stats.words > 0 ? (
@@ -977,7 +977,7 @@ ${text}`;
                             </div>
                             <div className="flex flex-col">
                                 <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Passive Voice</p>
-                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">
+                                <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none">
                                    {stats.passiveCount} <span className="text-sm font-medium text-zinc-500">({stats.passiveDensity}%)</span>
                                 </p>
                             </div>
@@ -1035,7 +1035,7 @@ ${text}`;
                             </div>
                             <div className="flex flex-col">
                                 <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Academic Clichés</p>
-                                <p className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">
+                                <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none">
                                    {stats.clicheCount} <span className="text-sm font-medium text-zinc-500">detected</span>
                                 </p>
                             </div>
@@ -1131,13 +1131,13 @@ ${text}`;
                                 <span className="text-[10px] sm:text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 truncate">
                                     Keyword
                                 </span>
-                                <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none truncate">
+                                <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none truncate">
                                     {k.word}
                                 </span>
                             </div>
                             <div className="flex flex-col items-end justify-center px-2">
                                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-0.5">Count</span>
-                                <span className="text-lg font-black text-cyan-600 dark:text-cyan-400 leading-none">{k.count}</span>
+                                <span className="text-lg font-bold text-cyan-600 dark:text-cyan-400 leading-none">{k.count}</span>
                             </div>
                         </div>
                     ))

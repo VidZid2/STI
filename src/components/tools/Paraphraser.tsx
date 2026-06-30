@@ -586,7 +586,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                             </svg>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Integrity Guardrail</p>
+                                            <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Integrity Guardrail</p>
                                             <p className="text-xs font-bold text-zinc-800 dark:text-zinc-200 leading-tight">Paraphrased work needs citations.</p>
                                         </div>
                                     </div>
@@ -599,7 +599,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                             </svg>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Meaning Check</p>
+                                            <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Meaning Check</p>
                                             <p className="text-xs font-bold text-zinc-800 dark:text-zinc-200 leading-tight">{changeInsight}</p>
                                         </div>
                                     </div>
@@ -607,7 +607,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                     {/* Session Safety Card */}
                                     <div className="flex flex-col items-start justify-between gap-2.5 px-4 py-3.5 rounded-[20px] bg-white/60 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-700/80 shadow-sm hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors sm:col-span-2 lg:col-span-1">
                                         <div>
-                                            <p className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Session Safety</p>
+                                            <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Session Safety</p>
                                             <p className="text-xs font-bold text-zinc-800 dark:text-zinc-200 leading-tight">
                                                 {hasSavedSession ? 'Draft recoverable' : 'Auto-saves locally'}
                                             </p>
@@ -645,7 +645,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                 </svg>
                             </motion.div>
                             <div>
-                                <p className="text-[10px] sm:text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 sm:mb-1">Integrity Guardrail</p>
+                                <p className="text-[10px] sm:text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 sm:mb-1">Integrity Guardrail</p>
                                 <p className="text-xs sm:text-[13px] font-bold text-zinc-800 dark:text-zinc-200 leading-tight">Paraphrased work needs citations.</p>
                             </div>
                         </div>
@@ -662,7 +662,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                 </svg>
                             </motion.div>
                             <div>
-                                <p className="text-[10px] sm:text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 sm:mb-1">Meaning Check</p>
+                                <p className="text-[10px] sm:text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 sm:mb-1">Meaning Check</p>
                                 <p className="text-xs sm:text-[13px] font-bold text-zinc-800 dark:text-zinc-200 leading-tight">{changeInsight}</p>
                             </div>
                         </div>
@@ -670,7 +670,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                         {/* Session Safety Card */}
                         <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-3 sm:gap-4 px-4 sm:px-5 py-4 rounded-[20px] bg-white/60 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-700/80 shadow-sm hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors flex-1 min-w-[200px]">
                             <div>
-                                <p className="text-[10px] sm:text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 sm:mb-1">Session Safety</p>
+                                <p className="text-[10px] sm:text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5 sm:mb-1">Session Safety</p>
                                 <p className="text-xs sm:text-[13px] font-bold text-zinc-800 dark:text-zinc-200 leading-tight">
                                     {hasSavedSession ? 'Draft recoverable' : 'Auto-saves locally'}
                                 </p>
@@ -759,7 +759,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                     </span>
                                 </div>
                                 <div className="flex flex-col items-center gap-0.5 relative text-center">
-                                    <span className={`text-[12px] sm:text-[13px] font-black tracking-tight ${isActive ? colors.text : 'text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-colors'}`}>
+                                    <span className={`text-[12px] sm:text-[13px] font-bold tracking-tight ${isActive ? colors.text : 'text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-colors'}`}>
                                         {m.label}
                                     </span>
                                     <span className={`text-[9px] sm:text-[10px] font-bold hidden 2xl:block ${isActive ? 'opacity-70' : 'text-zinc-400'}`}>
@@ -799,7 +799,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                         </svg>
                                     </motion.div>
                                     <div className="flex items-center gap-2.5">
-                                        <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Original Text</span>
+                                        <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Original Text</span>
                                         {/* Mobile Words Badge */}
                                         <span className="flex sm:hidden text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-2.5 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
                                             {wordCount} words
@@ -930,7 +930,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                         <polyline points="20 6 9 17 4 12"/>
                                     </svg>
                                 </motion.div>
-                                <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">
+                                <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">
                                     {mode.charAt(0).toUpperCase() + mode.slice(1)}
                                 </span>
                             </div>
@@ -1198,7 +1198,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                             <Sparkles width="20" height="20" strokeWidth="2.5" className="sm:w-6 sm:h-6" />
                         </motion.div>
                         <div className="flex flex-col">
-                            <h3 className="text-base sm:text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Academic AI Risk</h3>
+                            <h3 className="text-base sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Academic AI Risk</h3>
                             <p className="text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-0.5">Groq Llama 3 Detection scan</p>
                         </div>
                      </div>
@@ -1214,7 +1214,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-3">
-                                             <span className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-none">
+                                             <span className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-none">
                                                 {aiProbability}%
                                             </span>
                                             <span className={`px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-lg border ${
@@ -1258,7 +1258,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                                 strokeDashoffset={2 * Math.PI * 26 * (1 - aiProbability / 100)}
                                             />
                                         </svg>
-                                        <span className="absolute text-[11px] font-black text-zinc-400 dark:text-zinc-500 tracking-wide uppercase">
+                                        <span className="absolute text-[11px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wide uppercase">
                                             Risk
                                         </span>
                                     </div>
@@ -1328,7 +1328,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                             <BookOpen width="20" height="20" strokeWidth="2.5" className="sm:w-6 sm:h-6" />
                         </motion.div>
                         <div className="flex flex-col">
-                            <h3 className="text-base sm:text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Academic Attribution</h3>
+                            <h3 className="text-base sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Academic Attribution</h3>
                             <p className="text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-0.5">Paraphrases still require citations</p>
                         </div>
                      </div>
@@ -1336,7 +1336,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                      <div className="relative z-10 flex flex-col gap-3 sm:gap-4">
                         <div className="flex items-center gap-2 pl-1 pb-1">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50"></div>
-                            <label className="text-[12px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+                            <label className="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
                                 Link Source Reference
                             </label>
                         </div>
@@ -1503,7 +1503,7 @@ const Paraphraser: React.FC<ParaphraserProps> = ({ onBack }) => {
                                 </motion.div>
                                 
                                 <div className="flex flex-col">
-                                    <h2 className="text-base sm:text-lg font-black tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
+                                    <h2 className="text-base sm:text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
                                         Saved rewrites
                                     </h2>
                                     <p className="text-[11px] sm:text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mt-0.5">

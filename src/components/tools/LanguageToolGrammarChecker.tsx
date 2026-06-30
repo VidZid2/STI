@@ -478,7 +478,7 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                           </svg>
                       </motion.div>
                       <div className="flex items-center gap-2.5">
-                          <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Text Editor</span>
+                          <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Text Editor</span>
                           {/* Mobile Words Badge */}
                           <span className="flex sm:hidden text-[10.5px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-800 px-2.5 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50">
                               {stats.words} words
@@ -689,11 +689,11 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                 {/* Inner Data Module: Exact Paraphraser Pattern */}
                 <div className="flex items-center justify-between p-4 px-5 bg-white/60 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-700/80 rounded-[20px] shadow-sm">
                     <div className="flex flex-col">
-                        <span className="text-[11px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">
                             Score Result
                         </span>
                         <div className="flex items-baseline gap-1">
-                            <NumberTicker value={qualityScore} className="text-3xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight leading-none" />
+                            <NumberTicker value={qualityScore} className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-none" />
                             <span className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">/ 100</span>
                         </div>
                     </div>
@@ -774,7 +774,7 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                                             )}
                                         </div>
-                                        <span className={`text-[11px] font-black uppercase tracking-wider ${isError ? 'text-red-600 dark:text-red-400' : isWarning ? 'text-yellow-600 dark:text-yellow-500' : 'text-blue-600 dark:text-blue-400'}`}>
+                                        <span className={`text-[11px] font-bold uppercase tracking-wider ${isError ? 'text-red-600 dark:text-red-400' : isWarning ? 'text-yellow-600 dark:text-yellow-500' : 'text-blue-600 dark:text-blue-400'}`}>
                                             {issue.category}
                                         </span>
                                     </div>
@@ -798,7 +798,7 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                                     <div className="rounded-[16px] border border-blue-100/50 bg-blue-50/50 p-4 dark:border-blue-800/30 dark:bg-blue-900/10">
                                         <div className="flex items-center gap-2 mb-1.5">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-blue-500"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                                            <p className="text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">Why this matters</p>
+                                            <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Why this matters</p>
                                         </div>
                                         <p className="text-[13px] font-medium leading-relaxed text-blue-900/70 dark:text-blue-100/70">{getIssueLesson(issue)}</p>
                                     </div>
@@ -872,12 +872,12 @@ const LanguageToolGrammarChecker: React.FC<LanguageToolGrammarCheckerProps> = ({
                 {/* Inner Data Modules */}
                 <div className="grid grid-cols-2 gap-3">
                     <motion.div whileHover={{ scale: 1.02 }} className="flex flex-col items-center justify-center p-4 px-2 bg-white/60 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-700/80 rounded-[20px] transition-colors hover:border-green-300 dark:hover:border-green-700 shadow-sm text-center">
-                        <NumberTicker value={stats.words} className="text-3xl font-black text-zinc-900 dark:text-zinc-100 mb-1 leading-none tracking-tight" />
-                        <span className="text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Words</span>
+                        <NumberTicker value={stats.words} className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-1 leading-none tracking-tight" />
+                        <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Words</span>
                     </motion.div>
                     <motion.div whileHover={{ scale: 1.02 }} className="flex flex-col items-center justify-center p-4 px-2 bg-white/60 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-700/80 rounded-[20px] transition-colors hover:border-green-300 dark:hover:border-green-700 shadow-sm text-center">
-                        <NumberTicker value={stats.chars} className="text-3xl font-black text-zinc-900 dark:text-zinc-100 mb-1 leading-none tracking-tight" />
-                        <span className="text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Characters</span>
+                        <NumberTicker value={stats.chars} className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-1 leading-none tracking-tight" />
+                        <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Characters</span>
                     </motion.div>
                 </div>
             </div>

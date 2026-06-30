@@ -609,7 +609,7 @@ const PlagiarismChecker: React.FC<PlagiarismCheckerProps> = ({ onBack }) => {
                                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
                                     </svg>
                                 </motion.div>
-                                <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Original Document</span>
+                                <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0 whitespace-nowrap">Original Document</span>
                             </div>
                             
                             <div className="flex items-center gap-4 shrink-0">
@@ -916,7 +916,7 @@ const PlagiarismChecker: React.FC<PlagiarismCheckerProps> = ({ onBack }) => {
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Words</span>
-                                    <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none"><NumberTicker value={wordCount} /></span>
+                                    <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none"><NumberTicker value={wordCount} /></span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3 p-3 pr-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700 shadow-sm transition-colors hover:border-red-300 dark:hover:border-red-700 group/stat">
@@ -929,7 +929,7 @@ const PlagiarismChecker: React.FC<PlagiarismCheckerProps> = ({ onBack }) => {
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-0.5">Characters</span>
-                                    <span className="text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none"><NumberTicker value={inputText.length} /></span>
+                                    <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none"><NumberTicker value={inputText.length} /></span>
                                 </div>
                             </div>
                         </div>

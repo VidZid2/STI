@@ -154,7 +154,7 @@ export const TextSummarizerEmpty: React.FC<EmptyStateProps> = ({ onAction }) => 
         <AlignLeft className="w-12 h-12 text-blue-500 dark:text-blue-400" />
       </div>
       <motion.div
-        className="absolute -top-2 -right-4 px-2.5 py-1 rounded-full bg-blue-200 dark:bg-blue-700 flex items-center justify-center text-[10px] font-black tracking-widest text-blue-800 dark:text-blue-100 uppercase"
+        className="absolute -top-2 -right-4 px-2.5 py-1 rounded-full bg-blue-200 dark:bg-blue-700 flex items-center justify-center text-[10px] font-bold tracking-widest text-blue-800 dark:text-blue-100 uppercase"
         animate={{ y: [0, -4, 0] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
@@ -300,7 +300,7 @@ export const WordCounterEmpty: React.FC<EmptyStateProps> = ({ onAction }) => (
   >
     <motion.div variants={itemVariants} className="relative mb-6">
       <div className="w-24 h-24 rounded-3xl bg-cyan-50 dark:bg-cyan-900/20 flex items-center justify-center border border-cyan-100 dark:border-cyan-800/50">
-        <span className="text-3xl font-black text-cyan-500 dark:text-cyan-400">0</span>
+        <span className="text-3xl font-bold text-cyan-500 dark:text-cyan-400">0</span>
       </div>
       <motion.div
         className="absolute -top-2 right-0 flex gap-1"
