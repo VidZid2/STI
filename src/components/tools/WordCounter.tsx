@@ -1210,7 +1210,7 @@ ${text}`;
                     min-height: 100vh;
                     padding: 24px;
                     background: transparent;
-                    font-family: 'Outfit', sans-serif;
+                    font-family: 'Plus Jakarta Sans', sans-serif;
                 }
                 body.dark-mode .wc-container {
                     background: transparent;
@@ -1338,7 +1338,7 @@ ${text}`;
                     background: #f8fafc;
                     padding: 1.5rem 1rem 1rem 1rem;
                     font-size: 1rem;
-                    font-family: 'Outfit', sans-serif;
+                    font-family: 'Plus Jakarta Sans', sans-serif;
                     color: #334155;
                     transition: border 150ms cubic-bezier(0.4,0,0.2,1), box-shadow 150ms cubic-bezier(0.4,0,0.2,1);
                     resize: vertical;

@@ -375,7 +375,7 @@
     color: var(--hz-blue-deep);
     font-size: 0.98rem;
     font-weight: 750;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     text-decoration: none;
     cursor: pointer;
     box-shadow:
@@ -432,7 +432,7 @@
     color: var(--hz-blue-deep);
     font-size: 0.98rem;
     font-weight: 700;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     cursor: pointer;
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -1346,7 +1346,7 @@
     justify-content: center;
     align-items: center;
     text-decoration: none;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 1.05rem;
     position: relative;
     box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
@@ -1522,7 +1522,7 @@
     color: var(--hz-text-body);
     font-size: 0.85rem;
     font-weight: 500;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     cursor: pointer;
     transition: all 0.3s ease;
 }

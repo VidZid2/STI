@@ -9,7 +9,7 @@ export default {
     theme: {
     	extend: {
             fontFamily: {
-                sans: ['Outfit', 'sans-serif'],
+                sans: ['Plus Jakarta Sans', 'sans-serif'],
             },
     		colors: {
     			canvas: 'var(--bg-canvas)',
