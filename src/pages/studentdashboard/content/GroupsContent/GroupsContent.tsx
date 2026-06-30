@@ -384,7 +384,7 @@ const GroupsContent: React.FC = () => {
                                     transition={{ duration: 0.4, delay: 0.4, type: "spring", stiffness: 300, damping: 20 }}
                                     className="absolute -bottom-2 left-1/2 px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 border-[2.5px] border-white dark:border-slate-800 shadow-sm flex items-center justify-center whitespace-nowrap z-10 min-w-[40px]"
                                 >
-                                    <span className="text-[13px] font-black text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
+                                    <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200 leading-none" style={{ paddingTop: '1px' }}>
                                         {stats.totalGroups}
                                     </span>
                                 </motion.div>
@@ -397,7 +397,7 @@ const GroupsContent: React.FC = () => {
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                                className="text-2xl sm:text-[28px] font-black text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-2"
+                                className="text-2xl sm:text-[28px] font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-none mb-2"
                             >
                                 Project Workspaces
                             </motion.h1>
@@ -427,7 +427,7 @@ const GroupsContent: React.FC = () => {
                                 <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Total Groups</span>
                             </div>
                             <div className="flex items-baseline gap-1.5">
-                                <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.totalGroups}</span>
+                                <span className="text-xl sm:text-2xl font-semibold text-slate-800 dark:text-slate-100 leading-none">{stats.totalGroups}</span>
                                 <span className="text-xs font-medium text-slate-500">Available</span>
                             </div>
                         </motion.div>
@@ -444,7 +444,7 @@ const GroupsContent: React.FC = () => {
                                 <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider">My Groups</span>
                             </div>
                             <div className="flex items-baseline gap-1.5">
-                                <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.myGroups}</span>
+                                <span className="text-xl sm:text-2xl font-semibold text-slate-800 dark:text-slate-100 leading-none">{stats.myGroups}</span>
                                 <span className="text-xs font-medium text-slate-500">Joined</span>
                             </div>
                         </motion.div>
@@ -461,7 +461,7 @@ const GroupsContent: React.FC = () => {
                                 <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Public</span>
                             </div>
                             <div className="flex items-baseline gap-1.5">
-                                <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.publicGroups}</span>
+                                <span className="text-xl sm:text-2xl font-semibold text-slate-800 dark:text-slate-100 leading-none">{stats.publicGroups}</span>
                                 <span className="text-xs font-medium text-slate-500">Open</span>
                             </div>
                         </motion.div>
@@ -478,7 +478,7 @@ const GroupsContent: React.FC = () => {
                                 <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Online</span>
                             </div>
                             <div className="flex items-baseline gap-1.5">
-                                <span className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 leading-none">{stats.onlineMembers}</span>
+                                <span className="text-xl sm:text-2xl font-semibold text-slate-800 dark:text-slate-100 leading-none">{stats.onlineMembers}</span>
                                 <span className="text-xs font-medium text-slate-500">Active</span>
                             </div>
                         </motion.div>

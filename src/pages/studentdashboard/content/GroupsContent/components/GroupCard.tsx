@@ -296,7 +296,7 @@ const GroupCard: React.FC<{
                 </motion.div>
                 <div className="flex-1 min-w-0 flex flex-col justify-center pt-1 sm:pt-2">
                     <div className="flex items-center gap-2 mb-2 sm:mb-2.5">
-                        <h3 className="text-lg sm:text-[20px] font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight truncate pr-16 sm:pr-0">
+                        <h3 className="text-lg sm:text-[20px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight truncate pr-16 sm:pr-0">
                             {group.name}
                         </h3>
                         {group.is_private && (
@@ -310,7 +310,7 @@ const GroupCard: React.FC<{
                         {/* Role Badge (Styled like ADVANCED badge) */}
                         {group.is_member && group.user_role && (
                             <span 
-                                className="inline-flex h-[24px] items-center gap-1.5 rounded-full border px-2.5 text-[10.5px] font-extrabold uppercase leading-none tracking-wide shadow-sm"
+                                className="inline-flex h-[24px] items-center gap-1.5 rounded-full border px-2.5 text-[10.5px] font-bold uppercase leading-none tracking-wide shadow-sm"
                                 style={{ 
                                     background: `${getRoleInfo(group.user_role).color}15`, 
                                     color: getRoleInfo(group.user_role).color,
@@ -323,7 +323,7 @@ const GroupCard: React.FC<{
                         
                         {/* Category Badge */}
                         <span 
-                            className="inline-flex h-[24px] items-center gap-1.5 rounded-md border px-2.5 text-[10.5px] font-extrabold uppercase leading-none tracking-wide shadow-sm" 
+                            className="inline-flex h-[24px] items-center gap-1.5 rounded-md border px-2.5 text-[10.5px] font-bold uppercase leading-none tracking-wide shadow-sm" 
                             style={{ 
                                 background: `${categoryConfig.color}15`, 
                                 color: categoryConfig.color,
