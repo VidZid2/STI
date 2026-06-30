@@ -372,7 +372,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                                                         </svg>
                                                     </div>
-                                                    <span className={`font-bold text-slate-800 dark:text-slate-200 ${quickViewSettings.compactMode ? 'text-xs' : 'text-sm'}`}>This Week</span>
+                                                    <span className={`font-semibold text-slate-800 dark:text-slate-200 ${quickViewSettings.compactMode ? 'text-xs' : 'text-sm'}`}>This Week</span>
                                                 </div>
                                                 <motion.button
                                                     whileHover={{ rotate: 180, scale: 1.05 }}
@@ -396,12 +396,12 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                         {isRefreshing ? (
                                                             <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
                                                                 <Skeleton className={`rounded-md ${quickViewSettings.compactMode ? 'h-6 w-8' : 'h-10 w-12'} mb-1 bg-slate-200/80 dark:bg-slate-700/80`} />
-                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Courses</div>
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-bold uppercase tracking-[0.08em] mt-1">Courses</div>
                                                             </motion.div>
                                                         ) : (
                                                             <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
-                                                                <div className={`font-black text-blue-600 dark:text-blue-400 leading-none mb-1 ${quickViewSettings.compactMode ? 'text-2xl' : 'text-4xl'}`}>{totalCourses}</div>
-                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Courses</div>
+                                                                <div className={`font-bold text-blue-600 dark:text-blue-400 leading-none mb-1 ${quickViewSettings.compactMode ? 'text-2xl' : 'text-4xl'}`}>{totalCourses}</div>
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-bold uppercase tracking-[0.08em] mt-1">Courses</div>
                                                             </motion.div>
                                                         )}
                                                     </AnimatePresence>
@@ -414,12 +414,12 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                         {isRefreshing ? (
                                                             <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
                                                                 <Skeleton className={`rounded-md ${quickViewSettings.compactMode ? 'h-6 w-8' : 'h-10 w-12'} mb-1 bg-slate-200/80 dark:bg-slate-700/80`} />
-                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Due Soon</div>
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-bold uppercase tracking-[0.08em] mt-1">Due Soon</div>
                                                             </motion.div>
                                                         ) : (
                                                             <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
-                                                                <div className={`font-black text-amber-500 dark:text-amber-400 leading-none mb-1 ${quickViewSettings.compactMode ? 'text-2xl' : 'text-4xl'}`}>{upcomingDeadlines.length}</div>
-                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Due Soon</div>
+                                                                <div className={`font-bold text-amber-500 dark:text-amber-400 leading-none mb-1 ${quickViewSettings.compactMode ? 'text-2xl' : 'text-4xl'}`}>{upcomingDeadlines.length}</div>
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-bold uppercase tracking-[0.08em] mt-1">Due Soon</div>
                                                             </motion.div>
                                                         )}
                                                     </AnimatePresence>
@@ -432,7 +432,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                         {isRefreshing ? (
                                                             <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
                                                                 <Skeleton className={`rounded-full ${quickViewSettings.compactMode ? 'size-10' : 'size-14'} mb-1 bg-slate-200/80 dark:bg-slate-700/80`} />
-                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Progress</div>
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-bold uppercase tracking-[0.08em] mt-1">Progress</div>
                                                             </motion.div>
                                                         ) : (
                                                             <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex flex-col items-center">
@@ -458,12 +458,12 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                                         transition={{ duration: 0.4, delay: 0.2, type: "spring" }}
                                                                         className={`absolute -bottom-1.5 left-1/2 px-1.5 py-0.5 rounded-full bg-white dark:bg-slate-800 border-[2px] border-white dark:border-slate-800 shadow-sm flex items-center justify-center whitespace-nowrap z-10 ${quickViewSettings.compactMode ? 'min-w-[28px]' : 'min-w-[34px]'}`}
                                                                     >
-                                                                        <span className={`font-black text-slate-700 dark:text-slate-200 leading-none ${quickViewSettings.compactMode ? 'text-[8.5px]' : 'text-[10px]'}`} style={{ paddingTop: '1px' }}>
+                                                                        <span className={`font-bold text-slate-700 dark:text-slate-200 leading-none ${quickViewSettings.compactMode ? 'text-[8.5px]' : 'text-[10px]'}`} style={{ paddingTop: '1px' }}>
                                                                             {overallProgress}%
                                                                         </span>
                                                                     </motion.div>
                                                                 </div>
-                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-extrabold uppercase tracking-[0.08em] mt-1">Progress</div>
+                                                                <div className="text-slate-500 dark:text-slate-400 text-[9px] font-bold uppercase tracking-[0.08em] mt-1">Progress</div>
                                                             </motion.div>
                                                         )}
                                                     </AnimatePresence>
@@ -490,7 +490,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                                 </svg>
                                                             </div>
-                                                            <span className={`font-extrabold text-slate-900 dark:text-slate-100 tracking-tight truncate ${quickViewSettings.compactMode ? 'text-[13px]' : 'text-[15px]'}`}>Upcoming</span>
+                                                            <span className={`font-bold text-slate-900 dark:text-slate-100 tracking-tight truncate ${quickViewSettings.compactMode ? 'text-[13px]' : 'text-[15px]'}`}>Upcoming</span>
                                                             {upcomingDeadlines.length > 0 && (
                                                                 <span className={`shrink-0 px-2 py-0.5 rounded-full font-bold ${upcomingHeaderBadgeStyle} ${quickViewSettings.compactMode ? 'text-[9px]' : 'text-[10px]'}`}>
                                                                     {upcomingDeadlines.length}
@@ -537,7 +537,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                                     initial={{ opacity: 0, y: 10 }}
                                                                     animate={{ opacity: 1, y: 0 }}
                                                                     transition={{ delay: 0.2 }}
-                                                                    className={`font-extrabold text-slate-900 dark:text-slate-100 tracking-tight m-0 mb-1 leading-snug ${quickViewSettings.compactMode ? 'text-[12px]' : 'text-[14px]'}`}
+                                                                    className={`font-bold text-slate-900 dark:text-slate-100 tracking-tight m-0 mb-1 leading-snug ${quickViewSettings.compactMode ? 'text-[12px]' : 'text-[14px]'}`}
                                                                 >
                                                                     You're all caught up!
                                                                 </motion.h3>
@@ -615,7 +615,7 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
                                                             }}
                                                             whileHover={{ scale: 1.02 }}
                                                             whileTap={{ scale: 0.98 }}
-                                                            className={`w-full ${quickViewSettings.compactMode ? 'py-2 px-3 text-[10px]' : 'py-2.5 px-4 text-[12px]'} font-bold rounded-[14px] transition-colors shadow-sm flex items-center justify-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus-visible:ring-blue-500`}
+                                                            className={`w-full ${quickViewSettings.compactMode ? 'py-2 px-3 text-[10px]' : 'py-2.5 px-4 text-[12px]'} font-semibold rounded-[14px] transition-colors shadow-sm flex items-center justify-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/50 dark:hover:bg-blue-900/70 text-blue-700 dark:text-blue-300 focus-visible:ring-blue-500`}
                                                         >
                                                             <span>Go to tasks</span>
                                                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
