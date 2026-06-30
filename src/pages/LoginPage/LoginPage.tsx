@@ -4,12 +4,12 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import msLoginCss from './ms-login.css?raw';
-import { loginUser, saveAccount, getSavedAccounts, removeSavedAccount } from '../../../services/authService';
+import { loginUser, saveAccount, getSavedAccounts, removeSavedAccount } from '../../services/authService';
 import type { SavedAccount } from './types';
 import { User, Plus } from 'lucide-react';
 import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
-const StudentLogin: React.FC = () => {
+const LoginPage: React.FC = () => {
     const navigate = useNavigate();
     const { executeRecaptcha } = useGoogleReCaptcha();
     const initialAccounts = getSavedAccounts();
@@ -1306,15 +1306,15 @@ const StudentLogin: React.FC = () => {
     );
 };
 
-const StudentLoginWrapper = () => {
+const LoginPageWrapper = () => {
     const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
-    if (!siteKey) return <StudentLogin />;
+    if (!siteKey) return <LoginPage />;
     
     return (
         <GoogleReCaptchaProvider reCaptchaKey={siteKey}>
-            <StudentLogin />
+            <LoginPage />
         </GoogleReCaptchaProvider>
     );
 };
 
-export default StudentLoginWrapper;
+export default LoginPageWrapper;

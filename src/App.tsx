@@ -4,7 +4,7 @@ import { Toaster } from 'sonner'
 import { HorizontalHome } from './components/landing'
 import { LoginModal } from './components/modals'
 import { SmoothCursor } from '@/components/ui/smooth-cursor'
-import StudentLogin from './pages/studentdashboard/StudentLogin'
+import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/studentdashboard'
 import JoinGroupPage from './pages/studentdashboard/JoinGroupPage'
 import FocusModePage from './pages/studentdashboard/FocusModePage'
@@ -113,7 +113,7 @@ function AppContent() {
       {!hideCustomCursor && <SmoothCursor />}
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/student-login" element={<MaintenanceGuard><StudentLogin /></MaintenanceGuard>} />
+        <Route path="/student-login" element={<MaintenanceGuard><LoginPage /></MaintenanceGuard>} />
         <Route path="/dashboard" element={<MaintenanceGuard><NotificationProvider><QuickViewSettingsProvider><DashboardPage /></QuickViewSettingsProvider></NotificationProvider></MaintenanceGuard>} />
         <Route path="/teacher-dashboard" element={<TeacherRouteGuard><ErrorBoundary name="TeacherDashboard"><MaintenanceGuard><TeacherDashboard /></MaintenanceGuard></ErrorBoundary></TeacherRouteGuard>} />
         <Route path="/admin-dashboard" element={<AdminRouteGuard><AdminDashboard /></AdminRouteGuard>} />

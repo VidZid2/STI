@@ -13,7 +13,7 @@ import HelpDropdown from '../../../components/ui/dropdowns/HelpDropdown';
 import ToolbarExpandable from '../../../components/ui/toolbar/ToolbarExpandable';
 import { Drawer, DrawerContent, DrawerTitle } from '../../../components/ui/drawer';
 import { AnimatedCircularProgressBar } from '../../../components/ui/animated-circular-progress-bar';
-import { Badge } from '../../../components/ui/badge';
+
 import { Skeleton } from '../../../components/ui/skeleton';
 
 

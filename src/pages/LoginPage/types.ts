@@ -1,5 +1,5 @@
 /**
- * StudentLogin Types
+ * LoginPage Types
  * TypeScript type definitions for the login page
  */
 
