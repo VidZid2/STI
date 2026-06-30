@@ -49,7 +49,7 @@ export const ToolsHeader: React.FC<ToolsHeaderProps> = ({ totalTools }) => {
                     </div>
                     <div>
                         <p className="text-[10px] md:text-[12px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-0.5">Available</p>
-                        <p className="text-base md:text-lg font-black text-zinc-900 dark:text-zinc-100 leading-none">{totalTools} Tools</p>
+                        <p className="text-base md:text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-none">{totalTools} Tools</p>
                     </div>
                 </div>
 

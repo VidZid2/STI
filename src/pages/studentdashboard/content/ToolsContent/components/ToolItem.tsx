@@ -339,7 +339,7 @@ const ToolItem: React.FC<{
     };
     const accent = accentStyles[tool.accent || (tool.category === 'convert' ? 'emerald' : 'blue')];
     const categoryLabel = tool.category === 'convert' ? 'Converter' : 'Text Tool';
-    const statusBadgeClass = 'inline-flex h-[24px] items-center gap-1.5 rounded-full border px-2.5 text-[10.5px] font-extrabold uppercase leading-none tracking-wide shadow-sm';
+    const statusBadgeClass = 'inline-flex h-[24px] items-center gap-1.5 rounded-full border px-2.5 text-[10.5px] font-bold uppercase leading-none tracking-wide shadow-sm';
     const staticTagClass = 'inline-flex h-[24px] items-center gap-1.5 rounded-md px-2 text-[10.5px] font-bold uppercase leading-none tracking-wide';
     const cardActionLabel = `${tool.name}. ${tool.description}. ${tool.onClick ? 'Open workspace' : 'Choose file'}.`;
 
@@ -413,7 +413,7 @@ const ToolItem: React.FC<{
                     {/* Title */}
                     <div className="mt-6 flex min-w-0 flex-col justify-center">
                         <motion.h3
-                            className="max-w-full whitespace-normal text-base font-bold leading-snug tracking-tighter text-zinc-900 dark:text-zinc-100 sm:text-lg"
+                            className="max-w-full whitespace-normal text-base font-semibold leading-snug tracking-tighter text-zinc-900 dark:text-zinc-100 sm:text-lg"
                             transition={{ duration: 0.2 }}
                         >
                             {tool.name}

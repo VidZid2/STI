@@ -710,7 +710,7 @@ const ToolsContent: React.FC = () => {
                 <div className="relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white p-4 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7">
                     <div className="relative z-10 flex flex-col gap-4 sm:gap-6">
                         <div className="min-w-0">
-                            <h2 className="text-xl font-black tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-2xl">
+                            <h2 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-2xl">
                                 Find the right tool before you lose momentum.
                             </h2>
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-600 dark:text-zinc-400 hidden sm:block">
@@ -827,7 +827,7 @@ const ToolsContent: React.FC = () => {
 
                             {/* Text */}
                             <div className="flex flex-col min-w-0 flex-1">
-                                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-0.5 transition-colors truncate">
+                                <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-0.5 transition-colors truncate">
                                     {tool.name}
                                 </h2>
                                 <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed truncate">
@@ -904,7 +904,7 @@ const ToolsContent: React.FC = () => {
                                 </svg>
                             </div>
                             <div className="min-w-0">
-                                <h3 className="text-2xl font-black tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-3xl">
+                                <h3 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-3xl">
                                     No matching tools found
                                 </h3>
                                 <p className="mt-2 max-w-2xl text-[15px] leading-7 text-zinc-600 dark:text-zinc-400">
