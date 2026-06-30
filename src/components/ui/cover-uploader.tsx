@@ -96,7 +96,8 @@ export function CoverUploader({
 				setIsPending(false);
 			}
 		} else {
-			throw new Error('No image selected for upload');
+			console.warn('No image selected for upload');
+			setIsPending(false);
 		}
 	};
 
