@@ -569,7 +569,7 @@ const ToolItem: React.FC<{
                                                     initial={{ opacity: 0, y: 10 }}
                                                     animate={{ opacity: 1, y: 0 }}
                                                     transition={{ delay: 0.15 }}
-                                                    className="text-[22px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight"
+                                                    className="text-[22px] font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight"
                                                 >
                                                     {tool.name}
                                                 </motion.h2>
@@ -875,7 +875,7 @@ const ToolItem: React.FC<{
                                                         <div className="scale-[1.15]">{tool.icon}</div>
                                                     </motion.div>
 
-                                                    <h2 id={tutorialTitleId} className="text-[22px] font-bold text-zinc-900 dark:text-zinc-50 mb-1.5 tracking-tight leading-tight">
+                                                    <h2 id={tutorialTitleId} className="text-[22px] font-semibold text-zinc-900 dark:text-zinc-50 mb-1.5 tracking-tight leading-tight">
                                                         {resolvedTutorial.title}
                                                     </h2>
                                                     <p id={tutorialDescriptionId} className="text-[14px] font-medium text-zinc-500 dark:text-zinc-400">

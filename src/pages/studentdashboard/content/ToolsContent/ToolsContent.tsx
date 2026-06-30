@@ -827,7 +827,7 @@ const ToolsContent: React.FC = () => {
 
                             {/* Text */}
                             <div className="flex flex-col min-w-0 flex-1">
-                                <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-0.5 transition-colors truncate">
+                                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-tight mb-0.5 transition-colors truncate">
                                     {tool.name}
                                 </h2>
                                 <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed truncate">
