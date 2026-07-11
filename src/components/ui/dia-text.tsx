@@ -7,7 +7,7 @@ import {
   useInView,
   useMotionValue,
   useTransform,
-} from "framer-motion";
+} from "motion/react";
 import {
   type ComponentPropsWithoutRef,
   type CSSProperties,

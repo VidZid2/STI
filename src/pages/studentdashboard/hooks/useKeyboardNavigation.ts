@@ -12,10 +12,11 @@ interface KeyboardNavOptions {
   openSettingsModal: () => void;
   toggleSidebar: () => void;
   isModalOpen?: boolean;
+  playTutorial?: () => void;
 }
 
 export const useKeyboardNavigation = (options: KeyboardNavOptions) => {
-  const { activeView, setActiveView, openSettingsModal, toggleSidebar, isModalOpen = false } = options;
+  const { activeView, setActiveView, openSettingsModal, toggleSidebar, isModalOpen = false, playTutorial } = options;
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     // Don't trigger shortcuts when typing in inputs or when modals are open
@@ -94,7 +95,13 @@ export const useKeyboardNavigation = (options: KeyboardNavOptions) => {
       // Dispatch custom event to open keyboard shortcuts modal
       window.dispatchEvent(new CustomEvent('open-keyboard-shortcuts'));
     }
-  }, [activeView, setActiveView, openSettingsModal, toggleSidebar, isModalOpen]);
+
+    // Single quote to play tutorial
+    if (key === "'" && playTutorial) {
+      event.preventDefault();
+      playTutorial();
+    }
+  }, [activeView, setActiveView, openSettingsModal, toggleSidebar, isModalOpen, playTutorial]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);

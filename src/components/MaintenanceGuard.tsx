@@ -61,7 +61,7 @@ const MaintenanceScreen: React.FC<{ reason: string | null }> = ({ reason }) => {
             justifyContent: 'center',
             background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
             color: 'white',
-            fontFamily: "'Inter', -apple-system, sans-serif",
+            fontFamily: "'Lexend Deca', sans-serif",
             overflow: 'hidden',
         }}>
             {/* Animated background circles */}

@@ -7,11 +7,11 @@ export default {
         "./@/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
-    	extend: {
+        extend: {
             fontFamily: {
-                sans: ['Outfit', 'sans-serif'],
+                sans: ['"Lexend Deca"', 'sans-serif'],
             },
-    		colors: {
+            colors: {
     			canvas: 'var(--bg-canvas)',
     			surface: 'var(--bg-surface)',
     			'surface-alt': 'var(--bg-surface-alt)',

@@ -34,6 +34,9 @@ interface UseDashboardStateReturn {
     setTutorialActive: (active: boolean) => void;
     closeTutorial: () => void;
 
+    toolsTutorialActive: boolean;
+    setToolsTutorialActive: (active: boolean) => void;
+
     // View state
     activeView: DashboardView;
     setActiveView: (view: DashboardView) => void;
@@ -120,6 +123,7 @@ export const useDashboardState = (): UseDashboardStateReturn => {
         return localStorage.getItem('welcome-modal-completed') !== 'true';
     });
     const [tutorialActive, setTutorialActive] = useState(false);
+    const [toolsTutorialActive, setToolsTutorialActive] = useState(false);
 
     // Demo mode state
     const [isDemoMode] = useState(() => {
@@ -199,6 +203,7 @@ export const useDashboardState = (): UseDashboardStateReturn => {
     const closeTutorial = () => {
         setTutorialActive(false);
         localStorage.setItem('tutorial-completed', 'true');
+        window.dispatchEvent(new Event('tutorial:completed'));
     };
 
     return {
@@ -222,6 +227,8 @@ export const useDashboardState = (): UseDashboardStateReturn => {
         tutorialActive,
         setTutorialActive,
         closeTutorial,
+        toolsTutorialActive,
+        setToolsTutorialActive,
 
         // Views
         activeView,

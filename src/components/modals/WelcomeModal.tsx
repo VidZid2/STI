@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { LayoutDashboard, X, Rocket, ShieldCheck, MessageSquare } from 'lucide-react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { ScrollReelTestimonials } from '../ui/scroll-reel-testimonials';
 import { AdvantagesBento } from '../ui/advantages-bento';
 import HoverBrandLogo from '../ui/hover-brand-logo';

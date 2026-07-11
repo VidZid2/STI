@@ -707,7 +707,7 @@ const ToolsContent: React.FC = () => {
                 transition={{ delay: 0.12, type: 'spring', stiffness: 300, damping: 26 }}
                 aria-label="Tool search and recommended workflow"
             >
-                <div className="relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white p-4 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7">
+                <div className="tools-search-card relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white p-4 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 sm:p-7">
                     <div className="relative z-10 flex flex-col gap-4 sm:gap-6">
                         <div className="min-w-0">
                             <h2 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-2xl">
@@ -788,7 +788,7 @@ const ToolsContent: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="flex gap-3 overflow-x-auto [scrollbar-width:none] sm:grid sm:grid-cols-3 xl:grid-cols-1 p-2 -m-2">
+                <div className="tools-recommended-container flex gap-3 overflow-x-auto [scrollbar-width:none] sm:grid sm:grid-cols-3 xl:grid-cols-1 p-2 -m-2">
                     {recommendedTools.map((tool, index) => (
                         <motion.button
                             key={tool.id}

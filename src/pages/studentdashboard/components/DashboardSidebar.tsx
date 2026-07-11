@@ -1,9 +1,9 @@
 /**
  * DashboardSidebar — Persistent collapsible sidebar using shadcn primitives
  */
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import ToolsNavTooltip from '../../../components/ui/misc/ToolsNavTooltip';
-import { CoursesNavItem, HelpNavItem, PathsNavItem } from '../nav-items';
+import { CoursesNavItem, PathsNavItem } from '../nav-items';
 import MobileCoursesSheet from './MobileCoursesSheet';
 import MobilePathsSheet from './MobilePathsSheet';
 import { DockMenu } from './DockMenu';
@@ -22,7 +22,7 @@ interface DashboardSidebarProps {
     selectedCourse: SidebarCourse | null;
     setSelectedCourse: (course: SidebarCourse | null) => void;
     openSettingsModal: () => void;
-    widgetsSidebarActive?: boolean;
+    widgetsSidebarActive: boolean;
 }
 
 const Icons = {
@@ -101,6 +101,7 @@ const NavItemButton = React.memo(({ id, activeView, setActiveView, icon, label, 
     return (
         <button
             type="button"
+            data-nav-id={id}
             className={`nav-item ${isActive ? 'active' : ''} ${isLocked ? 'opacity-80 grayscale-[20%]' : ''} ${shake ? 'animate-[shake_0.4s_ease-in-out]' : ''}`}
             onClick={handleClick}
             aria-current={isActive ? 'page' : undefined}
@@ -135,13 +136,30 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
     setActiveView,
     selectedCourse,
     setSelectedCourse,
-    openSettingsModal,
+    openSettingsModal: _openSettingsModal,
     widgetsSidebarActive }) => {
     const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
     const [isMobilePathsOpen, setIsMobilePathsOpen] = useState(false);
     const [activeDockMenu, setActiveDockMenu] = useState<string | null>(null);
-    const [xpData] = useState(() => getXPData());
+    const [xpData, setXpData] = useState(() => getXPData());
     const level = calculateLevel(xpData.totalXP).level;
+
+    useEffect(() => {
+        const refreshXP = () => {
+            setXpData(getXPData());
+        };
+        
+        window.addEventListener('tutorial:completed', refreshXP);
+        window.addEventListener('storage', refreshXP);
+        const interval = setInterval(refreshXP, 1000);
+        
+        return () => {
+            window.removeEventListener('tutorial:completed', refreshXP);
+            window.removeEventListener('storage', refreshXP);
+            clearInterval(interval);
+        };
+    }, []);
+
     const courses = React.useMemo(() => getSidebarCoursesWithProgress(), []);
 
     const handleCourseSelect = useCallback((course: SidebarCourse) => {
@@ -167,7 +185,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
         <Sidebar collapsible="icon" variant="inset" className={`border-r-0 hidden lg:flex ${widgetsSidebarActive ? 'hidden-dock' : ''}`}>
             {/* Desktop Logo in Sidebar */}
             <SidebarHeader 
-                className="hidden lg:flex flex-row items-center gap-2.5 px-6 pt-4 pb-6 cursor-pointer shrink-0"
+                className="sidebar-logo-header hidden lg:flex flex-row items-center gap-2.5 px-6 pt-4 pb-6 cursor-pointer shrink-0"
                 onClick={() => { setActiveView('home'); }}
             >
                 <div 
@@ -224,15 +242,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
             </SidebarContent>
 
             <SidebarFooter className="px-3 py-4 border-none mt-auto flex flex-col gap-1 lg:gap-0.5 sidebar-bottom desktop-sleek">
-                <hr className="hidden lg:block border-t-2 border-slate-200/80 dark:border-slate-800/60 mx-2 mb-1" />
-                <button type="button" className="nav-item" id="settingsButton" onClick={openSettingsModal}>
-                    <div className="nav-icon"><Icons.Settings /></div>
-                    <div className="nav-content">
-                        <span className="nav-text">Settings</span>
-                        <span className="nav-description">Preferences</span>
-                    </div>
-                </button>
-                <HelpNavItem onSidebarClose={() => {/* no-op */}} isExpanded={true} />
+                {/* Settings and Help moved to toolbar */}
             </SidebarFooter>
 
             <MobileCoursesSheet
@@ -250,7 +260,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
         </Sidebar>
         
         {/* Mobile Dock using ExpandableTabs */}
-        <div className={`flex lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[9000] transition-transform duration-300 ${widgetsSidebarActive ? 'translate-y-[150%]' : 'translate-y-0'} w-full max-w-[calc(100%-32px)] sm:max-w-md justify-center`}>
+        <div className={`mobile-bottom-dock flex lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[9000] transition-transform duration-300 ${widgetsSidebarActive ? 'translate-y-[150%]' : 'translate-y-0'} w-full max-w-[calc(100%-32px)] sm:max-w-md justify-center`}>
             <ExpandableTabs
                 fullWidth
                 value={activeDockMenu}
@@ -264,6 +274,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
                 }}
                 items={[
                     { id: 'home', label: 'Home', icon: <Icons.Home />, content: null },
+                    { id: 'dock-divider', label: '', icon: null, isDivider: true },
                     { 
                         id: 'course', 
                         label: 'Courses', 

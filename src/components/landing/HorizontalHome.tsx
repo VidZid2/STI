@@ -1,6 +1,6 @@
 import React from 'react';
 import { IconWorld, IconBrandFacebook, IconBrandTwitter } from "@tabler/icons-react";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useHorizontalScroll } from '../../hooks/useHorizontalScroll';
 import WhyPanel from './panels/WhyPanel';
 import FeaturesPanel from './panels/FeaturesPanel';

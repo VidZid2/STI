@@ -1,11 +1,18 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { cn } from '../../../lib/utils';
 import { useNotifications, type Notification as SharedNotification, type NotificationCategory } from '../../../contexts/NotificationContext';
 import { ExpandableTabs, type ExpandableTabsItem } from '../../motion/expandable-tabs';
-import SidebarHelpDropdown from '../dropdowns/SidebarHelpDropdown';
+
+import GettingStartedModal from '../modals/GettingStartedModal';
+import VideoTutorialsModal from '../modals/VideoTutorialsModal';
+import FAQsModal from '../modals/FAQsModal';
+import KeyboardShortcutsModal from '../modals/KeyboardShortcutsModal';
+import ContactSupportModal from '../modals/ContactSupportModal';
+import { BookOpen, PlaySquare, HelpCircle, Keyboard, MessageCircle } from 'lucide-react';
+import { Tooltip, TooltipProvider } from '@/components/ui/tooltip-motion';
 
 function useDarkMode() {
     const [isDark, setIsDark] = useState(() => 
@@ -204,7 +211,7 @@ function NotificationContent({
     };
 
     return (
-        <div className='flex flex-col gap-3 sm:gap-3.5 w-[288px]'>
+        <div className='flex flex-col gap-3 sm:gap-3.5 w-full min-w-[340px]'>
             <div className='flex items-center justify-between px-1'>
                 <div className={cn("text-[11px] sm:text-[12px] font-bold uppercase tracking-widest", isDarkMode ? "text-slate-400" : "text-slate-500")}>
                     Notifications
@@ -451,7 +458,7 @@ function MailContent({ mails, markMailAsRead, markAllMailsAsRead, deleteMail, cl
     const showSearchResults = searchQuery.trim().length > 0;
 
     return (
-        <div className='flex flex-col gap-3 sm:gap-3.5 w-[288px]'>
+        <div className='flex flex-col gap-3 sm:gap-3.5 w-full min-w-[340px]'>
             <div className='flex items-center justify-between px-1'>
                 <div className='flex items-center gap-2'>
                     <div className={cn(
@@ -717,7 +724,7 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
     };
 
     return (
-        <div className='flex flex-col gap-3 sm:gap-3.5 w-[288px]'>
+        <div className='flex flex-col gap-3 sm:gap-3.5 w-full min-w-[340px]'>
             <div className='relative w-full'>
                 <svg className='absolute left-3 top-0 bottom-0 my-auto w-4 h-4 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
@@ -1049,10 +1056,14 @@ function SearchContent({ onSearchChange }: { onSearchChange: (query: string) => 
 
 
 
-export default function ToolbarExpandable({ className, hideCloseButton, isMobile = false, barHeight }: { className?: string; hideCloseButton?: boolean; isMobile?: boolean; barHeight?: number }) {
+export default function ToolbarExpandable({ className, isMobile = false, barHeight }: { className?: string; isMobile?: boolean; barHeight?: number }) {
     const isDarkMode = useDarkMode();
-    const [isHelpOpen, setIsHelpOpen] = useState(false);
-    const helpAnchorRef = useRef<HTMLDivElement>(null);
+
+    const [showGettingStarted, setShowGettingStarted] = useState(false);
+    const [showVideoTutorials, setShowVideoTutorials] = useState(false);
+    const [showFAQs, setShowFAQs] = useState(false);
+    const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+    const [showContactSupport, setShowContactSupport] = useState(false);
 
     // Disable keyboard shortcuts for search since it's now handled natively by the tab component or needs to be adapted
 
@@ -1121,6 +1132,92 @@ export default function ToolbarExpandable({ className, hideCloseButton, isMobile
     const unreadMailCount = mails.filter(m => !m.isRead).length;
 
     const ITEMS: ExpandableTabsItem[] = [
+        {
+            id: 'getting-started',
+            label: 'Getting Started',
+            onClick: () => setShowGettingStarted(true),
+            icon: isMobile ? (
+                <div className='relative flex items-center justify-center text-blue-500'>
+                    <BookOpen className="w-5 h-5" />
+                </div>
+            ) : (
+                <Tooltip content="Getting Started" side="bottom">
+                    <div className='relative flex items-center justify-center text-blue-500'>
+                        <BookOpen className="w-5 h-5" />
+                    </div>
+                </Tooltip>
+            )
+        },
+        {
+            id: 'video-tutorials',
+            label: 'Video Tutorials',
+            onClick: () => setShowVideoTutorials(true),
+            icon: isMobile ? (
+                <div className='relative flex items-center justify-center text-blue-500'>
+                    <PlaySquare className="w-5 h-5" />
+                </div>
+            ) : (
+                <Tooltip content="Video Tutorials" side="bottom">
+                    <div className='relative flex items-center justify-center text-blue-500'>
+                        <PlaySquare className="w-5 h-5" />
+                    </div>
+                </Tooltip>
+            )
+        },
+        {
+            id: 'faqs',
+            label: 'FAQs',
+            onClick: () => setShowFAQs(true),
+            icon: isMobile ? (
+                <div className='relative flex items-center justify-center text-blue-500'>
+                    <HelpCircle className="w-5 h-5" />
+                </div>
+            ) : (
+                <Tooltip content="FAQs" side="bottom">
+                    <div className='relative flex items-center justify-center text-blue-500'>
+                        <HelpCircle className="w-5 h-5" />
+                    </div>
+                </Tooltip>
+            )
+        },
+        ...(!isMobile ? [{
+            id: 'keyboard-shortcuts',
+            label: 'Keyboard Shortcuts',
+            onClick: () => setShowKeyboardShortcuts(true),
+            icon: isMobile ? (
+                <div className='relative flex items-center justify-center text-blue-500'>
+                    <Keyboard className="w-5 h-5" />
+                </div>
+            ) : (
+                <Tooltip content="Keyboard Shortcuts" side="bottom">
+                    <div className='relative flex items-center justify-center text-blue-500'>
+                        <Keyboard className="w-5 h-5" />
+                    </div>
+                </Tooltip>
+            )
+        }] : []),
+        {
+            id: 'contact-support',
+            label: 'Contact Support',
+            onClick: () => setShowContactSupport(true),
+            icon: isMobile ? (
+                <div className='relative flex items-center justify-center text-blue-500'>
+                    <MessageCircle className="w-5 h-5" />
+                </div>
+            ) : (
+                <Tooltip content="Contact Support" side="bottom">
+                    <div className='relative flex items-center justify-center text-blue-500'>
+                        <MessageCircle className="w-5 h-5" />
+                    </div>
+                </Tooltip>
+            )
+        },
+        {
+            id: 'divider-main',
+            label: '',
+            icon: null,
+            isDivider: true,
+        },
         {
             id: 'search',
             label: 'Search',
@@ -1226,21 +1323,17 @@ export default function ToolbarExpandable({ className, hideCloseButton, isMobile
             ),
             content: <MailContent mails={mails} markMailAsRead={markMailAsRead} markAllMailsAsRead={markAllMailsAsRead} deleteMail={deleteMail} clearAllMails={clearAllMails} isLoading={isMailsLoading} />,
         },
-    ];
-
-    if (isMobile) {
-        ITEMS.push({
-            id: 'separator',
+        {
+            id: 'divider-settings',
             label: '',
             icon: null,
-            isSeparator: true,
-        });
-
-        ITEMS.push({
+            isDivider: true,
+        },
+        {
             id: 'settings',
             label: 'Settings',
             icon: (
-                <div className='relative flex items-center justify-center'>
+                <div className='relative flex items-center justify-center text-blue-500'>
                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="3"></circle>
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -1250,34 +1343,24 @@ export default function ToolbarExpandable({ className, hideCloseButton, isMobile
             onClick: () => {
                 document.dispatchEvent(new CustomEvent('open:settings'));
             }
-        });
+        },
+    ];
 
-        ITEMS.push({
-            id: 'help',
-            label: 'Help',
-            icon: (
-                <div ref={helpAnchorRef} className='relative flex items-center justify-center'>
-                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                        <path d="M12 17h.01"></path>
-                    </svg>
-                </div>
-            ),
-            onClick: () => {
-                setIsHelpOpen(!isHelpOpen);
-            }
-        });
+    if (isMobile) {
+        // Help item removed because its contents were moved into the main tabs
     }
 
     return (
-        <div className={cn('flex items-center relative z-50', className)}>
-            <ExpandableTabs items={ITEMS} expandDirection="down" className={className} hideCloseButton={hideCloseButton} fullWidth={isMobile} barHeight={barHeight} />
-            <SidebarHelpDropdown 
-                isOpen={isHelpOpen} 
-                onClose={() => setIsHelpOpen(false)} 
-                anchorRef={helpAnchorRef} 
-            />
-        </div>
+        <TooltipProvider delayDuration={0} skipDelayDuration={0}>
+            <div className="flex items-center relative z-50">
+                <ExpandableTabs items={ITEMS} expandDirection="down" className={className} fullWidth={isMobile} barHeight={barHeight} />
+
+                <GettingStartedModal isOpen={showGettingStarted} onClose={() => setShowGettingStarted(false)} />
+                <VideoTutorialsModal isOpen={showVideoTutorials} onClose={() => setShowVideoTutorials(false)} />
+                <FAQsModal isOpen={showFAQs} onClose={() => setShowFAQs(false)} />
+                <KeyboardShortcutsModal isOpen={showKeyboardShortcuts} onClose={() => setShowKeyboardShortcuts(false)} />
+                <ContactSupportModal isOpen={showContactSupport} onClose={() => setShowContactSupport(false)} />
+            </div>
+        </TooltipProvider>
     );
 }

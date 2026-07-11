@@ -20,3 +20,4 @@ export { default as DashboardTutorial } from './DashboardTutorial';
 // Phase 1.4: Extracted layout components
 export { default as DashboardHeader } from './DashboardHeader';
 export { default as DashboardSidebar } from './DashboardSidebar';
+export { default as ToolsTutorial } from './ToolsTutorial';

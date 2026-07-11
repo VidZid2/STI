@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Flame,
   LayoutTemplate,
@@ -14,7 +14,8 @@ import {
   Calendar,
   ChevronRight,
 } from "lucide-react";
-import FireIcon from "../../../Fire.png";
+
+const FireIcon = "/Fire.png";
 
 // Mockup Previews for each new feature
 

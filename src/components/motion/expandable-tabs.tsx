@@ -6,7 +6,7 @@ import {
   useReducedMotion,
   type Variants,
 } from "motion/react";
-import { X, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -28,6 +28,7 @@ export type ExpandableTabsItem = {
   isLocked?: boolean;
   onClick?: () => void;
   isSeparator?: boolean;
+  isDivider?: boolean;
 };
 
 export type ExpandableTabsClassNames = {
@@ -65,7 +66,7 @@ const CONTENT_SPRING = {
 
 const TAB_W = 36;
 const BAR_X = 12;
-const BAR_GAP = 6;
+const BAR_GAP = 2;
 const ROOT_BORDER = 2;
 const ICON_W = 20;
 const ACTIVE_LEFT_PAD = 10;
@@ -202,7 +203,6 @@ export interface ExpandableTabsProps {
   className?: string;
   classNames?: ExpandableTabsClassNames;
   expandDirection?: "up" | "down";
-  hideCloseButton?: boolean;
   fullWidth?: boolean;
   barHeight?: number;
 }
@@ -216,7 +216,6 @@ export function ExpandableTabs({
   className,
   classNames,
   expandDirection = "up",
-  hideCloseButton = false,
   fullWidth = false,
   barHeight = 52,
 }: ExpandableTabsProps) {
@@ -275,14 +274,20 @@ export function ExpandableTabs({
 
   const highlightedItem = items.find((item) => item.id === highlightedId);
 
+  const regularItems = items.filter((item) => !item.isSeparator && !item.isDivider);
+  const dividerCount = items.filter((item) => item.isDivider).length;
+  const DIVIDER_W = 6; // 2px width + 2px mx on each side
+
   const barWidth = highlightedItem
-    ? (items.length - 1) * TAB_W +
+    ? (regularItems.length - 1) * TAB_W +
       getActiveTabWidth(highlightedItem) +
-      Math.max(0, items.length - 1) * BAR_GAP +
+      Math.max(0, regularItems.length - 1) * BAR_GAP +
+      dividerCount * (DIVIDER_W + BAR_GAP) +
       BAR_X +
       ROOT_BORDER
-    : items.length * TAB_W +
-      Math.max(0, items.length - 1) * BAR_GAP +
+    : regularItems.length * TAB_W +
+      Math.max(0, regularItems.length - 1) * BAR_GAP +
+      dividerCount * (DIVIDER_W + BAR_GAP) +
       BAR_X +
       ROOT_BORDER;
 
@@ -336,7 +341,7 @@ export function ExpandableTabs({
                 transition={
                   reduce ? { duration: 0.15, ease: EASE_OUT } : CONTENT_SPRING
                 }
-                className={fullWidth ? "w-full" : "w-max"}
+                className="w-full"
                 style={{
                   transformOrigin: "top center",
                   willChange: "transform, opacity, filter",
@@ -353,7 +358,7 @@ export function ExpandableTabs({
           aria-label="Navigation tabs"
           aria-orientation="horizontal"
           className={cn(
-            "absolute left-0 z-20 flex w-full items-center justify-start gap-[6px] py-2 px-1.5 overflow-x-auto no-scrollbar",
+            "absolute left-0 z-20 flex w-full items-center justify-start gap-[2px] py-2 px-1.5 overflow-x-auto no-scrollbar",
             expandDirection === "up" ? "bottom-0" : "top-0",
             classNames?.bar,
           )}
@@ -363,17 +368,26 @@ export function ExpandableTabs({
             if (item.isSeparator) {
               return <div key={item.id} className="flex-1" />;
             }
+            if (item.isDivider) {
+              return (
+                <svg key={item.id} width="2" height="18" viewBox="0 0 2 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-0.5 shrink-0">
+                  <line x1="1" y1="0" x2="1" y2="18" strokeWidth="2" shapeRendering="crispEdges" className="stroke-slate-300 dark:stroke-slate-600" />
+                </svg>
+              );
+            }
 
             const isActive = item.id === visualActiveId;
             const isHighlighted = item.id === highlightedId;
             const activeTabWidth = getActiveTabWidth(item);
             const labelWidth = labelWidths[item.id] ?? 0;
+            const isLastItem = item.id === items[items.length - 1].id;
 
             return (
               <motion.button
                 key={item.id}
                 type="button"
                 role="tab"
+                data-nav-id={item.id}
                 aria-selected={isHighlighted}
                 aria-label={item.label}
                 onClick={() => {
@@ -404,6 +418,7 @@ export function ExpandableTabs({
                   shakeId === item.id ? "animate-[shake_0.4s_ease-in-out]" : "",
                   classNames?.tab,
                   isHighlighted && classNames?.activeTab,
+                  isLastItem && active && "ml-auto mr-1",
                 )}
               >
                 {isHighlighted && !item.isLocked && (
@@ -464,27 +479,8 @@ export function ExpandableTabs({
               </motion.button>
             );
           })}
-
-          {!highlightedId && items.length > 1 && (
-            <div className="absolute left-[44px] top-1/2 -translate-y-1/2 w-[1.5px] h-[18px] bg-slate-200 dark:bg-slate-700 pointer-events-none rounded-full" />
-          )}
           
-          {!hideCloseButton && (
-          <AnimatePresence>
-            {active && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                onClick={() => setActive(null)}
-                className="ml-auto mr-1 flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors dark:hover:bg-slate-800 dark:hover:text-slate-300"
-                aria-label="Close panel"
-              >
-                <X size={18} />
-              </motion.button>
-            )}
-          </AnimatePresence>
-          )}
+
         </div>
       </motion.div>
       <div

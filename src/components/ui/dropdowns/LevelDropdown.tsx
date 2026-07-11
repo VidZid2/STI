@@ -199,7 +199,7 @@ const LevelDropdown: React.FC<LevelDropdownProps> = ({ className }) => {
                 onClick={() => setIsOpen(!isOpen)}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className={`relative flex items-center sm:gap-2.5 sm:p-1 sm:pr-3.5 sm:rounded-[14px] cursor-pointer text-left transition-all duration-300 ${
+                className={`level-dropdown-trigger relative flex items-center sm:gap-2.5 sm:p-1 sm:pr-3.5 sm:rounded-[14px] cursor-pointer text-left transition-all duration-300 ${
                     isDarkMode 
                         ? 'sm:bg-slate-800/80 sm:border sm:border-slate-700/50 sm:shadow-sm sm:hover:bg-slate-700' 
                         : 'sm:bg-white sm:border sm:border-slate-200 sm:shadow-sm sm:hover:bg-slate-50'

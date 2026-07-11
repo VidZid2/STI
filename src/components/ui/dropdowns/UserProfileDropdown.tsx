@@ -46,6 +46,7 @@ import {
     clearLevelUpNotification,
     getXPData,
     getXPNeededForLevel,
+    saveXPData,
 } from '@/services/studyTimeService';
 
 import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
@@ -301,7 +302,7 @@ export default function UserProfileDropdown() {
                     onMouseEnter={() => setIsAvatarHovered(true)}
                     onMouseLeave={() => setIsAvatarHovered(false)}
                     className={cn(
-                        'relative flex items-center gap-2.5 px-0 sm:px-1.5 py-1 rounded-xl transition-all duration-150',
+                        'profile-dropdown-trigger relative flex items-center gap-2.5 px-0 sm:px-1.5 py-1 rounded-xl transition-all duration-150',
                         isDarkMode ? 'hover:bg-slate-700/50' : 'hover:bg-zinc-50'
                     )}
                 >
@@ -929,6 +930,35 @@ function SettingsContent({ onShowOnlineStatusChange, isDarkMode: _isDarkMode }: 
                     </div>
                     <button className='w-full sm:w-auto px-5 py-2.5 text-[13px] font-bold text-red-600 dark:text-red-400 bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all shadow-sm flex items-center justify-center flex-shrink-0'>
                         Sign Out Everywhere
+                    </button>
+                </div>
+                
+                <div className='bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-[1.25rem] p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-4'>
+                    <div>
+                        <h4 className='text-[14px] font-bold text-slate-900 dark:text-white'>Reset Level & Tutorials</h4>
+                        <p className='text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5'>This will reset your Level to 1 and clear all completed tutorial states.</p>
+                    </div>
+                    <button 
+                        onClick={() => {
+                            if (window.confirm("Are you sure you want to reset your level to 1 and clear all tutorials? This will reload the page.")) {
+                                localStorage.removeItem('tutorial-completed');
+                                localStorage.removeItem('tools-tutorial-completed');
+                                localStorage.removeItem('bridge-tutorial-completed');
+                                localStorage.removeItem('welcome-modal-completed');
+                                
+                                const freshXP = {
+                                    totalXP: 0,
+                                    currentLevel: 1,
+                                    xpInCurrentLevel: 0,
+                                    lastLevelUp: null,
+                                };
+                                saveXPData(freshXP);
+                                window.location.reload();
+                            }
+                        }}
+                        className='w-full sm:w-auto px-5 py-2.5 text-[13px] font-bold text-red-600 dark:text-red-400 bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all shadow-sm flex items-center justify-center flex-shrink-0'
+                    >
+                        Reset Progress
                     </button>
                 </div>
             </motion.div>

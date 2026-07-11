@@ -7,7 +7,7 @@ import {
   motion,
   useMotionValue,
   useTransform,
-} from "framer-motion"; // Note: using framer-motion as it's typically aliased or used interchangeably, but motion/react is newer. Given we installed motion, I'll stick to framer-motion if possible, but let me use 'motion/react' if that's what was requested, wait let me check the package installed.
+} from "motion/react"; // Note: using motion/react as it's typically aliased or used interchangeably, but motion/react is newer. Given we installed motion, I'll stick to motion/react if possible, but let me use 'motion/react' if that's what was requested, wait let me check the package installed.
 import { cn } from "@/lib/utils";
 
 /* ── types ───────────────────────────────────────────────────── */

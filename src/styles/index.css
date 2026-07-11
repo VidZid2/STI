@@ -3,6 +3,38 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Lexend Deca';
+  src: url('/font/Lexend_Deca/LexendDeca-VariableFont_wght.ttf') format('truetype-variations'),
+       url('/font/Lexend_Deca/LexendDeca-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@source "../../node_modules/streamdown/dist/*.js";
+
+:root {
+  --foreground: #09090b;
+  --muted-foreground: #71717a;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+}
+/* Remove default focus highlights globally across the codebase */
+*:focus,
+*:focus-visible,
+*:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+}
+
 @keyframes accordion-down {
   from { height: 0; }
   to { height: var(--radix-accordion-content-height); }
@@ -1190,7 +1222,7 @@ html.show-default-cursor textarea {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Lexend Deca', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     word-break: normal;
@@ -1220,8 +1252,10 @@ body {
 
 /* Dark Mode - Body Background */
 body.dark-mode {
-    background: #0f172a;
-    color: #e2e8f0;
+  --foreground: #fafafa;
+  --muted-foreground: #a1a1aa;
+  background-color: #0d0d0f; /* very dark grey/black */
+  color: #f3f4f6;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -1471,7 +1505,7 @@ body.dark-mode .App {
         0 13.646761411524492px 13.646761411524492px -3.125px #0000001b,
         0 30px 30px -3.75px #0000000d;
     font-weight: bold;
-    font-family: Montserrat, sans-serif;
+    font-family: 'Lexend Deca', sans-serif;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1898,7 +1932,7 @@ body.dark-mode .App {
     padding: 0.25em 1em;
     font-size: 0.8em;
     font-weight: 600;
-    font-family: "Poppins", monospace;
+    font-family: 'Lexend Deca', sans-serif;
     color: #0009;
     background: linear-gradient(#ffffff22, #00000011), var(--btn-color);
     opacity: 0;
@@ -1926,7 +1960,7 @@ body.dark-mode .App {
 .btn-text {
     display: inline-block;
     font-size: 1.05em;
-    font-family: "Syne", "Poppins", "Inter", sans-serif;
+    font-family: 'Lexend Deca', sans-serif;
     font-weight: 700;
     color: #1e40af;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -6220,4 +6254,45 @@ input[type="range"]::-moz-range-thumb {
     --brand: 213, 94%, 68%;
     --brand-foreground: 221, 83%, 53%;
   }
+}
+
+/* Safe override to show scrollbars on specific elements */
+@property --thumb-color {
+  syntax: '<color>';
+  initial-value: transparent;
+  inherits: true;
+}
+
+.fade-scrollbar {
+    scrollbar-width: thin !important;
+    --thumb-color: transparent;
+    transition: --thumb-color 0.5s ease;
+}
+.fade-scrollbar.is-typing {
+    --thumb-color: rgba(203, 213, 225, 1);
+}
+html.dark-mode .fade-scrollbar.is-typing,
+body.dark-mode .fade-scrollbar.is-typing,
+.dark .fade-scrollbar.is-typing {
+    --thumb-color: rgba(71, 85, 105, 1);
+}
+
+.fade-scrollbar::-webkit-scrollbar {
+    display: block !important;
+    width: 6px !important;
+    height: 6px !important;
+    background: transparent !important;
+    -webkit-appearance: none !important;
+}
+.fade-scrollbar::-webkit-scrollbar-button {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+.fade-scrollbar::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+.fade-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--thumb-color) !important;
+    border-radius: 10px !important;
 }

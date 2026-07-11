@@ -12,7 +12,7 @@ export const ToolsHeader: React.FC<ToolsHeaderProps> = ({ totalTools }) => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring' as const, stiffness: 300, damping: 24 }}
-            className="mt-4 md:mt-0 mb-8 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-2xl md:rounded-[24px] p-4 lg:p-7 flex flex-col md:flex-row items-center justify-between gap-5 md:gap-8 group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50"
+            className="tools-header-container mt-4 md:mt-0 mb-8 relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 shadow-sm rounded-2xl md:rounded-[24px] p-4 lg:p-7 flex flex-col md:flex-row items-center justify-between gap-5 md:gap-8 group transition-all duration-300 hover:shadow-md hover:border-blue-200/80 dark:hover:border-blue-800/50"
         >
             {/* SaaS Background Accents */}
             <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none transition-transform duration-700 group-hover:scale-150" aria-hidden="true" />

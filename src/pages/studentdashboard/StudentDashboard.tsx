@@ -37,7 +37,7 @@ import { formatDaysUntil, getDeadlineTypeColor, getDaysUntil } from '../../servi
 import { formatRelativeTime } from '../../services/activityService';
 
 // Extracted modules from local folder
-import { DashboardIntro, DashboardTutorial, DashboardHeader, DashboardSidebar, DailyInspirationToast, triggerGlobalToast } from './components';
+import { DashboardIntro, DashboardTutorial, ToolsTutorial, DashboardHeader, DashboardSidebar, DailyInspirationToast, triggerGlobalToast } from './components';
 import { WidgetSidebar } from './components/WidgetSidebar';
 import { DashboardSuspenseFallback } from './components/DashboardSuspenseFallback';
 import { getSidebarCoursesWithProgress, getTodaysQuote } from './utils';
@@ -104,8 +104,10 @@ const DashboardPage: React.FC = () => {
         showWelcomeModal,
         closeWelcomeModal,
         tutorialActive,
-        setTutorialActive: _setTutorialActive,
+        setTutorialActive,
         closeTutorial,
+        toolsTutorialActive,
+        setToolsTutorialActive,
         activeView,
         setActiveView,
         previousView,
@@ -120,7 +122,6 @@ const DashboardPage: React.FC = () => {
         isDemoMode } = useDashboardState();
 
     // Suppress unused variable warnings - these are available for future use
-    void _setTutorialActive;
     void _setShowConfetti;
 
     // Keyboard navigation for main nav items (Alt+1-7, Cmd/Ctrl+, for settings, Cmd/Ctrl+B for sidebar)
@@ -130,7 +131,23 @@ const DashboardPage: React.FC = () => {
         openSettingsModal,
         toggleSidebar,
         isModalOpen: settingsModalActive || welcomeModalActive,
+        playTutorial: () => {
+            if (activeView === 'tools') {
+                setToolsTutorialActive(true);
+            } else {
+                setTutorialActive(true);
+            }
+        },
     });
+
+    // Auto-trigger tools tutorial when user enters the tools page if they've completed the main dashboard tutorial
+    useEffect(() => {
+        if (activeView === 'tools' && 
+            localStorage.getItem('tutorial-completed') === 'true' && 
+            localStorage.getItem('tools-tutorial-completed') !== 'true') {
+            setToolsTutorialActive(true);
+        }
+    }, [activeView, setToolsTutorialActive]);
 
     // Global listener for Settings
     useEffect(() => {
@@ -566,6 +583,14 @@ const DashboardPage: React.FC = () => {
                 onClose={closeTutorial}
                 onToggleWidgetsSidebar={(open) => setWidgetsSidebarActive(open)}
             />
+            <ToolsTutorial
+                isOpen={toolsTutorialActive}
+                onClose={() => {
+                    setToolsTutorialActive(false);
+                    localStorage.setItem('tools-tutorial-completed', 'true');
+                }}
+                onOpenToolsPage={() => setActiveView('tools')}
+            />
             <Confetti active={showConfetti} />
 
             {/* Dashboard Intro - shows only once per session */}
@@ -580,7 +605,7 @@ const DashboardPage: React.FC = () => {
             }} />}
 
             {/* Daily Inspiration Toast & Generic Toasts (Unified Stack) */}
-            {!showIntro && !tutorialActive && !welcomeModalActive && (
+            {!showIntro && !tutorialActive && !toolsTutorialActive && !welcomeModalActive && (
                 <DailyInspirationToast 
                     quote={todaysQuote} 
                     externalToasts={toastNotifications} 

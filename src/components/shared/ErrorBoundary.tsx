@@ -1,5 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Terminal } from '../ui/terminal';
 import { RefreshCw } from 'lucide-react';
 interface Props {

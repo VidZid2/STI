@@ -6,7 +6,6 @@ import VideoTutorialsModal from '../modals/VideoTutorialsModal';
 import FAQsModal from '../modals/FAQsModal';
 import KeyboardShortcutsModal from '../modals/KeyboardShortcutsModal';
 import ContactSupportModal from '../modals/ContactSupportModal';
-import HelpCenterModal from '../modals/HelpCenterModal';
 import { cn } from '../../../lib/utils';
 import { BottomSheet } from '../bottom-sheet';
 
@@ -77,7 +76,6 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
     const [showFAQs, setShowFAQs] = useState(false);
     const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
     const [showContactSupport, setShowContactSupport] = useState(false);
-    const [showHelpCenter, setShowHelpCenter] = useState(false);
 
     useEffect(() => {
         const checkDarkMode = () => {
@@ -219,7 +217,7 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
     }, []);
 
     // Don't show dropdown when any modal is open
-    const shouldShowDropdown = isOpen && !showGettingStarted && !showVideoTutorials && !showFAQs && !showKeyboardShortcuts && !showContactSupport && !showHelpCenter;
+    const shouldShowDropdown = isOpen && !showGettingStarted && !showVideoTutorials && !showFAQs && !showKeyboardShortcuts && !showContactSupport;
 
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
 
@@ -367,54 +365,12 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
                                 </motion.a>
                             ))}
                         </div>
-
-                        {/* Footer: Help Center Stat Card */}
-                        <motion.a
-                            href="#"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.25 }}
-                            whileHover={{ scale: 1.02 }}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setShowHelpCenter(true);
-                                onClose();
-                            }}
-                            className={`flex w-full items-center justify-center gap-3 px-4 py-3 rounded-[14px] border shadow-sm transition-colors relative z-10 no-underline ${
-                                isDarkMode ? 'bg-zinc-900/50 border-zinc-800/80' : 'bg-white border-zinc-200/80'
-                            }`}
-                            style={{ textDecoration: 'none' }}
-                        >
-                            <div className={`w-8 h-8 rounded-xl border flex-shrink-0 flex items-center justify-center ${
-                                isDarkMode
-                                    ? 'bg-blue-500/10 border-blue-500/20'
-                                    : 'bg-blue-50 border-blue-100'
-                            }`}>
-                                <svg className={`w-[16px] h-[16px] ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                    <polyline points="15 3 21 3 21 9" />
-                                    <line x1="10" y1="14" x2="21" y2="3" />
-                                </svg>
-                            </div>
-                            <div className="flex flex-col justify-center gap-0.5">
-                                <span className={`text-[9px] font-bold uppercase tracking-widest leading-none ${
-                                    isDarkMode ? 'text-zinc-500' : 'text-zinc-400'
-                                }`}>
-                                    Explore
-                                </span>
-                                <span className={`text-[12px] font-bold leading-none ${
-                                    isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
-                                }`}>
-                                    Visit Help Center
-                                </span>
-                            </div>
-                        </motion.a>
         </>
     );
 
     return [
         isMobile ? (
-            <BottomSheet key="mobile-bottom-sheet" snapPoints={["auto"]} open={shouldShowDropdown} onOpenChange={(open) => { if (!open) onClose(); }}>
+            <BottomSheet key="mobile-bottom-sheet" snapPoints={["auto"]} open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
                 <div className={cn(
                     "overflow-hidden relative flex flex-col gap-3.5 w-full pt-1 pb-4",
                     isDarkMode ? 'text-zinc-100' : 'text-zinc-900'
@@ -498,12 +454,6 @@ const SidebarHelpDropdown: React.FC<SidebarHelpDropdownProps> = ({
             key="contact-support-modal"
             isOpen={showContactSupport}
             onClose={() => setShowContactSupport(false)}
-        />,
-        // Help Center Modal
-        <HelpCenterModal
-            key="help-center-modal"
-            isOpen={showHelpCenter}
-            onClose={() => setShowHelpCenter(false)}
         />
     ];
 };

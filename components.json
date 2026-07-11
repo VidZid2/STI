@@ -28,6 +28,7 @@
     "@efferd": "https://efferd.com/r/{style}/{name}.json",
     "@iconiq": "https://iconiqui.com/r/{name}.json",
     "@bklit": "https://ui.bklit.com/r/{name}.json",
-    "@beui": "https://beui.dev/r/{name}.json"
+    "@beui": "https://beui.dev/r/{name}.json",
+    "@ai-elements": "https://ai-sdk.dev/elements/api/registry/{name}.json"
   }
 }

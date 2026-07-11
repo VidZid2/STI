@@ -6,7 +6,6 @@ import VideoTutorialsModal from '../modals/VideoTutorialsModal';
 import FAQsModal from '../modals/FAQsModal';
 import KeyboardShortcutsModal from '../modals/KeyboardShortcutsModal';
 import ContactSupportModal from '../modals/ContactSupportModal';
-import HelpCenterModal from '../modals/HelpCenterModal';
 
 const HelpDropdown: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +18,6 @@ const HelpDropdown: React.FC = () => {
     const [showFAQs, setShowFAQs] = useState(false);
     const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
     const [showContactSupport, setShowContactSupport] = useState(false);
-    const [showHelpCenter, setShowHelpCenter] = useState(false);
 
     // Check for dark mode
     useEffect(() => {
@@ -207,30 +205,6 @@ const HelpDropdown: React.FC = () => {
                                 </motion.div>
                             ))}
                         </div>
-
-                        {/* Footer - Visit Help Center */}
-                        <motion.a
-                            href="#"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            whileHover={{ 
-                                backgroundColor: isDarkMode 
-                                    ? 'rgba(59, 130, 246, 0.15)' 
-                                    : 'rgba(59, 130, 246, 0.08)'
-                            }}
-                            transition={{ delay: 0.15, backgroundColor: { duration: 0.2, ease: 'easeOut' } }}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setIsOpen(false);
-                                setShowHelpCenter(true);
-                            }}
-                            className={`w-full flex items-center justify-center gap-1.5 px-3 py-2 border-t text-[10px] font-medium text-blue-500 rounded-b-xl ${isDarkMode ? 'border-slate-700' : 'border-zinc-100'}`}
-                        >
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                            Visit Help Center
-                        </motion.a>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -255,10 +229,6 @@ const HelpDropdown: React.FC = () => {
             <ContactSupportModal
                 isOpen={showContactSupport}
                 onClose={() => setShowContactSupport(false)}
-            />
-            <HelpCenterModal
-                isOpen={showHelpCenter}
-                onClose={() => setShowHelpCenter(false)}
             />
         </div>
     );

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Clock3, Flame, GraduationCap, Target, TrendingUp, TrendingDown } from 'lucide-react';
 import { SIDEBAR_COURSES_BASE } from '../../constants';
@@ -30,9 +31,129 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
     const [profile] = useState(() => getProfile());
     const [profileImage] = useState(() => getImages().profileImage);
     const [showOnlineStatus, setShowOnlineStatus] = useState(() => getSettings().showOnlineStatus);
-    const [level] = useState(() => getCurrentLevel());
-    const [xpProgress] = useState(() => getXPProgress());
+    const [level, setLevel] = useState(() => getCurrentLevel());
+    const [xpProgress, setXpProgress] = useState(() => getXPProgress());
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [showBridgeTutorial, setShowBridgeTutorial] = useState(false);
+    const [highlightRect, setHighlightRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
+    const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+
+    const calculatePositions = useCallback(() => {
+        const isMobile = window.innerWidth < 1024;
+        const elements = document.querySelectorAll('[data-nav-id="tools"]');
+        let toolsBtn: HTMLElement | null = null;
+        for (let i = 0; i < elements.length; i++) {
+            const el = elements[i] as HTMLElement;
+            const r = el.getBoundingClientRect();
+            if (r.width > 0 && r.height > 0) {
+                toolsBtn = el;
+                break;
+            }
+        }
+
+        if (!toolsBtn) return;
+
+        const rect = toolsBtn.getBoundingClientRect();
+        const padding = 6;
+        const targetRect = {
+            top: rect.top - padding,
+            left: rect.left - padding,
+            width: rect.width + padding * 2,
+            height: rect.height + padding * 2
+        };
+
+        setHighlightRect(targetRect);
+
+        const gap = 16;
+        let top = 0;
+        let left = 0;
+
+        if (isMobile) {
+            top = targetRect.top - 180 - gap;
+            left = window.innerWidth / 2 - 140;
+        } else {
+            top = targetRect.top + targetRect.height / 2 - 90;
+            left = targetRect.left + targetRect.width + gap;
+        }
+
+        top = Math.max(20, Math.min(top, window.innerHeight - 200));
+        left = Math.max(20, Math.min(left, window.innerWidth - 300));
+
+        setTooltipPosition({ top, left });
+    }, []);
+
+    useEffect(() => {
+        let timerId: any;
+        const checkBridgeConditions = () => {
+            const mainCompleted = localStorage.getItem('tutorial-completed') === 'true';
+            const toolsCompleted = localStorage.getItem('tools-tutorial-completed') === 'true';
+            const bridgeCompleted = localStorage.getItem('bridge-tutorial-completed') === 'true';
+            const currentLevel = getCurrentLevel();
+            const currentXpProgress = getXPProgress();
+            
+            // Dynamically update states so UI responds instantly
+            setLevel(currentLevel);
+            setXpProgress(currentXpProgress);
+            
+            if (mainCompleted && currentLevel >= 2 && !toolsCompleted && !bridgeCompleted) {
+                if (timerId) clearTimeout(timerId);
+                timerId = setTimeout(() => {
+                    setShowBridgeTutorial(true);
+                }, 800);
+            }
+        };
+
+        checkBridgeConditions();
+
+        window.addEventListener('tutorial:completed', checkBridgeConditions);
+        window.addEventListener('storage', checkBridgeConditions);
+        const interval = setInterval(checkBridgeConditions, 1000);
+
+        return () => {
+            if (timerId) clearTimeout(timerId);
+            window.removeEventListener('tutorial:completed', checkBridgeConditions);
+            window.removeEventListener('storage', checkBridgeConditions);
+            clearInterval(interval);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (showBridgeTutorial) {
+            calculatePositions();
+            window.addEventListener('resize', calculatePositions);
+            window.addEventListener('scroll', calculatePositions);
+
+            const intervals = [100, 200, 300, 400, 500, 600, 800, 1000, 1200, 1500];
+            const timers = intervals.map(delay => setTimeout(calculatePositions, delay));
+
+            // On mobile, automatically swipe the bottom dock to make the tools tab visible
+            const isMobile = window.innerWidth < 1024;
+            if (isMobile) {
+                const tabList = document.querySelector('.mobile-bottom-dock [role="tablist"]');
+                const toolsBtn = document.querySelector('.mobile-bottom-dock [data-nav-id="tools"]');
+                
+                if (tabList && toolsBtn) {
+                    setTimeout(() => {
+                        const containerRect = tabList.getBoundingClientRect();
+                        const btnRect = toolsBtn.getBoundingClientRect();
+                        const scrollOffset = btnRect.left - containerRect.left - (containerRect.width / 2) + (btnRect.width / 2);
+                        
+                        tabList.scrollBy({
+                            left: scrollOffset,
+                            behavior: 'smooth'
+                        });
+                    }, 500);
+                }
+            }
+
+            return () => {
+                window.removeEventListener('resize', calculatePositions);
+                window.removeEventListener('scroll', calculatePositions);
+                timers.forEach(clearTimeout);
+            };
+        }
+    }, [showBridgeTutorial, calculatePositions]);
+
     const localWeather = useWeather();
     const weather = propWeather !== undefined ? propWeather : localWeather.weather;
     const weatherLoading = propWeatherLoading !== undefined ? propWeatherLoading : localWeather.weatherLoading;
@@ -158,6 +279,18 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
     const hour = new Date().getHours();
     let greetingText = 'GOOD MORNING';
     let greetingStyle = 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800/60 dark:bg-blue-900/30 dark:text-blue-400';
+
+    // Listen for deterministic tutorial toggles
+    useEffect(() => {
+        const handleStatsToggle = (e: CustomEvent) => {
+            if (typeof e.detail?.expand === 'boolean') {
+                setIsStatsExpanded(e.detail.expand);
+            }
+        };
+        window.addEventListener('dashboard-stats-toggle', handleStatsToggle as EventListener);
+        return () => window.removeEventListener('dashboard-stats-toggle', handleStatsToggle as EventListener);
+    }, []);
+
     if (hour >= 12 && hour < 17) {
         greetingText = 'GOOD AFTERNOON';
         greetingStyle = 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800/60 dark:bg-amber-900/30 dark:text-amber-400';
@@ -182,7 +315,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                 {/* --- Top Section: Profile Card --- */}
                 <div className="flex flex-col relative w-full mb-0">
                     {/* Good Morning / User Profile Card (Study Tools UI/UX) */}
-                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] p-4 sm:p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 w-full overflow-hidden">
+                    <div data-expanded={isStatsExpanded} className="welcome-main-card bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[20px] sm:rounded-[24px] p-4 sm:p-5 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700 w-full overflow-hidden">
                         
                         {/* Header (Clickable for Dropdown) */}
                         <div 
@@ -369,7 +502,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                     transition={{ duration: 0.3, ease: 'easeInOut' }}
                                     className="relative z-10 overflow-hidden w-full flex flex-col"
                                 >
-                                    <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 pt-5 pb-4 px-1 -mx-1 border-t border-slate-100 dark:border-slate-700/50">
+                                    <div className="dashboard-expanded-stats w-full grid grid-cols-1 md:grid-cols-2 gap-4 pt-5 pb-4 px-1 -mx-1 border-t border-slate-100 dark:border-slate-700/50">
                                         {/* Card 1: Streak */}
                                         <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm rounded-[24px] p-5 lg:p-6 flex flex-col group transition-all duration-300 hover:shadow-md hover:border-orange-200 dark:hover:border-orange-800 w-full overflow-hidden cursor-default">
                                             <div className="flex flex-col h-full gap-4 w-full flex-grow">
@@ -891,7 +1024,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                     </div>
 
                     {/* RIGHT COLUMN (Desktop): Carousel Container — Dynamic Course Card */}
-                    <div className="w-full flex-1 flex flex-col items-center pb-2 min-w-0">
+                    <div className="courses-section-premium w-full flex-1 flex flex-col items-center pb-2 min-w-0">
 
                         <AnimatePresence mode="wait" custom={slideDirection}>
                             <motion.div
@@ -906,7 +1039,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                                 animate="animate"
                                 exit="exit"
                                 transition={{ duration: 0.25, ease: 'easeInOut' }}
-                                className="w-full max-w-4xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[24px] shadow-sm overflow-hidden flex flex-col group/card hover:shadow-md transition-shadow duration-300"
+                                className="courses-carousel-card w-full max-w-4xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[24px] shadow-sm overflow-hidden flex flex-col group/card hover:shadow-md transition-shadow duration-300"
                             >
                                 {/* Top Banner Image */}
                                 <div className="h-32 sm:h-36 w-full bg-slate-900 relative overflow-hidden">
@@ -1194,6 +1327,135 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {createPortal(
+                <AnimatePresence>
+                    {showBridgeTutorial && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.25 }}
+                            className="fixed inset-0 z-[99999] pointer-events-auto"
+                        >
+                            {/* Backdrop cutout mask */}
+                            <svg className="absolute inset-0 w-full h-full">
+                                <defs>
+                                    <mask id="bridge-tutorial-mask">
+                                        <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                                        {highlightRect && (
+                                            <motion.rect
+                                                initial={false}
+                                                animate={{ 
+                                                    x: highlightRect.left,
+                                                    y: highlightRect.top,
+                                                    width: highlightRect.width,
+                                                    height: highlightRect.height 
+                                                }}
+                                                transition={{ 
+                                                    type: 'spring',
+                                                    duration: 0.46,
+                                                    bounce: 0.04
+                                                }}
+                                                rx="12"
+                                                fill="black"
+                                            />
+                                        )}
+                                    </mask>
+                                </defs>
+                                <rect
+                                    x="0"
+                                    y="0"
+                                    width="100%"
+                                    height="100%"
+                                    fill={isDarkMode ? "rgba(15, 23, 42, 0.7)" : "rgba(15, 23, 42, 0.55)"}
+                                    mask="url(#bridge-tutorial-mask)"
+                                    style={{ backdropFilter: 'blur(2.5px)' }}
+                                />
+                            </svg>
+
+                            {/* Highlight border */}
+                            {highlightRect && (
+                                <motion.div
+                                    initial={false}
+                                    animate={{ 
+                                        opacity: 1,
+                                        top: highlightRect.top,
+                                        left: highlightRect.left,
+                                        width: highlightRect.width,
+                                        height: highlightRect.height 
+                                    }}
+                                    transition={{ 
+                                        type: 'spring',
+                                        duration: 0.46,
+                                        bounce: 0.04
+                                    }}
+                                    className="absolute border-2 border-blue-500/80 rounded-[12px] pointer-events-none"
+                                    style={{
+                                        boxShadow: isDarkMode 
+                                            ? '0 0 0 4px rgba(59, 130, 246, 0.1), 0 10px 30px rgba(0, 0, 0, 0.4)' 
+                                            : '0 0 0 4px rgba(59, 130, 246, 0.12), 0 10px 30px rgba(0, 0, 0, 0.08)'
+                                    }}
+                                />
+                            )}
+
+                            {/* Interactive overlay target clicker */}
+                            {highlightRect && (
+                                <div 
+                                    className="absolute cursor-pointer pointer-events-auto z-[99999]"
+                                    style={{
+                                        top: highlightRect.top,
+                                        left: highlightRect.left,
+                                        width: highlightRect.width,
+                                        height: highlightRect.height,
+                                    }}
+                                    onClick={() => {
+                                        const elements = document.querySelectorAll('[data-nav-id="tools"]');
+                                        for (let i = 0; i < elements.length; i++) {
+                                            const el = elements[i] as HTMLElement;
+                                            if (el.getBoundingClientRect().width > 0) {
+                                                el.click();
+                                                localStorage.setItem('bridge-tutorial-completed', 'true');
+                                                setShowBridgeTutorial(false);
+                                                break;
+                                            }
+                                        }
+                                    }}
+                                />
+                            )}
+
+                            {/* Tooltip Card */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 15, scale: 0.96 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -15, scale: 0.96 }}
+                                transition={{ type: 'spring', duration: 0.4, bounce: 0.05 }}
+                                className="absolute w-[280px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl rounded-[24px] overflow-hidden flex flex-col"
+                                style={{
+                                    top: tooltipPosition.top,
+                                    left: tooltipPosition.left
+                                }}
+                            >
+                                <div className="h-[4px] bg-blue-500 dark:bg-blue-400 w-full" />
+                                <div className="p-5 flex flex-col gap-3">
+                                    <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1">
+                                        <span>🎉 Level 2 Unlocked!</span>
+                                    </span>
+                                    <div>
+                                        <h3 className="text-[16px] font-bold text-slate-900 dark:text-slate-100 mb-1 mt-0 leading-tight">
+                                            Secondary Training Available
+                                        </h3>
+                                        <p className="text-[12.5px] font-medium text-slate-500 dark:text-slate-400 leading-[1.4] m-0">
+                                            You have unlocked the new <strong>Learning Tools</strong> section! Click the highlighted Tools menu to start your secondary training.
+                                        </p>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
         </div>
             </motion.div>
         </div>
@@ -1201,3 +1463,4 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
 };
 
 export default HomeContent;
+

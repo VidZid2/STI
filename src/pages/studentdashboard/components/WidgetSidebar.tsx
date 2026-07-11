@@ -140,6 +140,16 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
     setCalendarMonth,
     hasDeadlines }) => {
     const [activeTab, setActiveTab] = React.useState<'Overview' | 'Academics'>('Overview');
+    const [isDesktop, setIsDesktop] = React.useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : false);
+
+    React.useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const media = window.matchMedia('(min-width: 1024px)');
+        const listener = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+        media.addEventListener('change', listener);
+        return () => media.removeEventListener('change', listener);
+    }, []);
+
     const scrollRef = React.useRef<HTMLDivElement>(null);
     const [showScrollIndicator, setShowScrollIndicator] = React.useState(false);
     const [isRefreshing, setIsRefreshing] = React.useState(false);
@@ -301,8 +311,8 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
 
             {/* Mobile Nav Tools */}
             {!isInline && (
-                <div className="lg:hidden mx-3 mt-4 mb-2 p-1.5 flex flex-col justify-center rounded-[20px] bg-white dark:bg-slate-800/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)] border border-slate-200/80 dark:border-slate-700/80 overflow-hidden">
-                    <ToolbarExpandable className="!shadow-none !border-none !bg-transparent w-full flex justify-between" hideCloseButton isMobile={true} />
+                <div className="mobile-toolbar lg:hidden mx-3 mt-4 mb-2 p-1.5 flex flex-col justify-center rounded-[20px] bg-white dark:bg-slate-800/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.2)] border border-slate-200/80 dark:border-slate-700/80 overflow-hidden">
+                    <ToolbarExpandable className="!shadow-none !border-none !bg-transparent w-full flex justify-between" isMobile={true} />
                     <div className="px-2 pb-1 pt-2 border-t border-slate-100 dark:border-slate-700/50 mt-1">
                         {renderTabs('small')}
                     </div>
@@ -736,6 +746,8 @@ export const WidgetSidebar: React.FC<WidgetSidebarProps> = ({
             </div>
         );
     }
+
+    if (isDesktop) return null;
 
     return (
         <Drawer 
