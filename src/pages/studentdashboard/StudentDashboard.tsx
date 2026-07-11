@@ -448,6 +448,7 @@ const DashboardPage: React.FC = () => {
                                     quickViewSlot={<WidgetSidebar isInline={true} {...widgetSidebarProps} />}
                                     weather={weather}
                                     weatherLoading={weatherLoading}
+                                    showIntro={showIntro}
                                 />
                             </ErrorBoundary>
                         </motion.div>
@@ -579,12 +580,12 @@ const DashboardPage: React.FC = () => {
 
             <WelcomeModal isOpen={welcomeModalActive} onClose={closeWelcomeModal} />
             <DashboardTutorial
-                isOpen={tutorialActive}
+                isOpen={tutorialActive && !showIntro}
                 onClose={closeTutorial}
                 onToggleWidgetsSidebar={(open) => setWidgetsSidebarActive(open)}
             />
             <ToolsTutorial
-                isOpen={toolsTutorialActive}
+                isOpen={toolsTutorialActive && !showIntro}
                 onClose={() => {
                     setToolsTutorialActive(false);
                     localStorage.setItem('tools-tutorial-completed', 'true');

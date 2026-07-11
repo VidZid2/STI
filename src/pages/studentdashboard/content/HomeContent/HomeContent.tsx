@@ -16,9 +16,10 @@ interface HomeContentProps {
     quickViewSlot?: React.ReactNode;
     weather?: any;
     weatherLoading?: boolean;
+    showIntro?: boolean;
 }
 
-const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickViewSlot, weather: propWeather, weatherLoading: propWeatherLoading }) => {
+const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickViewSlot, weather: propWeather, weatherLoading: propWeatherLoading, showIntro }) => {
     const [isStatsExpanded, setIsStatsExpanded] = useState(false);
     const [isFullscreenImageOpen, setIsFullscreenImageOpen] = useState(false);
     const [currentCourseIndex, setCurrentCourseIndex] = useState(0);
@@ -95,7 +96,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
             setLevel(currentLevel);
             setXpProgress(currentXpProgress);
             
-            if (mainCompleted && currentLevel >= 2 && !toolsCompleted && !bridgeCompleted) {
+            if (mainCompleted && currentLevel >= 2 && !toolsCompleted && !bridgeCompleted && !showIntro) {
                 if (timerId) clearTimeout(timerId);
                 timerId = setTimeout(() => {
                     setShowBridgeTutorial(true);
@@ -115,7 +116,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onShowWelcomeModal, quickView
             window.removeEventListener('storage', checkBridgeConditions);
             clearInterval(interval);
         };
-    }, []);
+    }, [showIntro]);
 
     useEffect(() => {
         if (showBridgeTutorial) {
