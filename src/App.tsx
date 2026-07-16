@@ -8,18 +8,17 @@ import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/studentdashboard'
 import JoinGroupPage from './pages/studentdashboard/JoinGroupPage'
 import FocusModePage from './pages/studentdashboard/FocusModePage'
-import TeacherDashboard from './pages/teacherdashboard'
+import AdminRouteGuard from './components/guards/AdminRouteGuard'
 import AdminDashboard from './pages/admindashboard'
 import MaintenanceGuard from './components/MaintenanceGuard'
 import AdminLogin from './pages/admindashboard/AdminLogin'
-import AdminRouteGuard from './components/guards/AdminRouteGuard'
-import TeacherRouteGuard from './components/guards/TeacherRouteGuard'
+import TeacherDashboard from './pages/teacherdashboard'
 import { NotificationProvider } from './contexts/NotificationContext'
 import { QuickViewSettingsProvider } from './contexts/QuickViewSettingsContext'
 import { DisplaySettingsProvider, useDisplaySettings } from './contexts/DisplaySettingsContext'
 import { NotificationSettingsProvider } from './contexts/NotificationSettingsContext'
 import { SystemConfigProvider } from './contexts/SystemConfigContext'
-import { ErrorBoundary } from './components/shared'
+
 import { NotFoundPage } from '@/components/ui/404-page-not-found'
 
 
@@ -115,9 +114,9 @@ function AppContent() {
         <Route path="/" element={<HomePage />} />
         <Route path="/student-login" element={<MaintenanceGuard><LoginPage /></MaintenanceGuard>} />
         <Route path="/dashboard" element={<MaintenanceGuard><NotificationProvider><QuickViewSettingsProvider><DashboardPage /></QuickViewSettingsProvider></NotificationProvider></MaintenanceGuard>} />
-        <Route path="/teacher-dashboard" element={<TeacherRouteGuard><ErrorBoundary name="TeacherDashboard"><MaintenanceGuard><TeacherDashboard /></MaintenanceGuard></ErrorBoundary></TeacherRouteGuard>} />
         <Route path="/admin-dashboard" element={<AdminRouteGuard><AdminDashboard /></AdminRouteGuard>} />
         <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
         <Route path="/join/:inviteCode" element={<MaintenanceGuard><JoinGroupPage /></MaintenanceGuard>} />
         <Route path="/focus" element={<MaintenanceGuard><FocusModePage /></MaintenanceGuard>} />
         <Route path="/focus/:groupId" element={<MaintenanceGuard><FocusModePage /></MaintenanceGuard>} />

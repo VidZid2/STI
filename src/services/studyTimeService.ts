@@ -344,8 +344,23 @@ export const addStudyTime = (minutes: number, courseId?: string): void => {
     saveStudyTimeData(data);
     updateStreak();
     if (minutes > 0) {
-        addXP(minutes * 5);
+        let multiplier = 1.0;
+        const level = getCurrentLevel();
+        if (level >= 18) multiplier = 1.25;
+        else if (level >= 11) multiplier = 1.20;
+        else if (level >= 9) multiplier = 1.15;
+        else if (level >= 6) multiplier = 1.10;
+        
+        addXP(Math.round((minutes * 5) * multiplier));
     }
+};
+
+export const getStreakMultiplier = (level: number): number => {
+    if (level >= 18) return 1.25;
+    if (level >= 11) return 1.20;
+    if (level >= 9) return 1.15;
+    if (level >= 6) return 1.10;
+    return 1.0;
 };
 
 // Update streak based on activity - tracks daily logins and awards XP
@@ -392,7 +407,15 @@ export const updateStreak = (): void => {
 
     // Award XP based on streak tier (daily login bonus)
     const tier = getStreakTier(data.currentStreak);
-    addXP(tier.xpBonus);
+    
+    let streakMultiplier = 1.0;
+    const level = getCurrentLevel();
+    if (level >= 18) streakMultiplier = 1.25;
+    else if (level >= 11) streakMultiplier = 1.20;
+    else if (level >= 9) streakMultiplier = 1.15;
+    // Note: Level 6 (1.10x) only applies to study sessions according to rewards
+
+    addXP(Math.round(tier.xpBonus * streakMultiplier));
 };
 
 // Get streak tier info based on current streak

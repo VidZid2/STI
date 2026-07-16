@@ -313,7 +313,7 @@ export default function UserProfileDropdown() {
                             max={100}
                             min={0}
                             value={xpProgress}
-                            gaugePrimaryColor={level >= 20 ? '#eab308' : '#3b82f6'}
+                            gaugePrimaryColor={level >= 15 ? '#eab308' : level >= 10 ? '#cbd5e1' : '#3b82f6'}
                             gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
                             className="w-8 h-8 sm:w-10 sm:h-10 shrink-0"
                         >
@@ -525,7 +525,7 @@ export default function UserProfileDropdown() {
                                                         max={100}
                                                         min={0}
                                                         value={xpProgress}
-                                                        gaugePrimaryColor={level >= 20 ? '#eab308' : '#3b82f6'}
+                                                        gaugePrimaryColor={level >= 15 ? '#eab308' : level >= 10 ? '#cbd5e1' : '#3b82f6'}
                                                         gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
                                                         className="!w-20 !h-20 sm:!w-28 sm:!h-28 md:!w-32 md:!h-32"
                                                     >

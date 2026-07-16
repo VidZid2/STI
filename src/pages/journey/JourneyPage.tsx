@@ -24,10 +24,7 @@ import {
     Star, 
     Gem,
     User,
-    Users,
-    Layers,
-    MessageSquare,
-    Clock,
+
     Flame,
 // @ts-ignore
     Download,
@@ -90,24 +87,6 @@ const levelTiers = [
                 ), 
                 icon: User,
                 type: 'cosmetic' as const
-            }
-        ],
-        gradient: 'from-zinc-500 to-zinc-650 dark:from-zinc-600 dark:to-zinc-800'
-    },
-    {
-        name: 'Curious Explorer',
-        levelRange: 'Level 2',
-        description: 'Building momentum! Unlock calendar scheduling and announcements.',
-        icon: Sparkles,
-        rewards: [
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Productivity Tools:</strong> Unlocks essential tools like the <strong className="text-blue-600 dark:text-blue-400 font-bold">Grammar Checker</strong>, <strong className="text-blue-600 dark:text-blue-400 font-bold">Text Summarizer</strong>, and <strong className="text-blue-600 dark:text-blue-400 font-bold">Word Counter</strong> to assist your studies.
-                    </span>
-                ), 
-                icon: Sparkles,
-                type: 'feature' as const
             },
             { 
                 text: (
@@ -126,43 +105,7 @@ const levelTiers = [
                 ), 
                 icon: Bell,
                 type: 'social' as const
-            }
-        ],
-        gradient: 'from-zinc-550 to-zinc-700 dark:from-zinc-650 dark:to-zinc-850'
-    },
-    {
-        name: 'Focus Apprentice',
-        levelRange: 'Level 3',
-        description: 'Mastering focus and concentration. Unlock the Pomodoro Study Timer.',
-        icon: BookOpen,
-        rewards: [
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Focus Mode Timer:</strong> Use the full-screen Pomodoro tool to structure study intervals.
-                    </span>
-                ), 
-                icon: Clock,
-                type: 'feature' as const
             },
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Ambient Alarms:</strong> Custom notification sounds and focus soundscapes.
-                    </span>
-                ), 
-                icon: Sparkles,
-                type: 'cosmetic' as const
-            }
-        ],
-        gradient: 'from-teal-500 to-emerald-600 dark:from-teal-600 dark:to-emerald-800'
-    },
-    {
-        name: 'Consistent Learner',
-        levelRange: 'Level 4',
-        description: 'Consistency is key. Unlock activity tracking and grade predictions.',
-        icon: Compass,
-        rewards: [
             { 
                 text: (
                     <span>
@@ -171,7 +114,42 @@ const levelTiers = [
                 ), 
                 icon: TrendingUp,
                 type: 'feature' as const
-            },
+            }
+        ],
+        gradient: 'from-zinc-500 to-zinc-650 dark:from-zinc-600 dark:to-zinc-800'
+    },
+    {
+        name: 'Curious Explorer',
+        levelRange: 'Level 2',
+        description: 'Building momentum! Unlock powerful productivity tools.',
+        icon: Sparkles,
+        rewards: [
+            { 
+                text: (
+                    <span>
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Productivity Tools:</strong> Unlocks essential tools like the <strong className="text-blue-600 dark:text-blue-400 font-bold">Grammar Checker</strong>, <strong className="text-blue-600 dark:text-blue-400 font-bold">Text Summarizer</strong>, and <strong className="text-blue-600 dark:text-blue-400 font-bold">Word Counter</strong> to assist your studies.
+                    </span>
+                ), 
+                icon: Sparkles,
+                type: 'feature' as const
+            }
+        ],
+        gradient: 'from-zinc-550 to-zinc-700 dark:from-zinc-650 dark:to-zinc-850'
+    },
+    {
+        name: 'Focus Apprentice',
+        levelRange: 'Level 3',
+        description: 'Mastering focus and concentration.',
+        icon: BookOpen,
+        rewards: [],
+        gradient: 'from-teal-500 to-emerald-600 dark:from-teal-600 dark:to-emerald-800'
+    },
+    {
+        name: 'Consistent Learner',
+        levelRange: 'Level 4',
+        description: 'Consistency is key. Unlock grade predictions.',
+        icon: Compass,
+        rewards: [
             { 
                 text: (
                     <span>
@@ -187,26 +165,17 @@ const levelTiers = [
     {
         name: 'Collaborative Student',
         levelRange: 'Level 5',
-        description: 'Learning is better together. Unlock peer study groups.',
+        description: 'Set your sights higher. Unlock the Goals page to track academic achievements.',
         icon: TrendingUp,
         rewards: [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Study Groups Lobby:</strong> Join virtual group rooms, coordinate study meets, and view member progress.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Goals:</strong> Define and track your academic objectives and milestones.
                     </span>
                 ), 
-                icon: Users,
-                type: 'social' as const
-            },
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Peer Chat Room:</strong> Talk with classmates and study partners in dedicated group chats.
-                    </span>
-                ), 
-                icon: MessageSquare,
-                type: 'social' as const
+                icon: Target,
+                type: 'feature' as const
             }
         ],
         gradient: 'from-cyan-500 to-blue-600 dark:from-cyan-650 dark:to-blue-800'
@@ -238,7 +207,7 @@ const levelTiers = [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Study Insights Widget:</strong> Review detailed analytics and charts of your study distribution.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Analytics Dashboard:</strong> Review detailed analytics and charts of your study distribution.
                     </span>
                 ), 
                 icon: Brain,
@@ -295,22 +264,13 @@ const levelTiers = [
     {
         name: 'Advanced Pathfinder',
         levelRange: 'Level 10',
-        description: 'Halfway to the peak! Unlocks dashboard customizations.',
+        description: 'Halfway to the peak! Unlocks a prestigious cosmetic upgrade.',
         icon: Bookmark,
         rewards: [
             { 
                 text: (
                     <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Dashboard Layout Editor:</strong> Rearrange, hide, or resize sidebar widgets to fit your needs.
-                    </span>
-                ), 
-                icon: Layers,
-                type: 'feature' as const
-            },
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Silver Level Ring:</strong> Unlocks the metallic silver progress ring around your profile avatar.
+                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Silver Level Ring:</strong> Unlocks the metallic silver progress ring around your profile avatar.
                     </span>
                 ), 
                 icon: Gem,
@@ -342,26 +302,7 @@ const levelTiers = [
         levelRange: 'Level 12',
         description: 'Approaching elite eLMS status. Unlocks advanced study timer styles.',
         icon: Trophy,
-        rewards: [
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Group Focus sessions:</strong> Join shared focus rooms with a synchronized study clock.
-                    </span>
-                ), 
-                icon: Users,
-                type: 'social' as const
-            },
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Compact Mode View:</strong> A tighter, dense dashboard layout option in your settings.
-                    </span>
-                ), 
-                icon: Layers,
-                type: 'feature' as const
-            }
-        ],
+        rewards: [],
         gradient: 'from-fuchsia-555 to-pink-700 dark:from-fuchsia-650 dark:to-pink-900'
     },
     {
@@ -369,17 +310,7 @@ const levelTiers = [
         levelRange: 'Level 13',
         description: 'Your efforts are making waves. Keep pushing toward the summit.',
         icon: Target,
-        rewards: [
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-100 font-bold">Premium Soundscapes:</strong> Unlocks exclusive white noise tracks (Rain, Forest, Cafe).
-                    </span>
-                ), 
-                icon: Sparkles,
-                type: 'cosmetic' as const
-            }
-        ],
+        rewards: [],
         gradient: 'from-pink-500 to-rose-600 dark:from-pink-600 dark:to-rose-800'
     },
     {
@@ -387,17 +318,7 @@ const levelTiers = [
         levelRange: 'Level 14',
         description: 'Major academic milestone. Unlock animated avatar cards.',
         icon: Zap,
-        rewards: [
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Animated Profile Border:</strong> A glowing neon animated border for your profile display card.
-                    </span>
-                ), 
-                icon: Zap,
-                type: 'cosmetic' as const
-            }
-        ],
+        rewards: [],
         gradient: 'from-pink-550 to-rose-655 dark:from-pink-655 dark:to-rose-850'
     },
     {
@@ -414,15 +335,6 @@ const levelTiers = [
                 ), 
                 icon: Gem,
                 type: 'cosmetic' as const
-            },
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Theme Accent Selection:</strong> Customize the dashboard primary color in display settings.
-                    </span>
-                ), 
-                icon: Image,
-                type: 'feature' as const
             }
         ],
         gradient: 'from-sky-500 to-indigo-650 dark:from-sky-600 dark:to-indigo-850'
@@ -432,17 +344,7 @@ const levelTiers = [
         levelRange: 'Level 16',
         description: 'Showing stellar leadership. Unlock peer tutor tags.',
         icon: Shield,
-        rewards: [
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Peer tutor badge:</strong> Mark yourself as available to help other students on the peer list.
-                    </span>
-                ), 
-                icon: User,
-                type: 'social' as const
-            }
-        ],
+        rewards: [],
         gradient: 'from-sky-555 to-indigo-700 dark:from-sky-655 dark:to-indigo-900'
     },
     {
@@ -450,17 +352,7 @@ const levelTiers = [
         levelRange: 'Level 17',
         description: 'Deep conceptual understanding. Unlock group creation.',
         icon: Compass,
-        rewards: [
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Create Custom Groups:</strong> Invite peers by sharing dynamic join codes.
-                    </span>
-                ), 
-                icon: Users,
-                type: 'social' as const
-            }
-        ],
+        rewards: [],
         gradient: 'from-green-500 to-teal-600 dark:from-green-600 dark:to-teal-800'
     },
     {
@@ -486,17 +378,7 @@ const levelTiers = [
         levelRange: 'Level 19',
         description: 'On the threshold of absolute mastery. Prepare yourself for the legendary status.',
         icon: Medal,
-        rewards: [
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Premium Theme Pack:</strong> Unlock dark mode theme variations (Slate, Charcoal, Deep Ocean).
-                    </span>
-                ), 
-                icon: Image,
-                type: 'cosmetic' as const
-            }
-        ],
+        rewards: [],
         gradient: 'from-amber-500 to-orange-600 dark:from-amber-600 dark:to-orange-800'
     },
     {
@@ -513,15 +395,6 @@ const levelTiers = [
                 ), 
                 icon: Crown,
                 type: 'cosmetic' as const
-            },
-            { 
-                text: (
-                    <span>
-                        <strong className="text-zinc-900 dark:text-zinc-105 font-bold">Peer Mentor Badge:</strong> Marks you as a mentor in study groups so peers can seek guidance.
-                    </span>
-                ), 
-                icon: Shield,
-                type: 'social' as const
             }
         ],
         gradient: 'from-rose-500 to-pink-700 dark:from-rose-600 dark:to-pink-900'
@@ -736,55 +609,57 @@ const LevelJourneyModal: React.FC<LevelJourneyModalProps> = ({ isOpen, onClose, 
                     </motion.div>
 
                     {/* Rewards list */}
-                    <motion.div variants={itemVariants} className="flex flex-col gap-3.5 mt-2">
-                        <div className="flex flex-col items-center gap-2 mb-1">
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30 flex items-center justify-center shadow-[0_1.5px_4px_rgba(59,130,246,0.08)] shrink-0">
-                                <Award className="w-4.5 h-4.5" />
+                    {tier.rewards.length > 0 && (
+                        <motion.div variants={itemVariants} className="flex flex-col gap-3.5 mt-2">
+                            <div className="flex flex-col items-center gap-2 mb-1">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/30 flex items-center justify-center shadow-[0_1.5px_4px_rgba(59,130,246,0.08)] shrink-0">
+                                    <Award className="w-4.5 h-4.5" />
+                                </div>
+                                <h4 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest text-center">Unlocked Rewards</h4>
                             </div>
-                            <h4 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest text-center">Unlocked Rewards</h4>
-                        </div>
-                        <div className="flex flex-col gap-2.5">
-                            {tier.rewards.map((reward, rIdx) => {
-                                const RewardIcon = reward.icon;
-                                return (
-                                    <motion.div 
-                                        variants={itemVariants}
-                                        key={rIdx} 
-                                        className={`relative flex items-center gap-3.5 p-4 rounded-[16px] bg-white dark:bg-slate-800 border transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default w-full ${
-                                            isReached 
-                                                ? "border-blue-500 dark:border-blue-400 shadow-[0_2px_12px_rgba(59,130,246,0.06)]" 
-                                                : "border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
-                                        }`}
-                                    >
-                                        {/* Unlocked / Locked Badge in Top Right */}
-                                        {isReached ? (
-                                            <span className="absolute top-2.5 right-2.5 px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 rounded-md border border-blue-100 dark:border-blue-900/30">
-                                                Unlocked!
-                                            </span>
-                                        ) : (
-                                            <span className="absolute top-2.5 right-2.5 px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 dark:bg-slate-800/80 dark:text-slate-450 rounded-md flex items-center gap-1 border border-slate-200/50 dark:border-slate-700/30">
-                                                <Lock className="w-2.5 h-2.5" /> Locked
-                                            </span>
-                                        )}
+                            <div className="flex flex-col gap-2.5">
+                                {tier.rewards.map((reward, rIdx) => {
+                                    const RewardIcon = reward.icon;
+                                    return (
+                                        <motion.div 
+                                            variants={itemVariants}
+                                            key={rIdx} 
+                                            className={`relative flex items-center gap-3.5 p-4 rounded-[16px] bg-white dark:bg-slate-800 border transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default w-full ${
+                                                isReached 
+                                                    ? "border-blue-500 dark:border-blue-400 shadow-[0_2px_12px_rgba(59,130,246,0.06)]" 
+                                                    : "border-slate-200 dark:border-slate-700/50 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]"
+                                            }`}
+                                        >
+                                            {/* Unlocked / Locked Badge in Top Right */}
+                                            {isReached ? (
+                                                <span className="absolute top-2.5 right-2.5 px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 rounded-md border border-blue-100 dark:border-blue-900/30">
+                                                    Unlocked!
+                                                </span>
+                                            ) : (
+                                                <span className="absolute top-2.5 right-2.5 px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 dark:bg-slate-800/80 dark:text-slate-450 rounded-md flex items-center gap-1 border border-slate-200/50 dark:border-slate-700/30">
+                                                    <Lock className="w-2.5 h-2.5" /> Locked
+                                                </span>
+                                            )}
 
-                                        <div className={`w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0 shadow-sm border ${
-                                            isReached 
-                                                ? "bg-blue-50 text-blue-600 border-blue-100/80 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900/30" 
-                                                : "bg-slate-50 text-slate-400 border-slate-200 dark:bg-slate-800/40 dark:text-slate-500 dark:border-slate-700"
-                                        }`}>
-                                            <RewardIcon className="w-4.5 h-4.5" />
-                                        </div>
-                                        
-                                        <div className="flex-grow min-w-0 pr-16">
-                                            <p className="text-[12.5px] text-slate-700 dark:text-slate-350 leading-snug font-semibold">
-                                                {reward.text}
-                                            </p>
-                                        </div>
-                                    </motion.div>
-                                );
-                            })}
-                        </div>
-                    </motion.div>
+                                            <div className={`w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0 shadow-sm border ${
+                                                isReached 
+                                                    ? "bg-blue-50 text-blue-600 border-blue-100/80 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900/30" 
+                                                    : "bg-slate-50 text-slate-400 border-slate-200 dark:bg-slate-800/40 dark:text-slate-500 dark:border-slate-700"
+                                            }`}>
+                                                <RewardIcon className="w-4.5 h-4.5" />
+                                            </div>
+                                            
+                                            <div className="flex-grow min-w-0 pr-16">
+                                                <p className="text-[12.5px] text-slate-700 dark:text-slate-350 leading-snug font-semibold">
+                                                    {reward.text}
+                                                </p>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
+                        </motion.div>
+                    )}
                 </motion.div>
             </AnimatePresence>
         );

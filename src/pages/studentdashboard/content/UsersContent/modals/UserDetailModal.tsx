@@ -164,7 +164,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                                             max={100}
                                             min={0}
                                             value={user.email === 'halili.andrei@meycauayan.sti.edu.ph' ? 75 : 0}
-                                            gaugePrimaryColor={(user.level || 1) >= 20 ? '#eab308' : '#3b82f6'}
+                                            gaugePrimaryColor={(user.level || 1) >= 15 ? '#eab308' : (user.level || 1) >= 10 ? '#cbd5e1' : '#3b82f6'}
                                             gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
                                             className="w-[48px] h-[48px] sm:w-[52px] sm:h-[52px]"
                                         >

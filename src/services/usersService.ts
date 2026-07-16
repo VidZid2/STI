@@ -610,6 +610,35 @@ export const getTeacherCourses = async (teacherName: string): Promise<TeacherCou
     }
 };
 
+/** Get the active section codes available to teachers. */
+export const getAvailableSections = async (): Promise<string[]> => {
+    const fallbackSections = DEMO_USERS
+        .filter((user) => user.role === 'student' && Boolean(user.section))
+        .map((user) => user.section!.trim().toUpperCase());
+
+    if (!isSupabaseConfigured() || !supabase) {
+        return [...new Set(fallbackSections)].sort();
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('students')
+            .select('section')
+            .not('section', 'is', null)
+            .limit(500);
+
+        if (error || !data) return [...new Set(fallbackSections)].sort();
+
+        const databaseSections = data
+            .map((row) => (typeof row.section === 'string' ? row.section.trim().toUpperCase() : ''))
+            .filter(Boolean);
+
+        return [...new Set([...databaseSections, ...fallbackSections])].sort();
+    } catch {
+        return [...new Set(fallbackSections)].sort();
+    }
+};
+
 /**
  * Get office hours for a teacher
  */

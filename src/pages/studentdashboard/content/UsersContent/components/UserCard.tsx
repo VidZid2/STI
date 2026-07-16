@@ -204,7 +204,7 @@ const UserCard: React.FC<{
                             max={100}
                             min={0}
                             value={user.is_online ? 100 : 85}
-                            gaugePrimaryColor={(user.level || 1) >= 20 ? '#eab308' : '#3b82f6'}
+                            gaugePrimaryColor={(user.level || 1) >= 15 ? '#eab308' : (user.level || 1) >= 10 ? '#cbd5e1' : '#3b82f6'}
                             gaugeSecondaryColor="rgba(219, 234, 254, 0.6)"
                             className="w-16 h-16 shrink-0 relative z-10"
                         >

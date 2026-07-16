@@ -226,7 +226,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
                         onMobilePathsTap={handleMobilePathsTap}
                     />
 
-                    <NavItemButton id="goals" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Goals />} label="Goals" description="Track progress" />
+                    <NavItemButton id="goals" activeView={activeView} setActiveView={setActiveView} icon={<Icons.Goals />} label="Goals" description="Track progress" isLocked={level < 5} />
 
                     <hr className="hidden lg:block border-t-2 border-slate-200/80 dark:border-slate-800/60 mx-2 mt-3 mb-1" />
                     <div className="hidden lg:block text-[11px] font-semibold text-slate-500/70 dark:text-slate-400/70 uppercase tracking-wider px-3 mb-1 mt-2">Collaboration</div>
@@ -297,7 +297,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = React.memo(({
                             { icon: Icons.Tools, label: 'Explore Paths', onClick: () => { setActiveDockMenu(null); setIsMobilePathsOpen(true); } }
                         ]} /> 
                     },
-                    { id: 'goals', label: 'Goals', icon: <Icons.Goals />, content: null },
+                    { id: 'goals', label: 'Goals', icon: <Icons.Goals />, content: null, isLocked: level < 5 },
                     { id: 'groups', label: 'Workspaces', icon: <Icons.Groups />, content: null },
                     { id: 'users', label: 'Community', icon: <Icons.Users />, content: null },
                     { id: 'tools', label: 'Tools', icon: <Icons.Tools />, content: null, isLocked: level < 2 },

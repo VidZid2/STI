@@ -30,7 +30,6 @@ import { AnimatedCircularProgressBar } from '../../../../components/ui/animated-
 import { FilterTabs } from './components/FilterTabs';
 import { UserCard, UserListItem } from './components/UserCard';
 import { UserCardSkeleton } from './components/UsersSkeleton';
-import { TeacherSpotlight } from './components/TeacherSpotlight';
 import { EmptyState } from '../CourseViewPage/components/SharedComponents';
 import UserDetailModal from './modals/UserDetailModal';
 import { Carousel, CarouselContent, CarouselItem, useCarousel } from "@/components/ui/carousel";

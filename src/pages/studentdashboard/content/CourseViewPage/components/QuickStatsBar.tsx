@@ -10,6 +10,7 @@ import { Area } from "@/components/charts/area";
 import { Grid } from "@/components/charts/grid";
 import { ChartTooltip } from "@/components/charts/tooltip";
 import { XAxis } from "@/components/charts/x-axis";
+import { getCurrentLevel } from '../../../../../services/studyTimeService';
 
 interface CourseStats {
     grade: number;
@@ -46,6 +47,8 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({
     void _courseId;
     void _progress;
     const [isExpanded, setIsExpanded] = useState(true);
+    const level = getCurrentLevel();
+    const isLocked = level < 7;
 
     const stats = propStats ?? defaultStats;
     const gradeTrendData = propGradeTrendData ?? [];
@@ -159,6 +162,46 @@ export const QuickStatsBar: React.FC<QuickStatsBarProps> = ({
         : daysLeft !== undefined && daysLeft <= 3
         ? 'border-2 border-amber-400 dark:border-amber-500'
         : 'border border-slate-200 dark:border-slate-700';
+
+    // Locked state: show grayed-out locked UI
+    if (isLocked) {
+        return (
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 24, delay: 0.1 }}
+                className="mb-4 sm:mb-6 relative overflow-hidden bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 shadow-sm rounded-[20px] sm:rounded-[24px] p-3.5 sm:p-5 lg:p-6 flex items-center gap-3 sm:gap-4 select-none cursor-not-allowed"
+            >
+                {/* Grayed Icon */}
+                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-[12px] sm:rounded-[14px] bg-slate-200 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600/50 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                        <path d="M3 3v18h18" />
+                        <path d="M7 16l4-4 4 4 5-6" />
+                    </svg>
+                    {/* Lock badge */}
+                    <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] rounded-full border-2 border-white dark:border-slate-800 shadow-sm bg-slate-400 dark:bg-slate-600 text-white">
+                        <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                        </svg>
+                    </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                    <h2 className="text-sm sm:text-base font-bold tracking-tight leading-none text-slate-400 dark:text-slate-500">
+                        Analytics Dashboard
+                    </h2>
+                    <p className="text-[10px] sm:text-[11px] font-medium text-slate-400 dark:text-slate-500 leading-none mt-0.5">
+                        Grades, attendance & upcoming deadlines
+                    </p>
+                </div>
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 text-[10px] sm:text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex-shrink-0">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                    </svg>
+                    Unlock at Level 7
+                </span>
+            </motion.div>
+        );
+    }
 
     return (
         <motion.div

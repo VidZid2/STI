@@ -173,6 +173,55 @@ export const getCurrentUser = (): User | null => {
     return null;
 };
 
+/**
+ * Restore the cached profile from an existing Supabase auth session.
+ * This keeps a valid login usable after a tab refresh or stale session cache.
+ */
+export const recoverCurrentUser = async (forceRefresh = false): Promise<User | null> => {
+    const cachedUser = getCurrentUser();
+    if (cachedUser && !forceRefresh) return cachedUser;
+    if (!isSupabaseConfigured() || !supabase) return null;
+
+    try {
+        // Read the browser-persisted session first. This remains available after
+        // refreshes and avoids rejecting a valid login when a profile cache is stale.
+        const { data: { session } } = await supabase.auth.getSession();
+        let authUser = session?.user ?? null;
+
+        if (!authUser) {
+            const { data, error: authError } = await supabase.auth.getUser();
+            if (authError || !data.user) return null;
+            authUser = data.user;
+        }
+
+        const profileFields = 'id, student_id, email, full_name, first_name, last_name, role, campus, program, year_level, section, profile_image';
+        let { data: profile } = await supabase
+            .from('users')
+            .select(profileFields)
+            .eq('id', authUser.id)
+            .maybeSingle();
+
+        if (!profile && authUser.email) {
+            const { data: profileByEmail } = await supabase
+                .from('users')
+                .select(profileFields)
+                .ilike('email', authUser.email.trim())
+                .maybeSingle();
+            profile = profileByEmail;
+        }
+
+        if (!profile) return null;
+
+        const restoredUser = profile as User;
+        const encryptedUser = CryptoJS.AES.encrypt(JSON.stringify(restoredUser), ENCRYPTION_KEY).toString();
+        sessionStorage.setItem(USER_STORAGE_KEY, encryptedUser);
+        return restoredUser;
+    } catch (error) {
+        console.warn('[AuthService] Could not recover the current user profile.', error);
+        return null;
+    }
+};
+
 export const isLoggedIn = (): boolean => getCurrentUser() !== null;
 
 /**
@@ -216,6 +265,7 @@ export const removeSavedAccount = (email: string): void => {
 export default {
     loginUser,
     getCurrentUser,
+    recoverCurrentUser,
     isLoggedIn,
     logoutUser,
     getSavedAccounts,

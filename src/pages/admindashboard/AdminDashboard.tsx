@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, Clock, RefreshCw, LayoutDashboard, Users, Megaphone, ShieldAlert, BarChart2, GraduationCap } from 'lucide-react';
-import { TabOverview, TabUsers, TabBroadcast, TabIntegrity, TabAnalytics, TabTeacherPerformance } from './components';
+import { Menu, X, Clock, RefreshCw, LayoutDashboard, Users, Megaphone, ShieldAlert, BarChart2 } from 'lucide-react';
+import { TabOverview, TabUsers, TabBroadcast, TabIntegrity, TabAnalytics } from './components';
 import { AnimatedThemeToggler } from '../../components/ui/animated-theme-toggler';
 import { useAdminState } from './useAdminState';
 import { ToastProvider } from './contexts/ToastContext';
 
-type Tab = 'overview' | 'users' | 'broadcast' | 'integrity' | 'analytics' | 'teachers';
+type Tab = 'overview' | 'users' | 'broadcast' | 'integrity' | 'analytics';
 
 const TAB_CONFIG: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: 'overview',   label: 'Overview',   icon: LayoutDashboard },
@@ -14,7 +14,6 @@ const TAB_CONFIG: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: 'broadcast',  label: 'Broadcast',  icon: Megaphone       },
     { id: 'integrity',  label: 'Integrity',  icon: ShieldAlert     },
     { id: 'analytics',  label: 'Analytics',  icon: BarChart2       },
-    { id: 'teachers',   label: 'Teachers',   icon: GraduationCap   },
 ];
 
 const AdminDashboard: React.FC = () => {
@@ -180,9 +179,6 @@ const AdminDashboard: React.FC = () => {
                         )}
                         {activeTab === 'analytics' && (
                             <TabAnalytics key="analytics" />
-                        )}
-                        {activeTab === 'teachers' && (
-                            <TabTeacherPerformance key="teachers" />
                         )}
                     </AnimatePresence>
                 </main>

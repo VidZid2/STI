@@ -1,0 +1,250 @@
+.motion-select {
+  position: relative;
+  width: 100%;
+}
+
+.motion-select--open {
+  z-index: 40;
+}
+
+.motion-select__trigger {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  border: 1px solid #cfd6e1;
+  background: #fff;
+  color: #344054;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: left;
+  outline: 0;
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.motion-select__trigger:hover {
+  border-color: #aeb9c8;
+}
+
+.motion-select__trigger:focus-visible {
+  border-color: #5f83e5;
+  box-shadow: 0 0 0 3px rgba(63, 110, 220, 0.12);
+}
+
+.motion-select__trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.motion-select__input-trigger {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #cfd6e1;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.motion-select__input-trigger:hover {
+  border-color: #aeb9c8;
+}
+
+.motion-select__input-trigger:focus-within {
+  border-color: #5f83e5;
+  box-shadow: 0 0 0 3px rgba(63, 110, 220, 0.12);
+}
+
+.motion-select__input-trigger input {
+  min-width: 0;
+  min-height: inherit;
+  flex: 1;
+  padding: 0 14px;
+  border: 0;
+  background: transparent;
+  color: #344054;
+  font: inherit;
+  font-size: 14px;
+  outline: 0;
+}
+
+.motion-select__input-trigger > button {
+  min-height: inherit;
+  display: grid;
+  flex: 0 0 42px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.motion-select__value-wrap {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.motion-select__value {
+  overflow: hidden;
+  color: #344054;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.motion-select__value--placeholder {
+  color: #98a2b3;
+}
+
+.motion-select__chevron {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  flex: 0 0 18px;
+  place-items: center;
+  color: #8a96a6;
+}
+
+.motion-select__chevron svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 2;
+}
+
+.motion-select__content {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 50;
+  border: 1px solid #d5dce7;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(16, 24, 40, 0.14), 0 3px 8px rgba(16, 24, 40, 0.08);
+}
+
+.motion-select__content--bottom {
+  top: 100%;
+}
+
+.motion-select__content--top {
+  bottom: 100%;
+}
+
+.motion-select__list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 5px;
+  list-style: none;
+}
+
+.motion-select__item-shell {
+  margin: 0;
+  padding: 0;
+}
+
+.motion-select__item {
+  width: 100%;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #667085;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: left;
+  outline: 0;
+  cursor: pointer;
+  transition: color 140ms ease, background-color 140ms ease;
+}
+
+.motion-select__item:hover,
+.motion-select__item:focus-visible {
+  background: #f3f6fb;
+  color: #243044;
+}
+
+.motion-select__item--selected {
+  background: #eef3ff;
+  color: #315fcb;
+}
+
+.motion-select__item svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  stroke-width: 2.25;
+}
+
+.motion-select__item:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ncp-motion-select--visibility .motion-select__trigger {
+  min-height: 43px;
+  color: #626975;
+  font-weight: 400;
+}
+
+.ncp-motion-select--visibility {
+  margin-top: 6px;
+}
+
+.ncp-motion-select--visibility .motion-select__value-wrap > svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  color: #9aa3b1;
+  fill: #9aa3b1;
+  stroke: #9aa3b1;
+}
+
+.ncp-motion-select--visibility .motion-select__value-wrap > svg circle {
+  fill: #fff;
+  stroke: #fff;
+}
+
+.ncp-motion-select--purchase .motion-select__trigger {
+  color: #626a76;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+@media (min-width: 1200px) and (max-height: 820px) {
+  .ncp-motion-select--visibility {
+    margin-top: 5px;
+  }
+
+  .ncp-motion-select--visibility .motion-select__trigger {
+    min-height: 38px;
+  }
+
+  .ncp-motion-select--purchase .motion-select__trigger {
+    min-height: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-select__trigger,
+  .motion-select__item {
+    transition: none;
+  }
+}

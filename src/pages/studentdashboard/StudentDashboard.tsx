@@ -32,7 +32,7 @@ import { useNotifications } from '../../contexts/NotificationContext';
 import { useQuickViewSettings } from '../../contexts/QuickViewSettingsContext';
 
 // Service imports
-import { getCourseProgressData, formatMinutesToHours } from '../../services/studyTimeService';
+import { getCourseProgressData, formatMinutesToHours, getCurrentLevel } from '../../services/studyTimeService';
 import { formatDaysUntil, getDeadlineTypeColor, getDaysUntil } from '../../services/deadlinesService';
 import { formatRelativeTime } from '../../services/activityService';
 
@@ -605,8 +605,8 @@ const DashboardPage: React.FC = () => {
                 }
             }} />}
 
-            {/* Daily Inspiration Toast & Generic Toasts (Unified Stack) */}
-            {!showIntro && !tutorialActive && !toolsTutorialActive && !welcomeModalActive && (
+            {/* Daily Inspiration Toast & Generic Toasts (Unified Stack) — only for Level 7+ */}
+            {!showIntro && !tutorialActive && !toolsTutorialActive && !welcomeModalActive && getCurrentLevel() >= 7 && (
                 <DailyInspirationToast 
                     quote={todaysQuote} 
                     externalToasts={toastNotifications} 

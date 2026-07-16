@@ -95,8 +95,8 @@ const MemberAvatarStack: React.FC<{
                 const userLevel = isMe ? myLevel : ((nameSum % 10) + 1);
                 const userProgress = isMe ? myProgress : ((nameSum % 80) + 10);
                 const isOwner = member.role === 'owner';
-                const ringColor = userLevel >= 20 ? '#eab308' : (isOwner ? '#f59e0b' : '#3b82f6');
-                const badgeBg = userLevel >= 20 ? 'bg-yellow-400 text-blue-800' : (isOwner ? 'bg-amber-500 text-white' : 'bg-blue-500 text-white');
+                const ringColor = userLevel >= 15 ? '#eab308' : (isOwner ? '#f59e0b' : '#3b82f6');
+                const badgeBg = userLevel >= 15 ? 'bg-yellow-400 text-blue-800' : (isOwner ? 'bg-amber-500 text-white' : 'bg-blue-500 text-white');
                 const badgeBorder = member.is_online ? 'border-emerald-500 dark:border-emerald-400' : (isOwner ? 'border-amber-400 dark:border-amber-600' : 'border-white dark:border-slate-800');
 
                 return (

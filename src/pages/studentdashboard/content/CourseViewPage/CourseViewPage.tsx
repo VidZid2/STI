@@ -12,7 +12,6 @@ import { SearchBar, EmptyState } from './components/SharedComponents';
 import { ModuleCard, getLockedReason, type ModuleData } from './components/ModuleCard';
 import { ActionsDropdown } from './components/ActionsDropdown';
 import { useCourseTasks } from './hooks/useCourseTasks';
-import { TeacherModeContent } from './components/TeacherModeContent';
 import MobileNavModal from './components/MobileNavModal';
 import { CourseAssignmentsTab } from './tabs/CourseAssignmentsTab';
 import {
@@ -206,21 +205,6 @@ type YearLevel = 'all' | '1st' | '2nd' | '3rd' | '4th';
 type Section = 'all' | 'A' | 'B' | 'C' | 'D';
 
 // Submission type for grading
-interface Submission {
-    id: number;
-    studentName: string;
-    studentId: string;
-    task: string;
-    submitted: string;
-    status: string;
-    yearLevel: YearLevel;
-    section: Section;
-    aiScore: number | null;
-}
-
-// Fresh start - no student submissions yet (empty for realistic fresh database)
-const SAMPLE_SUBMISSIONS: Submission[] = [];
-
 const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const { systemConfig } = useSystemConfig();
     const [activeTab, setActiveTab] = useState<TabType>(() => {
@@ -270,14 +254,11 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const { tasks: supabaseTasks, refetch: fetchSupabaseTasks } = useCourseTasks(course.id);
 
     // Teacher Mode State - persist across page refreshes
-    const [isTeacherMode, _setIsTeacherMode] = useState(() => {
-        return sessionStorage.getItem('teacher_mode_active') === 'true';
-    });
+    const isTeacherMode = false;
     const [teacherTab, setTeacherTab] = useState<TeacherTabType>(() => {
         const saved = sessionStorage.getItem('teacher_mode_tab');
         return (saved as TeacherTabType) || 'manage-tasks';
     });
-    const [isTeacherLoading, setIsTeacherLoading] = useState(false);
     const [yearLevelFilter, setYearLevelFilter] = useState<YearLevel>('all');
     const [sectionFilter, setSectionFilter] = useState<Section>('all');
 
@@ -318,15 +299,8 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
 
 
 
-    const [submissions, setSubmissions] = useState(() => {
-        // Fallback or empty state
-        return SAMPLE_SUBMISSIONS;
-    });
 
-    // No-op or handle real submission saves here
-    useEffect(() => {
-        // Will be replaced by actual Supabase service
-    }, [submissions, course.id]);
+
 
     // State for viewing task details in a modal
     const [instructionsModalTask, setInstructionsModalTask] = useState<any>(null);
@@ -334,11 +308,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
     const [submitModalTask, setSubmitModalTask] = useState<any>(null);
 
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-    const [selectedTaskType, setSelectedTaskType] = useState<TaskCategory>('assignment');
 
-    const [isAiGrading, setIsAiGrading] = useState(false);
-    const [aiGradingProgress, setAiGradingProgress] = useState(0);
-    const [showAiWarning, setShowAiWarning] = useState(false);
     const [showYearDropdown, setShowYearDropdown] = useState(false);
     const [showSectionDropdown, setShowSectionDropdown] = useState(false);
     const [showTeacherTutorial, setShowTeacherTutorial] = useState(false);
@@ -397,13 +367,6 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
         return () => clearTimeout(timer);
     }, []);
 
-    // Simulate loading for teacher mode tabs on initial mount only
-    useEffect(() => {
-        if (isTeacherMode) {
-            const timer = setTimeout(() => setIsTeacherLoading(false), 500);
-            return () => clearTimeout(timer);
-        }
-    }, [isTeacherMode]);
 
     // Close dropdowns when clicking outside
     useEffect(() => {
@@ -1053,7 +1016,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             submissionsContainer.removeEventListener('mouseleave', handleMouseLeave);
             submissionsContainer.removeEventListener('wheel', handleWheel);
         };
-    }, [isTeacherMode, teacherTab, submissions.length, yearLevelFilter, sectionFilter]);
+    }, [isTeacherMode, teacherTab, yearLevelFilter, sectionFilter]);
 
     // Handle wheel scroll for teacher manage-tasks cards
     useEffect(() => {
@@ -1098,7 +1061,7 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             tasksContainer.removeEventListener('mouseleave', handleMouseLeave);
             tasksContainer.removeEventListener('wheel', handleWheel);
         };
-    }, [isTeacherMode, teacherTab, selectedTaskType]);
+    }, [isTeacherMode, teacherTab]);
 
     // Get search placeholder based on active tab
     const getSearchPlaceholder = () => {
@@ -2605,40 +2568,11 @@ const CourseViewPage: React.FC<CourseViewPageProps> = ({ course, onBack }) => {
             {/* Content */}
             <div className="flex-1 py-4 sm:py-6">
                 <AnimatePresence mode="wait">
-                    {isTeacherMode ? (
-                        // Teacher Mode Content — extracted to ./components/TeacherModeContent.tsx
-                        <TeacherModeContent
-                            course={course}
-                            teacherTab={teacherTab}
-                            setTeacherTab={setTeacherTab}
-                            isTeacherLoading={isTeacherLoading}
-                            yearLevelFilter={yearLevelFilter}
-                            setYearLevelFilter={setYearLevelFilter}
-                            sectionFilter={sectionFilter}
-                            setSectionFilter={setSectionFilter}
-                            submissions={submissions}
-                            setSubmissions={setSubmissions}
-                            isAiGrading={isAiGrading}
-                            setIsAiGrading={setIsAiGrading}
-                            aiGradingProgress={aiGradingProgress}
-                            setAiGradingProgress={setAiGradingProgress}
-                            showAiWarning={showAiWarning}
-                            setShowAiWarning={setShowAiWarning}
-                            selectedTaskType={selectedTaskType}
-                            setSelectedTaskType={setSelectedTaskType}
-                            showAddTaskModal={showAddTaskModal}
-                            setShowAddTaskModal={setShowAddTaskModal}
-                            supabaseStudents={supabaseStudents}
-                            supabaseTasks={supabaseTasks}
-                            refetchTasks={fetchSupabaseTasks}
-                        />
-                    ) : (
-                        // Student Mode Content
+                        {/* Student Mode Content */}
                         <>
                             {/* Search Bar and Actions moved to Information Base Header */}
                             {renderContent()}
                         </>
-                    )}
                 </AnimatePresence>
             </div>
 

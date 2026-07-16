@@ -90,7 +90,7 @@ function DayStreakPreview() {
 function QuickViewWidgetsPreview() {
   return (
     <div className="w-full max-w-[280px] md:max-w-[360px] flex flex-col gap-3">
-      {/* Study Insights Widget */}
+      {/* Analytics Dashboard Widget */}
       <div className="bg-white dark:bg-[#18181b] rounded-2xl p-4 shadow-md transition-all duration-300 transform-gpu antialiased cursor-pointer hover:-translate-y-1 hover:shadow-lg active:-translate-y-1 active:shadow-lg border border-white/20 dark:border-slate-800/40 flex flex-col gap-3">
         {/* Header */}
         <div className="flex items-center justify-between">

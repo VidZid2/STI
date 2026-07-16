@@ -51,7 +51,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, index }) => {
                         max={100}
                         min={0}
                         value={85}
-                        gaugePrimaryColor={(student.level || 1) >= 20 ? '#eab308' : '#3b82f6'}
+                        gaugePrimaryColor={(student.level || 1) >= 15 ? '#eab308' : (student.level || 1) >= 10 ? '#cbd5e1' : '#3b82f6'}
                         gaugeSecondaryColor="rgba(219, 234, 254, 0.6)"
                         className="w-16 h-16 shrink-0 relative z-10"
                     >

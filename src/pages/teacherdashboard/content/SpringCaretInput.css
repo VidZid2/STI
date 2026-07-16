@@ -1,0 +1,58 @@
+.spring-caret-field {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  display: block;
+  color: #344054;
+}
+
+.spring-caret-field__control {
+  caret-color: transparent !important;
+}
+
+.spring-caret-field__caret {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 1px;
+  min-height: 0;
+  border-radius: 999px;
+  background: currentColor;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.spring-caret-field__measure,
+.spring-caret-field__mirror {
+  position: absolute;
+  top: 0;
+  left: -100000px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.spring-caret-field__measure {
+  width: max-content;
+  white-space: pre;
+}
+
+.spring-caret-field__mirror {
+  min-height: 1px;
+}
+
+.spring-caret-field--multiline,
+.spring-caret-field--multiline .spring-caret-field__control {
+  display: block;
+}
+
+.ncp-category-search .spring-caret-field {
+  width: auto;
+  flex: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spring-caret-field__caret {
+    will-change: auto;
+  }
+}

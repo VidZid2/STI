@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import { getStreakData, getStreakTier, type StreakData } from '../../../services/studyTimeService';
+import { getStreakData, getStreakTier, getCurrentLevel, getStreakMultiplier, type StreakData } from '../../../services/studyTimeService';
 import { DailyStreakModal } from '../../modals/DailyStreakModal';
 import { Flame, Target, Trophy } from 'lucide-react';
 
@@ -115,6 +115,8 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
     }, []);
 
     const [streakData, setStreakData] = useState<StreakData>(() => getStreakData());
+    const [currentLevel, setCurrentLevel] = useState<number>(() => getCurrentLevel());
+    const multiplier = getStreakMultiplier(currentLevel);
     const [showWelcome, setShowWelcome] = useState(false);
     const [showStreakModal, setShowStreakModal] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -141,7 +143,10 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
         checkStatus();
         
         // Listen for storage changes (in case tutorial completes while component is mounted)
-        const handleStorageChange = () => checkStatus();
+        const handleStorageChange = () => {
+            checkStatus();
+            setCurrentLevel(getCurrentLevel());
+        };
         window.addEventListener('storage', handleStorageChange);
         
         // Also poll periodically in case localStorage/sessionStorage changes in same tab
@@ -508,6 +513,18 @@ const StreakDropdown: React.FC<StreakDropdownProps> = ({ className }) => {
                                 >
                                     +{tier.xpBonus} XP
                                 </div>
+                                {multiplier > 1.0 && (
+                                    <div
+                                        className="px-2 py-0.5 rounded-md text-[9.5px] font-bold shadow-sm shrink-0 ml-1.5"
+                                        style={{
+                                            background: isDarkMode ? 'rgba(249, 115, 22, 0.15)' : 'rgba(255, 237, 213, 0.8)',
+                                            color: isDarkMode ? '#fb923c' : '#ea580c',
+                                            border: `1px solid ${isDarkMode ? 'rgba(249, 115, 22, 0.3)' : 'rgba(249, 115, 22, 0.2)'}`,
+                                        }}
+                                    >
+                                        {multiplier}x
+                                    </div>
+                                )}
                             </div>
 
                             {/* Card 2: Weekly Progress (Study Tools Style) */}

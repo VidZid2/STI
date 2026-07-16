@@ -1439,7 +1439,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                                                                                                                 max={100}
                                                                                                                 min={0}
                                                                                                                 value={c.progress || 0}
-                                                                                                                gaugePrimaryColor={(c.level || 1) >= 20 ? '#eab308' : '#3b82f6'}
+                                                                                                                gaugePrimaryColor={(c.level || 1) >= 15 ? '#eab308' : (c.level || 1) >= 10 ? '#cbd5e1' : '#3b82f6'}
                                                                                                                 gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
                                                                                                                 className="w-14 h-14"
                                                                                                             >
@@ -1557,7 +1557,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                                                                                                 max={100}
                                                                                                 min={0}
                                                                                                 value={inv.progress || 0}
-                                                                                                gaugePrimaryColor={(inv.level || 1) >= 20 ? '#eab308' : '#3b82f6'}
+                                                                                                gaugePrimaryColor={(inv.level || 1) >= 15 ? '#eab308' : (inv.level || 1) >= 10 ? '#cbd5e1' : '#3b82f6'}
                                                                                                 gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
                                                                                                 className="w-12 h-12"
                                                                                             >

@@ -267,7 +267,7 @@ const LevelDropdown: React.FC<LevelDropdownProps> = ({ className }) => {
                                         max={100}
                                         min={0}
                                         value={xpProgress}
-                                        gaugePrimaryColor={level >= 20 ? '#eab308' : '#3b82f6'}
+                                        gaugePrimaryColor={level >= 15 ? '#eab308' : level >= 10 ? '#cbd5e1' : '#3b82f6'}
                                         gaugeSecondaryColor={isDarkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(219, 234, 254, 0.6)'}
                                         className="w-[54px] h-[54px] rounded-full transition-all duration-300"
                                     >
