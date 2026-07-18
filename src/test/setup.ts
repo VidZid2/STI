@@ -21,10 +21,10 @@ Element.prototype.scrollIntoView = vi.fn();
 
 // --- Range Mock ---
 class MockRange {
-  commonAncestorContainer = null;
-  startContainer = null;
+  commonAncestorContainer: Node | null = null;
+  startContainer: Node | null = null;
   startOffset = 0;
-  endContainer = null;
+  endContainer: Node | null = null;
   endOffset = 0;
   collapsed = true;
 
@@ -77,7 +77,6 @@ if (!window.Range) {
   (window as any).Range = MockRange;
 }
 
-const originalCreateRange = document.createRange;
 document.createRange = () => {
   return new MockRange() as unknown as Range;
 };
